@@ -1,0 +1,8 @@
+*
+
+!docker-compose.dev.yaml
+!docker-compose.inference.yaml
+!docker-compose.yaml
+!Makefile
+!README.md
+!.gitignore

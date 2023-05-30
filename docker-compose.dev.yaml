@@ -1,0 +1,90 @@
+version: "3"
+services:
+  # THESE ARE LOCAL DEVELOPMENT VERSIONS OF OUR SERVICES
+  filechat-api:
+    image: filechat-api:local
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: development
+    volumes:
+      - ./api:/usr/src/app
+      - node_modules_api:/usr/src/app/node_modules
+    command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
+    working_dir: /usr/src/app
+
+  filechat-pyservice:
+    image: filechat-pyservice:local
+    build:
+      dockerfile: Dockerfile
+      context: ./pyservice
+
+  filechat-ui:
+    image: filechat-ui:local
+    build:
+      dockerfile: Dockerfile
+      context: ./ui
+      target: development
+    volumes:
+      - ./ui:/app
+      - node_modules_ui:/app/node_modules
+
+  # THESE ARE DEVELOPMENT TOOLS TO MAKE THINGS EASIER
+  filechat-milvus-attu:
+    image: zilliz/attu:v2.2.5
+    hostname: filechat-milvus-attu
+    container_name: filechat-milvus-attu
+    ports:
+      - "9998:3000"
+    environment:
+      - MILVUS_URL=filechat-milvus-standalone:19530
+    profiles:
+      - local
+
+  filechat-pgadmin:
+    image: dpage/pgadmin4
+    container_name: filechat-pgadmin
+    restart: always
+    ports:
+      - "5434:80"
+    environment:
+      - PGADMIN_LISTEN_PORT=80
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_DEFAULT_EMAIL=jonathan@filechat.io
+      - PGADMIN_DEFAULT_PASSWORD=password
+    depends_on:
+      - filechat-postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  portainer:
+    image: portainer/portainer-ce
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9999:9000
+
+  # THIS SERVICE IS FOR RUNNING E2E TESTS
+  filechat-api-test-e2e:
+    container_name: filechat-api-test-e2e
+    image: filechat-api:local
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: test
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - ./api/.env.${PROFILE}
+    command: /bin/sh -c 'npm run test:e2e'
+    working_dir: /usr/src/app
+    profiles:
+      - test
+
+volumes:
+  node_modules_api:
+  node_modules_ui:
+  pgadmin_data:
+  portainer_data:
