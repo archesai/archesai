@@ -51,3 +51,11 @@ telepresence-all:
 
 telepresence-stop:
 	telepresence quit
+
+REPO_LIST = ui api pyservice
+
+download_repos:
+    @for repo in $(REPO_LIST); do \
+        echo "Cloning $$repo..."; \
+        git clone https://github.com/filechat-io/$$repo; \
+    done
