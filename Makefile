@@ -52,10 +52,10 @@ telepresence-all:
 telepresence-stop:
 	telepresence quit
 
-REPO_LIST = ui api pyservice
+REPO_LIST = ui api pyservice widget
 
 download_repos:
-    @for repo in $(REPO_LIST); do \
-        echo "Cloning $$repo..."; \
-        git clone https://github.com/filechat-io/$$repo; \
-    done
+	@for repo in $(REPO_LIST); do \
+		echo "Cloning $$repo..."; \
+		git clone https://github.com/filechat-io/$$repo; \
+	done
