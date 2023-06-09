@@ -32,3 +32,5 @@ patches:
 
 resources:
   - "./cloud-service-account.yaml"
+  - "./arches-api-filechat-managedcertificate.yaml"
+  - "./arches-api-filechat-ingress.yaml"
