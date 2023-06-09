@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-pyservice
+  name: arches-pyservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-pyservice
+  template:
+    metadata:
+      labels:
+        component: arches-pyservice
+    spec:
+      containers:
+        - image: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
+          name: arches-pyservice
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+      restartPolicy: Always

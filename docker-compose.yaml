@@ -1,46 +1,45 @@
 version: "3.8"
 services:
   ########### THESE SERVICES BELOW ARE THE ONES THAT WE NEED TO BUILD ###########
-  filechat-api:
-    container_name: filechat-api
+  arches-api:
+    container_name: arches-api
     image: us-central1-docker.pkg.dev/filechat-io/cloud-run-source-deploy/api@sha256:e33dba536f661a817c496964cc9a1fff835da84ebcc8adbc6fedb3ba657819e5
     hostname: api-tcp
     env_file:
       # - ./api/.env.${PROFILE}
       - ./api/.env.bob
     environment:
-      - DATABASE_URL=postgresql://admin:admin@filechat-postgres:5432/nestjs?schema=public
+      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
     depends_on:
-      - filechat-redis
-      - filechat-postgres
-      - filechat-auth-keycloak
-      - filechat-milvus-standalone
+      - arches-redis
+      - arches-postgres
+      - arches-auth-keycloak
+      - arches-milvus-standalone
     ports:
       - 3001:3001
 
-  filechat-ui:
-    container_name: filechat-ui
+  arches-ui:
+    container_name: arches-ui
     hostname: ui-tcp
     image: us-west2-docker.pkg.dev/filechat-io/images/ui:jonathan-local
     ports:
       - "3000:3000"
     env_file:
-      # - ./ui/.env.${PROFILE}
       - ./ui/.env.bob
 
-  filechat-pyservice:
-    container_name: filechat-pyservice
+  arches-pyservice:
+    container_name: arches-pyservice
     image: us.gcr.io/filechat-io/pyservice/pyservice@sha256:898cb3111ad1455ceafa509b119d3afd98b4c4b2cfe1ddb94edf6b36ba4839a3
     ports:
       - "3002:80"
 
   ########### THESE SERVICES BELOW ARE THE ONES THAT WE JUST NEED TO PULL ###########
-  filechat-postgres:
-    hostname: filechat-postgres
-    container_name: filechat-postgres
+  arches-postgres:
+    hostname: arches-postgres
+    container_name: arches-postgres
     image: postgres:latest
     ports:
-      - "5432:5432"
+      - "5431:5432"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
@@ -48,18 +47,18 @@ services:
       - POSTGRES_HOST=localhost
       - POSTGRES_PORT=5432
 
-  filechat-redis:
-    hostname: filechat-redis
-    container_name: filechat-redis
+  arches-redis:
+    hostname: arches-redis
+    container_name: arches-redis
     image: "redis:alpine"
     ports:
       - "6379:6379"
     command: redis-server --requirepass "PASSWORD"
 
   ## STAGE ONLY ##
-  filechat-firebase:
-    container_name: filechat-firebase
-    hostname: filechat-firebase
+  arches-firebase:
+    container_name: arches-firebase
+    hostname: arches-firebase
     image: andreysenov/firebase-tools:11.25.2
     ports:
       - "9099:9099"
@@ -70,15 +69,15 @@ services:
       - emulatorCache:/home/node/.cache/firebase/emulators
     command: firebase emulators:start --project filechat-io
     depends_on:
-      - filechat-postgres
-      - filechat-redis
+      - arches-postgres
+      - arches-redis
     profiles:
       - stage
 
   ## LOCAL ONLY ##
-  filechat-milvus-etcd:
-    hostname: filechat-milvus-etcd
-    container_name: filechat-milvus-etcd
+  arches-milvus-etcd:
+    hostname: arches-milvus-etcd
+    container_name: arches-milvus-etcd
     image: quay.io/coreos/etcd:v3.5.5
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
@@ -93,28 +92,28 @@ services:
     profiles:
       - local
 
-  filechat-milvus-standalone:
-    hostname: filechat-milvus-standalone
-    container_name: filechat-milvus-standalone
+  arches-milvus-standalone:
+    hostname: arches-milvus-standalone
+    container_name: arches-milvus-standalone
     image: milvusdb/milvus:v2.2.8
     command: ["milvus", "run", "standalone"]
     environment:
-      ETCD_ENDPOINTS: filechat-milvus-etcd:2379
-      MINIO_ADDRESS: filechat-minio:9000
+      ETCD_ENDPOINTS: arches-milvus-etcd:2379
+      MINIO_ADDRESS: arches-minio:9000
     volumes:
       - milvus-standalone-data:/var/lib/milvus
     ports:
       - "19530:19530"
       - "9091:9091"
     depends_on:
-      - "filechat-milvus-etcd"
-      - "filechat-minio"
+      - "arches-milvus-etcd"
+      - "arches-minio"
     profiles:
       - local
 
-  filechat-minio:
-    hostname: filechat-minio
-    container_name: filechat-minio
+  arches-minio:
+    hostname: arches-minio
+    container_name: arches-minio
     image: minio/minio:RELEASE.2022-03-17T06-34-49Z
     environment:
       MINIO_ACCESS_KEY: minioadmin
@@ -133,9 +132,9 @@ services:
     profiles:
       - local
 
-  filechat-auth-keycloak:
-    hostname: filechat-auth-keycloak
-    container_name: filechat-auth-keycloak
+  arches-auth-keycloak:
+    hostname: arches-auth-keycloak
+    container_name: arches-auth-keycloak
     image: quay.io/keycloak/keycloak:21.1.1
     environment:
       - KEYCLOAK_ADMIN=admin
@@ -150,10 +149,10 @@ services:
       - local
 
   ## INFERENCE ENDPOINT
-  filechat-inference:
-    hostname: filechat-inference
-    container_name: filechat-inference
-    image: us-west2-docker.pkg.dev/filechat-io/images/filechat-inference:jonathan-0.1.1
+  arches-inference:
+    hostname: arches-inference
+    container_name: arches-inference
+    image: us-west2-docker.pkg.dev/filechat-io/images/arches-inference:jonathan-0.1.1
     build:
       context: ./inference
       dockerfile: Dockerfile

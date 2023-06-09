@@ -6,3 +6,12 @@
 !Makefile
 !README.md
 !.gitignore
+!.github/workflows
+!kubernetes
+!kubernetes/**
+!skaffold.yaml
+!clouddeploy.yaml
+.env.production
+redis-ca.pem
+!.github
+!.github/**

@@ -1,0 +1,192 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arches-api
+spec:
+  selector:
+    matchLabels:
+      component: arches-api
+  replicas: 3
+  template:
+    spec:
+      $patch: replace
+      containers:
+        - name: arches-api
+          env:
+            - name: AUTH_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: AUTH_TYPE
+                  name: arches-api-config-secret
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: DATABASE_URL
+                  name: arches-api-config-secret
+            - name: FIREBASE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: FIREBASE_API_KEY
+                  name: arches-api-config-secret
+            - name: FRONTEND_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: FRONTEND_HOST
+                  name: arches-api-config-secret
+            - name: JWT_API_TOKEN_EXPIRATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_API_TOKEN_EXPIRATION_TIME
+                  name: arches-api-config-secret
+            - name: JWT_API_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_API_TOKEN_SECRET
+                  name: arches-api-config-secret
+            - name: JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
+                  name: arches-api-config-secret
+            - name: JWT_VERIFICATION_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_VERIFICATION_TOKEN_SECRET
+                  name: arches-api-config-secret
+            - name: LOADER_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  key: LOADER_ENDPOINT
+                  name: arches-api-config-secret
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  key: NODE_ENV
+                  name: arches-api-config-secret
+            - name: OPEN_AI_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: OPEN_AI_KEY
+                  name: arches-api-config-secret
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  key: PORT
+                  name: arches-api-config-secret
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_AUTH
+                  name: arches-api-config-secret
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_HOST
+                  name: arches-api-config-secret
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_PORT
+                  name: arches-api-config-secret
+            - name: SERVER_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: SERVER_HOST
+                  name: arches-api-config-secret
+            - name: STORAGE_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: STORAGE_TYPE
+                  name: arches-api-config-secret
+            - name: VECTOR_DB_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: VECTOR_DB_TYPE
+                  name: arches-api-config-secret
+            - name: FEATURE_BILLING
+              valueFrom:
+                secretKeyRef:
+                  key: FEATURE_BILLING
+                  name: arches-api-config-secret
+            - name: FEATURE_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  key: FEATURE_EMAIL
+                  name: arches-api-config-secret
+            - name: PINECONE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: PINECONE_API_KEY
+                  name: arches-api-config-secret
+            - name: PINECONE_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: PINECONE_BASE_URL
+                  name: arches-api-config-secret
+            - name: REDIS_CA_CERT_PATH
+              value: /usr/src/app/server-ca.pem
+          image: us-west2-docker.pkg.dev/filechat-io/images/arches-api
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+          volumeMounts:
+            - mountPath: /usr/src/app/server-ca.pem
+              name: arches-redis-ca-cert
+              subPath: redis-ca.pem
+          readinessProbe: # define readiness probe
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe: # define liveness probe
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 20
+        - name: cloud-sql-proxy
+          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
+          # Make sure to update on a regular schedule!
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            # If connecting from a VPC-native GKE cluster, you can use the
+            # following flag to have the proxy connect over private IP
+            # - "--private-ip"
+
+            # Enable structured logging with LogEntry format:
+            - "--structured-logs"
+
+            # Replace DB_PORT with the port the proxy should listen on
+            - "--port=5432"
+            - "filechat-io:us-central1:migrations-test"
+
+          securityContext:
+            # The default Cloud SQL Auth Proxy image runs as the
+            # "nonroot" user and group (uid: 65532) by default.
+            runAsNonRoot: true
+          # You should use resource requests/limits as a best practice to prevent
+          # pods from consuming too many resources and affecting the execution of
+          # other pods. You should adjust the following values based on what your
+          # application needs. For details, see
+          # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+      volumes:
+        - name: arches-redis-ca-cert
+          secret:
+            secretName: arches-redis-ca-cert
+      serviceAccountName: cloud-sql-sa
+      hostname: arches-api
+      restartPolicy: Always

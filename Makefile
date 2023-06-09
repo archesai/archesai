@@ -7,8 +7,11 @@ docker-build:
 docker-run:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d
 
+docker-run-ui:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-ui -d
+
 docker-test:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up filechat-api-test-e2e
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
 
 docker-stop:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) down
@@ -41,10 +44,10 @@ telepresence-install:
 	telepresence helm install
 
 telepresence-api:
-	telepresence intercept filechat-api --port 3001:3000 -n filechat-dev
+	telepresence intercept arches-api --port 3001:3000 -n filechat-dev
 
 telepresence-ui:
-	telepresence intercept filechat-ui --port 3000:3000 -n filechat-dev
+	telepresence intercept arches-ui --port 3000:3000 -n filechat-dev
 
 telepresence-all: 
 	make telepresence-stop && make telepresence-api && make telepresence-ui
@@ -59,3 +62,12 @@ download_repos:
 		echo "Cloning $$repo..."; \
 		git clone https://github.com/filechat-io/$$repo; \
 	done
+
+release:
+	gcloud deploy releases create ${RELEASE} \
+	--delivery-pipeline=arches-deployment \
+	--region=us-central1 \
+	--source=./ \
+	--images=us-west2-docker.pkg.dev/filechat-io/images/arches-ui=us-west2-docker.pkg.dev/filechat-io/images/arches-ui:${UI_TAG},\
+	us-west2-docker.pkg.dev/filechat-io/images/arches-api=us-west2-docker.pkg.dev/filechat-io/images/arches-api:${API_TAG},\
+	us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice=us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice:${PYSERVICE_TAG}

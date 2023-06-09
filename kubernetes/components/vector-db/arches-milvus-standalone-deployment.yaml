@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-milvus-standalone
+  name: arches-milvus-standalone
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-milvus-standalone
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: arches-milvus-standalone
+    spec:
+      containers:
+        - args:
+            - milvus
+            - run
+            - standalone
+          env:
+            - name: ETCD_ENDPOINTS
+              value: arches-milvus-etcd:2379
+            - name: MINIO_ADDRESS
+              value: arches-minio:9000
+          image: milvusdb/milvus:v2.2.8
+          name: arches-milvus-standalone
+          ports:
+            - containerPort: 19530
+            - containerPort: 9091
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/milvus
+              name: milvus-standalone-data
+      restartPolicy: Always
+      volumes:
+        - name: milvus-standalone-data
+          persistentVolumeClaim:
+            claimName: milvus-standalone-data
+status: {}

@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - "./arches-minio-deployment.yaml"
+  - "./arches-minio-service.yaml"
+  - "./minio-data-persistentvolumeclaim.yaml"

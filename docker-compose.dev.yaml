@@ -1,8 +1,8 @@
 version: "3"
 services:
   # THESE ARE LOCAL DEVELOPMENT VERSIONS OF OUR SERVICES
-  filechat-api:
-    image: filechat-api:local
+  arches-api:
+    image: arches-api:local
     build:
       dockerfile: Dockerfile
       context: ./api
@@ -13,14 +13,14 @@ services:
     command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
     working_dir: /usr/src/app
 
-  filechat-pyservice:
-    image: filechat-pyservice:local
+  arches-pyservice:
+    image: arches-pyservice:local
     build:
       dockerfile: Dockerfile
       context: ./pyservice
 
-  filechat-ui:
-    image: filechat-ui:local
+  arches-ui:
+    image: arches-ui:local
     build:
       dockerfile: Dockerfile
       context: ./ui
@@ -30,20 +30,20 @@ services:
       - node_modules_ui:/app/node_modules
 
   # THESE ARE DEVELOPMENT TOOLS TO MAKE THINGS EASIER
-  filechat-milvus-attu:
+  arches-milvus-attu:
     image: zilliz/attu:v2.2.5
-    hostname: filechat-milvus-attu
-    container_name: filechat-milvus-attu
+    hostname: arches-milvus-attu
+    container_name: arches-milvus-attu
     ports:
       - "9998:3000"
     environment:
-      - MILVUS_URL=filechat-milvus-standalone:19530
+      - MILVUS_URL=arches-milvus-standalone:19530
     profiles:
       - local
 
-  filechat-pgadmin:
+  arches-pgadmin:
     image: dpage/pgadmin4
-    container_name: filechat-pgadmin
+    container_name: arches-pgadmin
     restart: always
     ports:
       - "5434:80"
@@ -53,7 +53,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=jonathan@filechat.io
       - PGADMIN_DEFAULT_PASSWORD=password
     depends_on:
-      - filechat-postgres
+      - arches-postgres
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
@@ -67,9 +67,9 @@ services:
       - 9999:9000
 
   # THIS SERVICE IS FOR RUNNING E2E TESTS
-  filechat-api-test-e2e:
-    container_name: filechat-api-test-e2e
-    image: filechat-api:local
+  arches-api-test-e2e:
+    container_name: arches-api-test-e2e
+    image: arches-api:local
     build:
       dockerfile: Dockerfile
       context: ./api

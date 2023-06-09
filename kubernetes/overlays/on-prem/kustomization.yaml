@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+  - "../../base"
+namespace: on-prem
+components:
+  - ../../components/database
+  - ../../components/auth
+  - ../../components/storage
+  - ../../components/vector-db
+  - ../../components/ui
+  - ../../components/redis
+
+images:
+  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-api
+    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-api
+    newTag: 628200a
+  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-ui
+    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-ui
+    newTag: db28c53
+  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
+    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
+    newTag: f2183c8

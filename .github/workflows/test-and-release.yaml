@@ -1,0 +1,82 @@
+name: Create GCP Release
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ui
+        uses: actions/checkout@v2
+        with:
+          repository: filechat-io/ui
+          token: ${{ secrets.PAT }}
+          ref: arches
+      - name: Get ui short SHA
+        run: echo "UI_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Checkout api
+        uses: actions/checkout@v2
+        with:
+          repository: filechat-io/api
+          token: ${{ secrets.PAT }}
+          ref: arches
+      - name: Get api short SHA
+        run: echo "API_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Checkout pyservice
+        uses: actions/checkout@v2
+        with:
+          repository: filechat-io/pyservice
+          token: ${{ secrets.PAT }}
+      - name: Get pyservice short SHA
+        run: echo "PYSERVICE_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Checkout dev
+        uses: actions/checkout@v2
+        with:
+          repository: filechat-io/dev
+          token: ${{ secrets.PAT }}
+          ref: main
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.SA }}
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          project_id: filechat-io
+
+      - name: Install Kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+      - name: Set up YQ for YAML manipulation
+        run: |
+          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
+
+      - name: Update image tags in Kustomization file
+        run: |
+          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-api\").newTag = \"${{ env.API_SHA_SHORT }}\"" ./kubernetes/overlays/stage/kustomization.yaml
+          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-ui\").newTag = \"${{ env.UI_SHA_SHORT }}\"" ./kubernetes/overlays/stage/kustomization.yaml
+          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice\").newTag = \"${{ env.PYSERVICE_SHA_SHORT }}\"" ./kubernetes/overlays/stage/kustomization.yaml
+
+      - name: Deploy to Google Cloud
+        run: |
+          echo "${{ secrets.PROD_ENV_FILE }}" > ./kubernetes/overlays/stage/.env.production
+          echo "${{ secrets.PROD_REDIS_CA }}" > ./kubernetes/overlays/stage/redis-ca.pem
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud container clusters get-credentials arches-cluster --zone us-central1-c --project filechat-io
+          kubectl apply -k ./kubernetes/overlays/stage
+        env:
+          UI_SHA_SHORT: ${{ env.UI_SHA_SHORT }}
+          API_SHA_SHORT: ${{ env.API_SHA_SHORT }}
+          PYSERVICE_SHA_SHORT: ${{ env.PYSERVICE_SHA_SHORT }}
