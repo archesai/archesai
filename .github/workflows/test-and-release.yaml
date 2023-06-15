@@ -14,7 +14,6 @@ jobs:
         with:
           repository: filechat-io/ui
           token: ${{ secrets.PAT }}
-          ref: arches
       - name: Get ui short SHA
         run: echo "UI_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
@@ -23,7 +22,6 @@ jobs:
         with:
           repository: filechat-io/api
           token: ${{ secrets.PAT }}
-          ref: arches
       - name: Get api short SHA
         run: echo "API_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 

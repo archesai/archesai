@@ -1,8 +1,8 @@
-PROFILE ?= stage
+PROFILE ?= minimal
 
 # THESE ARE FOR RUNNING THE SERVICES IN DOCKER
 docker-build:
-	docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
 
 docker-run:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d

@@ -39,7 +39,7 @@ services:
     environment:
       - MILVUS_URL=arches-milvus-standalone:19530
     profiles:
-      - local
+      - full
 
   arches-pgadmin:
     image: dpage/pgadmin4
@@ -50,7 +50,7 @@ services:
     environment:
       - PGADMIN_LISTEN_PORT=80
       - PGADMIN_CONFIG_SERVER_MODE=False
-      - PGADMIN_DEFAULT_EMAIL=jonathan@filechat.io
+      - PGADMIN_DEFAULT_EMAIL=jonathan@archesai.com
       - PGADMIN_DEFAULT_PASSWORD=password
     depends_on:
       - arches-postgres

@@ -6,8 +6,7 @@ services:
     image: us-central1-docker.pkg.dev/filechat-io/cloud-run-source-deploy/api@sha256:e33dba536f661a817c496964cc9a1fff835da84ebcc8adbc6fedb3ba657819e5
     hostname: api-tcp
     env_file:
-      # - ./api/.env.${PROFILE}
-      - ./api/.env.bob
+      - ./api/.env.${PROFILE}
     environment:
       - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
     depends_on:
@@ -25,7 +24,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./ui/.env.bob
+      - ./ui/.env.${PROFILE}
 
   arches-pyservice:
     container_name: arches-pyservice
@@ -72,7 +71,7 @@ services:
       - arches-postgres
       - arches-redis
     profiles:
-      - stage
+      - minimal
 
   ## LOCAL ONLY ##
   arches-milvus-etcd:
@@ -90,7 +89,7 @@ services:
       - "2379:2379"
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     profiles:
-      - local
+      - full
 
   arches-milvus-standalone:
     hostname: arches-milvus-standalone
@@ -109,7 +108,7 @@ services:
       - "arches-milvus-etcd"
       - "arches-minio"
     profiles:
-      - local
+      - full
 
   arches-minio:
     hostname: arches-minio
@@ -130,7 +129,7 @@ services:
       timeout: 20s
       retries: 3
     profiles:
-      - local
+      - full
 
   arches-auth-keycloak:
     hostname: arches-auth-keycloak
@@ -146,7 +145,7 @@ services:
       - "8080:8080"
     command: start-dev
     profiles:
-      - local
+      - full
 
   ## INFERENCE ENDPOINT
   arches-inference:
@@ -176,7 +175,7 @@ services:
               capabilities: [gpu]
     shm_size: "1g"
     profiles:
-      - local
+      - full
 
 volumes:
   minio-data:
@@ -185,3 +184,18 @@ volumes:
   hf-models:
   outputs:
   emulatorCache:
+# arches-instructor-embeddings:
+#   image: fill in with your local build
+#   command: CMD ["uvicorn", "embeddings_fastapi:app", "--host", "0.0.0.0", "--port", "8000"]
+#   volumes:
+#     - figure this out so that the model downloaded is saved to a volume
+#   ports:
+#     - 3004:8000
+#   deploy:
+#     resources:
+#       reservations:
+#         devices:
+#           - driver: nvidia
+#             count: all
+#             capabilities: [gpu]
+#   shm_size: "1g"
