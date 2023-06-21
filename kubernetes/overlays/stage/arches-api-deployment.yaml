@@ -151,7 +151,7 @@ spec:
             - name: EMAIL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: EMAIL_USER
+                  key: EMAIL_PASSWORD
                   name: arches-api-config-secret
             - name: PINECONE_API_KEY
               valueFrom:
