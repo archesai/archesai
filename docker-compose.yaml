@@ -12,8 +12,6 @@ services:
     depends_on:
       - arches-redis
       - arches-postgres
-      - arches-auth-keycloak
-      - arches-milvus-standalone
     ports:
       - 3001:3001
 

@@ -73,7 +73,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./api
-      target: test
+      target: development
     volumes:
       - ./api:/usr/src/app
     env_file:

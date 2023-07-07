@@ -16,6 +16,9 @@ docker-test:
 docker-stop:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) down
 		
+docker-migrations:
+	docker kill arches-api && docker rm arches-api && make docker-build && docker volume rm filechat_node_modules_api && make docker-run
+	
 # THESE ARE FOR BUILDING AND PUSHING THE SERVICES TO GCP
 build-and-push-ui: 
 	gcloud builds submit --config ./ui/cloudbuild.yaml --async ./ui
