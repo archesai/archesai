@@ -204,13 +204,13 @@ spec:
               cpu: "1"
           readinessProbe: # define readiness probe
             httpGet:
-              path: /docs
+              path: /
               port: 3001
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe: # define liveness probe
             httpGet:
-              path: /docs
+              path: /
               port: 3001
             initialDelaySeconds: 10
             periodSeconds: 20
