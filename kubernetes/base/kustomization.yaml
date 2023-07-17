@@ -9,3 +9,5 @@ resources:
   - ./arches-pyservice-deployment.yaml
   - ./arches-pyservice-service.yaml
   - ./arches-frontendconfig.yaml
+  - ./arches-api-hpa.yaml
+  - ./arches-pyservice-hpa.yaml
