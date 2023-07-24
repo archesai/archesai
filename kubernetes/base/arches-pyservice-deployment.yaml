@@ -26,4 +26,16 @@ spec:
             limits:
               memory: "2Gi"
               cpu: "1"
+          readinessProbe: # define readiness probe
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe: # define liveness probe
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
       restartPolicy: Always
