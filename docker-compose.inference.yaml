@@ -29,3 +29,104 @@
 #             count: all
 #             capabilities: [gpu]
 #   shm_size: "1g"
+version: "3.8"
+services:
+  arches-deforum:
+    image: archesai/deforum:deforum-jul-17.2
+    # build:
+    #   context: deforum
+    #   dockerfile: Dockerfile
+    container_name: arches-deforum
+    ports:
+      - 8000:8000
+    # volumes:
+    #   - ./deforum/models:/app/models
+    #   - ./deforum/outputs:/app/outputs
+    environment:
+      - BUCKET_SECRET_ACCESS_KEY=U9Yl+NMTgZm3m3cChEB3HI9XIjmVdFjLlprTDMYK
+      - BUCKET_ACCESS_KEY=GOOGP6MU3LG325ZWBC4QWCSA
+      - BUCKET_ENDPOINT_URL=https://storage.googleapis.com
+      - PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.6,max_split_size_mb:128
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: "1g"
+    command: |
+      python3 runpod_m.py --test_input '{"input": {"name": "my-animation.mp4", "orgname": "mountain.raccoon.591-418", "use_audio": false, "audio_url": "https://cdn.pixabay.com/download/audio/2023/02/09/audio_80ecdcb069.mp3?filename=blast-138451.mp3&g-recaptcha-response=03AAYGu2TPuJ8t_nnYLJy0ZpvSge7OeTYDnERo6YKtxlhPfC4h1nYm85NEwJ9m9BJW3P0xjH0fTRs9N17d7t4A-a4Vquwzp3_36icIRgaeBYxDY-iJNKgHy1uvcDxT9YYwiY4I_T4eL-6aY_a-J6nme4vTzMR8UtmAZHB4s30EJ8yQ2wGvqVxGDI3EeDC-gM8KT4DnHRCQuTlxQOLs9SyVwDiMRuWW7G-hO_9pdo9Q6qFqnLBCIUJOjWXTDlVsBodD0w7gVA6-bdFQfzOVHQuL5nFzMNbCPqLI-hVR65QBMTZsRV4XzqptkDHtEjuYaDbTdgdMfhyHO5AWfZ6qhtIlr8aVa35FNh5xrjMg24hTYlvY3H2XosKB1q_ecgGLL5rmWQy1uAei-ZtOTiUHLyi87j5XNNFae3ETnRBxiBLrqiuBnKOqSzikEEwupFqkuxW3wsagN5R_IoHWgdmRIcWAuXjubN9CT-YvRFyGh1bNTrCrLaJX7uxNuMfql5xIfuhDXqJKoApaLHUdqjQ5fL0LG8BVbo-lTPC4r_DwgHyoTJ954kq7mwvYxB03TNvu4wDk2AuoWw46rQTJBXv5-ZL5-7Iyx2qnYElNtw&remote_template=1", "model_checkpoint": "v2-1_768-ema-pruned.ckpt", "max_frames": 10, "animation_prompts": "0: a beautiful apple, trending on Artstation | 5: a beautiful banana, trending on Artstation | 6: a beautiful coconut, trending on Artstation | 9: a beautiful durian, trending on Artstation", "negative_prompts": "0: nsfw gore", "width": 768, "height": 768, "num_inference_steps": 25, "guidance_scale": 7, "sampler": "euler_ancestral", "seed": 0, "fps": 10, "clip_name": "ViT-L/14", "use_init": false, "init_image": "string", "strength": 0.5, "use_mask": false, "mask_file": "string", "invert_mask": false, "animation_mode": "3D", "border": "replicate", "angle": "0:(0)", "zoom": "0:(1.04)", "translation_x": "0:(10 * sin(23.14*t/10))", "translation_y": "0:(0)", "translation_z": "0:(10)", "rotation_3d_x": "0:(0)", "rotation_3d_y": "0:(0)", "rotation_3d_z": "0:(0)", "flip_2d_perspective": false, "perspective_flip_theta": "0:(0)", "perspective_flip_phi": "0:(t%15)", "perspective_flip_gamma": "0:(0)", "perspective_flip_fv": "0:(53)", "noise_schedule": "0: (0.02)", "strength_schedule": "0: (0.65)", "contrast_schedule": "0: (1.0)", "hybrid_video_comp_alpha_schedule": "0:(1)", "hybrid_video_comp_mask_blend_alpha_schedule": "0:(0.5)", "hybrid_video_comp_mask_contrast_schedule": "0:(1)", "hybrid_video_comp_mask_auto_contrast_cutoff_high_schedule": "0:(100)", "hybrid_video_comp_mask_auto_contrast_cutoff_low_schedule": "0:(0)", "enable_schedule_samplers": false, "sampler_schedule": "0:('euler'),10:('dpm2'),20:('dpm2_ancestral'),30:('heun'),40:('euler'),50:('euler_ancestral'),60:('dpm_fast'),70:('dpm_adaptive'),80:('dpmpp_2s_a'),90:('dpmpp_2m')", "kernel_schedule": "0: (5)", "sigma_schedule": "0: (1.0)", "amount_schedule": "0: (0.2)", "threshold_schedule": "0: (0.0)", "color_coherence": "Match Frame 0 LAB", "color_coherence_video_every_N_frames": 1, "color_force_grayscale": false, "diffusion_cadence": "1", "use_depth_warping": true, "midas_weight": 0.3, "near_plane": 200, "far_plane": 10000, "fov": 40, "padding_mode": "border", "sampling_mode": "bicubic", "video_init_path": "string", "extract_nth_frame": 1, "overwrite_extracted_frames": true, "use_mask_video": false, "video_mask_path": "string", "hybrid_video_generate_inputframes": false, "hybrid_video_use_first_frame_as_init_image": true, "hybrid_video_motion": "None", "hybrid_video_flow_method": "Farneback", "hybrid_video_composite": false, "hybrid_video_comp_mask_type": "None", "hybrid_video_comp_mask_inverse": false, "hybrid_video_comp_mask_equalize": "None", "hybrid_video_comp_mask_auto_contrast": false, "hybrid_video_comp_save_extra_frames": false, "hybrid_video_use_video_as_mse_image": false, "interpolate_key_frames": false, "interpolate_x_frames": 4, "resume_from_timestring": false, "resume_timestring": ""}}'
+    # command: |
+    #   find nvcc
+
+  arches-sdxl:
+    hostname: arches-sdxl
+    container_name: arches-sdxl
+    image: docker.io/archesai/deforum:sdxl-image
+    build:
+      context: ./inference/sdxl
+      dockerfile: Dockerfile
+    ports:
+      - 3004:8000
+    # volumes:
+    #   - "hf-models:/root/.cache/huggingface"
+    # command:
+    #   - uvicorn
+    #   - sdxl:app
+    #   - --host
+    #   - "0.0.0.0"
+    #   - --port
+    #   - "8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: "1g"
+    # command: |
+    #   python3 runpod_m.py --test_input '{"input": {"name": "my-animation.mp4", "orgname": "mountain.raccoon.591-418", "prompts": "a man standing on the wall", "width": 1024, "height": 1024}}'
+
+  arches-instructor:
+    hostname: arches-instructor
+    container_name: arches-instructor
+    image: docker.io/archesai/deforum:instructor-jul-18.1
+    # command: |
+    #   nvidia-smi
+    build:
+      context: ./inference/instructor
+      dockerfile: Dockerfile
+    ports:
+      - 3004:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: "1g"
+    profiles:
+      - minimal
+
+  # arches-instructor:
+  #   hostname: arches-instructor
+  #   container_name: arches-instructor
+  #   image: docker.io/archesai/deforum:instructor-jul-18.1
+  #   build:
+  #     context: ./inference/instructor
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3004:8000
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
+  #   shm_size: "1g"
+# volumes:
+#   hf-models:

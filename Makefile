@@ -2,11 +2,19 @@ PROFILE ?= minimal
 
 # THESE ARE FOR RUNNING THE SERVICES IN DOCKER
 docker-build:
+	-make docker-stop
+	-docker volume rm filechat_node_modules_ui
+	-docker volume rm filechat_node_modules_api
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
 
 docker-run:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d
 
+docker-db-seed:
+	-docker stop arches-api
+	cd api && npm run db:seed && cd ..
+	docker start arches-api
+	
 docker-run-ui:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-ui -d
 
@@ -16,8 +24,9 @@ docker-test:
 docker-stop:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) down
 		
-docker-migrations:
-	docker kill arches-api && docker rm arches-api && make docker-build && docker volume rm filechat_node_modules_api && make docker-run
+docker-reset:
+	make docker-build && make docker-run
+	
 	
 # THESE ARE FOR BUILDING AND PUSHING THE SERVICES TO GCP
 build-and-push-ui: 
