@@ -22,6 +22,7 @@ services:
       - ./pyservice/app:/code/app
     command: |
       uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload
+    mem_limit: 2g
 
   arches-ui:
     image: arches-ui:local
