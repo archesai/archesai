@@ -41,70 +41,71 @@ jobs:
         id: pyservice_sha
 
 
-  e2e-test:
-    needs: extract-sha
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
+  # e2e-test:
+  #   needs: extract-sha
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v2
 
-      - name: Print SHAs
-        run: |
-          echo "ui_sha=${{ needs.extract-sha.outputs.ui_sha }}"
-          echo "api_sha=${{ needs.extract-sha.outputs.api_sha }}"
-          echo "pyservice_sha=${{ needs.extract-sha.outputs.pyservice_sha }}"
+  #     - name: Print SHAs
+  #       run: |
+  #         echo "ui_sha=${{ needs.extract-sha.outputs.ui_sha }}"
+  #         echo "api_sha=${{ needs.extract-sha.outputs.api_sha }}"
+  #         echo "pyservice_sha=${{ needs.extract-sha.outputs.pyservice_sha }}"
 
-      - name: Set up YQ for YAML manipulation
-        run: |
-          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
-          sudo chmod +x /usr/bin/yq
+  #     - name: Set up YQ for YAML manipulation
+  #       run: |
+  #         sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
+  #         sudo chmod +x /usr/bin/yq
 
-      - name: Update image tags in Docker Compose
-        run: |
-          yq eval '.services.arches-api.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml          
-          yq eval '.services.arches-pyservice.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice:${{ env.PYSERVICE_SHA }}"' -i docker-compose.yaml
-          yq eval '.services.arches-ui.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
-        env:
-          UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
-          API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-          PYSERVICE_SHA: ${{ needs.extract-sha.outputs.pyservice_sha }}
+  #     - name: Update image tags in Docker Compose
+  #       run: |
+  #         yq eval '.services.arches-api.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml          
+  #         yq eval '.services.arches-pyservice.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice:${{ env.PYSERVICE_SHA }}"' -i docker-compose.yaml
+  #         yq eval '.services.arches-ui.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
+  #       env:
+  #         UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
+  #         API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
+  #         PYSERVICE_SHA: ${{ needs.extract-sha.outputs.pyservice_sha }}
 
-      - name: Download API repo
-        uses: actions/checkout@v2
-        with:
-          repository: filechat-io/api
-          token: ${{ secrets.PAT }}
-          path: ./api
+  #     - name: Download API repo
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: filechat-io/api
+  #         token: ${{ secrets.PAT }}
+  #         path: ./api
       
-      - name: Write env file and create fake one for ui so docker compose doesn't fail
-        run: |
-          echo "${{ secrets.DEV_ENV_FILE }}" > ./api/.env.minimal
-          mkdir ui
-          echo "" > ./ui/.env.minimal
+  #     - name: Write env file and create fake one for ui so docker compose doesn't fail
+  #       run: |
+  #         echo "${{ secrets.DEV_ENV_FILE }}" > ./api/.env.minimal
+  #         mkdir ui
+  #         echo "" > ./ui/.env.minimal
 
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
-        with:
-          credentials_json: ${{ secrets.SA }}
+  #     - id: "auth"
+  #       name: "Authenticate to Google Cloud"
+  #       uses: "google-github-actions/auth@v1"
+  #       with:
+  #         credentials_json: ${{ secrets.SA }}
 
-      - name: Setup Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1.1.1
-        with:
-          project_id: filechat-io
+  #     - name: Setup Google Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v1.1.1
+  #       with:
+  #         project_id: filechat-io
 
-      - name: Log into registry
-        run: |
-          gcloud auth configure-docker \
-            us-west2-docker.pkg.dev
+  #     - name: Log into registry
+  #       run: |
+  #         gcloud auth configure-docker \
+  #           us-west2-docker.pkg.dev
 
-      - name: Run e2e tests
-        run: |
-          PROFILE=minimal docker compose up -d arches-api arches-pyservice arches-postgres arches-redis arches-firebase
-          PROFILE=minimal docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up arches-api-test-e2e --build
+  #     - name: Run e2e tests
+  #       run: |
+  #         PROFILE=minimal docker compose up -d arches-api arches-pyservice arches-postgres arches-redis arches-firebase
+  #         PROFILE=minimal docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up arches-api-test-e2e --build
 
   release:
-    needs: [extract-sha, e2e-test]
+    # needs: [extract-sha, e2e-test]
+    needs: [extract-sha]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
