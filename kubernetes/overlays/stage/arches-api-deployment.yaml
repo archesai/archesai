@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       component: arches-api
-  replicas: 2
+  replicas: 1
   template:
     spec:
       $patch: replace
