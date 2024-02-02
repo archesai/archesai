@@ -8,38 +8,121 @@ jobs:
     outputs:
       ui_sha: ${{ steps.ui_sha.outputs.ui_sha }}
       api_sha: ${{ steps.api_sha.outputs.api_sha }}
-      pyservice_sha: ${{ steps.pyservice_sha.outputs.pyservice_sha }}
+      nlp_sha: ${{ steps.nlp_sha.outputs.nlp_sha }}
     steps:
       - name: Checkout ui repo
         uses: actions/checkout@v2
         with:
-          repository: filechat-io/ui
+          repository: archesai/ui
           token: ${{ secrets.PAT }}
 
       - name: Get ui SHA
         run: echo "ui_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
         id: ui_sha
 
+      - name: Ensure UI CI is successful
+        id: check-ui-ci
+        run: |
+          UI_SHA=${{ steps.ui_sha.outputs.ui_sha }}
+          RESPONSE=$(curl -s \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            https://api.github.com/repos/archesai/ui/commits/$UI_SHA/check-runs)
+          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
+          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
+            echo "Some UI checks failed or are still running."
+            exit 1
+          fi
+
       - name: Checkout api repo
         uses: actions/checkout@v2
         with:
-          repository: filechat-io/api
+          repository: archesai/api
           token: ${{ secrets.PAT }}
 
       - name: Get api SHA
         run: echo "api_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
         id: api_sha
 
-      - name: Checkout pyservice repo
+      - name: Ensure API CI is successful
+        id: check-api-ci
+        run: |
+          API_SHA=${{ steps.api_sha.outputs.api_sha }}
+          RESPONSE=$(curl -s \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            https://api.github.com/repos/archesai/api/commits/$API_SHA/check-runs)
+          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
+          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
+            echo "Some API checks failed or are still running."
+            exit 1
+          fi
+
+      - name: Checkout nlp repo
         uses: actions/checkout@v2
         with:
-          repository: filechat-io/pyservice
+          repository: archesai/nlp
           token: ${{ secrets.PAT }}
 
-      - name: Get pyservice SHA
-        run: echo "pyservice_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-        id: pyservice_sha
+      - name: Get nlp SHA
+        run: echo "nlp_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        id: nlp_sha
 
+      - name: Ensure NLP CI is successful
+        id: check-nlp-ci
+        run: |
+          NLP_SHA=${{ steps.nlp_sha.outputs.nlp_sha }}
+          RESPONSE=$(curl -s \
+            -H "Authorization: token ${{ secrets.PAT }}" \
+            https://api.github.com/repos/archesai/nlp/commits/$NLP_SHA/check-runs)
+          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
+          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
+            echo "Some NLP checks failed or are still running."
+            exit 1
+          fi
+
+  release:
+    needs: [extract-sha]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up auth for Google Cloud
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: "archesai"
+          workload_identity_provider: "projects/1080946766516/locations/global/workloadIdentityPools/github/providers/my-repo"
+
+      - name: Set up gcloud CLI
+        uses: "google-github-actions/setup-gcloud@v2"
+
+      - name: Install Kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+      - name: Set up YQ for YAML manipulation
+        run: |
+          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
+
+      - name: Update image tags in Kustomization file
+        run: |
+          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-api\").newTag = \"${{ env.API_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
+          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-ui\").newTag = \"${{ env.UI_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
+          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-nlp\").newTag = \"${{ env.nlp_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
+        env:
+          UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
+          API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
+          nlp_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
+
+      # - name: Deploy to Google Cloud
+      #   run: |
+      #     cat ./kubernetes/overlays/production/kustomization.yaml
+      #     echo "${{ secrets.PROD_ENV_FILE }}" > ./kubernetes/overlays/production/.env.production
+      #     echo "${{ secrets.PROD_REDIS_CA }}" > ./kubernetes/overlays/production/redis-ca.pem
+      #     gcloud components install gke-gcloud-auth-plugin
+      #     gcloud container clusters get-credentials arches-cluster --zone us-central1-c --project archesai
+      #     kubectl apply -k ./kubernetes/overlays/production
 
   # e2e-test:
   #   needs: extract-sha
@@ -52,7 +135,7 @@ jobs:
   #       run: |
   #         echo "ui_sha=${{ needs.extract-sha.outputs.ui_sha }}"
   #         echo "api_sha=${{ needs.extract-sha.outputs.api_sha }}"
-  #         echo "pyservice_sha=${{ needs.extract-sha.outputs.pyservice_sha }}"
+  #         echo "nlp_sha=${{ needs.extract-sha.outputs.nlp_sha }}"
 
   #     - name: Set up YQ for YAML manipulation
   #       run: |
@@ -61,21 +144,21 @@ jobs:
 
   #     - name: Update image tags in Docker Compose
   #       run: |
-  #         yq eval '.services.arches-api.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml          
-  #         yq eval '.services.arches-pyservice.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice:${{ env.PYSERVICE_SHA }}"' -i docker-compose.yaml
-  #         yq eval '.services.arches-ui.image = "us-west2-docker.pkg.dev/filechat-io/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
+  #         yq eval '.services.arches-api.image = "us-east4-docker.pkg.dev/archesai/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml
+  #         yq eval '.services.arches-nlp.image = "us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ env.nlp_SHA }}"' -i docker-compose.yaml
+  #         yq eval '.services.arches-ui.image = "us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
   #       env:
   #         UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
   #         API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-  #         PYSERVICE_SHA: ${{ needs.extract-sha.outputs.pyservice_sha }}
+  #         nlp_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
 
   #     - name: Download API repo
   #       uses: actions/checkout@v2
   #       with:
-  #         repository: filechat-io/api
+  #         repository: archesai/api
   #         token: ${{ secrets.PAT }}
   #         path: ./api
-      
+
   #     - name: Write env file and create fake one for ui so docker compose doesn't fail
   #       run: |
   #         echo "${{ secrets.DEV_ENV_FILE }}" > ./api/.env.minimal
@@ -91,7 +174,7 @@ jobs:
   #     - name: Setup Google Cloud SDK
   #       uses: google-github-actions/setup-gcloud@v1.1.1
   #       with:
-  #         project_id: filechat-io
+  #         project_id: archesai
 
   #     - name: Log into registry
   #       run: |
@@ -100,54 +183,5 @@ jobs:
 
   #     - name: Run e2e tests
   #       run: |
-  #         PROFILE=minimal docker compose up -d arches-api arches-pyservice arches-postgres arches-redis arches-firebase
+  #         PROFILE=minimal docker compose up -d arches-api arches-nlp arches-postgres arches-redis arches-firebase
   #         PROFILE=minimal docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up arches-api-test-e2e --build
-
-  release:
-    # needs: [extract-sha, e2e-test]
-    needs: [extract-sha]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
-        with:
-          credentials_json: ${{ secrets.SA }}
-
-      - name: Setup Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1.1.1
-        with:
-          project_id: filechat-io
-
-      - name: Install Kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-      - name: Set up YQ for YAML manipulation
-        run: |
-          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
-          sudo chmod +x /usr/bin/yq
-
-      - name: Update image tags in Kustomization file
-        run: |
-          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-api\").newTag = \"${{ env.API_SHA }}\"" ./kubernetes/overlays/stage/kustomization.yaml
-          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-ui\").newTag = \"${{ env.UI_SHA }}\"" ./kubernetes/overlays/stage/kustomization.yaml
-          yq eval -i ".images[] |= select(.name == \"us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice\").newTag = \"${{ env.PYSERVICE_SHA }}\"" ./kubernetes/overlays/stage/kustomization.yaml
-        env:
-          UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
-          API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-          PYSERVICE_SHA: ${{ needs.extract-sha.outputs.pyservice_sha }}
-
-      - name: Deploy to Google Cloud
-        run: |
-          cat ./kubernetes/overlays/stage/kustomization.yaml
-          echo "${{ secrets.PROD_ENV_FILE }}" > ./kubernetes/overlays/stage/.env.production
-          echo "${{ secrets.PROD_REDIS_CA }}" > ./kubernetes/overlays/stage/redis-ca.pem
-          gcloud components install gke-gcloud-auth-plugin
-          gcloud container clusters get-credentials arches-cluster --zone us-central1-c --project filechat-io
-          kubectl apply -k ./kubernetes/overlays/stage
-

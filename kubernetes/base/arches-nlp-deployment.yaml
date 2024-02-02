@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    component: arches-pyservice
-  name: arches-pyservice
+    component: arches-nlp
+  name: arches-nlp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: arches-pyservice
+      component: arches-nlp
   template:
     metadata:
       labels:
-        component: arches-pyservice
+        component: arches-nlp
     spec:
       containers:
-        - image: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
-          name: arches-pyservice
+        - image: us-east4-docker.pkg.dev/archesai/images/arches-nlp
+          name: arches-nlp
           ports:
             - containerPort: 80
           resources:

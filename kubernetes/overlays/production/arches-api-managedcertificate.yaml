@@ -1,7 +1,7 @@
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: arches-api-filechat-certificate
+  name: arches-api-certificate
 spec:
   domains:
-    - api.filechat.io
+    - api.archesai.com

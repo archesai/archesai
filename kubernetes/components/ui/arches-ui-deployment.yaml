@@ -16,7 +16,7 @@ spec:
         component: arches-ui
     spec:
       containers:
-        - image: us-west2-docker.pkg.dev/filechat-io/images/arches-ui
+        - image: us-east4-docker.pkg.dev/archesai/images/arches-ui
           name: arches-ui
           ports:
             - containerPort: 3000

@@ -165,7 +165,7 @@ spec:
                   name: arches-api-config-secret
             - name: REDIS_CA_CERT_PATH
               value: /usr/src/app/server-ca.pem
-          image: us-west2-docker.pkg.dev/filechat-io/images/arches-api
+          image: us-east4-docker.pkg.dev/archesai/images/arches-api
           ports:
             - containerPort: 3001
           resources:
@@ -205,7 +205,7 @@ spec:
 
             # Replace DB_PORT with the port the proxy should listen on
             - "--port=5432"
-            - "filechat-io:us-central1:migrations-test"
+            - "archesai:us-central1:arches-postgres"
 
           securityContext:
             # The default Cloud SQL Auth Proxy image runs as the

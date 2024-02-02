@@ -2,35 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 bases:
   - "../../base"
-namespace: stage
-
-images:
-  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-api
-    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-api
-    newTag: cce2e35
-  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-ui
-    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-ui
-    newTag: 75f7815
-  - name: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
-    newName: us-west2-docker.pkg.dev/filechat-io/images/arches-pyservice
-    newTag: 0c0943d
-
-secretGenerator:
-  - name: arches-api-config-secret
-    envs:
-      - ./.env.production
-    behavior: replace
-  - name: arches-redis-ca-cert
-    files:
-      - "redis-ca.pem"
-
-patches:
-  - path: "./arches-api-deployment.yaml"
-    target:
-      kind: Deployment
-      name: arches-api
-
-resources:
-  - "./cloud-service-account.yaml"
-  - "./arches-api-filechat-managedcertificate.yaml"
-  - "./arches-api-filechat-ingress.yaml"
+namespace: default
+components:
+  - ../../components/database
+  - ../../components/auth
+  - ../../components/storage
+  - ../../components/vector-db
+  - ../../components/ui
+  - ../../components/redis

@@ -3,7 +3,7 @@ services:
   ########### THESE SERVICES BELOW ARE THE ONES THAT WE NEED TO BUILD ###########
   arches-api:
     container_name: arches-api
-    image: us-central1-docker.pkg.dev/filechat-io/cloud-run-source-deploy/api@sha256:e33dba536f661a817c496964cc9a1fff835da84ebcc8adbc6fedb3ba657819e5
+    image: us-east4-docker.pkg.dev/archesai/images/arches-api
     hostname: api-tcp
     env_file:
       - ./api/.env.${PROFILE}
@@ -18,15 +18,15 @@ services:
   arches-ui:
     container_name: arches-ui
     hostname: ui-tcp
-    image: us-west2-docker.pkg.dev/filechat-io/images/ui:jonathan-local
+    image: us-east4-docker.pkg.dev/archesai/images/arches-ui
     ports:
       - "3000:3000"
     env_file:
       - ./ui/.env.${PROFILE}
 
-  arches-pyservice:
-    container_name: arches-pyservice
-    image: us.gcr.io/filechat-io/pyservice/pyservice@sha256:898cb3111ad1455ceafa509b119d3afd98b4c4b2cfe1ddb94edf6b36ba4839a3
+  arches-nlp:
+    container_name: arches-nlp
+    image: us-east4-docker.pkg.dev/archesai/images/arches-nlp
     ports:
       - "3002:80"
 
@@ -64,7 +64,7 @@ services:
     volumes:
       - ./api/firebase.json:/home/node/firebase.json
       - emulatorCache:/home/node/.cache/firebase/emulators
-    command: firebase emulators:start --project filechat-io
+    command: firebase emulators:start --project archesai
     depends_on:
       - arches-postgres
       - arches-redis
@@ -149,7 +149,7 @@ services:
   arches-inference:
     hostname: arches-inference
     container_name: arches-inference
-    image: us-west2-docker.pkg.dev/filechat-io/images/arches-inference:jonathan-0.1.1
+    image: us-east4-docker.pkg.dev/archesai/images/arches-inference
     build:
       context: ./inference
       dockerfile: Dockerfile

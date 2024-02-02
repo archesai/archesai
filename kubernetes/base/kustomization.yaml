@@ -6,8 +6,8 @@ resources:
   - ./arches-api-service.yaml
   - ./arches-api-ingress.yaml
   - ./arches-api-managedcertificate.yaml
-  - ./arches-pyservice-deployment.yaml
-  - ./arches-pyservice-service.yaml
+  - ./arches-nlp-deployment.yaml
+  - ./arches-nlp-service.yaml
   - ./arches-frontendconfig.yaml
   - ./arches-api-hpa.yaml
-  - ./arches-pyservice-hpa.yaml
+  - ./arches-nlp-hpa.yaml

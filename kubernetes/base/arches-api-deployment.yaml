@@ -192,7 +192,7 @@ spec:
                 secretKeyRef:
                   key: FEATURE_EMAIL
                   name: arches-api-config-secret
-          image: us-west2-docker.pkg.dev/filechat-io/images/arches-api
+          image: us-east4-docker.pkg.dev/archesai/images/arches-api
           ports:
             - containerPort: 3001
           resources:
