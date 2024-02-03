@@ -12,6 +12,11 @@
 !skaffold.yaml
 !clouddeploy.yaml
 .env.production
+.env.stage
 redis-ca.pem
 !.github
 !.github/**
+!.gcloudignore
+!cloudbuild.yaml
+!render-config.sh
+!.env.template

@@ -4,4 +4,4 @@ metadata:
   name: arches-api-certificate
 spec:
   domains:
-    - api.archesai.com
+    - api.example.com

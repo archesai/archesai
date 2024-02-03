@@ -1,6 +1,14 @@
 name: Create GCP Release
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        default: "v0.0.0"
+  push:
+    branches:
+      - main
 
 jobs:
   extract-sha:
@@ -79,9 +87,12 @@ jobs:
             exit 1
           fi
 
-  release:
+  run-cloud-build:
     needs: [extract-sha]
     runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -95,34 +106,16 @@ jobs:
       - name: Set up gcloud CLI
         uses: "google-github-actions/setup-gcloud@v2"
 
-      - name: Install Kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      - name: Get short SHORT_SHA
+        run: echo ${GITHUB_SHA::7}
 
-      - name: Set up YQ for YAML manipulation
-        run: |
-          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
-          sudo chmod +x /usr/bin/yq
-
-      - name: Update image tags in Kustomization file
-        run: |
-          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-api\").newTag = \"${{ env.API_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
-          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-ui\").newTag = \"${{ env.UI_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
-          yq eval -i ".images[] |= select(.name == \"us-east4-docker.pkg.dev/archesai/images/arches-nlp\").newTag = \"${{ env.nlp_SHA }}\"" ./kubernetes/overlays/production/kustomization.yaml
+      - name: Run Google Cloud Build job
+        run: gcloud builds submit --substitutions=_VERSION=${VERSION},_API_SHA=${API_SHA},_UI_SHA=${UI_SHA},_NLP_SHA=${NLP_SHA} .
         env:
           UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
           API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-          nlp_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
-
-      # - name: Deploy to Google Cloud
-      #   run: |
-      #     cat ./kubernetes/overlays/production/kustomization.yaml
-      #     echo "${{ secrets.PROD_ENV_FILE }}" > ./kubernetes/overlays/production/.env.production
-      #     echo "${{ secrets.PROD_REDIS_CA }}" > ./kubernetes/overlays/production/redis-ca.pem
-      #     gcloud components install gke-gcloud-auth-plugin
-      #     gcloud container clusters get-credentials arches-cluster --zone us-central1-c --project archesai
-      #     kubectl apply -k ./kubernetes/overlays/production
+          NLP_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
+          VERSION: ${GITHUB_SHA::7}
 
   # e2e-test:
   #   needs: extract-sha
@@ -145,12 +138,12 @@ jobs:
   #     - name: Update image tags in Docker Compose
   #       run: |
   #         yq eval '.services.arches-api.image = "us-east4-docker.pkg.dev/archesai/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml
-  #         yq eval '.services.arches-nlp.image = "us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ env.nlp_SHA }}"' -i docker-compose.yaml
+  #         yq eval '.services.arches-nlp.image = "us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ env.NLP_SHA }}"' -i docker-compose.yaml
   #         yq eval '.services.arches-ui.image = "us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
   #       env:
   #         UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
   #         API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-  #         nlp_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
+  #         NLP_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
 
   #     - name: Download API repo
   #       uses: actions/checkout@v2

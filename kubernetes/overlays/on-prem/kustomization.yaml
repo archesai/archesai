@@ -1,12 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-bases:
+resources:
   - "../../base"
-namespace: on-prem
-components:
-  - ../../components/database
-  - ../../components/auth
-  - ../../components/storage
-  - ../../components/vector-db
-  - ../../components/ui
-  - ../../components/redis
+
+patches:
+  - path: "./arches-api-deployment.yaml"
+    target:
+      kind: Deployment
+      name: arches-api

@@ -68,7 +68,7 @@ download_repos:
 release:
 	gcloud deploy releases create ${RELEASE} \
 	--delivery-pipeline=arches-deployment \
-	--region=us-central1 \
+	--region=us-east1 \
 	--source=./ \
 	--images=us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${UI_TAG},\
 	us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${API_TAG},\

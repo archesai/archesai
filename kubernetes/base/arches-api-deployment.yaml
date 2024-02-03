@@ -32,11 +32,6 @@ spec:
                 secretKeyRef:
                   key: FIREBASE_API_KEY
                   name: arches-api-config-secret
-            - name: FIREBASE_AUTH_EMULATOR_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: FIREBASE_AUTH_EMULATOR_HOST
-                  name: arches-api-config-secret
             - name: FRONTEND_HOST
               valueFrom:
                 secretKeyRef:
@@ -62,55 +57,10 @@ spec:
                 secretKeyRef:
                   key: JWT_VERIFICATION_TOKEN_SECRET
                   name: arches-api-config-secret
-            - name: KEYCLOAK_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_ADMIN_PASSWORD
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_ADMIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_ADMIN_USERNAME
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_BASE_URL
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_CLIENT_ID
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_REALM
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_REALM
-                  name: arches-api-config-secret
             - name: LOADER_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   key: LOADER_ENDPOINT
-                  name: arches-api-config-secret
-            - name: MINIO_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: MINIO_ACCESS_KEY
-                  name: arches-api-config-secret
-            - name: MINIO_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  key: MINIO_ENDPOINT
-                  name: arches-api-config-secret
-            - name: MINIO_PORT
-              valueFrom:
-                secretKeyRef:
-                  key: MINIO_PORT
-                  name: arches-api-config-secret
-            - name: MINIO_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: MINIO_SECRET_KEY
                   name: arches-api-config-secret
             - name: NODE_ENV
               valueFrom:
@@ -157,31 +107,6 @@ spec:
                 secretKeyRef:
                   key: VECTOR_DB_TYPE
                   name: arches-api-config-secret
-            - name: MILVUS_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_HOST
-                  name: arches-api-config-secret
-            - name: MILVUS_COLLECTION
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_COLLECTION
-                  name: arches-api-config-secret
-            - name: MILVUS_VECTOR_DIM
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_VECTOR_DIM
-                  name: arches-api-config-secret
-            - name: MILVUS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_USERNAME
-                  name: arches-api-config-secret
-            - name: MILVUS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_PASSWORD
-                  name: arches-api-config-secret
             - name: FEATURE_BILLING
               valueFrom:
                 secretKeyRef:
@@ -201,7 +126,6 @@ spec:
               cpu: "1"
             limits:
               memory: "2Gi"
-              cpu: "1"
           readinessProbe: # define readiness probe
             httpGet:
               path: /

@@ -3,12 +3,12 @@ kind: Ingress
 metadata:
   name: arches-api-ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: arches-api-static-ip
+    kubernetes.io/ingress.global-static-ip-name: example-static-ip
     networking.gke.io/managed-certificates: arches-api-certificate
     networking.gke.io/v1beta1.FrontendConfig: arches-frontend-config
 spec:
   rules:
-    - host: api.archesai.com
+    - host: api.example.com
       http:
         paths:
           - pathType: Prefix

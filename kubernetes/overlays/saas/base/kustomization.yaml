@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+secretGenerator:
+  - name: arches-redis-ca-cert
+    files:
+      - "./redis-ca.pem"
+
+resources:
+  - "../../../base"
+  - "./cloud-service-account.yaml"
+  - "./arches-frontend-config.yaml"
+  - "./arches-api-managedcertificate.yaml"
+  - "./arches-api-ingress.yaml"
+
+patches:
+  - path: "./arches-api-deployment.patch.yaml"
+    target:
+      kind: Deployment
+      name: arches-api
