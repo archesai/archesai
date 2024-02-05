@@ -82,4 +82,3 @@ spec:
         - name: arches-redis-ca-cert
           secret:
             secretName: arches-redis-ca-cert
-      serviceAccountName: cloud-sql-sa

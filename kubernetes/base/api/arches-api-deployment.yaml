@@ -14,6 +14,13 @@ spec:
       labels:
         component: arches-api
     spec:
+      initContainers:
+        - name: arches-api-wait-for-migration
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - "job"
+            - "arches-api-migration-job"
       containers:
         - name: arches-api
           env:
@@ -122,10 +129,11 @@ spec:
             - containerPort: 3001
           resources:
             requests:
-              memory: "2Gi"
-              cpu: "1"
+              memory: "1Gi"
+              cpu: "0.5"
             limits:
               memory: "2Gi"
+              cpu: "1"
           readinessProbe: # define readiness probe
             httpGet:
               path: /
@@ -140,3 +148,4 @@ spec:
             periodSeconds: 20
       hostname: arches-api
       restartPolicy: Always
+      serviceAccountName: arches-api-service-account
