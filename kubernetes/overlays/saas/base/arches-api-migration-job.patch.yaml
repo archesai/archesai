@@ -13,7 +13,7 @@ spec:
             - "--structured-logs"
             - "--port=5432"
             - "--quitquitquit"
-            - "archesai:us-central1:arches-postgres"
+            - "archesai:us-east1:arches-postgres"
           securityContext:
             runAsNonRoot: true
           resources:

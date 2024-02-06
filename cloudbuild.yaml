@@ -32,6 +32,9 @@ steps:
           secret_key=$(echo $placeholder | cut -d ':' -f 1)
           secret_version=$(echo $placeholder | cut -d ':' -f 2)
           secret_value=$(gcloud secrets versions access $secret_version --secret="$secret_key")
+          if [[ "$line" == *"DATABASE_URL"* ]]; then
+              secret_value=$(echo "$secret_value" | sed 's/&/\&/g')
+          fi
           line=${line//\{\{$placeholder\}\}/$secret_value}
         fi
         echo "$line" >> "$prod_env_file"

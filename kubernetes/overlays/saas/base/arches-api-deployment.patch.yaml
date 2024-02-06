@@ -52,10 +52,10 @@ spec:
                 secretKeyRef:
                   key: PINECONE_API_KEY
                   name: arches-api-config-secret
-            - name: PINECONE_BASE_URL
+            - name: PINECONE_INDEX
               valueFrom:
                 secretKeyRef:
-                  key: PINECONE_BASE_URL
+                  key: PINECONE_INDEX
                   name: arches-api-config-secret
             - name: REDIS_CA_CERT_PATH
               value: /usr/src/app/server-ca.pem
@@ -68,7 +68,7 @@ spec:
           args:
             - "--structured-logs"
             - "--port=5432"
-            - "archesai:us-central1:arches-postgres"
+            - "archesai:us-east1:arches-postgres"
           securityContext:
             runAsNonRoot: true
           resources:

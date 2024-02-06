@@ -25,7 +25,7 @@ patches:
         value: api.archesai.com
       - op: replace
         path: /metadata/annotations/kubernetes.io~1ingress.global-static-ip-name
-        value: arches-api-static-ip
+        value: production-arches-api-static-ip
     target:
       kind: Ingress
       name: arches-api-ingress
