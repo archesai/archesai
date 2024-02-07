@@ -5,16 +5,26 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Get latest image tags
-    args: ["./scripts/01_get_release_values.sh"]
+    args: ["./scripts/01_get-release-values.sh"]
+    secretEnv:
+      - GITHUB_TOKEN
+
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: bash
+    id: e2e-test
+    args: ["./scripts/01_e2e-test.sh"]
     secretEnv:
       - GITHUB_TOKEN
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
-    id: Generate .env for stages
+    id: gen-dotenv
     args: ["./scripts/02_generate-dotenv.sh"]
 
   - name: gcr.io/cloud-builders/gcloud
+    waitFor:
+      - e2e-test
+      - gen-dotenv
     entrypoint: bash
     id: Create release in cloud deploy
     args: ["./scripts/03_create-release.sh"]
