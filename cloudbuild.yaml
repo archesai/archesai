@@ -5,23 +5,21 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Get latest image tags
-    args: ["./scripts/check-latest-sha.sh"]
+    args: ["./scripts/01_get_release_values.sh"]
     secretEnv:
-      - GH_PAT
+      - GITHUB_TOKEN
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Generate .env for stages
-    args: ["./scripts/generate-dotenv.sh"]
+    args: ["./scripts/02_generate-dotenv.sh"]
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Create release in cloud deploy
-    args: ["./scripts/create-release.sh"]
-    env:
-      - VERSION=${SHORT_SHA}
+    args: ["./scripts/03_create-release.sh"]
 
 availableSecrets:
   secretManager:
     - versionName: projects/archesai/secrets/GH_PAT/versions/1
-      env: GH_PAT
+      env: GITHUB_TOKEN
