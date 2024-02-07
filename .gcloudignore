@@ -10,3 +10,5 @@
 !cloudbuild.yaml
 !render-config.sh
 !.env.template
+!scripts
+!scripts/**

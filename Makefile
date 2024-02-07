@@ -57,7 +57,7 @@ telepresence-all:
 telepresence-stop:
 	telepresence quit
 
-REPO_LIST = ui api nlp widget
+REPO_LIST = ui api nlp
 
 download_repos:
 	@for repo in $(REPO_LIST); do \

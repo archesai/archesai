@@ -6,175 +6,59 @@ on:
         description: "Version"
         required: true
         default: "v0.0.0"
-  push:
-    branches:
-      - main
 
 jobs:
-  extract-sha:
+  e2e-test:
     runs-on: ubuntu-latest
-    outputs:
-      ui_sha: ${{ steps.ui_sha.outputs.ui_sha }}
-      api_sha: ${{ steps.api_sha.outputs.api_sha }}
-      nlp_sha: ${{ steps.nlp_sha.outputs.nlp_sha }}
-    steps:
-      - name: Checkout ui repo
-        uses: actions/checkout@v2
-        with:
-          repository: archesai/ui
-          token: ${{ secrets.PAT }}
-
-      - name: Get ui SHA
-        run: echo "ui_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-        id: ui_sha
-
-      - name: Ensure UI CI is successful
-        id: check-ui-ci
-        run: |
-          UI_SHA=${{ steps.ui_sha.outputs.ui_sha }}
-          RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.PAT }}" \
-            https://api.github.com/repos/archesai/ui/commits/$UI_SHA/check-runs)
-          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
-          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
-            echo "Some UI checks failed or are still running."
-            exit 1
-          fi
-
-      - name: Checkout api repo
-        uses: actions/checkout@v2
-        with:
-          repository: archesai/api
-          token: ${{ secrets.PAT }}
-
-      - name: Get api SHA
-        run: echo "api_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-        id: api_sha
-
-      - name: Ensure API CI is successful
-        id: check-api-ci
-        run: |
-          API_SHA=${{ steps.api_sha.outputs.api_sha }}
-          RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.PAT }}" \
-            https://api.github.com/repos/archesai/api/commits/$API_SHA/check-runs)
-          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
-          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
-            echo "Some API checks failed or are still running."
-            exit 1
-          fi
-
-      - name: Checkout nlp repo
-        uses: actions/checkout@v2
-        with:
-          repository: archesai/nlp
-          token: ${{ secrets.PAT }}
-
-      - name: Get nlp SHA
-        run: echo "nlp_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
-        id: nlp_sha
-
-      - name: Ensure NLP CI is successful
-        id: check-nlp-ci
-        run: |
-          NLP_SHA=${{ steps.nlp_sha.outputs.nlp_sha }}
-          RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.PAT }}" \
-            https://api.github.com/repos/archesai/nlp/commits/$NLP_SHA/check-runs)
-          ALL_CHECKS_SUCCESSFUL=$(echo "$RESPONSE" | jq 'all(.check_runs[]; .status == "completed" and .conclusion == "success")')
-          if [ "$ALL_CHECKS_SUCCESSFUL" = "false" ]; then
-            echo "Some NLP checks failed or are still running."
-            exit 1
-          fi
-
-  run-cloud-build:
-    needs: [extract-sha]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: "read"
-      id-token: "write"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Set up auth for Google Cloud
-        uses: "google-github-actions/auth@v2"
-        with:
-          project_id: "archesai"
-          workload_identity_provider: "projects/1080946766516/locations/global/workloadIdentityPools/github/providers/my-repo"
+      - name: Set up YQ for YAML manipulation
+        run: |
+          sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
 
-      - name: Set up gcloud CLI
-        uses: "google-github-actions/setup-gcloud@v2"
-
-      - name: Get short SHORT_SHA
-        run: echo ${GITHUB_SHA::7}
-
-      - name: Run Google Cloud Build job
-        run: gcloud builds submit --substitutions=_VERSION=${VERSION},_API_SHA=${API_SHA},_UI_SHA=${UI_SHA},_NLP_SHA=${NLP_SHA} .
+      - name: Update image tags in Docker Compose
+        run: |
+          yq eval '.services.arches-api.image = "us-east4-docker.pkg.dev/archesai/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml
+          yq eval '.services.arches-nlp.image = "us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ env.NLP_SHA }}"' -i docker-compose.yaml
+          yq eval '.services.arches-ui.image = "us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
         env:
           UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
           API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
           NLP_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
-          VERSION: ${GITHUB_SHA::7}
 
-  # e2e-test:
-  #   needs: extract-sha
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repo
-  #       uses: actions/checkout@v2
+      - name: Download API repo
+        uses: actions/checkout@v2
+        with:
+          repository: archesai/api
+          token: ${{ secrets.PAT }}
+          path: ./api
 
-  #     - name: Print SHAs
-  #       run: |
-  #         echo "ui_sha=${{ needs.extract-sha.outputs.ui_sha }}"
-  #         echo "api_sha=${{ needs.extract-sha.outputs.api_sha }}"
-  #         echo "nlp_sha=${{ needs.extract-sha.outputs.nlp_sha }}"
+      - name: Write env file and create fake one for ui so docker compose doesn't fail
+        run: |
+          echo "${{ secrets.DEV_ENV_FILE }}" > ./api/.env.minimal
+          mkdir ui
+          echo "" > ./ui/.env.minimal
 
-  #     - name: Set up YQ for YAML manipulation
-  #       run: |
-  #         sudo wget -O /usr/bin/yq https://github.com/mikefarah/yq/releases/download/v4.13.2/yq_linux_amd64
-  #         sudo chmod +x /usr/bin/yq
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: ${{ secrets.SA }}
 
-  #     - name: Update image tags in Docker Compose
-  #       run: |
-  #         yq eval '.services.arches-api.image = "us-east4-docker.pkg.dev/archesai/images/arches-api:${{ env.API_SHA }}"' -i docker-compose.yaml
-  #         yq eval '.services.arches-nlp.image = "us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ env.NLP_SHA }}"' -i docker-compose.yaml
-  #         yq eval '.services.arches-ui.image = "us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ env.UI_SHA }}"' -i docker-compose.yaml
-  #       env:
-  #         UI_SHA: ${{ needs.extract-sha.outputs.ui_sha }}
-  #         API_SHA: ${{ needs.extract-sha.outputs.api_sha }}
-  #         NLP_SHA: ${{ needs.extract-sha.outputs.nlp_sha }}
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          project_id: archesai
 
-  #     - name: Download API repo
-  #       uses: actions/checkout@v2
-  #       with:
-  #         repository: archesai/api
-  #         token: ${{ secrets.PAT }}
-  #         path: ./api
+      - name: Log into registry
+        run: |
+          gcloud auth configure-docker \
+            us-west2-docker.pkg.dev
 
-  #     - name: Write env file and create fake one for ui so docker compose doesn't fail
-  #       run: |
-  #         echo "${{ secrets.DEV_ENV_FILE }}" > ./api/.env.minimal
-  #         mkdir ui
-  #         echo "" > ./ui/.env.minimal
-
-  #     - id: "auth"
-  #       name: "Authenticate to Google Cloud"
-  #       uses: "google-github-actions/auth@v1"
-  #       with:
-  #         credentials_json: ${{ secrets.SA }}
-
-  #     - name: Setup Google Cloud SDK
-  #       uses: google-github-actions/setup-gcloud@v1.1.1
-  #       with:
-  #         project_id: archesai
-
-  #     - name: Log into registry
-  #       run: |
-  #         gcloud auth configure-docker \
-  #           us-west2-docker.pkg.dev
-
-  #     - name: Run e2e tests
-  #       run: |
-  #         PROFILE=minimal docker compose up -d arches-api arches-nlp arches-postgres arches-redis arches-firebase
-  #         PROFILE=minimal docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up arches-api-test-e2e --build
+      - name: Run e2e tests
+        run: |
+          PROFILE=minimal docker compose up -d arches-api arches-nlp arches-postgres arches-redis arches-firebase
+          PROFILE=minimal docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up arches-api-test-e2e --build
