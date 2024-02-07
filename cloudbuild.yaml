@@ -5,19 +5,19 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Get latest image tags
-    args: ["./scripts/check-latest-sha.sh"]
+    args: ["./scripts/01_get_release_values.sh"]
     secretEnv:
       - GH_PAT
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Generate .env for stages
-    args: ["./scripts/generate-dotenv.sh"]
+    args: ["./scripts/02_generate-dotenv.sh"]
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Create release in cloud deploy
-    args: ["./scripts/create-release.sh"]
+    args: ["./scripts/03_create-release.sh"]
     env:
       - VERSION=${SHORT_SHA}
 
