@@ -41,6 +41,8 @@ create_new_tag() {
         -H "Content-Type: application/json" \
         -d "{\"ref\": \"refs/tags/$new_tag\", \"sha\": \"$tag_sha\"}" \
         "$GITHUB_API_URL/repos/$REPO_OWNER/$REPO_NAME/git/refs"
+
+    echo $new_tag
 }
 
 # Function to get the latest short SHA and check CI status
@@ -90,7 +92,7 @@ get_latest_short_sha "nlp"
 source /workspace/values.sh
 
 # Create new tag
-create_new_tag
+new_tag=$(create_new_tag)
 
 echo "New tag $new_tag created."
 
