@@ -32,7 +32,6 @@ create_new_tag() {
 
     local tag_object_response=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
         -d "{\"tag\": \"$new_tag\", \"message\": \"$RELEASE_NAME_PREFIX $new_tag\n\", \"object\": \"$commit_sha\", \"type\": \"commit\"}" "$GITHUB_API_URL/repos/$REPO_OWNER/$REPO_NAME/git/tags")
-    echo "Tag Object Response: $tag_object_response"
     local tag_sha=$(echo "$tag_object_response" | jq -r '.sha')
     echo "Tag SHA: $tag_sha"
 
@@ -41,6 +40,8 @@ create_new_tag() {
         -H "Content-Type: application/json" \
         -d "{\"ref\": \"refs/tags/$new_tag\", \"sha\": \"$tag_sha\"}" \
         "$GITHUB_API_URL/repos/$REPO_OWNER/$REPO_NAME/git/refs"
+
+    echo $new_tag
 }
 
 # Function to get the latest short SHA and check CI status
@@ -90,8 +91,8 @@ get_latest_short_sha "nlp"
 source /workspace/values.sh
 
 # Create new tag
-create_new_tag
+new_tag=$(create_new_tag)
 
-echo "New tag $new_tag created."
+echo "$new_tag created."
 
 echo "export RELEASE_NAME=$new_tag" >>/workspace/values.sh
