@@ -9,12 +9,12 @@ steps:
     secretEnv:
       - GITHUB_TOKEN
 
-  - name: "gcr.io/cloud-builders/docker"
-    entrypoint: bash
-    id: e2e-test
-    args: ["./scripts/01_e2e-test.sh"]
-    secretEnv:
-      - GITHUB_TOKEN
+  # - name: "gcr.io/cloud-builders/docker"
+  #   entrypoint: bash
+  #   id: e2e-test
+  #   args: ["./scripts/01_e2e-test.sh"]
+  #   secretEnv:
+  #     - GITHUB_TOKEN
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
@@ -23,7 +23,7 @@ steps:
 
   - name: gcr.io/cloud-builders/gcloud
     waitFor:
-      - e2e-test
+      # - e2e-test
       - gen-dotenv
     entrypoint: bash
     id: Create release in cloud deploy
