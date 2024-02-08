@@ -17,10 +17,10 @@ patches:
     target:
       kind: Deployment
       name: arches-api
-  - path: "./arches-api-migration-job.patch.yaml"
+  - path: "./arches-upgrade-job.patch.yaml"
     target:
       kind: Job
-      name: arches-api-migration-job
+      name: arches-upgrade
   - path: "./arches-api-service-account.patch.yaml"
     target:
       kind: ServiceAccount

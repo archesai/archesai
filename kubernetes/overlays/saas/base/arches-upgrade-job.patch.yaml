@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: arches-api-migration-job
+  name: arches-upgrade
 spec:
   template:
     spec:

@@ -8,7 +8,7 @@ rules:
     resources:
       - jobs
     resourceNames:
-      - arches-api-migration-job
+      - arches-upgrade
     verbs:
       - get
       - list

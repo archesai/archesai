@@ -4,10 +4,12 @@ set -o pipefail
 
 # Load image shas from the file
 source /workspace/values.sh
-echo "="
-cat /workspace/values.shs
-echo "="
+cat /workspace/values.sh
 echo "Creating release ${RELEASE_NAME}"
+
+# Set version in upgrade job FIXME - make this better somehow
+SCRIPT_DIR=$(dirname $(realpath "$0"))
+sed -i "s/nameSuffix: -v[0-9]*\.[0-9]*\.[0-9]*/nameSuffix: -${RELEASE_NAME}/" $SCRIPT_DIR/../kubernetes/base/upgrade/kustomization.yaml
 
 # Create release in cloud dpeloy
 RELEASE_NAME=$(echo "${RELEASE_NAME}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')

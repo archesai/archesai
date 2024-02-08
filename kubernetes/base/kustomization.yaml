@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ./api
   - ./nlp
-  - ./migration
+  - ./upgrade
 
 images:
   - name: us-east4-docker.pkg.dev/archesai/images/arches-api

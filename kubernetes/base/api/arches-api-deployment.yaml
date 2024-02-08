@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: IfNotPresent
           args:
             - "job"
-            - "arches-api-migration-job"
+            - "arches-upgrade"
       containers:
         - name: arches-api
           env:
