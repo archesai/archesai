@@ -4,9 +4,7 @@ set -o pipefail
 
 # Load image shas from the file
 source /workspace/values.sh
-echo "="
-cat /workspace/values.shs
-echo "="
+cat /workspace/values.sh
 echo "Creating release ${RELEASE_NAME}"
 
 # Create release in cloud dpeloy
