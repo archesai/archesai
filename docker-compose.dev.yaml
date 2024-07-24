@@ -1,4 +1,3 @@
-version: "3"
 services:
   # THESE ARE LOCAL DEVELOPMENT VERSIONS OF OUR SERVICES
   arches-api:
@@ -9,7 +8,6 @@ services:
       target: development
     volumes:
       - ./api:/usr/src/app
-      - node_modules_api:/usr/src/app/node_modules
     command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
     working_dir: /usr/src/app
 
@@ -32,7 +30,6 @@ services:
       target: development
     volumes:
       - ./ui:/app
-      - node_modules_ui:/app/node_modules
 
   # THESE ARE DEVELOPMENT TOOLS TO MAKE THINGS EASIER
   arches-milvus-attu:
@@ -89,7 +86,5 @@ services:
       - test
 
 volumes:
-  node_modules_api:
-  node_modules_ui:
   pgadmin_data:
   portainer_data:

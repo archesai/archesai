@@ -3,8 +3,6 @@ PROFILE ?= minimal
 # THESE ARE FOR RUNNING THE SERVICES IN DOCKER
 docker-build:
 	-make docker-stop
-	-docker volume rm archesai_node_modules_ui
-	-docker volume rm archesai_node_modules_api
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
 
 docker-run:

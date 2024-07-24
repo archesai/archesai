@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   ########### THESE SERVICES BELOW ARE THE ONES THAT WE NEED TO BUILD ###########
   arches-api:
@@ -64,7 +63,7 @@ services:
     volumes:
       - ./api/firebase.json:/home/node/firebase.json
       - emulatorCache:/home/node/.cache/firebase/emulators
-    command: firebase emulators:start --project archesai
+    command: firebase emulators:start --project filechat-io
     depends_on:
       - arches-postgres
       - arches-redis
