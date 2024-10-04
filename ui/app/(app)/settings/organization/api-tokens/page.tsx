@@ -1,7 +1,6 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import ApiTokenForm from "@/components/forms/api-token-form";
 import { Badge } from "@/components/ui/badge";
 import {
   ApiTokensControllerRemoveVariables,
@@ -99,7 +98,6 @@ export default function ApiTokensPageContent() {
           <User className="opacity-30" size={100} />
         </div>
       )}
-      createForm={<ApiTokenForm />}
       data={chatbots as any}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"

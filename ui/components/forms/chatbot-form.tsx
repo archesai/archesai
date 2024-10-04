@@ -2,25 +2,25 @@
 import { CustomCardForm, FormFieldConfig } from "@/components/custom-card-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import {
   useChatbotsControllerCreate,
   useChatbotsControllerFindOne,
   useChatbotsControllerUpdate,
 } from "@/generated/archesApiComponents";
+import {
+  CreateChatbotDto,
+  UpdateChatbotDto,
+} from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
 
 const formSchema = z.object({
-  access_scope: z.string(),
   description: z.string().min(1),
-  documents: z.string(),
   llmBase: z.string(),
   name: z.string().min(1).max(255),
 });
 
 export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
-  const { toast } = useToast();
   const { defaultOrgname } = useAuth();
   const { data: chatbot, isLoading } = useChatbotsControllerFindOne(
     {
@@ -33,38 +33,8 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
       enabled: !!defaultOrgname && !!chatbotId,
     }
   );
-
-  const { mutateAsync: updateChatbot } = useChatbotsControllerUpdate({
-    onError: (error) => {
-      toast({
-        description: error?.stack.msg,
-        title: "Error updating chatbot",
-        variant: "destructive",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        description: "Your chatbot has been updated.",
-        title: "Chatbot updated",
-      });
-    },
-  });
-
-  const { mutateAsync: createChatbot } = useChatbotsControllerCreate({
-    onError: (error) => {
-      toast({
-        description: error?.stack.msg,
-        title: "Error creating chatbot",
-        variant: "destructive",
-      });
-    },
-    onSuccess: () => {
-      toast({
-        description: "Your chatbot has been created.",
-        title: "Chatbot created",
-      });
-    },
-  });
+  const { mutateAsync: updateChatbot } = useChatbotsControllerUpdate({});
+  const { mutateAsync: createChatbot } = useChatbotsControllerCreate({});
 
   const formFields: FormFieldConfig[] = [
     {
@@ -110,29 +80,35 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
   }
 
   return (
-    <CustomCardForm
+    <CustomCardForm<CreateChatbotDto, UpdateChatbotDto>
       description={"Configure your chatbot's settings"}
       fields={formFields}
-      onSubmit={
-        chatbotId
-          ? async (data) => {
-              await updateChatbot({
-                body: data,
-                pathParams: {
-                  chatbotId: chatbotId || "",
-                  orgname: defaultOrgname,
-                },
-              });
-            }
-          : async (data) => {
-              await createChatbot({
-                body: data as any,
-                pathParams: {
-                  orgname: defaultOrgname,
-                },
-              });
-            }
-      }
+      isUpdateForm={!!chatbotId}
+      itemType="chatbot"
+      onSubmitCreate={async (createChatbotDto, mutateOptions) => {
+        await createChatbot(
+          {
+            body: createChatbotDto,
+            pathParams: {
+              orgname: defaultOrgname,
+            },
+          },
+          mutateOptions
+        );
+      }}
+      onSubmitUpdate={async (data, mutateOptions) => {
+        await updateChatbot(
+          {
+            body: data as any,
+
+            pathParams: {
+              chatbotId: chatbotId as string,
+              orgname: defaultOrgname,
+            },
+          },
+          mutateOptions
+        );
+      }}
       title="Configuration"
     />
   );

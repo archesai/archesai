@@ -22,6 +22,7 @@ export default function OrganizationSettingsPage() {
     <CustomCardForm
       description={"View your organization's details"}
       fields={formFields}
+      isUpdateForm={true}
       title="Organization"
     />
   );

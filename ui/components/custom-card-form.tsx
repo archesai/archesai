@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "./ui/button";
+import { useToast } from "./ui/use-toast";
 
 export interface FormFieldConfig {
   component: React.ComponentType<any>;
@@ -36,19 +37,26 @@ export interface FormFieldConfig {
   validationRule?: z.ZodType<any, any>;
 }
 
-interface CustomCardFormProps {
+interface CustomCardFormProps<TCreateVariables, TUpdateVariables> {
   description?: string;
   fields: FormFieldConfig[];
-  onSubmit?: (data: Record<string, any>) => void;
+  isUpdateForm: boolean;
+  itemType: string;
+  onSubmitCreate?: (data: TCreateVariables, mutateOptions: any) => void;
+  onSubmitUpdate?: (data: TUpdateVariables, mutateOptions: any) => void;
   title?: string;
 }
 
-export const CustomCardForm: React.FC<CustomCardFormProps> = ({
+export function CustomCardForm<TCreateVariables, TUpdateVariables>({
   description,
   fields,
-  onSubmit,
+  isUpdateForm,
+  itemType,
+  onSubmitCreate,
+  onSubmitUpdate,
   title,
-}) => {
+}: CustomCardFormProps<TCreateVariables, TUpdateVariables>) {
+  const { toast } = useToast();
   const defaultValues = fields.reduce<Record<string, any>>((acc, field) => {
     if (field.defaultValue !== undefined) {
       acc[field.name] = field.defaultValue;
@@ -74,6 +82,7 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
   });
 
   useEffect(() => {
+    console.log("RESETTING FORM");
     form.reset(defaultValues);
   }, [fields]);
 
@@ -92,12 +101,43 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
             className="flex flex-col gap-4"
             noValidate
             onSubmit={form.handleSubmit(
-              onSubmit
+              isUpdateForm
                 ? (data) => {
-                    onSubmit(data);
+                    onSubmitUpdate?.(data as any, {
+                      onError: (error: any) => {
+                        toast({
+                          description: (error as any)?.stack.msg,
+                          title: `Error updating ${itemType}`,
+                          variant: "destructive",
+                        });
+                      },
+                      onSuccess: () => {
+                        toast({
+                          description: `Your ${itemType} has been updated`,
+                          title: `${itemType} updated`,
+                        });
+                      },
+                    });
                     form.reset();
                   }
-                : () => {}
+                : (data) => {
+                    onSubmitCreate?.(data as any, {
+                      onError: (error: any) => {
+                        toast({
+                          description: (error as any)?.stack.msg,
+                          title: `Error creating ${itemType}`,
+                          variant: "destructive",
+                        });
+                      },
+                      onSuccess: () => {
+                        toast({
+                          description: `Your ${itemType} has been created`,
+                          title: `${itemType} created`,
+                        });
+                      },
+                    });
+                    form.reset();
+                  }
             )}
           >
             {fields.map((fieldConfig) => (
@@ -136,7 +176,7 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
               />
             ))}
 
-            {onSubmit && (
+            {(onSubmitCreate || onSubmitUpdate) && (
               <div className="flex gap-4 w-full">
                 <Button
                   className="w-full"
@@ -172,4 +212,4 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
       </CardContent>
     </Card>
   );
-};
+}

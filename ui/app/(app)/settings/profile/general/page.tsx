@@ -67,7 +67,9 @@ export default function ProfileSettingsPage() {
     <CustomCardForm
       description="View and update your user details"
       fields={formFields}
-      onSubmit={async (data) => {
+      isUpdateForm={true}
+      onSubmitCreate={() => {}}
+      onSubmitUpdate={async (data) => {
         await updateUser(
           {
             body: {

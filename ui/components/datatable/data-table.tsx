@@ -4,7 +4,7 @@ import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +32,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { PlusSquare } from "lucide-react";
+import { FilePenLine, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "../ui/button";
@@ -240,10 +240,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                   {item.name}
                 </h5>
               </div>
-              <div className="flex items-center gap-1 p-2">
-                <PlusSquare
+              <div className="flex items-center gap-2 p-2">
+                <FilePenLine
                   className="text-primary cursor-pointer"
-                  onClick={async () => handleSelect(item)}
+                  onClick={() => {
+                    setFinalForm(getEditFormFromItem?.(item));
+                    setFormOpen(true);
+                  }}
                 />
                 <DeleteItems
                   items={[
@@ -262,7 +265,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                 <Checkbox
                   aria-label={`Select ${item.name}`}
                   checked={isItemSelected}
-                  className="h-5 w-5 m-1 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   onCheckedChange={() => toggleSelection(item.id)}
                 />
               </div>
@@ -347,7 +350,9 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
         }}
         open={formOpen}
       >
+        <DrawerTitle />
         <DrawerContent
+          aria-describedby="dialog-description"
           className="p-3 bg-transparent border-none shadow-none"
           title="Create/Edit"
         >

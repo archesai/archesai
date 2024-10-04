@@ -77,7 +77,6 @@ export default function BillingPageContent() {
     mutateAsync: createCheckoutSesseion,
   } = useBillingControllerCreateCheckoutSession({
     onError: (error) => {
-      console.log("ERRR", error);
       toast({
         description: error?.stack.msg,
         title: "Could not create checkout session",

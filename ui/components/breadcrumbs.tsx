@@ -23,7 +23,6 @@ export const Breadcrumbs = () => {
       pathname.startsWith(routePattern) ||
       getOriginalPath(pathname).startsWith(routePattern)
     ) {
-      console.log(getOriginalPath(pathname));
       const link = links.find(
         (link) =>
           link.href === pathname || link.href === getOriginalPath(pathname)
