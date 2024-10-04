@@ -4,6 +4,7 @@ import { User } from "@prisma/client";
 import { AuthProviderType } from "@prisma/client";
 
 import { OrganizationsService } from "../organizations/organizations.service";
+import { WebsocketsService } from "../websockets/websockets.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateUserInput } from "./types/create-user.type";
 import { UserRepository } from "./user.repository";
@@ -13,7 +14,8 @@ export class UsersService {
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private websocketsService: WebsocketsService
   ) {}
 
   async create(createUser: CreateUserInput) {
@@ -73,7 +75,9 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
+    const user = await this.userRepository.update(id, updateUserDto);
+    this.websocketsService.socket.to(user.defaultOrg).emit("update");
+    return user;
   }
 
   async updateEmail(id: string, email: string) {

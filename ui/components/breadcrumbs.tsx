@@ -7,14 +7,35 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react"; // Adjust the import path as necessary
+import { siteConfig } from "@/config/site";
+
+import { getOriginalPath } from "./tabs-section";
 
 export const Breadcrumbs = () => {
   const pathname = usePathname();
   const pathnames = pathname.split("/").filter((x) => x);
 
+  let Icon = null;
+  const entries = Object.entries(siteConfig.links);
+  entries.sort(([a], [b]) => a.length - b.length);
+  for (const [routePattern, links] of entries) {
+    if (
+      pathname.startsWith(routePattern) ||
+      getOriginalPath(pathname).startsWith(routePattern)
+    ) {
+      console.log(getOriginalPath(pathname));
+      const link = links.find(
+        (link) =>
+          link.href === pathname || link.href === getOriginalPath(pathname)
+      );
+      Icon = link?.Icon;
+    }
+  }
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
+        <Icon className="h-5 w-5" strokeWidth={1.5} />
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           const isLast = index === pathnames.length - 1;

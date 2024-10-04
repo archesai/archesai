@@ -38,8 +38,8 @@ export const useWebsockets = ({
 
       websocket.on("ping", () => {});
 
-      websocket.on("update", () => {
-        queryClient.invalidateQueries();
+      websocket.on("update", async () => {
+        await queryClient.invalidateQueries();
       });
 
       websocket.on("chat", (event) => {

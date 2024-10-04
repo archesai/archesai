@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { ForbiddenException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Organization, PlanType } from "@prisma/client";
@@ -12,6 +12,7 @@ import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 @Injectable()
 export class OrganizationsService {
   constructor(
+    @Inject(forwardRef(() => BillingService))
     private billingService: BillingService,
     private prisma: PrismaService,
     private configService: ConfigService

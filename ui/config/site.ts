@@ -13,7 +13,6 @@ import {
   Key,
   Layers,
   MessageSquare,
-  PlayCircle,
   Server,
   User,
   Users,
@@ -70,7 +69,7 @@ export const siteConfig = {
     "/chatbots/[chatbotId]": [
       {
         href: "/chatbots/[chatbotId]/chat",
-        Icon: PlayCircle,
+        Icon: MessageSquare,
         tab: "Chat",
         title: "Chat",
       },

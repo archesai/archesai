@@ -114,7 +114,7 @@ services:
     container_name: arches-stripe
     hostname: arches-stripe
     image: stripe/stripe-cli:latest
-    command: listen --api-key sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV
+    command: listen --forward-to http://arches-api:3001/webhooks/stripe --api-key sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV
     ports:
       - "3009:3000"
     profiles:

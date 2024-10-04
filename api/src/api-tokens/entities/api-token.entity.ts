@@ -6,20 +6,23 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { ChatbotEntity } from "../../chatbots/entities/chatbot.entity";
 import { BaseEntity } from "../../common/base-entity.dto";
 
-export class AgentsFieldItem extends PickType(ChatbotEntity, ["id", "name"]) {}
+export class ChatbotsFieldItem extends PickType(ChatbotEntity, [
+  "id",
+  "name",
+]) {}
 
 export class ApiTokenEntity extends BaseEntity implements ApiToken {
   @ApiProperty({
     description: "The chatbots this API token has access to",
     example: [
-      { id: "uuid-uuid-uuid-uuid", name: "Arches API Documentation Agent" },
+      { id: "uuid-uuid-uuid-uuid", name: "Arches API Documentation Chatbot" },
     ],
-    type: [AgentsFieldItem],
+    type: [ChatbotsFieldItem],
   })
   @Expose()
   @IsOptional()
   @ValidateNested({ each: true })
-  chatbots: AgentsFieldItem[];
+  chatbots: ChatbotsFieldItem[];
 
   @ApiProperty({
     default: "*",

@@ -5,7 +5,7 @@ import { OrganizationsService } from "../src/organizations/organizations.service
 import { UsersService } from "../src/users/users.service";
 import { createApp, sleep } from "./util";
 
-describe("Agents", () => {
+describe("Chatbots", () => {
   let app: INestApplication;
 
   const credentials1 = {
@@ -122,7 +122,7 @@ describe("Agents", () => {
           "You are an educational teacher and you help people learn about the stories of Aesop's Fables.",
         documentIds: ["doc1", "doc2"],
         llmBase: "GPT_3_5_TURBO_16_K",
-        name: "My Test Agent",
+        name: "My Test Chatbot",
       })
       .set("Authorization", "Bearer " + agent1Token);
     expect(res.status).toBe(404);

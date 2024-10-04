@@ -56,6 +56,27 @@ export class OpenAiCompletionsService implements CompletionsService {
     return answer;
   }
 
+  async createImageSummary(imageUrl: string) {
+    const response = await this.openai.chat.completions.create({
+      messages: [
+        {
+          content: [
+            { text: "What’s in this image?", type: "text" },
+            {
+              image_url: {
+                url: imageUrl,
+              },
+              type: "image_url",
+            },
+          ],
+          role: "user",
+        },
+      ],
+      model: "gpt-4o",
+    });
+    return response.choices[0];
+  }
+
   async createSummary(text: string) {
     const { choices, usage } = await this.openai.completions.create({
       frequency_penalty: 0,

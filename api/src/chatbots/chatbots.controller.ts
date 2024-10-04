@@ -11,11 +11,11 @@ import {
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "../auth/decorators/roles.decorator";
-import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
+import { BaseController } from "../common/base.controller";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ChatbotsService } from "./chatbots.service";
 import { ChatbotQueryDto } from "./dto/chatbot-query.dto";

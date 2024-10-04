@@ -7,8 +7,8 @@ import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
 
 import { ApiTokensService } from "./api-tokens/api-tokens.service";
 import {
-  AgentsFieldItem,
   ApiTokenEntity,
+  ChatbotsFieldItem,
 } from "./api-tokens/entities/api-token.entity";
 import { AppModule } from "./app.module";
 import { AppAuthGuard } from "./auth/guards/app-auth.guard";
@@ -81,7 +81,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     extraModels: [
       _PaginatedDto,
-      AgentsFieldItem,
+      ChatbotsFieldItem,
       ThreadAggregates,
       ApiTokenEntity,
     ],

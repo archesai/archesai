@@ -36,7 +36,7 @@ const faqs = [
     questions: [
       {
         answer:
-          "Yes, Arches AI supports searching across multiple files. When creating an agent, you have the option to either search through all of your files or a specific subset.",
+          "Yes, Arches AI supports searching across multiple files. When creating an chatbot, you have the option to either search through all of your files or a specific subset.",
         question: "Can I search multiple files simultaneously?",
       },
       {

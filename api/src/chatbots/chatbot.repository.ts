@@ -71,10 +71,7 @@ export class ChatbotRepository
   ) {
     return this.prisma.chatbot.update({
       data: {
-        ...(updateChatbotDto.name && { name: updateChatbotDto.name }),
-        ...(updateChatbotDto.description && {
-          description: updateChatbotDto.description,
-        }),
+        ...updateChatbotDto,
       },
       where: { id: chatbotId },
     });

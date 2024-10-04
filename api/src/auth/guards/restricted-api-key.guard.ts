@@ -50,7 +50,7 @@ export class RestrictedAPIKeyGuard implements CanActivate {
         }
       }
 
-      // Verify token is valid for this agent if we are looking at an agent
+      // Verify token is valid for this chatbot if we are looking at an chatbot
       const chatbotId = request.params.chatbotId;
       if (chatbotId) {
         // Get current token
@@ -64,12 +64,12 @@ export class RestrictedAPIKeyGuard implements CanActivate {
           return true;
         }
 
-        const isTokenValidForAgent = Boolean(
+        const isTokenValidForChatbot = Boolean(
           token.chatbots.find((val) => val.id == chatbotId)
         );
-        if (!isTokenValidForAgent) {
+        if (!isTokenValidForChatbot) {
           throw new NotFoundException(
-            "You tried to access an agent that doesn't exist or that you don't have access to."
+            "You tried to access an chatbot that doesn't exist or that you don't have access to."
           );
         }
       }

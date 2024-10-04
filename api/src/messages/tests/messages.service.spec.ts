@@ -40,7 +40,7 @@ describe("MessagesService unit spec", () => {
     updatedAt: new Date(),
   };
 
-  const mockAgent = {
+  const mockChatbot = {
     accessScope: "ORGANIZATION" as const,
     createdAt: new Date(),
     description: "description",
@@ -97,7 +97,7 @@ describe("MessagesService unit spec", () => {
       return mockOrganization;
     });
     mockedChatbotsService.findOne.mockImplementation(async () => {
-      return mockAgent;
+      return mockChatbot;
     });
     mockedThreadsService.findOne.mockImplementation(async () => {
       return mockThread;
@@ -161,7 +161,7 @@ describe("MessagesService unit spec", () => {
       await expect(
         messagesService.create(
           "nonexistentOrgname",
-          "badAgentId",
+          "badChatbotId",
           "badThreadId",
           createMessageDto,
           null
@@ -276,7 +276,7 @@ describe("MessagesService unit spec", () => {
       );
 
       expect(answerQuestionSpy).toHaveBeenCalledWith(
-        mockAgent,
+        mockChatbot,
         {
           ...mockThread,
           documents: [
@@ -308,7 +308,7 @@ describe("MessagesService unit spec", () => {
     it("should filter first after on agent documents if document specific", async () => {
       mockedChatbotsService.findOne.mockImplementation(async () => {
         return {
-          ...mockAgent,
+          ...mockChatbot,
           accessScope: "DOCUMENT" as const,
           documents: [
             {
@@ -334,7 +334,7 @@ describe("MessagesService unit spec", () => {
 
       expect(answerQuestionSpy).toHaveBeenCalledWith(
         {
-          ...mockAgent,
+          ...mockChatbot,
           accessScope: "DOCUMENT" as const,
           documents: [
             {
@@ -366,7 +366,7 @@ describe("MessagesService unit spec", () => {
     it("should filter first after on organization documents if organiztion access scope specific", async () => {
       mockedChatbotsService.findOne.mockImplementation(async () => {
         return {
-          ...mockAgent,
+          ...mockChatbot,
         };
       });
 
@@ -381,7 +381,7 @@ describe("MessagesService unit spec", () => {
 
       expect(answerQuestionSpy).toHaveBeenCalledWith(
         {
-          ...mockAgent,
+          ...mockChatbot,
         },
         mockThread,
         [mockMessage, mockMessage, mockMessage, mockMessage, mockMessage],
@@ -395,7 +395,7 @@ describe("MessagesService unit spec", () => {
     it("should block all document matches if document level and no docs specified", async () => {
       mockedChatbotsService.findOne.mockImplementation(async () => {
         return {
-          ...mockAgent,
+          ...mockChatbot,
           accessScope: "DOCUMENT" as const,
         };
       });
@@ -411,7 +411,7 @@ describe("MessagesService unit spec", () => {
 
       expect(answerQuestionSpy).toHaveBeenCalledWith(
         {
-          ...mockAgent,
+          ...mockChatbot,
           accessScope: "DOCUMENT" as const,
         },
         mockThread,

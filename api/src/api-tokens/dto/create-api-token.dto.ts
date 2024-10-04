@@ -12,8 +12,8 @@ export class CreateApiTokenDto extends PickType(ApiTokenEntity, [
   @ApiProperty({
     default: [],
     description:
-      "The ids of the agent this token will have access to. This can not be changed later.",
-    example: ["agent1", "agent2"],
+      "The ids of the chatbot this token will have access to. This can not be changed later.",
+    example: ["chatbot1", "chatbot2"],
     required: false,
   })
   @IsOptional()
