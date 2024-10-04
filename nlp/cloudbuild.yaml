@@ -4,6 +4,7 @@ steps:
       - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
       - --cache=true
       - --cache-ttl=24h
+      - --context=./nlp
 
 options:
   machineType: "N1_HIGHCPU_8"

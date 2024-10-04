@@ -73,7 +73,7 @@ export async function archesApiFetch<
         headers: requestHeaders,
         method: method.toUpperCase(),
         signal,
-      },
+      }
     );
     if (!response.ok) {
       let error: ErrorWrapper<TError>;
@@ -100,8 +100,10 @@ export async function archesApiFetch<
       return (await response.blob()) as unknown as TData;
     }
   } catch (e) {
+    let err = e as any;
     const errorObject: Error = {
-      message: e instanceof Error ? `Network error (${e.message})` : e.message,
+      message:
+        e instanceof Error ? `Network error (${err.message})` : err.message,
       name: "unknown" as const,
       stack: e as string,
     };
@@ -112,7 +114,7 @@ export async function archesApiFetch<
 const resolveUrl = (
   url: string,
   queryParams: Record<string, string> = {},
-  pathParams: Record<string, string> = {},
+  pathParams: Record<string, string> = {}
 ) => {
   let query = new URLSearchParams(queryParams).toString();
   if (query) query = `?${query}`;

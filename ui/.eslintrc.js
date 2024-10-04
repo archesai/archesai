@@ -9,4 +9,5 @@ module.exports = {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
   },
+  ignorePatterns: ["components/ui/*.tsx", "generated/**"],
 };

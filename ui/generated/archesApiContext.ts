@@ -65,7 +65,7 @@ export function useArchesApiContext<
     },
     queryKeyFn,
     queryOptions: {
-      enabled: t !== null && (_queryOptions?.enabled ?? true),
+      enabled: t !== null && (_queryOptions?.enabled ? true : false),
       onError: async (error: any) => {
         if (error?.stack?.statusCode === 401) {
           console.log("Refreshing token");

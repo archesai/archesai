@@ -1,7 +1,7 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Member, Organization, User } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsInt, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString, MinLength } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
 import { MemberEntity } from "../../members/entities/member.entity";
