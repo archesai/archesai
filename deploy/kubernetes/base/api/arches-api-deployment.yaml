@@ -29,11 +29,6 @@ spec:
                 secretKeyRef:
                   key: DATABASE_URL
                   name: arches-api-config-secret
-            - name: FIREBASE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: FIREBASE_API_KEY
-                  name: arches-api-config-secret
             - name: FRONTEND_HOST
               valueFrom:
                 secretKeyRef:

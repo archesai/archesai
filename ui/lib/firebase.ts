@@ -17,7 +17,7 @@ const auth = getAuth(app);
 let analytics = null;
 
 if (typeof window !== "undefined" && !window["_init" as any]) {
-  if (location) {
+  if (location && process.env.NEXT_PUBLIC_USE_FIREBASE == "true") {
     analytics = getAnalytics();
     if (process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH_EMULATOR == "true") {
       connectAuthEmulator(

@@ -275,6 +275,182 @@ export type BillingUrlEntity = {
   url: string;
 };
 
+export type PlanEntity = {
+  /**
+   * The currency of the plan
+   *
+   * @example usd
+   */
+  currency: string;
+  /**
+   * @example A plan for a small business
+   */
+  description?: Record<string, any>;
+  /**
+   * The ID of the plan
+   *
+   * @example prod_1234567890
+   */
+  id: string;
+  metadata?: Record<string, any>;
+  /**
+   * The name of the plan
+   *
+   * @example Small Business Plan
+   */
+  name: string;
+  /**
+   * The ID of the price associated with the plan
+   *
+   * @example price_1234567890
+   */
+  priceId: string;
+  priceMetadata?: Record<string, any>;
+  recurring?: Record<string, any>;
+  /**
+   * The amount in cents to be charged on the interval specified
+   *
+   * @example 1000
+   */
+  unitAmount: number;
+};
+
+export type Address = {
+  /**
+   * City/District/Suburb/Town/Village.
+   *
+   * @example San Francisco
+   */
+  city: Record<string, any> | null;
+  /**
+   * Two-letter country code (ISO 3166-1 alpha-2).
+   *
+   * @example US
+   */
+  country: Record<string, any> | null;
+  /**
+   * Address line 1 (e.g., street, PO Box, or company name).
+   *
+   * @example 123 Main Street
+   */
+  line1: Record<string, any> | null;
+  /**
+   * Address line 2 (e.g., apartment, suite, unit, or building).
+   *
+   * @example Apt 4B
+   */
+  line2: Record<string, any> | null;
+  /**
+   * ZIP or postal code.
+   *
+   * @example 94111
+   */
+  postal_code: Record<string, any> | null;
+  /**
+   * State/County/Province/Region.
+   *
+   * @example CA
+   */
+  state: Record<string, any> | null;
+};
+
+export type BillingDetails = {
+  /**
+   * Billing address associated with the payment method.
+   */
+  address: Address;
+  /**
+   * Email address associated with the payment method.
+   *
+   * @example customer@example.com
+   */
+  email: Record<string, any> | null;
+  /**
+   * Full name associated with the payment method.
+   *
+   * @example Jane Doe
+   */
+  name: Record<string, any> | null;
+  /**
+   * Phone number associated with the payment method.
+   *
+   * @example +1234567890
+   */
+  phone: Record<string, any> | null;
+};
+
+export type CardDetails = {
+  /**
+   * Card brand (e.g., Visa, MasterCard).
+   *
+   * @example visa
+   */
+  brand: string;
+  /**
+   * Two-letter ISO code representing the country of the card.
+   *
+   * @example US
+   */
+  country: string;
+  /**
+   * Two-digit number representing the card’s expiration month.
+   *
+   * @example 12
+   */
+  exp_month: number;
+  /**
+   * Four-digit number representing the card’s expiration year.
+   *
+   * @example 2024
+   */
+  exp_year: number;
+  /**
+   * Unencrypted PAN tokens (optional, sensitive).
+   */
+  fingerprint: Record<string, any> | null;
+  /**
+   * Card funding type (credit, debit, prepaid, unknown).
+   *
+   * @example credit
+   */
+  funding: string;
+  /**
+   * The last four digits of the card.
+   *
+   * @example 4242
+   */
+  last4: string;
+};
+
+export type PaymentMethodEntity = {
+  /**
+   * Billing details associated with the payment method.
+   */
+  billing_details: BillingDetails;
+  /**
+   * If the PaymentMethod is a card, this contains the card details.
+   */
+  card: CardDetails;
+  /**
+   * ID of the customer this payment method is saved to.
+   *
+   * @example cus_J0a1b2c3d4e5f6g7h8i9
+   */
+  customer: Record<string, any> | null;
+  /**
+   * Unique identifier for the payment method
+   *
+   * @example pm_1J2Y3A4B5C6D7E8F9G0H
+   */
+  id: string;
+  /**
+   * The type of the PaymentMethod. An example value is "card".
+   *
+   * @example card
+   */
+  type: string;
+};
+
 export type CreateApiTokenDto = {
   /**
    * The domains that can access this API token

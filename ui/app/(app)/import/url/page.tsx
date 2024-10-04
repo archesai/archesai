@@ -48,9 +48,6 @@ export default function CrawlPage() {
         // Update progress
         setCrawlProgress(Math.round(((i + 1) * 100) / urlList.length));
       }
-
-      // Handle successful crawl
-      console.log("Crawling completed");
     } catch (error) {
       console.error("An error occurred during crawling:", error);
     } finally {

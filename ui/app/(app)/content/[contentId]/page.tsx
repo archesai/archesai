@@ -46,8 +46,6 @@ export default function ContentDetailsPage() {
       }
     );
 
-  console.log(vectorRecords);
-
   const { data: content, isLoading } = useContentControllerFindOne(
     {
       pathParams: {

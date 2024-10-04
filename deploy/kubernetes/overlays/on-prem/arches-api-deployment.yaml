@@ -7,36 +7,6 @@ spec:
       containers:
         - name: arches-api
           env:
-            - name: FIREBASE_AUTH_EMULATOR_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: FIREBASE_AUTH_EMULATOR_HOST
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_ADMIN_PASSWORD
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_ADMIN_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_ADMIN_USERNAME
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_BASE_URL
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_CLIENT_ID
-                  name: arches-api-config-secret
-            - name: KEYCLOAK_REALM
-              valueFrom:
-                secretKeyRef:
-                  key: KEYCLOAK_REALM
-                  name: arches-api-config-secret
             - name: MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
@@ -56,29 +26,4 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: MINIO_SECRET_KEY
-                  name: arches-api-config-secret
-            - name: MILVUS_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_HOST
-                  name: arches-api-config-secret
-            - name: MILVUS_COLLECTION
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_COLLECTION
-                  name: arches-api-config-secret
-            - name: MILVUS_VECTOR_DIM
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_VECTOR_DIM
-                  name: arches-api-config-secret
-            - name: MILVUS_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_USERNAME
-                  name: arches-api-config-secret
-            - name: MILVUS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: MILVUS_PASSWORD
                   name: arches-api-config-secret

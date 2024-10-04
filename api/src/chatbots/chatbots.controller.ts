@@ -12,7 +12,10 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { Roles } from "../auth/decorators/roles.decorator";
 import { BaseController } from "../common/base.controller";
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ChatbotsService } from "./chatbots.service";
 import { ChatbotQueryDto } from "./dto/chatbot-query.dto";
@@ -35,7 +38,7 @@ export class ChatbotsController
 {
   constructor(private readonly chatbotsService: ChatbotsService) {}
 
-  @CrudOperation(Operation.CREATE, "chatbot", ChatbotEntity, true)
+  @ApiCrudOperation(Operation.CREATE, "chatbot", ChatbotEntity, true)
   @Post("/")
   async create(
     @Param("orgname") orgname: string,
@@ -46,7 +49,7 @@ export class ChatbotsController
     );
   }
 
-  @CrudOperation(Operation.FIND_ALL, "chatbot", ChatbotEntity, true)
+  @ApiCrudOperation(Operation.FIND_ALL, "chatbot", ChatbotEntity, true)
   @Get()
   async findAll(
     @Param("orgname") orgname: string,
@@ -66,7 +69,7 @@ export class ChatbotsController
     });
   }
 
-  @CrudOperation(Operation.GET, "chatbot", ChatbotEntity, true)
+  @ApiCrudOperation(Operation.GET, "chatbot", ChatbotEntity, true)
   @Get(":chatbotId")
   async findOne(
     @Param("orgname") orgname: string,
@@ -76,7 +79,7 @@ export class ChatbotsController
   }
 
   @Delete(":chatbotId")
-  @CrudOperation(Operation.DELETE, "chatbot", ChatbotEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "chatbot", ChatbotEntity, true)
   async remove(
     @Param("orgname") orgname: string,
     @Param("chatbotId") chatbotId: string
@@ -84,7 +87,7 @@ export class ChatbotsController
     return this.chatbotsService.remove(orgname, chatbotId);
   }
 
-  @CrudOperation(Operation.UPDATE, "chatbot", ChatbotEntity, true)
+  @ApiCrudOperation(Operation.UPDATE, "chatbot", ChatbotEntity, true)
   @Patch(":chatbotId")
   async update(
     @Param("orgname") orgname: string,

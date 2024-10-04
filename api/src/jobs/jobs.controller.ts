@@ -2,7 +2,10 @@ import { Controller, Delete, Get, Param, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { BaseController } from "../common/base.controller";
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { JobQueryDto } from "./dto/job-query.dto";
 import { JobEntity } from "./entities/job.entity";
@@ -16,7 +19,7 @@ export class JobsController
 {
   constructor(private readonly jobsService: JobsService) {}
 
-  @CrudOperation(Operation.FIND_ALL, "job", JobEntity, true)
+  @ApiCrudOperation(Operation.FIND_ALL, "job", JobEntity, true)
   @Get()
   async findAll(
     @Param("orgname") orgname: string,
@@ -36,13 +39,13 @@ export class JobsController
     });
   }
 
-  @CrudOperation(Operation.GET, "job", JobEntity, true)
+  @ApiCrudOperation(Operation.GET, "job", JobEntity, true)
   @Get(":id")
   findOne(@Param("orgname") orgname: string, @Param("id") id: string) {
     return this.jobsService.findOne(orgname, id);
   }
 
-  @CrudOperation(Operation.DELETE, "job", JobEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "job", JobEntity, true)
   @Delete(":id")
   remove(@Param("orgname") orgname: string, @Param("id") id: string) {
     return this.jobsService.remove(orgname, id);

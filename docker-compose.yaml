@@ -42,6 +42,8 @@ services:
       - POSTGRES_DB=nestjs
       - POSTGRES_HOST=localhost
       - POSTGRES_PORT=5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   arches-redis:
     hostname: arches-redis
@@ -106,9 +108,20 @@ services:
       - arches-postgres
       - arches-redis
     profiles:
-      - minimal
+      - stage
+
+  arches-stripe:
+    container_name: arches-stripe
+    hostname: arches-stripe
+    image: stripe/stripe-cli:latest
+    command: listen --api-key sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV
+    ports:
+      - "3009:3000"
+    profiles:
+      - stage
 
 volumes:
   ollama-data:
   minio-data:
   emulatorCache:
+  postgres-data:

@@ -2,7 +2,10 @@ import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { BaseController } from "../common/base.controller";
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { VectorRecordQueryDto } from "./dto/vector-record-query.dto";
 import { VectorRecordEntity } from "./entities/vector-record.entity";
@@ -22,7 +25,12 @@ export class VectorRecordController
 {
   constructor(private readonly vectorRecordService: VectorRecordService) {}
 
-  @CrudOperation(Operation.FIND_ALL, "vector record", VectorRecordEntity, true)
+  @ApiCrudOperation(
+    Operation.FIND_ALL,
+    "vector record",
+    VectorRecordEntity,
+    true
+  )
   @Get("/")
   async findAll(
     @Param("orgname") orgname: string,
@@ -49,7 +57,7 @@ export class VectorRecordController
     });
   }
 
-  @CrudOperation(Operation.GET, "vector record", VectorRecordEntity, true)
+  @ApiCrudOperation(Operation.GET, "vector record", VectorRecordEntity, true)
   @Get("/:vectorRecordId")
   async findOne(
     @Param("orgname") orgname: string,

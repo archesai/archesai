@@ -17,21 +17,6 @@ spec:
                 secretKeyRef:
                   key: STRIPE_WEBHOOK_SECRET
                   name: arches-api-config-secret
-            - name: STRIPE_BASIC_PRICE_ID
-              valueFrom:
-                secretKeyRef:
-                  key: STRIPE_BASIC_PRICE_ID
-                  name: arches-api-config-secret
-            - name: STRIPE_API_PRICE_ID
-              valueFrom:
-                secretKeyRef:
-                  key: STRIPE_API_PRICE_ID
-                  name: arches-api-config-secret
-            - name: STRIPE_API_CREDITS_PRICE_ID
-              valueFrom:
-                secretKeyRef:
-                  key: STRIPE_API_CREDITS_PRICE_ID
-                  name: arches-api-config-secret
             - name: EMAIL_SERVICE
               valueFrom:
                 secretKeyRef:

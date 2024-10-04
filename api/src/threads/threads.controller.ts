@@ -9,7 +9,10 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
@@ -23,7 +26,7 @@ import { ThreadsService } from "./threads.service";
 export class ThreadsController {
   constructor(private readonly threadsService: ThreadsService) {}
 
-  @CrudOperation(Operation.CREATE, "thread", ThreadEntity, false)
+  @ApiCrudOperation(Operation.CREATE, "thread", ThreadEntity, false)
   @Post()
   async create(
     @Param("orgname") orgname: string,
@@ -35,7 +38,7 @@ export class ThreadsController {
     );
   }
 
-  @CrudOperation(
+  @ApiCrudOperation(
     Operation.FIND_ALL,
     "thread",
     ThreadEntity,
@@ -64,7 +67,7 @@ export class ThreadsController {
     });
   }
 
-  @CrudOperation(Operation.GET, "thread", ThreadEntity, true)
+  @ApiCrudOperation(Operation.GET, "thread", ThreadEntity, true)
   @Get(":threadId")
   async findOne(
     @Param("orgname") orgname: string,
@@ -76,7 +79,7 @@ export class ThreadsController {
     );
   }
 
-  @CrudOperation(Operation.DELETE, "thread", ThreadEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "thread", ThreadEntity, true)
   @Delete(":threadId")
   async remove(
     @Param("orgname") orgname: string,

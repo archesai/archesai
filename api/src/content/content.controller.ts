@@ -11,7 +11,10 @@ import {
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { BaseController } from "../common/base.controller";
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ContentService } from "./content.service";
 import { ContentQueryDto } from "./dto/content-query.dto";
@@ -33,7 +36,7 @@ export class ContentController
 {
   constructor(private readonly contentService: ContentService) {}
 
-  @CrudOperation(Operation.CREATE, "content", ContentEntity, true)
+  @ApiCrudOperation(Operation.CREATE, "content", ContentEntity, true)
   @Post("/")
   create(
     @Param("orgname") orgname: string,
@@ -42,7 +45,7 @@ export class ContentController
     return this.contentService.create(orgname, createContentDto);
   }
 
-  @CrudOperation(Operation.FIND_ALL, "content", ContentEntity, true)
+  @ApiCrudOperation(Operation.FIND_ALL, "content", ContentEntity, true)
   @Get("/")
   async findAll(
     @Param("orgname") orgname: string,
@@ -68,7 +71,7 @@ export class ContentController
     });
   }
 
-  @CrudOperation(Operation.GET, "content", ContentEntity, true)
+  @ApiCrudOperation(Operation.GET, "content", ContentEntity, true)
   @Get("/:contentId")
   async findOne(
     @Param("orgname") orgname: string,
@@ -77,7 +80,7 @@ export class ContentController
     return new ContentEntity(await this.contentService.findOne(contentId));
   }
 
-  @CrudOperation(Operation.DELETE, "content", ContentEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "content", ContentEntity, true)
   @Delete("/:contentId")
   remove(
     @Param("orgname") orgname: string,
@@ -86,7 +89,7 @@ export class ContentController
     return this.contentService.remove(orgname, contentId);
   }
 
-  @CrudOperation(Operation.UPDATE, "content", ContentEntity, true)
+  @ApiCrudOperation(Operation.UPDATE, "content", ContentEntity, true)
   @Patch("/:contentId")
   async update(
     @Param("orgname") orgname: string,

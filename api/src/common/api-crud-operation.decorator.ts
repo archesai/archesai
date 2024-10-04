@@ -12,12 +12,12 @@ export enum Operation {
   UPDATE = "UPDATE",
 }
 
-export function CrudOperation<TEntity>(
+export function ApiCrudOperation<TEntity>(
   operation: Operation,
   entityName: string,
   entityType: new (...args: any[]) => TEntity,
   isAdmin: boolean,
-  aggregates?: new (...args: any[]) => any,
+  aggregates?: new (...args: any[]) => any
 ) {
   let summary = `${
     operation.charAt(0) + operation.slice(1).toLowerCase()
@@ -31,7 +31,7 @@ export function CrudOperation<TEntity>(
 
   if (isAdmin) {
     specificResponses.push(
-      ApiResponse({ description: "Forbidden", status: 403 }),
+      ApiResponse({ description: "Forbidden", status: 403 })
     );
   }
 
@@ -43,14 +43,14 @@ export function CrudOperation<TEntity>(
           description: `Successfully created a new ${entityName}`,
           status: 201,
           type: entityType,
-        }),
+        })
       );
       break;
     case "DELETE":
       specificResponses.push(
         ApiOkResponse({
           description: `Successfully deleted the ${entityName}`,
-        }),
+        })
       );
       break;
     case "FIND_ALL":
@@ -62,7 +62,7 @@ export function CrudOperation<TEntity>(
         ApiOkResponse({
           description: `Successfully retrieved the ${entityName}`,
           type: entityType,
-        }),
+        })
       );
       break;
     case "UPDATE":
@@ -70,7 +70,7 @@ export function CrudOperation<TEntity>(
         ApiOkResponse({
           description: `Successfully updated the ${entityName}`,
           type: entityType,
-        }),
+        })
       );
       break;
   }
@@ -86,6 +86,6 @@ export function CrudOperation<TEntity>(
       summary,
     }),
     ...defaultResponses,
-    ...specificResponses,
+    ...specificResponses
   );
 }

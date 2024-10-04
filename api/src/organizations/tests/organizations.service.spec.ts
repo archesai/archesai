@@ -3,7 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 
 import { CurrentUserDto } from "../../auth/decorators/current-user.decorator";
 import { PrismaService } from "../../prisma/prisma.service";
-import { StripeService } from "../../stripe/stripe.service";
+import { StripeService } from "../../billing/billing.service";
 import { CreateOrganizationDto } from "../dto/create-organization.dto";
 import { OrganizationsService } from "../organizations.service";
 

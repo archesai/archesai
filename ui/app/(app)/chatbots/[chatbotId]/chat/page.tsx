@@ -68,7 +68,6 @@ export default function ChatbotChatPage() {
             orgname: defaultOrgname,
           },
         });
-        console.log("Created thread", thread);
         setThreadId(thread.id);
         currentThreadId = thread.id;
       } catch (error) {

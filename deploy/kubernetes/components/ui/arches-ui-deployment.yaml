@@ -22,10 +22,6 @@ spec:
             - containerPort: 3000
           resources: {}
           env:
-            - name: NEXT_PUBLIC_AUTH_TYPE
-              value: "Keycloak"
-            - name: NEXT_PUBLIC_KEYCLOAK_URL
-              value: "http://arches-auth-keycloak:8080"
             - name: NEXT_PUBLIC_WEBSOCKET_URL
               value: "wss://arches-api:3001"
             - name: NEXT_PUBLIC_API_URL

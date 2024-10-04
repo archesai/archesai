@@ -285,7 +285,7 @@ export type OrganizationsControllerCreateVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Create an organization. ADMIN ONLY.
+ * Create a new organization. ADMIN ONLY.
  */
 export const fetchOrganizationsControllerCreate = (
   variables: OrganizationsControllerCreateVariables,
@@ -301,7 +301,7 @@ export const fetchOrganizationsControllerCreate = (
   >({ url: "/organizations", method: "post", ...variables, signal });
 
 /**
- * Create an organization. ADMIN ONLY.
+ * Create a new organization. ADMIN ONLY.
  */
 export const useOrganizationsControllerCreate = (
   options?: Omit<
@@ -337,7 +337,7 @@ export type OrganizationsControllerDeleteVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Delete an organization. ADMIN ONLY.
+ * Delete a organization. ADMIN ONLY.
  */
 export const fetchOrganizationsControllerDelete = (
   variables: OrganizationsControllerDeleteVariables,
@@ -358,7 +358,7 @@ export const fetchOrganizationsControllerDelete = (
   });
 
 /**
- * Delete an organization. ADMIN ONLY.
+ * Delete a organization. ADMIN ONLY.
  */
 export const useOrganizationsControllerDelete = (
   options?: Omit<
@@ -394,7 +394,7 @@ export type OrganizationsControllerFindOneVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get an organization. ADMIN ONLY.
+ * Get a organization. ADMIN ONLY.
  */
 export const fetchOrganizationsControllerFindOne = (
   variables: OrganizationsControllerFindOneVariables,
@@ -410,7 +410,7 @@ export const fetchOrganizationsControllerFindOne = (
   >({ url: "/organizations/{orgname}", method: "get", ...variables, signal });
 
 /**
- * Get an organization. ADMIN ONLY.
+ * Get a organization. ADMIN ONLY.
  */
 export const useOrganizationsControllerFindOne = <
   TData = Schemas.OrganizationEntity,
@@ -460,14 +460,14 @@ export type OrganizationsControllerUpdateVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Update an organization. ADMIN ONLY.
+ * Update a organization. ADMIN ONLY.
  */
 export const fetchOrganizationsControllerUpdate = (
   variables: OrganizationsControllerUpdateVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    undefined,
+    Schemas.OrganizationEntity,
     OrganizationsControllerUpdateError,
     Schemas.UpdateOrganizationDto,
     {},
@@ -476,12 +476,12 @@ export const fetchOrganizationsControllerUpdate = (
   >({ url: "/organizations/{orgname}", method: "patch", ...variables, signal });
 
 /**
- * Update an organization. ADMIN ONLY.
+ * Update a organization. ADMIN ONLY.
  */
 export const useOrganizationsControllerUpdate = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      undefined,
+      Schemas.OrganizationEntity,
       OrganizationsControllerUpdateError,
       OrganizationsControllerUpdateVariables
     >,
@@ -490,7 +490,7 @@ export const useOrganizationsControllerUpdate = (
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
-    undefined,
+    Schemas.OrganizationEntity,
     OrganizationsControllerUpdateError,
     OrganizationsControllerUpdateVariables
   >({
@@ -500,47 +500,47 @@ export const useOrganizationsControllerUpdate = (
   });
 };
 
-export type StripeControllerCreateBillingPortalPathParams = {
+export type BillingControllerCreateBillingPortalPathParams = {
   orgname: string;
 };
 
-export type StripeControllerCreateBillingPortalError =
+export type BillingControllerCreateBillingPortalError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type StripeControllerCreateBillingPortalVariables = {
-  pathParams: StripeControllerCreateBillingPortalPathParams;
+export type BillingControllerCreateBillingPortalVariables = {
+  pathParams: BillingControllerCreateBillingPortalPathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * This endpoint will create a billing for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.
+ * This endpoint will create a billing portal for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.
  */
-export const fetchStripeControllerCreateBillingPortal = (
-  variables: StripeControllerCreateBillingPortalVariables,
+export const fetchBillingControllerCreateBillingPortal = (
+  variables: BillingControllerCreateBillingPortalVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
-    StripeControllerCreateBillingPortalError,
+    BillingControllerCreateBillingPortalError,
     undefined,
     {},
     {},
-    StripeControllerCreateBillingPortalPathParams
+    BillingControllerCreateBillingPortalPathParams
   >({
-    url: "/organizations/{orgname}/billing",
+    url: "/organizations/{orgname}/billing/portal",
     method: "post",
     ...variables,
     signal,
   });
 
 /**
- * This endpoint will create a billing for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.
+ * This endpoint will create a billing portal for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.
  */
-export const useStripeControllerCreateBillingPortal = (
+export const useBillingControllerCreateBillingPortal = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.BillingUrlEntity,
-      StripeControllerCreateBillingPortalError,
-      StripeControllerCreateBillingPortalVariables
+      BillingControllerCreateBillingPortalError,
+      BillingControllerCreateBillingPortalVariables
     >,
     "mutationFn"
   >,
@@ -548,11 +548,11 @@ export const useStripeControllerCreateBillingPortal = (
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
     Schemas.BillingUrlEntity,
-    StripeControllerCreateBillingPortalError,
-    StripeControllerCreateBillingPortalVariables
+    BillingControllerCreateBillingPortalError,
+    BillingControllerCreateBillingPortalVariables
   >({
-    mutationFn: (variables: StripeControllerCreateBillingPortalVariables) =>
-      fetchStripeControllerCreateBillingPortal({
+    mutationFn: (variables: BillingControllerCreateBillingPortalVariables) =>
+      fetchBillingControllerCreateBillingPortal({
         ...fetcherOptions,
         ...variables,
       }),
@@ -560,52 +560,52 @@ export const useStripeControllerCreateBillingPortal = (
   });
 };
 
-export type StripeControllerCreateCheckoutSessionPathParams = {
+export type BillingControllerCreateCheckoutSessionPathParams = {
   orgname: string;
 };
 
-export type StripeControllerCreateCheckoutSessionQueryParams = {
-  product: string;
+export type BillingControllerCreateCheckoutSessionQueryParams = {
+  planId: string;
 };
 
-export type StripeControllerCreateCheckoutSessionError =
+export type BillingControllerCreateCheckoutSessionError =
   Fetcher.ErrorWrapper<undefined>;
 
-export type StripeControllerCreateCheckoutSessionVariables = {
-  pathParams: StripeControllerCreateCheckoutSessionPathParams;
-  queryParams: StripeControllerCreateCheckoutSessionQueryParams;
+export type BillingControllerCreateCheckoutSessionVariables = {
+  pathParams: BillingControllerCreateCheckoutSessionPathParams;
+  queryParams: BillingControllerCreateCheckoutSessionQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * This endpoint will create a checkout session for an organization to purchase a subscription. Only available on archesai.com. ADMIN ONLY.
+ * This endpoint will create a checkout session for an organization to purchase a subscription or one-time product. Only available on archesai.com. ADMIN ONLY.
  */
-export const fetchStripeControllerCreateCheckoutSession = (
-  variables: StripeControllerCreateCheckoutSessionVariables,
+export const fetchBillingControllerCreateCheckoutSession = (
+  variables: BillingControllerCreateCheckoutSessionVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
-    StripeControllerCreateCheckoutSessionError,
+    BillingControllerCreateCheckoutSessionError,
     undefined,
     {},
-    StripeControllerCreateCheckoutSessionQueryParams,
-    StripeControllerCreateCheckoutSessionPathParams
+    BillingControllerCreateCheckoutSessionQueryParams,
+    BillingControllerCreateCheckoutSessionPathParams
   >({
-    url: "/organizations/{orgname}/checkout",
+    url: "/organizations/{orgname}/billing/checkout",
     method: "post",
     ...variables,
     signal,
   });
 
 /**
- * This endpoint will create a checkout session for an organization to purchase a subscription. Only available on archesai.com. ADMIN ONLY.
+ * This endpoint will create a checkout session for an organization to purchase a subscription or one-time product. Only available on archesai.com. ADMIN ONLY.
  */
-export const useStripeControllerCreateCheckoutSession = (
+export const useBillingControllerCreateCheckoutSession = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       Schemas.BillingUrlEntity,
-      StripeControllerCreateCheckoutSessionError,
-      StripeControllerCreateCheckoutSessionVariables
+      BillingControllerCreateCheckoutSessionError,
+      BillingControllerCreateCheckoutSessionVariables
     >,
     "mutationFn"
   >,
@@ -613,11 +613,206 @@ export const useStripeControllerCreateCheckoutSession = (
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
     Schemas.BillingUrlEntity,
-    StripeControllerCreateCheckoutSessionError,
-    StripeControllerCreateCheckoutSessionVariables
+    BillingControllerCreateCheckoutSessionError,
+    BillingControllerCreateCheckoutSessionVariables
   >({
-    mutationFn: (variables: StripeControllerCreateCheckoutSessionVariables) =>
-      fetchStripeControllerCreateCheckoutSession({
+    mutationFn: (variables: BillingControllerCreateCheckoutSessionVariables) =>
+      fetchBillingControllerCreateCheckoutSession({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type BillingControllerGetPlansError = Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerGetPlansResponse = Schemas.PlanEntity[];
+
+export type BillingControllerGetPlansVariables =
+  ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get a list of available billing plans
+ */
+export const fetchBillingControllerGetPlans = (
+  variables: BillingControllerGetPlansVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    BillingControllerGetPlansResponse,
+    BillingControllerGetPlansError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/plans", method: "get", ...variables, signal });
+
+/**
+ * Get a list of available billing plans
+ */
+export const useBillingControllerGetPlans = <
+  TData = BillingControllerGetPlansResponse,
+>(
+  variables: BillingControllerGetPlansVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      BillingControllerGetPlansResponse,
+      BillingControllerGetPlansError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    BillingControllerGetPlansResponse,
+    BillingControllerGetPlansError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/plans",
+      operationId: "billingControllerGetPlans",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchBillingControllerGetPlans(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type BillingControllerListPaymentMethodsPathParams = {
+  orgname: string;
+};
+
+export type BillingControllerListPaymentMethodsError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerListPaymentMethodsResponse =
+  Schemas.PaymentMethodEntity[];
+
+export type BillingControllerListPaymentMethodsVariables = {
+  pathParams: BillingControllerListPaymentMethodsPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * List payment methods for an organization
+ */
+export const fetchBillingControllerListPaymentMethods = (
+  variables: BillingControllerListPaymentMethodsVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    BillingControllerListPaymentMethodsResponse,
+    BillingControllerListPaymentMethodsError,
+    undefined,
+    {},
+    {},
+    BillingControllerListPaymentMethodsPathParams
+  >({
+    url: "/organizations/{orgname}/billing/payment-methods",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * List payment methods for an organization
+ */
+export const useBillingControllerListPaymentMethods = <
+  TData = BillingControllerListPaymentMethodsResponse,
+>(
+  variables: BillingControllerListPaymentMethodsVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      BillingControllerListPaymentMethodsResponse,
+      BillingControllerListPaymentMethodsError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    BillingControllerListPaymentMethodsResponse,
+    BillingControllerListPaymentMethodsError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/billing/payment-methods",
+      operationId: "billingControllerListPaymentMethods",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchBillingControllerListPaymentMethods(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type BillingControllerRemovePaymentMethodPathParams = {
+  orgname: string;
+  paymentMethodId: string;
+};
+
+export type BillingControllerRemovePaymentMethodError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerRemovePaymentMethodVariables = {
+  pathParams: BillingControllerRemovePaymentMethodPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Remove a payment method from an organization
+ */
+export const fetchBillingControllerRemovePaymentMethod = (
+  variables: BillingControllerRemovePaymentMethodVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    BillingControllerRemovePaymentMethodError,
+    undefined,
+    {},
+    {},
+    BillingControllerRemovePaymentMethodPathParams
+  >({
+    url: "/organizations/{orgname}/billing/payment-methods/{paymentMethodId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Remove a payment method from an organization
+ */
+export const useBillingControllerRemovePaymentMethod = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BillingControllerRemovePaymentMethodError,
+      BillingControllerRemovePaymentMethodVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    BillingControllerRemovePaymentMethodError,
+    BillingControllerRemovePaymentMethodVariables
+  >({
+    mutationFn: (variables: BillingControllerRemovePaymentMethodVariables) =>
+      fetchBillingControllerRemovePaymentMethod({
         ...fetcherOptions,
         ...variables,
       }),
@@ -3539,6 +3734,16 @@ export type QueryOperation =
       path: "/organizations/{orgname}";
       operationId: "organizationsControllerFindOne";
       variables: OrganizationsControllerFindOneVariables;
+    }
+  | {
+      path: "/plans";
+      operationId: "billingControllerGetPlans";
+      variables: BillingControllerGetPlansVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/billing/payment-methods";
+      operationId: "billingControllerListPaymentMethods";
+      variables: BillingControllerListPaymentMethodsVariables;
     }
   | {
       path: "/organizations/{orgname}/api-tokens";

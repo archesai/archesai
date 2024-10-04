@@ -8,7 +8,7 @@ import React from "react";
 import { z } from "zod";
 
 export default function ProfileSettingsPage() {
-  const { data: user } = useUserControllerFindOne({});
+  const { data: user } = useUserControllerFindOne({}, { enabled: true });
 
   if (!user) {
     return <div>Loading...</div>;

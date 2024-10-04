@@ -21,7 +21,10 @@ import {
 } from "../auth/decorators/current-user.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { BaseController } from "../common/base.controller";
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { MemberQueryDto } from "./dto/member-query.dto";
@@ -44,7 +47,7 @@ export class MembersController
   constructor(private readonly membersService: MembersService) {}
 
   @Post("/organizations/:orgname/members")
-  @CrudOperation(Operation.CREATE, "member", MemberEntity, true)
+  @ApiCrudOperation(Operation.CREATE, "member", MemberEntity, true)
   async create(
     @Param("orgname") orgname: string,
     @Body() createMemberDto: CreateMemberDto
@@ -55,7 +58,7 @@ export class MembersController
   }
 
   @Get("/organizations/:orgname/members")
-  @CrudOperation(Operation.FIND_ALL, "member", MemberEntity, true)
+  @ApiCrudOperation(Operation.FIND_ALL, "member", MemberEntity, true)
   async findAll(
     @Param("orgname") orgname: string,
     @Query() memberQueryDto: MemberQueryDto
@@ -99,7 +102,7 @@ export class MembersController
   }
 
   @Delete("/organizations/:orgname/members/:memberId")
-  @CrudOperation(Operation.DELETE, "member", MemberEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "member", MemberEntity, true)
   async remove(
     @Param("orgname") orgname: string,
     @Param("memberId") memberId: string
@@ -108,7 +111,7 @@ export class MembersController
   }
 
   @Patch("/organizations/:orgname/members/:memberId")
-  @CrudOperation(Operation.UPDATE, "member", MemberEntity, true)
+  @ApiCrudOperation(Operation.UPDATE, "member", MemberEntity, true)
   async update(
     @Param("orgname") orgname: string,
     @Param("memberId") memberId: string,

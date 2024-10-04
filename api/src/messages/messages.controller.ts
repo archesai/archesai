@@ -2,7 +2,10 @@ import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 
-import { CrudOperation, Operation } from "../common/crud-operation.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { PaginatedDto } from "../common/paginated.dto";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { MessageQueryDto } from "./dto/message-query.dto";
@@ -17,7 +20,7 @@ import { MessagesService } from "./messages.service";
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
-  @CrudOperation(Operation.CREATE, "message", MessageEntity, true)
+  @ApiCrudOperation(Operation.CREATE, "message", MessageEntity, true)
   @Post()
   async create(
     @Param("orgname") orgname: string,
@@ -46,7 +49,7 @@ export class MessagesController {
     return message;
   }
 
-  @CrudOperation(Operation.FIND_ALL, "message", MessageEntity, true)
+  @ApiCrudOperation(Operation.FIND_ALL, "message", MessageEntity, true)
   @Get()
   async findAll(
     @Query() messageQueryDto: MessageQueryDto,

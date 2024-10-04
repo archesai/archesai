@@ -13,6 +13,7 @@ import { ApiTokensModule } from "./api-tokens/api-tokens.module";
 import { ARTokensModule } from "./ar-tokens/ar-tokens.module";
 import { AudioModule } from "./audio/audio.module";
 import { AuthModule } from "./auth/auth.module";
+import { BillingModule } from "./billing/billing.module";
 import { ChatbotsModule } from "./chatbots/chatbots.module";
 import { CompletionsModule } from "./completions/completions.module";
 import { ContentModule } from "./content/content.module";
@@ -29,7 +30,6 @@ import { PasswordResetModule } from "./password-reset/password-reset.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
 import { StorageModule } from "./storage/storage.module";
-import { StripeModule } from "./stripe/stripe.module";
 import { ThreadsModule } from "./threads/threads.module";
 import { UsersModule } from "./users/users.module";
 import { VectorDBModule } from "./vector-db/vector-db.module";
@@ -102,9 +102,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
         FEATURE_BILLING: Joi.boolean().required(),
         // EMAIL CONFIG
         FEATURE_EMAIL: Joi.boolean().required(),
-        // FIREBASE CONFIG
-        FIREBASE_API_KEY: Joi.string().optional(),
-        FRONTEND_HOST: Joi.string().required(),
 
         // JWT API TOKEN CONFIG
         JWT_API_TOKEN_EXPIRATION_TIME: Joi.string().required(),
@@ -163,21 +160,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
         STORAGE_TYPE: Joi.string()
           .valid("google-cloud", "local", "minio")
           .required(),
-        STRIPE_API_CREDITS_PRICE_ID: Joi.when("FEATURE_BILLING", {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required(),
-        }),
-        STRIPE_API_PRICE_ID: Joi.when("FEATURE_BILLING", {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required(),
-        }),
-        STRIPE_BASIC_PRICE_ID: Joi.when("FEATURE_BILLING", {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required(),
-        }),
 
         STRIPE_PRIVATE_API_KEY: Joi.when("FEATURE_BILLING", {
           is: true,
@@ -212,7 +194,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
       }),
     }),
     JwtModule,
-    StripeModule,
+    BillingModule,
     HttpModule,
     PrismaModule,
     EmailModule,

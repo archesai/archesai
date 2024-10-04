@@ -4,15 +4,15 @@ import { ConfigService } from "@nestjs/config";
 import { Organization, PlanType } from "@prisma/client";
 
 import { CurrentUserDto } from "../auth/decorators/current-user.decorator";
+import { BillingService } from "../billing/billing.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { StripeService } from "../stripe/stripe.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 
 @Injectable()
 export class OrganizationsService {
   constructor(
-    private stripeService: StripeService,
+    private billingService: BillingService,
     private prisma: PrismaService,
     private configService: ConfigService
   ) {}
@@ -45,7 +45,7 @@ export class OrganizationsService {
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
     let stripeCustomerId = createOrganizationDto.orgname;
     if (freeUser) {
-      const stripeCustomer = await this.stripeService.createCustomer(
+      const stripeCustomer = await this.billingService.createCustomer(
         createOrganizationDto.orgname,
         createOrganizationDto.billingEmail
       );

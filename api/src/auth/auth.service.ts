@@ -77,7 +77,6 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    console.log("FEATURE_EMAIL", this.configService.get("FEATURE_EMAIL"));
     const user = await this.usersService.create({
       email: registerDto.email,
       emailVerified: this.configService.get("FEATURE_EMAIL") === false,
