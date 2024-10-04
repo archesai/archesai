@@ -1,0 +1,30 @@
+PROFILE ?= local
+
+build:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
+
+run:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d
+
+seed:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-seed
+
+seed-push:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm arches-api-seed /bin/sh -c 'npm run db:seed'
+
+models:
+	docker exec -it arches-ollama bash -c "echo llama3.1 mxbai-embed-large | xargs -n1 ollama pull"
+
+lint:
+	cd api && npm run lint && cd ../ui-new && npm run lint
+
+test:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
+
+stop:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) down
+		
+reset:
+	-make stop
+	make build && make run
+	

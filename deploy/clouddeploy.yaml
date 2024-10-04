@@ -1,0 +1,30 @@
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: DeliveryPipeline
+metadata:
+  name: arches-deployment
+description: Arches AI Deployment Pipeline
+serialPipeline:
+  stages:
+    - targetId: staging
+      profiles:
+        - staging
+    - targetId: production
+      profiles:
+        - production
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: staging
+description: Staging Environment
+gke:
+  cluster: projects/archesai/locations/us-east1-c/clusters/archesai-cluster
+---
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: production
+description: Production Environment
+gke:
+  cluster: projects/archesai/locations/us-east1-c/clusters/archesai-cluster

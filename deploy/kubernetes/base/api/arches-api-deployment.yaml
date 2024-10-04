@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-api
+  name: arches-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-api
+  template:
+    metadata:
+      labels:
+        component: arches-api
+    spec:
+      initContainers:
+        - name: arches-api-wait-for-migration
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - "job"
+            - "arches-upgrade"
+      containers:
+        - name: arches-api
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: DATABASE_URL
+                  name: arches-api-config-secret
+            - name: FIREBASE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: FIREBASE_API_KEY
+                  name: arches-api-config-secret
+            - name: FRONTEND_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: FRONTEND_HOST
+                  name: arches-api-config-secret
+            - name: JWT_API_TOKEN_EXPIRATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_API_TOKEN_EXPIRATION_TIME
+                  name: arches-api-config-secret
+            - name: JWT_API_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_API_TOKEN_SECRET
+                  name: arches-api-config-secret
+            - name: LOADER_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  key: LOADER_ENDPOINT
+                  name: arches-api-config-secret
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  key: NODE_ENV
+                  name: arches-api-config-secret
+            - name: OPEN_AI_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: OPEN_AI_KEY
+                  name: arches-api-config-secret
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  key: PORT
+                  name: arches-api-config-secret
+            - name: REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_AUTH
+                  name: arches-api-config-secret
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_HOST
+                  name: arches-api-config-secret
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_PORT
+                  name: arches-api-config-secret
+            - name: SERVER_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: SERVER_HOST
+                  name: arches-api-config-secret
+            - name: STORAGE_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: STORAGE_TYPE
+                  name: arches-api-config-secret
+            - name: VECTOR_DB_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: VECTOR_DB_TYPE
+                  name: arches-api-config-secret
+            - name: FEATURE_BILLING
+              valueFrom:
+                secretKeyRef:
+                  key: FEATURE_BILLING
+                  name: arches-api-config-secret
+            - name: FEATURE_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  key: FEATURE_EMAIL
+                  name: arches-api-config-secret
+          image: us-east4-docker.pkg.dev/archesai/images/arches-api
+          ports:
+            - containerPort: 3001
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+          readinessProbe: # define readiness probe
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe: # define liveness probe
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      hostname: arches-api
+      restartPolicy: Always
+      serviceAccountName: arches-api-service-account

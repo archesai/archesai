@@ -1,0 +1,64 @@
+services:
+  # THESE ARE LOCAL DEVELOPMENT VERSIONS OF OUR SERVICES
+  arches-api:
+    image: arches-api:local
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: development
+    volumes:
+      - ./api:/usr/src/app
+    command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
+    working_dir: /usr/src/app
+
+  arches-nlp:
+    image: arches-nlp:local
+    build:
+      dockerfile: Dockerfile
+      context: ./nlp
+    volumes:
+      - ./nlp/app:/code/app
+    command: |
+      uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload
+    mem_limit: 2g
+
+  arches-ui:
+    image: arches-ui:local
+    build:
+      dockerfile: Dockerfile
+      context: ./ui
+      target: development
+    volumes:
+      - ./ui:/app
+
+  arches-api-test-e2e:
+    container_name: arches-api-test-e2e
+    image: arches-api:local
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: development
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - ./api/.env.${PROFILE}
+    command: /bin/sh -c 'npm run test:e2e'
+    working_dir: /usr/src/app
+    profiles:
+      - test
+
+  arches-api-seed:
+    container_name: arches-api-seed
+    image: arches-api:local
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: development
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - ./api/.env.${PROFILE}
+    command: /bin/sh -c 'npm run seed'
+    working_dir: /usr/src/app
+    profiles:
+      - test

@@ -1,0 +1,19 @@
+apiVersion: skaffold/v4beta5
+kind: Config
+profiles:
+  - name: staging
+    deploy:
+      statusCheckDeadlineSeconds: 600
+      tolerateFailuresUntilDeadline: true
+    manifests:
+      kustomize:
+        paths:
+          - "kubernetes/overlays/saas/stage"
+  - name: production
+    deploy:
+      statusCheckDeadlineSeconds: 600
+      tolerateFailuresUntilDeadline: true
+    manifests:
+      kustomize:
+        paths:
+          - "kubernetes/overlays/saas/production"

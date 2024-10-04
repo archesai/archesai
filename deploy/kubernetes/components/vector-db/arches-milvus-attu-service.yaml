@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: arches-milvus-attu
+  name: arches-milvus-attu
+spec:
+  ports:
+    - name: "3003"
+      port: 3003
+      targetPort: 3000
+  selector:
+    component: arches-milvus-attu

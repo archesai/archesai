@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-nlp
+  name: arches-nlp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-nlp
+  template:
+    metadata:
+      labels:
+        component: arches-nlp
+    spec:
+      containers:
+        - image: us-east4-docker.pkg.dev/archesai/images/arches-nlp
+          name: arches-nlp
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+          readinessProbe: # define readiness probe
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe: # define liveness probe
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      restartPolicy: Always

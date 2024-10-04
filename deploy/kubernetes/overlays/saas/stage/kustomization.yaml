@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: archesai-stage
+
+secretGenerator:
+  - name: arches-api-config-secret
+    envs:
+      - ./.env.stage
+    behavior: replace
+
+resources:
+  - "../base"
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/domains/0
+        value: stage.api.archesai.com
+    target:
+      kind: ManagedCertificate
+      name: arches-api-certificate
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: stage.api.archesai.com
+      - op: replace
+        path: /metadata/annotations/kubernetes.io~1ingress.global-static-ip-name
+        value: stage-arches-api-static-ip
+    target:
+      kind: Ingress
+      name: arches-api-ingress

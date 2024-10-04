@@ -1,0 +1,310 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["linux-musl-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+enum RoleType {
+  USER
+  ADMIN
+}
+
+enum AuthProviderType {
+  LOCAL
+  FIREBASE
+  TWITTER
+}
+
+enum ContentType {
+  DOCUMENT
+  ANIMATION
+  IMAGE
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  COMPLETE
+  ERROR
+}
+
+enum PlanType {
+  FREE
+  BASIC
+  STANDARD
+  PREMIUM
+  API
+}
+
+model Content {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?
+  text        String?
+
+  url          String?
+  credits      Int         @default(0)
+  mimeType     String
+  type         ContentType
+  previewImage String?
+
+  organization Organization @relation(fields: [orgname], references: [orgname])
+  orgname      String
+
+  job   Job?    @relation(fields: [jobId], references: [id])
+  jobId String? @unique
+
+  vectorRecords VectorRecord[]
+  citations     Citation[]
+
+  buildArgs   Json
+  annotations Json
+}
+
+model Job {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  startedAt   DateTime?
+  completedAt DateTime?
+  status      JobStatus @default(QUEUED)
+  progress    Float?    @default(0)
+  jobType     String
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  content Content?
+}
+
+model Chatbot {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String  @default("Default Search Chatbot")
+  llmBase     String
+  description String? @default("You are an AI-powered search chatbot. You can answer questions about documents.")
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  threads   Thread[]
+  apiTokens ApiToken[]
+}
+
+model Thread {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String @default("New Thread")
+  credits Int    @default(0)
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+  chatbot      Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  chatbotId    String
+
+  messages Message[]
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  question         String
+  answer           String
+  contextLength    Int
+  answerLength     Int
+  topK             Int
+  similarityCutoff Float  @default(0.7)
+  temperature      Float  @default(0)
+  credits          Int    @default(0)
+
+  thread   Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId String
+
+  citations Citation[]
+}
+
+model Citation {
+  id         String @id @default(uuid())
+  similarity Float
+
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String
+
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId String
+}
+
+model AuthProvider {
+  id         String           @id @default(uuid())
+  provider   AuthProviderType
+  providerId String
+  user       User             @relation(fields: [userId], references: [id])
+  userId     String
+  createdAt  DateTime         @default(now())
+
+  @@unique([provider, providerId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  username      String  @unique
+  email         String  @unique
+  firstName     String  @default("")
+  lastName      String  @default("")
+  emailVerified Boolean @default(false)
+  deactivated   Boolean @default(false)
+  photoUrl      String?
+  defaultOrg    String?
+  password      String?
+
+  refreshToken String?
+
+  memberships   Member[]
+  apiTokens     ApiToken[]
+  authProviders AuthProvider[]
+  arTokens      ARToken[]
+}
+
+model VectorRecord {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  embedding Unsupported("vector")
+  content   Content               @relation(fields: [contentId], references: [id])
+  contentId String
+  text      String
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stripeCustomerId String   @unique
+  orgname          String   @unique
+  billingEmail     String
+  credits          Int      @default(0)
+  plan             PlanType @default(FREE)
+
+  members       Member[]
+  apiTokens     ApiToken[]
+  threads       Thread[]
+  chatbots      Chatbot[]
+  jobs          Job[]
+  content       Content[]
+  vectorRecords VectorRecord[]
+}
+
+model Member {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inviteAccepted Boolean  @default(false)
+  inviteEmail    String
+  role           RoleType @default(USER)
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+  user         User?        @relation(fields: [username], references: [username])
+  username     String?
+
+  @@unique([inviteEmail, orgname])
+  @@unique([username, orgname])
+}
+
+model ApiToken {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String   @default("")
+  role    RoleType @default(USER)
+  key     String
+  domains String   @default("*")
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+  user         User?        @relation(fields: [username], references: [username])
+  username     String?
+
+  chatbots Chatbot[]
+}
+
+// IMAGE
+// width  Int
+// height Int
+// prompt String
+
+// ANIMATION
+// width  Int
+// height Int
+// useAudio   Boolean
+// audioUrl   String
+// audioStart Float
+// animationPrompts String
+// maxFrames Int
+// fps       Int
+
+// DOCUMENT
+// chunkSize    Int           @default(200)
+// delimiter    String?
+// textSegments TextSegment[]
+// chatbots       Chatbot[]
+
+// model TextSegment {
+//   id String @id @default(uuid())
+
+//   page  Int
+//   index Int
+//   text  String
+
+//   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+//   orgname      String
+
+//   vectorDbId String
+//   citations  Citation[]
+
+//   @@unique([vectorDbId, documentId])
+// }
+
+model ARToken {
+  id        String      @id @default(uuid())
+  type      ARTokenType
+  token     String // Hashed token
+  expiresAt DateTime
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  newEmail  String? // For email change tokens
+}
+
+enum ARTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  EMAIL_CHANGE
+}

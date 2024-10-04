@@ -1,0 +1,114 @@
+services:
+  ########### THESE SERVICES BELOW ARE THE ONES THAT WE NEED TO BUILD ###########
+  arches-api:
+    container_name: arches-api
+    image: us-east4-docker.pkg.dev/archesai/images/arches-api
+    hostname: api-tcp
+    env_file:
+      - ./api/.env.${PROFILE}
+    environment:
+      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
+    depends_on:
+      - arches-redis
+      - arches-postgres
+    ports:
+      - 3001:3001
+
+  arches-ui:
+    container_name: arches-ui
+    hostname: ui-tcp
+    image: us-east4-docker.pkg.dev/archesai/images/arches-ui
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./ui/.env.${PROFILE}
+
+  arches-nlp:
+    container_name: arches-nlp
+    image: us-east4-docker.pkg.dev/archesai/images/arches-nlp
+    ports:
+      - "3002:80"
+
+  ########### THESE SERVICES BELOW ARE THE ONES THAT WE JUST NEED TO PULL ###########
+  arches-postgres:
+    hostname: arches-postgres
+    container_name: arches-postgres
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=nestjs
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+
+  arches-redis:
+    hostname: arches-redis
+    container_name: arches-redis
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass "PASSWORD"
+
+  ########### THESE SERVICES BELOW ARE THE ONES THAT WE NEED FOR A LOCAL INSTALL ###########
+  arches-ollama:
+    container_name: arches-ollama
+    image: ollama/ollama:latest
+    hostname: arches-ollama
+    volumes:
+      - ollama-data:/root/.ollama/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    profiles:
+      - local
+
+  arches-minio:
+    hostname: arches-minio
+    container_name: arches-minio
+    image: minio/minio:latest
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - minio-data:/minio_data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: minio server /minio_data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    profiles:
+      - local
+
+  ########## THESE SERVICES BELOW ARE THE ONES THAT WE JUST NEED FOR STAGING ###########
+  arches-firebase:
+    container_name: arches-firebase
+    hostname: arches-firebase
+    image: andreysenov/firebase-tools:11.25.2
+    ports:
+      - "9099:9099"
+      - "4000:4000"
+      - "9098:9098"
+    volumes:
+      - ./api/firebase.json:/home/node/firebase.json
+      - emulatorCache:/home/node/.cache/firebase/emulators
+    command: firebase emulators:start --project filechat-io
+    depends_on:
+      - arches-postgres
+      - arches-redis
+    profiles:
+      - minimal
+
+volumes:
+  ollama-data:
+  minio-data:
+  emulatorCache:

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-redis
+  name: arches-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-redis
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        component: arches-redis
+    spec:
+      containers:
+        - args:
+            - redis-server
+            - --requirepass
+            - PASSWORD
+          image: redis:alpine
+          name: arches-redis
+          ports:
+            - containerPort: 6379
+          resources: {}
+      restartPolicy: Always

@@ -1,0 +1,209 @@
+"use client";
+
+import { DataTable } from "@/components/datatable/data-table";
+import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import {
+  useContentControllerFindOne,
+  useVectorRecordControllerFindAll,
+} from "@/generated/archesApiComponents";
+import {
+  ContentEntity,
+  VectorRecordEntity,
+} from "@/generated/archesApiSchemas";
+import { useAuth } from "@/hooks/useAuth";
+import { useSelectItems } from "@/hooks/useSelectItems";
+import { format } from "date-fns";
+import { File } from "lucide-react";
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+
+// Dynamically import react-player to prevent SSR issues
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+
+export default function ContentDetailsPage() {
+  const { contentId } = useParams();
+  const { defaultOrgname } = useAuth();
+  const { data: vectorRecords, isLoading: vectorRecordsIsLoading } =
+    useVectorRecordControllerFindAll(
+      {
+        pathParams: {
+          contentId: contentId as string,
+          orgname: defaultOrgname,
+        },
+      },
+      {
+        enabled: !!defaultOrgname,
+      }
+    );
+
+  console.log(vectorRecords);
+
+  const { data: content, isLoading } = useContentControllerFindOne(
+    {
+      pathParams: {
+        contentId: contentId as string,
+        orgname: defaultOrgname,
+      },
+    },
+    {
+      enabled: !!contentId,
+    }
+  );
+
+  const { selectedItems } = useSelectItems({
+    items: vectorRecords?.results || [],
+  });
+
+  if (isLoading || !content || !vectorRecords) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto p-6 space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>{content.name}</CardTitle>
+          <CardDescription>{content.description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2">
+            <Badge variant="outline">{content.type}</Badge>
+            <Badge variant="outline">{content.mimeType}</Badge>
+            <Badge variant="outline">
+              {format(new Date(content.createdAt), "PPP")}
+            </Badge>
+          </div>
+          <Separator className="my-4" />
+
+          {/* Display Content Based on MIME Type */}
+          <div className="w-full aspect-w-16 aspect-h-9">
+            {renderContent(content)}
+          </div>
+
+          {/* Additional Information */}
+          <div className="mt-6 space-y-2">
+            <h3 className="text-lg font-semibold">Details</h3>
+            <p>
+              <strong>ID:</strong> {content.id}
+            </p>
+            <p>
+              <strong>Organization:</strong> {content.orgname}
+            </p>
+            <p>
+              <strong>Credits Used:</strong> {content.credits}
+            </p>
+          </div>
+
+          {/* Annotations and Build Args */}
+          <div className="mt-6 space-y-2">
+            <h3 className="text-lg font-semibold">Annotations</h3>
+            <pre className="bg-gray-100 p-4 rounded-md">
+              {JSON.stringify(content.annotations, null, 2)}
+            </pre>
+            <h3 className="text-lg font-semibold">Build Arguments</h3>
+            <pre className="bg-gray-100 p-4 rounded-md">
+              {JSON.stringify(content.buildArgs, null, 2)}
+            </pre>
+          </div>
+
+          {/* Text Content */}
+          {content.text && (
+            <div className="mt-6 space-y-2">
+              <h3 className="text-lg font-semibold">Text</h3>
+              <p>{content.text}</p>
+            </div>
+          )}
+
+          {/* Download Button */}
+          <div className="mt-6">
+            <Button asChild>
+              <a href={content.url} rel="noopener noreferrer" target="_blank">
+                Download Content
+              </a>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+      <DataTable<{ name: string } & VectorRecordEntity, undefined>
+        columns={[
+          {
+            accessorKey: "text",
+            cell: ({ row }) => {
+              return <div className="flex space-x-2">{row.original.text}</div>;
+            },
+            header: ({ column }) => (
+              <DataTableColumnHeader column={column} title="Text" />
+            ),
+          },
+        ]}
+        content={() => (
+          <div className="flex w-full justify-center items-center h-full"></div>
+        )}
+        data={vectorRecords as any}
+        dataIcon={<File size={24} />}
+        defaultView="table"
+        deleteItem={async () => {}}
+        getDeleteVariablesFromItem={() => []}
+        handleSelect={() => {}}
+        itemType="vector"
+        loading={vectorRecordsIsLoading}
+        mutationVariables={selectedItems.map(() => undefined)}
+      />
+    </div>
+  );
+}
+
+function renderContent(content: ContentEntity) {
+  const { mimeType, url } = content;
+
+  if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) {
+    return (
+      <ReactPlayer
+        config={{
+          file: {
+            attributes: {
+              controlsList: "nodownload",
+            },
+          },
+        }}
+        controls
+        height="100%"
+        url={url}
+        width="100%"
+      />
+    );
+  } else if (mimeType.startsWith("image/")) {
+    return (
+      <img
+        alt={content.description}
+        className="w-full h-full object-contain"
+        src={url}
+      />
+    );
+  } else if (mimeType === "application/pdf") {
+    return (
+      <iframe
+        className="w-full h-full"
+        frameBorder="0"
+        src={url}
+        title="PDF Document"
+      ></iframe>
+    );
+  } else {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p>Cannot preview this content type. Please download to view.</p>
+      </div>
+    );
+  }
+}

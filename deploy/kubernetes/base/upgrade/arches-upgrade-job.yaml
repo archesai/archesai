@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: arches-upgrade
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: database-migration
+          image: us-east4-docker.pkg.dev/archesai/images/arches-api
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              npx prisma migrate deploy --schema /usr/src/app/migrations/schema.prisma
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: DATABASE_URL
+                  name: arches-api-config-secret
