@@ -1,10 +1,17 @@
 "use client";
 import { DataTablePagination } from "@/components/datatable/data-table-pagination";
-import { DataTableRowActions } from "@/components/datatable/data-table-row-actions";
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -15,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -27,6 +35,9 @@ import {
 import { PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Button } from "../ui/button";
+import { DropdownMenuShortcut } from "../ui/dropdown-menu";
+
 export interface BaseItem {
   id: string;
   name: string;
@@ -35,6 +46,8 @@ export interface BaseItem {
 interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
   columns: ColumnDef<TItem, TMutationVariables>[];
   content: (item: TItem) => JSX.Element;
+  createForm?: React.ReactNode;
+
   data: {
     metadata: {
       limit: number;
@@ -43,12 +56,12 @@ interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
     };
     results: TItem[];
   };
-
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
-  deleteItem: (vars: TMutationVariables) => Promise<void>;
 
+  deleteItem: (vars: TMutationVariables) => Promise<void>;
   getDeleteVariablesFromItem: (item: TItem) => TMutationVariables[];
+  getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
 
   hidePagination?: boolean;
@@ -64,11 +77,13 @@ interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
 export function DataTable<TItem extends BaseItem, TMutationVariables>({
   columns,
   content,
+  createForm,
   data,
   dataIcon,
   defaultView,
   deleteItem,
   getDeleteVariablesFromItem,
+  getEditFormFromItem,
   handleSelect,
   hoverContent,
   itemType,
@@ -76,6 +91,10 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [formOpen, setFormOpen] = useState(false);
+  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
+    createForm
+  );
 
   const { setView, view } = useToggleView();
 
@@ -119,7 +138,48 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       },
       ...columns,
       {
-        cell: ({ row }) => <DataTableRowActions row={row} />,
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                variant="ghost"
+              >
+                <DotsHorizontalIcon className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuItem
+                onClick={() => {
+                  setFinalForm(getEditFormFromItem?.(row.original));
+                  setFormOpen(true);
+                }}
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <DeleteItems
+                  items={[
+                    {
+                      id: row.original.id,
+                      name: row.original.name,
+                    },
+                  ]}
+                  itemType={itemType}
+                  mutationFunction={async (vars) => {
+                    await deleteItem(vars);
+                    setSelectedItems([]);
+                  }}
+                  mutationVariables={getDeleteVariablesFromItem(row.original)}
+                  variant="md"
+                />
+                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
         id: "actions",
       },
     ],
@@ -143,6 +203,19 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
 
   const grid_view = (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
+      <Card
+        className={`shadow-sm relative w-full overflow-visible hover:bg-primary-foreground border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
+      >
+        <div
+          className="h-64 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
+          onClick={async () => {
+            setFormOpen(true);
+          }}
+        >
+          <PlusSquare size={30} />
+          <span className="mt-2 text-lg">New {itemType}</span>
+        </div>
+      </Card>
       {data?.results.map((item, i) => {
         const isItemSelected = selectedItems.includes(item.id);
         return (
@@ -223,6 +296,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
           ))}
         </TableHeader>
         <TableBody>
+          <TableRow className="">
+            <TableCell className="text-center" colSpan={columns.length + 2}>
+              <Button onClick={() => setFormOpen(true)} variant="secondary">
+                New {itemType}
+              </Button>
+            </TableCell>
+          </TableRow>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -261,6 +341,19 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       <div>
         <DataTablePagination data={data} />
       </div>
+      <Drawer
+        onOpenChange={(o) => {
+          setFormOpen(o);
+        }}
+        open={formOpen}
+      >
+        <DrawerContent
+          className="p-3 bg-transparent border-none shadow-none"
+          title="Create/Edit"
+        >
+          {finalForm}
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

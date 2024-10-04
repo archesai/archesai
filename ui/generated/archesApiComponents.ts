@@ -500,6 +500,66 @@ export const useOrganizationsControllerUpdate = (
   });
 };
 
+export type BillingControllerCancelSubscriptionPlanPathParams = {
+  orgname: string;
+};
+
+export type BillingControllerCancelSubscriptionPlanError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerCancelSubscriptionPlanVariables = {
+  pathParams: BillingControllerCancelSubscriptionPlanPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Cancel the subscription plan for an organization
+ */
+export const fetchBillingControllerCancelSubscriptionPlan = (
+  variables: BillingControllerCancelSubscriptionPlanVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    BillingControllerCancelSubscriptionPlanError,
+    undefined,
+    {},
+    {},
+    BillingControllerCancelSubscriptionPlanPathParams
+  >({
+    url: "/organizations/{orgname}/billing/subscription/cancel",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Cancel the subscription plan for an organization
+ */
+export const useBillingControllerCancelSubscriptionPlan = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BillingControllerCancelSubscriptionPlanError,
+      BillingControllerCancelSubscriptionPlanVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    BillingControllerCancelSubscriptionPlanError,
+    BillingControllerCancelSubscriptionPlanVariables
+  >({
+    mutationFn: (variables: BillingControllerCancelSubscriptionPlanVariables) =>
+      fetchBillingControllerCancelSubscriptionPlan({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type BillingControllerCreateBillingPortalPathParams = {
   orgname: string;
 };
@@ -813,6 +873,71 @@ export const useBillingControllerRemovePaymentMethod = (
   >({
     mutationFn: (variables: BillingControllerRemovePaymentMethodVariables) =>
       fetchBillingControllerRemovePaymentMethod({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type BillingControllerSwitchSubscriptionPlanPathParams = {
+  orgname: string;
+};
+
+export type BillingControllerSwitchSubscriptionPlanQueryParams = {
+  planId: string;
+};
+
+export type BillingControllerSwitchSubscriptionPlanError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerSwitchSubscriptionPlanVariables = {
+  pathParams: BillingControllerSwitchSubscriptionPlanPathParams;
+  queryParams: BillingControllerSwitchSubscriptionPlanQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Switch subscription plan for an organization
+ */
+export const fetchBillingControllerSwitchSubscriptionPlan = (
+  variables: BillingControllerSwitchSubscriptionPlanVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    BillingControllerSwitchSubscriptionPlanError,
+    undefined,
+    {},
+    BillingControllerSwitchSubscriptionPlanQueryParams,
+    BillingControllerSwitchSubscriptionPlanPathParams
+  >({
+    url: "/organizations/{orgname}/billing/subscription",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Switch subscription plan for an organization
+ */
+export const useBillingControllerSwitchSubscriptionPlan = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BillingControllerSwitchSubscriptionPlanError,
+      BillingControllerSwitchSubscriptionPlanVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    BillingControllerSwitchSubscriptionPlanError,
+    BillingControllerSwitchSubscriptionPlanVariables
+  >({
+    mutationFn: (variables: BillingControllerSwitchSubscriptionPlanVariables) =>
+      fetchBillingControllerSwitchSubscriptionPlan({
         ...fetcherOptions,
         ...variables,
       }),

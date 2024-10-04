@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import ChatbotForm from "@/components/forms/chatbot-form";
 import { Badge } from "@/components/ui/badge";
 import {
   ChatbotsControllerRemoveVariables,
@@ -112,20 +113,22 @@ export default function ChatbotsPageContent() {
           </svg>
         </div>
       )}
+      createForm={<ChatbotForm />}
       data={chatbots as any}
       dataIcon={<User size={24} />}
       defaultView="grid"
       deleteItem={deleteChatbot}
-      getDeleteVariablesFromItem={(agent) => [
+      getDeleteVariablesFromItem={(chatbot) => [
         {
           pathParams: {
-            chatbotId: agent.id,
+            chatbotId: chatbot.id,
             orgname: defaultOrgname,
           },
         },
       ]}
-      handleSelect={(agent) => router.push(`/chatbots/${agent.id}/chat`)}
-      itemType="agent"
+      getEditFormFromItem={(chatbot) => <ChatbotForm chatbotId={chatbot.id} />}
+      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
+      itemType="chatbot"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({
         pathParams: {

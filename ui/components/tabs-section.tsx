@@ -99,7 +99,7 @@ const convertPatternToRegex = (pattern: string): RegExp => {
   return new RegExp(`^${escapedPattern}$`);
 };
 
-function getOriginalPath(pathname: string) {
+export function getOriginalPath(pathname: string) {
   // Define patterns for typical dynamic segments
   const patterns = [
     {

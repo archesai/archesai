@@ -1,43 +1,45 @@
 "use client";
 
 import { CustomCardForm, FormFieldConfig } from "@/components/custom-card-form";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useUserControllerFindOne } from "@/generated/archesApiComponents";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  useUserControllerFindOne,
+  useUserControllerUpdate,
+} from "@/generated/archesApiComponents";
+import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { z } from "zod";
 
 export default function ProfileSettingsPage() {
-  const { data: user } = useUserControllerFindOne({}, { enabled: true });
+  const { defaultOrgname } = useAuth();
+  const { data: user } = useUserControllerFindOne(
+    {},
+    { enabled: !!defaultOrgname }
+  );
+  const { mutateAsync: updateUser } = useUserControllerUpdate();
+  const { toast } = useToast();
 
   if (!user) {
     return <div>Loading...</div>;
   }
 
   const formFields: FormFieldConfig[] = [
-    // {
-    //   component: Input,
-    //   defaultValue: user.firstName,
-    //   description: "Your first name",
-    //   label: "First Name",
-    //   name: "firstName",
-    //   validationRule: z.string().min(1, "First name is required"),
-    // },
-    // {
-    //   component: Input,
-    //   defaultValue: user.lastName,
-    //   description: "Your last name",
-    //   label: "Last Name",
-    //   name: "lastName",
-    //   validationRule: z.string().min(1, "Last name is required"),
-    // },
     {
       component: Input,
-      defaultValue: user.displayName,
-      description: "Your display name",
-      label: "Display Name",
-      name: "displayName",
-      validationRule: z.string().min(1, "Display name is required"),
+      defaultValue: user.firstName,
+      description: "Your first name",
+      label: "First Name",
+      name: "firstName",
+      validationRule: z.string().min(1, "First name is required"),
+    },
+    {
+      component: Input,
+      defaultValue: user.lastName,
+      description: "Your last name",
+      label: "Last Name",
+      name: "lastName",
+      validationRule: z.string().min(1, "Last name is required"),
     },
     {
       component: Input,
@@ -59,32 +61,36 @@ export default function ProfileSettingsPage() {
         disabled: true,
       },
     },
-    {
-      component: Checkbox,
-      description: "Email Verified",
-      label: "Email Verified",
-      name: "emailVerified",
-      props: {
-        checked: user.emailVerified,
-        disabled: true,
-      },
-    },
-    {
-      component: Input,
-      defaultValue: user.defaultOrg,
-      description: "Your default organization",
-      label: "Default Organization",
-      name: "defaultOrg",
-      props: {
-        disabled: true,
-      },
-    },
   ];
 
   return (
     <CustomCardForm
       description="View and update your user details"
       fields={formFields}
+      onSubmit={async (data) => {
+        await updateUser(
+          {
+            body: {
+              defaultOrg: data.defaultOrg,
+              firstName: data.firstName,
+              lastName: data.lastName,
+            },
+          },
+          {
+            onError: (error) => {
+              toast({
+                description: error?.stack?.msg,
+                title: "Error updating profile",
+              });
+            },
+            onSuccess: () => {
+              toast({
+                title: "Profile updated",
+              });
+            },
+          }
+        );
+      }}
       title="Profile"
     />
   );

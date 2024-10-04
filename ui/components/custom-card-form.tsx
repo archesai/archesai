@@ -12,11 +12,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { Button } from "./ui/button";
 
 export interface FormFieldConfig {
   component: React.ComponentType<any>;
@@ -35,12 +39,14 @@ export interface FormFieldConfig {
 interface CustomCardFormProps {
   description?: string;
   fields: FormFieldConfig[];
+  onSubmit?: (data: Record<string, any>) => void;
   title?: string;
 }
 
 export const CustomCardForm: React.FC<CustomCardFormProps> = ({
   description,
   fields,
+  onSubmit,
   title,
 }) => {
   const defaultValues = fields.reduce<Record<string, any>>((acc, field) => {
@@ -67,9 +73,9 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<Record<string, any>> = (data) => {
-    console.log(data);
-  };
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [fields]);
 
   return (
     <Card>
@@ -85,7 +91,14 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
           <form
             className="flex flex-col gap-4"
             noValidate
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(
+              onSubmit
+                ? (data) => {
+                    onSubmit(data);
+                    form.reset();
+                  }
+                : () => {}
+            )}
           >
             {fields.map((fieldConfig) => (
               <FormField
@@ -112,11 +125,48 @@ export const CustomCardForm: React.FC<CustomCardFormProps> = ({
                       <FormDescription className="text-sm">
                         {fieldConfig.description}
                       </FormDescription>
+                      <FormMessage>
+                        {form.formState.errors[
+                          fieldConfig.name
+                        ]?.message?.toString()}
+                      </FormMessage>
                     </FormItem>
                   )
                 }
               />
             ))}
+
+            {onSubmit && (
+              <div className="flex gap-4 w-full">
+                <Button
+                  className="w-full"
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
+                  size="sm"
+                  type="submit"
+                  variant={"secondary"}
+                >
+                  {form.formState.isSubmitting && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Submit
+                </Button>
+                <Button
+                  className="w-full"
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
+                  onClick={() => {
+                    form.reset();
+                  }}
+                  size="sm"
+                  variant={"secondary"}
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
           </form>
         </Form>
       </CardContent>

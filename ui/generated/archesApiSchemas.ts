@@ -254,7 +254,7 @@ export type OrganizationEntity = {
    *
    * @example FREE
    */
-  plan: "FREE" | "BASIC" | "STANDARD" | "PREMIUM" | "API";
+  plan: "FREE" | "BASIC" | "STANDARD" | "PREMIUM" | "UNLIMITED";
 };
 
 export type UpdateOrganizationDto = {
@@ -478,7 +478,7 @@ export type CreateApiTokenDto = {
   chatbotIds?: string[];
 };
 
-export type AgentsFieldItem = {
+export type ChatbotsFieldItem = {
   /**
    * The item's unique identifier
    *
@@ -510,9 +510,9 @@ export type ApiTokenEntity = {
   /**
    * The chatbots this API token has access to
    *
-   * @example {"id":"uuid-uuid-uuid-uuid","name":"Arches API Documentation Agent"}
+   * @example {"id":"uuid-uuid-uuid-uuid","name":"Arches API Documentation Chatbot"}
    */
-  chatbots: AgentsFieldItem[];
+  chatbots: ChatbotsFieldItem[];
   /**
    * The domains that can access this API token
    *

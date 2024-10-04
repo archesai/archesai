@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import ApiTokenForm from "@/components/forms/api-token-form";
 import { Badge } from "@/components/ui/badge";
 import {
   ApiTokensControllerRemoveVariables,
@@ -24,22 +25,27 @@ export default function ApiTokensPageContent() {
     data: chatbots,
     isLoading,
     isPlaceholderData,
-  } = useApiTokensControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
+  } = useApiTokensControllerFindAll(
+    {
+      pathParams: {
+        orgname: defaultOrgname,
+      },
+      queryParams: {
+        endDate: endOfDay(range.to || new Date()).toISOString(),
+        limit,
+        name: query,
+        offset: page * limit,
+        sortBy: "createdAt",
+        sortDirection: "asc" as const,
+        startDate: range.from?.toISOString(),
+      },
     },
-    queryParams: {
-      endDate: endOfDay(range.to || new Date()).toISOString(),
-      limit,
-      name: query,
-      offset: page * limit,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-    },
-  });
+    {
+      enabled: !!defaultOrgname,
+    }
+  );
   const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: removeAgent } = useApiTokensControllerRemove();
+  const { mutateAsync: removeChatbot } = useApiTokensControllerRemove();
 
   const { selectedItems } = useSelectItems({ items: chatbots?.results || [] });
 
@@ -93,10 +99,11 @@ export default function ApiTokensPageContent() {
           <User className="opacity-30" size={100} />
         </div>
       )}
+      createForm={<ApiTokenForm />}
       data={chatbots as any}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
-      deleteItem={removeAgent}
+      deleteItem={removeChatbot}
       getDeleteVariablesFromItem={(apiToken) => [
         {
           pathParams: {
@@ -105,7 +112,7 @@ export default function ApiTokensPageContent() {
           },
         },
       ]}
-      handleSelect={(agent) => router.push(`/chatbots/${agent.id}/chat`)}
+      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
       itemType="API token"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({

@@ -6,19 +6,56 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  useUserControllerFindOne,
+  useUserControllerUpdate,
+} from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
+
+import { useToast } from "./ui/use-toast";
 
 interface UserButtonProps {
   size: "lg" | "sm";
 }
 
 export const UserButton: FC<UserButtonProps> = ({ size }) => {
-  const { defaultOrgname, logout, user } = useAuth();
+  const { defaultOrgname, logout } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+  const { data: user } = useUserControllerFindOne(
+    {},
+    {
+      enabled: !!defaultOrgname,
+    }
+  );
+
+  const { mutateAsync: updateDefaultOrg } = useUserControllerUpdate({
+    onError: (error) => {
+      toast({
+        description: error?.stack.msg,
+        title: "Error updating default organization",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        description: "Your default organization has been updated.",
+        title: "Default organization updated",
+      });
+    },
+  });
+
+  const memberships = user?.memberships;
 
   return (
     <DropdownMenu>
@@ -106,15 +143,36 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => router.push("/settings/organization/general")}
+          >
             Settings
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Support
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                {memberships?.map((membership) => (
+                  <DropdownMenuItem
+                    key={membership.id}
+                    onClick={() => {
+                      updateDefaultOrg({
+                        body: {
+                          defaultOrg: membership.orgname,
+                        },
+                      });
+                    }}
+                  >
+                    {membership.orgname}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={async () => await logout()}>

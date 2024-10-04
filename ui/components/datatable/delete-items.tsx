@@ -13,7 +13,7 @@ export interface DeleteProps<TMutationVariables> {
   itemType: string;
   mutationFunction: (params: TMutationVariables) => Promise<void>;
   mutationVariables: TMutationVariables[];
-  variant?: "large" | "small";
+  variant?: "lg" | "md" | "sm";
 }
 
 // create a functional component called DeleteItems
@@ -22,7 +22,7 @@ export const DeleteItems = <TMutationVariables,>({
   itemType,
   mutationFunction,
   mutationVariables,
-  variant = "small",
+  variant = "sm",
 }: DeleteProps<TMutationVariables>) => {
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const t = (text: string) => text;
@@ -46,13 +46,15 @@ export const DeleteItems = <TMutationVariables,>({
       open={openConfirmDelete}
     >
       <DialogTrigger>
-        {variant === "small" ? (
+        {variant === "sm" ? (
           <div
             className="text-destructive"
             onClick={() => setOpenConfirmDelete(true)}
           >
             <SquareX />
           </div>
+        ) : variant === "md" ? (
+          <div onClick={() => setOpenConfirmDelete(true)}>Delete</div>
         ) : (
           <div onClick={() => setOpenConfirmDelete(true)}>{t("Delete")}</div>
         )}

@@ -34,6 +34,13 @@ const cardData = [
     title: "Analyze Data",
   },
   {
+    buttonText: "View Content",
+    description: "View and manage your content.",
+    icon: Server,
+    link: "/content",
+    title: "View Content",
+  },
+  {
     buttonText: "Create Chatbot",
     description: "Set up a chatbot using imported data.",
     icon: MessageCircle,
@@ -53,13 +60,6 @@ const cardData = [
     icon: ClapperboardIcon,
     link: "/images",
     title: "Create Animation",
-  },
-  {
-    buttonText: "View Content",
-    description: "View and manage your content.",
-    icon: Server,
-    link: "/content",
-    title: "View Content",
   },
 ];
 

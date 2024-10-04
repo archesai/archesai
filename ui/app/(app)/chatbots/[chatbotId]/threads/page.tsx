@@ -41,7 +41,7 @@ function ChatbotThreadsPage() {
     },
   });
   const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: deleteAgent } = useThreadsControllerRemove();
+  const { mutateAsync: deleteChatbot } = useThreadsControllerRemove();
 
   const { selectedItems } = useSelectItems({ items: threads?.results || [] });
 
@@ -111,7 +111,7 @@ function ChatbotThreadsPage() {
       data={threads as any}
       dataIcon={<User size={24} />}
       defaultView="table"
-      deleteItem={deleteAgent}
+      deleteItem={deleteChatbot}
       getDeleteVariablesFromItem={(thread) => [
         {
           pathParams: {
@@ -121,8 +121,8 @@ function ChatbotThreadsPage() {
           },
         },
       ]}
-      handleSelect={(agent) => router.push(`/chatbots/${agent.id}/chat`)}
-      itemType="agent"
+      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
+      itemType="chatbot"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({
         pathParams: {

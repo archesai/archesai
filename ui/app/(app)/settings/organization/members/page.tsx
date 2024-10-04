@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { endOfDay } from "date-fns";
-import { User } from "lucide-react";
+import { CheckIcon, User, XIcon } from "lucide-react";
 
 export default function MembersPageContent() {
   const { defaultOrgname } = useAuth();
@@ -22,19 +22,24 @@ export default function MembersPageContent() {
     data: members,
     isLoading,
     isPlaceholderData,
-  } = useMembersControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
+  } = useMembersControllerFindAll(
+    {
+      pathParams: {
+        orgname: defaultOrgname,
+      },
+      queryParams: {
+        endDate: endOfDay(range.to || new Date()).toISOString(),
+        limit,
+        offset: page * limit,
+        sortBy: "createdAt",
+        sortDirection: "asc" as const,
+        startDate: range.from?.toISOString(),
+      },
     },
-    queryParams: {
-      endDate: endOfDay(range.to || new Date()).toISOString(),
-      limit,
-      offset: page * limit,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-    },
-  });
+    {
+      enabled: !!defaultOrgname,
+    }
+  );
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: deleteMember } = useMembersControllerRemove();
 
@@ -75,7 +80,11 @@ export default function MembersPageContent() {
             return (
               <div className="flex space-x-2">
                 <span className="max-w-[500px] truncate font-medium">
-                  {row.original.inviteAccepted}
+                  {row.original.inviteAccepted ? (
+                    <CheckIcon className="text-primary" />
+                  ) : (
+                    <XIcon className="text-red-950" />
+                  )}
                 </span>
               </div>
             );
@@ -103,7 +112,7 @@ export default function MembersPageContent() {
         },
       ]}
       handleSelect={() => {}}
-      itemType="API token"
+      itemType="Member"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({
         pathParams: {

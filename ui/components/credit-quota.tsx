@@ -29,11 +29,11 @@ export const CreditQuota = () => {
       <div className="flex justify-between text-gray-alpha-500">
         <div>Credit quota</div>
         <div>
-          <a className="outline-black" href="/app/subscription">
+          <Link className="outline-black" href="/settings/organization/billing">
             <span className="text-gray-alpha-900 font-medium inter text-xs">
               Upgrade
             </span>
-          </a>
+          </Link>
         </div>
       </div>
       <div className="font-medium flex items-center gap-2.5">
@@ -60,6 +60,7 @@ export const CreditQuota = () => {
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
 import {
   PolarGrid,
   PolarRadiusAxis,

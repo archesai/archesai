@@ -1,6 +1,4 @@
-// billing.service.ts
-
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
 
@@ -11,6 +9,31 @@ export class BillingService {
     this.stripe = new Stripe(this.configService.get("STRIPE_PRIVATE_API_KEY"), {
       apiVersion: "2024-06-20",
     });
+  }
+
+  async cancelSubscription(customerId: string) {
+    // Retrieve the customer's active subscriptions
+    const subscriptions = await this.stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+    });
+
+    if (subscriptions.data.length === 0) {
+      throw new BadRequestException(
+        "No active subscriptions found for this customer."
+      );
+    }
+
+    // Assuming there is only one subscription per customer
+    const subscription = subscriptions.data[0];
+
+    // Cancel the subscription immediately
+    await this.stripe.subscriptions.cancel(subscription.id);
+
+    // Alternatively, to cancel at period end, use:
+    // await this.stripe.subscriptions.update(subscription.id, {
+    //   cancel_at_period_end: true,
+    // });
   }
 
   async constructEventFromPayload(signature: string, payload: Buffer) {
@@ -26,7 +49,9 @@ export class BillingService {
   async createBillingPortal(customerId: string) {
     return this.stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${this.configService.get("FRONTEND_HOST")}/settings/organization/billing`,
+      return_url: `${this.configService.get(
+        "FRONTEND_HOST"
+      )}/settings/organization/billing`,
     });
   }
 
@@ -37,7 +62,9 @@ export class BillingService {
   ) {
     const session = await this.stripe.checkout.sessions.create({
       allow_promotion_codes: isOneTime ? undefined : true,
-      cancel_url: `${this.configService.get("FRONTEND_HOST")}/settings/organization/billing`,
+      cancel_url: `${this.configService.get(
+        "FRONTEND_HOST"
+      )}/settings/organization/billing`,
       customer: customerId,
       invoice_creation: isOneTime
         ? {
@@ -54,7 +81,9 @@ export class BillingService {
       ],
       mode: isOneTime ? "payment" : "subscription",
       payment_method_types: ["card"],
-      success_url: `${this.configService.get("FRONTEND_HOST")}/settings/organization/billing`,
+      success_url: `${this.configService.get(
+        "FRONTEND_HOST"
+      )}/settings/organization/billing`,
     });
 
     return { url: session.url };
@@ -79,11 +108,19 @@ export class BillingService {
   }
 
   async getCustomer(stripeCustomerId: string) {
-    return this.stripe.customers.retrieve(stripeCustomerId);
+    return this.stripe.customers.retrieve(stripeCustomerId, {
+      expand: ["invoice_settings.default_payment_method"],
+    }) as Promise<Stripe.Customer | Stripe.DeletedCustomer>;
   }
 
   async getPrice(id: string) {
-    return this.stripe.prices.retrieve(id);
+    return this.stripe.prices.retrieve(id, {
+      expand: ["product"],
+    });
+  }
+
+  async getProduct(id: string) {
+    return this.stripe.products.retrieve(id);
   }
 
   public async listAllSubscriptions() {
@@ -123,7 +160,46 @@ export class BillingService {
       })
       .filter((val) => val !== null);
 
-    console.log(plans);
     return plans;
+  }
+
+  async updateCustomerDefaultPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ) {
+    await this.stripe.customers.update(customerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+  }
+
+  async updateSubscription(customerId: string, newPriceId: string) {
+    // Retrieve the customer's subscriptions
+    const subscriptions = await this.stripe.subscriptions.list({
+      customer: customerId,
+      expand: ["data.default_payment_method"],
+      status: "active",
+    });
+
+    if (subscriptions.data.length === 0) {
+      throw new BadRequestException(
+        "No active subscriptions found for this customer."
+      );
+    }
+
+    // Assuming there is only one subscription per customer
+    const subscription = subscriptions.data[0];
+
+    // Update the subscription to the new price
+    await this.stripe.subscriptions.update(subscription.id, {
+      items: [
+        {
+          id: subscription.items.data[0].id,
+          price: newPriceId,
+        },
+      ],
+      proration_behavior: "create_prorations",
+    });
   }
 }

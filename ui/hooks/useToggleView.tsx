@@ -6,6 +6,10 @@ export const useToggleView = () => {
   const [view, setView] = useAtom(viewAtom);
   const [width, setWidth] = useState(window.innerWidth);
 
+  const toggleView = () => {
+    setView((prev) => (prev === "grid" ? "table" : "grid"));
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setWidth(window.innerWidth);
@@ -22,6 +26,7 @@ export const useToggleView = () => {
 
   return {
     setView,
+    toggleView,
     view,
   };
 };

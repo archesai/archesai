@@ -27,6 +27,7 @@ import { Stripe } from "stripe";
 import { IsPublic } from "../auth/decorators/is-public.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { OrganizationsService } from "../organizations/organizations.service";
+import { WebsocketsService } from "../websockets/websockets.service";
 import { BillingService } from "./billing.service";
 import { BillingUrlEntity } from "./entities/billing-url.entity";
 import { PaymentMethodEntity } from "./entities/payment-method.entity";
@@ -42,22 +43,73 @@ export class BillingController {
   constructor(
     private readonly billingService: BillingService,
     private organizationsService: OrganizationsService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private websocketsService: WebsocketsService
   ) {}
+
+  @Post("/organizations/:orgname/billing/subscription/cancel")
+  @ApiOperation({
+    description: "Cancel the subscription plan for an organization",
+    summary: "Cancel subscription plan",
+  })
+  @ApiResponse({
+    description: "Successfully canceled subscription plan",
+    status: 200,
+  })
+  async cancelSubscriptionPlan(@Param("orgname") orgname: string) {
+    if (this.configService.get("FEATURE_BILLING") == false) {
+      throw new ForbiddenException("Billing is disabled");
+    }
+    const organization = await this.organizationsService.findOneByName(orgname);
+
+    // Cancel the subscription
+    await this.billingService.cancelSubscription(organization.stripeCustomerId);
+
+    return { success: true };
+  }
+
+  @ApiOperation({
+    description: "Switch subscription plan for an organization",
+    summary: "Switch subscription plan",
+  })
+  @ApiResponse({
+    description: "Successfully switched subscription plan",
+    status: 200,
+  })
+  @Post("/organizations/:orgname/billing/subscription")
+  async changeSubscriptionPlan(
+    @Param("orgname") orgname: string,
+    @Query("planId") planId: string
+  ) {
+    if (this.configService.get("FEATURE_BILLING") == false) {
+      throw new ForbiddenException("Billing is disabled");
+    }
+    const organization = await this.organizationsService.findOneByName(orgname);
+
+    const plans = await this.billingService.listPlans();
+    const plan = plans.find((p) => p.id === planId);
+
+    if (!plan) {
+      throw new BadRequestException("Invalid plan");
+    }
+
+    // Update the subscription to the new plan
+    await this.billingService.updateSubscription(
+      organization.stripeCustomerId,
+      plan.priceId
+    );
+  }
 
   @ApiOperation({
     description:
       "This endpoint will create a billing portal for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.",
     summary: "Create a billing portal for an organization",
   })
-  @ApiResponse({ description: "Unauthorized", status: 401 })
-  @ApiResponse({ description: "Not Found", status: 404 })
   @ApiResponse({
     description: "Successfully created URL",
     status: 201,
     type: BillingUrlEntity,
   })
-  @ApiResponse({ description: "Forbidden", status: 403 })
   @Post("/organizations/:orgname/billing/portal")
   async createBillingPortal(
     @Param("orgname") orgname: string
@@ -79,15 +131,11 @@ export class BillingController {
       "This endpoint will create a checkout session for an organization to purchase a subscription or one-time product. Only available on archesai.com. ADMIN ONLY.",
     summary: "Create a checkout session for an organization",
   })
-  @ApiResponse({ description: "Unauthorized", status: 401 })
-  @ApiResponse({ description: "Bad Request", status: 400 })
-  @ApiResponse({ description: "Not Found", status: 404 })
   @ApiResponse({
     description: "Successfully created checkout session URL",
     status: 201,
     type: BillingUrlEntity,
   })
-  @ApiResponse({ description: "Forbidden", status: 403 })
   @Post("/organizations/:orgname/billing/checkout")
   async createCheckoutSession(
     @Param("orgname") orgname: string,
@@ -97,6 +145,11 @@ export class BillingController {
       throw new ForbiddenException("Billing is disabled");
     }
     const organization = await this.organizationsService.findOneByName(orgname);
+    if (["BASIC", "PREMIUM", "STANDARD"].includes(organization.plan)) {
+      throw new BadRequestException(
+        "Cannot purchase a plan when already on a plan"
+      );
+    }
 
     const plans = await this.billingService.listPlans();
     const plan = plans.find((p) => p.id === planId);
@@ -140,8 +193,6 @@ export class BillingController {
     description: "List payment methods for an organization",
     summary: "List payment methods",
   })
-  @ApiResponse({ description: "Unauthorized", status: 401 })
-  @ApiResponse({ description: "Not Found", status: 404 })
   @ApiResponse({
     description: "List of payment methods",
     status: 200,
@@ -156,8 +207,6 @@ export class BillingController {
     return paymentMethods.data;
   }
 
-  @ApiResponse({ description: "Unauthorized", status: 401 })
-  @ApiResponse({ description: "Not Found", status: 404 })
   @ApiOperation({
     description: "Remove a payment method from an organization",
     summary: "Remove payment method",
@@ -177,8 +226,55 @@ export class BillingController {
     if (!paymentMethod) {
       throw new NotFoundException("Payment method not found");
     }
+
+    // Check if there is more than one payment method
+    if (paymentMethods.data.length <= 1) {
+      throw new BadRequestException(
+        "Cannot remove the last payment method. At least one payment method is required."
+      );
+    }
+
+    // Retrieve the customer to check default payment method
+    const customer = await this.billingService.getCustomer(
+      organization.stripeCustomerId
+    );
+
+    // Type guard to ensure customer is not deleted
+    if (customer.deleted) {
+      throw new NotFoundException("Customer has been deleted.");
+    }
+
+    const c = customer as Stripe.Customer;
+    let defaultPaymentMethodId;
+    if (c.invoice_settings && c.invoice_settings.default_payment_method) {
+      if (typeof c.invoice_settings.default_payment_method === "string") {
+        defaultPaymentMethodId = c.invoice_settings.default_payment_method;
+      } else {
+        defaultPaymentMethodId = c.invoice_settings.default_payment_method.id;
+      }
+    }
+
+    // If the payment method being removed is the default, set another as default
+    if (defaultPaymentMethodId === paymentMethodId) {
+      // Set another payment method as default
+      const otherPaymentMethod = paymentMethods.data.find(
+        (pm) => pm.id !== paymentMethodId
+      );
+      if (otherPaymentMethod) {
+        await this.billingService.updateCustomerDefaultPaymentMethod(
+          organization.stripeCustomerId,
+          otherPaymentMethod.id
+        );
+      } else {
+        throw new BadRequestException(
+          "Cannot remove the last payment method. At least one payment method is required."
+        );
+      }
+
+      this.websocketsService.socket.to(orgname).emit("update");
+    }
+
     await this.billingService.detachPaymentMethod(paymentMethodId);
-    return { success: true };
   }
 
   @ApiExcludeEndpoint()
@@ -205,12 +301,14 @@ export class BillingController {
           await this.organizationsService.findOneByCustomerId(customerId);
         for (const lineItem of data.lines.data) {
           const price = await this.billingService.getPrice(lineItem.price.id);
-          const credits = price.metadata["credits"];
+          const product = price.product as Stripe.Product;
+          const credits = product.metadata["credits"];
           const quantity = lineItem.quantity || 1;
           await this.organizationsService.addCredits(
             organization.orgname,
             Number(credits) * quantity
           );
+          this.websocketsService.socket.to(organization.orgname).emit("update");
         }
       }
     }
@@ -227,13 +325,15 @@ export class BillingController {
 
       const priceId = data.items.data[0].price.id;
       const price = await this.billingService.getPrice(priceId);
-      const planType = price.metadata["plan_type"] as PlanType;
+      const product = price.product as Stripe.Product;
+      const planType = product.metadata["key"] as PlanType;
 
       if (data.status == "active") {
         await this.organizationsService.setPlan(organization.orgname, planType);
       } else {
         await this.organizationsService.setPlan(organization.orgname, "FREE");
       }
+      this.websocketsService.socket.to(organization.orgname).emit("update");
     }
   }
 }
