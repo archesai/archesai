@@ -8,7 +8,11 @@ export class PlanEntity {
   })
   currency: string;
 
-  @ApiProperty({ example: "A plan for a small business", required: false })
+  @ApiProperty({
+    example: "A plan for a small business",
+    required: false,
+    type: String,
+  })
   description: null | string;
 
   @ApiProperty({

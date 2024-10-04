@@ -285,7 +285,7 @@ export type PlanEntity = {
   /**
    * @example A plan for a small business
    */
-  description?: Record<string, any>;
+  description?: string;
   /**
    * The ID of the plan
    *

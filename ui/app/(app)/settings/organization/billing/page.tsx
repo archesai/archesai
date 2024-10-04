@@ -1,6 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import {
   FormControl,
@@ -9,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -21,6 +28,7 @@ import {
   useBillingControllerGetPlans,
   useBillingControllerListPaymentMethods,
   useBillingControllerRemovePaymentMethod,
+  useOrganizationsControllerFindOne,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -55,6 +63,14 @@ export default function BillingPageContent() {
         enabled: !!defaultOrgname,
       }
     );
+
+  const { data: organization, isLoading: organizationLoading } =
+    useOrganizationsControllerFindOne({
+      pathParams: {
+        orgname: defaultOrgname,
+      },
+    });
+
   const { mutateAsync: deletePaymentMethod } =
     useBillingControllerRemovePaymentMethod();
   const { mutateAsync: createCheckoutSesseion } =
@@ -72,7 +88,107 @@ export default function BillingPageContent() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Payment Methods</CardTitle>
+          <CardTitle className="text-xl">Current Plan</CardTitle>
+          <CardDescription>
+            View your current plan and upgrade to a different plan.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {organizationLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <>
+              {organization && (
+                <>
+                  <Input disabled value={organization.plan} />
+                  <h6>
+                    {plans
+                      ? plans.find((p) => p.metadata?.key === organization.plan)
+                          ?.description || ""
+                      : ""}
+                  </h6>
+                </>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* New Card for Available Plans */}
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle className="text-xl">Available Plans</CardTitle>
+          <CardDescription>
+            Subscribe to a plan to unlock additional features.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingPlans ? (
+            <p>Loading plans...</p>
+          ) : (
+            <>
+              {plans && plans.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableCell>Plan Name</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell>Interval</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {plans.map((plan) => (
+                      <TableRow key={plan.id}>
+                        <TableCell>{plan.name}</TableCell>
+                        <TableCell>{String(plan.description) || "-"}</TableCell>
+                        <TableCell>
+                          {plan.unitAmount
+                            ? `$${(plan.unitAmount / 100).toFixed(2)} ${plan.currency.toUpperCase()}`
+                            : "Free"}
+                        </TableCell>
+                        <TableCell>
+                          {plan.recurring
+                            ? `${plan.recurring.interval_count} ${plan.recurring.interval}(s)`
+                            : "One-time"}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={async () => {
+                              const data = await createCheckoutSesseion({
+                                pathParams: {
+                                  orgname: defaultOrgname,
+                                },
+                                queryParams: {
+                                  planId: plan.id,
+                                },
+                              });
+                              router.push(data.url);
+                            }}
+                            variant="default"
+                          >
+                            Subscribe
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p>No plans available.</p>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle className="text-xl">Payment Methods</CardTitle>
+          <CardDescription>
+            Manage your payment methods and subscribe to available plans.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loadingMethods ? (
@@ -142,72 +258,6 @@ export default function BillingPageContent() {
             </DialogContent>
           </Dialog>
         )}
-      </Card>
-
-      {/* New Card for Available Plans */}
-      <Card style={{ marginTop: "2rem" }}>
-        <CardHeader>
-          <CardTitle>Available Plans</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loadingPlans ? (
-            <p>Loading plans...</p>
-          ) : (
-            <>
-              {plans && plans.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell>Plan Name</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Interval</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {plans.map((plan) => (
-                      <TableRow key={plan.id}>
-                        <TableCell>{plan.name}</TableCell>
-                        <TableCell>{String(plan.description) || "-"}</TableCell>
-                        <TableCell>
-                          {plan.unitAmount
-                            ? `$${(plan.unitAmount / 100).toFixed(2)} ${plan.currency.toUpperCase()}`
-                            : "Free"}
-                        </TableCell>
-                        <TableCell>
-                          {plan.recurring
-                            ? `${plan.recurring.interval_count} ${plan.recurring.interval}(s)`
-                            : "One-time"}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={async () => {
-                              const data = await createCheckoutSesseion({
-                                pathParams: {
-                                  orgname: defaultOrgname,
-                                },
-                                queryParams: {
-                                  planId: plan.id,
-                                },
-                              });
-                              router.push(data.url);
-                            }}
-                            variant="default"
-                          >
-                            Subscribe
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p>No plans available.</p>
-              )}
-            </>
-          )}
-        </CardContent>
       </Card>
     </>
   );

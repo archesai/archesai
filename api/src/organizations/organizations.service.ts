@@ -41,10 +41,10 @@ export class OrganizationsService {
     user: CurrentUserDto,
     createOrganizationDto: CreateOrganizationDto
   ): Promise<Organization> {
-    const freeUser = this.configService.get("FEATURE_BILLING") === true;
+    const billingEnabled = this.configService.get("FEATURE_BILLING") === true;
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
     let stripeCustomerId = createOrganizationDto.orgname;
-    if (freeUser) {
+    if (billingEnabled) {
       const stripeCustomer = await this.billingService.createCustomer(
         createOrganizationDto.orgname,
         createOrganizationDto.billingEmail
@@ -65,7 +65,7 @@ export class OrganizationsService {
         credits:
           // If this is their first org and their e-mail is verified, give them free credits
           // Otherwise, if billing is disabled, give them free credits
-          freeUser
+          billingEnabled
             ? user.memberships?.length == 0 && user.emailVerified
               ? 0
               : 0
@@ -82,7 +82,7 @@ export class OrganizationsService {
             },
           },
         },
-        plan: freeUser ? PlanType.FREE : PlanType.API,
+        plan: billingEnabled ? PlanType.FREE : PlanType.UNLIMITED,
         stripeCustomerId: stripeCustomerId,
       },
     });

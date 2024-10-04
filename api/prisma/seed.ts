@@ -43,7 +43,7 @@ async function main() {
     );
 
     // Create init organization
-    await organizationsService.setPlan(user.defaultOrg, "API");
+    await organizationsService.setPlan(user.defaultOrg, "UNLIMITED");
     await organizationsService.addCredits(user.defaultOrg, 1000000000);
   } catch (e) {
     console.log("User already exists");

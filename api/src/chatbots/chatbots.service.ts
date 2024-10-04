@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Chatbot } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
@@ -21,12 +21,6 @@ export class ChatbotsService
   ) {}
 
   async create(orgname: string, createChatbotDto: CreateChatbotDto) {
-    const organization = await this.organizationsService.findOneByName(orgname);
-    if (createChatbotDto.llmBase === "GPT_4" && organization.plan !== "API") {
-      throw new ForbiddenException(
-        "You must be on a Pro plan to use the GPT-4 model."
-      );
-    }
     const chatbot = await this.chatbotRepository.create(
       orgname,
       createChatbotDto
@@ -53,12 +47,6 @@ export class ChatbotsService
     chatbotId: string,
     updateChatbotDto: UpdateChatbotDto
   ) {
-    const organization = await this.organizationsService.findOneByName(orgname);
-    if (updateChatbotDto.llmBase === "GPT_4" && organization.plan !== "API") {
-      throw new ForbiddenException(
-        "You must be on a Pro plan to use the GPT-4 model."
-      );
-    }
     const chatbot = await this.chatbotRepository.update(
       orgname,
       chatbotId,

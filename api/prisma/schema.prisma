@@ -42,7 +42,7 @@ enum PlanType {
   BASIC
   STANDARD
   PREMIUM
-  API
+  UNLIMITED
 }
 
 model Content {
