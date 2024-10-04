@@ -17,11 +17,11 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import {
   useBillingControllerCancelSubscriptionPlan,
+  useBillingControllerChangeSubscriptionPlan,
   useBillingControllerCreateCheckoutSession,
   useBillingControllerGetPlans,
   useBillingControllerListPaymentMethods,
   useBillingControllerRemovePaymentMethod,
-  useBillingControllerSwitchSubscriptionPlan,
   useOrganizationsControllerFindOne,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
@@ -94,7 +94,7 @@ export default function BillingPageContent() {
   const {
     isPending: switchSubscriptionLoading,
     mutateAsync: switchSubscriptionPlan,
-  } = useBillingControllerSwitchSubscriptionPlan();
+  } = useBillingControllerChangeSubscriptionPlan();
   const {
     isPending: cancelSubscriptionLoading,
     mutateAsync: cancelSubscription,

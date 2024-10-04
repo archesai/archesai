@@ -1,5 +1,5 @@
 "use client";
-import { CustomCardForm, FormFieldConfig } from "@/components/custom-card-form";
+import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -14,9 +14,20 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
 
+import { FormControl } from "../ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+
 const formSchema = z.object({
   description: z.string().min(1),
-  llmBase: z.string(),
+  llmBase: z.enum(["gpt-4o", "gpt-4o-mini"], {
+    message: "Invalid language model. Must be one of 'gpt-4o', 'gpt-4o-mini'.",
+  }),
   name: z.string().min(1).max(255),
 });
 
@@ -50,7 +61,7 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
     },
     {
       component: Input,
-      defaultValue: chatbot?.llmBase,
+      defaultValue: chatbot?.llmBase || "gpt-4o",
       description:
         "This is the LLM base that will be used for this chatbot. Note that different models have different credit usages.",
       label: "Language Model",
@@ -58,6 +69,34 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
       props: {
         placeholder: "Search llms...",
       },
+      renderControl: (field) => (
+        <Select
+          onValueChange={(value) => field.onChange(value)}
+          value={String(field.value) || undefined}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder={"Choose your model"} />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {[
+              {
+                id: "gpt-4o",
+                name: "GPT-4o",
+              },
+              {
+                id: "gpt-4o-mini",
+                name: "GPT-4o Mini",
+              },
+            ].map((option) => (
+              <SelectItem key={option.id} value={option.id.toString()}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
       validationRule: formSchema.shape.llmBase,
     },
     {
@@ -80,7 +119,7 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
   }
 
   return (
-    <CustomCardForm<CreateChatbotDto, UpdateChatbotDto>
+    <GenericForm<CreateChatbotDto, UpdateChatbotDto>
       description={"Configure your chatbot's settings"}
       fields={formFields}
       isUpdateForm={!!chatbotId}
@@ -100,7 +139,6 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
         await updateChatbot(
           {
             body: data as any,
-
             pathParams: {
               chatbotId: chatbotId as string,
               orgname: defaultOrgname,

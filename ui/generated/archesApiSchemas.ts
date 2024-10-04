@@ -470,10 +470,10 @@ export type CreateApiTokenDto = {
    */
   role: "USER" | "ADMIN";
   /**
-   * The ids of the agent this token will have access to. This can not be changed later.
+   * The ids of the chatbot this token will have access to. This can not be changed later.
    *
-   * @example agent1
-   * @example agent2
+   * @example chatbot1
+   * @example chatbot2
    */
   chatbotIds?: string[];
 };
@@ -548,6 +548,33 @@ export type ApiTokenEntity = {
    * @example jonathan
    */
   username: string;
+};
+
+export type UpdateApiTokenDto = {
+  /**
+   * The domains that can access this API token
+   *
+   * @default *
+   * @example archesai.com,localhost:3000
+   */
+  domains?: string;
+  /**
+   * The name of the API token
+   *
+   * @example My Token
+   */
+  name?: string;
+  /**
+   * The role of the API token
+   */
+  role?: "USER" | "ADMIN";
+  /**
+   * The ids of the chatbot this token will have access to. This can not be changed later.
+   *
+   * @example chatbot1
+   * @example chatbot2
+   */
+  chatbotIds?: string[];
 };
 
 export type CreateMemberDto = {

@@ -90,7 +90,7 @@ export class ApiTokensController
   async update(
     @Param("orgname") orgname: string,
     @Param("id") id: string,
-    @Query() updateApiTokenDto: UpdateApiTokenDto
+    @Body() updateApiTokenDto: UpdateApiTokenDto
   ) {
     const apiToken = await this.apiTokensService.update(
       orgname,

@@ -1,5 +1,5 @@
 "use client";
-import { CustomCardForm, FormFieldConfig } from "@/components/custom-card-form";
+import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -19,10 +19,11 @@ export default function OrganizationSettingsPage() {
   ];
 
   return (
-    <CustomCardForm
+    <GenericForm
       description={"View your organization's details"}
       fields={formFields}
       isUpdateForm={true}
+      itemType="organization"
       title="Organization"
     />
   );

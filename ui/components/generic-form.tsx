@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "./ui/button";
@@ -31,13 +31,12 @@ export interface FormFieldConfig {
   name: string;
   props?: any;
   renderControl?: (
-    field: any,
-    updateValue: (value: any) => void
+    field: ControllerRenderProps<Record<string, any>>
   ) => React.ReactNode;
   validationRule?: z.ZodType<any, any>;
 }
 
-interface CustomCardFormProps<TCreateVariables, TUpdateVariables> {
+interface GenericFormProps<TCreateVariables, TUpdateVariables> {
   description?: string;
   fields: FormFieldConfig[];
   isUpdateForm: boolean;
@@ -47,7 +46,7 @@ interface CustomCardFormProps<TCreateVariables, TUpdateVariables> {
   title?: string;
 }
 
-export function CustomCardForm<TCreateVariables, TUpdateVariables>({
+export function GenericForm<TCreateVariables, TUpdateVariables>({
   description,
   fields,
   isUpdateForm,
@@ -55,14 +54,16 @@ export function CustomCardForm<TCreateVariables, TUpdateVariables>({
   onSubmitCreate,
   onSubmitUpdate,
   title,
-}: CustomCardFormProps<TCreateVariables, TUpdateVariables>) {
+}: GenericFormProps<TCreateVariables, TUpdateVariables>) {
   const { toast } = useToast();
-  const defaultValues = fields.reduce<Record<string, any>>((acc, field) => {
-    if (field.defaultValue !== undefined) {
-      acc[field.name] = field.defaultValue;
-    }
-    return acc;
-  }, {});
+  const defaultValues = isUpdateForm
+    ? fields.reduce<Record<string, any>>((acc, field) => {
+        if (field.defaultValue !== undefined) {
+          acc[field.name] = field.defaultValue;
+        }
+        return acc;
+      }, {})
+    : {};
 
   const schema = z.object(
     fields.reduce(
@@ -82,7 +83,6 @@ export function CustomCardForm<TCreateVariables, TUpdateVariables>({
   });
 
   useEffect(() => {
-    console.log("RESETTING FORM");
     form.reset(defaultValues);
   }, [fields]);
 
@@ -116,9 +116,9 @@ export function CustomCardForm<TCreateVariables, TUpdateVariables>({
                           description: `Your ${itemType} has been updated`,
                           title: `${itemType} updated`,
                         });
+                        form.reset();
                       },
                     });
-                    form.reset();
                   }
                 : (data) => {
                     onSubmitCreate?.(data as any, {
@@ -134,9 +134,9 @@ export function CustomCardForm<TCreateVariables, TUpdateVariables>({
                           description: `Your ${itemType} has been created`,
                           title: `${itemType} created`,
                         });
+                        form.reset();
                       },
                     });
-                    form.reset();
                   }
             )}
           >
@@ -145,34 +145,33 @@ export function CustomCardForm<TCreateVariables, TUpdateVariables>({
                 control={form.control}
                 key={fieldConfig.name}
                 name={fieldConfig.name}
-                render={({ field }) =>
-                  fieldConfig.renderControl ? (
-                    // fieldConfig.renderControl(field, (value) =>
-                    //   form.setValue(fieldConfig.name, value)
-                    // )
-                    <></>
-                  ) : (
-                    <FormItem className="flex flex-col col-span-1">
-                      <FormLabel className="font-semibold text-sm">
-                        {fieldConfig.label}
-                      </FormLabel>
-                      <FormControl>
+                render={({ field }) => (
+                  <FormItem className="flex flex-col col-span-1">
+                    <FormLabel>{fieldConfig.label}</FormLabel>
+                    <FormControl>
+                      {fieldConfig.renderControl ? (
+                        fieldConfig.renderControl(field)
+                      ) : (
                         <fieldConfig.component
                           {...field}
                           {...fieldConfig.props}
                         />
-                      </FormControl>
-                      <FormDescription className="text-sm">
+                      )}
+                    </FormControl>
+                    {!form.formState.errors[
+                      fieldConfig.name
+                    ]?.message?.toString() && (
+                      <FormDescription>
                         {fieldConfig.description}
                       </FormDescription>
-                      <FormMessage>
-                        {form.formState.errors[
-                          fieldConfig.name
-                        ]?.message?.toString()}
-                      </FormMessage>
-                    </FormItem>
-                  )
-                }
+                    )}
+                    <FormMessage>
+                      {form.formState.errors[
+                        fieldConfig.name
+                      ]?.message?.toString()}
+                    </FormMessage>
+                  </FormItem>
+                )}
               />
             ))}
 

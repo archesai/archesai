@@ -560,6 +560,71 @@ export const useBillingControllerCancelSubscriptionPlan = (
   });
 };
 
+export type BillingControllerChangeSubscriptionPlanPathParams = {
+  orgname: string;
+};
+
+export type BillingControllerChangeSubscriptionPlanQueryParams = {
+  planId: string;
+};
+
+export type BillingControllerChangeSubscriptionPlanError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type BillingControllerChangeSubscriptionPlanVariables = {
+  pathParams: BillingControllerChangeSubscriptionPlanPathParams;
+  queryParams: BillingControllerChangeSubscriptionPlanQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Switch subscription plan for an organization
+ */
+export const fetchBillingControllerChangeSubscriptionPlan = (
+  variables: BillingControllerChangeSubscriptionPlanVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    BillingControllerChangeSubscriptionPlanError,
+    undefined,
+    {},
+    BillingControllerChangeSubscriptionPlanQueryParams,
+    BillingControllerChangeSubscriptionPlanPathParams
+  >({
+    url: "/organizations/{orgname}/billing/subscription",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Switch subscription plan for an organization
+ */
+export const useBillingControllerChangeSubscriptionPlan = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      BillingControllerChangeSubscriptionPlanError,
+      BillingControllerChangeSubscriptionPlanVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    BillingControllerChangeSubscriptionPlanError,
+    BillingControllerChangeSubscriptionPlanVariables
+  >({
+    mutationFn: (variables: BillingControllerChangeSubscriptionPlanVariables) =>
+      fetchBillingControllerChangeSubscriptionPlan({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type BillingControllerCreateBillingPortalPathParams = {
   orgname: string;
 };
@@ -880,71 +945,6 @@ export const useBillingControllerRemovePaymentMethod = (
   });
 };
 
-export type BillingControllerSwitchSubscriptionPlanPathParams = {
-  orgname: string;
-};
-
-export type BillingControllerSwitchSubscriptionPlanQueryParams = {
-  planId: string;
-};
-
-export type BillingControllerSwitchSubscriptionPlanError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type BillingControllerSwitchSubscriptionPlanVariables = {
-  pathParams: BillingControllerSwitchSubscriptionPlanPathParams;
-  queryParams: BillingControllerSwitchSubscriptionPlanQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Switch subscription plan for an organization
- */
-export const fetchBillingControllerSwitchSubscriptionPlan = (
-  variables: BillingControllerSwitchSubscriptionPlanVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    BillingControllerSwitchSubscriptionPlanError,
-    undefined,
-    {},
-    BillingControllerSwitchSubscriptionPlanQueryParams,
-    BillingControllerSwitchSubscriptionPlanPathParams
-  >({
-    url: "/organizations/{orgname}/billing/subscription",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * Switch subscription plan for an organization
- */
-export const useBillingControllerSwitchSubscriptionPlan = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      BillingControllerSwitchSubscriptionPlanError,
-      BillingControllerSwitchSubscriptionPlanVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    BillingControllerSwitchSubscriptionPlanError,
-    BillingControllerSwitchSubscriptionPlanVariables
-  >({
-    mutationFn: (variables: BillingControllerSwitchSubscriptionPlanVariables) =>
-      fetchBillingControllerSwitchSubscriptionPlan({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type ApiTokensControllerCreatePathParams = {
   orgname: string;
 };
@@ -1251,32 +1251,11 @@ export type ApiTokensControllerUpdatePathParams = {
   id: string;
 };
 
-export type ApiTokensControllerUpdateQueryParams = {
-  /**
-   * The domains that can access this API token
-   *
-   * @default *
-   */
-  domains?: string;
-  /**
-   * The name of the API token
-   */
-  name?: string;
-  /**
-   * The role of the API token
-   */
-  role?: "USER" | "ADMIN";
-  /**
-   * The ids of the agent this token will have access to. This can not be changed later.
-   */
-  chatbotIds?: string[];
-};
-
 export type ApiTokensControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
 
 export type ApiTokensControllerUpdateVariables = {
+  body?: Schemas.UpdateApiTokenDto;
   pathParams: ApiTokensControllerUpdatePathParams;
-  queryParams?: ApiTokensControllerUpdateQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
@@ -1289,9 +1268,9 @@ export const fetchApiTokensControllerUpdate = (
   archesApiFetch<
     Schemas.ApiTokenEntity,
     ApiTokensControllerUpdateError,
-    undefined,
+    Schemas.UpdateApiTokenDto,
     {},
-    ApiTokensControllerUpdateQueryParams,
+    {},
     ApiTokensControllerUpdatePathParams
   >({
     url: "/organizations/{orgname}/api-tokens/{id}",

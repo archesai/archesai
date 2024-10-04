@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import APITokenForm from "@/components/forms/api-token-form";
 import { Badge } from "@/components/ui/badge";
 import {
   ApiTokensControllerRemoveVariables,
@@ -21,7 +22,7 @@ export default function ApiTokensPageContent() {
   const { limit, page, query, range } = useFilterItems();
 
   const {
-    data: chatbots,
+    data: apiTokens,
     isLoading,
     isPlaceholderData,
   } = useApiTokensControllerFindAll(
@@ -46,7 +47,7 @@ export default function ApiTokensPageContent() {
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: removeChatbot } = useApiTokensControllerRemove();
 
-  const { selectedItems } = useSelectItems({ items: chatbots?.results || [] });
+  const { selectedItems } = useSelectItems({ items: apiTokens?.results || [] });
 
   return (
     <DataTable<ApiTokenEntity, ApiTokensControllerRemoveVariables>
@@ -98,7 +99,8 @@ export default function ApiTokensPageContent() {
           <User className="opacity-30" size={100} />
         </div>
       )}
-      data={chatbots as any}
+      createForm={<APITokenForm />}
+      data={apiTokens as any}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
       deleteItem={removeChatbot}
@@ -110,7 +112,10 @@ export default function ApiTokensPageContent() {
           },
         },
       ]}
-      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
+      getEditFormFromItem={(apiToken) => (
+        <APITokenForm apiTokenId={apiToken.id} />
+      )}
+      handleSelect={(apiToken) => router.push(`/apiTokens/${apiToken.id}/chat`)}
       itemType="API token"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({

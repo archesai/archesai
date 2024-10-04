@@ -1,12 +1,13 @@
 "use client";
 
-import { CustomCardForm, FormFieldConfig } from "@/components/custom-card-form";
+import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useUserControllerFindOne,
   useUserControllerUpdate,
 } from "@/generated/archesApiComponents";
+import { UpdateUserDto } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { z } from "zod";
@@ -64,10 +65,11 @@ export default function ProfileSettingsPage() {
   ];
 
   return (
-    <CustomCardForm
+    <GenericForm<any, UpdateUserDto>
       description="View and update your user details"
       fields={formFields}
       isUpdateForm={true}
+      itemType="user"
       onSubmitCreate={() => {}}
       onSubmitUpdate={async (data) => {
         await updateUser(

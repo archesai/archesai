@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import MemberForm from "@/components/forms/member-form";
 import { Badge } from "@/components/ui/badge";
 import {
   MembersControllerRemoveVariables,
@@ -99,6 +100,7 @@ export default function MembersPageContent() {
           <User className="opacity-30" size={100} />
         </div>
       )}
+      createForm={<MemberForm />}
       data={members as any}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
@@ -111,6 +113,9 @@ export default function MembersPageContent() {
           },
         },
       ]}
+      getEditFormFromItem={(member) => {
+        return <MemberForm memberId={member.id} />;
+      }}
       handleSelect={() => {}}
       itemType="Member"
       loading={loading}

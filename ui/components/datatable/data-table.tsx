@@ -140,7 +140,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       {
         cell: ({ row }) => (
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="text-center">
               <Button
                 className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                 variant="ghost"
@@ -159,7 +159,9 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                 Edit
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()} // Prevent closing on select
+              >
                 <DeleteItems
                   items={[
                     {
@@ -179,6 +181,15 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        ),
+        header: () => (
+          <Button
+            onClick={() => setFormOpen(true)}
+            size="sm"
+            variant="secondary"
+          >
+            New {itemType}
+          </Button>
         ),
         id: "actions",
       },
@@ -284,6 +295,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
+                console.log(header);
                 return (
                   <TableHead colSpan={header.colSpan} key={header.id}>
                     {header.isPlaceholder
@@ -299,13 +311,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
           ))}
         </TableHeader>
         <TableBody>
-          <TableRow className="">
-            <TableCell className="text-center" colSpan={columns.length + 2}>
-              <Button onClick={() => setFormOpen(true)} variant="secondary">
-                New {itemType}
-              </Button>
-            </TableCell>
-          </TableRow>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -347,6 +352,9 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       <Drawer
         onOpenChange={(o) => {
           setFormOpen(o);
+          if (!o) {
+            setFinalForm(createForm);
+          }
         }}
         open={formOpen}
       >
