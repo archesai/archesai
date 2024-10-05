@@ -4,7 +4,11 @@ import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+} from "@/components/ui/drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +26,9 @@ import {
 } from "@/components/ui/table";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
+import { DialogTitle } from "@radix-ui/react-dialog";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -140,7 +146,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       {
         cell: ({ row }) => (
           <DropdownMenu>
-            <DropdownMenuTrigger className="text-center">
+            <DropdownMenuTrigger asChild className="text-center">
               <Button
                 className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                 variant="ghost"
@@ -245,13 +251,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
             <hr />
 
             <div className="flex justify-between items-center mt-auto p-2">
-              <div className="flex items-center">
+              <div className="flex items-center min-w-0">
                 {dataIcon}
-                <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-1 max-w-[8.5rem]">
+                <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-1">
                   {item.name}
                 </h5>
               </div>
-              <div className="flex items-center gap-2 p-2">
+              <div className="flex items-center gap-2 p-2 flex-shrink-0">
                 <FilePenLine
                   className="text-primary cursor-pointer"
                   onClick={() => {
@@ -295,7 +301,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                console.log(header);
                 return (
                   <TableHead colSpan={header.colSpan} key={header.id}>
                     {header.isPlaceholder
@@ -358,9 +363,14 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
         }}
         open={formOpen}
       >
-        <DrawerTitle />
+        <VisuallyHidden.Root>
+          <DrawerDescription />
+          <DialogTitle>
+            {finalForm ? "Edit" : "Create"} {itemType}
+          </DialogTitle>
+        </VisuallyHidden.Root>
         <DrawerContent
-          aria-describedby="dialog-description"
+          aria-description="Create/Edit"
           className="p-3 bg-transparent border-none shadow-none"
           title="Create/Edit"
         >

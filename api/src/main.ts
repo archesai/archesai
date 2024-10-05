@@ -50,7 +50,11 @@ async function bootstrap() {
     new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
     new OrganizationRoleGuard(app.get(Reflector))
   );
-  app.enableCors({ allowedHeaders: "*", credentials: true, origin: "*" });
+  app.enableCors({
+    allowedHeaders: "Authorization, Content-Type, Accept",
+    credentials: true,
+    origin: "*",
+  });
   const config = new DocumentBuilder()
     .setTitle("Arches AI API")
     .setDescription("The Arches AI API")

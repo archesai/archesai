@@ -1,8 +1,6 @@
 // ChatbotChatPage.tsx
 "use client";
 
-import { LogoSVG } from "@/components/logo-svg";
-import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
+import { Maximize, Minimize } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
@@ -116,7 +115,7 @@ export default function ChatbotChatPage() {
     setMessage(e.target.value);
   };
 
-  const { toggleFullscreen } = useFullScreen();
+  const { isFullScreen, toggleFullscreen } = useFullScreen();
 
   return (
     <div className="flex flex-col h-full relative group">
@@ -127,21 +126,7 @@ export default function ChatbotChatPage() {
         variant={"ghost"}
       >
         {/* You can use an icon instead of text if preferred */}
-        <svg
-          className="h-6 w-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <title>Toggle Full Screen</title>
-          <path
-            d="M4 4h6v6m0 0V4m0 6h6m-6 6v6m-6-6h6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-          />
-        </svg>
+        {isFullScreen ? <Minimize /> : <Maximize />}
       </Button>
 
       {/* Chat Body */}
@@ -163,15 +148,15 @@ export default function ChatbotChatPage() {
                     </div>
                     {/* Bot Response */}
                     <div className="flex items-start space-x-2 py-2">
-                      <Avatar>
+                      {/* <Avatar>
                         <LogoSVG scale={0.124} size="sm" />
-                      </Avatar>
+                      </Avatar> */}
                       {msg.id === "pending" ? (
                         <div className="flex items-center justify-center">
                           <div className="pulse bg-black h-4 w-4 rounded-full"></div>
                         </div>
                       ) : (
-                        <div className="rounded-lg px-4 py-2">{msg.answer}</div>
+                        <div className="rounded-lg py-2">{msg.answer}</div>
                       )}
                     </div>
                   </div>

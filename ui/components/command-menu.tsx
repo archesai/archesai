@@ -14,9 +14,12 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { type DialogProps } from "@radix-ui/react-dialog";
 import { LaptopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import * as React from "react";
+
+import { DialogDescription, DialogTitle } from "./ui/dialog";
 
 export function CommandMenu({ ...props }: DialogProps) {
   const router = useRouter();
@@ -68,6 +71,10 @@ export function CommandMenu({ ...props }: DialogProps) {
         </kbd>
       </Button>
       <CommandDialog onOpenChange={setOpen} open={open}>
+        <VisuallyHidden.Root>
+          <DialogTitle />
+        </VisuallyHidden.Root>
+        <DialogDescription />
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>

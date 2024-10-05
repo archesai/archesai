@@ -60,8 +60,8 @@ export const Sidebar = () => {
               />
             )}
 
-            <Button onClick={toggleSidebar} size="icon" variant="secondary">
-              <Menu className="h-5 w-5" />
+            <Button onClick={toggleSidebar} size="icon" variant="ghost">
+              <Menu className="h-5 w-5 text-gray-500" />
             </Button>
           </div>
 
