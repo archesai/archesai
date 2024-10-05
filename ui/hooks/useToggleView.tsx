@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export const useToggleView = () => {
   const [view, setView] = useAtom(viewAtom);
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(0);
 
   const toggleView = () => {
     setView((prev) => (prev === "grid" ? "table" : "grid"));

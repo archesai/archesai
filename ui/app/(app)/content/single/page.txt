@@ -24,14 +24,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { format } from "date-fns";
 import { File } from "lucide-react";
-import dynamic from "next/dynamic";
-import { useParams } from "next/navigation";
+// import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 
 // Dynamically import react-player to prevent SSR issues
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+// const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export default function ContentDetailsPage() {
-  const { contentId } = useParams();
+  const searchParams = useSearchParams();
+  const contentId = searchParams.get("contentId");
+
   const { defaultOrgname } = useAuth();
   const { data: vectorRecords, isLoading: vectorRecordsIsLoading } =
     useVectorRecordControllerFindAll(
@@ -166,19 +168,20 @@ function renderContent(content: ContentEntity) {
 
   if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) {
     return (
-      <ReactPlayer
-        config={{
-          file: {
-            attributes: {
-              controlsList: "nodownload",
-            },
-          },
-        }}
-        controls
-        height="100%"
-        url={url}
-        width="100%"
-      />
+      // <ReactPlayer
+      //   config={{
+      //     file: {
+      //       attributes: {
+      //         controlsList: "nodownload",
+      //       },
+      //     },
+      //   }}
+      //   controls
+      //   height="100%"
+      //   url={url}
+      //   width="100%"
+      // />
+      <></>
     );
   } else if (mimeType.startsWith("image/")) {
     return (

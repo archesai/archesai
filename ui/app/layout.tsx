@@ -1,4 +1,5 @@
 "use client";
+export const dynamicParams = false;
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";

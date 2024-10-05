@@ -73,7 +73,7 @@ export default function ContentPage() {
               <div className="flex space-x-2">
                 <Link
                   className="max-w-[500px] truncate font-medium text-primary"
-                  href={`/content/${row.original.id}`}
+                  href={`/content/single?contentId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -150,7 +150,9 @@ export default function ContentPage() {
           },
         },
       ]}
-      handleSelect={(content) => router.push(`/content/${content.id}`)}
+      handleSelect={(content) =>
+        router.push(`/content/single?contentId=${content.id}`)
+      }
       itemType="content"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({

@@ -4,10 +4,10 @@ module.exports = {
     "plugin:@next/next/recommended",
     "plugin:@typescript-eslint/recommended",
   ],
+  ignorePatterns: ["components/ui/*.tsx", "generated/**", "electron/**/*.ts"],
   plugins: ["@typescript-eslint/eslint-plugin"],
   rules: {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
   },
-  ignorePatterns: ["components/ui/*.tsx", "generated/**"],
 };

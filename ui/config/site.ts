@@ -66,21 +66,21 @@ export const siteConfig = {
         title: "Animation",
       },
     ],
-    "/chatbots/[chatbotId]": [
+    "/chatbots/single": [
       {
-        href: "/chatbots/[chatbotId]/chat",
+        href: "/chatbots/single/chat",
         Icon: MessageSquare,
         tab: "Chat",
         title: "Chat",
       },
       {
-        href: "/chatbots/[chatbotId]/threads",
+        href: "/chatbots/single/threads",
         Icon: Layers,
         tab: "Threads",
         title: "Threads",
       },
       {
-        href: "/chatbots/[chatbotId]/configuration",
+        href: "/chatbots/single/configuration",
         Icon: Bolt,
         tab: "Configuration",
         title: "Configuration",

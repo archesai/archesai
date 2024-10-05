@@ -73,7 +73,7 @@ export default function ChatbotsPageContent() {
               <div className="flex space-x-2">
                 <Link
                   className="max-w-[500px] truncate font-medium text-primary"
-                  href={`/chatbots/${row.original.id}/chat`}
+                  href={`/chatbots/single/chat?chatbotId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -127,7 +127,9 @@ export default function ChatbotsPageContent() {
         },
       ]}
       getEditFormFromItem={(chatbot) => <ChatbotForm chatbotId={chatbot.id} />}
-      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
+      handleSelect={(chatbot) =>
+        router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
+      }
       itemType="chatbot"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({

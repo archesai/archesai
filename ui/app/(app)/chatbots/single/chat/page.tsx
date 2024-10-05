@@ -15,14 +15,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 export default function ChatbotChatPage() {
   const [threadId, setThreadId] = useState<string>("");
-  const { chatbotId } = useParams();
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
+  const searchParams = useSearchParams();
+  const chatbotId = searchParams.get("chatbotId");
 
   const { streamChatMessage } = useStreamChat();
 

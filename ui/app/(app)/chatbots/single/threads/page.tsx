@@ -14,13 +14,14 @@ import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { endOfDay } from "date-fns";
 import { User } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function ChatbotThreadsPage() {
   const { defaultOrgname } = useAuth();
   const router = useRouter();
   const { limit, page, range } = useFilterItems();
-  const { chatbotId } = useParams();
+  const searchParams = useSearchParams();
+  const chatbotId = searchParams.get("chatbotId");
 
   const {
     data: threads,
@@ -121,7 +122,9 @@ function ChatbotThreadsPage() {
           },
         },
       ]}
-      handleSelect={(chatbot) => router.push(`/chatbots/${chatbot.id}/chat`)}
+      handleSelect={(chatbot) =>
+        router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
+      }
       itemType="chatbot"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({

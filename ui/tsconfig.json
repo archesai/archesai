@@ -27,6 +27,7 @@
     ".next",
     "dist",
     "components/ui/**.tsx",
-    "generated/**.ts"
+    "generated/**.ts",
+    "electron/**/**.ts"
   ]
 }
