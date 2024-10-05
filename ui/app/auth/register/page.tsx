@@ -95,7 +95,9 @@ export default function RegisterPage() {
           <form
             className="space-y-4"
             noValidate
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={() => {
+              form.handleSubmit(onSubmit);
+            }}
           >
             {/* Email Field */}
             <FormField
