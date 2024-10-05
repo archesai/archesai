@@ -125,7 +125,7 @@ function ChatbotThreadsPage() {
       handleSelect={(chatbot) =>
         router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
       }
-      itemType="chatbot"
+      itemType="thread"
       loading={loading}
       mutationVariables={selectedItems.map((id) => ({
         pathParams: {

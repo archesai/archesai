@@ -7,16 +7,11 @@ import {
   useUserControllerUpdate,
 } from "@/generated/archesApiComponents";
 import { UpdateUserDto } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { z } from "zod";
 
 export default function ProfileSettingsPage() {
-  const { defaultOrgname } = useAuth();
-  const { data: user } = useUserControllerFindOne(
-    {},
-    { enabled: !!defaultOrgname }
-  );
+  const { data: user } = useUserControllerFindOne({});
   const { mutateAsync: updateUser } = useUserControllerUpdate();
 
   if (!user) {

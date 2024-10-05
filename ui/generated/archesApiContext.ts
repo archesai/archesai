@@ -55,27 +55,25 @@ export function useArchesApiContext<
     "queryFn" | "queryKey"
   >
 ): ArchesApiContext {
-  const { accessToken, getNewRefreshToken, logout } = useAuth();
-  const t = accessToken;
+  const { accessToken, getNewRefreshToken, logout, defaultOrgname } = useAuth();
+
   return {
     fetcherOptions: {
       headers: {
-        authorization: t ? `Bearer ${t}` : undefined,
+        authorization: accessToken ? `Bearer ${accessToken}` : undefined,
       },
     },
     queryKeyFn,
     queryOptions: {
-      enabled: t !== null && (_queryOptions?.enabled ? true : false),
+      enabled:
+        !!accessToken && (_queryOptions?.enabled ? true : !!defaultOrgname),
       onError: async (error: any) => {
         if (error?.stack?.statusCode === 401) {
-          console.log("Refreshing token");
           await getNewRefreshToken();
         }
       },
       retry: async (failureCount: number, error: any) => {
         if (error?.stack?.statusCode === 401 && failureCount <= 2) {
-          console.log("Refreshing token");
-
           await getNewRefreshToken();
           return true;
         } else if (

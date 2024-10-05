@@ -5,16 +5,11 @@ import { useSidebar } from "@/hooks/useSidebar";
 export const CreditQuota = () => {
   const { isCollapsed } = useSidebar();
   const { defaultOrgname } = useAuth();
-  const { data: organization } = useOrganizationsControllerFindOne(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
+  const { data: organization } = useOrganizationsControllerFindOne({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+  });
 
   if (isCollapsed) {
     return (

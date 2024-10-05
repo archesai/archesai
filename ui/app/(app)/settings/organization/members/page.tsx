@@ -23,24 +23,19 @@ export default function MembersPageContent() {
     data: members,
     isLoading,
     isPlaceholderData,
-  } = useMembersControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
-      queryParams: {
-        endDate: endOfDay(range.to || new Date()).toISOString(),
-        limit,
-        offset: page * limit,
-        sortBy: "createdAt",
-        sortDirection: "asc" as const,
-        startDate: range.from?.toISOString(),
-      },
+  } = useMembersControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+    queryParams: {
+      endDate: endOfDay(range.to || new Date()).toISOString(),
+      limit,
+      offset: page * limit,
+      sortBy: "createdAt",
+      sortDirection: "asc" as const,
+      startDate: range.from?.toISOString(),
+    },
+  });
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: deleteMember } = useMembersControllerRemove();
 

@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ChatbotsPageContent() {
-  const { defaultOrgname, user } = useAuth();
+  const { defaultOrgname } = useAuth();
   const router = useRouter();
   const { limit, page, query, range } = useFilterItems();
 
@@ -26,25 +26,20 @@ export default function ChatbotsPageContent() {
     data: chatbots,
     isLoading,
     isPlaceholderData,
-  } = useChatbotsControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
-      queryParams: {
-        endDate: endOfDay(range.to || new Date()).toISOString(),
-        limit,
-        name: query,
-        offset: page * limit,
-        sortBy: "createdAt",
-        sortDirection: "asc" as const,
-        startDate: range.from?.toISOString(),
-      },
+  } = useChatbotsControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    {
-      enabled: !!user?.defaultOrg,
-    }
-  );
+    queryParams: {
+      endDate: endOfDay(range.to || new Date()).toISOString(),
+      limit,
+      name: query,
+      offset: page * limit,
+      sortBy: "createdAt",
+      sortDirection: "asc" as const,
+      startDate: range.from?.toISOString(),
+    },
+  });
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: deleteChatbot } = useChatbotsControllerRemove();
 

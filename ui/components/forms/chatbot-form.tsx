@@ -41,7 +41,7 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
       },
     },
     {
-      enabled: !!defaultOrgname && !!chatbotId,
+      enabled: !!chatbotId,
     }
   );
   const { mutateAsync: updateChatbot } = useChatbotsControllerUpdate({});

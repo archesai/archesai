@@ -50,16 +50,21 @@ export const TabsSection = () => {
           return (
             <TabsTrigger
               className={`relative rounded-none border-b-2 px-4 pb-3 pt-2 font-semibold shadow-none transition-all 
-                ${
-                  isActive
-                    ? "border-b-primary text-foreground"
-                    : "text-muted-foreground"
-                }
+              ${
+                isActive
+                  ? "border-b-primary text-foreground"
+                  : "text-muted-foreground"
+              }
               `}
               key={tab.href}
-              onClick={() =>
-                router.push(replaceDynamicSegments(tab.href, pathname))
-              }
+              onClick={() => {
+                const url = new URL(
+                  replaceDynamicSegments(tab.href, pathname),
+                  window.location.origin
+                );
+                url.search = window.location.search; // Preserve query parameters
+                router.push(url.toString());
+              }}
               value={tab.href}
             >
               {tab.tab || tab.title}

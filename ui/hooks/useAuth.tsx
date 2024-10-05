@@ -1,16 +1,15 @@
+import { baseUrl } from "@/generated/archesApiFetcher";
+import { TokenDto, UserEntity } from "@/generated/archesApiSchemas";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useAtom } from "jotai";
+import { useAtom } from "jotai"; // The auth state atom
 import { useRouter } from "next/navigation";
 
+import { auth } from "../lib/firebase";
 import {
   accessTokenAtom,
   authStateAtom,
   refreshTokenAtom,
-} from "../state/authState"; // The auth state atom
-import { baseUrl } from "@/generated/archesApiFetcher";
-import { TokenDto, UserEntity } from "@/generated/archesApiSchemas";
-
-import { auth } from "../lib/firebase";
+} from "../state/authState";
 
 export const useAuth = () => {
   const [authState, setAuthState] = useAtom(authStateAtom);
@@ -19,6 +18,7 @@ export const useAuth = () => {
   const router = useRouter();
 
   const getUserFromToken = async () => {
+    console.log("Getting user from token");
     try {
       // get expiration
       const [, payload] = accessToken.split(".");
@@ -78,6 +78,7 @@ export const useAuth = () => {
   };
 
   const getNewRefreshToken = async () => {
+    console.log("Getting new refresh token");
     const response = await fetch(baseUrl + "/auth/refresh-token", {
       body: JSON.stringify({ refreshToken }),
       headers: { "Content-Type": "application/json" },

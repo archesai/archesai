@@ -32,12 +32,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
   const { defaultOrgname, logout } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-  const { data: user } = useUserControllerFindOne(
-    {},
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+  const { data: user } = useUserControllerFindOne({});
 
   const { mutateAsync: updateDefaultOrg } = useUserControllerUpdate({
     onError: (error) => {

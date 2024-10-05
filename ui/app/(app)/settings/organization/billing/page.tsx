@@ -33,21 +33,11 @@ export default function BillingPageContent() {
   const { defaultOrgname } = useAuth();
   const { toast } = useToast();
 
-  const { data: plans } = useBillingControllerGetPlans(
-    {},
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+  const { data: plans } = useBillingControllerGetPlans({});
   const { data: paymentMethods, isLoading: loadingMethods } =
-    useBillingControllerListPaymentMethods(
-      {
-        pathParams: { orgname: defaultOrgname },
-      },
-      {
-        enabled: !!defaultOrgname,
-      }
-    );
+    useBillingControllerListPaymentMethods({
+      pathParams: { orgname: defaultOrgname },
+    });
 
   const { data: organization } = useOrganizationsControllerFindOne({
     pathParams: {

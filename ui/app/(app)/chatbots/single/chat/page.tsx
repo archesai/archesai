@@ -39,7 +39,7 @@ export default function ChatbotChatPage() {
       },
     },
     {
-      enabled: !!threadId,
+      enabled: false,
     }
   );
 

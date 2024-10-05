@@ -25,25 +25,20 @@ export default function ApiTokensPageContent() {
     data: apiTokens,
     isLoading,
     isPlaceholderData,
-  } = useApiTokensControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
-      queryParams: {
-        endDate: endOfDay(range.to || new Date()).toISOString(),
-        limit,
-        name: query,
-        offset: page * limit,
-        sortBy: "createdAt",
-        sortDirection: "asc" as const,
-        startDate: range.from?.toISOString(),
-      },
+  } = useApiTokensControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+    queryParams: {
+      endDate: endOfDay(range.to || new Date()).toISOString(),
+      limit,
+      name: query,
+      offset: page * limit,
+      sortBy: "createdAt",
+      sortDirection: "asc" as const,
+      startDate: range.from?.toISOString(),
+    },
+  });
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: removeChatbot } = useApiTokensControllerRemove();
 

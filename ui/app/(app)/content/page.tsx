@@ -26,24 +26,19 @@ export default function ContentPage() {
     data: content,
     isLoading,
     isPlaceholderData,
-  } = useContentControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
-      queryParams: {
-        limit,
-        offset: page * limit,
-        searchTerm: query,
-        sortBy: "createdAt",
-        sortDirection: "asc" as const,
-        startDate: range.from?.toISOString(),
-      },
+  } = useContentControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    {
-      enabled: !!defaultOrgname,
-    }
-  );
+    queryParams: {
+      limit,
+      offset: page * limit,
+      searchTerm: query,
+      sortBy: "createdAt",
+      sortDirection: "asc" as const,
+      startDate: range.from?.toISOString(),
+    },
+  });
 
   const loading = isPlaceholderData || isLoading;
   const { mutateAsync: deleteDocument } = useContentControllerRemove();
