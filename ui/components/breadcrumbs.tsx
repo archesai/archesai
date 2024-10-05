@@ -4,10 +4,10 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react"; // Adjust the import path as necessary
-import { siteConfig } from "@/config/site";
 
 import { getOriginalPath } from "./tabs-section";
 
