@@ -107,14 +107,14 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                       onError: (error: any) => {
                         toast({
                           description: (error as any)?.stack.msg,
-                          title: `Error updating ${itemType}`,
+                          title: `Update failed`,
                           variant: "destructive",
                         });
                       },
                       onSuccess: () => {
                         toast({
                           description: `Your ${itemType} has been updated`,
-                          title: `${itemType} updated`,
+                          title: `Update successful`,
                         });
                         form.reset();
                       },
@@ -125,14 +125,14 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                       onError: (error: any) => {
                         toast({
                           description: (error as any)?.stack.msg,
-                          title: `Error creating ${itemType}`,
+                          title: `Create failed`,
                           variant: "destructive",
                         });
                       },
                       onSuccess: () => {
                         toast({
                           description: `Your ${itemType} has been created`,
-                          title: `${itemType} created`,
+                          title: `Creation successful`,
                         });
                         form.reset();
                       },

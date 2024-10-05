@@ -2,7 +2,6 @@
 
 import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import {
   useUserControllerFindOne,
   useUserControllerUpdate,
@@ -19,7 +18,6 @@ export default function ProfileSettingsPage() {
     { enabled: !!defaultOrgname }
   );
   const { mutateAsync: updateUser } = useUserControllerUpdate();
-  const { toast } = useToast();
 
   if (!user) {
     return <div>Loading...</div>;
@@ -71,7 +69,7 @@ export default function ProfileSettingsPage() {
       isUpdateForm={true}
       itemType="user"
       onSubmitCreate={() => {}}
-      onSubmitUpdate={async (data) => {
+      onSubmitUpdate={async (data, mutateOptions) => {
         await updateUser(
           {
             body: {
@@ -80,19 +78,7 @@ export default function ProfileSettingsPage() {
               lastName: data.lastName,
             },
           },
-          {
-            onError: (error) => {
-              toast({
-                description: error?.stack?.msg,
-                title: "Error updating profile",
-              });
-            },
-            onSuccess: () => {
-              toast({
-                title: "Profile updated",
-              });
-            },
-          }
+          mutateOptions
         );
       }}
       title="Profile"

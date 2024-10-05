@@ -34,7 +34,8 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2 backdrop-blur-md">
       <div className="flex-1 text-sm text-muted-foreground sm:block hidden">
-        {selectedItems.length} of {limit} row(s) selected.
+        {data?.metadata?.totalResults} found - {selectedItems.length} of {limit}{" "}
+        row(s) selected.
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-0 sm:space-x-2">
@@ -58,7 +59,10 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {page + 1} of {Math.ceil(data?.metadata?.totalResults / limit)}
+          Page {page + 1} of{" "}
+          {isNaN(Math.max(Math.ceil(data?.metadata?.totalResults / limit), 1))
+            ? 1
+            : Math.max(Math.ceil(data?.metadata?.totalResults / limit), 1)}
         </div>
         <div className="flex items-center space-x-2">
           <Button
