@@ -23,7 +23,7 @@ export default function ChatbotChatPage() {
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
   const searchParams = useSearchParams();
-  const chatbotId = searchParams.get("chatbotId");
+  const chatbotId = searchParams?.get("chatbotId");
 
   const { streamChatMessage } = useStreamChat();
 

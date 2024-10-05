@@ -15,7 +15,7 @@ import { CreditQuota } from "./credit-quota";
 export const Sidebar = () => {
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { resolvedTheme } = useTheme();
-  const pathname = usePathname();
+  const pathname = usePathname() as string;
 
   // Sections to display in the sidebar
   const sidebarSections = ["home", "create", "data", "settings"];

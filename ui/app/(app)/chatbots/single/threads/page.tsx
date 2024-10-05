@@ -21,7 +21,7 @@ function ChatbotThreadsPage() {
   const router = useRouter();
   const { limit, page, range } = useFilterItems();
   const searchParams = useSearchParams();
-  const chatbotId = searchParams.get("chatbotId");
+  const chatbotId = searchParams?.get("chatbotId");
 
   const {
     data: threads,

@@ -12,7 +12,7 @@ import React from "react"; // Adjust the import path as necessary
 import { getOriginalPath } from "./tabs-section";
 
 export const Breadcrumbs = () => {
-  const pathname = usePathname();
+  const pathname = usePathname() as string;
   const pathnames = pathname.split("/").filter((x) => x);
 
   let Icon = null;

@@ -57,8 +57,8 @@ type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 export default function ConfirmPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const type = searchParams.get("type") as ActionType;
-  const token = searchParams.get("token") as string;
+  const type = searchParams?.get("type") as ActionType;
+  const token = searchParams?.get("token") as string;
 
   const { setAccessToken, setRefreshToken, user } = useAuth();
 

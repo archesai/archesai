@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 export const TabsSection = () => {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() as string;
 
   // Determine which tabs to display based on the current route pattern
   let currentTabs: {
