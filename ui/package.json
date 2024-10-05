@@ -10,7 +10,6 @@
     "gen": "npx openapi-codegen gen archesApi"
   },
   "dependencies": {
-    "@capacitor-community/electron": "^5.0.1",
     "@capacitor/core": "^6.1.2",
     "@capacitor/ios": "^6.1.2",
     "@hookform/resolvers": "^3.9.0",
