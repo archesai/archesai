@@ -1,7 +1,9 @@
 // app/layout.tsx
 "use client";
 
+import { CommandMenu } from "@/components/command-menu";
 import { VerifyEmailAlert } from "@/components/email-verify";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Sidebar } from "@/components/sidebar";
 import { TabsSection } from "@/components/tabs-section";
 import { Button } from "@/components/ui/button";
@@ -59,11 +61,10 @@ export default function AppLayout({
       </div>
 
       {/* Sidebar for mobile */}
-      <div className="flex md:hidden h-12 items-center justify-end px-6 z-50">
+      <div className="flex md:hidden min-h-16 items-center px-6 z-50">
         <Sheet>
-          <SheetTrigger asChild>
-            <div className="flex items-center gap-3 mt-2">
-              <UserButton size="sm" />
+          <div className="flex items-center justify-between w-full">
+            <SheetTrigger asChild>
               <Button
                 className="shrink-0 md:hidden"
                 size="icon"
@@ -72,8 +73,14 @@ export default function AppLayout({
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
+            </SheetTrigger>
+            <div className="flex items-center gap-3">
+              <CommandMenu />
+              <ModeToggle />
+              <UserButton size="sm" />
             </div>
-          </SheetTrigger>
+          </div>
+
           <SheetContent className="w-64 p-0" side="left">
             <Sidebar />
           </SheetContent>

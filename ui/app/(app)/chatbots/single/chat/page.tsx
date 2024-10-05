@@ -123,7 +123,7 @@ export default function ChatbotChatPage() {
       <Button
         className="bg-transparent text-bg absolute top-0 left-0 z-10"
         onClick={toggleFullscreen}
-        variant={"ghost"}
+        variant={"outline"}
       >
         {/* You can use an icon instead of text if preferred */}
         {isFullScreen ? <Minimize /> : <Maximize />}

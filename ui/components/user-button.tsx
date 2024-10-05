@@ -60,7 +60,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
           className={`relative flex items-center justify-between ${
             size === "lg"
               ? "p-2 pl-2 text-sm leading-6 font-semibold"
-              : "h-8 w-8 rounded-full"
+              : "p-0 h-9 w-9 rounded-full"
           }`}
           variant="ghost"
         >
@@ -110,7 +110,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
               </svg>
             </>
           ) : (
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-9 w-9">
               <AvatarImage
                 alt={user?.displayName || "User"}
                 src={user?.photoUrl}

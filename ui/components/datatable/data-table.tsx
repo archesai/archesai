@@ -85,6 +85,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
   content,
   createForm,
   data,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   dataIcon,
   defaultView,
   deleteItem,
@@ -156,15 +157,19 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem
-                onClick={() => {
-                  setFinalForm(getEditFormFromItem?.(row.original));
-                  setFormOpen(true);
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {getEditFormFromItem ? (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setFinalForm(getEditFormFromItem?.(row.original));
+                      setFormOpen(true);
+                    }}
+                  >
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              ) : null}
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()} // Prevent closing on select
               >
@@ -188,15 +193,16 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
             </DropdownMenuContent>
           </DropdownMenu>
         ),
-        header: () => (
-          <Button
-            onClick={() => setFormOpen(true)}
-            size="sm"
-            variant="secondary"
-          >
-            New {itemType}
-          </Button>
-        ),
+        header: () =>
+          createForm ? (
+            <Button
+              onClick={() => setFormOpen(true)}
+              size="sm"
+              variant="secondary"
+            >
+              New {itemType}
+            </Button>
+          ) : null,
         id: "actions",
       },
     ],
@@ -220,19 +226,21 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
 
   const grid_view = (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-      <Card
-        className={`shadow-sm relative w-full overflow-visible hover:bg-primary-foreground border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
-      >
-        <div
-          className="h-64 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
-          onClick={async () => {
-            setFormOpen(true);
-          }}
+      {createForm ? (
+        <Card
+          className={`shadow-sm relative w-full overflow-visible hover:bg-primary-foreground border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
         >
-          <PlusSquare size={30} />
-          <span className="mt-2 text-lg">New {itemType}</span>
-        </div>
-      </Card>
+          <div
+            className="h-64 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
+            onClick={async () => {
+              setFormOpen(true);
+            }}
+          >
+            <PlusSquare size={30} />
+            <span className="mt-2 text-lg">New {itemType}</span>
+          </div>
+        </Card>
+      ) : null}
       {data?.results.map((item, i) => {
         const isItemSelected = selectedItems.includes(item.id);
         return (
@@ -252,19 +260,26 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
 
             <div className="flex justify-between items-center mt-auto p-2">
               <div className="flex items-center min-w-0">
-                {dataIcon}
-                <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-1">
+                <Checkbox
+                  aria-label={`Select ${item.name}`}
+                  checked={isItemSelected}
+                  className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                  onCheckedChange={() => toggleSelection(item.id)}
+                />
+                <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-2">
                   {item.name}
                 </h5>
               </div>
               <div className="flex items-center gap-2 p-2 flex-shrink-0">
-                <FilePenLine
-                  className="text-primary cursor-pointer"
-                  onClick={() => {
-                    setFinalForm(getEditFormFromItem?.(item));
-                    setFormOpen(true);
-                  }}
-                />
+                {getEditFormFromItem ? (
+                  <FilePenLine
+                    className="text-primary cursor-pointer"
+                    onClick={() => {
+                      setFinalForm(getEditFormFromItem?.(item));
+                      setFormOpen(true);
+                    }}
+                  />
+                ) : null}
                 <DeleteItems
                   items={[
                     {
@@ -278,12 +293,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                     setSelectedItems([]);
                   }}
                   mutationVariables={getDeleteVariablesFromItem(item)}
-                />
-                <Checkbox
-                  aria-label={`Select ${item.name}`}
-                  checked={isItemSelected}
-                  className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  onCheckedChange={() => toggleSelection(item.id)}
                 />
               </div>
             </div>

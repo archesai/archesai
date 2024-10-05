@@ -60,7 +60,12 @@ export const Sidebar = () => {
               />
             )}
 
-            <Button onClick={toggleSidebar} size="icon" variant="ghost">
+            <Button
+              className="hidden md:flex"
+              onClick={toggleSidebar}
+              size="icon"
+              variant="outline"
+            >
               <Menu className="h-5 w-5 text-gray-500" />
             </Button>
           </div>
@@ -106,7 +111,7 @@ export const Sidebar = () => {
             </div>
           ))}
         </div>
-        <div className="stack gap-3 py-3">
+        <div className="stack gap-3 py-3 justify-center">
           <CreditQuota />
           <UserButton size="lg" />
         </div>
