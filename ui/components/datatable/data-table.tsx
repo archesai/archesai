@@ -225,13 +225,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
   const [hover, setHover] = useState(-1);
 
   const grid_view = (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
       {createForm ? (
         <Card
           className={`shadow-sm relative w-full overflow-visible hover:bg-primary-foreground border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
         >
           <div
-            className="h-64 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
+            className="h-48 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
             onClick={async () => {
               setFormOpen(true);
             }}
@@ -249,7 +249,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
             key={i}
           >
             <div
-              className="h-64 cursor-pointer relative overflow-hidden group hover:bg-primary-foreground transition-all"
+              className="h-48 cursor-pointer relative overflow-hidden group hover:bg-primary-foreground transition-all"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}

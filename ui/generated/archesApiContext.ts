@@ -66,11 +66,6 @@ export function useArchesApiContext<
     queryKeyFn,
     queryOptions: {
       enabled: _queryOptions?.enabled !== false && !!defaultOrgname,
-      onError: async (error: any) => {
-        if (error?.stack?.statusCode === 401) {
-          await getNewRefreshToken();
-        }
-      },
       retry: async (failureCount: number, error: any) => {
         if (error?.stack?.statusCode === 401 && failureCount <= 2) {
           await getNewRefreshToken();

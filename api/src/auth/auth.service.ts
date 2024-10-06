@@ -21,7 +21,7 @@ export class AuthService {
     return this.jwtService.sign(
       { sub: userId },
       {
-        expiresIn: "30m", // Set access token expiration to 15 minutes
+        expiresIn: "15m", // Set access token expiration to 15 minutes
       }
     );
   }
