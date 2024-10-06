@@ -49,26 +49,16 @@ export default function ContentPage() {
     <DataTable<ContentEntity, ContentControllerRemoveVariables>
       columns={[
         {
-          accessorKey: "contentType",
-          cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2 justify-center text-muted-foreground max-w-10">
-                <ContentTypeToIcon contentType={row.original.mimeType} />
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Type" />
-          ),
-        },
-        {
           accessorKey: "name",
           cell: ({ row }) => {
             return (
               <div className="flex space-x-2">
+                <div className="flex space-x-2 justify-center text-muted-foreground max-w-10">
+                  <ContentTypeToIcon contentType={row.original.mimeType} />
+                </div>
                 <Link
-                  className="max-w-[500px] truncate font-medium text-primary"
-                  href={`/content/single?contentId=${row.original.id}`}
+                  className="max-w-[200px] truncate font-medium text-primary"
+                  href={`/content/single/general?contentId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -91,7 +81,7 @@ export default function ContentPage() {
             );
           },
           header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Summary" />
+            <DataTableColumnHeader column={column} title="Description" />
           ),
         },
         {
@@ -100,6 +90,11 @@ export default function ContentPage() {
             return (
               <div className="flex space-x-2">
                 <span className="font-light">{row.original.job.status}</span>
+                {row.original.job.status === "PROCESSING" && (
+                  <span className="text-priamry">
+                    {(row.original.job.progress * 100).toFixed(0)}%
+                  </span>
+                )}
               </div>
             );
           },
@@ -146,7 +141,7 @@ export default function ContentPage() {
         },
       ]}
       handleSelect={(content) =>
-        router.push(`/content/single?contentId=${content.id}`)
+        router.push(`/content/single/general?contentId=${content.id}`)
       }
       itemType="content"
       loading={loading}

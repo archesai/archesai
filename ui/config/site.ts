@@ -94,6 +94,20 @@ export const siteConfig = {
         title: "Content",
       },
     ],
+    "/content/single": [
+      {
+        href: "/content/single/general",
+        Icon: Server,
+        tab: "General",
+        title: "General",
+      },
+      {
+        href: "/content/single/vectors",
+        Icon: Server,
+        tab: "Vectors",
+        title: "Vectors",
+      },
+    ],
     "/home": [
       {
         href: "/home",
@@ -126,12 +140,6 @@ export const siteConfig = {
         title: "Organization",
       },
       {
-        href: "/settings/organization/api-tokens",
-        Icon: Key,
-        tab: "API Tokens",
-        title: "API Tokens",
-      },
-      {
         href: "/settings/organization/billing",
         Icon: DollarSign,
         tab: "Billing",
@@ -142,6 +150,12 @@ export const siteConfig = {
         Icon: Users,
         tab: "Members",
         title: "Members",
+      },
+      {
+        href: "/settings/organization/api-tokens",
+        Icon: Key,
+        tab: "API Tokens",
+        title: "API Tokens",
       },
     ],
     "/settings/profile": [

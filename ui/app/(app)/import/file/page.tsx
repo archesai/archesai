@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   useContentControllerCreate,
@@ -10,6 +10,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { Loader2, Trash, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
@@ -28,7 +29,13 @@ export default function ImportPage() {
 
   const handleFiles = (files: FileList | null) => {
     if (files) {
-      setSelectedFiles(Array.from(files));
+      const newFiles = Array.from(files).filter(
+        (file) =>
+          !selectedFiles.some(
+            (f) => f.name === file.name && f.size === file.size
+          )
+      );
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
@@ -52,6 +59,10 @@ export default function ImportPage() {
     handleFiles(e.target.files);
   };
 
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const uploadFile = (file: File, writeUrl: string) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -61,8 +72,7 @@ export default function ImportPage() {
           const percentCompleted = Math.round(
             (event.loaded * 100) / event.total
           );
-          // Update progress for this file
-          setUploadProgress(percentCompleted);
+          setUploadProgress((prev) => Math.max(prev, percentCompleted));
         }
       });
 
@@ -74,7 +84,7 @@ export default function ImportPage() {
 
             const readUrlResponse = await getReadUrl({
               body: {
-                path: `uploads/${file.name}`, // Include the file name in the path
+                path: `uploads/${file.name}`,
               },
               pathParams: {
                 orgname: defaultOrgname,
@@ -120,20 +130,21 @@ export default function ImportPage() {
   const uploadFiles = async () => {
     if (selectedFiles.length === 0) return;
     setUploading(true);
+    setUploadProgress(0);
 
     try {
       for (const file of selectedFiles) {
         // Get a unique write URL for each file
         const writeUrlResponse = await getWriteUrl({
           body: {
-            path: `uploads/${file.name}`, // Include the file name in the path
+            path: `uploads/${file.name}`,
           },
           pathParams: {
             orgname: defaultOrgname,
           },
         });
 
-        const writeUrl = writeUrlResponse.write; // Adjust this based on your API response structure
+        const writeUrl = writeUrlResponse.write;
         console.log("Write URL for", file.name, ":", writeUrl);
 
         // Upload the file using the write URL
@@ -142,7 +153,7 @@ export default function ImportPage() {
 
       setUploading(false);
       setSelectedFiles([]);
-      setUploadProgress(0);
+      setUploadProgress(100);
       console.log("All files uploaded successfully");
       router.push("/content");
     } catch (error) {
@@ -153,25 +164,34 @@ export default function ImportPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto h-[80%] mt-8 stack items-center justify-center">
-      <Card
+    <div className="flex flex-col items-center px-8 h-[90%] justify-center ">
+      <div
         className={cn(
-          "border-dashed border-2 p-6 text-center",
-          dragActive ? "border-blue-500" : "border-gray-400"
+          "w-full max-w-4xl bg-white rounded-lg transition-all duration-300",
+          selectedFiles.length > 0 ? "flex" : "flex flex-col items-center"
         )}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
       >
-        <CardContent>
-          <p className="text-gray-600">
+        {/* Drop Area */}
+        <Card
+          className={cn(
+            "p-8 flex flex-col items-center justify-center border-dashed border-2 transition-colors duration-300 w-full",
+            dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
+            selectedFiles.length > 0 ? "w-2/3" : ""
+          )}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <Upload className="h-12 w-12 text-gray-400 mb-4" />
+          <p className="text-gray-600 mb-4">
             Drag and drop files here, or click to select files
           </p>
           <Button
-            className="mt-4"
+            className="mt-4 px-4 py-2 flex items-center justify-center"
             onClick={() => fileInputRef.current?.click()}
             variant="outline"
           >
+            <Upload className="h-5 w-5 mr-2" />
             Select Files
           </Button>
           <input
@@ -181,29 +201,63 @@ export default function ImportPage() {
             ref={fileInputRef}
             type="file"
           />
-        </CardContent>
-      </Card>
+        </Card>
 
-      {selectedFiles.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold">Selected Files:</h3>
-          <ul className="list-disc list-inside">
-            {selectedFiles.map((file, idx) => (
-              <li key={idx}>{file.name}</li>
-            ))}
-          </ul>
-          <Button className="mt-4" disabled={uploading} onClick={uploadFiles}>
-            Upload
-          </Button>
-        </div>
-      )}
-
-      {uploading && (
-        <div className="mt-6">
-          <Progress value={uploadProgress} />
-          <p className="text-center mt-2">{uploadProgress}%</p>
-        </div>
-      )}
+        {/* Sidebar */}
+        {selectedFiles.length > 0 && (
+          <div className="w-1/3 bg-gray-50 border-l border-gray-200 p-6 flex flex-col">
+            <h2 className="text-xl font-semibold mb-4">Selected Files</h2>
+            {selectedFiles.length === 0 ? (
+              <p className="text-gray-500">No files selected.</p>
+            ) : (
+              <ul className="flex-1 overflow-y-auto space-y-2">
+                {selectedFiles.map((file, idx) => (
+                  <li
+                    className="flex items-center justify-between p-3 bg-white rounded shadow-sm"
+                    key={idx}
+                  >
+                    <span className="text-gray-700 truncate w-4/5">
+                      {file.name}
+                    </span>
+                    <button
+                      aria-label={`Remove ${file.name}`}
+                      className="text-red-500 hover:text-red-700 focus:outline-none"
+                      onClick={() => removeFile(idx)}
+                    >
+                      <Trash className="h-5 w-5" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Button
+              className="mt-6 flex items-center justify-center px-4 py-2"
+              disabled={uploading || selectedFiles.length === 0}
+              onClick={uploadFiles}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5 mr-3 text-white" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-5 w-5 mr-2" />
+                  Upload
+                </>
+              )}
+            </Button>
+            {uploading && (
+              <div className="mt-6">
+                <Progress value={uploadProgress} />
+                <p className="text-center mt-2 text-sm text-gray-600">
+                  {uploadProgress}% Uploaded
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

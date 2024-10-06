@@ -1,7 +1,5 @@
 "use client";
 
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,18 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  useContentControllerFindOne,
-  useVectorRecordControllerFindAll,
-} from "@/generated/archesApiComponents";
-import {
-  ContentEntity,
-  VectorRecordEntity,
-} from "@/generated/archesApiSchemas";
+import { useContentControllerFindOne } from "@/generated/archesApiComponents";
+import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useSelectItems } from "@/hooks/useSelectItems";
 import { format } from "date-fns";
-import { File } from "lucide-react";
 // import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 
@@ -35,18 +25,6 @@ export default function ContentDetailsPage() {
   const contentId = searchParams?.get("contentId");
 
   const { defaultOrgname } = useAuth();
-  const { data: vectorRecords, isLoading: vectorRecordsIsLoading } =
-    useVectorRecordControllerFindAll(
-      {
-        pathParams: {
-          contentId: contentId as string,
-          orgname: defaultOrgname,
-        },
-      },
-      {
-        enabled: !!defaultOrgname,
-      }
-    );
 
   const { data: content, isLoading } = useContentControllerFindOne(
     {
@@ -60,16 +38,12 @@ export default function ContentDetailsPage() {
     }
   );
 
-  const { selectedItems } = useSelectItems({
-    items: vectorRecords?.results || [],
-  });
-
-  if (isLoading || !content || !vectorRecords) {
+  if (isLoading || !content) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
+    <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>{content.name}</CardTitle>
@@ -134,31 +108,6 @@ export default function ContentDetailsPage() {
           </div>
         </CardContent>
       </Card>
-      <DataTable<{ name: string } & VectorRecordEntity, undefined>
-        columns={[
-          {
-            accessorKey: "text",
-            cell: ({ row }) => {
-              return <div className="flex space-x-2">{row.original.text}</div>;
-            },
-            header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Text" />
-            ),
-          },
-        ]}
-        content={() => (
-          <div className="flex w-full justify-center items-center h-full"></div>
-        )}
-        data={vectorRecords as any}
-        dataIcon={<File size={24} />}
-        defaultView="table"
-        deleteItem={async () => {}}
-        getDeleteVariablesFromItem={() => []}
-        handleSelect={() => {}}
-        itemType="vector"
-        loading={vectorRecordsIsLoading}
-        mutationVariables={selectedItems.map(() => undefined)}
-      />
     </div>
   );
 }

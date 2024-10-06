@@ -62,7 +62,7 @@ export class ContentProcessor {
           await this.openAiEmbeddingsService.createEmbeddings(
             textContentChunk.map((x) => x.text)
           ),
-        5
+        3
       );
       embeddings = embeddings.concat(embeddingsChunk);
     }
@@ -129,6 +129,7 @@ export class ContentProcessor {
   @OnQueueActive()
   async onActive(job: Job) {
     const content = job.data.content as ContentEntity;
+    await this.jobsService.updateStatus(content.job.id, "PROCESSING");
     // await this.organizationsService.removeCredits(
     //   content.orgname,
     //   (content.maxFrames / 12) * 1000
@@ -395,7 +396,7 @@ export class ContentProcessor {
       const { summary, tokens } = await retry(
         this.logger,
         async () => await this.openAiCompletionsService.createSummary(c),
-        5
+        3
       );
 
       this.logger.log(`Got summary for content for ${content.name}`);

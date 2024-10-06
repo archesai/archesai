@@ -3,7 +3,7 @@ import { Logger } from "@nestjs/common";
 export const retry = async <T>(
   logger: Logger,
   fn: () => Promise<T>,
-  maxAttempts: number,
+  maxAttempts: number
 ) => {
   const execute = async (attempt: any): Promise<T> => {
     try {
@@ -14,12 +14,12 @@ export const retry = async <T>(
         const delayInSeconds = Math.max(
           Math.min(
             Math.pow(2, nextAttempt) + randInt(-nextAttempt, nextAttempt),
-            30,
+            10
           ),
-          1,
+          1
         );
         logger.warn(
-          `Retrying after ${delayInSeconds} seconds due to error: ${err}`,
+          `Retrying after ${delayInSeconds} seconds due to error: ${err}`
         );
         return await delay(() => execute(nextAttempt), delayInSeconds * 1000);
       } else {

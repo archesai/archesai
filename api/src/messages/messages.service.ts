@@ -268,7 +268,7 @@ export class MessagesService {
         await this.openAiEmbeddingsService.createEmbeddings([
           createMessageDto.question,
         ]),
-      5
+      3
     );
     const queryResult = await this.vectorDBService.query(
       orgname,

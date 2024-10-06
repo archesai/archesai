@@ -1,11 +1,20 @@
 import { fullScreenAtom } from "@/state/fullScreenAtom";
 import { useAtom } from "jotai";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 import { useSidebar } from "./useSidebar";
 
 export const useFullScreen = () => {
+  const pathname = usePathname();
   const [isFullScreen, setIsFullScreen] = useAtom(fullScreenAtom);
   const { collapseSidebar, expandSidebar } = useSidebar();
+
+  useEffect(() => {
+    if (pathname !== "/chatbots/single/chat") {
+      setIsFullScreen(false);
+    }
+  }, [pathname]);
 
   const toggleFullscreen = () => {
     if (isFullScreen) {

@@ -82,7 +82,9 @@ export class OpenAiCompletionsService implements CompletionsService {
       frequency_penalty: 0,
       max_tokens: 80,
       model:
-        this.configService.get("LLM_TYPE") == "openai" ? "gpt-4o" : "llama3.1",
+        this.configService.get("LLM_TYPE") == "openai"
+          ? "gpt-3.5-turbo-instruct"
+          : "llama3.1",
       presence_penalty: 0,
       prompt: `Write a very short few word summary describing what this document is based on a part of its content. It could be a book, a legal document, a textbook, a newspaper, a bank statement, or another document like this.\n\nContent:\n${text}\n\n---\n\nSummary:`,
       temperature: 0.3,
