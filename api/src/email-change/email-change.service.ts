@@ -47,8 +47,12 @@ export class EmailChangeService {
     requestEmailChangeDto: RequestEmailChangeDto
   ): Promise<void> {
     const user = await this.usersService.findOne(userId);
-
-    if (await this.usersService.findOneByEmail(requestEmailChangeDto.email)) {
+    let newEmailInUse = false;
+    try {
+      await this.usersService.findOneByEmail(requestEmailChangeDto.email);
+      newEmailInUse = true;
+    } catch (e) {}
+    if (newEmailInUse) {
       throw new ConflictException("New email is already in use.");
     }
 

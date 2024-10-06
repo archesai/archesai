@@ -23,8 +23,8 @@ import { CreateChatbotDto } from "./dto/create-chatbot.dto";
 import { UpdateChatbotDto } from "./dto/update-chatbot.dto";
 import { ChatbotEntity } from "./entities/chatbot.entity";
 
-@Roles("ADMIN")
 @ApiBearerAuth()
+@Roles("ADMIN")
 @ApiTags("Chatbots")
 @Controller("/organizations/:orgname/chatbots")
 export class ChatbotsController

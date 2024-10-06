@@ -23,9 +23,9 @@ import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
 import { ApiTokenEntity } from "./entities/api-token.entity";
 
-@Roles("ADMIN")
 @ApiBearerAuth()
 @ApiTags("Organization - API Tokens")
+@Roles("ADMIN")
 @Controller()
 export class ApiTokensController
   implements
@@ -38,8 +38,8 @@ export class ApiTokensController
 {
   constructor(private readonly apiTokensService: ApiTokensService) {}
 
-  @Post("/organizations/:orgname/api-tokens")
   @ApiCrudOperation(Operation.CREATE, "API token", ApiTokenEntity, true)
+  @Post("/organizations/:orgname/api-tokens")
   async create(
     @Param("orgname") orgname: string,
     @Body() createTokenDto: CreateApiTokenDto
@@ -51,8 +51,8 @@ export class ApiTokensController
     return new ApiTokenEntity(apiToken);
   }
 
-  @Get("/organizations/:orgname/api-tokens")
   @ApiCrudOperation(Operation.FIND_ALL, "API token", ApiTokenEntity, true)
+  @Get("/organizations/:orgname/api-tokens")
   async findAll(
     @Param("orgname") orgname: string,
     @Query() apiTokenQueryDto: ApiTokenQueryDto
@@ -72,21 +72,21 @@ export class ApiTokensController
     });
   }
 
-  @Get("/organizations/:orgname/api-tokens/:id")
   @ApiCrudOperation(Operation.GET, "API token", ApiTokenEntity, true)
+  @Get("/organizations/:orgname/api-tokens/:id")
   async findOne(@Param("orgname") orgname: string, @Param("id") id: string) {
     const apiToken = await this.apiTokensService.findOne(orgname, id);
     return new ApiTokenEntity(apiToken);
   }
 
-  @Delete("/organizations/:orgname/api-tokens/:id")
   @ApiCrudOperation(Operation.DELETE, "API token", ApiTokenEntity, true)
+  @Delete("/organizations/:orgname/api-tokens/:id")
   async remove(@Param("orgname") orgname: string, @Param("id") id: string) {
     return this.apiTokensService.remove(orgname, id);
   }
 
-  @Patch("/organizations/:orgname/api-tokens/:id")
   @ApiCrudOperation(Operation.UPDATE, "API token", ApiTokenEntity, true)
+  @Patch("/organizations/:orgname/api-tokens/:id")
   async update(
     @Param("orgname") orgname: string,
     @Param("id") id: string,

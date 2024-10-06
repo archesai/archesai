@@ -10,11 +10,11 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
+import { BaseController } from "../common/base.controller";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ContentService } from "./content.service";
 import { ContentQueryDto } from "./dto/content-query.dto";

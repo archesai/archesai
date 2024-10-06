@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
+import { BaseController } from "../common/base.controller";
 import { PaginatedDto } from "../common/paginated.dto";
 import { VectorRecordQueryDto } from "./dto/vector-record-query.dto";
 import { VectorRecordEntity } from "./entities/vector-record.entity";

@@ -20,11 +20,11 @@ import {
   CurrentUserDto,
 } from "../auth/decorators/current-user.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
-import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
+import { BaseController } from "../common/base.controller";
 import { PaginatedDto } from "../common/paginated.dto";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { MemberQueryDto } from "./dto/member-query.dto";
@@ -46,8 +46,8 @@ export class MembersController
 {
   constructor(private readonly membersService: MembersService) {}
 
-  @Post("/organizations/:orgname/members")
   @ApiCrudOperation(Operation.CREATE, "member", MemberEntity, true)
+  @Post("/organizations/:orgname/members")
   async create(
     @Param("orgname") orgname: string,
     @Body() createMemberDto: CreateMemberDto
@@ -57,8 +57,8 @@ export class MembersController
     );
   }
 
-  @Get("/organizations/:orgname/members")
   @ApiCrudOperation(Operation.FIND_ALL, "member", MemberEntity, true)
+  @Get("/organizations/:orgname/members")
   async findAll(
     @Param("orgname") orgname: string,
     @Query() memberQueryDto: MemberQueryDto
@@ -78,8 +78,10 @@ export class MembersController
     });
   }
 
-  @Roles("ADMIN")
-  @Post("/organizations/:orgname/members/join")
+  @ApiOperation({
+    description: "Accept invitation to this organization. ADMIN ONLY.",
+    summary: "Accept invitation to this organization",
+  })
   @ApiResponse({ description: "Unauthorized", status: 401 })
   @ApiResponse({ description: "Email not verified", status: 403 })
   @ApiResponse({ description: "Not Found", status: 404 })
@@ -88,10 +90,8 @@ export class MembersController
     status: 201,
     type: MemberEntity,
   })
-  @ApiOperation({
-    description: "Accept invitation to this organization. ADMIN ONLY.",
-    summary: "Accept invitation to this organization",
-  })
+  @Roles("ADMIN")
+  @Post("/organizations/:orgname/members/join")
   async join(
     @Param("orgname") orgname: string,
     @CurrentUser() user: CurrentUserDto
@@ -101,8 +101,8 @@ export class MembersController
     );
   }
 
-  @Delete("/organizations/:orgname/members/:memberId")
   @ApiCrudOperation(Operation.DELETE, "member", MemberEntity, true)
+  @Delete("/organizations/:orgname/members/:memberId")
   async remove(
     @Param("orgname") orgname: string,
     @Param("memberId") memberId: string
@@ -110,8 +110,8 @@ export class MembersController
     return this.membersService.remove(orgname, memberId);
   }
 
-  @Patch("/organizations/:orgname/members/:memberId")
   @ApiCrudOperation(Operation.UPDATE, "member", MemberEntity, true)
+  @Patch("/organizations/:orgname/members/:memberId")
   async update(
     @Param("orgname") orgname: string,
     @Param("memberId") memberId: string,

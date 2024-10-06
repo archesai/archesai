@@ -11,6 +11,7 @@ import {
   HomeIcon,
   Image,
   Key,
+  KeySquare,
   Layers,
   MessageSquare,
   Server,
@@ -165,6 +166,12 @@ export const siteConfig = {
         section: "settings",
         tab: "General",
         title: "Profile",
+      },
+      {
+        href: "/settings/profile/security",
+        Icon: KeySquare,
+        tab: "Security",
+        title: "Security",
       },
     ],
   } as Record<

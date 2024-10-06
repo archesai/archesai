@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Patch, Post } from "@nestjs/common";
 import {
   ApiBearerAuth,
-  ApiNotFoundResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -11,6 +10,10 @@ import {
   CurrentUser,
   CurrentUserDto,
 } from "../auth/decorators/current-user.decorator";
+import {
+  ApiCrudOperation,
+  Operation,
+} from "../common/api-crud-operation.decorator";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersService } from "./users.service";
@@ -32,36 +35,16 @@ export class UserController {
   @ApiOperation({ summary: "Deactivate" })
   @Post("/deactivate")
   async deactivate(@CurrentUser() user: CurrentUserDto) {
-    return this.usersService.deactivate(user.id);
+    return this.usersService.remove(user.id);
   }
 
-  @ApiOperation({
-    description:
-      "This endpoint can be used to find out about the currently authorized user. USER and ADMIN can use endpoint.",
-    summary: "Get current user ",
-  })
-  @ApiNotFoundResponse()
-  @ApiResponse({
-    description: "User was successfully returned",
-    status: 200,
-    type: UserEntity,
-  })
+  @ApiCrudOperation(Operation.GET, "user", UserEntity, true)
   @Get()
   async findOne(@CurrentUser() user: CurrentUserDto) {
     return new UserEntity(user);
   }
 
-  @ApiOperation({
-    description:
-      "This endpoint can be used to update the currently authorized user. ADMIN ONLY.",
-    summary: "Update current user",
-  })
-  @ApiNotFoundResponse()
-  @ApiResponse({
-    description: "User was successfully updated",
-    status: 200,
-    type: UserEntity,
-  })
+  @ApiCrudOperation(Operation.UPDATE, "user", UserEntity, true)
   @Patch()
   async update(
     @CurrentUser() user: CurrentUserDto,
