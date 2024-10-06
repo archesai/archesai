@@ -51,8 +51,8 @@ export class WebsocketsGateway
         socket.handshake.auth.token
       );
       const user = await this.usersService.findOne(id);
-      this.logger.log(`Connected with websockets ${user.defaultOrg}`);
-      socket.join(user.defaultOrg);
+      this.logger.log(`Connected with websockets ${user.defaultOrgname}`);
+      socket.join(user.defaultOrgname);
     } catch (error) {
       this.logger.error(error);
       socket.disconnect();

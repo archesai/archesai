@@ -89,7 +89,7 @@ export class OrganizationsService {
     });
 
     await this.prisma.user.update({
-      data: { defaultOrg: organization.orgname },
+      data: { defaultOrgname: organization.orgname },
       where: { username: user.username },
     });
 

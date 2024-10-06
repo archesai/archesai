@@ -156,7 +156,7 @@ model AuthProvider {
   id         String           @id @default(uuid())
   provider   AuthProviderType
   providerId String
-  user       User             @relation(fields: [userId], references: [id])
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   createdAt  DateTime         @default(now())
 
@@ -168,15 +168,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  username      String  @unique
-  email         String  @unique
-  firstName     String  @default("")
-  lastName      String  @default("")
-  emailVerified Boolean @default(false)
-  deactivated   Boolean @default(false)
-  photoUrl      String?
-  defaultOrg    String?
-  password      String?
+  username       String  @unique
+  email          String  @unique
+  firstName      String  @default("")
+  lastName       String  @default("")
+  emailVerified  Boolean @default(false)
+  deactivated    Boolean @default(false)
+  photoUrl       String?
+  defaultOrgname String?
+  password       String?
 
   refreshToken String?
 
@@ -298,7 +298,7 @@ model ARToken {
   type      ARTokenType
   token     String // Hashed token
   expiresAt DateTime
-  user      User        @relation(fields: [userId], references: [id])
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   newEmail  String? // For email change tokens
 }

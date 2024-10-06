@@ -111,9 +111,7 @@ export class UserRepository {
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.prisma.user.update({
       data: {
-        firstName: updateUserDto.firstName,
-        lastName: updateUserDto.lastName,
-        username: updateUserDto.username,
+        ...updateUserDto,
       },
       include: { authProviders: true, memberships: true },
       where: { id },

@@ -4,6 +4,7 @@ import { AuthProviderType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 import { AppModule } from "../src/app.module";
+import { CurrentUserDto } from "../src/auth/decorators/current-user.decorator";
 import { OrganizationsService } from "../src/organizations/organizations.service";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { UsersService } from "../src/users/users.service";
@@ -20,7 +21,7 @@ async function main() {
     app.get<OrganizationsService>(OrganizationsService);
 
   // Create init user
-  let user = null as any;
+  let user = null as CurrentUserDto;
   const email = "user@example.com";
 
   const hashedPassword = await bcrypt.hash("password", 10);
@@ -34,7 +35,8 @@ async function main() {
       password: hashedPassword,
       photoUrl:
         "https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179",
-      username: email,
+      username:
+        email.split("@")[0] + "-" + Math.random().toString(36).substring(2, 6),
     });
     user = await usersService.syncAuthProvider(
       email,
@@ -43,8 +45,8 @@ async function main() {
     );
 
     // Create init organization
-    await organizationsService.setPlan(user.defaultOrg, "UNLIMITED");
-    await organizationsService.addCredits(user.defaultOrg, 1000000000);
+    await organizationsService.setPlan(user.defaultOrgname, "UNLIMITED");
+    await organizationsService.addCredits(user.defaultOrgname, 1000000000);
   } catch (e) {
     console.log("User already exists");
     user = await usersService.findOneByEmail(email);
@@ -53,7 +55,7 @@ async function main() {
 
   const chatbot = await prismaService.chatbot.findFirst({
     where: {
-      orgname: user.defaultOrg,
+      orgname: user.defaultOrgname,
     },
   });
 
@@ -73,7 +75,7 @@ async function main() {
       //         jobType: "DOCUMENT",
       //         organization: {
       //           connect: {
-      //             orgname: user.defaultOrg,
+      //             orgname: user.defaultOrgname,
       //           },
       //         },
       //         status: "COMPLETE",
@@ -83,7 +85,7 @@ async function main() {
       //     name: faker.commerce.productName(),
       //     organization: {
       //       connect: {
-      //         orgname: user.defaultOrg,
+      //         orgname: user.defaultOrgname,
       //       },
       //     },
       //     previewImage: "https://picsum.photos/200/300",
@@ -107,7 +109,7 @@ async function main() {
             },
           },
           name: faker.commerce.productName(),
-          orgname: user.defaultOrg,
+          orgname: user.defaultOrgname,
         },
       });
 
@@ -122,7 +124,7 @@ async function main() {
           name: faker.commerce.productName(),
           organization: {
             connect: {
-              orgname: user.defaultOrg,
+              orgname: user.defaultOrgname,
             },
           },
           role: faker.helpers.arrayElement(roles) as any,

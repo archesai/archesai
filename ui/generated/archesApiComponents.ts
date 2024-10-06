@@ -182,7 +182,7 @@ export type UserControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
 export type UserControllerFindOneVariables = ArchesApiContext["fetcherOptions"];
 
 /**
- * This endpoint can be used to find out about the currently authorized user. USER and ADMIN can use endpoint.
+ * Get a user. ADMIN ONLY.
  */
 export const fetchUserControllerFindOne = (
   variables: UserControllerFindOneVariables,
@@ -198,7 +198,7 @@ export const fetchUserControllerFindOne = (
   >({ url: "/user", method: "get", ...variables, signal });
 
 /**
- * This endpoint can be used to find out about the currently authorized user. USER and ADMIN can use endpoint.
+ * Get a user. ADMIN ONLY.
  */
 export const useUserControllerFindOne = <TData = Schemas.UserEntity,>(
   variables: UserControllerFindOneVariables,
@@ -237,7 +237,7 @@ export type UserControllerUpdateVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * This endpoint can be used to update the currently authorized user. ADMIN ONLY.
+ * Update a user. ADMIN ONLY.
  */
 export const fetchUserControllerUpdate = (
   variables: UserControllerUpdateVariables,
@@ -253,7 +253,7 @@ export const fetchUserControllerUpdate = (
   >({ url: "/user", method: "patch", ...variables, signal });
 
 /**
- * This endpoint can be used to update the currently authorized user. ADMIN ONLY.
+ * Update a user. ADMIN ONLY.
  */
 export const useUserControllerUpdate = (
   options?: Omit<

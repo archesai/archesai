@@ -47,7 +47,7 @@ export const useAuth = () => {
       const user = (await response.json()) as UserEntity;
       setAuthState((prevState) => ({
         ...prevState,
-        defaultOrgname: user.defaultOrg,
+        defaultOrgname: user.defaultOrgname,
         isLoading: false,
         memberships: user.memberships,
         user,
@@ -130,7 +130,6 @@ export const useAuth = () => {
       body: JSON.stringify({
         email,
         password,
-        username: email,
       }),
       headers: { "Content-Type": "application/json" },
       method: "POST",

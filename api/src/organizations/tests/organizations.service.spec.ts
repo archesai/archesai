@@ -16,7 +16,7 @@ describe("OrganizationsService", () => {
   const user: CurrentUserDto = {
     createdAt: new Date(),
     deactivated: false,
-    defaultOrg: "org1",
+    defaultOrgname: "org1",
     email: "user1@test.com",
     emailVerified: true,
     firstName: "User",

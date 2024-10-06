@@ -43,7 +43,7 @@ export default function AppLayout({
       router.push("/auth/login");
       return;
     }
-    if (!user?.defaultOrg) {
+    if (!user?.defaultOrgname) {
       getUserFromToken();
       return;
     }

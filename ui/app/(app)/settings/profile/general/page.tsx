@@ -68,7 +68,7 @@ export default function ProfileSettingsPage() {
         await updateUser(
           {
             body: {
-              defaultOrg: data.defaultOrg,
+              defaultOrgname: data.defaultOrgname,
               firstName: data.firstName,
               lastName: data.lastName,
             },

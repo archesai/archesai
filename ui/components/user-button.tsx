@@ -157,7 +157,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                     onClick={() => {
                       updateDefaultOrg({
                         body: {
-                          defaultOrg: membership.orgname,
+                          defaultOrgname: membership.orgname,
                         },
                       });
                     }}

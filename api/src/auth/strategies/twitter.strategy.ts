@@ -29,6 +29,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
     try {
       const twitterId = profile.id;
       const email = profile.emails?.[0]?.value;
+      const username = profile.username;
 
       let user: CurrentUserDto;
       try {
@@ -39,7 +40,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
           emailVerified: true,
           password: null,
           photoUrl: profile.photos?.[0]?.value,
-          username: email,
+          username,
         });
       } finally {
         user = await this.usersService.syncAuthProvider(

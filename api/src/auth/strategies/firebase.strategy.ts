@@ -35,7 +35,11 @@ export class FirebaseStrategy extends PassportStrategy(
         emailVerified: true,
         password: null,
         photoUrl: decodedToken.picture,
-        username: decodedToken.email,
+        // plus - and a random string of 4 letters
+        username:
+          decodedToken.email.split("@")[0] +
+          "-" +
+          Math.random().toString(36).substring(2, 6),
       });
     } finally {
       user = await this.usersService.syncAuthProvider(

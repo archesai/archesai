@@ -16,7 +16,7 @@ export class UserEntity extends BaseEntity implements User {
     description: "The user's default organization name",
     example: "my-organization",
   })
-  defaultOrg: string;
+  defaultOrgname: string;
 
   @ApiProperty({
     description: "The user's display name",

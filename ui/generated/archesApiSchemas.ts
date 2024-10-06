@@ -42,13 +42,6 @@ export type RegisterDto = {
    */
   email: string;
   /**
-   * The user's username
-   *
-   * @example jonathan
-   * @minLength 5
-   */
-  username: string;
-  /**
    * The password to create and/or login to an account
    *
    * @example password
@@ -126,7 +119,7 @@ export type UserEntity = {
    *
    * @example my-organization
    */
-  defaultOrg: string;
+  defaultOrgname: string;
   /**
    * The user's display name
    *
@@ -180,7 +173,7 @@ export type UpdateUserDto = {
    *
    * @example my-organization
    */
-  defaultOrg?: string;
+  defaultOrgname?: string;
   /**
    * The user's first name
    *

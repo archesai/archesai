@@ -82,7 +82,11 @@ export class AuthService {
       emailVerified: this.configService.get("FEATURE_EMAIL") === false,
       password: hashedPassword,
       photoUrl: "",
-      username: registerDto.username,
+      // username: registerDto.username,
+      username:
+        registerDto.email.split("@")[0] +
+        "-" +
+        Math.random().toString(36).substring(2, 6),
     });
     return this.usersService.syncAuthProvider(
       user.email,
