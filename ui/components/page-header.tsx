@@ -9,7 +9,7 @@ export const PageHeader = ({
   title: string;
 }) => {
   return (
-    <header className="hidden md:block z-[9]  md:-mt-0 pt-1 bg-background">
+    <header className="hidden md:block z-[9] md:-mt-0 bg-background">
       <div className="bg-true-white/80 backdrop-blur-md">
         <div className="hstack justify-between items-center w-full p-4">
           <Breadcrumbs />
