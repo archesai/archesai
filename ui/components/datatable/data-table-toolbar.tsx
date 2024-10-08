@@ -8,6 +8,7 @@ import { useToggleView } from "@/hooks/useToggleView";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DatePickerWithRange } from "./date-range-picker";
 
 interface DataTableToolbarProps<TData> {
@@ -32,7 +33,7 @@ export function DataTableToolbar<TData>({
           placeholder={`Filter ${itemType}s...`}
           value={query}
         />
-        {/* {table.getColumn("llmBase") && (
+        {table.getColumn("llmBase") && (
           <DataTableFacetedFilter
             column={table.getColumn("llmBase")}
             options={[
@@ -43,7 +44,7 @@ export function DataTableToolbar<TData>({
             ]}
             title="Language Model"
           />
-        )} */}
+        )}
         {isFiltered && (
           <Button
             className="h-8 px-2 lg:px-3"

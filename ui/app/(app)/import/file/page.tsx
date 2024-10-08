@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
-  useContentControllerCreate,
+  useDocumentsControllerCreate,
   useStorageControllerGetReadUrl,
   useStorageControllerGetWriteUrl,
 } from "@/generated/archesApiComponents";
@@ -25,7 +25,7 @@ export default function ImportPage() {
 
   const { mutateAsync: getWriteUrl } = useStorageControllerGetWriteUrl();
   const { mutateAsync: getReadUrl } = useStorageControllerGetReadUrl();
-  const { mutateAsync: indexDocument } = useContentControllerCreate();
+  const { mutateAsync: indexDocument } = useDocumentsControllerCreate();
 
   const handleFiles = (files: FileList | null) => {
     if (files) {
@@ -93,9 +93,7 @@ export default function ImportPage() {
 
             await indexDocument({
               body: {
-                buildArgs: {},
                 name: file.name,
-                type: "DOCUMENT",
                 url: readUrlResponse.read,
               },
               pathParams: {

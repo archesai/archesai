@@ -8,14 +8,6 @@ import { JobEntity } from "../../jobs/entities/job.entity";
 
 @Exclude()
 export class ContentEntity extends BaseEntity implements Content {
-  @ApiProperty({
-    description: "The content's annotations",
-    example: { key: "value" },
-  })
-  @Expose()
-  @IsObject()
-  annotations: any;
-
   @ApiProperty()
   @Expose()
   @IsObject()

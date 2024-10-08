@@ -54,8 +54,8 @@ export class LoaderService {
           )
       );
 
-      const { mimeType, preview, textContent, title } = data as {
-        mimeType: string;
+      const { contentType, preview, textContent, title } = data as {
+        contentType: string;
         preview: string;
         textContent: { page: number; text: string; tokens: number }[];
         title: string;
@@ -69,7 +69,7 @@ export class LoaderService {
       }));
 
       return {
-        mimeType,
+        mimeType: contentType,
         preview,
         textContent: sanitizedTextContent,
         title,

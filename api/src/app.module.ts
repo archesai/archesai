@@ -16,11 +16,13 @@ import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
 import { ChatbotsModule } from "./chatbots/chatbots.module";
 import { ContentModule } from "./content/content.module";
+import { DocumentsModule } from "./documents/documents.module";
 import { EmailModule } from "./email/email.module";
 import { EmailChangeModule } from "./email-change/email-change.module";
 import { EmailVerificationModule } from "./email-verification/email-verification.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { FirebaseModule } from "./firebase/firebase.module";
+import { ImagesModule } from "./images/images.module";
 import { JobsModule } from "./jobs/jobs.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
@@ -219,6 +221,8 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     EmailChangeModule,
     VectorRecordModule,
     ARTokensModule,
+    ImagesModule,
+    DocumentsModule,
   ],
   providers: [WebsocketsGateway],
 })

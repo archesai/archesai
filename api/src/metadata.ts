@@ -306,12 +306,6 @@ export default async () => {
           {
             ChatbotEntity: {
               description: { required: true, type: () => String },
-              documents: {
-                required: true,
-                type: () => [
-                  t["./content/dto/content-field-item.dto"].ContentFieldItem,
-                ],
-              },
               llmBase: { required: true, type: () => String },
               name: { required: true, type: () => String },
               orgname: { required: true, type: () => String },
@@ -438,6 +432,7 @@ export default async () => {
                 default: "createdAt",
                 enum: t["./content/dto/content-query.dto"].SortByField.CREATED,
               },
+              type: { required: false, type: () => Object },
             },
           },
         ],
@@ -703,7 +698,7 @@ export default async () => {
           },
         ],
         [
-          import("./content/entities/document.entity"),
+          import("./documents/entities/document.entity"),
           {
             DocumentEntity: {
               chunkSize: { required: true, type: () => Number },
@@ -731,7 +726,7 @@ export default async () => {
           { CreateAnimationDto: {} },
         ],
         [
-          import("./content/dto/create-document.dto"),
+          import("./documents/dto/create-document.dto"),
           {
             CreateDocumentDto: {
               chunkSize: { required: false, type: () => Number, default: 200 },
@@ -808,6 +803,38 @@ export default async () => {
             },
           },
         ],
+        [
+          import("./animations/entities/animation.entity"),
+          {
+            AnimationEntity: {
+              animationPrompts: { required: true, type: () => String },
+              audioStart: { required: true, type: () => Object, default: 0 },
+              audioUrl: { required: true, type: () => Object, default: "" },
+              fps: { required: true, type: () => Number },
+              height: { required: true, type: () => Number },
+              length: { required: true, type: () => Number },
+              maxFrames: { required: true, type: () => Number },
+              useAudio: { required: true, type: () => Object, default: false },
+              width: { required: true, type: () => Number },
+            },
+          },
+        ],
+        [
+          import("./animations/dto/create-animation.dto"),
+          { CreateAnimationDto: {} },
+        ],
+        [
+          import("./images/entities/image.entity"),
+          {
+            ImageEntity: {
+              height: { required: true, type: () => Number },
+              prompt: { required: true, type: () => String },
+              useInit: { required: true, type: () => Boolean },
+              width: { required: true, type: () => Number },
+            },
+          },
+        ],
+        [import("./images/dto/create-image.dto"), { CreateImageDto: {} }],
       ],
       controllers: [
         [
@@ -1042,6 +1069,26 @@ export default async () => {
             PasswordResetController: {
               confirm: { type: t["./auth/dto/token.dto"].TokenDto },
               request: {},
+            },
+          },
+        ],
+        [
+          import("./animations/animations.controller"),
+          {
+            AnimationsController: {
+              create: {
+                type: t["./content/entities/content.entity"].ContentEntity,
+              },
+            },
+          },
+        ],
+        [
+          import("./images/images.controller"),
+          {
+            ImagesController: {
+              create: {
+                type: t["./content/entities/content.entity"].ContentEntity,
+              },
             },
           },
         ],

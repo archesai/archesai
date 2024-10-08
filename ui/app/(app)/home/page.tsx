@@ -8,14 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  BarChart2,
-  ClapperboardIcon,
-  Image,
-  MessageCircle,
-  Server,
-  Upload,
-} from "lucide-react";
+import { BarChart2, Image, MessageCircle, Server, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const cardData = [
@@ -53,13 +46,6 @@ const cardData = [
     icon: Image,
     link: "/images",
     title: "Create Image",
-  },
-  {
-    buttonText: "Create Animation",
-    description: "Create animations using generative AI.",
-    icon: ClapperboardIcon,
-    link: "/images",
-    title: "Create Animation",
   },
 ];
 

@@ -2841,63 +2841,6 @@ export const useMessagesControllerFindAll = <
   });
 };
 
-export type ContentControllerCreatePathParams = {
-  orgname: string;
-};
-
-export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerCreateVariables = {
-  body: Schemas.CreateContentDto;
-  pathParams: ContentControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Create a new content. ADMIN ONLY.
- */
-export const fetchContentControllerCreate = (
-  variables: ContentControllerCreateVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ContentEntity,
-    ContentControllerCreateError,
-    Schemas.CreateContentDto,
-    {},
-    {},
-    ContentControllerCreatePathParams
-  >({
-    url: "/organizations/{orgname}/content",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * Create a new content. ADMIN ONLY.
- */
-export const useContentControllerCreate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ContentEntity,
-      ContentControllerCreateError,
-      ContentControllerCreateVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ContentEntity,
-    ContentControllerCreateError,
-    ContentControllerCreateVariables
-  >({
-    mutationFn: (variables: ContentControllerCreateVariables) =>
-      fetchContentControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
 export type ContentControllerFindAllPathParams = {
   orgname: string;
 };
@@ -2941,6 +2884,7 @@ export type ContentControllerFindAllQueryParams = {
    * The start date to search from
    */
   startDate?: string;
+  type?: "DOCUMENT" | "ANIMATION" | "IMAGE";
 };
 
 export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
@@ -3146,7 +3090,7 @@ export type ContentControllerUpdatePathParams = {
 export type ContentControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
 
 export type ContentControllerUpdateVariables = {
-  body: Schemas.UpdateContentDto;
+  body?: Schemas.UpdateContentDto;
   pathParams: ContentControllerUpdatePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
@@ -3193,6 +3137,194 @@ export const useContentControllerUpdate = (
     mutationFn: (variables: ContentControllerUpdateVariables) =>
       fetchContentControllerUpdate({ ...fetcherOptions, ...variables }),
     ...options,
+  });
+};
+
+export type VectorRecordControllerFindAllPathParams = {
+  orgname: string;
+  contentId: string;
+};
+
+export type VectorRecordControllerFindAllQueryParams = {
+  /**
+   * The end date to search to
+   */
+  endDate?: string;
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   */
+  limit?: number;
+  /**
+   * The offset of the returned results
+   *
+   * @default 0
+   */
+  offset?: number;
+  /**
+   * Search term
+   *
+   * @default
+   */
+  searchTerm?: string;
+  /**
+   * The field to sort the results by
+   *
+   * @default createdAt
+   */
+  sortBy?: "createdAt";
+  /**
+   * The direction to sort the results by
+   *
+   * @default desc
+   */
+  sortDirection?: "asc" | "desc";
+  /**
+   * The start date to search from
+   */
+  startDate?: string;
+};
+
+export type VectorRecordControllerFindAllError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type VectorRecordControllerFindAllResponse = Schemas.PaginatedDto & {
+  results?: Schemas.VectorRecordEntity[];
+};
+
+export type VectorRecordControllerFindAllVariables = {
+  pathParams: VectorRecordControllerFindAllPathParams;
+  queryParams?: VectorRecordControllerFindAllQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get all vector records. ADMIN ONLY.
+ */
+export const fetchVectorRecordControllerFindAll = (
+  variables: VectorRecordControllerFindAllVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    VectorRecordControllerFindAllResponse,
+    VectorRecordControllerFindAllError,
+    undefined,
+    {},
+    VectorRecordControllerFindAllQueryParams,
+    VectorRecordControllerFindAllPathParams
+  >({
+    url: "/organizations/{orgname}/content/{contentId}/vector-records",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get all vector records. ADMIN ONLY.
+ */
+export const useVectorRecordControllerFindAll = <
+  TData = VectorRecordControllerFindAllResponse,
+>(
+  variables: VectorRecordControllerFindAllVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      VectorRecordControllerFindAllResponse,
+      VectorRecordControllerFindAllError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    VectorRecordControllerFindAllResponse,
+    VectorRecordControllerFindAllError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/content/{contentId}/vector-records",
+      operationId: "vectorRecordControllerFindAll",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchVectorRecordControllerFindAll(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type VectorRecordControllerFindOnePathParams = {
+  orgname: string;
+  contentId: string;
+};
+
+export type VectorRecordControllerFindOneError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type VectorRecordControllerFindOneVariables = {
+  pathParams: VectorRecordControllerFindOnePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get a vector record. ADMIN ONLY.
+ */
+export const fetchVectorRecordControllerFindOne = (
+  variables: VectorRecordControllerFindOneVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.VectorRecordEntity,
+    VectorRecordControllerFindOneError,
+    undefined,
+    {},
+    {},
+    VectorRecordControllerFindOnePathParams
+  >({
+    url: "/organizations/{orgname}/content/{contentId}/vector-records/{vectorRecordId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a vector record. ADMIN ONLY.
+ */
+export const useVectorRecordControllerFindOne = <
+  TData = Schemas.VectorRecordEntity,
+>(
+  variables: VectorRecordControllerFindOneVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.VectorRecordEntity,
+      VectorRecordControllerFindOneError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.VectorRecordEntity,
+    VectorRecordControllerFindOneError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/content/{contentId}/vector-records/{vectorRecordId}",
+      operationId: "vectorRecordControllerFindOne",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchVectorRecordControllerFindOne(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
   });
 };
 
@@ -3430,194 +3562,6 @@ export const useJobsControllerRemove = (
   });
 };
 
-export type VectorRecordControllerFindAllPathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type VectorRecordControllerFindAllQueryParams = {
-  /**
-   * The end date to search to
-   */
-  endDate?: string;
-  /**
-   * The limit of the number of results returned
-   *
-   * @default 10
-   */
-  limit?: number;
-  /**
-   * The offset of the returned results
-   *
-   * @default 0
-   */
-  offset?: number;
-  /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
-   * The field to sort the results by
-   *
-   * @default createdAt
-   */
-  sortBy?: "createdAt";
-  /**
-   * The direction to sort the results by
-   *
-   * @default desc
-   */
-  sortDirection?: "asc" | "desc";
-  /**
-   * The start date to search from
-   */
-  startDate?: string;
-};
-
-export type VectorRecordControllerFindAllError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type VectorRecordControllerFindAllResponse = Schemas.PaginatedDto & {
-  results?: Schemas.VectorRecordEntity[];
-};
-
-export type VectorRecordControllerFindAllVariables = {
-  pathParams: VectorRecordControllerFindAllPathParams;
-  queryParams?: VectorRecordControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get all vector records. ADMIN ONLY.
- */
-export const fetchVectorRecordControllerFindAll = (
-  variables: VectorRecordControllerFindAllVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    VectorRecordControllerFindAllResponse,
-    VectorRecordControllerFindAllError,
-    undefined,
-    {},
-    VectorRecordControllerFindAllQueryParams,
-    VectorRecordControllerFindAllPathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}/vector-records",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get all vector records. ADMIN ONLY.
- */
-export const useVectorRecordControllerFindAll = <
-  TData = VectorRecordControllerFindAllResponse,
->(
-  variables: VectorRecordControllerFindAllVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      VectorRecordControllerFindAllResponse,
-      VectorRecordControllerFindAllError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    VectorRecordControllerFindAllResponse,
-    VectorRecordControllerFindAllError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{contentId}/vector-records",
-      operationId: "vectorRecordControllerFindAll",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchVectorRecordControllerFindAll(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type VectorRecordControllerFindOnePathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type VectorRecordControllerFindOneError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type VectorRecordControllerFindOneVariables = {
-  pathParams: VectorRecordControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get a vector record. ADMIN ONLY.
- */
-export const fetchVectorRecordControllerFindOne = (
-  variables: VectorRecordControllerFindOneVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.VectorRecordEntity,
-    VectorRecordControllerFindOneError,
-    undefined,
-    {},
-    {},
-    VectorRecordControllerFindOnePathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}/vector-records/{vectorRecordId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get a vector record. ADMIN ONLY.
- */
-export const useVectorRecordControllerFindOne = <
-  TData = Schemas.VectorRecordEntity,
->(
-  variables: VectorRecordControllerFindOneVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.VectorRecordEntity,
-      VectorRecordControllerFindOneError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    Schemas.VectorRecordEntity,
-    VectorRecordControllerFindOneError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{contentId}/vector-records/{vectorRecordId}",
-      operationId: "vectorRecordControllerFindOne",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchVectorRecordControllerFindOne(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
 export type PasswordResetControllerConfirmError =
   Fetcher.ErrorWrapper<undefined>;
 
@@ -3828,6 +3772,120 @@ export const useEmailChangeControllerRequest = (
   });
 };
 
+export type ImagesControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type ImagesControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export type ImagesControllerCreateVariables = {
+  body: Schemas.CreateImageDto;
+  pathParams: ImagesControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new image. ADMIN ONLY.
+ */
+export const fetchImagesControllerCreate = (
+  variables: ImagesControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ContentEntity,
+    ImagesControllerCreateError,
+    Schemas.CreateImageDto,
+    {},
+    {},
+    ImagesControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/images",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new image. ADMIN ONLY.
+ */
+export const useImagesControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ContentEntity,
+      ImagesControllerCreateError,
+      ImagesControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ContentEntity,
+    ImagesControllerCreateError,
+    ImagesControllerCreateVariables
+  >({
+    mutationFn: (variables: ImagesControllerCreateVariables) =>
+      fetchImagesControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type DocumentsControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type DocumentsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export type DocumentsControllerCreateVariables = {
+  body: Schemas.CreateDocumentDto;
+  pathParams: DocumentsControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new document. ADMIN ONLY.
+ */
+export const fetchDocumentsControllerCreate = (
+  variables: DocumentsControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ContentEntity,
+    DocumentsControllerCreateError,
+    Schemas.CreateDocumentDto,
+    {},
+    {},
+    DocumentsControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/documents",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new document. ADMIN ONLY.
+ */
+export const useDocumentsControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ContentEntity,
+      DocumentsControllerCreateError,
+      DocumentsControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ContentEntity,
+    DocumentsControllerCreateError,
+    DocumentsControllerCreateVariables
+  >({
+    mutationFn: (variables: DocumentsControllerCreateVariables) =>
+      fetchDocumentsControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/user";
@@ -3905,16 +3963,6 @@ export type QueryOperation =
       variables: ContentControllerFindOneVariables;
     }
   | {
-      path: "/organizations/{orgname}/jobs";
-      operationId: "jobsControllerFindAll";
-      variables: JobsControllerFindAllVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/jobs/{id}";
-      operationId: "jobsControllerFindOne";
-      variables: JobsControllerFindOneVariables;
-    }
-  | {
       path: "/organizations/{orgname}/content/{contentId}/vector-records";
       operationId: "vectorRecordControllerFindAll";
       variables: VectorRecordControllerFindAllVariables;
@@ -3923,4 +3971,14 @@ export type QueryOperation =
       path: "/organizations/{orgname}/content/{contentId}/vector-records/{vectorRecordId}";
       operationId: "vectorRecordControllerFindOne";
       variables: VectorRecordControllerFindOneVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/jobs";
+      operationId: "jobsControllerFindAll";
+      variables: JobsControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/jobs/{id}";
+      operationId: "jobsControllerFindOne";
+      variables: JobsControllerFindOneVariables;
     };

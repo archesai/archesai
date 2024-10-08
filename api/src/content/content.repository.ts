@@ -19,14 +19,9 @@ export class ContentRepository
 {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    orgname: string,
-    createContentDto: CreateContentDto,
-    annotations?: object
-  ) {
+  async create(orgname: string, createContentDto: CreateContentDto) {
     return this.prisma.content.create({
       data: {
-        annotations: annotations || {},
         buildArgs: createContentDto.buildArgs,
         job: {
           create: {
@@ -61,6 +56,7 @@ export class ContentRepository
               OR: [{ name: { contains: contentQueryDto.searchTerm } }],
             }
           : undefined),
+        ...(contentQueryDto.type ? { type: contentQueryDto.type } : undefined),
       },
     });
     const content = await this.prisma.content.findMany({
@@ -80,6 +76,7 @@ export class ContentRepository
               OR: [{ name: { contains: contentQueryDto.searchTerm } }],
             }
           : undefined),
+        ...(contentQueryDto.type ? { type: contentQueryDto.type } : undefined),
       },
     });
     return { count, results: content };

@@ -3,7 +3,6 @@ import {
   Award,
   Bolt,
   Building2,
-  ClapperboardIcon,
   CloudUploadIcon,
   Compass,
   DollarSign,
@@ -54,18 +53,6 @@ export const siteConfig = {
         section: "create",
         title: "Chatbot",
       },
-      {
-        href: "/images",
-        Icon: Image,
-        section: "create",
-        title: "Image",
-      },
-      {
-        href: "/animations",
-        Icon: ClapperboardIcon,
-        section: "create",
-        title: "Animation",
-      },
     ],
     "/chatbots/single": [
       {
@@ -115,6 +102,14 @@ export const siteConfig = {
         Icon: HomeIcon,
         section: "home",
         title: "Home",
+      },
+    ],
+    "/images": [
+      {
+        href: "/images",
+        Icon: Image,
+        section: "create",
+        title: "Image",
       },
     ],
     "/import": [

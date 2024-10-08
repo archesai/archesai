@@ -1,6 +1,6 @@
 import { PickType } from "@nestjs/swagger";
 
-import { ImageEntity } from "../../content/entities/image.entity";
+import { ImageEntity } from "../entities/image.entity";
 
 export class CreateImageDto extends PickType(ImageEntity, [
   "name",

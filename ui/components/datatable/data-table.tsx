@@ -42,7 +42,6 @@ import { FilePenLine, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "../ui/button";
-import { DropdownMenuShortcut } from "../ui/dropdown-menu";
 
 export interface BaseItem {
   id: string;

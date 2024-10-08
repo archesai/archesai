@@ -9,25 +9,23 @@ import {
 import { Inject, Logger } from "@nestjs/common";
 import { Job } from "bull";
 
-import { AudioService } from "../audio/audio.service";
 import { retry } from "../common/retry";
+import { ContentService } from "../content/content.service";
+import { ContentEntity } from "../content/entities/content.entity";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { JobsService } from "../jobs/jobs.service";
 import { LLMService } from "../llm/llm.service";
 import { LoaderService } from "../loader/loader.service";
 import { OrganizationsService } from "../organizations/organizations.service";
-import { RunpodService } from "../runpod/runpod.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
 import {
   VECTOR_DB_SERVICE,
   VectorDBService,
 } from "../vector-db/vector-db.service";
-import { ContentService } from "./content.service";
-import { ContentEntity } from "./entities/content.entity";
 
-@Processor("content")
-export class ContentProcessor {
-  private readonly logger: Logger = new Logger("Content Processor");
+@Processor("document")
+export class DocumentProcessor {
+  private readonly logger: Logger = new Logger("Document Processor");
 
   chunkArray = <T>(array: T[], chunkSize: number): T[][] =>
     Array.from({ length: Math.ceil(array.length / chunkSize) }, (v, i) =>
@@ -35,8 +33,6 @@ export class ContentProcessor {
     );
 
   constructor(
-    private runpodService: RunpodService,
-    private audioService: AudioService,
     private organizationsService: OrganizationsService,
     private jobsService: JobsService,
     private contentService: ContentService,
@@ -169,89 +165,7 @@ export class ContentProcessor {
     );
   }
 
-  @Process({ concurrency: 8, name: "ANIMATION" })
-  async processAnimation(job: Job) {
-    const content = job.data.content as ContentEntity;
-
-    // If content uses audio, get the strength
-    let strengthSchedule = "0:(0.6)";
-    let translationX = "0:(0)";
-    let translationZ = "0:(0)";
-    const mode = "3D";
-    const border = "replicate";
-    const zoom = "0: (0.1)";
-    if (content.buildArgs.useAudio) {
-      this.logger.log("Trimming audio " + content.buildArgs.audioUrl);
-      const trimmedUrl = await this.audioService.trimAudio(
-        content.orgname,
-        content.buildArgs.audioUrl,
-        content.buildArgs.audioStart,
-        content.buildArgs.length
-      );
-      this.logger.log("Trimmed audio to " + trimmedUrl);
-      content.buildArgs.audioUrl = trimmedUrl;
-
-      const { bassSrc, drumsSrc } =
-        await this.audioService.splitAudio(trimmedUrl);
-
-      strengthSchedule = await this.audioService.getKeyframes(
-        bassSrc,
-        content.buildArgs.fps,
-        "0.70 - x^1.5",
-        false
-      );
-
-      // Determine which to set baesd on the mode
-      if (mode === "3D") {
-        translationZ = await this.audioService.getKeyframes(
-          drumsSrc,
-          content.buildArgs.fps,
-          "1 + x^4",
-          true
-        );
-      } else {
-        translationX = await this.audioService.getKeyframes(
-          drumsSrc,
-          content.buildArgs.fps,
-          "1 + x^4",
-          true
-        );
-      }
-
-      this.logger.log("Strength schedule: " + strengthSchedule);
-      this.logger.log("Translation X: " + translationX);
-      this.logger.log("Translation Z: " + translationZ);
-    }
-
-    const input = {
-      input: {
-        audio_url: content.buildArgs.audioUrl,
-        border: border,
-        content_mode: mode,
-        content_prompts: content.buildArgs.contentPrompts,
-        fps: content.buildArgs.fps,
-        height: content.buildArgs.height,
-        max_frames: content.buildArgs.maxFrames,
-        name: content.name,
-        orgname: content.orgname,
-        strength_schedule: strengthSchedule,
-        translation_x: translationX,
-        translation_z: translationZ,
-        use_audio: content.buildArgs.useAudio,
-        width: content.buildArgs.width,
-        zoom: zoom,
-      },
-    };
-
-    await this.runpodService.runPod(
-      content.orgname,
-      content.id,
-      job.id.toString(),
-      "x4mve8pg5zn7bt",
-      input
-    );
-  }
-  @Process({ concurrency: 32, name: "DOCUMENT" })
+  @Process({ concurrency: 32, name: "document" })
   async processDocument(job: Job) {
     let progress = 0;
     let content = job.data.content as ContentEntity;
@@ -433,28 +347,5 @@ export class ContentProcessor {
       uploadPreview,
       // clustersPromise,
     ]);
-  }
-
-  @Process({ concurrency: 8, name: "IMAGE" })
-  async processImage(job: Job) {
-    const content = job.data.content as ContentEntity;
-
-    const input = {
-      input: {
-        height: content.buildArgs.height,
-        name: content.name,
-        orgname: content.orgname,
-        prompt: content.buildArgs.prompt,
-        width: content.buildArgs.width,
-      },
-    };
-
-    await this.runpodService.runPod(
-      content.orgname,
-      content.id,
-      job.id.toString(),
-      "7f6wc3v2b1vl1s",
-      input
-    );
   }
 }

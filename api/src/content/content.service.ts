@@ -1,7 +1,5 @@
-import { InjectQueue } from "@nestjs/bull";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Content, Job, Prisma } from "@prisma/client";
-import { Queue } from "bull";
 
 import { BaseService } from "../common/base.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
@@ -22,35 +20,18 @@ export class ContentService
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentRepository: ContentRepository,
-    private websocketsService: WebsocketsService,
-    @InjectQueue("content") private readonly contentQueue: Queue
+    private websocketsService: WebsocketsService
   ) {}
 
   async create(
     orgname: string,
-    createContentDto: CreateContentDto,
-    annotations?: object
+    createContentDto: CreateContentDto
   ): Promise<ContentEntity> {
-    // await this.organizationsService.checkCredits(orgname, estimatedCredits); FIXME
-
     const content = await this.contentRepository.create(
       orgname,
-      createContentDto,
-      annotations
+      createContentDto
     );
-    const contentEntity = new ContentEntity(content);
-
-    await this.contentQueue.add(
-      createContentDto.type,
-      {
-        content: contentEntity,
-      },
-      {
-        jobId: contentEntity.id,
-      }
-    );
-    this.websocketsService.socket.to(orgname).emit("update");
-    return contentEntity;
+    return new ContentEntity(content);
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {

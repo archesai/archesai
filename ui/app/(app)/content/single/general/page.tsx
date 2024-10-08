@@ -14,11 +14,12 @@ import { useContentControllerFindOne } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-// import dynamic from "next/dynamic";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
 // Dynamically import react-player to prevent SSR issues
-// const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export default function ContentDetailsPage() {
   const searchParams = useSearchParams();
@@ -60,7 +61,7 @@ export default function ContentDetailsPage() {
           <Separator className="my-4" />
 
           {/* Display Content Based on MIME Type */}
-          <div className="w-full aspect-w-16 aspect-h-9">
+          <div className="w-full aspect-w-16 min-h-20">
             {renderContent(content)}
           </div>
 
@@ -68,22 +69,12 @@ export default function ContentDetailsPage() {
           <div className="mt-6 space-y-2">
             <h3 className="text-lg font-semibold">Details</h3>
             <p>
-              <strong>ID:</strong> {content.id}
-            </p>
-            <p>
-              <strong>Organization:</strong> {content.orgname}
-            </p>
-            <p>
               <strong>Credits Used:</strong> {content.credits}
             </p>
           </div>
 
           {/* Annotations and Build Args */}
           <div className="mt-6 space-y-2">
-            <h3 className="text-lg font-semibold">Annotations</h3>
-            <pre className="bg-gray-100 p-4 rounded-md">
-              {JSON.stringify(content.annotations, null, 2)}
-            </pre>
             <h3 className="text-lg font-semibold">Build Arguments</h3>
             <pre className="bg-gray-100 p-4 rounded-md">
               {JSON.stringify(content.buildArgs, null, 2)}
@@ -117,37 +108,33 @@ function renderContent(content: ContentEntity) {
 
   if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) {
     return (
-      // <ReactPlayer
-      //   config={{
-      //     file: {
-      //       attributes: {
-      //         controlsList: "nodownload",
-      //       },
-      //     },
-      //   }}
-      //   controls
-      //   height="100%"
-      //   url={url}
-      //   width="100%"
-      // />
-      <></>
+      <ReactPlayer
+        config={{
+          file: {
+            attributes: {
+              controlsList: "nodownload",
+            },
+          },
+        }}
+        controls
+        height="100%"
+        url={url}
+        width="100%"
+      />
     );
   } else if (mimeType.startsWith("image/")) {
     return (
-      <img
+      <Image
         alt={content.description}
         className="w-full h-full object-contain"
+        height={516}
         src={url}
+        width={516}
       />
     );
   } else if (mimeType === "application/pdf") {
     return (
-      <iframe
-        className="w-full h-full"
-        frameBorder="0"
-        src={url}
-        title="PDF Document"
-      ></iframe>
+      <iframe className="w-full h-full" src={url} title="PDF Document"></iframe>
     );
   } else {
     return (

@@ -2,10 +2,9 @@ import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Chatbot } from "@prisma/client";
 import { Organization } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
-import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
-import { ContentFieldItem } from "../../content/dto/content-field-item.dto";
 
 export class ChatbotEntity extends BaseEntity implements Chatbot {
   @ApiProperty({
@@ -15,21 +14,6 @@ export class ChatbotEntity extends BaseEntity implements Chatbot {
   @Expose()
   @IsString()
   description: string;
-
-  @ApiProperty({
-    description: "The documents this chatbot has access to",
-    example: [
-      {
-        id: "417221d3-2b96-4157-a79b-f1866df7743b",
-        name: "Arches API Documentation",
-      },
-    ],
-    type: [ContentFieldItem],
-  })
-  @Expose()
-  @IsOptional()
-  @ValidateNested({ each: true })
-  documents: ContentFieldItem[];
 
   @ApiProperty({
     default: "GPT_3_5_TURBO_16_K",

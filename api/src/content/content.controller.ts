@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   Query,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -18,7 +17,6 @@ import { BaseController } from "../common/base.controller";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ContentService } from "./content.service";
 import { ContentQueryDto } from "./dto/content-query.dto";
-import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { ContentEntity } from "./entities/content.entity";
 
@@ -27,23 +25,9 @@ import { ContentEntity } from "./entities/content.entity";
 @Controller("organizations/:orgname/content")
 export class ContentController
   implements
-    BaseController<
-      ContentEntity,
-      CreateContentDto,
-      ContentQueryDto,
-      UpdateContentDto
-    >
+    BaseController<ContentEntity, undefined, ContentQueryDto, UpdateContentDto>
 {
   constructor(private readonly contentService: ContentService) {}
-
-  @ApiCrudOperation(Operation.CREATE, "content", ContentEntity, true)
-  @Post("/")
-  create(
-    @Param("orgname") orgname: string,
-    @Body() createContentDto: CreateContentDto
-  ) {
-    return this.contentService.create(orgname, createContentDto);
-  }
 
   @ApiCrudOperation(Operation.FIND_ALL, "content", ContentEntity, true)
   @Get("/")

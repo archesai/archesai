@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { ContentType } from "@prisma/client";
 import { IsEnum, IsOptional } from "class-validator";
 
 import { SearchQueryDto } from "../../common/search-query";
@@ -13,4 +14,9 @@ export class ContentQueryDto extends SearchQueryDto {
   @IsEnum(SortByField, { always: false })
   @IsOptional()
   sortBy? = "createdAt" as SortByField.CREATED;
+
+  @ApiProperty({ enum: ContentType, required: false })
+  @IsEnum(ContentType, { always: false })
+  @IsOptional()
+  type?: ContentType;
 }

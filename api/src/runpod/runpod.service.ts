@@ -81,7 +81,7 @@ export class RunpodService {
           JSON.stringify(rundpodCheckJobResponse, null, 2)
       );
       if (rundpodCheckJobResponse.status == "COMPLETED") {
-        return rundpodCheckJobResponse.output[0];
+        return rundpodCheckJobResponse.output;
       } else if (rundpodCheckJobResponse.status === "IN_PROGRESS") {
         if (firstAttempt) {
           // mark as processing

@@ -186,13 +186,6 @@ export type UpdateUserDto = {
    * @example Smith
    */
   lastName?: string;
-  /**
-   * The user's username
-   *
-   * @example jonathan
-   * @minLength 5
-   */
-  username?: string;
 };
 
 export type CreateOrganizationDto = {
@@ -751,21 +744,6 @@ export type CreateChatbotDto = {
   name: string;
 };
 
-export type ContentFieldItem = {
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The animation's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-};
-
 export type ChatbotEntity = {
   /**
    * The creation date of this item
@@ -786,12 +764,6 @@ export type ChatbotEntity = {
    * @example You are a chatbot designed to answer questions about Arches AI
    */
   description: string;
-  /**
-   * The documents this chatbot has access to
-   *
-   * @example {"id":"417221d3-2b96-4157-a79b-f1866df7743b","name":"Arches API Documentation"}
-   */
-  documents: ContentFieldItem[];
   /**
    * The base LLM that the chatbot will use
    *
@@ -965,24 +937,6 @@ export type MessageEntity = {
   topK?: number;
 };
 
-export type CreateContentDto = {
-  buildArgs: Record<string, any>;
-  /**
-   * The animation's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-  /**
-   * @example video/mp4
-   */
-  type: "DOCUMENT" | "ANIMATION" | "IMAGE";
-  /**
-   * @example https://example.com/example.mp4
-   */
-  url: string;
-};
-
 export type JobEntity = {
   /**
    * The creation date of this item
@@ -1051,12 +1005,6 @@ export type ContentEntity = {
    * @example 32411590-a8e0-11ed-afa1-0242ac120002
    */
   id: string;
-  /**
-   * The content's annotations
-   *
-   * @example {"key":"value"}
-   */
-  annotations: Record<string, any>;
   buildArgs: Record<string, any>;
   /**
    * The number of credits used to process this content
@@ -1113,21 +1061,21 @@ export type ContentEntity = {
 };
 
 export type UpdateContentDto = {
-  buildArgs: Record<string, any>;
+  buildArgs?: Record<string, any>;
   /**
    * The animation's name
    *
    * @example my-file.pdf
    */
-  name: string;
+  name?: string;
   /**
    * @example video/mp4
    */
-  type: "DOCUMENT" | "ANIMATION" | "IMAGE";
+  type?: "DOCUMENT" | "ANIMATION" | "IMAGE";
   /**
    * @example https://example.com/example.mp4
    */
-  url: string;
+  url?: string;
 };
 
 export type VectorRecordEntity = {
@@ -1190,6 +1138,60 @@ export type RequestEmailChangeDto = {
    * @example user@archesai.com
    */
   email: string;
+};
+
+export type CreateImageDto = {
+  /**
+   * The animation's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * The height of the image
+   *
+   * @example 1024
+   */
+  height: number;
+  /**
+   * The image prompt
+   *
+   * @example a person standing on the moon
+   */
+  prompt: string;
+  /**
+   * The width of the image
+   *
+   * @example 1024
+   */
+  width: number;
+};
+
+export type CreateDocumentDto = {
+  /**
+   * The animation's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * @example https://example.com/example.mp4
+   */
+  url: string;
+  /**
+   * The size of the documents text segments
+   *
+   * @default 200
+   * @example 200
+   */
+  chunkSize?: number;
+  /**
+   * The delimiter used to separate the document into text segments. If left blank, only chunkSize will be used.
+   *
+   * @default
+   * @example
+   */
+  delimiter?: string;
 };
 
 export type Metadata = {
