@@ -19,11 +19,11 @@ steps:
 
         # Detect changes in ./api/
         local api_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
-        echo "export API_CHANGED=$api_changed"  >>/workspace/values.sh
+        echo "export _API_CHANGED=$api_changed"  >>/workspace/values.sh
 
         # Detect changes in ./nlp/
         local nlp_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
-        echo "export NLP_CHANGED=$nlp_changed"  >>/workspace/values.sh
+        echo "export _NLP_CHANGED=$nlp_changed"  >>/workspace/values.sh
 
   # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
@@ -35,7 +35,7 @@ steps:
       - |
         source /workspace/values.sh
 
-        if [ "$API_CHANGED" = "true" ]; then
+        if [ "$_API_CHANGED" = "true" ]; then
           echo "Changes detected in ./api/. Building arches-api..."
           /kaniko/executor \
             --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA \
@@ -58,7 +58,7 @@ steps:
       - |
         source /workspace/values.sh
 
-        if [ "$NLP_CHANGED" = "true" ]; then
+        if [ "$_NLP_CHANGED" = "true" ]; then
           echo "Changes detected in ./nlp/. Building arches-nlp..."
           /kaniko/executor \
             --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA \
