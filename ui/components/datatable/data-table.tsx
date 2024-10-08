@@ -5,10 +5,11 @@ import { DeleteItems } from "@/components/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-} from "@/components/ui/drawer";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +27,6 @@ import {
 } from "@/components/ui/table";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
@@ -188,7 +188,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                   mutationVariables={getDeleteVariablesFromItem(row.original)}
                   variant="md"
                 />
-                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -357,7 +356,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
       <div>
         <DataTablePagination data={data} />
       </div>
-      <Drawer
+      <Dialog
         onOpenChange={(o) => {
           setFormOpen(o);
           if (!o) {
@@ -367,19 +366,19 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
         open={formOpen}
       >
         <VisuallyHidden.Root>
-          <DrawerDescription />
+          <DialogDescription />
           <DialogTitle>
             {finalForm ? "Edit" : "Create"} {itemType}
           </DialogTitle>
         </VisuallyHidden.Root>
-        <DrawerContent
+        <DialogContent
           aria-description="Create/Edit"
           className="p-3 bg-transparent border-none shadow-none"
           title="Create/Edit"
         >
           {finalForm}
-        </DrawerContent>
-      </Drawer>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
