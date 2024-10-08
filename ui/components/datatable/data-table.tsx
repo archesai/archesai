@@ -224,14 +224,12 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
       {createForm ? (
         <Card
-          className={`shadow-sm relative w-full overflow-visible hover:bg-primary-foreground border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
+          className={`shadow-sm relative w-full cursor-pointer overflow-visible hover:bg-gray-200 hover:dark:bg-gray-900 border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
+          onClick={async () => {
+            setFormOpen(true);
+          }}
         >
-          <div
-            className="h-48 cursor-pointer relative overflow-hidden group transition-all flex flex-col items-center justify-center"
-            onClick={async () => {
-              setFormOpen(true);
-            }}
-          >
+          <div className="h-48 relative overflow-hidden group transition-all flex flex-col items-center justify-center">
             <PlusSquare size={30} />
             <span className="mt-2 text-lg">New {itemType}</span>
           </div>
@@ -245,7 +243,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
             key={i}
           >
             <div
-              className="h-48 cursor-pointer relative overflow-hidden group hover:bg-primary-foreground transition-all"
+              className="h-48 cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
