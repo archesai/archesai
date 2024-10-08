@@ -23,30 +23,16 @@ steps:
 
         # Set flags based on changes
         if [ -n "$API_CHANGED" ]; then
-          echo "API_CHANGED=true" >> /workspace/build_flags.env
+          echo "export API_CHANGED=true"  >>/workspace/values.sh
         else
-          echo "API_CHANGED=false" >> /workspace/build_flags.env
+          echo "export API_CHANGED=false"  >>/workspace/values.sh
         fi
 
         if [ -n "$NLP_CHANGED" ]; then
-          echo "NLP_CHANGED=true" >> /workspace/build_flags.env
+          echo "export NLP_CHANGED=true"  >>/workspace/values.sh
         else
-          echo "NLP_CHANGED=false" >> /workspace/build_flags.env
+          echo "export NLP_CHANGED=false"  >>/workspace/values.sh
         fi
-
-  # Step 2: Export flags for use in subsequent steps
-  - name: "alpine"
-    id: export-flags
-    entrypoint: /bin/sh
-    args:
-      - "-c"
-      - |
-        # Source the flags
-        source /workspace/build_flags.env
-
-        # Export flags to a file for easy sourcing
-        echo "API_CHANGED=$API_CHANGED" > /workspace/exported_vars.env
-        echo "NLP_CHANGED=$NLP_CHANGED" >> /workspace/exported_vars.env
 
   # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
@@ -57,7 +43,7 @@ steps:
       - "-c"
       - |
         # Source the exported flags
-        source /workspace/exported_vars.env
+        source /workspace/values.sh
 
         if [ "$API_CHANGED" = "true" ]; then
           echo "Changes detected in ./api/. Building arches-api..."
@@ -81,7 +67,7 @@ steps:
       - "-c"
       - |
         # Source the exported flags
-        source /workspace/exported_vars.env
+        source /workspace/values.sh
 
         if [ "$NLP_CHANGED" = "true" ]; then
           echo "Changes detected in ./nlp/. Building arches-nlp..."
