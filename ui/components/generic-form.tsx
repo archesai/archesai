@@ -56,14 +56,12 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   title,
 }: GenericFormProps<TCreateVariables, TUpdateVariables>) {
   const { toast } = useToast();
-  const defaultValues = isUpdateForm
-    ? fields.reduce<Record<string, any>>((acc, field) => {
-        if (field.defaultValue !== undefined) {
-          acc[field.name] = field.defaultValue;
-        }
-        return acc;
-      }, {})
-    : {};
+  const defaultValues = fields.reduce<Record<string, any>>((acc, field) => {
+    if (field.defaultValue !== undefined) {
+      acc[field.name] = field.defaultValue;
+    }
+    return acc;
+  }, {});
 
   const schema = z.object(
     fields.reduce(
@@ -155,6 +153,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                         <fieldConfig.component
                           {...field}
                           {...fieldConfig.props}
+                          value={field.value || ""}
                         />
                       )}
                     </FormControl>
