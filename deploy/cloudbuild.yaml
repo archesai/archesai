@@ -19,24 +19,11 @@ steps:
 
         # Detect changes in ./api/
         local api_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
-        echo "$api_changed"
+        echo "export API_CHANGED=$api_changed"  >>/workspace/values.sh
 
         # Detect changes in ./nlp/
         local nlp_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
-        echo "$nlp_changed"
-
-        # Set flags based on changes
-        if [ -n "$api_changed" ]; then
-          echo "export API_CHANGED=true"  >>/workspace/values.sh
-        else
-          echo "export API_CHANGED=false"  >>/workspace/values.sh
-        fi
-
-        if [ -n "$nlp_changed" ]; then
-          echo "export NLP_CHANGED=true"  >>/workspace/values.sh
-        else
-          echo "export NLP_CHANGED=false"  >>/workspace/values.sh
-        fi
+        echo "export NLP_CHANGED=$nlp_changed"  >>/workspace/values.sh
 
   # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
