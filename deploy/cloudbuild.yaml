@@ -28,7 +28,7 @@ steps:
   # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-api
-    waitFor: ["detect-changes", "export-flags"]
+    waitFor: ["detect-changes"]
     entrypoint: /bin/sh
     args:
       - "-c"
@@ -51,7 +51,7 @@ steps:
   # Step 4: Conditionally build arches-nlp
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-nlp
-    waitFor: ["detect-changes", "export-flags"]
+    waitFor: ["detect-changes"]
     entrypoint: /bin/sh
     args:
       - "-c"
