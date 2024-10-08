@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 export const Hero = () => {
   const router = useRouter();
   return (
-    <section className="z-10 container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10 h-screen mt-10 lg:-mt-10">
-      <div className="text-center lg:text-start space-y-6 z-10 ">
+    <section className="z-10 container grid place-items-center py-20 md:py-32 gap-10 h-screen mt-10 max-w-4xl">
+      <div className="text-center space-y-6 z-10 ">
         <main className="text-5xl md:text-5xl font-bold">
           Elevate Your Business with AI-Driven Solutions
         </main>
 
-        <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
+        <p className="text-xl text-muted-foreground md:w-10/12 mx-auto">
           Create intelligent chatbots, generate vibrant AI visuals, and
           integrate seamlessly using our API or no-code widgets.
         </p>
