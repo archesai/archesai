@@ -195,11 +195,7 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
         ),
         header: () =>
           createForm ? (
-            <Button
-              onClick={() => setFormOpen(true)}
-              size="sm"
-              variant="secondary"
-            >
+            <Button onClick={() => setFormOpen(true)} size="sm">
               New {itemType}
             </Button>
           ) : null,

@@ -84,11 +84,7 @@ export default function HomePage() {
               <p className="text-gray-600">{card.description}</p>
             </CardContent>
             <CardFooter className="justify-center">
-              <Button
-                className="h-8"
-                onClick={() => router.push(card.link)}
-                variant="secondary"
-              >
+              <Button className="h-8" onClick={() => router.push(card.link)}>
                 {card.buttonText}
               </Button>
             </CardFooter>

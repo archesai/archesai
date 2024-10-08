@@ -17,6 +17,8 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+import { ModeToggle } from "../mode-toggle";
+
 interface RouteProps {
   href: string;
   label: string;
@@ -134,7 +136,8 @@ export const Navbar = () => {
               ))}
             </nav>
           </div>
-          <div className="hidden md:flex gap-2">
+          <div className="hidden md:flex gap-2 items-center">
+            <ModeToggle h={"h-10"} />
             <Button variant={"outline"}>
               <Link href="/auth/login">Log in</Link>
             </Button>

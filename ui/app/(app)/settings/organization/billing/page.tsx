@@ -252,7 +252,7 @@ export default function BillingPageContent() {
                               })
                             }
                             size="sm"
-                            variant="secondary"
+                            variant="destructive"
                           >
                             Delete
                           </Button>

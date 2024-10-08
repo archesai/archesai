@@ -41,7 +41,7 @@ export default function ProfileSecuritySettingsPage() {
         </CardHeader>
         <CardFooter className="flex justify-between">
           <Button
-            className="w-full"
+            className="w-full h-8"
             disabled={requestPasswordResetPending}
             onClick={async () =>
               await requestPasswordReset(
@@ -69,7 +69,6 @@ export default function ProfileSecuritySettingsPage() {
                 }
               )
             }
-            variant={"secondary"}
           >
             {requestPasswordResetPending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -88,7 +87,7 @@ export default function ProfileSecuritySettingsPage() {
         </CardHeader>
         <CardFooter className="flex justify-between">
           <Button
-            className="w-full"
+            className="w-full h-8"
             disabled={deactivatePending}
             onClick={async () =>
               await deactivateAccount(
@@ -108,7 +107,7 @@ export default function ProfileSecuritySettingsPage() {
                 }
               )
             }
-            variant={"secondary"}
+            variant={"destructive"}
           >
             {deactivatePending && (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

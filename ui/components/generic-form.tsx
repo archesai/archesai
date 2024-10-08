@@ -184,7 +184,6 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   }
                   size="sm"
                   type="submit"
-                  variant={"secondary"}
                 >
                   {form.formState.isSubmitting && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -200,7 +199,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                     form.reset();
                   }}
                   size="sm"
-                  variant={"secondary"}
+                  variant={"destructive"}
                 >
                   Clear
                 </Button>
