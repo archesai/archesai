@@ -6,6 +6,11 @@ metadata:
   name: arches-api
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 # Maximum pods that can be unavailable during the update
+      maxSurge: 1 # Maximum additional pods that can be created during the update
   selector:
     matchLabels:
       component: arches-api
