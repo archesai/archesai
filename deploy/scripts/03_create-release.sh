@@ -19,5 +19,5 @@ gcloud deploy releases create "$RELEASE_NAME" \
     --project=archesai \
     --region=us-east1 \
     --delivery-pipeline=arches-deployment \
-    --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${SHORT_SHA} \
+    --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${RELEASE_SHA},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${RELEASE_SHA},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${RELEASE_SHA} \
     --skaffold-file=./deploy/skaffold.yaml
