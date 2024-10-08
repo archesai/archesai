@@ -41,24 +41,23 @@ export const useStreamChat = () => {
             results: [],
           };
         }
-        const oldMessage = oldData.results?.find((i) => i.id === message.id);
-        if (oldMessage) {
+        const prevStreamedMessage = oldData.results?.find(
+          (i) => i.id === message.id
+        );
+        if (prevStreamedMessage) {
           return {
             ...oldData,
             results: [
-              { ...oldMessage, answer: message.answer },
-              ...(oldData.results || []).filter(
-                (i) => i.createdAt !== oldMessage?.createdAt
-              ),
+              { ...prevStreamedMessage, answer: message.answer },
+              ...(oldData.results || [])
+                .filter((i) => i.createdAt !== prevStreamedMessage?.createdAt)
+                .filter((i) => i.id !== "pending"),
             ],
           };
         } else {
           return {
             ...oldData,
-            results: [
-              message,
-              ...(oldData.results || []).filter((i) => i.id != "pending"),
-            ],
+            results: [message, ...(oldData.results || [])],
           };
         }
       }

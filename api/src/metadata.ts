@@ -8,18 +8,15 @@ export default async () => {
     ["./members/entities/member.entity"]: await import(
       "./members/entities/member.entity"
     ),
-    ["./jobs/entities/job.entity"]: await import("./jobs/entities/job.entity"),
-    ["./content/dto/content-field-item.dto"]: await import(
-      "./content/dto/content-field-item.dto"
-    ),
     ["./api-tokens/entities/api-token.entity"]: await import(
       "./api-tokens/entities/api-token.entity"
     ),
-    ["./completions/dto/create-chat-completion.dto"]: await import(
-      "./completions/dto/create-chat-completion.dto"
-    ),
     ["./content/dto/content-query.dto"]: await import(
       "./content/dto/content-query.dto"
+    ),
+    ["./jobs/entities/job.entity"]: await import("./jobs/entities/job.entity"),
+    ["./llm/dto/create-chat-completion.dto"]: await import(
+      "./llm/dto/create-chat-completion.dto"
     ),
     ["./members/dto/member-query.dto"]: await import(
       "./members/dto/member-query.dto"
@@ -32,9 +29,6 @@ export default async () => {
     ),
     ["./messages/dto/message-query.dto"]: await import(
       "./messages/dto/message-query.dto"
-    ),
-    ["./llm/dto/create-chat-completion.dto"]: await import(
-      "./llm/dto/create-chat-completion.dto"
     ),
     ["./billing/entities/billing-url.entity"]: await import(
       "./billing/entities/billing-url.entity"
@@ -263,45 +257,6 @@ export default async () => {
           },
         ],
         [
-          import("./jobs/entities/job.entity"),
-          {
-            JobEntity: {
-              completedAt: { required: true, type: () => Date },
-              jobType: { required: true, type: () => String },
-              progress: { required: true, type: () => Number },
-              resourceLink: { required: true, type: () => String },
-              startedAt: { required: true, type: () => Date },
-              status: { required: true, type: () => Object },
-            },
-          },
-        ],
-        [
-          import("./content/entities/content.entity"),
-          {
-            ContentEntity: {
-              annotations: { required: true, type: () => Object },
-              buildArgs: { required: true, type: () => Object },
-              credits: { required: true, type: () => Number },
-              description: { required: true, type: () => String },
-              job: {
-                required: true,
-                type: () => t["./jobs/entities/job.entity"].JobEntity,
-              },
-              mimeType: { required: true, type: () => String },
-              name: { required: true, type: () => String },
-              orgname: { required: true, type: () => String },
-              previewImage: { required: true, type: () => String },
-              text: { required: true, type: () => String },
-              type: { required: true, type: () => Object },
-              url: { required: true, type: () => String },
-            },
-          },
-        ],
-        [
-          import("./content/dto/content-field-item.dto"),
-          { ContentFieldItem: {} },
-        ],
-        [
           import("./chatbots/entities/chatbot.entity"),
           {
             ChatbotEntity: {
@@ -382,7 +337,58 @@ export default async () => {
         [import("./chatbots/dto/create-chatbot.dto"), { CreateChatbotDto: {} }],
         [import("./chatbots/dto/update-chatbot.dto"), { UpdateChatbotDto: {} }],
         [
-          import("./completions/dto/create-chat-completion.dto"),
+          import("./content/dto/content-query.dto"),
+          {
+            ContentQueryDto: {
+              sortBy: {
+                required: false,
+                type: () => Object,
+                default: "createdAt",
+                enum: t["./content/dto/content-query.dto"].SortByField.CREATED,
+              },
+              type: { required: false, type: () => Object },
+            },
+          },
+        ],
+        [
+          import("./jobs/entities/job.entity"),
+          {
+            JobEntity: {
+              completedAt: { required: true, type: () => Date },
+              jobType: { required: true, type: () => String },
+              progress: { required: true, type: () => Number },
+              resourceLink: { required: true, type: () => String },
+              startedAt: { required: true, type: () => Date },
+              status: { required: true, type: () => Object },
+            },
+          },
+        ],
+        [
+          import("./content/entities/content.entity"),
+          {
+            ContentEntity: {
+              buildArgs: { required: true, type: () => Object },
+              credits: { required: true, type: () => Number },
+              description: { required: true, type: () => String },
+              job: {
+                required: true,
+                type: () => t["./jobs/entities/job.entity"].JobEntity,
+              },
+              mimeType: { required: true, type: () => String },
+              name: { required: true, type: () => String },
+              orgname: { required: true, type: () => String },
+              previewImage: { required: true, type: () => String },
+              text: { required: true, type: () => String },
+              type: { required: true, type: () => Object },
+              url: { required: true, type: () => String },
+            },
+          },
+        ],
+        [import("./content/dto/create-content.dto"), { CreateContentDto: {} }],
+        [import("./content/dto/update-content.dto"), { UpdateContentDto: {} }],
+        [import("./jobs/dto/job-query.dto"), { JobQueryDto: {} }],
+        [
+          import("./llm/dto/create-chat-completion.dto"),
           {
             MessageDto: {
               content: { required: true, type: () => String },
@@ -398,7 +404,7 @@ export default async () => {
               messages: {
                 required: true,
                 type: () => [
-                  t["./completions/dto/create-chat-completion.dto"].MessageDto,
+                  t["./llm/dto/create-chat-completion.dto"].MessageDto,
                 ],
               },
               model: { required: false, type: () => String },
@@ -421,23 +427,28 @@ export default async () => {
             },
           },
         ],
-        [import("./jobs/dto/job-query.dto"), { JobQueryDto: {} }],
         [
-          import("./content/dto/content-query.dto"),
+          import("./documents/entities/document.entity"),
           {
-            ContentQueryDto: {
-              sortBy: {
-                required: false,
-                type: () => Object,
-                default: "createdAt",
-                enum: t["./content/dto/content-query.dto"].SortByField.CREATED,
-              },
-              type: { required: false, type: () => Object },
+            DocumentEntity: {
+              chunkSize: { required: true, type: () => Number },
+              delimiter: { required: true, type: () => String },
+              md5Hash: { required: true, type: () => String },
+              size: { required: true, type: () => String },
+              sourceUrl: { required: true, type: () => String },
+              summary: { required: true, type: () => String },
             },
           },
         ],
-        [import("./content/dto/create-content.dto"), { CreateContentDto: {} }],
-        [import("./content/dto/update-content.dto"), { UpdateContentDto: {} }],
+        [
+          import("./documents/dto/create-document.dto"),
+          {
+            CreateDocumentDto: {
+              chunkSize: { required: false, type: () => Number, default: 200 },
+              delimiter: { required: false, type: () => String, default: "" },
+            },
+          },
+        ],
         [
           import("./email-change/dto/confirm-email-change.dto"),
           {
@@ -462,6 +473,18 @@ export default async () => {
             },
           },
         ],
+        [
+          import("./images/entities/image.entity"),
+          {
+            ImageEntity: {
+              height: { required: true, type: () => Number },
+              prompt: { required: true, type: () => String },
+              useInit: { required: true, type: () => Boolean },
+              width: { required: true, type: () => Number },
+            },
+          },
+        ],
+        [import("./images/dto/create-image.dto"), { CreateImageDto: {} }],
         [import("./members/dto/create-member.dto"), { CreateMemberDto: {} }],
         [
           import("./members/dto/member-query.dto"),
@@ -640,7 +663,7 @@ export default async () => {
           },
         ],
         [
-          import("./completions/dto/create-completion.dto"),
+          import("./llm/dto/create-completion.dto"),
           {
             CreateCompletionDto: {
               best_of: { required: false, type: () => Number },
@@ -681,160 +704,6 @@ export default async () => {
             UploadDocumentDto: { file: { required: true, type: () => Object } },
           },
         ],
-        [
-          import("./content/entities/animation.entity"),
-          {
-            AnimationEntity: {
-              animationPrompts: { required: true, type: () => String },
-              audioStart: { required: true, type: () => Object, default: 0 },
-              audioUrl: { required: true, type: () => Object, default: "" },
-              fps: { required: true, type: () => Number },
-              height: { required: true, type: () => Number },
-              length: { required: true, type: () => Number },
-              maxFrames: { required: true, type: () => Number },
-              useAudio: { required: true, type: () => Object, default: false },
-              width: { required: true, type: () => Number },
-            },
-          },
-        ],
-        [
-          import("./documents/entities/document.entity"),
-          {
-            DocumentEntity: {
-              chunkSize: { required: true, type: () => Number },
-              delimiter: { required: true, type: () => String },
-              md5Hash: { required: true, type: () => String },
-              size: { required: true, type: () => String },
-              sourceUrl: { required: true, type: () => String },
-              summary: { required: true, type: () => String },
-            },
-          },
-        ],
-        [
-          import("./content/entities/image.entity"),
-          {
-            ImageEntity: {
-              height: { required: true, type: () => Number },
-              prompt: { required: true, type: () => String },
-              useInit: { required: true, type: () => Boolean },
-              width: { required: true, type: () => Number },
-            },
-          },
-        ],
-        [
-          import("./content/dto/create-animation.dto"),
-          { CreateAnimationDto: {} },
-        ],
-        [
-          import("./documents/dto/create-document.dto"),
-          {
-            CreateDocumentDto: {
-              chunkSize: { required: false, type: () => Number, default: 200 },
-              delimiter: { required: false, type: () => String, default: "" },
-            },
-          },
-        ],
-        [import("./content/dto/create-image.dto"), { CreateImageDto: {} }],
-        [
-          import("./llm/dto/create-chat-completion.dto"),
-          {
-            MessageDto: {
-              content: { required: true, type: () => String },
-              name: { required: false, type: () => String },
-              role: { required: true, type: () => Object },
-            },
-            CreateChatCompletionDto: {
-              best_of: { required: false, type: () => Number },
-              frequency_penalty: { required: false, type: () => Number },
-              ignore_eos: { required: false, type: () => Boolean },
-              logit_bias: { required: false, type: () => Object },
-              max_tokens: { required: false, type: () => Number },
-              messages: {
-                required: true,
-                type: () => [
-                  t["./llm/dto/create-chat-completion.dto"].MessageDto,
-                ],
-              },
-              model: { required: false, type: () => String },
-              n: { required: false, type: () => Number, default: 1 },
-              name: { required: false, type: () => String },
-              presence_penalty: { required: false, type: () => Number },
-              skip_special_tokens: { required: false, type: () => Boolean },
-              stop: { required: false, type: () => [String] },
-              stop_token_ids: { required: false, type: () => [Number] },
-              stream: { required: false, type: () => Boolean },
-              temperature: {
-                required: false,
-                type: () => Number,
-                default: 0.7,
-              },
-              top_k: { required: false, type: () => Number, default: -1 },
-              top_p: { required: false, type: () => Number, default: 1 },
-              use_beam_search: { required: false, type: () => Boolean },
-              user: { required: false, type: () => String },
-            },
-          },
-        ],
-        [
-          import("./llm/dto/create-completion.dto"),
-          {
-            CreateCompletionDto: {
-              best_of: { required: false, type: () => Number },
-              echo: { required: false, type: () => Boolean, default: false },
-              frequency_penalty: { required: false, type: () => Number },
-              ignore_eos: { required: false, type: () => Boolean },
-              logit_bias: { required: false, type: () => Object },
-              logprobs: { required: false, type: () => Number },
-              max_tokens: { required: false, type: () => Number, default: 16 },
-              model: { required: true, type: () => String },
-              n: { required: true, type: () => Number, default: 1 },
-              presence_penalty: { required: false, type: () => Number },
-              prompt: { required: true, type: () => Object },
-              skip_special_tokens: { required: false, type: () => Boolean },
-              stop: { required: false, type: () => [String] },
-              stop_token_ids: { required: false, type: () => [Number] },
-              stream: { required: false, type: () => Boolean, default: false },
-              suffix: { required: false, type: () => String },
-              temperature: { required: false, type: () => Number, default: 1 },
-              top_k: { required: true, type: () => Number },
-              top_p: { required: false, type: () => Number, default: 1 },
-              use_beam_search: { required: false, type: () => Boolean },
-              user: { required: false, type: () => String },
-            },
-          },
-        ],
-        [
-          import("./animations/entities/animation.entity"),
-          {
-            AnimationEntity: {
-              animationPrompts: { required: true, type: () => String },
-              audioStart: { required: true, type: () => Object, default: 0 },
-              audioUrl: { required: true, type: () => Object, default: "" },
-              fps: { required: true, type: () => Number },
-              height: { required: true, type: () => Number },
-              length: { required: true, type: () => Number },
-              maxFrames: { required: true, type: () => Number },
-              useAudio: { required: true, type: () => Object, default: false },
-              width: { required: true, type: () => Number },
-            },
-          },
-        ],
-        [
-          import("./animations/dto/create-animation.dto"),
-          { CreateAnimationDto: {} },
-        ],
-        [
-          import("./images/entities/image.entity"),
-          {
-            ImageEntity: {
-              height: { required: true, type: () => Number },
-              prompt: { required: true, type: () => String },
-              useInit: { required: true, type: () => Boolean },
-              width: { required: true, type: () => Number },
-            },
-          },
-        ],
-        [import("./images/dto/create-image.dto"), { CreateImageDto: {} }],
       ],
       controllers: [
         [
@@ -962,6 +831,21 @@ export default async () => {
           },
         ],
         [
+          import("./content/content.controller"),
+          {
+            ContentController: {
+              findAll: {},
+              findOne: {
+                type: t["./content/entities/content.entity"].ContentEntity,
+              },
+              remove: {},
+              update: {
+                type: t["./content/entities/content.entity"].ContentEntity,
+              },
+            },
+          },
+        ],
+        [
           import("./jobs/jobs.controller"),
           {
             JobsController: {
@@ -972,18 +856,10 @@ export default async () => {
           },
         ],
         [
-          import("./content/content.controller"),
+          import("./documents/documents.controller"),
           {
-            ContentController: {
+            DocumentsController: {
               create: {
-                type: t["./content/entities/content.entity"].ContentEntity,
-              },
-              findAll: {},
-              findOne: {
-                type: t["./content/entities/content.entity"].ContentEntity,
-              },
-              remove: {},
-              update: {
                 type: t["./content/entities/content.entity"].ContentEntity,
               },
             },
@@ -1004,6 +880,16 @@ export default async () => {
             EmailVerificationController: {
               confirm: { type: t["./auth/dto/token.dto"].TokenDto },
               request: {},
+            },
+          },
+        ],
+        [
+          import("./images/images.controller"),
+          {
+            ImagesController: {
+              create: {
+                type: t["./content/entities/content.entity"].ContentEntity,
+              },
             },
           },
         ],
@@ -1069,26 +955,6 @@ export default async () => {
             PasswordResetController: {
               confirm: { type: t["./auth/dto/token.dto"].TokenDto },
               request: {},
-            },
-          },
-        ],
-        [
-          import("./animations/animations.controller"),
-          {
-            AnimationsController: {
-              create: {
-                type: t["./content/entities/content.entity"].ContentEntity,
-              },
-            },
-          },
-        ],
-        [
-          import("./images/images.controller"),
-          {
-            ImagesController: {
-              create: {
-                type: t["./content/entities/content.entity"].ContentEntity,
-              },
             },
           },
         ],

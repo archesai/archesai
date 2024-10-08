@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
-import { Chatbot, Content, Message, Thread } from "@prisma/client";
+// import { Content } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { ChatbotsService } from "../chatbots/chatbots.service";
@@ -40,122 +40,17 @@ export class MessagesService {
     private vectorRecordService: VectorRecordService
   ) {}
 
-  async answerQuestion(
-    chatbot: Chatbot,
-    thread: Thread,
-    messages: Message[],
-    orgname: string,
-    content: Content[],
-    createMessageDto: CreateMessageDto,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    signal: AbortSignal
-  ) {
-    this.logger.log("Answering question: " + createMessageDto.question);
-
-    // Get memory
-    const memory = [] as { answer: string; question: string }[];
-    messages.forEach((i) => {
-      memory.push({
-        answer: i.answer,
-        question: i.question,
-      });
-    });
-
-    const emitAnswer = (answer: string) => {
-      this.websocketsService.socket.to(orgname).emit("chat", {
-        answer,
-        chatbotId: chatbot.id,
-        message: new MessageEntity({
-          answer: answer,
-          answerLength: createMessageDto.answerLength,
-          citations: [],
-          contextLength: createMessageDto.contextLength,
-          createdAt: new Date(),
-          credits: 0,
-          id: "random",
-          question: createMessageDto.question,
-          similarityCutoff: createMessageDto.similarityCutoff,
-          temperature: createMessageDto.temperature,
-          threadId: thread.id,
-          topK: createMessageDto.topK,
-        }),
-        orgname,
-        threadId: thread.id,
-      });
-    };
-
-    const { citations, context } = await this.createContext(
-      orgname,
-      content,
-      createMessageDto
-    );
-
-    const completionMessages = [
-      {
-        content: chatbot.description,
-        role: "assistant",
-      },
-    ];
-    for (const m of memory) {
-      completionMessages.push({
-        content: m.question,
-        role: "user",
-      });
-      completionMessages.push({
-        content: m.answer,
-        role: "assistant",
-      });
-    }
-    if (context.length > 0) {
-      completionMessages.push({
-        content: context,
-        role: "user",
-      });
-    }
-    completionMessages.push({
-      content: createMessageDto.question,
-      role: "user",
-    });
-
-    const answer = await retry(
-      this.logger,
-      async () =>
-        await this.llmService.createChatCompletion(
-          {
-            max_tokens:
-              createMessageDto.contextLength + createMessageDto.answerLength,
-            messages: completionMessages as any,
-            temperature: createMessageDto.temperature,
-          },
-          (answer) => emitAnswer(answer)
-        ),
-      1
-    );
-
-    this.logger.log("Got final answer: " + answer);
-
-    const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
-    const tokens =
-      tokenizer.encode(context).text.length +
-      tokenizer.encode(answer).text.length +
-      tokenizer.encode(createMessageDto.question).text.length;
-
-    this.logger.log("Used: " + tokens + " tokens in answering question");
-    return {
-      answer,
-      citations,
-      tokens: tokens,
-    };
-  }
-
   async create(
     orgname: string,
     chatbotId: string,
     threadId: string,
-    createMessageDto: CreateMessageDto,
-    signal: AbortSignal
+    createMessageDto: CreateMessageDto
   ) {
     try {
+      // Create tokenizer
+      const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
+
+      // Get chatbot, thread, and organization
       const chatbot = await this.chatbotsService.findOne(chatbotId);
       const thread = await this.threadsService.findOne(
         orgname,
@@ -195,17 +90,184 @@ export class MessagesService {
       });
       this.logger.log("Got messages");
 
-      const documents = [];
-      // Get answer
-      const { answer, citations, tokens } = await this.answerQuestion(
-        chatbot,
-        thread,
-        messages.results.reverse(),
-        orgname,
-        documents,
-        createMessageDto,
-        signal
+      // Create memory memory
+      const memory = [] as { answer: string; question: string }[];
+      messages.results.reverse().forEach((i) => {
+        memory.push({
+          answer: i.answer,
+          question: i.question,
+        });
+      });
+      this.logger.log("Created memory");
+
+      // Define emitAnswer function
+      const mockId = new Date().getTime().toString();
+      const emitAnswer = (answer: string) => {
+        this.websocketsService.socket.to(orgname).emit("chat", {
+          answer,
+          chatbotId: chatbot.id,
+          message: new MessageEntity({
+            answer: answer,
+            answerLength: createMessageDto.answerLength,
+            citations: [],
+            contextLength: createMessageDto.contextLength,
+            createdAt: new Date(),
+            credits: 0,
+            id: mockId,
+            question: createMessageDto.question,
+            similarityCutoff: createMessageDto.similarityCutoff,
+            temperature: createMessageDto.temperature,
+            threadId: thread.id,
+            topK: createMessageDto.topK,
+          }),
+          orgname,
+          threadId: thread.id,
+        });
+      };
+
+      //       // Get question embedding
+      //       const [questionEmbedding] = await retry(
+      //         this.logger,
+      //         async () =>
+      //           await this.openAiEmbeddingsService.createEmbeddings([
+      //             createMessageDto.question,
+      //           ]),
+      //         3
+      //       );
+
+      //       // Query vector db to get similar content
+      //       const content = [];
+      //       const queryResult = await this.vectorDBService.query(
+      //         orgname,
+      //         questionEmbedding.embedding,
+      //         createMessageDto.topK,
+      //         content.map((content) => ({ contentId: content.id }))
+      //       );
+      //       this.logger.log("Got query result: " + JSON.stringify(queryResult));
+
+      //       const discoveredContent = {} as { [key: string]: Content };
+      //       const citations = [] as {
+      //         contentId: string;
+      //         similarity: number;
+      //         text: string;
+      //       }[];
+
+      //       let highestSimilarity = 0;
+      //       if (queryResult.length > 0) {
+      //         highestSimilarity = queryResult[0].score;
+      //       }
+
+      //       // Get content for citations
+      //       const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
+      //       let currentLen = 0;
+      //       for (const match of queryResult) {
+      //         if (match.score < createMessageDto.similarityCutoff) {
+      //           continue;
+      //         }
+      //         if (highestSimilarity - match.score > 0.025) {
+      //           continue;
+      //         }
+      //         const contentId = match.id.split("__")[0];
+      //         const vectorRecord = await this.vectorRecordService.findOne(match.id);
+      //         const text = vectorRecord.text;
+      //         if (!text) {
+      //           continue;
+      //         }
+      //         currentLen += tokenizer.encode(text).text.length;
+      //         // break if we are gonna go over the limit
+      //         if (currentLen > 14000) {
+      //           break;
+      //         }
+      //         this.logger.log("Adding text segment: " + text);
+      //         const content = await this.contentService.findOne(contentId);
+      //         discoveredContent[contentId] = content;
+      //         citations.push({
+      //           contentId,
+      //           similarity: match.score,
+      //           text: text,
+      //         });
+      //         if (currentLen > createMessageDto.contextLength) {
+      //           break;
+      //         }
+      //       }
+
+      //       // Create context from citations
+      //       let context = "";
+      //       if (citations.length > 0) {
+      //         context =
+      //           `**Context**: Below you'll find brief summaries and excerpts from a selection of content relevant to your inquiry.` +
+      //           Object.values(discoveredContent).map((doc) => {
+      //             const contentCitations = citations.filter(
+      //               (c) => c.contentId === doc.id
+      //             );
+      //             return (
+      //               `
+      // - **Title**: ${doc.name}
+      // - **Summary**: //FIXME{doc.summary}
+
+      // **Excerpts from ${doc.name}**:
+      // ` +
+      //               contentCitations.map((excerpts, i) => {
+      //                 return `
+
+      // **Excerpt ${i + 1}**: ${excerpts.text.replace(/\n/g, " ")}
+      // `;
+      //               })
+      //             );
+      //           });
+      //       }
+
+      // Create messages
+      const completionMessages = [
+        {
+          content: chatbot.description,
+          role: "assistant",
+        },
+      ];
+      for (const m of memory) {
+        completionMessages.push({
+          content: m.question,
+          role: "user",
+        });
+        completionMessages.push({
+          content: m.answer,
+          role: "assistant",
+        });
+      }
+      // if (context.length > 0) {
+      //   completionMessages.push({
+      //     content: context,
+      //     role: "user",
+      //   });
+      // }
+      completionMessages.push({
+        content: createMessageDto.question,
+        role: "user",
+      });
+
+      // Get chat completion to answer question
+      const answer = await retry(
+        this.logger,
+        async () =>
+          await this.llmService.createChatCompletion(
+            {
+              max_tokens:
+                createMessageDto.contextLength + createMessageDto.answerLength,
+              messages: completionMessages as any,
+              temperature: createMessageDto.temperature,
+            },
+            (answer) => emitAnswer(answer)
+          ),
+        1
       );
+      this.logger.log("Got final answer: " + answer);
+
+      // Calculate tokens used
+      const tokens =
+        // tokenizer.encode(context).text.length +
+        tokenizer.encode(answer).text.length +
+        tokenizer.encode(createMessageDto.question).text.length;
+      this.logger.log("Used: " + tokens + " tokens in answering question");
       this.logger.log("Completed question, saving message");
 
       // Create answer in db
@@ -214,9 +276,10 @@ export class MessagesService {
         createMessageDto,
         answer,
         tokens,
-        citations
+        []
       );
 
+      // Calculate token cost and update credits
       let multiple = 1;
       if (chatbot.llmBase === "GPT_3_5_TURBO_16_K") {
         multiple =
@@ -230,15 +293,13 @@ export class MessagesService {
             : 45;
       }
       await this.organizationsService.removeCredits(orgname, multiple * tokens);
-
-      // Add credits to thread total
       await this.threadsService.incrementCredits(
         orgname,
         threadId,
         multiple * tokens
       );
-      this.websocketsService.socket.to(orgname).emit("update");
 
+      this.websocketsService.socket.to(orgname).emit("update");
       return message;
     } catch (err) {
       if (err instanceof NotFoundException) {
@@ -255,105 +316,6 @@ export class MessagesService {
       this.websocketsService.socket.to(orgname).emit("update");
       return message;
     }
-  }
-
-  async createContext(
-    orgname: string,
-    content: Content[],
-    createMessageDto: CreateMessageDto
-  ) {
-    const [questionEmbedding] = await retry(
-      this.logger,
-      async () =>
-        await this.openAiEmbeddingsService.createEmbeddings([
-          createMessageDto.question,
-        ]),
-      3
-    );
-    const queryResult = await this.vectorDBService.query(
-      orgname,
-      questionEmbedding.embedding,
-      createMessageDto.topK,
-      content.map((content) => ({ contentId: content.id }))
-    );
-    this.logger.log("Got query result: " + JSON.stringify(queryResult));
-
-    const discoveredContent = {} as { [key: string]: Content };
-    const citations = [] as {
-      contentId: string;
-      similarity: number;
-      text: string;
-    }[];
-
-    const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
-    let currentLen = 0;
-
-    let highestSimilarity = 0;
-    if (queryResult.length > 0) {
-      highestSimilarity = queryResult[0].score;
-    }
-
-    for (const match of queryResult) {
-      if (match.score < createMessageDto.similarityCutoff) {
-        continue;
-      }
-      if (highestSimilarity - match.score > 0.025) {
-        continue;
-      }
-      const contentId = match.id.split("__")[0];
-      const vectorRecord = await this.vectorRecordService.findOne(match.id);
-      const text = vectorRecord.text;
-      if (!text) {
-        continue;
-      }
-      currentLen += tokenizer.encode(text).text.length;
-      // break if we are gonna go over the limit
-      if (currentLen > 14000) {
-        break;
-      }
-      this.logger.log("Adding text segment: " + text);
-      const content = await this.contentService.findOne(contentId);
-      discoveredContent[contentId] = content;
-      citations.push({
-        contentId,
-        similarity: match.score,
-        text: text,
-      });
-      if (currentLen > createMessageDto.contextLength) {
-        break;
-      }
-    }
-
-    let context = ""; // by default, we don't include any context
-    if (citations.length > 0) {
-      context =
-        `**Context**: Below you'll find brief summaries and excerpts from a selection of content relevant to your inquiry.` +
-        Object.values(discoveredContent).map((doc) => {
-          const contentCitations = citations.filter(
-            (c) => c.contentId === doc.id
-          );
-          return (
-            `
-
-- **Title**: ${doc.name}
-- **Summary**: //FIXME{doc.summary}
-
-**Excerpts from ${doc.name}**:
-` +
-            contentCitations.map((excerpts, i) => {
-              return `
-
-**Excerpt ${i + 1}**: ${excerpts.text.replace(/\n/g, " ")}
-`;
-            })
-          );
-        });
-    }
-
-    return {
-      citations,
-      context,
-    };
   }
 
   findAll(
