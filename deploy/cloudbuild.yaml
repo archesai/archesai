@@ -4,6 +4,7 @@ options:
 steps:
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-api
+    waitFor: ["-"]
     args:
       - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
       - --cache=true
@@ -12,6 +13,7 @@ steps:
 
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-nlp
+    waitFor: ["-"]
     args:
       - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
       - --cache=true
@@ -20,6 +22,7 @@ steps:
 
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-ui
+    waitFor: ["-"]
     args:
       - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-ui:$SHORT_SHA
       - --cache=true
@@ -29,6 +32,10 @@ steps:
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     id: Get latest image tags
+    waitFor:
+      - build-arches-api
+      - build-arches-nlp
+      - build-arches-ui
     args: ["./scripts/01_get-release-values.sh"]
     secretEnv:
       - GITHUB_TOKEN
