@@ -89,11 +89,6 @@ spec:
                 secretKeyRef:
                   key: STORAGE_TYPE
                   name: arches-api-config-secret
-            - name: VECTOR_DB_TYPE
-              valueFrom:
-                secretKeyRef:
-                  key: VECTOR_DB_TYPE
-                  name: arches-api-config-secret
             - name: FEATURE_BILLING
               valueFrom:
                 secretKeyRef:

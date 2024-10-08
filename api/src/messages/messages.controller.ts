@@ -41,8 +41,7 @@ export class MessagesController {
         orgname,
         chatbotId,
         threadId,
-        createMessageDto,
-        controller.signal
+        createMessageDto
       )
     );
     req.socket.off("close", handleRequestClose);

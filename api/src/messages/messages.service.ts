@@ -1,6 +1,5 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { NotFoundException } from "@nestjs/common";
-// import { Content } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { ChatbotsService } from "../chatbots/chatbots.service";
@@ -13,10 +12,6 @@ import { MessageQueryDto } from "../messages/dto/message-query.dto";
 import { MessageEntity } from "../messages/entities/message.entity";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { ThreadsService } from "../threads/threads.service";
-import {
-  VECTOR_DB_SERVICE,
-  VectorDBService,
-} from "../vector-db/vector-db.service";
 import { VectorRecordService } from "../vector-records/vector-record.service";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
@@ -32,8 +27,6 @@ export class MessagesService {
     private chatbotsService: ChatbotsService,
     private websocketsService: WebsocketsService,
     private organizationsService: OrganizationsService,
-    @Inject(VECTOR_DB_SERVICE)
-    private vectorDBService: VectorDBService,
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
     private contentService: ContentService,
@@ -46,6 +39,7 @@ export class MessagesService {
     threadId: string,
     createMessageDto: CreateMessageDto
   ) {
+    console.log(createMessageDto);
     try {
       // Create tokenizer
       const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
@@ -251,10 +245,10 @@ export class MessagesService {
         async () =>
           await this.llmService.createChatCompletion(
             {
-              max_tokens:
-                createMessageDto.contextLength + createMessageDto.answerLength,
+              // max_tokens:
+              //   createMessageDto.contextLength + createMessageDto.answerLength,
               messages: completionMessages as any,
-              temperature: createMessageDto.temperature,
+              // temperature: createMessageDto.temperature,
             },
             (answer) => emitAnswer(answer)
           ),

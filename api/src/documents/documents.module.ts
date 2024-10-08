@@ -8,7 +8,7 @@ import { LLMModule } from "../llm/llm.module";
 import { LoaderModule } from "../loader/loader.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { StorageModule } from "../storage/storage.module";
-import { VectorDBModule } from "../vector-db/vector-db.module";
+import { VectorRecordModule } from "../vector-records/vector-record.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
 import { DocumentProcessor } from "./document.processor";
 import { DocumentsController } from "./documents.controller";
@@ -31,7 +31,7 @@ import { DocumentsService } from "./documents.service";
     StorageModule.forRoot(),
     LLMModule,
     EmbeddingsModule,
-    VectorDBModule,
+    VectorRecordModule,
   ],
   providers: [DocumentProcessor, DocumentsService],
 })

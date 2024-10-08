@@ -2,9 +2,87 @@ import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
 import { ChatCompletionCreateParamsStreaming } from "openai/resources";
+import { z } from "zod";
 
 import { CreateChatCompletionDto } from "./dto/create-chat-completion.dto";
+
+// Schema for Lesson Metadata
+const LessonMetadataSchema = z.object({
+  description: z.string(),
+  lessonNumber: z.number().int().positive(),
+  nativeLanguage: z.string(),
+  targetLanguage: z.string(),
+  title: z.string(),
+});
+
+// Schema for Dialogues
+const DialogueSchema = z.object({
+  audioResources: z.array(z.string()).optional(),
+  dialogueId: z.string().uuid(),
+  originalText: z.string(),
+  translation: z.string(),
+});
+
+// Schema for Vocabulary
+const VocabularyItemSchema = z.object({
+  pronunciation: z.string().optional(),
+  translation: z.string(),
+  usageExamples: z.array(z.string()).optional(),
+  word: z.string(),
+});
+
+// Schema for Grammar Explanations
+const GrammarPointSchema = z.object({
+  examples: z.array(z.string()),
+  explanation: z.string(),
+  grammarPoint: z.string(),
+});
+
+// Schema for Exercises
+const ExerciseSchema = z.object({
+  answers: z.array(z.string()).optional(),
+  exerciseId: z.string().uuid(),
+  instructions: z.string(),
+  questions: z.array(z.string()),
+  type: z.enum([
+    "multiple-choice",
+    "fill-in-the-blank",
+    "matching",
+    "short-answer",
+  ]),
+});
+
+// Schema for Cultural Notes
+const CulturalNoteSchema = z.object({
+  content: z.string(),
+  topic: z.string(),
+});
+
+// Schema for Summary
+const SummarySchema = z.object({
+  keyTakeaways: z.array(z.string()),
+  reviewQuestions: z.array(z.string()).optional(),
+});
+
+// Schema for Additional Resources
+const AdditionalResourceSchema = z.object({
+  links: z.array(z.string().url()),
+  references: z.array(z.string()),
+});
+
+// Complete Lesson Schema
+const LessonSchema = z.object({
+  additionalResources: AdditionalResourceSchema.optional(),
+  culturalNotes: z.array(CulturalNoteSchema).optional(),
+  dialogues: z.array(DialogueSchema),
+  exercises: z.array(ExerciseSchema),
+  grammar: z.array(GrammarPointSchema),
+  metadata: LessonMetadataSchema,
+  summary: SummarySchema,
+  vocabulary: z.array(VocabularyItemSchema),
+});
 
 @Injectable()
 export class LLMService {
@@ -26,12 +104,36 @@ export class LLMService {
     });
   }
 
+  async createAssimil() {
+    this.logger.log("Creating Assimil Lesson");
+    const completion = await this.openai.beta.chat.completions.parse({
+      messages: [
+        { content: "Extract the event information.", role: "system" },
+        {
+          content: "Create me an assimil lesson in Spanish",
+          role: "user",
+        },
+      ],
+      model: "gpt-4o",
+      response_format: zodResponseFormat(LessonSchema, "lesson"),
+    });
+
+    const lesson = completion.choices[0].message;
+
+    // If the model refuses to respond, you will get a refusal message
+    if (lesson.refusal) {
+      this.logger.error(lesson.refusal);
+    } else {
+      this.logger.log("Assimil Lesson: " + JSON.stringify(lesson, null, 2));
+    }
+  }
+
   async createChatCompletion(
     createChatCompletionDto: CreateChatCompletionDto,
     emitAnswer: (answer: string) => void
   ) {
     this.logger.log(
-      "Sending messages to OpenAI:" +
+      "Sending messages to OpenAI: " +
         JSON.stringify(createChatCompletionDto, null, 2)
     );
 
@@ -51,7 +153,7 @@ export class LLMService {
       }
     }
 
-    this.logger.log("Received Answer" + answer);
+    this.logger.log("Received Answer: " + answer);
     return answer;
   }
 

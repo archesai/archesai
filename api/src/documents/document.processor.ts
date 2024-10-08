@@ -18,10 +18,7 @@ import { LLMService } from "../llm/llm.service";
 import { LoaderService } from "../loader/loader.service";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import {
-  VECTOR_DB_SERVICE,
-  VectorDBService,
-} from "../vector-db/vector-db.service";
+import { VectorRecordService } from "../vector-records/vector-record.service";
 
 @Processor("document")
 export class DocumentProcessor {
@@ -41,8 +38,7 @@ export class DocumentProcessor {
     private storageService: StorageService,
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
-    @Inject(VECTOR_DB_SERVICE)
-    private vectorDBService: VectorDBService
+    private vectorRecordService: VectorRecordService
   ) {}
 
   private async createEmbeddings(textContent: { text: string }[]) {
@@ -274,11 +270,10 @@ export class DocumentProcessor {
 
     const upsertVectorsPromise = (async () => {
       const start = Date.now();
-      await this.vectorDBService.upsert(
+      await this.vectorRecordService.upsert(
         organization.orgname,
         content.id,
-        populatedTextContent.map((e) => e.embedding),
-        populatedTextContent.map((e) => e.text)
+        populatedTextContent
       );
       this.logger.log(
         `Upserted embeddings for ${content.name}. Completed in ${

@@ -34,7 +34,6 @@ import { RunpodModule } from "./runpod/runpod.module";
 import { StorageModule } from "./storage/storage.module";
 import { ThreadsModule } from "./threads/threads.module";
 import { UsersModule } from "./users/users.module";
-import { VectorDBModule } from "./vector-db/vector-db.module";
 import { VectorRecordModule } from "./vector-records/vector-record.module";
 import { WebsocketsGateway } from "./websockets/websockets.gateway";
 import { WebsocketsModule } from "./websockets/websockets.module";
@@ -136,17 +135,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
           }),
           then: Joi.required(),
         }),
-        // PINECONE
-        PINECONE_API_KEY: Joi.when("VECTOR_DB_TYPE", {
-          is: "pinecone",
-          otherwise: Joi.string().optional(),
-          then: Joi.string().required(),
-        }),
-        PINECONE_INDEX: Joi.when("VECTOR_DB_TYPE", {
-          is: "pinecone",
-          otherwise: Joi.string().optional(),
-          then: Joi.string().required(),
-        }),
+
         PORT: Joi.number().required(),
 
         REDIS_AUTH: Joi.string().required(),
@@ -174,8 +163,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
           otherwise: Joi.string().forbidden(),
           then: Joi.string().required(),
         }),
-        // STORAGE TYPE
-        VECTOR_DB_TYPE: Joi.string().valid("pinecone", "pgvector").required(),
       }),
     }),
     BullModule.forRootAsync({
@@ -204,7 +191,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ApiTokensModule,
     EmbeddingsModule,
     LLMModule,
-    VectorDBModule,
     EmailVerificationModule,
     ThreadsModule,
     StorageModule.forRoot(),

@@ -11,15 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useContentControllerFindOne } from "@/generated/archesApiComponents";
-import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-
-// Dynamically import react-player to prevent SSR issues
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export default function ContentDetailsPage() {
   const searchParams = useSearchParams();
@@ -60,11 +54,6 @@ export default function ContentDetailsPage() {
           </div>
           <Separator className="my-4" />
 
-          {/* Display Content Based on MIME Type */}
-          <div className="w-full aspect-w-16 min-h-20">
-            {renderContent(content)}
-          </div>
-
           {/* Additional Information */}
           <div className="mt-6 space-y-2">
             <h3 className="text-lg font-semibold">Details</h3>
@@ -101,46 +90,4 @@ export default function ContentDetailsPage() {
       </Card>
     </div>
   );
-}
-
-function renderContent(content: ContentEntity) {
-  const { mimeType, url } = content;
-
-  if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) {
-    return (
-      <ReactPlayer
-        config={{
-          file: {
-            attributes: {
-              controlsList: "nodownload",
-            },
-          },
-        }}
-        controls
-        height="100%"
-        url={url}
-        width="100%"
-      />
-    );
-  } else if (mimeType.startsWith("image/")) {
-    return (
-      <Image
-        alt={content.description}
-        className="w-full h-full object-contain"
-        height={516}
-        src={url}
-        width={516}
-      />
-    );
-  } else if (mimeType === "application/pdf") {
-    return (
-      <iframe className="w-full h-full" src={url} title="PDF Document"></iframe>
-    );
-  } else {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p>Cannot preview this content type. Please download to view.</p>
-      </div>
-    );
-  }
 }

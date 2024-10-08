@@ -7,7 +7,6 @@ import { LLMModule } from "../llm/llm.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { ThreadsModule } from "../threads/threads.module";
-import { VectorDBModule } from "../vector-db/vector-db.module";
 import { VectorRecordModule } from "../vector-records/vector-record.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
 import { MessageRepository } from "./message.repository";
@@ -18,7 +17,6 @@ import { MessagesService } from "./messages.service";
   controllers: [MessagesController],
   imports: [
     PrismaModule,
-    VectorDBModule,
     EmbeddingsModule,
     LLMModule,
     WebsocketsModule,

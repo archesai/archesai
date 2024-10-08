@@ -156,7 +156,43 @@ export default function ChatbotChatPage() {
                           <div className="pulse bg-black h-4 w-4 rounded-full"></div>
                         </div>
                       ) : (
-                        <div className="rounded-lg py-2">{msg.answer}</div>
+                        <div className="rounded-lg py-2">
+                          {(msg.answer as string)
+                            .replaceAll(" -", "\n-")
+                            .split(/(```[\s\S]*?```)/g)
+                            .map((segment, index) => {
+                              const replaced = segment
+                                .split(/(\*\*[^*]+\*\*|`[^`]+`|\n)/g)
+                                .map((part, partIndex) => {
+                                  if (
+                                    part.startsWith("**") &&
+                                    part.endsWith("**")
+                                  ) {
+                                    return (
+                                      <b key={partIndex}>{part.slice(2, -2)}</b>
+                                    );
+                                  } else if (
+                                    part.startsWith("`") &&
+                                    part.endsWith("`")
+                                  ) {
+                                    return (
+                                      <span
+                                        className="markdown-code"
+                                        key={partIndex}
+                                      >
+                                        {part.slice(1, -1)}
+                                      </span>
+                                    );
+                                  } else if (part === "\n") {
+                                    return <br key={partIndex} />;
+                                  } else {
+                                    return part;
+                                  }
+                                });
+
+                              return <span key={index}>{replaced}</span>;
+                            })}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -167,7 +203,7 @@ export default function ChatbotChatPage() {
 
         {/* Input Form */}
         <form
-          className="flex-shrink-0"
+          className="flex-shrink-0 h-16"
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();

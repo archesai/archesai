@@ -59,7 +59,7 @@ export default function ContentPage() {
                 </div>
                 <Link
                   className="max-w-[200px] truncate font-medium text-primary"
-                  href={`/content/single/general?contentId=${row.original.id}`}
+                  href={`/content/single/details?contentId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -148,7 +148,7 @@ export default function ContentPage() {
         },
       ]}
       handleSelect={(content) =>
-        router.push(`/content/single/general?contentId=${content.id}`)
+        router.push(`/content/single/details?contentId=${content.id}`)
       }
       itemType="content"
       loading={loading}
