@@ -5,32 +5,24 @@ steps:
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-api
     waitFor: ["-"]
-    entrypoint: "sh"
     args:
-      - "-c"
-      - |
-        if git diff --quiet HEAD^ HEAD -- ./api; then
-          echo "No changes in ./api directory. Tagging latest image."
-          gcloud container images add-tag us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:latest us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
-        else
-          echo "Changes detected in ./api directory. Building image."
-          /kaniko/executor --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA --cache=true --cache-ttl=24h --context=./api --snapshot-mode=redo --use-new-run
-        fi
+      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=24h
+      - --context=./api
+      - --snapshot-mode=redo
+      - --use-new-run
 
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-nlp
     waitFor: ["-"]
-    entrypoint: "sh"
     args:
-      - "-c"
-      - |
-        if git diff --quiet HEAD^ HEAD -- ./nlp; then
-          echo "No changes in ./nlp directory. Tagging latest image."
-          gcloud container images add-tag us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:latest us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
-        else
-          echo "Changes detected in ./nlp directory. Building image."
-          /kaniko/executor --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA --cache=true --cache-ttl=24h --context=./nlp --snapshot-mode=redo --use-new-run
-        fi
+      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=24h
+      - --context=./nlp
+      - --snapshot-mode=redo
+      - --use-new-run
 
   # - name: "gcr.io/kaniko-project/executor:latest"
   #   id: build-arches-ui
