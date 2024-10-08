@@ -70,72 +70,76 @@ export const Navbar = () => {
       }`}
     >
       <NavigationMenu className="mx-auto">
-        <NavigationMenuList className="container h-14 px-4 w-screen flex justify-between ">
-          <NavigationMenuItem className="font-bold flex">
-            <LogoSVG fill={resolvedTheme === "dark" ? "#FFF" : "#000"} />
-          </NavigationMenuItem>
+        <NavigationMenuList className="container h-16 px-2.5 w-screen flex justify-between">
+          <div className="flex items-center justify-center gap-3">
+            <NavigationMenuItem className="font-bold flex">
+              <LogoSVG fill={resolvedTheme === "dark" ? "#FFF" : "#000"} />
+            </NavigationMenuItem>
+            {/* mobile */}
+            <span className="flex md:hidden">
+              <Sheet onOpenChange={setIsOpen} open={isOpen}>
+                <SheetTrigger className="px-2">
+                  <Menu
+                    className="flex md:hidden h-5 w-5"
+                    onClick={() => setIsOpen(true)}
+                  ></Menu>
+                </SheetTrigger>
 
-          {/* mobile */}
-          <span className="flex md:hidden">
-            <Sheet onOpenChange={setIsOpen} open={isOpen}>
-              <SheetTrigger className="px-2">
-                <Menu
-                  className="flex md:hidden h-5 w-5"
-                  onClick={() => setIsOpen(true)}
-                ></Menu>
-              </SheetTrigger>
-
-              <SheetContent side={"left"}>
-                <SheetHeader>
-                  <LogoSVG fill={resolvedTheme === "dark" ? "#FFF" : "#000"} />
-                </SheetHeader>
-                <nav className="flex flex-col justify-center items-center gap-2 mt-4">
-                  {routeList.map(({ href, label }: RouteProps) => (
+                <SheetContent side={"left"}>
+                  <SheetHeader>
+                    <LogoSVG
+                      fill={resolvedTheme === "dark" ? "#FFF" : "#000"}
+                    />
+                  </SheetHeader>
+                  <nav className="flex flex-col justify-center items-center gap-2 mt-4">
+                    {routeList.map(({ href, label }: RouteProps) => (
+                      <a
+                        className={buttonVariants({ variant: "ghost" })}
+                        href={href}
+                        key={label}
+                        onClick={() => setIsOpen(false)}
+                        rel="noreferrer noopener"
+                      >
+                        {label}
+                      </a>
+                    ))}
                     <a
-                      className={buttonVariants({ variant: "ghost" })}
-                      href={href}
-                      key={label}
-                      onClick={() => setIsOpen(false)}
+                      className={`w-[110px] border ${buttonVariants({
+                        variant: "secondary",
+                      })}`}
+                      href="https://github.com/leoMirandaa/shadcn-landing-page.git"
                       rel="noreferrer noopener"
+                      target="_blank"
                     >
-                      {label}
+                      <GitHubLogoIcon className="mr-2 w-5 h-5" />
+                      Github
                     </a>
-                  ))}
-                  <a
-                    className={`w-[110px] border ${buttonVariants({
-                      variant: "secondary",
-                    })}`}
-                    href="https://github.com/leoMirandaa/shadcn-landing-page.git"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    <GitHubLogoIcon className="mr-2 w-5 h-5" />
-                    Github
-                  </a>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </span>
-
-          {/* desktop */}
-          <nav className="hidden md:flex gap-2">
-            {routeList.map((route: RouteProps, i) => (
-              <a
-                className={`text-[17px] ${buttonVariants({
-                  variant: "ghost",
-                })}`}
-                href={route.href}
-                key={i}
-                rel="noreferrer noopener"
-              >
-                {route.label}
-              </a>
-            ))}
-          </nav>
-
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            </span>
+            {/* desktop */}
+            <nav className="hidden md:flex gap-2">
+              {routeList.map((route: RouteProps, i) => (
+                <a
+                  className={`text-[17px] ${buttonVariants({
+                    variant: "ghost",
+                  })}`}
+                  href={route.href}
+                  key={i}
+                  rel="noreferrer noopener"
+                >
+                  {route.label}
+                </a>
+              ))}
+            </nav>
+          </div>
           <div className="hidden md:flex gap-2">
-            <Button size="sm" variant={"secondary"}>
-              <Link href="/home">Dashboard</Link>
+            <Button variant={"outline"}>
+              <Link href="/auth/login">Log in</Link>
+            </Button>
+            <Button>
+              <Link href="/auth/register">Sign up for free</Link>
             </Button>
           </div>
         </NavigationMenuList>

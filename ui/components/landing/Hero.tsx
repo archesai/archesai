@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export const Hero = () => {
   const router = useRouter();
   return (
-    <section className="z-10 container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10 h-screen -mt-14">
+    <section className="z-10 container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10 h-screen mt-10 lg:-mt-10">
       <div className="text-center lg:text-start space-y-6 z-10 ">
         <main className="text-5xl md:text-5xl font-bold">
           Elevate Your Business with AI-Driven Solutions

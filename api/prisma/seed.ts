@@ -61,38 +61,38 @@ async function main() {
 
   try {
     for (let i = 0; i < 100; i++) {
-      // const fakeDate = faker.date.past({ years: 1 });
-      // await prismaService.content.create({
-      //   data: {
-      //     annotations: {},
-      //     buildArgs: {},
-      //     createdAt: fakeDate,
-      //     credits: faker.number.int(10000),
-      //     description: faker.lorem.paragraphs(2),
-      //     job: {
-      //       create: {
-      //         createdAt: fakeDate,
-      //         jobType: "DOCUMENT",
-      //         organization: {
-      //           connect: {
-      //             orgname: user.defaultOrgname,
-      //           },
-      //         },
-      //         status: "COMPLETE",
-      //       },
-      //     },
-      //     mimeType: faker.helpers.arrayElement(contentTypes),
-      //     name: faker.commerce.productName(),
-      //     organization: {
-      //       connect: {
-      //         orgname: user.defaultOrgname,
-      //       },
-      //     },
-      //     previewImage: "https://picsum.photos/200/300",
-      //     type: "DOCUMENT",
-      //     url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
-      //   },
-      // });
+      const fakeDate = faker.date.past({ years: 1 });
+      await prismaService.content.create({
+        data: {
+          annotations: {},
+          buildArgs: {},
+          createdAt: fakeDate,
+          credits: faker.number.int(10000),
+          description: faker.lorem.paragraphs(2),
+          job: {
+            create: {
+              createdAt: fakeDate,
+              jobType: "DOCUMENT",
+              organization: {
+                connect: {
+                  orgname: user.defaultOrgname,
+                },
+              },
+              status: "COMPLETE",
+            },
+          },
+          mimeType: "application/pdf",
+          name: faker.commerce.productName(),
+          organization: {
+            connect: {
+              orgname: user.defaultOrgname,
+            },
+          },
+          previewImage: "https://picsum.photos/200/300",
+          type: "DOCUMENT",
+          url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
+        },
+      });
       await prismaService.thread.create({
         data: {
           chatbotId: chatbot.id,

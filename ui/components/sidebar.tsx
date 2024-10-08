@@ -44,7 +44,7 @@ export const Sidebar = () => {
   });
 
   return (
-    <nav className="items-start px-2.5 pb-2.5 pt-1.5 text-sm font-md h-full">
+    <nav className="items-start px-2.5 pb-2.5 text-sm font-md h-full">
       <div className="flex flex-col justify-between max-h-screen h-full opacity-100">
         <div>
           <div
