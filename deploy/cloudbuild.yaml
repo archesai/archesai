@@ -18,21 +18,21 @@ steps:
         git fetch origin $BRANCH_NAME
 
         # Detect changes in ./api/
-        export API_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
-        echo "$API_CHANGED"
+        local api_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
+        echo "$api_changed"
 
         # Detect changes in ./nlp/
-        export NLP_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
-        echo "$NLP_CHANGED"
+        local nlp_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
+        echo "$nlp_changed"
 
         # Set flags based on changes
-        if [ -n "$API_CHANGED" ]; then
+        if [ -n "$api_changed" ]; then
           echo "export API_CHANGED=true"  >>/workspace/values.sh
         else
           echo "export API_CHANGED=false"  >>/workspace/values.sh
         fi
 
-        if [ -n "$NLP_CHANGED" ]; then
+        if [ -n "$nlp_changed" ]; then
           echo "export NLP_CHANGED=true"  >>/workspace/values.sh
         else
           echo "export NLP_CHANGED=false"  >>/workspace/values.sh
