@@ -2,12 +2,36 @@ options:
   machineType: "N1_HIGHCPU_8"
 
 steps:
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    id: Get latest image tags
-    args: ["./scripts/01_get-release-values.sh"]
-    secretEnv:
-      - GITHUB_TOKEN
+  - name: "gcr.io/kaniko-project/executor:latest"
+    id: build-arches-api
+    args:
+      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=24h
+      - --context=./api
+
+  - name: "gcr.io/kaniko-project/executor:latest"
+    id: build-arches-nlp
+    args:
+      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=24h
+      - --context=./nlp
+
+  - name: "gcr.io/kaniko-project/executor:latest"
+    id: build-arches-ui
+    args:
+      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-ui:$SHORT_SHA
+      - --cache=true
+      - --cache-ttl=24h
+      - --context=./ui
+
+  # - name: gcr.io/cloud-builders/gcloud
+  #   entrypoint: bash
+  #   id: Get latest image tags
+  #   args: ["./scripts/01_get-release-values.sh"]
+  #   secretEnv:
+  #     - GITHUB_TOKEN
 
   # - name: "gcr.io/cloud-builders/docker"
   #   entrypoint: bash
@@ -16,18 +40,18 @@ steps:
   #   secretEnv:
   #     - GITHUB_TOKEN
 
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    id: gen-dotenv
-    args: ["./scripts/02_generate-dotenv.sh"]
+  # - name: gcr.io/cloud-builders/gcloud
+  #   entrypoint: bash
+  #   id: gen-dotenv
+  #   args: ["./scripts/02_generate-dotenv.sh"]
 
-  - name: gcr.io/cloud-builders/gcloud
-    waitFor:
-      # - e2e-test
-      - gen-dotenv
-    entrypoint: bash
-    id: Create release in cloud deploy
-    args: ["./scripts/03_create-release.sh"]
+  # - name: gcr.io/cloud-builders/gcloud
+  #   waitFor:
+  #     # - e2e-test
+  #     - gen-dotenv
+  #   entrypoint: bash
+  #   id: Create release in cloud deploy
+  #   args: ["./scripts/03_create-release.sh"]
 
 availableSecrets:
   secretManager:

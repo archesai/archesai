@@ -89,7 +89,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
           otherwise: Joi.string().forbidden(),
           then: Joi.string().required(),
         }),
-
         EMAIL_USER: Joi.when("FEATURE_EMAIL", {
           is: true,
           otherwise: Joi.string().forbidden(),
@@ -138,13 +137,12 @@ import { WebsocketsModule } from "./websockets/websockets.module";
 
         PORT: Joi.number().required(),
 
-        REDIS_AUTH: Joi.string().required(),
-
-        REDIS_CA_CERT_PATH: Joi.string().optional(),
-
         // REDIS CONFIG
+        REDIS_AUTH: Joi.string().required(),
+        REDIS_CA_CERT_PATH: Joi.string().optional(),
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.number().required(),
+
         SERVER_HOST: Joi.string().required(),
 
         // STORAGE TYPE
