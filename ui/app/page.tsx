@@ -17,17 +17,6 @@ function App() {
   return (
     <>
       <Navbar />
-      {/* <div className="min-h-screen relative w-screen -mt-14 ">
-        <Image
-          alt="Arches AI - AI-Driven Solutions"
-          className=""
-          layout="fill"
-          objectFit="cover"
-          priority={true}
-          src="/landing-compressed-2.jpg"
-        />
-        <div className="absolute bg-black bg-opacity-70 bottom-0 left-0 right-0 top-0" />
-      </div> */}
       <Hero />
       <About />
       <HowItWorks />

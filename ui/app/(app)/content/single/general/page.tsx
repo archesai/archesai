@@ -34,7 +34,7 @@ export default function ContentDetailsPage() {
       },
     },
     {
-      enabled: !!contentId,
+      enabled: !!defaultOrgname && !!contentId,
     }
   );
 

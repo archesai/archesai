@@ -15,17 +15,12 @@ export default function ContentVectorsPage() {
 
   const { defaultOrgname } = useAuth();
   const { data: vectorRecords, isLoading: vectorRecordsIsLoading } =
-    useVectorRecordControllerFindAll(
-      {
-        pathParams: {
-          contentId: contentId as string,
-          orgname: defaultOrgname,
-        },
+    useVectorRecordControllerFindAll({
+      pathParams: {
+        contentId: contentId as string,
+        orgname: defaultOrgname,
       },
-      {
-        enabled: !!defaultOrgname,
-      }
-    );
+    });
 
   const { selectedItems } = useSelectItems({
     items: vectorRecords?.results || [],

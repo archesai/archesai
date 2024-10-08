@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import React from "react";
 
 const faqs = [
   {
@@ -101,7 +102,7 @@ export const FAQ = () => {
       </h2>
 
       {faqs.map(({ category, questions }, i) => (
-        <>
+        <React.Fragment key={i}>
           <h3 className="font-bold text-lg mt-8">{category}</h3>
           <Accordion
             className="w-full AccordionRoot"
@@ -119,7 +120,7 @@ export const FAQ = () => {
               </AccordionItem>
             ))}
           </Accordion>
-        </>
+        </React.Fragment>
       ))}
 
       <h3 className="font-medium mt-4">

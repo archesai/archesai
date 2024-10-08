@@ -8,23 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useBillingControllerGetPlans } from "@/generated/archesApiComponents";
+import { PlanEntity } from "@/generated/archesApiSchemas";
 import { Check } from "lucide-react";
 
-enum PopularPlanType {
-  NO = 0,
-  YES = 1,
-}
-
-interface PricingProps {
-  benefitList: string[];
-  buttonText: string;
-  description: string;
-  popular: PopularPlanType;
-  price: number;
-  title: string;
-}
-
-const pricingList: PricingProps[] = [
+const pricingList = [
   {
     benefitList: [
       "1 Team member",
@@ -33,12 +21,6 @@ const pricingList: PricingProps[] = [
       "Community support",
       "lorem ipsum dolor",
     ],
-    buttonText: "Get Started",
-    description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    popular: 0,
-    price: 0,
-    title: "Free",
   },
   {
     benefitList: [
@@ -48,12 +30,6 @@ const pricingList: PricingProps[] = [
       "Priority support",
       "lorem ipsum dolor",
     ],
-    buttonText: "Start Free Trial",
-    description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    popular: 1,
-    price: 5,
-    title: "Premium",
   },
   {
     benefitList: [
@@ -63,16 +39,11 @@ const pricingList: PricingProps[] = [
       "Priority support",
       "lorem ipsum dolor",
     ],
-    buttonText: "Contact US",
-    description:
-      "Lorem ipsum dolor sit, amet ipsum consectetur adipisicing elit.",
-    popular: 0,
-    price: 40,
-    title: "Enterprise",
   },
 ];
 
 export const Pricing = () => {
+  const { data: plans } = useBillingControllerGetPlans({});
   return (
     <section className="container py-24 sm:py-32" id="pricing">
       <h2 className="text-3xl md:text-4xl font-bold text-center">
@@ -88,41 +59,43 @@ export const Pricing = () => {
         reiciendis.
       </h3>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {pricingList.map((pricing: PricingProps) => (
+        {plans?.toReversed().map((plan: PlanEntity, i) => (
           <Card
             className={
-              pricing.popular === PopularPlanType.YES
+              plan?.metadata?.key === "STANDARD"
                 ? "drop-shadow-xl shadow-black/10 dark:shadow-white/10"
                 : ""
             }
-            key={pricing.title}
+            key={plan.name}
           >
             <CardHeader>
               <CardTitle className="flex item-center justify-between">
-                {pricing.title}
-                {pricing.popular === PopularPlanType.YES ? (
+                {plan.name}
+                {plan?.metadata?.key === "STANDARD" ? (
                   <Badge className="text-sm text-primary" variant="secondary">
                     Most popular
                   </Badge>
                 ) : null}
               </CardTitle>
               <div>
-                <span className="text-3xl font-bold">${pricing.price}</span>
+                <span className="text-3xl font-bold">
+                  ${plan.unitAmount / 100}
+                </span>
                 <span className="text-muted-foreground"> /month</span>
               </div>
 
-              <CardDescription>{pricing.description}</CardDescription>
+              <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
 
             <CardContent>
-              <Button className="w-full">{pricing.buttonText}</Button>
+              <Button className="w-full">Choose plan</Button>
             </CardContent>
 
             <hr className="w-4/5 m-auto mb-4" />
 
             <CardFooter className="flex">
               <div className="space-y-4">
-                {pricing.benefitList.map((benefit: string) => (
+                {pricingList[i].benefitList.map((benefit: string) => (
                   <span className="flex" key={benefit}>
                     <Check className="text-green-500" />{" "}
                     <h3 className="ml-2">{benefit}</h3>
