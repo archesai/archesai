@@ -3,15 +3,14 @@ options:
 
 steps:
   # Step 1: Detect changes in api/ and nlp/ directories
-  - name: "alpine/git"
+  - name: gcr.io/cloud-builders/gcloud
     id: detect-changes
-    entrypoint: /bin/sh
+    entrypoint: bash
     args:
       - "-c"
       - |
         >/workspace/values.sh
 
-        # Install Git
         apk add --no-cache git
         git config --global init.defaultBranch main
 
