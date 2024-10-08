@@ -56,14 +56,14 @@ steps:
     id: gen-dotenv
     waitFor:
       - Get latest image tags
-    args: ["./scripts/02_generate-dotenv.sh"]
+    args: ["./deploy/scripts/02_generate-dotenv.sh"]
 
   - name: gcr.io/cloud-builders/gcloud
     waitFor:
       - gen-dotenv
     entrypoint: bash
     id: Create release in cloud deploy
-    args: ["./scripts/03_create-release.sh"]
+    args: ["./deploy/scripts/03_create-release.sh"]
 
 availableSecrets:
   secretManager:
