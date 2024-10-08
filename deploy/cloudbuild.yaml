@@ -3,7 +3,7 @@ options:
 
 steps:
   # Step 1: Detect changes in api/ and nlp/ directories
-  - name: gcr.io/cloud-builders/gcloud
+  - name: gcr.io/cloud-builders/git
     id: detect-changes
     entrypoint: bash
     args:
@@ -24,6 +24,8 @@ steps:
         # Detect changes in ./nlp/
         nlp_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
         echo "export _NLP_CHANGED=$nlp_changed"  >>/workspace/values.sh
+
+        cat /workspace/values.sh
 
   # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
