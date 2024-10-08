@@ -72,7 +72,7 @@ get_latest_short_sha() {
     fi
 
     # Export the short SHA to a file
-    echo "export ${repo_name^^}_SHA=$short_sha" >>/workspace/values.sh
+    echo "export RELEASE_SHA=$short_sha" >>/workspace/values.sh
 
 }
 
@@ -83,9 +83,7 @@ apt-get -y update && apt-get install -y jq
 >/workspace/values.sh
 
 # Check each repository and get latest tag
-get_latest_short_sha "ui"
-get_latest_short_sha "api"
-get_latest_short_sha "nlp"
+get_latest_short_sha "archesai"
 
 # Load values into the environment
 source /workspace/values.sh

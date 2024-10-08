@@ -7,10 +7,6 @@ const nextConfig = {
   images: {
     domains: ["picsum.photos", "storage.googleapis.com", "arches-minio"],
   },
-  images: {
-    unoptimized: true,
-  },
-  output: "export",
   async redirects() {
     return [
       {
