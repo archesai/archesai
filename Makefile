@@ -9,8 +9,8 @@ run:
 seed:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-seed
 
-seed-push:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm arches-api-seed /bin/sh -c 'npm run db:seed'
+migrations:
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm arches-api-seed /bin/sh -c 'npm run migrations:dev'
 
 models:
 	docker exec -it arches-ollama bash -c "echo llama3.1 mxbai-embed-large | xargs -n1 ollama pull"
