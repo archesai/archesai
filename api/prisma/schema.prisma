@@ -190,13 +190,14 @@ model VectorRecord {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  text      String
+  embedding Unsupported("vector")
+
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  embedding Unsupported("vector")
-  content   Content               @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
   contentId String
-  text      String
 }
 
 model Organization {
@@ -254,43 +255,6 @@ model ApiToken {
 
   chatbots Chatbot[]
 }
-
-// IMAGE
-// width  Int
-// height Int
-// prompt String
-
-// ANIMATION
-// width  Int
-// height Int
-// useAudio   Boolean
-// audioUrl   String
-// audioStart Float
-// animationPrompts String
-// maxFrames Int
-// fps       Int
-
-// DOCUMENT
-// chunkSize    Int           @default(200)
-// delimiter    String?
-// textSegments TextSegment[]
-// chatbots       Chatbot[]
-
-// model TextSegment {
-//   id String @id @default(uuid())
-
-//   page  Int
-//   index Int
-//   text  String
-
-//   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
-//   orgname      String
-
-//   vectorDbId String
-//   citations  Citation[]
-
-//   @@unique([vectorDbId, documentId])
-// }
 
 model ARToken {
   id        String      @id @default(uuid())
