@@ -10,7 +10,7 @@ steps:
       - --cache=true
       - --cache-ttl=24h
       - --context=./api
-      - --snapshotMode=redo
+      - --snapshot-mode=redo
       - --use-new-run
 
   - name: "gcr.io/kaniko-project/executor:latest"
@@ -21,7 +21,7 @@ steps:
       - --cache=true
       - --cache-ttl=24h
       - --context=./nlp
-      - --snapshotMode=redo
+      - --snapshot-mode=redo
       - --use-new-run
 
   # - name: "gcr.io/kaniko-project/executor:latest"
@@ -40,7 +40,7 @@ steps:
       - build-arches-api
       - build-arches-nlp
       # - build-arches-ui
-    args: ["./scripts/01_get-release-values.sh"]
+    args: ["./deploy/scripts/01_get-release-values.sh"]
     secretEnv:
       - GITHUB_TOKEN
 
@@ -51,18 +51,19 @@ steps:
   #   secretEnv:
   #     - GITHUB_TOKEN
 
-  # - name: gcr.io/cloud-builders/gcloud
-  #   entrypoint: bash
-  #   id: gen-dotenv
-  #   args: ["./scripts/02_generate-dotenv.sh"]
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    id: gen-dotenv
+    waitFor:
+      - Get latest image tags
+    args: ["./scripts/02_generate-dotenv.sh"]
 
-  # - name: gcr.io/cloud-builders/gcloud
-  #   waitFor:
-  #     # - e2e-test
-  #     - gen-dotenv
-  #   entrypoint: bash
-  #   id: Create release in cloud deploy
-  #   args: ["./scripts/03_create-release.sh"]
+  - name: gcr.io/cloud-builders/gcloud
+    waitFor:
+      - gen-dotenv
+    entrypoint: bash
+    id: Create release in cloud deploy
+    args: ["./scripts/03_create-release.sh"]
 
 availableSecrets:
   secretManager:
