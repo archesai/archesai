@@ -139,6 +139,12 @@ export default function ContentPage() {
       dataIcon={<File size={24} />}
       defaultView="table"
       deleteItem={deleteDocument}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          contentId: id,
+          orgname: defaultOrgname,
+        },
+      }))}
       getDeleteVariablesFromItem={(content) => [
         {
           pathParams: {
@@ -152,12 +158,6 @@ export default function ContentPage() {
       }
       itemType="content"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          contentId: id,
-          orgname: defaultOrgname,
-        },
-      }))}
     />
   );
 }

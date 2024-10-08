@@ -140,6 +140,12 @@ export default function ContentPage() {
       dataIcon={<File size={24} />}
       defaultView="grid"
       deleteItem={deleteDocument}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          contentId: id,
+          orgname: defaultOrgname,
+        },
+      }))}
       getDeleteVariablesFromItem={(content) => [
         {
           pathParams: {
@@ -148,18 +154,11 @@ export default function ContentPage() {
           },
         },
       ]}
-      getEditFormFromItem={(item) => <ImageForm imageId={item.id} />}
       handleSelect={(content) =>
         router.push(`/content/single/details?contentId=${content.id}`)
       }
       itemType="image"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          contentId: id,
-          orgname: defaultOrgname,
-        },
-      }))}
     />
   );
 }

@@ -3,34 +3,35 @@ import { SquareX, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
 import { useToast } from "../ui/use-toast";
 
-export interface DeleteProps<TMutationVariables> {
+export interface DeleteProps<TDeleteVariables> {
+  deleteFunction: (params: TDeleteVariables) => Promise<void>;
+  deleteVariables: TDeleteVariables[];
   items: {
     id: string;
     name: string;
   }[];
   itemType: string;
-  mutationFunction: (params: TMutationVariables) => Promise<void>;
-  mutationVariables: TMutationVariables[];
   variant?: "lg" | "md" | "sm";
 }
 
 // create a functional component called DeleteItems
-export const DeleteItems = <TMutationVariables,>({
+export const DeleteItems = <TDeleteVariables,>({
+  deleteFunction,
+  deleteVariables,
   items,
   itemType,
-  mutationFunction,
-  mutationVariables,
   variant = "sm",
-}: DeleteProps<TMutationVariables>) => {
+}: DeleteProps<TDeleteVariables>) => {
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const t = (text: string) => text;
   const { toast } = useToast();
   const handleDelete = async () => {
-    for (const mutationVars of mutationVariables) {
+    for (const deleteVars of deleteVariables) {
       try {
-        await mutationFunction(mutationVars);
+        await deleteFunction(deleteVars);
         setOpenConfirmDelete(false);
         toast({ title: t(`The ${itemType} has been removed`) });
       } catch (err) {
@@ -45,18 +46,26 @@ export const DeleteItems = <TMutationVariables,>({
       onOpenChange={(open) => setOpenConfirmDelete(open)}
       open={openConfirmDelete}
     >
-      <DialogTrigger>
+      <DialogTrigger asChild>
         {variant === "sm" ? (
           <div
-            className="text-destructive"
+            className="text-destructive cursor-pointer"
             onClick={() => setOpenConfirmDelete(true)}
           >
-            <SquareX />
+            <SquareX className="h-5 w-5" />
           </div>
         ) : variant === "md" ? (
-          <div onClick={() => setOpenConfirmDelete(true)}>Delete</div>
+          <div className="w-full" onClick={() => setOpenConfirmDelete(true)}>
+            {t("Delete")}
+          </div>
         ) : (
-          <div onClick={() => setOpenConfirmDelete(true)}>{t("Delete")}</div>
+          <Button
+            className="h-8"
+            onClick={() => setOpenConfirmDelete(true)}
+            variant="destructive"
+          >
+            {t("Delete")}
+          </Button>
         )}
       </DialogTrigger>
 
@@ -72,9 +81,11 @@ export const DeleteItems = <TMutationVariables,>({
             )}
           </p>
           {
-            <div className="px-6 py-4">
-              {items?.map((item, i) => <p key={i}>{item.name}</p>)}
-            </div>
+            <ScrollArea>
+              <div className="max-h-72 px-6 py-4">
+                {items?.map((item, i) => <p key={i}>{item.name}</p>)}
+              </div>
+            </ScrollArea>
           }
 
           <div className="flex-1 flex gap-4">

@@ -113,6 +113,13 @@ function ChatbotThreadsPage() {
       dataIcon={<User size={24} />}
       defaultView="table"
       deleteItem={deleteChatbot}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          chatbotId: chatbotId as string,
+          orgname: defaultOrgname,
+          threadId: id,
+        },
+      }))}
       getDeleteVariablesFromItem={(thread) => [
         {
           pathParams: {
@@ -127,13 +134,6 @@ function ChatbotThreadsPage() {
       }
       itemType="thread"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          chatbotId: chatbotId as string,
-          orgname: defaultOrgname,
-          threadId: id,
-        },
-      }))}
     />
   );
 }

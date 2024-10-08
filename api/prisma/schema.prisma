@@ -60,7 +60,7 @@ model Content {
   type         ContentType
   previewImage String?
 
-  organization Organization @relation(fields: [orgname], references: [orgname])
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
   job   Job?    @relation(fields: [jobId], references: [id])
@@ -194,7 +194,7 @@ model VectorRecord {
   orgname      String
 
   embedding Unsupported("vector")
-  content   Content               @relation(fields: [contentId], references: [id])
+  content   Content               @relation(fields: [contentId], references: [id], onDelete: Cascade)
   contentId String
   text      String
 }
@@ -230,7 +230,7 @@ model Member {
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
-  user         User?        @relation(fields: [username], references: [username])
+  user         User?        @relation(fields: [username], references: [username], onDelete: Cascade)
   username     String?
 
   @@unique([inviteEmail, orgname])
@@ -249,7 +249,7 @@ model ApiToken {
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
-  user         User?        @relation(fields: [username], references: [username])
+  user         User?        @relation(fields: [username], references: [username], onDelete: Cascade)
   username     String?
 
   chatbots Chatbot[]

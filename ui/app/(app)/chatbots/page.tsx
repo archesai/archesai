@@ -113,6 +113,12 @@ export default function ChatbotsPageContent() {
       dataIcon={<User size={24} />}
       defaultView="grid"
       deleteItem={deleteChatbot}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          chatbotId: id,
+          orgname: defaultOrgname,
+        },
+      }))}
       getDeleteVariablesFromItem={(chatbot) => [
         {
           pathParams: {
@@ -127,12 +133,6 @@ export default function ChatbotsPageContent() {
       }
       itemType="chatbot"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          chatbotId: id,
-          orgname: defaultOrgname,
-        },
-      }))}
     />
   );
 }

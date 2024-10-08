@@ -99,6 +99,12 @@ export default function ApiTokensPageContent() {
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
       deleteItem={removeChatbot}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          id: id,
+          orgname: defaultOrgname,
+        },
+      }))}
       getDeleteVariablesFromItem={(apiToken) => [
         {
           pathParams: {
@@ -113,12 +119,6 @@ export default function ApiTokensPageContent() {
       handleSelect={(apiToken) => router.push(`/apiTokens/${apiToken.id}/chat`)}
       itemType="API token"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          id: id,
-          orgname: defaultOrgname,
-        },
-      }))}
     />
   );
 }

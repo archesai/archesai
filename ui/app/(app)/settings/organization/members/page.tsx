@@ -100,6 +100,12 @@ export default function MembersPageContent() {
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
       deleteItem={deleteMember}
+      deleteVariables={selectedItems.map((id) => ({
+        pathParams: {
+          memberId: id,
+          orgname: defaultOrgname,
+        },
+      }))}
       getDeleteVariablesFromItem={(member) => [
         {
           pathParams: {
@@ -114,12 +120,6 @@ export default function MembersPageContent() {
       handleSelect={() => {}}
       itemType="Member"
       loading={loading}
-      mutationVariables={selectedItems.map((id) => ({
-        pathParams: {
-          memberId: id,
-          orgname: defaultOrgname,
-        },
-      }))}
     />
   );
 }

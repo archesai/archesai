@@ -48,8 +48,8 @@ export interface BaseItem {
   name: string;
 }
 
-interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
-  columns: ColumnDef<TItem, TMutationVariables>[];
+interface DataTableProps<TItem extends BaseItem, TDeleteVariables> {
+  columns: ColumnDef<TItem, TDeleteVariables>[];
   content: (item: TItem) => JSX.Element;
   createForm?: React.ReactNode;
 
@@ -64,8 +64,9 @@ interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
 
-  deleteItem: (vars: TMutationVariables) => Promise<void>;
-  getDeleteVariablesFromItem: (item: TItem) => TMutationVariables[];
+  deleteItem: (vars: TDeleteVariables) => Promise<void>;
+  deleteVariables: TDeleteVariables[];
+  getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables[];
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
 
@@ -75,11 +76,9 @@ interface DataTableProps<TItem extends BaseItem, TMutationVariables> {
   hoverContent?: (item: TItem) => JSX.Element;
   itemType: string;
   loading: boolean;
-
-  mutationVariables: TMutationVariables[];
 }
 
-export function DataTable<TItem extends BaseItem, TMutationVariables>({
+export function DataTable<TItem extends BaseItem, TDeleteVariables>({
   columns,
   content,
   createForm,
@@ -88,12 +87,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
   dataIcon,
   defaultView,
   deleteItem,
+  deleteVariables,
   getDeleteVariablesFromItem,
   getEditFormFromItem,
   handleSelect,
   hoverContent,
   itemType,
-}: DataTableProps<TItem, TMutationVariables>) {
+}: DataTableProps<TItem, TDeleteVariables>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -110,14 +110,9 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
     }
   }, [defaultView]);
 
-  const {
-    selectedAllItems,
-    selectedItems,
-    selectedSomeItems,
-    setSelectedItems,
-    toggleSelectAll,
-    toggleSelection,
-  } = useSelectItems({ items: data?.results || [] });
+  const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
+    items: data?.results || [],
+  });
 
   const table = useReactTable({
     columns: [
@@ -126,20 +121,13 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
           <Checkbox
             aria-label="Select row"
             checked={selectedItems.includes(row.original.id)}
-            className="translate-y-[2px]"
+            className=""
             onCheckedChange={() => toggleSelection(row.original.id)}
           />
         ),
         enableHiding: false,
         enableSorting: false,
-        header: () => (
-          <Checkbox
-            aria-label="Select all"
-            checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
-            className="translate-y-[2px]"
-            onCheckedChange={() => toggleSelectAll()}
-          />
-        ),
+
         id: "select",
       },
       ...columns,
@@ -173,6 +161,11 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                 onSelect={(e) => e.preventDefault()} // Prevent closing on select
               >
                 <DeleteItems
+                  deleteFunction={async (vars) => {
+                    await deleteItem(vars);
+                    setSelectedItems([]);
+                  }}
+                  deleteVariables={getDeleteVariablesFromItem(row.original)}
                   items={[
                     {
                       id: row.original.id,
@@ -180,11 +173,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                     },
                   ]}
                   itemType={itemType}
-                  mutationFunction={async (vars) => {
-                    await deleteItem(vars);
-                    setSelectedItems([]);
-                  }}
-                  mutationVariables={getDeleteVariablesFromItem(row.original)}
                   variant="md"
                 />
               </DropdownMenuItem>
@@ -203,7 +191,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
     data: data?.results || [],
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
-
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
@@ -255,17 +242,17 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                 <Checkbox
                   aria-label={`Select ${item.name}`}
                   checked={isItemSelected}
-                  className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                  className=" text-blue-600 rounded focus:ring-blue-500"
                   onCheckedChange={() => toggleSelection(item.id)}
                 />
                 <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-2">
                   {item.name}
                 </h5>
               </div>
-              <div className="flex items-center gap-2 p-2 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 {getEditFormFromItem ? (
                   <FilePenLine
-                    className="text-primary cursor-pointer"
+                    className=" text-primary cursor-pointer h-5 w-5"
                     onClick={() => {
                       setFinalForm(getEditFormFromItem?.(item));
                       setFormOpen(true);
@@ -273,6 +260,11 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                   />
                 ) : null}
                 <DeleteItems
+                  deleteFunction={async (vars) => {
+                    await deleteItem(vars);
+                    setSelectedItems([]);
+                  }}
+                  deleteVariables={getDeleteVariablesFromItem(item)}
                   items={[
                     {
                       id: item.id,
@@ -280,11 +272,6 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
                     },
                   ]}
                   itemType={itemType}
-                  mutationFunction={async (vars) => {
-                    await deleteItem(vars);
-                    setSelectedItems([]);
-                  }}
-                  mutationVariables={getDeleteVariablesFromItem(item)}
                 />
               </div>
             </div>
@@ -348,13 +335,36 @@ export function DataTable<TItem extends BaseItem, TMutationVariables>({
   return (
     <div className="flex space-y-4 flex-col justify-between backdrop-blur-sm opacity-70 h-full">
       <div className="space-y-4">
-        <DataTableToolbar itemType={itemType} table={table} />
+        <DataTableToolbar
+          data={data?.results}
+          itemType={itemType}
+          table={table}
+        />
+        {selectedItems.length > 0 && (
+          <DeleteItems
+            deleteFunction={async (vars) => {
+              await deleteItem(vars);
+              setSelectedItems([]);
+            }}
+            deleteVariables={deleteVariables}
+            items={selectedItems.map((id) => {
+              const item = data?.results.find((i) => i.id === id);
+              return {
+                id: item?.id || "",
+                name: item?.name || "",
+              };
+            })}
+            itemType={itemType}
+            variant="lg"
+          />
+        )}
         {data?.results?.length > 10 && <DataTablePagination data={data} />}
         {view === "grid" ? grid_view : table_view}
       </div>
       <div>
         <DataTablePagination data={data} />
       </div>
+      {/* THIS IS THE FORM DIALOG */}
       <Dialog
         onOpenChange={(o) => {
           setFormOpen(o);

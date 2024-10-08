@@ -50,11 +50,11 @@ export default function ContentVectorsPage() {
       dataIcon={<File size={24} />}
       defaultView="table"
       deleteItem={async () => {}}
+      deleteVariables={selectedItems.map(() => undefined)}
       getDeleteVariablesFromItem={() => []}
       handleSelect={() => {}}
       itemType="vector"
       loading={vectorRecordsIsLoading}
-      mutationVariables={selectedItems.map(() => undefined)}
     />
   );
 }
