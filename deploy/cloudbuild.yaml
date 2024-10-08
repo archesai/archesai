@@ -9,6 +9,8 @@ steps:
     args:
       - "-c"
       - |
+        >/workspace/values.sh
+
         # Install Git
         apk add --no-cache git
 
@@ -16,10 +18,12 @@ steps:
         git fetch origin $BRANCH_NAME
 
         # Detect changes in ./api/
-        API_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
+        export API_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
+        echo "$API_CHANGED"
 
         # Detect changes in ./nlp/
-        NLP_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
+        export NLP_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
+        echo "$NLP_CHANGED"
 
         # Set flags based on changes
         if [ -n "$API_CHANGED" ]; then
@@ -42,7 +46,6 @@ steps:
     args:
       - "-c"
       - |
-        # Source the exported flags
         source /workspace/values.sh
 
         if [ "$API_CHANGED" = "true" ]; then
@@ -66,7 +69,6 @@ steps:
     args:
       - "-c"
       - |
-        # Source the exported flags
         source /workspace/values.sh
 
         if [ "$NLP_CHANGED" = "true" ]; then
