@@ -26,12 +26,12 @@ steps:
       - --cache-ttl=24h
       - --context=./ui
 
-  # - name: gcr.io/cloud-builders/gcloud
-  #   entrypoint: bash
-  #   id: Get latest image tags
-  #   args: ["./scripts/01_get-release-values.sh"]
-  #   secretEnv:
-  #     - GITHUB_TOKEN
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    id: Get latest image tags
+    args: ["./scripts/01_get-release-values.sh"]
+    secretEnv:
+      - GITHUB_TOKEN
 
   # - name: "gcr.io/cloud-builders/docker"
   #   entrypoint: bash
