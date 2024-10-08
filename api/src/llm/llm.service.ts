@@ -4,12 +4,11 @@ import { ConfigService } from "@nestjs/config";
 import OpenAI from "openai";
 import { ChatCompletionCreateParamsStreaming } from "openai/resources";
 
-import { CompletionsService } from "./completions.service";
 import { CreateChatCompletionDto } from "./dto/create-chat-completion.dto";
 
 @Injectable()
-export class OpenAiCompletionsService implements CompletionsService {
-  private readonly logger: Logger = new Logger("OpenAiCompletionsService");
+export class LLMService {
+  private readonly logger: Logger = new Logger("LLMService");
 
   public openai: OpenAI;
 

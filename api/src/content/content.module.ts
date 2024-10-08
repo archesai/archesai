@@ -3,9 +3,9 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 
 import { AudioModule } from "../audio/audio.module";
-import { CompletionsModule } from "../completions/completions.module";
 import { EmbeddingsModule } from "../embeddings/embeddings.module";
 import { JobsModule } from "../jobs/jobs.module";
+import { LLMModule } from "../llm/llm.module";
 import { LoaderModule } from "../loader/loader.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { PrismaModule } from "../prisma/prisma.module";
@@ -36,7 +36,7 @@ import { ContentService } from "./content.service";
     JobsModule,
     LoaderModule,
     RunpodModule,
-    CompletionsModule,
+    LLMModule,
     EmbeddingsModule,
     VectorDBModule,
   ],

@@ -11,9 +11,9 @@ import { Job } from "bull";
 
 import { AudioService } from "../audio/audio.service";
 import { retry } from "../common/retry";
-import { OpenAiCompletionsService } from "../completions/completions.openai.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { JobsService } from "../jobs/jobs.service";
+import { LLMService } from "../llm/llm.service";
 import { LoaderService } from "../loader/loader.service";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { RunpodService } from "../runpod/runpod.service";
@@ -43,7 +43,7 @@ export class ContentProcessor {
     private loaderService: LoaderService,
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
-    private openAiCompletionsService: OpenAiCompletionsService,
+    private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
     @Inject(VECTOR_DB_SERVICE)
     private vectorDBService: VectorDBService
@@ -395,7 +395,7 @@ export class ContentProcessor {
       );
       const { summary, tokens } = await retry(
         this.logger,
-        async () => await this.openAiCompletionsService.createSummary(c),
+        async () => await this.llmService.createSummary(c),
         3
       );
 

@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 
 import { ChatbotsModule } from "../chatbots/chatbots.module";
-import { CompletionsModule } from "../completions/completions.module";
 import { ContentModule } from "../content/content.module";
 import { EmbeddingsModule } from "../embeddings/embeddings.module";
+import { LLMModule } from "../llm/llm.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { ThreadsModule } from "../threads/threads.module";
@@ -20,7 +20,7 @@ import { MessagesService } from "./messages.service";
     PrismaModule,
     VectorDBModule,
     EmbeddingsModule,
-    CompletionsModule,
+    LLMModule,
     WebsocketsModule,
     OrganizationsModule,
     ChatbotsModule,

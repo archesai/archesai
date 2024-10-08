@@ -6,9 +6,9 @@ import GPT3Tokenizer from "gpt3-tokenizer";
 import { ChatbotsService } from "../chatbots/chatbots.service";
 import { retry } from "../common/retry";
 import { SortByField, SortDirection } from "../common/search-query";
-import { OpenAiCompletionsService } from "../completions/completions.openai.service";
 import { ContentService } from "../content/content.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
+import { LLMService } from "../llm/llm.service";
 import { MessageQueryDto } from "../messages/dto/message-query.dto";
 import { MessageEntity } from "../messages/entities/message.entity";
 import { OrganizationsService } from "../organizations/organizations.service";
@@ -34,7 +34,7 @@ export class MessagesService {
     private organizationsService: OrganizationsService,
     @Inject(VECTOR_DB_SERVICE)
     private vectorDBService: VectorDBService,
-    private openAiCompletionsService: OpenAiCompletionsService,
+    private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
     private contentService: ContentService,
     private vectorRecordService: VectorRecordService
@@ -120,7 +120,7 @@ export class MessagesService {
     const answer = await retry(
       this.logger,
       async () =>
-        await this.openAiCompletionsService.createChatCompletion(
+        await this.llmService.createChatCompletion(
           {
             max_tokens:
               createMessageDto.contextLength + createMessageDto.answerLength,
