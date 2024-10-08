@@ -11,7 +11,6 @@ steps:
       - |
         >/workspace/values.sh
 
-        apk add --no-cache git
         git config --global init.defaultBranch main
 
         # Fetch the latest commits
