@@ -32,16 +32,6 @@ spec:
                 secretKeyRef:
                   key: EMAIL_PASSWORD
                   name: arches-api-config-secret
-            - name: PINECONE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: PINECONE_API_KEY
-                  name: arches-api-config-secret
-            - name: PINECONE_INDEX
-              valueFrom:
-                secretKeyRef:
-                  key: PINECONE_INDEX
-                  name: arches-api-config-secret
             - name: REDIS_CA_CERT_PATH
               value: /usr/src/app/server-ca.pem
           volumeMounts:

@@ -44,6 +44,16 @@ spec:
                 secretKeyRef:
                   key: JWT_API_TOKEN_SECRET
                   name: arches-api-config-secret
+            - name: LLM_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: LLM_TYPE
+                  name: arches-api-config-secret
+            - name: EMBEDDING_TYPE
+              valueFrom:
+                secretKeyRef:
+                  key: EMBEDDING_TYPE
+                  name: arches-api-config-secret
             - name: LOADER_ENDPOINT
               valueFrom:
                 secretKeyRef:

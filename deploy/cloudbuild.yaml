@@ -10,8 +10,9 @@ steps:
       - --cache=true
       - --cache-ttl=24h
       - --context=./api
-      - --snapshot-mode=redo
-      - --use-new-run
+      # - --snapshot-mode=redo
+      # - --use-new-run
+      - --single-snapshot
 
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-nlp
@@ -21,8 +22,9 @@ steps:
       - --cache=true
       - --cache-ttl=24h
       - --context=./nlp
-      - --snapshot-mode=redo
-      - --use-new-run
+      # - --snapshot-mode=redo
+      # - --use-new-run
+      - --single-snapshot
 
   # - name: "gcr.io/kaniko-project/executor:latest"
   #   id: build-arches-ui
