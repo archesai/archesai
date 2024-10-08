@@ -2,67 +2,125 @@ options:
   machineType: "E2_HIGHCPU_32"
 
 steps:
+  # Step 1: Detect changes in api/ and nlp/ directories
+  - name: "alpine/git"
+    id: detect-changes
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        # Install Git
+        apk add --no-cache git
+
+        # Fetch the latest commits
+        git fetch origin $BRANCH_NAME
+
+        # Detect changes in ./api/
+        API_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
+
+        # Detect changes in ./nlp/
+        NLP_CHANGED=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
+
+        # Set flags based on changes
+        if [ -n "$API_CHANGED" ]; then
+          echo "API_CHANGED=true" >> /workspace/build_flags.env
+        else
+          echo "API_CHANGED=false" >> /workspace/build_flags.env
+        fi
+
+        if [ -n "$NLP_CHANGED" ]; then
+          echo "NLP_CHANGED=true" >> /workspace/build_flags.env
+        else
+          echo "NLP_CHANGED=false" >> /workspace/build_flags.env
+        fi
+
+  # Step 2: Export flags for use in subsequent steps
+  - name: "alpine"
+    id: export-flags
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        # Source the flags
+        source /workspace/build_flags.env
+
+        # Export flags to a file for easy sourcing
+        echo "API_CHANGED=$API_CHANGED" > /workspace/exported_vars.env
+        echo "NLP_CHANGED=$NLP_CHANGED" >> /workspace/exported_vars.env
+
+  # Step 3: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-api
-    waitFor: ["-"]
+    waitFor: ["detect-changes", "export-flags"]
+    entrypoint: /bin/sh
     args:
-      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
-      - --cache=true
-      - --cache-ttl=24h
-      - --context=./api
-      - --snapshot-mode=redo
-      - --use-new-run
+      - "-c"
+      - |
+        # Source the exported flags
+        source /workspace/exported_vars.env
 
+        if [ "$API_CHANGED" = "true" ]; then
+          echo "Changes detected in ./api/. Building arches-api..."
+          /kaniko/executor \
+            --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA \
+            --cache=true \
+            --cache-ttl=24h \
+            --context=./api \
+            --snapshot-mode=redo \
+            --use-new-run
+        else
+          echo "No changes detected in ./api/. Skipping arches-api build."
+        fi
+
+  # Step 4: Conditionally build arches-nlp
   - name: "gcr.io/kaniko-project/executor:latest"
     id: build-arches-nlp
-    waitFor: ["-"]
+    waitFor: ["detect-changes", "export-flags"]
+    entrypoint: /bin/sh
     args:
-      - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
-      - --cache=true
-      - --cache-ttl=24h
-      - --context=./nlp
-      - --snapshot-mode=redo
-      - --use-new-run
+      - "-c"
+      - |
+        # Source the exported flags
+        source /workspace/exported_vars.env
 
-  # - name: "gcr.io/kaniko-project/executor:latest"
-  #   id: build-arches-ui
-  #   waitFor: ["-"]
-  #   args:
-  #     - --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-ui:$SHORT_SHA
-  #     - --cache=true
-  #     - --cache-ttl=24h
-  #     - --context=./ui
+        if [ "$NLP_CHANGED" = "true" ]; then
+          echo "Changes detected in ./nlp/. Building arches-nlp..."
+          /kaniko/executor \
+            --destination=us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA \
+            --cache=true \
+            --cache-ttl=24h \
+            --context=./nlp \
+            --snapshot-mode=redo \
+            --use-new-run
+        else
+          echo "No changes detected in ./nlp/. Skipping arches-nlp build."
+        fi
 
+  # Step 5: Get latest image tags
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
-    id: Get latest image tags
+    id: get-latest-image-tags
     waitFor:
       - build-arches-api
       - build-arches-nlp
-      # - build-arches-ui
     args: ["./deploy/scripts/01_get-release-values.sh"]
     secretEnv:
       - GITHUB_TOKEN
 
-  # - name: "gcr.io/cloud-builders/docker"
-  #   entrypoint: bash
-  #   id: e2e-test
-  #   args: ["./scripts/01_e2e-test.sh"]
-  #   secretEnv:
-  #     - GITHUB_TOKEN
-
+  # Step 6: Generate .env file
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
-    id: gen-dotenv
+    id: generate-dotenv
     waitFor:
-      - Get latest image tags
+      - get-latest-image-tags
     args: ["./deploy/scripts/02_generate-dotenv.sh"]
 
+  # Step 7: Create release in Cloud Deploy
   - name: gcr.io/cloud-builders/gcloud
-    waitFor:
-      - gen-dotenv
     entrypoint: bash
-    id: Create release in cloud deploy
+    id: create-release
+    waitFor:
+      - generate-dotenv
     args: ["./deploy/scripts/03_create-release.sh"]
 
 availableSecrets:
