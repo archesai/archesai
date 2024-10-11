@@ -42,7 +42,7 @@ export const Sidebar = () => {
   });
 
   return (
-    <nav className="flex flex-col text-sm font-md justify-between max-h-screen h-full opacity-100">
+    <nav className="flex flex-col text-sm font-md justify-between max-h-screen h-full">
       <div>
         <div
           className={`flex items-center py-3 px-2.5 ${
@@ -66,7 +66,7 @@ export const Sidebar = () => {
             size="icon"
             variant="outline"
           >
-            <Menu className="h-5 w-5 text-gray-500" />
+            <Menu className="h-5 w-5" />
           </Button>
         </div>
 
@@ -75,7 +75,7 @@ export const Sidebar = () => {
           <div className="mt-3" key={section}>
             {
               <h2
-                className={`text-xs px-3.5 uppercase mb-2 whitespace-nowrap opacity-100 ${
+                className={`text-xs px-3.5 uppercase mb-2 whitespace-nowrap ${
                   isCollapsed ? "text-transparent" : "text-gray-400"
                 }`}
               >
@@ -102,7 +102,7 @@ export const Sidebar = () => {
                   {title}
                 </span>
                 {isCollapsed && (
-                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     {title}
                   </span>
                 )}

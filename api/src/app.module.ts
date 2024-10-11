@@ -31,6 +31,7 @@ import { OrganizationsModule } from "./organizations/organizations.module";
 import { PasswordResetModule } from "./password-reset/password-reset.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
+import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
 import { ThreadsModule } from "./threads/threads.module";
 import { UsersModule } from "./users/users.module";
@@ -207,6 +208,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ARTokensModule,
     ImagesModule,
     DocumentsModule,
+    SpeechModule,
   ],
   providers: [WebsocketsGateway],
 })

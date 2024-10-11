@@ -16,8 +16,15 @@ export class EmailVerifiedGuard implements CanActivate {
   canActivate(
     context: ExecutionContext
   ): boolean | Observable<boolean> | Promise<boolean> {
-    const { params, user } = context.switchToHttp().getRequest() as any;
+    const isPublic = this.reflector.getAllAndOverride<boolean>("public", [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
 
+    const { params, user } = context.switchToHttp().getRequest() as any;
     const currentUser = user as CurrentUserDto;
     const orgname = params.orgname;
 

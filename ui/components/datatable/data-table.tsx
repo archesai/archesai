@@ -333,7 +333,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
   );
 
   return (
-    <div className="flex space-y-4 flex-col justify-between backdrop-blur-sm opacity-70 h-full">
+    <div className="flex space-y-4 flex-col justify-between backdrop-blur-sm h-full">
       <div className="space-y-4">
         <DataTableToolbar
           data={data?.results}
