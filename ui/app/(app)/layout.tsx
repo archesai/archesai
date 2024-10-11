@@ -51,7 +51,7 @@ export default function AppLayout({
 
   return (
     <div
-      className={`flex flex-col md:grid h-screen ${
+      className={`flex flex-col md:grid h-screen w-full transition-all duration-200 ${
         !isCollapsed ? "md:grid-cols-[250px_1fr]" : "md:grid-cols-[65px_1fr]"
       }`}
     >

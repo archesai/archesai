@@ -1,6 +1,8 @@
 import { Breadcrumbs } from "./breadcrumbs";
 import { CommandMenu } from "./command-menu";
 import { ModeToggle } from "./mode-toggle";
+import { UserButton } from "./user-button";
+
 export const PageHeader = ({
   description,
   title,
@@ -31,6 +33,7 @@ export const PageHeader = ({
           <div className="hstack items-center gap-2">
             <CommandMenu />
             <ModeToggle />
+            <UserButton size="sm" />
           </div>
         </div>
       </div>

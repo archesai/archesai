@@ -2,7 +2,7 @@
 
 import { LogoSVG } from "@/components/logo-svg";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@/components/user-button";
+// import { UserButton } from "@/components/user-button";
 import { siteConfig } from "@/config/site";
 import { useSidebar } from "@/hooks/useSidebar";
 import { Menu } from "lucide-react";
@@ -13,8 +13,7 @@ import { useTheme } from "next-themes";
 import { CreditQuota } from "./credit-quota";
 
 export const Sidebar = () => {
-  const { collapseSidebar, expandSidebar, isCollapsed, toggleSidebar } =
-    useSidebar();
+  const { isCollapsed, toggleSidebar } = useSidebar();
   const { resolvedTheme } = useTheme();
   const pathname = usePathname() as string;
 
@@ -45,11 +44,7 @@ export const Sidebar = () => {
   });
 
   return (
-    <nav
-      className="flex flex-col text-sm font-md justify-between max-h-screen h-full opacity-100"
-      onMouseEnter={() => expandSidebar()}
-      onMouseLeave={() => collapseSidebar()}
-    >
+    <nav className="flex flex-col text-sm font-md justify-between max-h-screen h-full opacity-100">
       <div>
         <div
           className={`flex items-center py-3 px-2.5 ${
@@ -117,7 +112,7 @@ export const Sidebar = () => {
       </div>
       <div className="stack gap-3 py-3 px-3 justify-center">
         <CreditQuota />
-        <UserButton size="lg" />
+        {/* <UserButton size="lg" /> */}
       </div>
     </nav>
   );
