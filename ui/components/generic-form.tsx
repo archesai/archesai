@@ -43,6 +43,7 @@ interface GenericFormProps<TCreateVariables, TUpdateVariables> {
   itemType: string;
   onSubmitCreate?: (data: TCreateVariables, mutateOptions: any) => void;
   onSubmitUpdate?: (data: TUpdateVariables, mutateOptions: any) => void;
+  showCard?: boolean;
   title?: string;
 }
 
@@ -53,6 +54,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   itemType,
   onSubmitCreate,
   onSubmitUpdate,
+  showCard = false,
   title,
 }: GenericFormProps<TCreateVariables, TUpdateVariables>) {
   const { toast } = useToast();
@@ -85,7 +87,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   }, [fields]);
 
   return (
-    <Card>
+    <Card className={showCard ? "" : "border-none shadow-none"}>
       {true ? (
         <CardHeader>
           <CardTitle className="text-xl">{title}</CardTitle>

@@ -380,11 +380,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
             {finalForm ? "Edit" : "Create"} {itemType}
           </DialogTitle>
         </VisuallyHidden.Root>
-        <DialogContent
-          aria-description="Create/Edit"
-          className="p-3 bg-transparent border-none shadow-none"
-          title="Create/Edit"
-        >
+        <DialogContent aria-description="Create/Edit" title="Create/Edit">
           {finalForm}
         </DialogContent>
       </Dialog>

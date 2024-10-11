@@ -93,7 +93,7 @@ export default function BillingPageContent() {
   return (
     <>
       {/* New Card for Available Plans */}
-      <Card className="mt-4">
+      <Card>
         <CardHeader>
           <CardTitle className="text-xl">Available Plans</CardTitle>
           <CardDescription>

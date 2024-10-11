@@ -70,54 +70,6 @@ export class DocumentProcessor {
     });
   }
 
-  private async uploadMappings(
-    data: {
-      embedding: number[];
-      page: number;
-      text: string;
-      tokens: number;
-    }[],
-    content: ContentEntity
-  ) {
-    const start = Date.now();
-    const dataCopy = JSON.parse(JSON.stringify(data)) as {
-      embedding: number[];
-      page: number;
-      text: string;
-      tokens: number;
-    }[];
-
-    this.logger.log(`Took ${(Date.now() - start) / 1000}s to copy data`);
-    const uploadStart = Date.now();
-    while (dataCopy.length) {
-      // const currentIndex = data.length - dataCopy.length;
-      const docs = dataCopy.splice(0, 1000);
-      this.logger.log(`Uploading ${docs.length} contents`, content);
-      // for (const doc of docs) {
-      //   await this.contentService.create(
-      //     content.orgname,
-      //     {
-      //       buildArgs: {},
-      //       name: doc.text,
-      //       type: "DOCUMENT",
-      //       url: "",
-      //     },
-      //     {
-      //       page: doc.page,
-      //       tokens: doc.tokens,
-      //       vectorDbId: content.id + "__" + currentIndex.toString(),
-      //     }
-      //   );
-      // }
-    }
-    this.logger.log(
-      `Took ${(Date.now() - uploadStart) / 1000}s to upload data`
-    );
-    this.logger.log(
-      `Took ${(Date.now() - start) / 1000}s to complete whole process`
-    );
-  }
-
   @OnQueueActive()
   async onActive(job: Job) {
     const content = job.data.content as ContentEntity;
@@ -284,18 +236,6 @@ export class DocumentProcessor {
       await this.jobsService.setProgress(content.job.id, progress);
     })();
 
-    const upsertMappingsPromise = (async () => {
-      const start = Date.now();
-      await this.uploadMappings(populatedTextContent, content);
-      this.logger.log(
-        `Saved mappings for ${content.name}. Completed in ${
-          (Date.now() - start) / 1000
-        }s`
-      );
-      progress += 0.1;
-      await this.jobsService.setProgress(content.job.id, progress);
-    })();
-
     const summaryPromise = (async () => {
       const start = Date.now();
       const c = this.loaderService.getFirstTokens(
@@ -335,12 +275,6 @@ export class DocumentProcessor {
     })();
 
     // if any of this fail, throw an error
-    await Promise.all([
-      upsertVectorsPromise,
-      upsertMappingsPromise,
-      summaryPromise,
-      uploadPreview,
-      // clustersPromise,
-    ]);
+    await Promise.all([upsertVectorsPromise, summaryPromise, uploadPreview]);
   }
 }

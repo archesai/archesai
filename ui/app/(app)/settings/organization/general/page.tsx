@@ -24,6 +24,7 @@ export default function OrganizationSettingsPage() {
       fields={formFields}
       isUpdateForm={true}
       itemType="organization"
+      showCard={true}
       title="Organization"
     />
   );

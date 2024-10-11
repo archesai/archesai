@@ -76,6 +76,7 @@ export default function ProfileSettingsPage() {
           mutateOptions
         );
       }}
+      showCard={true}
       title="Profile"
     />
   );
