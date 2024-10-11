@@ -16,7 +16,7 @@ const cardData = [
     buttonText: "Go to Import",
     description: "Upload files or input URLs to import data.",
     icon: Upload,
-    link: "/import/file",
+    link: "/import",
     title: "Import Data",
   },
   {

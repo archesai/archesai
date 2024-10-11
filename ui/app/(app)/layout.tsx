@@ -98,7 +98,7 @@ export default function AppLayout({
             </>
           )}
           {/* Updated to allow scrolling when content overflows */}
-          <div className="px-6 md:py-6 py-4 flex-1 overflow-auto">
+          <div className="px-2 md:px-6 md:py-6 py-4 flex-1 overflow-auto">
             {children}
           </div>
         </main>

@@ -358,7 +358,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
             variant="lg"
           />
         )}
-        {data?.results?.length > 10 && <DataTablePagination data={data} />}
+        {data?.results?.length >= 10 && <DataTablePagination data={data} />}
         {view === "grid" ? grid_view : table_view}
       </div>
       <div>
