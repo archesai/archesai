@@ -121,17 +121,10 @@ export const siteConfig = {
     ],
     "/import": [
       {
-        href: "/import/file",
+        href: "/import",
         Icon: CloudUploadIcon,
         section: "data",
-        tab: "From File",
         title: "Import",
-      },
-      {
-        href: "/import/url",
-        Icon: Compass,
-        tab: "From URL",
-        title: "From URL",
       },
     ],
     "/settings/organization": [

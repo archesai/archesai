@@ -1,6 +1,5 @@
 # ------- Python Stage -------
-FROM quay.io/unstructured-io/unstructured:0.15.13
-
+FROM quay.io/unstructured-io/unstructured:0.10.22
 WORKDIR /code
 
 USER root
@@ -8,8 +7,6 @@ USER root
 # Copy the rest of the requirements and install
 COPY ./requirements.txt /code/requirements.txt
 RUN pip install -r requirements.txt
-
-# Update the system and install FFmpeg
 
 COPY ./app /code/app
 

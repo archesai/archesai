@@ -19,11 +19,6 @@ const nextConfig = {
         permanent: true,
         source: "/settings",
       },
-      {
-        destination: "/import/file",
-        permanent: true,
-        source: "/import",
-      },
     ];
   },
 };
