@@ -13,7 +13,8 @@ import { useTheme } from "next-themes";
 import { CreditQuota } from "./credit-quota";
 
 export const Sidebar = () => {
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { collapseSidebar, expandSidebar, isCollapsed, toggleSidebar } =
+    useSidebar();
   const { resolvedTheme } = useTheme();
   const pathname = usePathname() as string;
 
@@ -44,77 +45,79 @@ export const Sidebar = () => {
   });
 
   return (
-    <nav className="items-start px-2.5 pb-2.5 text-sm font-md h-full">
-      <div className="flex flex-col justify-between max-h-screen h-full opacity-100">
-        <div>
-          <div
-            className={`flex items-center py-3 ${
-              isCollapsed ? "justify-center" : "justify-between"
-            }`}
+    <nav
+      className="flex flex-col text-sm font-md justify-between max-h-screen h-full opacity-100"
+      onMouseEnter={() => expandSidebar()}
+      onMouseLeave={() => collapseSidebar()}
+    >
+      <div>
+        <div
+          className={`flex items-center py-3 px-2.5 ${
+            isCollapsed ? "justify-center" : "justify-between"
+          }`}
+        >
+          {!isCollapsed && (
+            <LogoSVG
+              fill={resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
+              scale={0.08}
+              size={"lg"}
+            />
+          )}
+
+          <Button
+            className="hidden md:flex"
+            onClick={toggleSidebar}
+            size="icon"
+            variant="outline"
           >
-            {!isCollapsed && (
-              <LogoSVG
-                fill={resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
-                scale={0.08}
-                size={"lg"}
-              />
-            )}
+            <Menu className="h-5 w-5 text-gray-500" />
+          </Button>
+        </div>
 
-            <Button
-              className="hidden md:flex"
-              onClick={toggleSidebar}
-              size="icon"
-              variant="outline"
-            >
-              <Menu className="h-5 w-5 text-gray-500" />
-            </Button>
-          </div>
+        {/* Render specific sidebar sections */}
+        {sidebarSections.map((section) => (
+          <div className="mt-4" key={section}>
+            {
+              <h2
+                className={`text-xs px-3.5 uppercase font-semibold mb-2 whitespace-nowrap opacity-100 ${
+                  isCollapsed ? "text-transparent" : "text-gray-400"
+                }`}
+              >
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </h2>
+            }
 
-          {/* Render specific sidebar sections */}
-          {sidebarSections.map((section) => (
-            <div className="mt-4" key={section}>
-              {section !== "home" && (
-                <h2
-                  className={`text-xs px-1 uppercase font-semibold text-muted-foreground mb-2 whitespace-nowrap inter opacity-100 ${
-                    isCollapsed ? "text-white" : ""
-                  }`}
-                >
-                  {section.charAt(0).toUpperCase() + section.slice(1)}
-                </h2>
-              )}
-
-              {linksBySection[section].map(({ href, Icon, title }) => (
-                <Link
-                  className={`${
-                    isCollapsed ? "justify-center" : ""
-                  } flex items-center text-md font-medium gap-3 rounded-lg px-2 py-2.5 my-1 ${
-                    pathname === href || pathname.startsWith(href)
-                      ? "bg-muted"
-                      : ""
-                  } transition-all hover:bg-muted relative group`}
-                  href={href}
-                  key={href}
-                >
-                  <Icon className="h-5 w-5" strokeWidth={1.5} />
-                  <span
-                    className={`${isCollapsed ? "hidden" : "block"} mt-0.5`}
-                  >
+            {linksBySection[section].map(({ href, Icon, title }) => (
+              <Link
+                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group
+                ${
+                  pathname === href || pathname.startsWith(href)
+                    ? "bg-muted"
+                    : ""
+                } ${isCollapsed ? "justify-center" : "pl-[22px]"}   `}
+                href={href}
+                key={href}
+              >
+                <Icon
+                  className="h-5 w-5 -translate-y-[-0.5px]"
+                  strokeWidth={1.5}
+                />
+                <span className={`${isCollapsed ? "hidden" : "block"}`}>
+                  {title}
+                </span>
+                {isCollapsed && (
+                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     {title}
                   </span>
-                  {isCollapsed && (
-                    <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {title}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div className="stack gap-3 py-3 justify-center">
-          <CreditQuota />
-          <UserButton size="lg" />
-        </div>
+                )}
+              </Link>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="stack gap-3 py-3 px-3 justify-center">
+        <CreditQuota />
+        <UserButton size="lg" />
       </div>
     </nav>
   );
