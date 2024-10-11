@@ -11,9 +11,9 @@ export const PageHeader = ({
   title: string;
 }) => {
   return (
-    <header className="hidden md:block z-[9] md:-mt-0 bg-background">
+    <header className="hidden md:block bg-background">
       <div className="bg-true-white/80 backdrop-blur-md">
-        <div className="hstack justify-between items-center w-full p-4">
+        <div className="hstack justify-between items-center w-full px-4 py-[10px]">
           <Breadcrumbs />
           <div className="stack gap-0.5 py-3 pt-0 pr-6 max-w-[64rem]">
             <h2

@@ -198,7 +198,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                     form.reset();
                   }}
                   size="sm"
-                  variant={"destructive"}
+                  variant={"secondary"}
                 >
                   Clear
                 </Button>

@@ -68,11 +68,11 @@ export const Navbar = () => {
       className={`sticky top-0 z-40 w-full ${
         isTop
           ? "bg-transparent"
-          : "bg-white dark:bg-background border-b shadow-sm"
+          : "bg-white dark:bg-background border-b shadow-sm transition-all"
       }`}
     >
-      <NavigationMenu className="mx-auto">
-        <NavigationMenuList className="container h-16 px-2.5 w-screen flex justify-between">
+      <NavigationMenu>
+        <NavigationMenuList className="h-[56px] px-2.5 w-screen flex justify-between">
           <div className="flex items-center justify-center gap-3">
             <NavigationMenuItem className="font-bold flex">
               <LogoSVG fill={resolvedTheme === "dark" ? "#FFF" : "#000"} />

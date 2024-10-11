@@ -60,7 +60,7 @@ export const Sidebar = () => {
           )}
 
           <Button
-            className="hidden md:flex"
+            className="hidden md:flex h-8 w-8"
             onClick={toggleSidebar}
             size="icon"
             variant="outline"
