@@ -4,13 +4,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -67,14 +60,16 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm mt-10">
-      <CardHeader>
-        <CardTitle className="text-2xl">Forgot Password</CardTitle>
-        <CardDescription>
+    <div className="stack gap-2">
+      <div className="flex flex-col space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Forgot Password
+        </h1>
+        <p className="text-sm text-muted-foreground">
           Enter your email address to receive a password reset link.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         {/* Display Success Message */}
         {message && (
           <div className="text-green-600 mb-4" role="alert">
@@ -139,7 +134,7 @@ export default function ForgotPasswordPage() {
             Login
           </Link>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

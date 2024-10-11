@@ -59,7 +59,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
           aria-label="User menu"
           className={`relative flex items-center justify-between ${
             size === "lg"
-              ? "p-2 pl-2 text-sm leading-6 font-semibold"
+              ? "p-2 pl-2 text-sm leading-6 font-semibold w-full"
               : "p-0 h-9 w-9 rounded-full"
           }`}
           variant="ghost"

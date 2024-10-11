@@ -2,13 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -90,14 +83,14 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
+    <div className="stack gap-2">
+      <div className="flex flex-col space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
+        <p className="text-sm text-muted-foreground">
           Enter your email and password to login to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         <Form {...form}>
           <form
             className="space-y-4"
@@ -198,7 +191,7 @@ export default function LoginPage() {
             Sign up
           </Link>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

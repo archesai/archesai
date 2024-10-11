@@ -14,7 +14,6 @@ import {
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 import { ModeToggle } from "../mode-toggle";
@@ -44,7 +43,6 @@ const routeList: RouteProps[] = [
 ];
 
 export const Navbar = () => {
-  const { resolvedTheme } = useTheme();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [isTop, setIsTop] = useState(true);
@@ -75,7 +73,7 @@ export const Navbar = () => {
         <NavigationMenuList className="h-[56px] px-2.5 w-screen flex justify-between">
           <div className="flex items-center justify-center gap-3">
             <NavigationMenuItem className="font-bold flex">
-              <LogoSVG fill={resolvedTheme === "dark" ? "#FFF" : "#000"} />
+              <LogoSVG />
             </NavigationMenuItem>
             {/* mobile */}
             <span className="flex md:hidden">
@@ -89,9 +87,7 @@ export const Navbar = () => {
 
                 <SheetContent side={"left"}>
                   <SheetHeader>
-                    <LogoSVG
-                      fill={resolvedTheme === "dark" ? "#FFF" : "#000"}
-                    />
+                    <LogoSVG />
                   </SheetHeader>
                   <nav className="flex flex-col justify-center items-center gap-2 mt-4">
                     {routeList.map(({ href, label }: RouteProps) => (

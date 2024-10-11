@@ -2,19 +2,17 @@
 
 import { LogoSVG } from "@/components/logo-svg";
 import { Button } from "@/components/ui/button";
-// import { UserButton } from "@/components/user-button";
+import { UserButton } from "@/components/user-button";
 import { siteConfig } from "@/config/site";
 import { useSidebar } from "@/hooks/useSidebar";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 
 import { CreditQuota } from "./credit-quota";
 
 export const Sidebar = () => {
   const { isCollapsed, toggleSidebar } = useSidebar();
-  const { resolvedTheme } = useTheme();
   const pathname = usePathname() as string;
 
   // Sections to display in the sidebar
@@ -52,11 +50,14 @@ export const Sidebar = () => {
           }`}
         >
           {!isCollapsed && (
-            <LogoSVG
-              fill={resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
-              scale={0.08}
-              size={"lg"}
-            />
+            <div className="flex items-center gap-1">
+              {/* <LogoSVG
+                fill={resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
+                scale={0.13}
+                size={"sm"}
+              /> */}
+              <LogoSVG scale={0.7} size={"lg"} />
+            </div>
           )}
 
           <Button
@@ -71,10 +72,10 @@ export const Sidebar = () => {
 
         {/* Render specific sidebar sections */}
         {sidebarSections.map((section) => (
-          <div className="mt-4" key={section}>
+          <div className="mt-3" key={section}>
             {
               <h2
-                className={`text-xs px-3.5 uppercase font-semibold mb-2 whitespace-nowrap opacity-100 ${
+                className={`text-xs px-3.5 uppercase mb-2 whitespace-nowrap opacity-100 ${
                   isCollapsed ? "text-transparent" : "text-gray-400"
                 }`}
               >
@@ -84,12 +85,12 @@ export const Sidebar = () => {
 
             {linksBySection[section].map(({ href, Icon, title }) => (
               <Link
-                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group
+                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group pl-[22px]
                 ${
                   pathname === href || pathname.startsWith(href)
                     ? "bg-muted"
                     : ""
-                } ${isCollapsed ? "justify-center" : "pl-[22px]"}   `}
+                }`}
                 href={href}
                 key={href}
               >
@@ -110,9 +111,9 @@ export const Sidebar = () => {
           </div>
         ))}
       </div>
-      <div className="stack gap-3 py-3 px-3 justify-center">
+      <div className="stack gap-3 py-3 px-2 justify-center items-center w-full">
         <CreditQuota />
-        {/* <UserButton size="lg" /> */}
+        <UserButton size={isCollapsed ? "sm" : "lg"} />
       </div>
     </nav>
   );

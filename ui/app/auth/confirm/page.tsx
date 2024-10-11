@@ -2,13 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -164,19 +157,21 @@ export default function ConfirmPage() {
   };
 
   return (
-    <Card className="mx-auto max-w-sm mt-10">
-      <CardHeader>
-        <CardTitle className="text-2xl">{type.split("-").join(" ")}</CardTitle>
-        <CardDescription>
+    <div className="stack gap-2">
+      <div className="flex flex-col space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {type.split("-").join(" ")}
+        </h1>
+        <p className="text-sm text-muted-foreground">
           {message ||
             (error
               ? ""
               : type === "password-reset"
                 ? "Please follow the instructions below."
                 : "Verifying...")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div>
         {/* Display Error Message */}
         {error && (
           <p className="text-red-500 mb-4" role="alert">
@@ -271,7 +266,7 @@ export default function ConfirmPage() {
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
