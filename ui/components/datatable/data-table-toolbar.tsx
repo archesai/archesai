@@ -31,46 +31,44 @@ export function DataTableToolbar<TData>({
     useSelectItems({ items: data || [] });
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2 flex-col md:flex-row gap-2 md:gap-0">
-        <Checkbox
-          aria-label="Select all"
-          checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
-          className="translate-y-[2px]"
-          onCheckedChange={() => toggleSelectAll()}
+    <div className="flex flex-wrap items-center space-x-2 gap-2 md:gap-0">
+      <Checkbox
+        aria-label="Select all"
+        checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
+        className="translate-y-[2px]"
+        onCheckedChange={() => toggleSelectAll()}
+      />
+      <Input
+        className="h-8 flex-1"
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={`Filter ${itemType}s...`}
+        value={query}
+      />
+      {table.getColumn("llmBase") && (
+        <DataTableFacetedFilter
+          column={table.getColumn("llmBase")}
+          options={[
+            {
+              label: "GPT-4",
+              value: "GPT-4",
+            },
+          ]}
+          title="Language Model"
         />
-        <Input
-          className="h-8"
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={`Filter ${itemType}s...`}
-          value={query}
-        />
-        {table.getColumn("llmBase") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("llmBase")}
-            options={[
-              {
-                label: "GPT-4",
-                value: "GPT-4",
-              },
-            ]}
-            title="Language Model"
-          />
-        )}
-        {isFiltered && (
-          <Button
-            className="h-8 px-2 lg:px-3"
-            onClick={() => table.resetColumnFilters()}
-            variant="ghost"
-          >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+      )}
+      {isFiltered && (
+        <Button
+          className="h-8 px-2 lg:px-3"
+          onClick={() => table.resetColumnFilters()}
+          variant="ghost"
+        >
+          Reset
+          <Cross2Icon className="ml-2 h-4 w-4" />
+        </Button>
+      )}
 
-        <DatePickerWithRange />
-        <DataTableViewOptions table={table} />
-      </div>
+      <DatePickerWithRange />
+      <DataTableViewOptions table={table} />
     </div>
   );
 }
