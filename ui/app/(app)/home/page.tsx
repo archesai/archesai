@@ -61,13 +61,13 @@ export default function HomePage() {
             key={index}
           >
             <CardHeader>
-              <card.icon className="mx-auto mb-2 w-12 h-12 text-gray-700 dark:text-foreground" />
+              <card.icon className="mx-auto mb-2 w-12 h-12 text-muted-foreground" />
               <CardTitle className="text-xl font-semibold">
                 {card.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">{card.description}</p>
+              <p className="text-muted-foreground">{card.description}</p>
             </CardContent>
             <CardFooter className="justify-center">
               <Button
