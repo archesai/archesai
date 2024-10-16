@@ -13,8 +13,9 @@ describe("ChatbotsService unit spec", () => {
     createdAt: new Date(),
     credits: 100,
     id: "id",
+    members: [],
     orgname: "orgname",
-    plan: "API" as const,
+    plan: "UNLIMITED" as const,
     stripeCustomerId: "stripeCustomerId",
     updatedAt: new Date(),
   } as OrganizationEntity;

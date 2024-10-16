@@ -1,4 +1,11 @@
-import { limitAtom, pageAtom, queryAtom, rangeAtom } from "@/state/filterAtoms";
+import {
+  limitAtom,
+  pageAtom,
+  queryAtom,
+  rangeAtom,
+  sortByAtom,
+  sortDirectionAtom,
+} from "@/state/filterAtoms";
 import { useAtom } from "jotai";
 
 export const useFilterItems = () => {
@@ -7,6 +14,8 @@ export const useFilterItems = () => {
   const [limit, setLimit] = useAtom(limitAtom);
   const [query, setQuery] = useAtom(queryAtom);
   const [range, setRange] = useAtom(rangeAtom);
+  const [sortBy, setSortBy] = useAtom(sortByAtom);
+  const [sortDirection, setSortDirection] = useAtom(sortDirectionAtom);
 
   return {
     limit,
@@ -17,5 +26,9 @@ export const useFilterItems = () => {
     setPage,
     setQuery,
     setRange,
+    setSortBy,
+    setSortDirection,
+    sortBy,
+    sortDirection,
   };
 };

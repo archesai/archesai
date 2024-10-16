@@ -4,15 +4,13 @@ import { DataTableColumnHeader } from "@/components/datatable/data-table-column-
 import ChatbotForm from "@/components/forms/chatbot-form";
 import { Badge } from "@/components/ui/badge";
 import {
+  ChatbotsControllerFindAllPathParams,
   ChatbotsControllerRemoveVariables,
   useChatbotsControllerFindAll,
   useChatbotsControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ChatbotEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
-import { endOfDay } from "date-fns";
 import { User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,33 +18,13 @@ import { useRouter } from "next/navigation";
 export default function ChatbotsPageContent() {
   const { defaultOrgname } = useAuth();
   const router = useRouter();
-  const { limit, page, query, range } = useFilterItems();
-
-  const {
-    data: chatbots,
-    isLoading,
-    isPlaceholderData,
-  } = useChatbotsControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
-    },
-    queryParams: {
-      endDate: endOfDay(range.to || new Date()).toISOString(),
-      limit,
-      name: query,
-      offset: page * limit,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-    },
-  });
-  const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: deleteChatbot } = useChatbotsControllerRemove();
-
-  const { selectedItems } = useSelectItems({ items: chatbots?.results || [] });
 
   return (
-    <DataTable<ChatbotEntity, ChatbotsControllerRemoveVariables>
+    <DataTable<
+      ChatbotEntity,
+      ChatbotsControllerFindAllPathParams,
+      ChatbotsControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: "llmBase",
@@ -88,6 +66,7 @@ export default function ChatbotsPageContent() {
               </div>
             );
           },
+          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Description" />
           ),
@@ -109,30 +88,24 @@ export default function ChatbotsPageContent() {
         </div>
       )}
       createForm={<ChatbotForm />}
-      data={chatbots as any}
       dataIcon={<User size={24} />}
       defaultView="grid"
-      deleteItem={deleteChatbot}
-      deleteVariables={selectedItems.map((id) => ({
+      findAllPathParams={{
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(chatbot) => ({
         pathParams: {
-          chatbotId: id,
+          chatbotId: chatbot.id,
           orgname: defaultOrgname,
         },
-      }))}
-      getDeleteVariablesFromItem={(chatbot) => [
-        {
-          pathParams: {
-            chatbotId: chatbot.id,
-            orgname: defaultOrgname,
-          },
-        },
-      ]}
+      })}
       getEditFormFromItem={(chatbot) => <ChatbotForm chatbotId={chatbot.id} />}
       handleSelect={(chatbot) =>
         router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
       }
       itemType="chatbot"
-      loading={loading}
+      useFindAll={useChatbotsControllerFindAll}
+      useRemove={useChatbotsControllerRemove}
     />
   );
 }

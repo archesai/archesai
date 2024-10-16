@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,6 +22,7 @@ import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 import { useToast } from "./ui/use-toast";
 
 export interface FormFieldConfig {
@@ -88,58 +90,54 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
 
   return (
     <Card className={showCard ? "" : "border-none shadow-none"}>
-      {true ? (
-        <CardHeader>
-          <CardTitle className="text-xl">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-      ) : null}
-
-      <CardContent>
-        <Form {...form}>
-          <form
-            className="flex flex-col gap-4"
-            noValidate
-            onSubmit={form.handleSubmit(
-              isUpdateForm
-                ? (data) => {
-                    onSubmitUpdate?.(data as any, {
-                      onError: (error: any) => {
-                        toast({
-                          description: (error as any)?.stack.msg,
-                          title: `Update failed`,
-                          variant: "destructive",
-                        });
-                      },
-                      onSuccess: () => {
-                        toast({
-                          description: `Your ${itemType} has been updated`,
-                          title: `Update successful`,
-                        });
-                        form.reset();
-                      },
-                    });
-                  }
-                : (data) => {
-                    onSubmitCreate?.(data as any, {
-                      onError: (error: any) => {
-                        toast({
-                          description: (error as any)?.stack.msg,
-                          title: `Create failed`,
-                          variant: "destructive",
-                        });
-                      },
-                      onSuccess: () => {
-                        toast({
-                          description: `Your ${itemType} has been created`,
-                          title: `Creation successful`,
-                        });
-                        form.reset();
-                      },
-                    });
-                  }
-            )}
-          >
+      <CardHeader>
+        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <Form {...form}>
+        <form
+          noValidate
+          onSubmit={form.handleSubmit(
+            isUpdateForm
+              ? (data) => {
+                  onSubmitUpdate?.(data as any, {
+                    onError: (error: any) => {
+                      toast({
+                        description: (error as any)?.stack.message,
+                        title: `Update failed`,
+                        variant: "destructive",
+                      });
+                    },
+                    onSuccess: () => {
+                      toast({
+                        description: `Your ${itemType} has been updated`,
+                        title: `Update successful`,
+                      });
+                      form.reset();
+                    },
+                  });
+                }
+              : (data) => {
+                  onSubmitCreate?.(data as any, {
+                    onError: (error: any) => {
+                      toast({
+                        description: (error as any)?.stack.message,
+                        title: `Create failed`,
+                        variant: "destructive",
+                      });
+                    },
+                    onSuccess: () => {
+                      toast({
+                        description: `Your ${itemType} has been created`,
+                        title: `Creation successful`,
+                      });
+                      form.reset();
+                    },
+                  });
+                }
+          )}
+        >
+          <CardContent className="flex flex-col gap-4">
             {fields.map((fieldConfig) => (
               <FormField
                 control={form.control}
@@ -175,9 +173,11 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 )}
               />
             ))}
-
+          </CardContent>
+          <Separator />
+          <CardFooter className="bg-gray-50 dark:bg-black flex pt-6 rounded-lg">
             {(onSubmitCreate || onSubmitUpdate) && (
-              <div className="flex gap-4 w-full">
+              <div className="flex gap-4 w-full items-center">
                 <Button
                   className="w-full"
                   disabled={
@@ -206,9 +206,9 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 </Button>
               </div>
             )}
-          </form>
-        </Form>
-      </CardContent>
+          </CardFooter>
+        </form>
+      </Form>
     </Card>
   );
 }

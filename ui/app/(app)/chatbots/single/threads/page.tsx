@@ -4,50 +4,28 @@ import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import {
+  ThreadsControllerFindAllPathParams,
   ThreadsControllerRemoveVariables,
   useThreadsControllerFindAll,
   useThreadsControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ThreadEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
-import { endOfDay } from "date-fns";
 import { User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function ChatbotThreadsPage() {
   const { defaultOrgname } = useAuth();
   const router = useRouter();
-  const { limit, page, range } = useFilterItems();
   const searchParams = useSearchParams();
   const chatbotId = searchParams?.get("chatbotId");
 
-  const {
-    data: threads,
-    isLoading,
-    isPlaceholderData,
-  } = useThreadsControllerFindAll({
-    pathParams: {
-      chatbotId: chatbotId as string,
-      orgname: defaultOrgname,
-    },
-    queryParams: {
-      endDate: endOfDay(range.to || new Date()).toISOString(),
-      limit,
-      offset: page * limit,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-    },
-  });
-  const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: deleteChatbot } = useThreadsControllerRemove();
-
-  const { selectedItems } = useSelectItems({ items: threads?.results || [] });
-
   return (
-    <DataTable<ThreadEntity, ThreadsControllerRemoveVariables>
+    <DataTable<
+      ThreadEntity,
+      ThreadsControllerFindAllPathParams,
+      ThreadsControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: "name",
@@ -109,31 +87,25 @@ function ChatbotThreadsPage() {
           <User size={"100px"} />
         </div>
       )}
-      data={threads as any}
       dataIcon={<User size={24} />}
       defaultView="table"
-      deleteItem={deleteChatbot}
-      deleteVariables={selectedItems.map((id) => ({
+      findAllPathParams={{
+        chatbotId: chatbotId as string,
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(thread) => ({
         pathParams: {
           chatbotId: chatbotId as string,
           orgname: defaultOrgname,
-          threadId: id,
+          threadId: thread.id,
         },
-      }))}
-      getDeleteVariablesFromItem={(thread) => [
-        {
-          pathParams: {
-            chatbotId: chatbotId as string,
-            orgname: defaultOrgname,
-            threadId: thread.id,
-          },
-        },
-      ]}
+      })}
       handleSelect={(chatbot) =>
         router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
       }
       itemType="thread"
-      loading={loading}
+      useFindAll={useThreadsControllerFindAll}
+      useRemove={useThreadsControllerRemove}
     />
   );
 }

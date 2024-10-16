@@ -147,6 +147,7 @@ export default function ChatbotForm({ chatbotId }: { chatbotId?: string }) {
           mutateOptions
         );
       }}
+      showCard={!!chatbotId}
       title="Configuration"
     />
   );

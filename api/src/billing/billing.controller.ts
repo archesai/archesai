@@ -38,12 +38,12 @@ import { PlanEntity } from "./entities/plan.entity";
 @ApiTags("Organization - Billing")
 @Controller()
 export class BillingController {
-  private readonly logger: Logger = new Logger("BillingController");
+  private readonly logger: Logger = new Logger("Billing Controller");
 
   constructor(
-    private readonly billingService: BillingService,
+    private billingService: BillingService,
     private organizationsService: OrganizationsService,
-    private readonly configService: ConfigService,
+    private configService: ConfigService,
     private websocketsService: WebsocketsService
   ) {}
 
@@ -54,7 +54,7 @@ export class BillingController {
   })
   @ApiResponse({
     description: "Successfully canceled subscription plan",
-    status: 200,
+    status: 201,
   })
   async cancelSubscriptionPlan(@Param("orgname") orgname: string) {
     if (this.configService.get("FEATURE_BILLING") == false) {
@@ -64,8 +64,6 @@ export class BillingController {
 
     // Cancel the subscription
     await this.billingService.cancelSubscription(organization.stripeCustomerId);
-
-    return { success: true };
   }
 
   @ApiOperation({
@@ -74,7 +72,7 @@ export class BillingController {
   })
   @ApiResponse({
     description: "Successfully switched subscription plan",
-    status: 200,
+    status: 201,
   })
   @Post("/organizations/:orgname/billing/subscription")
   async changeSubscriptionPlan(

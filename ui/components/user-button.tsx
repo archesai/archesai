@@ -37,7 +37,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
   const { mutateAsync: updateDefaultOrg } = useUserControllerUpdate({
     onError: (error) => {
       toast({
-        description: error?.stack.msg,
+        description: error?.stack.message,
         title: "Error updating default organization",
         variant: "destructive",
       });
@@ -70,7 +70,13 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                 <Avatar className="h-9 w-9">
                   <AvatarImage
                     alt={user?.displayName || "User"}
-                    src={user?.photoUrl}
+                    src={
+                      user?.photoUrl ||
+                      `https://ui-avatars.com/api/?name=${user?.displayName
+                        ?.split(" ")
+                        .map((x) => x[0])
+                        .join("+")}&background=0D8ABC&color=fff`
+                    }
                   />
                   <AvatarFallback>
                     {user?.displayName
@@ -113,7 +119,13 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
             <Avatar className="h-9 w-9">
               <AvatarImage
                 alt={user?.displayName || "User"}
-                src={user?.photoUrl}
+                src={
+                  user?.photoUrl ||
+                  `https://ui-avatars.com/api/?name=${user?.displayName
+                    ?.split(" ")
+                    .map((x) => x[0])
+                    .join("+")}&background=0D8ABC&color=fff`
+                }
               />
               <AvatarFallback>
                 {user?.displayName

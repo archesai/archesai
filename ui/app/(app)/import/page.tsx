@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 import {
   useDocumentsControllerCreate,
   useStorageControllerGetReadUrl,
@@ -22,6 +23,7 @@ export default function ImportPage() {
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const { mutateAsync: getWriteUrl } = useStorageControllerGetWriteUrl();
   const { mutateAsync: getReadUrl } = useStorageControllerGetReadUrl();
@@ -156,7 +158,11 @@ export default function ImportPage() {
       router.push("/content");
     } catch (error) {
       console.error("An error occurred during file upload:", error);
-      alert("An error occurred during file upload");
+      toast({
+        description: (error as any).stack.message,
+        title: "Upload Failed",
+        variant: "destructive",
+      });
       setUploading(false);
     }
   };

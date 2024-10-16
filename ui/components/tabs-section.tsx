@@ -49,13 +49,10 @@ export const TabsSection = () => {
           const isActive = tab.href === activeTab;
           return (
             <TabsTrigger
-              className={`relative rounded-none border-b-2 px-4 pb-3 pt-2 font-semibold shadow-none transition-all 
-              ${
-                isActive
-                  ? "border-b-primary text-foreground"
-                  : "text-muted-foreground"
-              }
-              `}
+              className={`relative rounded-none px-4 pb-3 pt-2 font-normal shadow-none transition-all
+    ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}
+    [&::after]:content-[''] [&::after]:absolute [&::after]:left-0 [&::after]:bottom-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all
+  `}
               key={tab.href}
               onClick={() => {
                 const url = new URL(

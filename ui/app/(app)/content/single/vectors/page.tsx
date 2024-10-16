@@ -2,10 +2,12 @@
 
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import { useVectorRecordControllerFindAll } from "@/generated/archesApiComponents";
+import {
+  useVectorRecordControllerFindAll,
+  VectorRecordControllerFindAllPathParams,
+} from "@/generated/archesApiComponents";
 import { VectorRecordEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useSelectItems } from "@/hooks/useSelectItems";
 import { File } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
@@ -14,24 +16,13 @@ export default function ContentVectorsPage() {
   const contentId = searchParams?.get("contentId");
 
   const { defaultOrgname } = useAuth();
-  const { data: vectorRecords, isLoading: vectorRecordsIsLoading } =
-    useVectorRecordControllerFindAll({
-      pathParams: {
-        contentId: contentId as string,
-        orgname: defaultOrgname,
-      },
-    });
-
-  const { selectedItems } = useSelectItems({
-    items: vectorRecords?.results || [],
-  });
-
-  if (!vectorRecords) {
-    return <div>Loading...</div>;
-  }
 
   return (
-    <DataTable<{ name: string } & VectorRecordEntity, undefined>
+    <DataTable<
+      { name: string } & VectorRecordEntity,
+      VectorRecordControllerFindAllPathParams,
+      undefined
+    >
       columns={[
         {
           accessorKey: "text",
@@ -46,15 +37,19 @@ export default function ContentVectorsPage() {
       content={() => (
         <div className="flex w-full justify-center items-center h-full"></div>
       )}
-      data={vectorRecords as any}
       dataIcon={<File size={24} />}
       defaultView="table"
-      deleteItem={async () => {}}
-      deleteVariables={selectedItems.map(() => undefined)}
-      getDeleteVariablesFromItem={() => []}
+      findAllPathParams={{
+        contentId: contentId as string,
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={() => {}}
       handleSelect={() => {}}
       itemType="vector"
-      loading={vectorRecordsIsLoading}
+      useFindAll={useVectorRecordControllerFindAll}
+      useRemove={() => ({
+        mutateAsync: async () => {},
+      })}
     />
   );
 }

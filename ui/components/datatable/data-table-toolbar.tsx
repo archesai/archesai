@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
       <Input
         className="h-8 flex-1"
         onChange={(event) => setQuery(event.target.value)}
-        placeholder={`Filter ${itemType}s...`}
+        placeholder={`Search ${itemType}s...`}
         value={query}
       />
       {table.getColumn("llmBase") && (

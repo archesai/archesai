@@ -39,7 +39,14 @@ export class ChatbotRepository
 
   async findAll(orgname: string, chatbotQueryDto: ChatbotQueryDto) {
     const count = await this.prisma.chatbot.count({
-      where: { name: { contains: chatbotQueryDto.name }, orgname },
+      where: {
+        createdAt: {
+          gte: chatbotQueryDto.startDate,
+          lte: chatbotQueryDto.endDate,
+        },
+        name: { contains: chatbotQueryDto.name },
+        orgname,
+      },
     });
     const results = await this.prisma.chatbot.findMany({
       orderBy: {
@@ -47,7 +54,14 @@ export class ChatbotRepository
       },
       skip: chatbotQueryDto.offset,
       take: chatbotQueryDto.limit,
-      where: { name: { contains: chatbotQueryDto.name }, orgname },
+      where: {
+        createdAt: {
+          gte: chatbotQueryDto.startDate,
+          lte: chatbotQueryDto.endDate,
+        },
+        name: { contains: chatbotQueryDto.name },
+        orgname,
+      },
     });
     return { count, results };
   }

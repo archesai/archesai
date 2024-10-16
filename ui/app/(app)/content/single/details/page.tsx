@@ -54,27 +54,11 @@ export default function ContentDetailsPage() {
           </div>
           <Separator className="my-4" />
 
-          {/* Additional Information */}
-          <div className="mt-6 space-y-2">
-            <h3 className="text-lg font-semibold">Details</h3>
-            <p>
-              <strong>Credits Used:</strong> {content.credits}
-            </p>
-          </div>
-
-          {/* Annotations and Build Args */}
-          <div className="mt-6 space-y-2">
-            <h3 className="text-lg font-semibold">Build Arguments</h3>
-            <pre className="bg-gray-100 p-4 rounded-md">
-              {JSON.stringify(content.buildArgs, null, 2)}
-            </pre>
-          </div>
-
           {/* Text Content */}
-          {content.text && (
+          {content.description && (
             <div className="mt-6 space-y-2">
-              <h3 className="text-lg font-semibold">Text</h3>
-              <p>{content.text}</p>
+              <h3 className="text-lg font-semibold">Description</h3>
+              <p>{content.description}</p>
             </div>
           )}
 

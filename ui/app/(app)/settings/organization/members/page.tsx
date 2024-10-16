@@ -4,45 +4,24 @@ import { DataTableColumnHeader } from "@/components/datatable/data-table-column-
 import MemberForm from "@/components/forms/member-form";
 import { Badge } from "@/components/ui/badge";
 import {
+  MembersControllerFindAllPathParams,
   MembersControllerRemoveVariables,
   useMembersControllerFindAll,
   useMembersControllerRemove,
 } from "@/generated/archesApiComponents";
 import { MemberEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
-import { endOfDay } from "date-fns";
 import { CheckIcon, User, XIcon } from "lucide-react";
 
 export default function MembersPageContent() {
   const { defaultOrgname } = useAuth();
-  const { limit, page, range } = useFilterItems();
-
-  const {
-    data: members,
-    isLoading,
-    isPlaceholderData,
-  } = useMembersControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
-    },
-    queryParams: {
-      endDate: endOfDay(range.to || new Date()).toISOString(),
-      limit,
-      offset: page * limit,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-    },
-  });
-  const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: deleteMember } = useMembersControllerRemove();
-
-  const { selectedItems } = useSelectItems({ items: members?.results || [] });
 
   return (
-    <DataTable<MemberEntity, MembersControllerRemoveVariables>
+    <DataTable<
+      MemberEntity,
+      MembersControllerFindAllPathParams,
+      MembersControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: "role",
@@ -96,30 +75,24 @@ export default function MembersPageContent() {
         </div>
       )}
       createForm={<MemberForm />}
-      data={members as any}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
-      deleteItem={deleteMember}
-      deleteVariables={selectedItems.map((id) => ({
+      findAllPathParams={{
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(member) => ({
         pathParams: {
-          memberId: id,
+          memberId: member.id,
           orgname: defaultOrgname,
         },
-      }))}
-      getDeleteVariablesFromItem={(member) => [
-        {
-          pathParams: {
-            memberId: member.id,
-            orgname: defaultOrgname,
-          },
-        },
-      ]}
+      })}
       getEditFormFromItem={(member) => {
         return <MemberForm memberId={member.id} />;
       }}
       handleSelect={() => {}}
       itemType="Member"
-      loading={loading}
+      useFindAll={useMembersControllerFindAll}
+      useRemove={useMembersControllerRemove}
     />
   );
 }

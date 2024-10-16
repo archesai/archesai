@@ -9,11 +9,10 @@ import { BaseExceptionFilter } from "@nestjs/core";
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
-  private readonly logger: Logger = new Logger("AllExceptionsFilter");
+  private readonly logger: Logger = new Logger("All Exceptions Filter");
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest();
     const response = ctx.getResponse();
 
     let statusCode =
@@ -51,7 +50,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       statusCode = 404;
     }
 
-    const prodErrorResponse: any = {
+    const errorResponse: any = {
       message,
       statusCode,
     };
@@ -60,23 +59,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       return e;
     }
 
-    const devErrorResponse: any = {
-      errorName: exception?.name,
-      method: request.method,
-      msg: message,
-      path: request.url,
-      statusCode,
-      timestamp: new Date().toISOString(),
-    };
+    this.logger.error(errorResponse);
 
-    this.logger.error(devErrorResponse);
-
-    response
-      .status(statusCode)
-      .json(
-        process.env.NODE_ENV === "production"
-          ? prodErrorResponse
-          : devErrorResponse,
-      );
+    response.status(statusCode).json(errorResponse);
   }
 }

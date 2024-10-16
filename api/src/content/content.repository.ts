@@ -50,6 +50,10 @@ export class ContentRepository
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
     const count = await this.prisma.content.count({
       where: {
+        createdAt: {
+          gte: contentQueryDto.startDate,
+          lte: contentQueryDto.endDate,
+        },
         orgname,
         ...(contentQueryDto.searchTerm
           ? {
@@ -70,6 +74,10 @@ export class ContentRepository
       skip: contentQueryDto.offset,
       take: contentQueryDto.limit,
       where: {
+        createdAt: {
+          gte: contentQueryDto.startDate,
+          lte: contentQueryDto.endDate,
+        },
         orgname,
         ...(contentQueryDto.searchTerm
           ? {

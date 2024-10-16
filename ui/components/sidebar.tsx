@@ -51,11 +51,6 @@ export const Sidebar = () => {
         >
           {!isCollapsed && (
             <div className="flex items-center gap-1">
-              {/* <LogoSVG
-                fill={resolvedTheme === "dark" ? "#FFFFFF" : "#000"}
-                scale={0.13}
-                size={"sm"}
-              /> */}
               <LogoSVG scale={0.7} size={"lg"} />
             </div>
           )}
@@ -64,7 +59,7 @@ export const Sidebar = () => {
             className="hidden md:flex h-8 w-8"
             onClick={toggleSidebar}
             size="icon"
-            variant="outline"
+            variant="secondary"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -85,7 +80,7 @@ export const Sidebar = () => {
 
             {linksBySection[section].map(({ href, Icon, title }) => (
               <Link
-                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group pl-[22px]
+                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group pl-[22px] transition-all duration-200
                 ${
                   pathname === href || pathname.startsWith(href)
                     ? "bg-muted"
@@ -102,7 +97,7 @@ export const Sidebar = () => {
                   {title}
                 </span>
                 {isCollapsed && (
-                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
                     {title}
                   </span>
                 )}

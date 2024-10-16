@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import {
   usePasswordResetControllerRequest,
@@ -39,9 +40,10 @@ export default function ProfileSecuritySettingsPage() {
             below. It will send you an email with instructions on how to reset.
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex justify-between">
+        <Separator />
+        <CardFooter className="bg-gray-50 dark:bg-black flex pt-6 rounded-lg justify-end">
           <Button
-            className="w-full h-8"
+            className="h-8 w-full"
             disabled={requestPasswordResetPending}
             onClick={async () =>
               await requestPasswordReset(
@@ -54,7 +56,7 @@ export default function ProfileSecuritySettingsPage() {
                   onError: (err) => {
                     toast({
                       description:
-                        err?.stack.msg ||
+                        err?.stack.message ||
                         "An error occurred while trying to reset your password.",
                       title: "Error",
                     });
@@ -85,7 +87,8 @@ export default function ProfileSecuritySettingsPage() {
             button below. This action is irreversible.
           </CardDescription>
         </CardHeader>
-        <CardFooter className="flex justify-between">
+        <Separator />
+        <CardFooter className="bg-gray-50 dark:bg-black flex pt-6 rounded-lg justify-end">
           <Button
             className="w-full h-8"
             disabled={deactivatePending}
@@ -96,7 +99,7 @@ export default function ProfileSecuritySettingsPage() {
                   onError: (err) => {
                     toast({
                       description:
-                        err?.stack.msg ||
+                        err?.stack.message ||
                         "An error occurred while trying to deactivate your account.",
                       title: "Error",
                     });

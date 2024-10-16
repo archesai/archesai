@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
@@ -38,6 +39,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
+import { endOfDay } from "date-fns";
 import { FilePenLine, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -48,59 +50,83 @@ export interface BaseItem {
   name: string;
 }
 
-interface DataTableProps<TItem extends BaseItem, TDeleteVariables> {
+interface DataTableProps<
+  TItem extends BaseItem,
+  TFindAllPathParams,
+  TDeleteVariables,
+> {
   columns: ColumnDef<TItem, TDeleteVariables>[];
   content: (item: TItem) => JSX.Element;
   createForm?: React.ReactNode;
 
-  data: {
-    metadata: {
-      limit: number;
-      offset: number;
-      totalResults: number;
-    };
-    results: TItem[];
-  };
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
 
-  deleteItem: (vars: TDeleteVariables) => Promise<void>;
-  deleteVariables: TDeleteVariables[];
-  getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables[];
+  findAllPathParams: TFindAllPathParams;
+  getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables;
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
 
-  hidePagination?: boolean;
-  hideSearch?: boolean;
-
   hoverContent?: (item: TItem) => JSX.Element;
   itemType: string;
-  loading: boolean;
+  useFindAll: (s: any) => {
+    data:
+      | {
+          metadata: {
+            limit: number;
+            offset: number;
+            totalResults: number;
+          };
+          results: TItem[];
+        }
+      | undefined;
+    isLoading: boolean;
+    isPlaceholderData: boolean;
+  };
+  useRemove: () => {
+    mutateAsync: (vars: TDeleteVariables) => Promise<void>;
+  };
 }
 
-export function DataTable<TItem extends BaseItem, TDeleteVariables>({
+export function DataTable<
+  TItem extends BaseItem,
+  TFindAllPathParams,
+  TDeleteVariables,
+>({
   columns,
   content,
   createForm,
-  data,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   dataIcon,
   defaultView,
-  deleteItem,
-  deleteVariables,
+  findAllPathParams,
   getDeleteVariablesFromItem,
   getEditFormFromItem,
   handleSelect,
   hoverContent,
   itemType,
-}: DataTableProps<TItem, TDeleteVariables>) {
+  useFindAll,
+  useRemove,
+}: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
+  const { limit, page, query, range, sortBy, sortDirection } = useFilterItems();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      desc: true,
+      id: "createdAt",
+    },
+  ]);
   const [formOpen, setFormOpen] = useState(false);
   const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
     createForm
   );
+  const { setSortBy, setSortDirection } = useFilterItems();
+
+  useEffect(() => {
+    setSortDirection(sorting[0]?.desc ? "desc" : "asc");
+    setSortBy(sorting[0]?.id);
+  }, [sorting]);
 
   const { setView, view } = useToggleView();
 
@@ -109,6 +135,20 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
       setView(defaultView);
     }
   }, [defaultView]);
+
+  const { data } = useFindAll({
+    pathParams: findAllPathParams,
+    queryParams: {
+      endDate: endOfDay(range.to).toISOString(),
+      limit,
+      name: query,
+      offset: page * limit,
+      sortBy: sortBy as "createdAt",
+      sortDirection: sortDirection,
+      startDate: range.from.toISOString(),
+    },
+  });
+  const { mutateAsync: deleteItem } = useRemove();
 
   const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
     items: data?.results || [],
@@ -133,57 +173,61 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
       ...columns,
       {
         cell: ({ row }) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className="text-center">
-              <Button
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                variant="ghost"
-              >
-                <DotsHorizontalIcon className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              {getEditFormFromItem ? (
-                <>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setFinalForm(getEditFormFromItem?.(row.original));
-                      setFormOpen(true);
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                  variant="ghost"
+                >
+                  <DotsHorizontalIcon className="h-4 w-4" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]">
+                {getEditFormFromItem ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setFinalForm(getEditFormFromItem?.(row.original));
+                        setFormOpen(true);
+                      }}
+                    >
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()} // Prevent closing on select
+                >
+                  <DeleteItems
+                    deleteFunction={async (vars) => {
+                      await deleteItem(vars);
+                      setSelectedItems([]);
                     }}
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              ) : null}
-              <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()} // Prevent closing on select
-              >
-                <DeleteItems
-                  deleteFunction={async (vars) => {
-                    await deleteItem(vars);
-                    setSelectedItems([]);
-                  }}
-                  deleteVariables={getDeleteVariablesFromItem(row.original)}
-                  items={[
-                    {
-                      id: row.original.id,
-                      name: row.original.name,
-                    },
-                  ]}
-                  itemType={itemType}
-                  variant="md"
-                />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                    deleteVariables={[getDeleteVariablesFromItem(row.original)]}
+                    items={[
+                      {
+                        id: row.original.id,
+                        name: row.original.name,
+                      },
+                    ]}
+                    itemType={itemType}
+                    variant="md"
+                  />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ),
         header: () =>
           createForm ? (
-            <Button onClick={() => setFormOpen(true)} size="sm">
-              New {itemType}
-            </Button>
+            <div className="text-right">
+              <Button onClick={() => setFormOpen(true)} size="sm">
+                New {itemType}
+              </Button>
+            </div>
           ) : null,
         id: "actions",
       },
@@ -264,7 +308,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
                     await deleteItem(vars);
                     setSelectedItems([]);
                   }}
-                  deleteVariables={getDeleteVariablesFromItem(item)}
+                  deleteVariables={[getDeleteVariablesFromItem(item)]}
                   items={[
                     {
                       id: item.id,
@@ -311,7 +355,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell className="py-2" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -336,7 +380,7 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
     <div className="flex space-y-4 flex-col justify-between backdrop-blur-sm h-full">
       <div className="space-y-4">
         <DataTableToolbar
-          data={data?.results}
+          data={data?.results || []}
           itemType={itemType}
           table={table}
         />
@@ -346,7 +390,11 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
               await deleteItem(vars);
               setSelectedItems([]);
             }}
-            deleteVariables={deleteVariables}
+            deleteVariables={selectedItems.map((id) =>
+              getDeleteVariablesFromItem(
+                data?.results.find((i) => i.id === id) as TItem
+              )
+            )}
             items={selectedItems.map((id) => {
               const item = data?.results.find((i) => i.id === id);
               return {
@@ -358,11 +406,13 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
             variant="lg"
           />
         )}
-        {data?.results?.length >= 10 && <DataTablePagination data={data} />}
+        {(data?.results?.length || 0) >= 10 && (
+          <DataTablePagination data={data as any} />
+        )}
         {view === "grid" ? grid_view : table_view}
       </div>
       <div>
-        <DataTablePagination data={data} />
+        <DataTablePagination data={data as any} />
       </div>
       {/* THIS IS THE FORM DIALOG */}
       <Dialog
@@ -380,7 +430,11 @@ export function DataTable<TItem extends BaseItem, TDeleteVariables>({
             {finalForm ? "Edit" : "Create"} {itemType}
           </DialogTitle>
         </VisuallyHidden.Root>
-        <DialogContent aria-description="Create/Edit" title="Create/Edit">
+        <DialogContent
+          aria-description="Create/Edit"
+          className="p-0"
+          title="Create/Edit"
+        >
           {finalForm}
         </DialogContent>
       </Dialog>

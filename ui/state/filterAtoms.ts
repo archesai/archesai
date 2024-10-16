@@ -1,4 +1,4 @@
-import { addDays } from "date-fns";
+import { subDays } from "date-fns";
 import { atom } from "jotai";
 
 interface DateRange {
@@ -11,6 +11,8 @@ export const pageAtom = atom<number>(0);
 export const limitAtom = atom<number>(10);
 export const queryAtom = atom<string>("");
 export const rangeAtom = atom<DateRange>({
-  from: new Date(2022, 0, 20),
-  to: addDays(new Date(2022, 0, 20), 20),
+  from: subDays(new Date(), 7),
+  to: new Date(),
 });
+export const sortByAtom = atom<string>("createdAt");
+export const sortDirectionAtom = atom<"asc" | "desc">("desc");

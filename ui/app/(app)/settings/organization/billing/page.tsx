@@ -27,11 +27,15 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function BillingPageContent() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
   const { toast } = useToast();
+  const [clickedButtonIndex, setClickedButtonIndex] = useState<null | number>(
+    -1
+  );
 
   const { data: plans } = useBillingControllerGetPlans({});
   const { data: paymentMethods, isLoading: loadingMethods } =
@@ -49,7 +53,7 @@ export default function BillingPageContent() {
     useBillingControllerRemovePaymentMethod({
       onError: (error) => {
         toast({
-          description: error?.stack.msg,
+          description: error?.stack.message,
           title: "Could not delete payment method",
           variant: "destructive",
         });
@@ -68,7 +72,7 @@ export default function BillingPageContent() {
   } = useBillingControllerCreateCheckoutSession({
     onError: (error) => {
       toast({
-        description: error?.stack.msg,
+        description: error?.stack.message,
         title: "Could not create checkout session",
         variant: "destructive",
       });
@@ -131,8 +135,12 @@ export default function BillingPageContent() {
                       <TableCell>
                         {organization?.plan === plan.metadata?.key ? (
                           <Button
-                            disabled={cancelSubscriptionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              cancelSubscriptionLoading
+                            }
                             onClick={async () => {
+                              setClickedButtonIndex(plans.indexOf(plan));
                               await cancelSubscription({
                                 pathParams: {
                                   orgname: defaultOrgname,
@@ -147,14 +155,18 @@ export default function BillingPageContent() {
                             size="sm"
                             variant="destructive"
                           >
-                            {cancelSubscriptionLoading && (
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              cancelSubscriptionLoading && (
+                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              )}
                             Cancel Plan
                           </Button>
                         ) : organization?.plan === "FREE" ? (
                           <Button
-                            disabled={createCheckoutSessionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              createCheckoutSessionLoading
+                            }
                             onClick={async () => {
                               const data = await createCheckoutSesseion({
                                 pathParams: {
@@ -168,34 +180,48 @@ export default function BillingPageContent() {
                             }}
                             size="sm"
                           >
-                            {createCheckoutSessionLoading && (
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              createCheckoutSessionLoading && (
+                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              )}
                             Subscribe
                           </Button>
                         ) : (
                           <Button
-                            disabled={switchSubscriptionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              switchSubscriptionLoading
+                            }
                             onClick={async () => {
-                              await switchSubscriptionPlan({
-                                pathParams: {
-                                  orgname: defaultOrgname,
-                                },
-                                queryParams: {
-                                  planId: plan.id,
-                                },
-                              });
-                              toast({
-                                description: "Plan switched successfully.",
-                                title: "Success",
-                                variant: "default",
-                              });
+                              setClickedButtonIndex(plans.indexOf(plan));
+                              try {
+                                await switchSubscriptionPlan({
+                                  pathParams: {
+                                    orgname: defaultOrgname,
+                                  },
+                                  queryParams: {
+                                    planId: plan.id,
+                                  },
+                                });
+                                toast({
+                                  description: "Plan switched successfully.",
+                                  title: "Success",
+                                  variant: "default",
+                                });
+                              } catch (err) {
+                                toast({
+                                  description: (err as any).stack.message,
+                                  title: "Error",
+                                  variant: "destructive",
+                                });
+                              }
                             }}
                             size="sm"
                           >
-                            {switchSubscriptionLoading && (
-                              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              switchSubscriptionLoading && (
+                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                              )}
                             Switch Plan
                           </Button>
                         )}
@@ -264,13 +290,6 @@ export default function BillingPageContent() {
               ) : (
                 <p>No payment methods available.</p>
               )}
-              {/* <Button
-                onClick={handleAddCard}
-                style={{ marginTop: "1rem" }}
-                variant="default"
-              >
-                Add New Card
-              </Button> */}
             </>
           )}
         </CardContent>

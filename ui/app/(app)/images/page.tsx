@@ -5,14 +5,13 @@ import { DataTableColumnHeader } from "@/components/datatable/data-table-column-
 import ImageForm from "@/components/forms/image-form";
 import { StatusToIcon } from "@/components/status-to-icon";
 import {
+  ContentControllerFindAllPathParams,
   ContentControllerRemoveVariables,
   useContentControllerFindAll,
   useContentControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
 import { File } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,34 +21,12 @@ export default function ContentPage() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
 
-  const { limit, page, query, range } = useFilterItems();
-
-  const {
-    data: content,
-    isLoading,
-    isPlaceholderData,
-  } = useContentControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
-    },
-    queryParams: {
-      limit,
-      offset: page * limit,
-      searchTerm: query,
-      sortBy: "createdAt",
-      sortDirection: "asc" as const,
-      startDate: range.from?.toISOString(),
-      type: "IMAGE",
-    },
-  });
-
-  const loading = isPlaceholderData || isLoading;
-  const { mutateAsync: deleteDocument } = useContentControllerRemove();
-
-  const { selectedItems } = useSelectItems({ items: content?.results || [] });
-
   return (
-    <DataTable<ContentEntity, ContentControllerRemoveVariables>
+    <DataTable<
+      ContentEntity,
+      ContentControllerFindAllPathParams,
+      ContentControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: "name",
@@ -136,29 +113,23 @@ export default function ContentPage() {
         </div>
       )}
       createForm={<ImageForm />}
-      data={content as any}
       dataIcon={<File size={24} />}
       defaultView="grid"
-      deleteItem={deleteDocument}
-      deleteVariables={selectedItems.map((id) => ({
+      findAllPathParams={{
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(content) => ({
         pathParams: {
-          contentId: id,
+          contentId: content.id,
           orgname: defaultOrgname,
         },
-      }))}
-      getDeleteVariablesFromItem={(content) => [
-        {
-          pathParams: {
-            contentId: content.id,
-            orgname: defaultOrgname,
-          },
-        },
-      ]}
+      })}
       handleSelect={(content) =>
         router.push(`/content/single/details?contentId=${content.id}`)
       }
       itemType="image"
-      loading={loading}
+      useFindAll={useContentControllerFindAll}
+      useRemove={useContentControllerRemove}
     />
   );
 }
