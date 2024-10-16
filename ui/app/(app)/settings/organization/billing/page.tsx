@@ -222,7 +222,7 @@ export default function BillingPageContent() {
                               switchSubscriptionLoading && (
                                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                               )}
-                            Switch Plan
+                            Subscribe
                           </Button>
                         )}
                       </TableCell>

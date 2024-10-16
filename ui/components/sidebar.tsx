@@ -45,7 +45,7 @@ export const Sidebar = () => {
     <nav className="flex flex-col text-sm font-md justify-between max-h-screen h-full">
       <div>
         <div
-          className={`flex items-center py-3 px-2.5 ${
+          className={`flex items-center py-3 px-4 ${
             isCollapsed ? "justify-center" : "justify-between"
           }`}
         >
@@ -70,7 +70,7 @@ export const Sidebar = () => {
           <div className="mt-3" key={section}>
             {
               <h2
-                className={`text-xs px-3.5 uppercase mb-2 whitespace-nowrap ${
+                className={`text-xs px-4 uppercase mb-2 whitespace-nowrap ${
                   isCollapsed ? "text-transparent" : "text-gray-400"
                 }`}
               >

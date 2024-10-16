@@ -8,7 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart2, Image, MessageCircle, Server, Upload } from "lucide-react";
+import {
+  BarChart2,
+  Image,
+  MessageSquareIcon,
+  Server,
+  Upload,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const cardData = [
@@ -36,7 +42,7 @@ const cardData = [
   {
     buttonText: "Create Chatbot",
     description: "Set up a chatbot using imported data.",
-    icon: MessageCircle,
+    icon: MessageSquareIcon,
     link: "/chatbots",
     title: "Create Chatbot",
   },

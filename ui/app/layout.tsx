@@ -1,12 +1,10 @@
 import { QCProvider } from "@/components/qc-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { GeistSans } from "geist/font/sans";
 import { Metadata } from "next";
-import { Inter } from "next/font/google";
 
 import "../styles/globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   description:
@@ -47,7 +45,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={GeistSans.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
