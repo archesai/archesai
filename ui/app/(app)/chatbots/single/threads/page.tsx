@@ -2,7 +2,6 @@
 
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import { Badge } from "@/components/ui/badge";
 import {
   ThreadsControllerFindAllPathParams,
   ThreadsControllerRemoveVariables,
@@ -40,45 +39,6 @@ function ChatbotThreadsPage() {
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Name" />
-          ),
-        },
-        {
-          accessorKey: "createdAt",
-          cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <span className="font-medium">{row.original.createdAt}</span>
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Created" />
-          ),
-        },
-        {
-          accessorKey: "numMessages",
-          cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <Badge variant="outline">{row.original.numMessages}</Badge>
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Messages" />
-          ),
-        },
-        {
-          accessorKey: "credits",
-          cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <Badge variant="outline">{row.original.credits}</Badge>
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Credits" />
           ),
         },
       ]}
