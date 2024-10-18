@@ -16,34 +16,34 @@ interface FeatureProps {
 const features: FeatureProps[] = [
   {
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
-    image: "/looking-ahead.png",
+      "Our platform ensures responsiveness across all devices, allowing you to access Arches AI's tools seamlessly from any screen size.",
+    image: "/responsive-design.png", // Replace with relevant image showing responsive design
     title: "Responsive Design",
   },
   {
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
-    image: "/reflecting.png",
-    title: "Intuitive user interface",
+      "Designed with users in mind, Arches AI offers an intuitive interface that simplifies complex workflows and maximizes productivity.",
+    image: "/intuitive-ui.png", // Replace with relevant image depicting intuitive UI
+    title: "Intuitive User Interface",
   },
   {
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi nesciunt est nostrum omnis ab sapiente.",
-    image: "/growth.png",
-    title: "AI-Powered insights",
+      "Harness the power of artificial intelligence to gather insights from your data, helping you make smarter decisions faster.",
+    image: "/ai-insights.png", // Replace with relevant image depicting AI-powered insights
+    title: "AI-Powered Insights",
   },
 ];
 
 const featureList: string[] = [
-  "Dark/Light theme",
-  "Reviews",
-  "Features",
-  "Pricing",
-  "Contact form",
-  "Our team",
-  "Responsive design",
-  "Newsletter",
-  "Minimalist",
+  "Dark/Light Mode",
+  "Advanced Analytics",
+  "AI-Driven Automation",
+  "Real-time Collaboration",
+  "Customizable Dashboards",
+  "Security and Compliance",
+  "Responsive Design",
+  "Seamless Integrations",
+  "User Management",
 ];
 
 export const Features = () => {
@@ -77,7 +77,7 @@ export const Features = () => {
 
             <CardFooter>
               <img
-                alt="About feature"
+                alt={title}
                 className="w-[200px] lg:w-[300px] mx-auto"
                 src={image}
               />

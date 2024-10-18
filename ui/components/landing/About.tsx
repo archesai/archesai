@@ -13,14 +13,23 @@ export const About = () => {
                 <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
                   About{" "}
                 </span>
-                Company
+                Arches AI
               </h2>
               <p className="text-xl text-muted-foreground mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit
-                amet, consectetur adipiscing elit.
+                At Arches AI, we are revolutionizing the way businesses
+                integrate artificial intelligence into their workflows. Our
+                platform empowers organizations with advanced AI capabilities,
+                enabling them to automate processes, gain insights, and deliver
+                better outcomes at scale. From AI-driven chatbots to robust data
+                analysis tools, Arches AI provides tailored solutions to meet
+                the needs of modern enterprises.
+              </p>
+              <p className="text-xl text-muted-foreground mt-4">
+                We believe in the future of AI as a service, offering
+                comprehensive solutions that are easy to implement, scalable,
+                and secure. Our mission is to bridge the gap between technology
+                and business by providing intuitive tools that allow
+                organizations to harness the full power of AI.
               </p>
             </div>
 

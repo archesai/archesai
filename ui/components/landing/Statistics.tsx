@@ -7,19 +7,19 @@ export const Statistics = () => {
   const stats: statsProps[] = [
     {
       description: "Users",
-      quantity: "2.7K+",
+      quantity: "50K+",
     },
     {
       description: "Subscribers",
-      quantity: "1.8K+",
+      quantity: "2K+",
     },
     {
-      description: "Downloads",
-      quantity: "112",
+      description: "Uploads",
+      quantity: "200k+",
     },
     {
-      description: "Products",
-      quantity: "4",
+      description: "Messages",
+      quantity: "650k+",
     },
   ];
 
@@ -27,10 +27,7 @@ export const Statistics = () => {
     <section id="statistics">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map(({ description, quantity }: statsProps) => (
-          <div
-            className="space-y-2 text-center"
-            key={description}
-          >
+          <div className="space-y-2 text-center" key={description}>
             <h2 className="text-3xl sm:text-4xl font-bold ">{quantity}</h2>
             <p className="text-xl text-muted-foreground">{description}</p>
           </div>

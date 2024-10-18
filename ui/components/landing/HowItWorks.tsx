@@ -11,27 +11,27 @@ interface FeatureProps {
 const features: FeatureProps[] = [
   {
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Easily sign up or log in to the Arches AI platform to access powerful AI tools designed to optimize your business processes.",
     icon: <MedalIcon />,
-    title: "Accessibility",
+    title: "Sign Up & Onboarding",
   },
   {
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Integrate your data seamlessly with our platform, allowing AI to process, analyze, and deliver insights tailored to your needs.",
     icon: <MapIcon />,
-    title: "Community",
+    title: "Data Integration",
   },
   {
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Scale your operations effortlessly with AI-driven automation, enabling you to handle increased workloads without losing efficiency.",
     icon: <PlaneIcon />,
-    title: "Scalability",
+    title: "AI Automation & Scalability",
   },
   {
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum quas provident cum",
+      "Monitor performance, receive insights, and continually improve through feedback loops built into the system.",
     icon: <GiftIcon />,
-    title: "Gamification",
+    title: "Optimization & Insights",
   },
 ];
 
@@ -46,8 +46,8 @@ export const HowItWorks = () => {
         Step-by-Step Guide
       </h2>
       <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
-        dolor pariatur sit!
+        Discover how Arches AI empowers your business with advanced AI
+        solutions. Here’s a simple guide on how to get started.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

@@ -70,7 +70,7 @@ export const Navbar = () => {
       }`}
     >
       <NavigationMenu>
-        <NavigationMenuList className="h-[56px] px-2.5 w-screen flex justify-between">
+        <NavigationMenuList className="h-[56px] px-4 w-screen flex justify-between">
           <div className="flex items-center justify-center gap-3">
             <NavigationMenuItem className="font-bold flex">
               <LogoSVG />

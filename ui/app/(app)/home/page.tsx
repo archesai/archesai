@@ -59,7 +59,7 @@ export default function HomePage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-start h-full">
+    <div className="flex flex-col justify-start h-full">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cardData.map((card, index) => (
           <Card

@@ -2,7 +2,6 @@
 import { LogoSVG } from "@/components/logo-svg";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function AuthenticationPage({
@@ -10,23 +9,7 @@ export default function AuthenticationPage({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <div className="md:hidden">
-        <Image
-          alt="Authentication"
-          className="block dark:hidden"
-          height={843}
-          src="/examples/authentication-light.png"
-          width={1280}
-        />
-        <Image
-          alt="Authentication"
-          className="hidden dark:block"
-          height={843}
-          src="/examples/authentication-dark.png"
-          width={1280}
-        />
-      </div>
-      <div className="container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <div className="container relative h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <Link
           className={cn(
             buttonVariants({ variant: "ghost" }),
