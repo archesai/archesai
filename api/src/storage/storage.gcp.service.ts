@@ -1,13 +1,11 @@
-import { DownloadResponse, Storage } from "@google-cloud/storage";
+import { Storage } from "@google-cloud/storage";
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
 import axios from "axios";
-import * as fs from "fs";
-import * as os from "os";
-import * as ospath from "path";
+import * as path from "path";
 
 import { archesaiSa } from "./archesai-sa";
 import { StorageItemDto } from "./dto/storage-item.dto";
@@ -15,9 +13,9 @@ import { StorageService } from "./storage.service";
 
 @Injectable()
 export class GoogleCloudStorageService implements StorageService {
-  private bucket: string;
-  private expirationTime = 60 * 60 * 1000;
-  private storage: Storage;
+  private readonly bucketName: string;
+  private readonly expirationTime = 60 * 60 * 1000; // 1 hour in milliseconds
+  private readonly storage: Storage;
 
   constructor() {
     this.storage = new Storage({
@@ -26,97 +24,103 @@ export class GoogleCloudStorageService implements StorageService {
       },
       projectId: "archesai",
     });
-    this.bucket = "archesai";
+    this.bucketName = "archesai";
   }
 
-  async checkFileExists(orgname: string, path: string): Promise<boolean> {
-    const [exists] = await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path))
-      .exists();
+  private getFilePath(orgname: string, filePath: string): string {
+    return path.posix.join("storage", orgname, filePath);
+  }
 
+  async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
+    const [exists] = await this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
+      .exists();
     return exists;
   }
 
-  async createDirectory(orgname: string, path: string): Promise<void> {
-    const exists = await this.checkFileExists(orgname, path);
+  async createDirectory(orgname: string, dirPath: string): Promise<void> {
+    const exists = await this.checkFileExists(orgname, dirPath);
     if (exists) {
       throw new ConflictException(
         "Cannot create directory. File or path already exists at this location"
       );
     }
     await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path) + "/")
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, dirPath) + "/")
       .save("");
   }
 
-  async delete(orgname: string, path: string) {
-    const exists = await this.checkFileExists(orgname, path);
+  async delete(orgname: string, filePath: string): Promise<void> {
+    const exists = await this.checkFileExists(orgname, filePath);
     if (!exists) {
-      throw new NotFoundException(`File at ${path} does not exist`);
+      throw new NotFoundException(`File at ${filePath} does not exist`);
     }
     await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path))
-      .delete({ ignoreNotFound: true });
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
+      .delete();
   }
 
-  async download(orgname: string, path: string, destination?: string) {
-    const exists = await this.checkFileExists(orgname, path);
+  async download(
+    orgname: string,
+    filePath: string,
+    destination?: string
+  ): Promise<{ buffer: Buffer }> {
+    const exists = await this.checkFileExists(orgname, filePath);
     if (!exists) {
-      throw new NotFoundException(`File at ${path} does not exist`);
+      throw new NotFoundException(`File at ${filePath} does not exist`);
     }
-    const fileResponse: DownloadResponse = await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path))
+    const [buffer] = await this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
       .download({ destination });
-    const [buffer] = fileResponse;
-
-    return {
-      buffer,
-    };
+    return { buffer };
   }
 
-  async getMetaData(orgname: string, path: string) {
-    const exists = await this.checkFileExists(orgname, path);
+  async getMetaData(orgname: string, filePath: string) {
+    const exists = await this.checkFileExists(orgname, filePath);
     if (!exists) {
-      throw new NotFoundException(`File at ${path} does not exist`);
+      throw new NotFoundException(`File at ${filePath} does not exist`);
     }
     const [metadata] = await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path))
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
       .getMetadata();
-
-    return {
-      metadata,
-    };
+    return { metadata };
   }
 
-  async getSignedUrl(orgname: string, path: string, action: "read" | "write") {
+  async getSignedUrl(
+    orgname: string,
+    filePath: string,
+    action: "read" | "write"
+  ): Promise<string> {
+    let fullPath = this.getFilePath(orgname, filePath);
     if (action === "write") {
       let conflict = true;
       let i = 0;
       for (; i < 1000; i++) {
-        conflict = await this.checkFileExists(orgname, path);
+        conflict = await this.checkFileExists(orgname, filePath);
         if (!conflict) {
           break;
         }
-        path = path.replace(/(\.[\w\d_-]+)$/i, `(${++i})$1`);
+        filePath = filePath.replace(/(\.[\w\d_-]+)$/i, `(${i})$1`);
+        fullPath = this.getFilePath(orgname, filePath);
       }
       if (conflict) {
         throw new ConflictException("File already exists");
       }
     } else {
-      const exists = await this.checkFileExists(orgname, path);
+      const exists = await this.checkFileExists(orgname, filePath);
       if (!exists) {
-        throw new NotFoundException(`File at ${path} does not exist`);
+        throw new NotFoundException(`File at ${filePath} does not exist`);
       }
     }
 
     const [url] = await this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path))
+      .bucket(this.bucketName)
+      .file(fullPath)
       .getSignedUrl({
         action: action,
         expires: Date.now() + this.expirationTime,
@@ -126,89 +130,122 @@ export class GoogleCloudStorageService implements StorageService {
     return url;
   }
 
-  // this function should list all of the files in the directory
-  async listDirectory(orgname: string, path: string) {
-    const [files, , apiResponse] = await this.storage
-      .bucket(this.bucket)
-      .getFiles({
-        autoPaginate: false,
-        delimiter: "/",
-        prefix: ospath.join("storage", orgname, path),
-      });
+  async listDirectory(
+    orgname: string,
+    dirPath: string
+  ): Promise<StorageItemDto[]> {
+    const fullPath =
+      this.getFilePath(orgname, dirPath).replace(/\/+$/, "") + "/";
 
-    const directories = (apiResponse as any).prefixes || [];
-    const directoriesInDir = directories.map(
-      (dir) =>
+    const [files] = await this.storage.bucket(this.bucketName).getFiles({
+      delimiter: "/",
+      prefix: fullPath,
+    });
+
+    const directories = new Set<string>();
+    const fileItems: StorageItemDto[] = [];
+
+    files.forEach((file) => {
+      const relativePath = file.name.slice(fullPath.length);
+      if (relativePath.endsWith("/")) {
+        const dirName = relativePath.split("/")[0];
+        directories.add(dirName);
+      } else if (relativePath) {
+        fileItems.push(
+          new StorageItemDto({
+            createdAt: new Date(file.metadata.timeCreated),
+            id: file.id,
+            isDir: false,
+            name: relativePath,
+            size: Number(file.metadata.size),
+          })
+        );
+      }
+    });
+
+    const directoryItems = Array.from(directories).map(
+      (dirName) =>
         new StorageItemDto({
           createdAt: null,
-          id: dir,
+          id: `${fullPath}${dirName}/`,
           isDir: true,
-          name: dir.split("/").at(-2) + "/",
+          name: dirName + "/",
           size: 0,
         })
     );
 
-    const fileDetails = await Promise.all(
-      files.map(async (file) => {
-        const metadata = await file.getMetadata();
-        return new StorageItemDto({
-          createdAt: new Date(metadata[0].timeCreated),
-          id: file.id,
-          isDir: false,
-          name: file.name.split("/").at(-1),
-          size: Number(metadata[0].size),
-        });
-      })
-    );
-
-    return [
-      ...fileDetails.filter((file) => file.size > 0),
-      ...directoriesInDir,
-    ];
+    return [...directoryItems, ...fileItems];
   }
 
-  async upload(orgname: string, path: string, file: Express.Multer.File) {
-    let conflict = true;
-    for (let i = 0; i < 1000; i++) {
-      let i = 0;
-      conflict = await this.checkFileExists(orgname, path);
-      if (conflict) {
-        // put the number before the extension
-        // path = path + `(${++i})`;
-        path = path.replace(/(\.[\w\d_-]+)$/i, `(${++i})$1`);
-        continue;
-      }
-      break;
+  async upload(
+    orgname: string,
+    filePath: string,
+    file: Express.Multer.File
+  ): Promise<string> {
+    let conflict = await this.checkFileExists(orgname, filePath);
+    const originalPath = filePath;
+    let i = 1;
+    while (conflict && i < 1000) {
+      filePath = originalPath.replace(/(\.[\w\d_-]+)$/i, `(${i})$1`);
+      conflict = await this.checkFileExists(orgname, filePath);
+      i++;
+    }
+    if (conflict) {
+      throw new ConflictException("File already exists");
     }
 
     const ref = this.storage
-      .bucket(this.bucket)
-      .file(ospath.join("storage", orgname, path));
-    const stream = ref.createWriteStream();
-    stream.end(file.buffer);
-    await new Promise((resolve) => stream.on("finish", resolve));
-    const read = await this.getSignedUrl(orgname, path, "read");
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath));
 
-    return read;
+    await ref.save(file.buffer, {
+      contentType: file.mimetype,
+      metadata: {
+        metadata: {
+          originalName: file.originalname,
+        },
+      },
+    });
+
+    return this.getSignedUrl(orgname, filePath, "read");
   }
 
-  async uploadFromUrl(orgname: string, path: string, url: string) {
-    const tmpPath = ospath.join(os.tmpdir(), "tmpfile");
-    const response = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
-    fs.writeFileSync(tmpPath, response.data);
-    try {
-      const read = await this.upload(orgname, path, {
-        buffer: fs.readFileSync(tmpPath),
-        originalname: ospath.basename(path),
-        size: fs.statSync(tmpPath).size,
-      } as Express.Multer.File);
-      fs.unlinkSync(tmpPath);
-      return read;
-    } catch (err) {
-      fs.unlinkSync(tmpPath);
-      throw err;
+  async uploadFromUrl(
+    orgname: string,
+    filePath: string,
+    url: string
+  ): Promise<string> {
+    let conflict = await this.checkFileExists(orgname, filePath);
+    const originalPath = filePath;
+    let i = 1;
+    while (conflict && i < 1000) {
+      filePath = originalPath.replace(/(\.[\w\d_-]+)$/i, `(${i})$1`);
+      conflict = await this.checkFileExists(orgname, filePath);
+      i++;
     }
+    if (conflict) {
+      throw new ConflictException("File already exists");
+    }
+
+    const ref = this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath));
+
+    const response = await axios({
+      method: "get",
+      responseType: "stream",
+      url: url,
+    });
+
+    const writeStream = ref.createWriteStream();
+
+    response.data.pipe(writeStream);
+
+    await new Promise<void>((resolve, reject) => {
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
+    return this.getSignedUrl(orgname, filePath, "read");
   }
 }

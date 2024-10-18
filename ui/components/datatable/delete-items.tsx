@@ -1,9 +1,15 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { SquareX, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
 import { useToast } from "../ui/use-toast";
 
 export interface DeleteProps<TDeleteVariables> {
@@ -69,7 +75,7 @@ export const DeleteItems = <TDeleteVariables,>({
         )}
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="p-0 gap-0">
         <div className="flex flex-col items-center justify-center p-5 gap-3">
           <X />
 
@@ -87,12 +93,19 @@ export const DeleteItems = <TDeleteVariables,>({
               </div>
             </ScrollArea>
           }
-
-          <div className="flex-1 flex gap-4">
-            <Button onClick={() => setOpenConfirmDelete(false)} size="sm">
+        </div>
+        <Separator />
+        <DialogFooter className="bg-gray-50 dark:bg-black flex rounded-lg p-6">
+          <div className="flex gap-4 w-full items-center">
+            <Button
+              className="w-full"
+              onClick={() => setOpenConfirmDelete(false)}
+              size="sm"
+            >
               {t("Cancel")}
             </Button>
             <Button
+              className="w-full"
               onClick={async () => await handleDelete()}
               size="sm"
               variant={"destructive"}
@@ -100,7 +113,7 @@ export const DeleteItems = <TDeleteVariables,>({
               {t("Delete")}
             </Button>
           </div>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

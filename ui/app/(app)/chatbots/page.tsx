@@ -27,19 +27,6 @@ export default function ChatbotsPageContent() {
     >
       columns={[
         {
-          accessorKey: "llmBase",
-          cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <Badge variant="outline">{row.original.llmBase}</Badge>
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Language Model" />
-          ),
-        },
-        {
           accessorKey: "name",
           cell: ({ row }) => {
             return (
@@ -55,6 +42,19 @@ export default function ChatbotsPageContent() {
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Name" />
+          ),
+        },
+        {
+          accessorKey: "llmBase",
+          cell: ({ row }) => {
+            return (
+              <div className="flex space-x-2">
+                <Badge variant="secondary">{row.original.llmBase}</Badge>
+              </div>
+            );
+          },
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Language Model" />
           ),
         },
         {

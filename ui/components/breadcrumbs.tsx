@@ -34,7 +34,7 @@ export const Breadcrumbs = () => {
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <Icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+        <Icon className="h-5 w-5  text-primary" strokeWidth={1.5} />
         {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           const isLast = index === pathnames.length - 1;

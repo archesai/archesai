@@ -1,4 +1,4 @@
-import { CheckSquare2Icon, Loader2Icon, XIcon } from "lucide-react";
+import { CheckIcon, Loader2Icon, XIcon } from "lucide-react";
 
 export const StatusToIcon = ({
   status,
@@ -7,7 +7,7 @@ export const StatusToIcon = ({
 }) => {
   switch (status) {
     case "COMPLETE":
-      return <CheckSquare2Icon className="text-primary" />;
+      return <CheckIcon className="text-green-700" />;
     case "ERROR":
       return <XIcon className="text-red-500" />;
     case "PROCESSING":

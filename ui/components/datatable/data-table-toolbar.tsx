@@ -85,7 +85,7 @@ export function DataTableViewOptions<
     <div className="flex h-8 gap-2">
       <Button
         className={`flex items-center justify-center h-full transition-colors ${
-          view === "table" ? "bg-secondary" : "bg-transparent"
+          view === "table" ? "bg-secondary text-primary" : "bg-transparent"
         }`}
         onClick={() => setView("table")}
         variant={"secondary"}
@@ -94,7 +94,7 @@ export function DataTableViewOptions<
       </Button>
       <Button
         className={`flex items-center justify-center h-full  transition-colors ${
-          view === "grid" ? "bg-secondary" : "bg-transparent"
+          view === "grid" ? "bg-secondary text-primary" : "bg-transparent"
         }`}
         onClick={() => setView("grid")}
         variant={"secondary"}

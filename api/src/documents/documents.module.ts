@@ -7,6 +7,7 @@ import { JobsModule } from "../jobs/jobs.module";
 import { LLMModule } from "../llm/llm.module";
 import { LoaderModule } from "../loader/loader.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
+import { SpeechModule } from "../speech/speech.module";
 import { StorageModule } from "../storage/storage.module";
 import { VectorRecordModule } from "../vector-records/vector-record.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
@@ -32,6 +33,7 @@ import { DocumentsService } from "./documents.service";
     LLMModule,
     EmbeddingsModule,
     VectorRecordModule,
+    SpeechModule,
   ],
   providers: [DocumentProcessor, DocumentsService],
 })

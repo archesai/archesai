@@ -75,7 +75,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                       `https://ui-avatars.com/api/?name=${user?.displayName
                         ?.split(" ")
                         .map((x) => x[0])
-                        .join("+")}&background=0D8ABC&color=fff`
+                        .join("+")}&background=3D61FF&color=fff`
                     }
                   />
                   <AvatarFallback>
@@ -124,7 +124,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                   `https://ui-avatars.com/api/?name=${user?.displayName
                     ?.split(" ")
                     .map((x) => x[0])
-                    .join("+")}&background=0D8ABC&color=fff`
+                    .join("+")}&background=3D61FF&color=fff`
                 }
               />
               <AvatarFallback>

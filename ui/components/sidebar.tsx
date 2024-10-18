@@ -51,7 +51,7 @@ export const Sidebar = () => {
         >
           {!isCollapsed && (
             <div className="flex items-center gap-1">
-              <LogoSVG scale={0.7} size={"lg"} />
+              <LogoSVG size={"lg"} />
             </div>
           )}
 
@@ -78,31 +78,30 @@ export const Sidebar = () => {
               </h2>
             }
 
-            {linksBySection[section].map(({ href, Icon, title }) => (
-              <Link
-                className={`flex items-center text-md font-medium gap-3 rounded-lg py-2 hover:bg-muted relative group pl-[22px] transition-all duration-200
-                ${
-                  pathname === href || pathname.startsWith(href)
-                    ? "bg-muted"
-                    : ""
-                }`}
-                href={href}
-                key={href}
-              >
-                <Icon
-                  className="h-5 w-5 -translate-y-[-0.5px]"
-                  strokeWidth={1.5}
-                />
-                <span className={`${isCollapsed ? "hidden" : "block"}`}>
-                  {title}
-                </span>
-                {isCollapsed && (
-                  <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+            {linksBySection[section].map(({ href, Icon, title }) => {
+              const isSelected = pathname === href || pathname.startsWith(href);
+              return (
+                <Link
+                  className={`flex items-center text-md font-medium gap-3 py-2 hover:bg-muted relative group pl-[22px] transition-all duration-200
+                ${isSelected && "bg-muted"}`}
+                  href={href}
+                  key={href}
+                >
+                  <Icon
+                    className={`h-5 w-5 -translate-y-[-0.5px]  ${isSelected && "text-primary"}`}
+                    strokeWidth={1.5}
+                  />
+                  <span className={`${isCollapsed ? "hidden" : "block"}`}>
                     {title}
                   </span>
-                )}
-              </Link>
-            ))}
+                  {isCollapsed && (
+                    <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                      {title}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         ))}
       </div>

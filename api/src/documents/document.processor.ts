@@ -17,6 +17,7 @@ import { JobsService } from "../jobs/jobs.service";
 import { LLMService } from "../llm/llm.service";
 import { LoaderService } from "../loader/loader.service";
 import { OrganizationsService } from "../organizations/organizations.service";
+import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
 import { VectorRecordService } from "../vector-records/vector-record.service";
 
@@ -38,7 +39,8 @@ export class DocumentProcessor {
     private storageService: StorageService,
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
-    private vectorRecordService: VectorRecordService
+    private vectorRecordService: VectorRecordService,
+    private speechService: SpeechService
   ) {}
 
   private async createEmbeddings(textContent: { text: string }[]) {
@@ -199,7 +201,7 @@ export class DocumentProcessor {
     progress = 0.6;
     await this.jobsService.setProgress(content.job.id, progress);
 
-    const uploadPreview = (async () => {
+    const uploadPreviewPromise = (async () => {
       const previewFilename = `${content.name}-preview.png`;
       const decodedImage = Buffer.from(preview, "base64");
       const multerFile = {
@@ -219,6 +221,28 @@ export class DocumentProcessor {
       progress += 0.1;
       await this.jobsService.setProgress(content.job.id, progress);
     })();
+
+    // const uploadSpeechPromise = (async () => {
+    //   const text = populatedTextContent.map((x) => x.text).join("\n");
+    //   const audioBuffer = await this.speechService.generateSpeech(text);
+    //   const multerFile = {
+    //     buffer: audioBuffer,
+    //     mimetype: "audio/mpeg",
+    //     originalname: `${content.name}.mp3`,
+    //     size: audioBuffer.length,
+    //   } as Express.Multer.File;
+    //   const url = await this.storageService.upload(
+    //     content.orgname,
+    //     `contents/${content.name}.mp3`,
+    //     multerFile
+    //   );
+    //   // await this.contentService.updateRaw(content.orgname, content.id, {
+    //   //   audio: url,
+    //   // });
+    //   console.log(url);
+    //   progress += 0.1;
+    //   await this.jobsService.setProgress(content.job.id, progress);
+    // })();
 
     const upsertVectorsPromise = (async () => {
       const start = Date.now();
@@ -275,6 +299,11 @@ export class DocumentProcessor {
     })();
 
     // if any of this fail, throw an error
-    await Promise.all([upsertVectorsPromise, summaryPromise, uploadPreview]);
+    await Promise.all([
+      upsertVectorsPromise,
+      summaryPromise,
+      uploadPreviewPromise,
+      // uploadSpeechPromise,
+    ]);
   }
 }

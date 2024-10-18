@@ -8,12 +8,12 @@ export default function OrganizationSettingsPage() {
   const formFields: FormFieldConfig[] = [
     {
       component: Input,
+      defaultValue: defaultOrgname,
       description: "The name of the organization. This cannot be changed.",
       label: "Name",
       name: "name",
       props: {
         disabled: true,
-        value: defaultOrgname,
       },
     },
   ];

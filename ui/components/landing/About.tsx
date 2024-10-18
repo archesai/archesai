@@ -24,13 +24,6 @@ export const About = () => {
                 analysis tools, Arches AI provides tailored solutions to meet
                 the needs of modern enterprises.
               </p>
-              <p className="text-xl text-muted-foreground mt-4">
-                We believe in the future of AI as a service, offering
-                comprehensive solutions that are easy to implement, scalable,
-                and secure. Our mission is to bridge the gap between technology
-                and business by providing intuitive tools that allow
-                organizations to harness the full power of AI.
-              </p>
             </div>
 
             <Statistics />
