@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 interface TeamProps {
   imageUrl: string;
@@ -96,10 +97,7 @@ export const Team = () => {
   };
 
   return (
-    <section
-      className="container py-24 sm:py-32"
-      id="team"
-    >
+    <section className="container py-24 sm:py-32" id="team">
       <h2 className="text-3xl md:text-4xl font-bold">
         <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
           Our Dedicated{" "}
@@ -120,10 +118,12 @@ export const Team = () => {
               key={name}
             >
               <CardHeader className="mt-8 flex justify-center items-center pb-2">
-                <img
+                <Image
                   alt={`${name} ${position}`}
                   className="absolute -top-12 rounded-full w-24 h-24 aspect-square object-cover"
+                  height={96}
                   src={imageUrl}
+                  width={96}
                 />
                 <CardTitle className="text-center">{name}</CardTitle>
                 <CardDescription className="text-primary">

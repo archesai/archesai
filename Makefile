@@ -17,7 +17,7 @@ models:
 	docker exec -it arches-ollama bash -c "echo llama3.1 mxbai-embed-large | xargs -n1 ollama pull"
 
 lint:
-	cd api && npm run lint && cd ../ui-new && npm run lint
+	cd api && npm run lint && cd ../ui && npm run lint
 
 test:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e

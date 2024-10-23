@@ -4,6 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 import { ChartIcon, MagnifierIcon, WalletIcon } from "./Icons";
 
@@ -70,10 +71,12 @@ export const Services = () => {
           </div>
         </div>
 
-        <img
+        <Image
           alt="About services"
           className="w-[300px] md:w-[500px] lg:w-[600px] object-contain"
+          height={300}
           src={"/cube-leg.png"}
+          width={500}
         />
       </div>
     </section>

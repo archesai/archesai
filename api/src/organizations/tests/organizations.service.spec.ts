@@ -2,18 +2,19 @@ import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 
 import { CurrentUserDto } from "../../auth/decorators/current-user.decorator";
+import { BillingService } from "../../billing/billing.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { StripeService } from "../../billing/billing.service";
 import { CreateOrganizationDto } from "../dto/create-organization.dto";
 import { OrganizationsService } from "../organizations.service";
 
 describe("OrganizationsService", () => {
   let organizationsService: OrganizationsService;
   let prismaService: PrismaService;
-  let stripeService: StripeService;
+  let billingService: BillingService;
   let configService: ConfigService;
 
   const user: CurrentUserDto = {
+    authProviders: [],
     createdAt: new Date(),
     deactivated: false,
     defaultOrgname: "org1",
@@ -23,8 +24,9 @@ describe("OrganizationsService", () => {
     id: "userId",
     lastName: "One",
     memberships: [],
+    password: "",
     photoUrl: "",
-    uid: "",
+    refreshToken: "",
     updatedAt: new Date(),
     username: "user1",
   };
@@ -42,7 +44,7 @@ describe("OrganizationsService", () => {
           },
         },
         {
-          provide: StripeService,
+          provide: BillingService,
           useValue: {
             createCustomer: jest.fn().mockResolvedValue({}),
           },
@@ -59,7 +61,7 @@ describe("OrganizationsService", () => {
     organizationsService =
       module.get<OrganizationsService>(OrganizationsService);
     prismaService = module.get<PrismaService>(PrismaService);
-    stripeService = module.get<StripeService>(StripeService);
+    billingService = module.get<BillingService>(BillingService);
     configService = module.get<ConfigService>(ConfigService);
   });
 
@@ -71,7 +73,7 @@ describe("OrganizationsService", () => {
     it("should create an organization and initialize stripe if billing is enabled", async () => {
       jest.spyOn(configService, "get").mockReturnValue(true);
       jest
-        .spyOn(stripeService, "createCustomer")
+        .spyOn(billingService, "createCustomer")
         .mockResolvedValue({ id: "stripeId" } as any);
       jest
         .spyOn(prismaService.organization, "create")
@@ -88,7 +90,7 @@ describe("OrganizationsService", () => {
       );
 
       expect(result).toEqual({ id: "orgId" });
-      expect(stripeService.createCustomer).toHaveBeenCalledWith(
+      expect(billingService.createCustomer).toHaveBeenCalledWith(
         "org1",
         "billing@test.com"
       );
@@ -112,7 +114,7 @@ describe("OrganizationsService", () => {
       );
 
       expect(result).toEqual({ id: "orgId" });
-      expect(stripeService.createCustomer).not.toHaveBeenCalled();
+      expect(billingService.createCustomer).not.toHaveBeenCalled();
       expect(prismaService.organization.create).toHaveBeenCalled();
     });
   });

@@ -15,7 +15,7 @@ export const Footer = () => {
           <div>
             <a
               className="opacity-60 hover:opacity-100"
-              href="#"
+              href="https://github.com/archesai"
               rel="noreferrer noopener"
             >
               Github
@@ -25,20 +25,10 @@ export const Footer = () => {
           <div>
             <a
               className="opacity-60 hover:opacity-100"
-              href="#"
+              href="https://x.com/archesai"
               rel="noreferrer noopener"
             >
               Twitter
-            </a>
-          </div>
-
-          <div>
-            <a
-              className="opacity-60 hover:opacity-100"
-              href="#"
-              rel="noreferrer noopener"
-            >
-              Dribbble
             </a>
           </div>
         </div>

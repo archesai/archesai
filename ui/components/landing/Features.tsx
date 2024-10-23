@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 
 interface FeatureProps {
   description: string;
@@ -76,10 +77,12 @@ export const Features = () => {
             <CardContent>{description}</CardContent>
 
             <CardFooter>
-              <img
+              <Image
                 alt={title}
                 className="w-[200px] lg:w-[300px] mx-auto"
+                height={200}
                 src={image}
+                width={200}
               />
             </CardFooter>
           </Card>
