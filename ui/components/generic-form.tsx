@@ -29,6 +29,7 @@ export interface FormFieldConfig {
   component: React.ComponentType<any>;
   defaultValue?: any;
   description: string;
+  ignoreOnCreate?: boolean;
   label: string;
   name: string;
   props?: any;
@@ -138,41 +139,43 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
           )}
         >
           <CardContent className="flex flex-col gap-4">
-            {fields.map((fieldConfig) => (
-              <FormField
-                control={form.control}
-                key={fieldConfig.name}
-                name={fieldConfig.name}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col col-span-1">
-                    <FormLabel>{fieldConfig.label}</FormLabel>
-                    <FormControl>
-                      {fieldConfig.renderControl ? (
-                        fieldConfig.renderControl(field)
-                      ) : (
-                        <fieldConfig.component
-                          {...field}
-                          {...fieldConfig.props}
-                          value={field.value || ""}
-                        />
-                      )}
-                    </FormControl>
-                    {!form.formState.errors[
-                      fieldConfig.name
-                    ]?.message?.toString() && (
-                      <FormDescription>
-                        {fieldConfig.description}
-                      </FormDescription>
-                    )}
-                    <FormMessage>
-                      {form.formState.errors[
+            {fields
+              .filter((f) => isUpdateForm || !f.ignoreOnCreate)
+              .map((fieldConfig) => (
+                <FormField
+                  control={form.control}
+                  key={fieldConfig.name}
+                  name={fieldConfig.name}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col col-span-1">
+                      <FormLabel>{fieldConfig.label}</FormLabel>
+                      <FormControl>
+                        {fieldConfig.renderControl ? (
+                          fieldConfig.renderControl(field)
+                        ) : (
+                          <fieldConfig.component
+                            {...field}
+                            {...fieldConfig.props}
+                            value={field.value || ""}
+                          />
+                        )}
+                      </FormControl>
+                      {!form.formState.errors[
                         fieldConfig.name
-                      ]?.message?.toString()}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-            ))}
+                      ]?.message?.toString() && (
+                        <FormDescription>
+                          {fieldConfig.description}
+                        </FormDescription>
+                      )}
+                      <FormMessage>
+                        {form.formState.errors[
+                          fieldConfig.name
+                        ]?.message?.toString()}
+                      </FormMessage>
+                    </FormItem>
+                  )}
+                />
+              ))}
           </CardContent>
           <Separator />
           <CardFooter className="bg-gray-50 dark:bg-black flex pt-6 rounded-lg">

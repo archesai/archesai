@@ -227,8 +227,12 @@ export function DataTable<
         header: () =>
           createForm ? (
             <div className="text-right">
-              <Button onClick={() => setFormOpen(true)} size="sm">
-                New {itemType}
+              <Button
+                onClick={() => setFormOpen(true)}
+                size="sm"
+                variant={"secondary"}
+              >
+                Create {itemType}
               </Button>
             </div>
           ) : null,
@@ -263,7 +267,7 @@ export function DataTable<
         >
           <div className="h-48 relative overflow-hidden group transition-all flex flex-col items-center justify-center">
             <PlusSquare size={30} />
-            <span className="mt-2 text-lg">New {itemType}</span>
+            <span className="mt-2 text-lg">Create {itemType}</span>
           </div>
         </Card>
       ) : null}

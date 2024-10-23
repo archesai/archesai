@@ -82,18 +82,16 @@ export const Sidebar = () => {
               const isSelected = pathname === href || pathname.startsWith(href);
               return (
                 <Link
-                  className={`flex items-center text-md font-medium gap-3 py-2 hover:bg-muted hover:text-primary relative group pl-[22px] transition-all duration-200
+                  className={`flex items-center text-md font-medium gap-3 ${isSelected ? "text-foreground" : "text-muted-foreground"} py-2 hover:bg-muted hover:text-foreground relative group pl-[22px] transition-all duration-200
                 ${isSelected && "bg-muted"}`}
                   href={href}
                   key={href}
                 >
                   <Icon
-                    className={`h-5 w-5 -translate-y-[-0.5px]  ${isSelected && "text-primary"}`}
+                    className={`h-5 w-5 -translate-y-[-0.5px]`}
                     strokeWidth={1.5}
                   />
-                  <span
-                    className={`${isCollapsed ? "hidden" : "block"} text-foreground`}
-                  >
+                  <span className={`${isCollapsed ? "hidden" : "block"}`}>
                     {title}
                   </span>
                   {isCollapsed && (

@@ -9,8 +9,10 @@ import { CreateImageDto } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
 
+import { Textarea } from "../ui/textarea";
+
 const formSchema = z.object({
-  name: z.string().min(1).max(255),
+  name: z.optional(z.string().min(1).max(255)),
   prompt: z.string(),
 });
 
@@ -34,15 +36,16 @@ export default function ImageForm({ imageId }: { imageId?: string }) {
       component: Input,
       defaultValue: image?.name,
       description: "This is the name that will be used for this image.",
+      ignoreOnCreate: true,
       label: "Name",
       name: "name",
       props: {
         placeholder: "Image name here...",
       },
-      validationRule: formSchema.shape.prompt,
+      validationRule: formSchema.shape.name,
     },
     {
-      component: Input,
+      component: Textarea,
       defaultValue: image?.buildArgs.prompt,
       description: "This is the prompt that will be used for this image.",
       label: "Prompt",
@@ -69,7 +72,7 @@ export default function ImageForm({ imageId }: { imageId?: string }) {
           {
             body: {
               height: 1024,
-              name: createImageDto.name,
+              name: createImageDto.prompt,
               prompt: createImageDto.prompt,
               width: 1024,
             },
