@@ -70,11 +70,6 @@ export default function ContentPage() {
             return (
               <div className="flex space-x-2">
                 <JobStatusButton job={row.original.job} />
-                {row.original.job.status === "PROCESSING" && (
-                  <span className="text-priamry">
-                    {(row.original.job.progress * 100).toFixed(0)}%
-                  </span>
-                )}
               </div>
             );
           },

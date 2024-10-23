@@ -18,7 +18,12 @@ export const JobStatusButton = ({ job }: { job: JobEntity }) => {
       case "ERROR":
         return <CircleX className="text-rose-600" />;
       case "PROCESSING":
-        return <Loader2Icon className="animate-spin text-primary" />;
+        return (
+          <div className="flex items-center gap-3">
+            <Loader2Icon className="animate-spin text-primary" />
+            <span>{(job.progress * 100).toFixed(0)}%</span>
+          </div>
+        );
       default:
         return null;
     }
