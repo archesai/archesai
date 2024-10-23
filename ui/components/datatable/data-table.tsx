@@ -272,7 +272,7 @@ export function DataTable<
             key={i}
           >
             <div
-              className="h-48 cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
+              className="h-48 rounded-t-sm cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
