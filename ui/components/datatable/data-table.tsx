@@ -271,65 +271,71 @@ export function DataTable<
           </div>
         </Card>
       ) : null}
-      {data?.results.map((item, i) => {
-        const isItemSelected = selectedItems.includes(item.id);
-        return (
-          <Card
-            className={`shadow-sm relative w-full ${isItemSelected ? "ring-4 ring-blue-500" : ""} overflow-visible after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none`}
-            key={i}
-          >
-            <div
-              className="h-48 rounded-t-sm cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
-              onClick={async () => handleSelect(item)}
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(-1)}
+      {data?.results.length ? (
+        data?.results.map((item, i) => {
+          const isItemSelected = selectedItems.includes(item.id);
+          return (
+            <Card
+              className={`shadow-sm relative w-full ${isItemSelected ? "ring-4 ring-blue-500" : ""} overflow-visible after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none`}
+              key={i}
             >
-              {content(item)}
-            </div>
-            <hr />
+              <div
+                className="h-48 rounded-t-sm cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
+                onClick={async () => handleSelect(item)}
+                onMouseEnter={() => setHover(i)}
+                onMouseLeave={() => setHover(-1)}
+              >
+                {content(item)}
+              </div>
+              <hr />
 
-            <div className="flex justify-between items-center mt-auto p-2">
-              <div className="flex items-center min-w-0">
-                <Checkbox
-                  aria-label={`Select ${item.name}`}
-                  checked={isItemSelected}
-                  className=" text-blue-600 rounded focus:ring-blue-500"
-                  onCheckedChange={() => toggleSelection(item.id)}
-                />
-                <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-2">
-                  {item.name}
-                </h5>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                {getEditFormFromItem ? (
-                  <FilePenLine
-                    className=" text-primary cursor-pointer h-5 w-5"
-                    onClick={() => {
-                      setFinalForm(getEditFormFromItem?.(item));
-                      setFormOpen(true);
-                    }}
+              <div className="flex justify-between items-center mt-auto p-2">
+                <div className="flex items-center min-w-0">
+                  <Checkbox
+                    aria-label={`Select ${item.name}`}
+                    checked={isItemSelected}
+                    className=" text-blue-600 rounded focus:ring-blue-500"
+                    onCheckedChange={() => toggleSelection(item.id)}
                   />
-                ) : null}
-                <DeleteItems
-                  deleteFunction={async (vars) => {
-                    await deleteItem(vars);
-                    setSelectedItems([]);
-                  }}
-                  deleteVariables={[getDeleteVariablesFromItem(item)]}
-                  items={[
-                    {
-                      id: item.id,
-                      name: item.name,
-                    },
-                  ]}
-                  itemType={itemType}
-                />
+                  <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-2">
+                    {item.name}
+                  </h5>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {getEditFormFromItem ? (
+                    <FilePenLine
+                      className=" text-primary cursor-pointer h-5 w-5"
+                      onClick={() => {
+                        setFinalForm(getEditFormFromItem?.(item));
+                        setFormOpen(true);
+                      }}
+                    />
+                  ) : null}
+                  <DeleteItems
+                    deleteFunction={async (vars) => {
+                      await deleteItem(vars);
+                      setSelectedItems([]);
+                    }}
+                    deleteVariables={[getDeleteVariablesFromItem(item)]}
+                    items={[
+                      {
+                        id: item.id,
+                        name: item.name,
+                      },
+                    ]}
+                    itemType={itemType}
+                  />
+                </div>
               </div>
-            </div>
-            {hoverContent && hover === i && hoverContent(item)}
-          </Card>
-        );
-      })}
+              {hoverContent && hover === i && hoverContent(item)}
+            </Card>
+          );
+        })
+      ) : (
+        <div className="flex justify-center items-center col-span-full row-span-full pt-12">
+          No {itemType}s found
+        </div>
+      )}
     </div>
   );
 
@@ -374,7 +380,7 @@ export function DataTable<
                 className="h-24 text-center"
                 colSpan={columns.length + 2}
               >
-                No results.
+                No {itemType}s found
               </TableCell>
             </TableRow>
           )}

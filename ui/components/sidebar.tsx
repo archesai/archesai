@@ -78,8 +78,6 @@ export const Sidebar = () => {
               </h2>
             }
             {linksBySection[section].map(({ href, Icon, title }) => {
-              console.log("HREF", href);
-              console.log("PATHNAME", pathname);
               const isSelected = pathname === href || pathname.startsWith(href);
               return (
                 <Link
