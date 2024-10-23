@@ -63,12 +63,12 @@ export default function HomePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cardData.map((card, index) => (
           <Card
-            className="flex flex-col text-center hover:shadow-lg transition-shadow justify-between"
+            className="flex flex-col text-center hover:shadow-lg hover:text-primary transition-shadow justify-between"
             key={index}
           >
             <CardHeader>
-              <card.icon className="mx-auto mb-2 w-12 h-12 text-muted-foreground" />
-              <CardTitle className="text-xl font-semibold">
+              <card.icon className="mx-auto mb-2 w-12 h-12" />
+              <CardTitle className="text-xl font-semibold text-foreground">
                 {card.title}
               </CardTitle>
             </CardHeader>

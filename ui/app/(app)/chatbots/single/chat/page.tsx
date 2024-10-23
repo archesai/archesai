@@ -2,17 +2,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Popover, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  useContentControllerFindAll,
   useMessagesControllerCreate,
   useMessagesControllerFindAll,
   useThreadsControllerCreate,
 } from "@/generated/archesApiComponents";
+import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
+import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Maximize, Minimize } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
@@ -23,6 +35,15 @@ export default function ChatbotChatPage() {
   const [message, setMessage] = useState<string>("");
   const searchParams = useSearchParams();
   const chatbotId = searchParams?.get("chatbotId");
+
+  const { data: content } = useContentControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
+    },
+    queryParams: {
+      limit: 3,
+    },
+  });
 
   const { streamChatMessage } = useStreamChat();
 
@@ -112,8 +133,15 @@ export default function ChatbotChatPage() {
   };
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.endsWith("@")) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+    }
     setMessage(e.target.value);
   };
+  const [open, setOpen] = useState(false);
+  const [, setSelectedContent] = useState<ContentEntity[]>([]);
 
   const { isFullScreen, toggleFullscreen } = useFullScreen();
 
@@ -210,24 +238,56 @@ export default function ChatbotChatPage() {
           }}
         >
           <div className="flex items-center space-x-2">
-            <Textarea
-              className="flex-1 resize-none bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg overflow-hidden max-h-40 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-              onChange={handleChange}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement;
-                target.style.height = "auto";
-                target.style.height = `${target.scrollHeight}px`;
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              rows={1}
-              // Auto-resize functionality
-              style={{
-                height: "auto",
-                overflow: "hidden",
-              }}
-              value={message}
-            />
+            <Popover onOpenChange={setOpen} open={open}>
+              <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
+                <Textarea
+                  className="text-md flex-1 resize-none bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg overflow-hidden max-h-40 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                  onChange={handleChange}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = "auto";
+                    target.style.height = `${target.scrollHeight}px`;
+                  }}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type your message..."
+                  rows={1}
+                  // Auto-resize functionality
+                  style={{
+                    height: "auto",
+                    overflow: "hidden",
+                  }}
+                  value={message}
+                />
+              </PopoverTrigger>
+              <PopoverContent align="start" className="p-0" side="top">
+                <Command>
+                  <CommandInput placeholder="Choose content..." />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                      {content?.results?.map((status) => (
+                        <CommandItem
+                          key={status.id}
+                          onSelect={(id) => {
+                            const currContent = content?.results?.find(
+                              (c) => c.id === id
+                            );
+                            setSelectedContent((prev) => [
+                              ...(prev || []),
+                              currContent as ContentEntity,
+                            ]);
+                            setOpen(false);
+                          }}
+                          value={status.id}
+                        >
+                          {status.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
             <Button
               className={cn(
                 "flex items-center justify-center p-2",

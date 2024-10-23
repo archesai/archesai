@@ -1,4 +1,5 @@
 PROFILE ?= local
+CONTAINER ?= arches-api
 
 build:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
@@ -28,3 +29,5 @@ reset:
 	-make stop
 	make build && make run
 	
+logs:
+	docker logs -f --tail=100 $(CONTAINER) 2>&1 | ccze -m ansi

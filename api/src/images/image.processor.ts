@@ -42,7 +42,6 @@ export class ImageProcessor {
   @OnQueueCompleted()
   async onCompleted(job: Job) {
     const content = job.data.content as ContentEntity;
-    console.log(content);
     await this.jobsService.updateStatus(content.job.id, "COMPLETE");
     this.logger.log(
       `Completed job ${job.id} for content ${job.data.content.id}`
@@ -104,8 +103,6 @@ export class ImageProcessor {
       originalname: ospath.basename(path),
       size: buffer.length,
     } as Express.Multer.File);
-
-    console.log(url);
 
     await this.contentService.updateRaw(content.orgname, content.id, {
       previewImage: url,

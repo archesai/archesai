@@ -30,7 +30,13 @@ export default function ApiTokensPageContent() {
           cell: ({ row }) => {
             return (
               <div className="flex space-x-2">
-                <Badge variant="outline">{row.original.role}</Badge>
+                <Badge
+                  variant={
+                    row.original.role === "ADMIN" ? "default" : "secondary"
+                  }
+                >
+                  {row.original.role}
+                </Badge>
               </div>
             );
           },

@@ -154,7 +154,10 @@ export default function ImportPage() {
       setUploading(false);
       setSelectedFiles([]);
       setUploadProgress(100);
-      console.log("All files uploaded successfully");
+      toast({
+        description: "Files uploaded successfully.",
+        title: "Upload Complete",
+      });
       router.push("/content");
     } catch (error) {
       console.error("An error occurred during file upload:", error);

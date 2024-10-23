@@ -46,9 +46,10 @@ export default function ContentDetailsPage() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center space-x-2">
-            <Badge variant="outline">{content.type}</Badge>
-            <Badge variant="outline">{content.mimeType}</Badge>
-            <Badge variant="outline">
+            <Badge className="text-sm text-primary" variant="secondary">
+              {content.mimeType}
+            </Badge>
+            <Badge className="text-sm text-primary" variant="secondary">
               {format(new Date(content.createdAt), "PPP")}
             </Badge>
           </div>
