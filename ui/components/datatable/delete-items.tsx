@@ -1,9 +1,12 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { SquareX, X } from "lucide-react";
 import { useState } from "react";
 
@@ -52,6 +55,10 @@ export const DeleteItems = <TDeleteVariables,>({
       onOpenChange={(open) => setOpenConfirmDelete(open)}
       open={openConfirmDelete}
     >
+      <VisuallyHidden.Root>
+        <DialogTitle />
+        <DialogDescription />
+      </VisuallyHidden.Root>
       <DialogTrigger asChild>
         {variant === "sm" ? (
           <div

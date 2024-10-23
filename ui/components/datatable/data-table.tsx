@@ -260,14 +260,14 @@ export function DataTable<
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
       {createForm ? (
         <Card
-          className={`shadow-sm relative w-full cursor-pointer overflow-visible hover:bg-gray-200 hover:dark:bg-gray-900 border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
+          className={`m-30 bg-transparent shadow-sm relative w-full cursor-pointer overflow-visible transition-all hover:bg-gray-200 hover:dark:bg-gray-900 border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
           onClick={async () => {
             setFormOpen(true);
           }}
         >
-          <div className="h-48 relative overflow-hidden group transition-all flex flex-col items-center justify-center">
-            <PlusSquare size={30} />
-            <span className="mt-2 text-lg">Create {itemType}</span>
+          <div className="h-48 relative overflow-hidden group  flex flex-col items-center justify-center">
+            <PlusSquare className="h-6 w-h-6 text-primary" />
+            <span className="mt-2 text-md">Create {itemType}</span>
           </div>
         </Card>
       ) : null}
@@ -413,9 +413,7 @@ export function DataTable<
             variant="lg"
           />
         )}
-        {(data?.results?.length || 0) >= 10 && (
-          <DataTablePagination data={data as any} />
-        )}
+
         {view === "grid" ? grid_view : table_view}
       </div>
       <div>

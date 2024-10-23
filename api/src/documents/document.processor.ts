@@ -97,6 +97,7 @@ export class DocumentProcessor {
     const content = job.data.content as ContentEntity;
     try {
       await this.jobsService.updateStatus(content.job.id, "ERROR");
+      await this.jobsService.setJobError(content.job.id, error?.message);
       // await this.organizationsService.addCredits(
       //   content.orgname,
       //   (content.maxFrames / 12) * 1000

@@ -30,7 +30,13 @@ export class VectorRecordRepository
     >(Prisma.sql`
       SELECT id, embedding::float8[] AS embedding
       FROM "VectorRecord"
-      WHERE orgname = ${orgname} AND id IN (${Prisma.join(ids)})
+      WHERE 
+        orgname = ${orgname}
+        ${
+          ids.length
+            ? Prisma.sql`AND id IN (${Prisma.join(ids)})`
+            : Prisma.empty
+        }
     `);
 
     for (const record of records) {
@@ -142,6 +148,9 @@ export class VectorRecordRepository
     }[]
   ): Promise<void> {
     // Construct the VALUES clause using Prisma.sql and Prisma.join
+    if (!records.length) {
+      return;
+    }
     const valuesSql = Prisma.join(
       records.map(
         (record, i) =>

@@ -51,7 +51,7 @@ export class BillingService {
       customer: customerId,
       return_url: `${this.configService.get(
         "FRONTEND_HOST"
-      )}/settings/organization/billing`,
+      )}/organization/billing`,
     });
   }
 
@@ -64,7 +64,7 @@ export class BillingService {
       allow_promotion_codes: isOneTime ? undefined : true,
       cancel_url: `${this.configService.get(
         "FRONTEND_HOST"
-      )}/settings/organization/billing`,
+      )}/organization/billing`,
       customer: customerId,
       invoice_creation: isOneTime
         ? {
@@ -83,7 +83,7 @@ export class BillingService {
       payment_method_types: ["card"],
       success_url: `${this.configService.get(
         "FRONTEND_HOST"
-      )}/settings/organization/billing`,
+      )}/organization/billing`,
     });
 
     return { url: session.url };

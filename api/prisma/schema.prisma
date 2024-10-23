@@ -81,7 +81,7 @@ model Job {
   completedAt DateTime?
   status      JobStatus @default(QUEUED)
   progress    Float?    @default(0)
-  jobType     String
+  error       String?
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String

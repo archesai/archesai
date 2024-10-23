@@ -1,9 +1,7 @@
-// config/site.ts
 import {
   Award,
-  Bolt,
+  // Bolt,
   Building2,
-  CloudUploadIcon,
   Compass,
   CreditCard,
   DollarSign,
@@ -11,7 +9,7 @@ import {
   HomeIcon,
   Image,
   KeySquare,
-  Layers,
+  // Layers,
   Lock,
   MessageSquare,
   Server,
@@ -22,7 +20,6 @@ import {
 export const siteConfig = {
   description:
     "Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.",
-
   links: {
     "/": [
       {
@@ -59,20 +56,7 @@ export const siteConfig = {
       {
         href: "/chatbots/single/chat",
         Icon: MessageSquare,
-        tab: "Chat",
         title: "Chat",
-      },
-      {
-        href: "/chatbots/single/threads",
-        Icon: Layers,
-        tab: "Threads",
-        title: "Threads",
-      },
-      {
-        href: "/chatbots/single/configuration",
-        Icon: Bolt,
-        tab: "Configuration",
-        title: "Configuration",
       },
     ],
     "/content": [
@@ -106,51 +90,53 @@ export const siteConfig = {
         title: "Image",
       },
     ],
-    "/import": [
+    "/organization": [
       {
-        href: "/import",
-        Icon: CloudUploadIcon,
-        section: "data",
-        title: "Import",
-      },
-    ],
-    "/settings/organization": [
-      {
-        href: "/settings/organization/general",
+        href: "/organization",
         Icon: Building2,
         section: "settings",
+        title: "Organization",
+      },
+      {
+        href: "/organization/general",
+        Icon: Building2,
         tab: "General",
         title: "Organization",
       },
       {
-        href: "/settings/organization/billing",
+        href: "/organization/billing",
         Icon: CreditCard,
         tab: "Billing",
         title: "Billing",
       },
       {
-        href: "/settings/organization/members",
+        href: "/organization/members",
         Icon: Users,
         tab: "Members",
         title: "Members",
       },
       {
-        href: "/settings/organization/api-tokens",
+        href: "/organization/api-tokens",
         Icon: Lock,
         tab: "API Tokens",
         title: "API Tokens",
       },
     ],
-    "/settings/profile": [
+    "/profile": [
       {
-        href: "/settings/profile/general",
+        href: "/profile",
         Icon: User,
         section: "settings",
+        title: "Profile",
+      },
+      {
+        href: "/profile/general",
+        Icon: User,
         tab: "General",
         title: "Profile",
       },
       {
-        href: "/settings/profile/security",
+        href: "/profile/security",
         Icon: KeySquare,
         tab: "Security",
         title: "Security",

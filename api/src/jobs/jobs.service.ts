@@ -28,6 +28,12 @@ export class JobsService
     await this.jobRepository.remove(orgname, id);
   }
 
+  async setJobError(id: string, error: string) {
+    const job = new JobEntity(await this.jobRepository.setJobError(id, error));
+    this.websocketsService.socket.to(job.orgname).emit("update");
+    return job;
+  }
+
   async setProgress(id: string, progress: number) {
     const job = new JobEntity(
       await this.jobRepository.setProgress(id, progress)
@@ -42,6 +48,7 @@ export class JobsService
     switch (status) {
       case "COMPLETE":
         await this.jobRepository.setCompletedAt(id, new Date());
+        await this.jobRepository.setProgress(id, 1);
         break;
       case "ERROR":
         await this.jobRepository.setCompletedAt(id, new Date());

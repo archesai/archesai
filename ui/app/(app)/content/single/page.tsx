@@ -56,19 +56,15 @@ export default function ContentDetailsPage() {
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
               <div>{content.name}</div>
-              <div className="mt-6">
-                <Button asChild size="sm" variant="secondary">
-                  <a
-                    href={content.url}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    Download Content
-                  </a>
-                </Button>
-              </div>
+              <Button asChild size="sm" variant="secondary">
+                <a href={content.url} rel="noopener noreferrer" target="_blank">
+                  Download Content
+                </a>
+              </Button>
             </CardTitle>
-            <CardDescription>{content.description}</CardDescription>
+            <CardDescription>
+              {content.description || "No Description"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
@@ -77,14 +73,6 @@ export default function ContentDetailsPage() {
                 {format(new Date(content.createdAt), "PPP")}
               </Badge>
             </div>
-
-            {/* Text Content */}
-            {content.description && (
-              <div className="mt-6 space-y-2">
-                <h3 className="text-lg font-semibold">Description</h3>
-                <p>{content.description}</p>
-              </div>
-            )}
           </CardContent>
         </Card>
         <DataTable<

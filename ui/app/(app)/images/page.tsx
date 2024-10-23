@@ -3,7 +3,7 @@ import { ContentTypeToIcon } from "@/components/content-type-to-icon";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import ImageForm from "@/components/forms/image-form";
-import { StatusToIcon } from "@/components/status-to-icon";
+import { JobStatusButton } from "@/components/job-status-button";
 import {
   ContentControllerFindAllPathParams,
   ContentControllerRemoveVariables,
@@ -55,7 +55,7 @@ export default function ContentPage() {
             return (
               <div className="flex space-x-2">
                 <span className="font-light">
-                  {row.original.description || "n/a"}
+                  {row.original.description || "No Description"}
                 </span>
               </div>
             );
@@ -69,7 +69,7 @@ export default function ContentPage() {
           cell: ({ row }) => {
             return (
               <div className="flex space-x-2">
-                <StatusToIcon status={row.original.job.status as any} />
+                <JobStatusButton job={row.original.job} />
                 {row.original.job.status === "PROCESSING" && (
                   <span className="text-priamry">
                     {(row.original.job.progress * 100).toFixed(0)}%
@@ -101,7 +101,7 @@ export default function ContentPage() {
       content={(item) => (
         <div className="flex w-full justify-center items-center h-full">
           {item.job.status !== "COMPLETE" ? (
-            <StatusToIcon status={item.job.status} />
+            <JobStatusButton job={item.job} />
           ) : (
             <Image
               alt="source image"

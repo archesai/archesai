@@ -70,7 +70,7 @@ async function main() {
           job: {
             create: {
               createdAt: fakeDate,
-              jobType: "DOCUMENT",
+              error: "",
               organization: {
                 connect: {
                   orgname: user.defaultOrgname,

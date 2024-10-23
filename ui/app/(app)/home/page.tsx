@@ -8,29 +8,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Image, MessageSquareIcon, Server, Upload } from "lucide-react";
+import { Image, MessageSquareIcon, Server } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const cardData = [
   {
-    buttonText: "Go to Import",
+    buttonText: "Manage Content",
     colorClass: "text-blue-600", // Blue for file handling and imports
-    description: "Upload files or input URLs to import data.",
-    icon: Upload,
-    link: "/import",
-    title: "Import Data",
-  },
-  {
-    buttonText: "View Content",
-    colorClass: "text-green-600", // Green for managing and overseeing data
     description: "View and manage your content.",
     icon: Server,
     link: "/content",
-    title: "View Content",
+    title: "Manage Content",
   },
   {
     buttonText: "Create Chatbot",
-    colorClass: "text-purple-600", // Purple for AI and communication-based features
+    colorClass: "text-sky-600", // Purple for AI and communication-based features
     description: "Set up a chatbot using imported data.",
     icon: MessageSquareIcon,
     link: "/chatbots",
@@ -38,7 +30,7 @@ const cardData = [
   },
   {
     buttonText: "Create Image",
-    colorClass: "text-pink-600", // Pink for creativity and AI-generated content
+    colorClass: "text-indigo-600", // Pink for creativity and AI-generated content
     description: "Create images using generative AI.",
     icon: Image,
     link: "/images",

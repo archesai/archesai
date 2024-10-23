@@ -11,11 +11,11 @@ import {
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Loader2, Trash, Upload } from "lucide-react";
+import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
-export default function ImportPage() {
+export default function ImportCard() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -171,36 +171,30 @@ export default function ImportPage() {
   };
 
   return (
-    <div className="flex flex-col items-center px-8 h-[90%] justify-center ">
+    <div className="flex flex-col">
       <div
         className={cn(
-          "w-full max-w-4xl bg-white rounded-lg transition-all duration-300",
+          "w-full rounded-lg transition-all duration-300 gap-3",
           selectedFiles.length > 0 ? "flex" : "flex flex-col items-center"
         )}
       >
         {/* Drop Area */}
         <Card
           className={cn(
-            "p-8 flex flex-col items-center justify-center border-dashed border-2 transition-colors duration-300 w-full",
+            "cursor-pointer gap-2 p-8 flex flex-col items-center justify-center border-dashed border-2 transition-colors duration-300 w-full bg-transparent",
             dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
             selectedFiles.length > 0 ? "w-2/3" : ""
           )}
+          onClick={() => fileInputRef.current?.click()}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
         >
-          <Upload className="h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-gray-600 mb-4">
+          <CloudUpload className="h-5 w-5 text-muted-foreground" />
+          <p className="text-gray-600 text-sm">
             Drag and drop files here, or click to select files
           </p>
-          <Button
-            className="mt-4 px-4 py-2 flex items-center justify-center"
-            onClick={() => fileInputRef.current?.click()}
-            variant="outline"
-          >
-            <Upload className="h-5 w-5 mr-2" />
-            Select Files
-          </Button>
+
           <input
             className="hidden"
             multiple
@@ -212,35 +206,32 @@ export default function ImportPage() {
 
         {/* Sidebar */}
         {selectedFiles.length > 0 && (
-          <div className="w-1/3 bg-gray-50 border-l border-gray-200 p-6 flex flex-col">
-            <h2 className="text-xl font-semibold mb-4">Selected Files</h2>
-            {selectedFiles.length === 0 ? (
-              <p className="text-gray-500">No files selected.</p>
-            ) : (
-              <ul className="flex-1 overflow-y-auto space-y-2">
-                {selectedFiles.map((file, idx) => (
-                  <li
-                    className="flex items-center justify-between p-3 bg-white rounded shadow-sm"
-                    key={idx}
+          <div className="w-1/3  flex flex-col">
+            <ul className="flex-1 overflow-y-auto space-y-2">
+              {selectedFiles.map((file, idx) => (
+                <li
+                  className="flex items-center justify-between px-3 py-1 bg-background rounded shadow-sm"
+                  key={idx}
+                >
+                  <span className="text-foreground truncate w-4/5">
+                    {file.name}
+                  </span>
+                  <button
+                    aria-label={`Remove ${file.name}`}
+                    className="text-red-500 hover:text-red-700 focus:outline-none"
+                    onClick={() => removeFile(idx)}
                   >
-                    <span className="text-gray-700 truncate w-4/5">
-                      {file.name}
-                    </span>
-                    <button
-                      aria-label={`Remove ${file.name}`}
-                      className="text-red-500 hover:text-red-700 focus:outline-none"
-                      onClick={() => removeFile(idx)}
-                    >
-                      <Trash className="h-5 w-5" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+                    <Trash className="h-5 w-5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
             <Button
-              className="mt-6 flex items-center justify-center px-4 py-2"
+              className="mt-3 flex items-center justify-center px-4 border"
               disabled={uploading || selectedFiles.length === 0}
               onClick={uploadFiles}
+              size="sm"
+              variant={"secondary"}
             >
               {uploading ? (
                 <>
@@ -254,6 +245,7 @@ export default function ImportPage() {
                 </>
               )}
             </Button>
+
             {uploading && (
               <div className="mt-6">
                 <Progress value={uploadProgress} />

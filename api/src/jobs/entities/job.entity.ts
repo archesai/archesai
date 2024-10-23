@@ -11,21 +11,8 @@ export const jobMap = {
   IMAGE: "imagesId",
 };
 
-const getResourceLink = (orgname: string, jobType: string, itemId: string) => {
-  const mappings = {
-    ANIMATION: "animations",
-    DOCUMENT: "documents",
-    IMAGE: "images",
-  };
-
-  return `/organizations/${orgname}/${mappings[jobType]}/${itemId}`;
-};
-
 @Exclude()
 export class JobEntity extends BaseEntity implements Job {
-  @ApiHideProperty()
-  animationId: string;
-
   @ApiProperty({
     description: "The time that the job was completed",
     example: "2023-07-11T21:09:20.895Z",
@@ -33,18 +20,12 @@ export class JobEntity extends BaseEntity implements Job {
   @Expose()
   completedAt: Date;
 
-  @ApiHideProperty()
-  documentId: string;
-
-  @ApiHideProperty()
-  imageId: string;
-
   @ApiProperty({
-    description: "The type of job that is being processed",
-    example: "DOCUMENT",
+    description: "The error message if the job failed",
+    example: "Could not process the document",
   })
   @Expose()
-  jobType: string;
+  error: string;
 
   // Private Properties
   @ApiHideProperty()
@@ -83,6 +64,6 @@ export class JobEntity extends BaseEntity implements Job {
   constructor(job: Job) {
     super();
     Object.assign(this, job);
-    this.resourceLink = getResourceLink(job.orgname, job.jobType, job.id);
+    this.resourceLink = `/organizations/${job.orgname}/content/${job.id}`;
   }
 }

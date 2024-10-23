@@ -39,10 +39,11 @@ export const Breadcrumbs = () => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           // const isLast = index === pathnames.length - 1;
           const isLast = false;
-
-          const capitalizedValue = (
-            value.charAt(0).toUpperCase() + value.slice(1)
-          ).slice(0, 13);
+          const capitalizedValue = value
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
+            .slice(0, 13);
           return (
             <React.Fragment key={to}>
               <BreadcrumbItem>

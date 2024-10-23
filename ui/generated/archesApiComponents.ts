@@ -2411,7 +2411,7 @@ export type ChatbotsControllerFindAllQueryParams = {
    *
    * @default createdAt
    */
-  sortBy?: "createdAt";
+  sortBy?: "createdAt" | "llmBase" | "name";
   /**
    * The direction to sort the results by
    *

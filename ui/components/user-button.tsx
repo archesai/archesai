@@ -22,6 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 
+import { Badge } from "./ui/badge";
 import { useToast } from "./ui/use-toast";
 
 interface UserButtonProps {
@@ -150,21 +151,13 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            onClick={() => router.push("/settings/organization/general")}
-          >
-            Settings
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
                 {memberships?.map((membership) => (
                   <DropdownMenuItem
+                    className="flex justify-between gap-2"
                     key={membership.id}
                     onClick={() => {
                       updateDefaultOrg({
@@ -175,11 +168,27 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                     }}
                   >
                     {membership.orgname}
+                    {defaultOrgname === membership.orgname && (
+                      <Badge variant="secondary">Current</Badge>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
+          <DropdownMenuItem
+            onClick={() => router.push("/organization/general")}
+          >
+            Settings
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => router.push("/profile/general")}>
+            Profile
+            <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={async () => await logout()}>

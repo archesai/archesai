@@ -25,7 +25,7 @@ export class ContentRepository
         buildArgs: createContentDto.buildArgs,
         job: {
           create: {
-            jobType: createContentDto.type,
+            error: "",
             orgname,
             status: JobStatus.QUEUED,
           },

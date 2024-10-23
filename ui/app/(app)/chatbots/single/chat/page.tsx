@@ -1,6 +1,9 @@
 // ChatbotChatPage.tsx
 "use client";
 
+import { DataTable } from "@/components/datatable/data-table";
+import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import ChatbotForm from "@/components/forms/chatbot-form";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -13,23 +16,34 @@ import {
 import { Popover, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   useContentControllerFindAll,
   useMessagesControllerCreate,
   useMessagesControllerFindAll,
   useThreadsControllerCreate,
 } from "@/generated/archesApiComponents";
+import {
+  ThreadsControllerFindAllPathParams,
+  ThreadsControllerRemoveVariables,
+  useThreadsControllerFindAll,
+  useThreadsControllerRemove,
+} from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
+import { ThreadEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { useFullScreen } from "@/hooks/useFullScreen";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
 import { PopoverTrigger } from "@radix-ui/react-popover";
+import { Bolt, Layers, RefreshCcw } from "lucide-react";
 import { Maximize, Minimize } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 export default function ChatbotChatPage() {
+  const { toast } = useToast();
+  const router = useRouter();
   const [threadId, setThreadId] = useState<string>("");
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
@@ -120,8 +134,10 @@ export default function ChatbotChatPage() {
         },
       });
     } catch (error) {
-      console.error("Failed to send message:", error);
-      // Optionally, show a toast notification
+      toast({
+        description: (error as any).stack.message,
+        title: "Failed to send message",
+      });
     }
   };
 
@@ -144,21 +160,60 @@ export default function ChatbotChatPage() {
   const [, setSelectedContent] = useState<ContentEntity[]>([]);
 
   const { isFullScreen, toggleFullscreen } = useFullScreen();
+  const [showConfiguration, setShowConfiguration] = useState(true);
+  const [showThreads, setShowThreads] = useState(false);
 
   return (
-    <div className="flex flex-col h-full relative group">
+    <div className="flex h-full relative group gap-3">
       {/* Full Screen Button */}
-      <Button
-        className="bg-transparent text-bg absolute top-0 left-0 z-10"
-        onClick={toggleFullscreen}
-        variant={"ghost"}
-      >
-        {/* You can use an icon instead of text if preferred */}
-        {isFullScreen ? <Minimize /> : <Maximize />}
-      </Button>
-
+      <div className="hidden md:flex flex-col bg-transparent text-bg absolute top-0 left-0 z-10 gap-1">
+        <Button
+          className={`${isFullScreen ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          onClick={toggleFullscreen}
+          size="icon"
+          variant={"ghost"}
+        >
+          {isFullScreen ? (
+            <Minimize className="h-5 w-5 " />
+          ) : (
+            <Maximize className="h-5 w-5" />
+          )}
+        </Button>
+        <Button
+          className={`${showThreads ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          onClick={() => {
+            setShowConfiguration(false);
+            setShowThreads(!showThreads);
+          }}
+          size="icon"
+          variant={"ghost"}
+        >
+          <Layers className={`h-5 w-5 `} />
+        </Button>
+        <Button
+          className={`${showConfiguration ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          onClick={() => {
+            setShowThreads(false);
+            setShowConfiguration(!showConfiguration);
+          }}
+          size="icon"
+          variant={"ghost"}
+        >
+          <Bolt className="h-5 w-5" />
+        </Button>
+        <Button
+          className="text-muted-foreground hover:text-primary"
+          onClick={() => {
+            setThreadId("");
+          }}
+          size="icon"
+          variant={"ghost"}
+        >
+          <RefreshCcw className="h-5 w-5" />
+        </Button>
+      </div>
       {/* Chat Body */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1">
         {/* Message Area */}
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-4 xl:pr-56 xl:pl-52 pl-8 pr-10">
@@ -237,11 +292,11 @@ export default function ChatbotChatPage() {
             handleSend();
           }}
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 pb-1">
             <Popover onOpenChange={setOpen} open={open}>
               <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
                 <Textarea
-                  className="text-md flex-1 resize-none bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg overflow-hidden max-h-40 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                  className="text-md flex-1 resize-none bg-background text-gray-800 dark:text-gray-200 rounded-lg  max-h-40 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                   onChange={handleChange}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -298,7 +353,6 @@ export default function ChatbotChatPage() {
             >
               <svg
                 className="h-5 w-5 text-white"
-                fill="none"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -312,6 +366,62 @@ export default function ChatbotChatPage() {
           </div>
         </form>
       </div>
+      {showConfiguration && (
+        <div className="md:flex hidden flex-col w-1/4">
+          <ChatbotForm chatbotId={chatbotId as string} />
+        </div>
+      )}
+      {showThreads && (
+        <div className="md:flex hidden flex-col">
+          <DataTable<
+            ThreadEntity,
+            ThreadsControllerFindAllPathParams,
+            ThreadsControllerRemoveVariables
+          >
+            columns={[
+              {
+                accessorKey: "name",
+                cell: ({ row }) => {
+                  return (
+                    <div className="flex space-x-2">
+                      <span className="max-w-[500px] truncate font-medium">
+                        {row.original.name}
+                      </span>
+                    </div>
+                  );
+                },
+                header: ({ column }) => (
+                  <DataTableColumnHeader column={column} title="Name" />
+                ),
+              },
+            ]}
+            content={() => (
+              <div className="flex w-full justify-center items-center h-full">
+                <Layers className="text-muted-foreground" />
+              </div>
+            )}
+            dataIcon={<Layers size={24} />}
+            defaultView="table"
+            findAllPathParams={{
+              chatbotId: chatbotId as string,
+              orgname: defaultOrgname,
+            }}
+            getDeleteVariablesFromItem={(thread) => ({
+              pathParams: {
+                chatbotId: chatbotId as string,
+                orgname: defaultOrgname,
+                threadId: thread.id,
+              },
+            })}
+            handleSelect={(chatbot) =>
+              router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
+            }
+            itemType="thread"
+            useFindAll={useThreadsControllerFindAll}
+            useRemove={useThreadsControllerRemove}
+          />
+        </div>
+      )}
     </div>
   );
 }

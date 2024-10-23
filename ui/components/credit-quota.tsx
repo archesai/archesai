@@ -21,13 +21,13 @@ export const CreditQuota = () => {
   }
   return (
     <div className="bg-muted inter p-3 w-full rounded-lg text-xs flex flex-col gap-3.5 ">
-      <div className="flex justify-between text-gray-alpha-500">
-        <div>Credit quota</div>
+      <div className="flex justify-between text-gray-alpha-500 items-center">
+        <div className="font-semibold">Credit Usage</div>
         <div>
-          <Link className="outline-black" href="/settings/organization/billing">
-            <span className="text-gray-alpha-900 font-medium inter text-xs">
+          <Link className="outline-black" href="/organization/billing">
+            <Badge className="font-medium inter text-xs" variant="default">
               Upgrade
-            </span>
+            </Badge>
           </Link>
         </div>
       </div>
@@ -62,6 +62,8 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
+
+import { Badge } from "./ui/badge";
 
 export const description = "A radial chart with a custom shape";
 

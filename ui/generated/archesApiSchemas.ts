@@ -959,11 +959,11 @@ export type JobEntity = {
    */
   completedAt: string;
   /**
-   * The type of job that is being processed
+   * The error message if the job failed
    *
-   * @example DOCUMENT
+   * @example Could not process the document
    */
-  jobType: string;
+  error: string;
   /**
    * The percent progress of the current job
    *

@@ -10,14 +10,14 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        destination: "/settings/organization/general",
+        destination: "/organization/general",
         permanent: true,
-        source: "/settings/organization",
+        source: "/organization",
       },
       {
-        destination: "/settings/organization/general",
+        destination: "/profile/general",
         permanent: true,
-        source: "/settings",
+        source: "/profile",
       },
     ];
   },

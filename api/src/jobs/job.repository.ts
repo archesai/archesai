@@ -46,6 +46,13 @@ export class JobRepository
     });
   }
 
+  async setJobError(id: string, error: string) {
+    return this.prisma.job.update({
+      data: { error },
+      where: { id },
+    });
+  }
+
   async setProgress(id: string, progress: number) {
     return this.prisma.job.update({
       data: { progress },
