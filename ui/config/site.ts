@@ -85,23 +85,9 @@ export const siteConfig = {
     ],
     "/content/single": [
       {
-        href: "/content/single/details",
+        href: "/content/single",
         Icon: Server,
-        tab: "Details",
         title: "Detils",
-      },
-      {
-        href: "/content/single/view",
-        Icon: Server,
-        tab: "View",
-        title: "View",
-      },
-
-      {
-        href: "/content/single/vectors",
-        Icon: Server,
-        tab: "Vectors",
-        title: "Vectors",
       },
     ],
     "/home": [

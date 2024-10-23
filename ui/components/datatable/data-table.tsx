@@ -63,6 +63,7 @@ interface DataTableProps<
   defaultView?: "grid" | "table";
 
   findAllPathParams: TFindAllPathParams;
+  findAllQueryParams?: object;
   getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables;
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
@@ -100,6 +101,7 @@ export function DataTable<
   dataIcon,
   defaultView,
   findAllPathParams,
+  findAllQueryParams,
   getDeleteVariablesFromItem,
   getEditFormFromItem,
   handleSelect,
@@ -146,6 +148,7 @@ export function DataTable<
       sortBy: sortBy as "createdAt",
       sortDirection: sortDirection,
       startDate: range.from.toISOString(),
+      ...findAllQueryParams,
     },
   });
   const { mutateAsync: deleteItem } = useRemove();

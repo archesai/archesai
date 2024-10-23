@@ -32,7 +32,7 @@ export function DataTablePagination<TData>({
   const { limit, page, setLimit, setPage } = useFilterItems();
   const { selectedItems } = useSelectItems({ items: data?.results || [] });
   return (
-    <div className="flex items-center justify-between px-2 backdrop-blur-md">
+    <div className="flex items-center justify-between px-2 backdrop-blur-md mb-3">
       <div className="flex-1 text-sm text-muted-foreground sm:block hidden">
         {data?.metadata?.totalResults} found - {selectedItems.length} of{" "}
         {Math.min(limit, data?.results.length)} item(s) selected.
