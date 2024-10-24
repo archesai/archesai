@@ -15,6 +15,8 @@ import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
+import { Badge } from "./ui/badge";
+
 export default function ImportCard() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
@@ -174,16 +176,16 @@ export default function ImportCard() {
     <div className="flex flex-col">
       <div
         className={cn(
-          "w-full rounded-lg transition-all duration-300 gap-3",
+          "w-full gap-2 rounded-lg transition-all duration-300",
           selectedFiles.length > 0 ? "flex" : "flex flex-col items-center"
         )}
       >
         {/* Drop Area */}
         <Card
           className={cn(
-            "cursor-pointer gap-2 p-8 flex flex-col items-center justify-center border-dashed border-2 transition-colors duration-300 w-full bg-transparent",
+            "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed bg-transparent p-8 transition-colors duration-300",
             dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
-            selectedFiles.length > 0 ? "w-2/3" : ""
+            selectedFiles.length > 0 ? "w-1/2" : ""
           )}
           onClick={() => fileInputRef.current?.click()}
           onDragLeave={handleDragLeave}
@@ -191,7 +193,7 @@ export default function ImportCard() {
           onDrop={handleDrop}
         >
           <CloudUpload className="h-5 w-5 text-muted-foreground" />
-          <p className="text-gray-600 text-sm">
+          <p className="text-sm text-muted-foreground">
             Drag and drop files here, or click to select files
           </p>
 
@@ -206,16 +208,20 @@ export default function ImportCard() {
 
         {/* Sidebar */}
         {selectedFiles.length > 0 && (
-          <div className="w-1/3  flex flex-col">
-            <ul className="flex-1 overflow-y-auto space-y-2">
+          <div className="flex w-1/2 flex-col gap-2">
+            <ul className="flex max-h-52 grow flex-col gap-2 overflow-y-scroll">
               {selectedFiles.map((file, idx) => (
                 <li
-                  className="flex items-center justify-between px-3 py-1 bg-background rounded shadow-sm"
+                  className="flex items-center justify-between rounded border bg-background p-2"
                   key={idx}
                 >
-                  <span className="text-foreground truncate w-4/5">
-                    {file.name}
+                  <span className="flex w-4/5 items-center gap-2 truncate text-foreground">
+                    <span>{file.name}</span>
+                    <Badge>{file.type}</Badge>
                   </span>
+                  <Badge className="text-nowrap" variant="secondary">
+                    {`${(file.size / 1024).toFixed(2)} KB`}
+                  </Badge>
                   <button
                     aria-label={`Remove ${file.name}`}
                     className="text-red-500 hover:text-red-700 focus:outline-none"
@@ -227,29 +233,29 @@ export default function ImportCard() {
               ))}
             </ul>
             <Button
-              className="mt-3 flex items-center justify-center px-4 border"
+              className="flex items-center justify-center border"
               disabled={uploading || selectedFiles.length === 0}
               onClick={uploadFiles}
               size="sm"
               variant={"secondary"}
             >
               {uploading ? (
-                <>
-                  <Loader2 className="animate-spin h-5 w-5 mr-3 text-white" />
-                  Uploading...
-                </>
+                <div className="flex gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin text-white" />
+                  <span>Uploading...</span>
+                </div>
               ) : (
-                <>
-                  <Upload className="h-5 w-5 mr-2" />
-                  Upload
-                </>
+                <div className="flex gap-2">
+                  <Upload className="h-5 w-5" />
+                  <span>Upload</span>
+                </div>
               )}
             </Button>
 
             {uploading && (
-              <div className="mt-6">
+              <div className="flex flex-col gap-2">
                 <Progress value={uploadProgress} />
-                <p className="text-center mt-2 text-sm text-gray-600">
+                <p className="text-center text-sm text-gray-600">
                   {uploadProgress}% Uploaded
                 </p>
               </div>

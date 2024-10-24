@@ -157,8 +157,8 @@ export default function ConfirmPage() {
   };
 
   return (
-    <div className="stack gap-2">
-      <div className="flex flex-col space-y-2 text-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
           {type.split("-").join(" ")}
         </h1>
@@ -171,10 +171,10 @@ export default function ConfirmPage() {
                 : "Verifying...")}
         </p>
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
         {/* Display Error Message */}
         {error && (
-          <p className="text-red-500 mb-4" role="alert">
+          <p className="text-red-500" role="alert">
             {error}
           </p>
         )}
@@ -183,7 +183,7 @@ export default function ConfirmPage() {
         {type === "password-reset" ? (
           <Form {...form}>
             <form
-              className="space-y-4"
+              className="flex flex-col gap-2"
               noValidate
               onSubmit={form.handleSubmit(onSubmit)}
             >
@@ -257,7 +257,7 @@ export default function ConfirmPage() {
           </Form>
         ) : (
           // Handle Email Verification & Email Change
-          <div className="text-center space-y-4">
+          <div className="text-center">
             {/* Navigate to Home if Email is Verified */}
             {user?.emailVerified && (
               <Button asChild>

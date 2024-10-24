@@ -19,7 +19,7 @@ export const JobStatusButton = ({ job }: { job: JobEntity }) => {
         return <CircleX className="text-rose-600" />;
       case "PROCESSING":
         return (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Loader2Icon className="animate-spin text-primary" />
             <span>{(job.progress * 100).toFixed(0)}%</span>
           </div>
@@ -32,11 +32,11 @@ export const JobStatusButton = ({ job }: { job: JobEntity }) => {
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button className="flex items-center" size="sm" variant="ghost">
+        <Button className="flex items-center" size="icon" variant="link">
           {renderIcon()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-4 text-nowrap flex-1 w-auto text-sm">
+      <PopoverContent className="overflow-auto p-4 text-sm">
         <div>
           <strong className="font-semibold">Status:</strong> {job.status}
         </div>

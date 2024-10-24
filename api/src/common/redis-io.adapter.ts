@@ -12,7 +12,7 @@ export class RedisIoAdapter extends IoAdapter {
   private readonly logger: Logger = new Logger("RedisIoAdapter");
   constructor(
     app,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     super(app);
   }
@@ -43,13 +43,13 @@ export class RedisIoAdapter extends IoAdapter {
 
           if (delay <= retryStrategyOptions.maxRetryDelay) {
             this.logger.warn(
-              `Reconnecting to Redis in ${delay}ms (attempt ${retryCount + 1})`,
+              `Reconnecting to Redis in ${delay}ms (attempt ${retryCount + 1})`
             );
             setTimeout(connectWithRetry, delay);
             retryCount += 1;
           } else {
             this.logger.error(
-              "Max retry attempts reached. Unable to reconnect.",
+              "Max retry attempts reached. Unable to reconnect."
             );
           }
         }
@@ -61,7 +61,7 @@ export class RedisIoAdapter extends IoAdapter {
     const pubClient = createClient({
       password: this.configService.get("REDIS_AUTH"),
       url: `redis://${this.configService.get(
-        "REDIS_HOST",
+        "REDIS_HOST"
       )}:${this.configService.get("REDIS_PORT")}`,
       ...(this.configService.get("REDIS_CA_CERT_PATH")
         ? {

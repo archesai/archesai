@@ -76,17 +76,17 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="stack gap-2">
-      <div className="flex flex-col space-y-2 text-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">Register</h1>
         <p className="text-sm text-muted-foreground">
           Create your account by entering your email and password
         </p>
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
         <Form {...form}>
           <form
-            className="space-y-4"
+            className="flex flex-col gap-2"
             noValidate
             onSubmit={form.handleSubmit(onSubmit)}
           >
@@ -172,14 +172,14 @@ export default function RegisterPage() {
 
             {/* Display Error Message */}
             {error && (
-              <div className="text-red-600 text-center" role="alert">
+              <div className="text-center text-red-600" role="alert">
                 {error}
               </div>
             )}
 
             {/* Submit Button */}
             <Button
-              className="w-full"
+              className="mt-5 w-full"
               disabled={form.formState.isSubmitting}
               type="submit"
             >
@@ -189,7 +189,7 @@ export default function RegisterPage() {
         </Form>
 
         {/* Redirect to Login */}
-        <div className="mt-4 text-center text-sm">
+        <div className="text-center text-sm">
           Already have an account?{" "}
           <Link className="underline" href="/auth/login">
             Login

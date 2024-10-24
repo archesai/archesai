@@ -66,13 +66,13 @@ export const Navbar = () => {
       className={`sticky top-0 z-40 w-full ${
         isTop
           ? "bg-transparent"
-          : "bg-white dark:bg-background border-b shadow-sm transition-all"
+          : "border-b bg-white shadow-sm transition-all dark:bg-background"
       }`}
     >
       <NavigationMenu>
-        <NavigationMenuList className="h-[56px] px-4 w-screen flex justify-between">
+        <NavigationMenuList className="flex h-[56px] w-screen justify-between px-4">
           <div className="flex items-center justify-center gap-3">
-            <NavigationMenuItem className="font-bold flex">
+            <NavigationMenuItem className="flex font-bold">
               <LogoSVG />
             </NavigationMenuItem>
             {/* mobile */}
@@ -80,7 +80,7 @@ export const Navbar = () => {
               <Sheet onOpenChange={setIsOpen} open={isOpen}>
                 <SheetTrigger className="px-2">
                   <Menu
-                    className="flex md:hidden h-5 w-5"
+                    className="flex h-5 w-5 md:hidden"
                     onClick={() => setIsOpen(true)}
                   ></Menu>
                 </SheetTrigger>
@@ -89,7 +89,7 @@ export const Navbar = () => {
                   <SheetHeader>
                     <LogoSVG />
                   </SheetHeader>
-                  <nav className="flex flex-col justify-center items-center gap-2 mt-4">
+                  <nav className="mt-4 flex flex-col items-center justify-center gap-2">
                     {routeList.map(({ href, label }: RouteProps) => (
                       <a
                         className={buttonVariants({ variant: "ghost" })}
@@ -109,7 +109,7 @@ export const Navbar = () => {
                       rel="noreferrer noopener"
                       target="_blank"
                     >
-                      <GitHubLogoIcon className="mr-2 w-5 h-5" />
+                      <GitHubLogoIcon className="mr-2 h-5 w-5" />
                       Github
                     </a>
                   </nav>
@@ -117,7 +117,7 @@ export const Navbar = () => {
               </Sheet>
             </span>
             {/* desktop */}
-            <nav className="hidden md:flex gap-2">
+            <nav className="hidden gap-2 md:flex">
               {routeList.map((route: RouteProps, i) => (
                 <a
                   className={`text-[17px] ${buttonVariants({
@@ -132,7 +132,7 @@ export const Navbar = () => {
               ))}
             </nav>
           </div>
-          <div className="hidden md:flex gap-2 items-center">
+          <div className="hidden items-center gap-2 md:flex">
             <ModeToggle h={"h-10"} />
             <Button variant={"outline"}>
               <Link href="/auth/login">Log in</Link>

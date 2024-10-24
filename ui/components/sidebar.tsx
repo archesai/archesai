@@ -42,21 +42,19 @@ export const Sidebar = () => {
   });
 
   return (
-    <nav className="flex flex-col text-sm font-md justify-between max-h-screen h-full">
-      <div>
+    <nav className="font-md flex h-full max-h-screen flex-col justify-between p-3 text-sm">
+      {/* TOP PART */}
+      <div className="flex flex-col gap-3">
+        {/* Render logo and collapse button */}
         <div
-          className={`flex items-center py-3 px-4 ${
+          className={`flex items-center ${
             isCollapsed ? "justify-center" : "justify-between"
           }`}
         >
-          {!isCollapsed && (
-            <div className="flex items-center gap-1">
-              <LogoSVG size={"lg"} />
-            </div>
-          )}
+          {!isCollapsed && <LogoSVG size={"lg"} />}
 
           <Button
-            className="hidden md:flex h-8 w-8"
+            className="hidden h-8 w-8 md:flex"
             onClick={toggleSidebar}
             size="icon"
             variant="secondary"
@@ -67,34 +65,31 @@ export const Sidebar = () => {
 
         {/* Render specific sidebar sections */}
         {sidebarSections.map((section) => (
-          <div className="mt-3" key={section}>
-            {
-              <h2
-                className={`text-xs px-4 uppercase mb-2 whitespace-nowrap ${
-                  isCollapsed ? "text-transparent" : "text-gray-400"
-                }`}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-              </h2>
-            }
+          <div className="flex flex-col gap-2" key={section}>
+            <h2
+              className={`whitespace-nowrap text-xs uppercase ${
+                isCollapsed ? "text-transparent" : "text-gray-400"
+              }`}
+            >
+              {section.charAt(0).toUpperCase() + section.slice(1)}
+            </h2>
             {linksBySection[section].map(({ href, Icon, title }) => {
-              const isSelected = pathname === href || pathname.startsWith(href);
               return (
                 <Link
-                  className={`flex items-center text-md font-medium gap-3 ${isSelected ? "text-foreground" : "text-muted-foreground"} py-2 hover:bg-muted hover:text-foreground relative group pl-[22px] transition-all duration-200
-                ${isSelected && "bg-muted"}`}
+                  className={`text-md group relative flex items-center rounded-lg p-2 font-medium duration-200 hover:bg-muted hover:text-foreground ${pathname.startsWith(href) ? "bg-secondary text-secondary-foreground" : "text-muted-foreground"} `}
                   href={href}
                   key={href}
                 >
-                  <Icon
-                    className={`h-5 w-5 -translate-y-[-0.5px]`}
-                    strokeWidth={1.5}
-                  />
-                  <span className={`${isCollapsed ? "hidden" : "block"}`}>
+                  <Icon className="h-5 w-5 flex-shrink-0" strokeWidth={1.5} />
+                  <div
+                    className={`ml-3 transition-opacity duration-500 ${isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"} `}
+                    style={{ overflow: "hidden" }}
+                  >
                     {title}
-                  </span>
+                  </div>
+                  {/* Render the title as a tooltip when collapsed */}
                   {isCollapsed && (
-                    <span className="absolute left-full ml-2 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                    <span className="absolute left-full z-10 m-2 whitespace-nowrap rounded-md bg-primary p-2 text-xs text-primary-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                       {title}
                     </span>
                   )}
@@ -104,7 +99,9 @@ export const Sidebar = () => {
           </div>
         ))}
       </div>
-      <div className="stack gap-3 py-3 px-2 justify-center items-center w-full">
+
+      {/* BOTTOM PART */}
+      <div className="flex flex-col items-center gap-3">
         <CreditQuota />
         <UserButton size={isCollapsed ? "sm" : "lg"} />
       </div>

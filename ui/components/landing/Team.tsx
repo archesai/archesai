@@ -98,29 +98,29 @@ export const Team = () => {
 
   return (
     <section className="container py-24 sm:py-32" id="team">
-      <h2 className="text-3xl md:text-4xl font-bold">
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+      <h2 className="text-3xl font-bold md:text-4xl">
+        <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
           Our Dedicated{" "}
         </span>
         Crew
       </h2>
 
-      <p className="mt-4 mb-10 text-xl text-muted-foreground">
+      <p className="mb-10 mt-4 text-xl text-muted-foreground">
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
         dolor pariatur sit!
       </p>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-10">
+      <div className="grid gap-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
         {teamList.map(
           ({ imageUrl, name, position, socialNetworks }: TeamProps) => (
             <Card
-              className="bg-muted/50 relative mt-8 flex flex-col justify-center items-center"
+              className="relative mt-8 flex flex-col items-center justify-center bg-muted/50"
               key={name}
             >
-              <CardHeader className="mt-8 flex justify-center items-center pb-2">
+              <CardHeader className="mt-8 flex items-center justify-center pb-2">
                 <Image
                   alt={`${name} ${position}`}
-                  className="absolute -top-12 rounded-full w-24 h-24 aspect-square object-cover"
+                  className="absolute -top-12 aspect-square h-24 w-24 rounded-full object-cover"
                   height={96}
                   src={imageUrl}
                   width={96}
@@ -131,7 +131,7 @@ export const Team = () => {
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="text-center pb-2">
+              <CardContent className="pb-2 text-center">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </CardContent>
 

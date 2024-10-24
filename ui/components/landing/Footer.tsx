@@ -3,15 +3,15 @@ import { LogoSVG } from "@/components/logo-svg";
 export const Footer = () => {
   return (
     <footer id="footer">
-      <hr className="w-11/12 mx-auto" />
+      <hr className="mx-auto w-11/12" />
 
-      <section className="container py-20 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
-        <div className="col-span-full xl:col-span-2 -mt-8">
+      <section className="container grid grid-cols-2 gap-x-12 gap-y-8 py-20 md:grid-cols-4 xl:grid-cols-6">
+        <div className="col-span-full -mt-8 xl:col-span-2">
           <LogoSVG scale={0.8} size="sm" />
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Follow US</h3>
+          <h3 className="text-lg font-bold">Follow US</h3>
           <div>
             <a
               className="opacity-60 hover:opacity-100"
@@ -34,7 +34,7 @@ export const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Platforms</h3>
+          <h3 className="text-lg font-bold">Platforms</h3>
           <div>
             <a
               className="opacity-60 hover:opacity-100"
@@ -67,7 +67,7 @@ export const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">About</h3>
+          <h3 className="text-lg font-bold">About</h3>
           <div>
             <a
               className="opacity-60 hover:opacity-100"
@@ -100,7 +100,7 @@ export const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="font-bold text-lg">Community</h3>
+          <h3 className="text-lg font-bold">Community</h3>
           <div>
             <a
               className="opacity-60 hover:opacity-100"

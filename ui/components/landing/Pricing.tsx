@@ -46,30 +46,30 @@ export const Pricing = () => {
   const { data: plans } = useBillingControllerGetPlans({});
   return (
     <section className="container py-24 sm:py-32" id="pricing">
-      <h2 className="text-3xl md:text-4xl font-bold text-center">
+      <h2 className="text-center text-3xl font-bold md:text-4xl">
         Get
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+        <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
           {" "}
           Unlimited{" "}
         </span>
         Access
       </h2>
-      <h3 className="text-xl text-center text-muted-foreground pt-4 pb-8">
+      <h3 className="pb-8 pt-4 text-center text-xl text-muted-foreground">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias
         reiciendis.
       </h3>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {plans?.toReversed().map((plan: PlanEntity, i) => (
           <Card
             className={
               plan?.metadata?.key === "STANDARD"
-                ? "drop-shadow-xl shadow-black/10 dark:shadow-white/10"
+                ? "shadow-black/10 drop-shadow-xl dark:shadow-white/10"
                 : ""
             }
             key={plan.name}
           >
             <CardHeader>
-              <CardTitle className="flex item-center justify-between">
+              <CardTitle className="item-center flex justify-between">
                 {plan.name}
                 {plan?.metadata?.key === "STANDARD" ? (
                   <Badge className="text-sm text-primary" variant="secondary">
@@ -91,7 +91,7 @@ export const Pricing = () => {
               <Button className="w-full">Choose plan</Button>
             </CardContent>
 
-            <hr className="w-4/5 m-auto mb-4" />
+            <hr className="m-auto mb-4 w-4/5" />
 
             <CardFooter className="flex">
               <div className="space-y-4">

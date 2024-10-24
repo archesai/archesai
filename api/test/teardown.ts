@@ -6,6 +6,6 @@ export default async () => {
         Authorization: "Bearer owner",
       },
       method: "DELETE",
-    },
+    }
   );
 };

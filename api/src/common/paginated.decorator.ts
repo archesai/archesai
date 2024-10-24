@@ -8,7 +8,7 @@ export const ApiPaginatedResponse = <
   TAggregateModel extends Type<any> = any,
 >(
   model: TModel,
-  aggregateModel?: TAggregateModel,
+  aggregateModel?: TAggregateModel
 ) => {
   return applyDecorators(
     ApiOkResponse({
@@ -34,6 +34,6 @@ export const ApiPaginatedResponse = <
         ],
         title: `PaginatedResponseOf${model.name}`,
       },
-    }),
+    })
   );
 };

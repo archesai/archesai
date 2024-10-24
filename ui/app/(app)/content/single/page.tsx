@@ -50,11 +50,12 @@ export default function ContentDetailsPage() {
   }
 
   return (
-    <div className="flex w-full gap-3 flex-shrink-0 items-start">
-      <div className="flex-initial w-1/2 gap-3 flex flex-col">
+    <div className="flex h-full w-full gap-3">
+      {/*LEFT SIDE*/}
+      <div className="flex w-1/2 flex-initial flex-col gap-3">
         <Card>
           <CardHeader>
-            <CardTitle className="flex justify-between items-center">
+            <CardTitle className="flex items-center justify-between">
               <div>{content.name}</div>
               <Button asChild size="sm" variant="secondary">
                 <a href={content.url} rel="noopener noreferrer" target="_blank">
@@ -67,7 +68,7 @@ export default function ContentDetailsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <Badge variant="secondary">{content.mimeType}</Badge>
               <Badge variant="secondary">
                 {format(new Date(content.createdAt), "PPP")}
@@ -84,9 +85,7 @@ export default function ContentDetailsPage() {
             {
               accessorKey: "text",
               cell: ({ row }) => {
-                return (
-                  <div className="flex space-x-2">{row.original.text}</div>
-                );
+                return row.original.text;
               },
               header: ({ column }) => (
                 <DataTableColumnHeader column={column} title="Text" />
@@ -94,7 +93,7 @@ export default function ContentDetailsPage() {
             },
           ]}
           content={() => (
-            <div className="flex w-full justify-center items-center h-full"></div>
+            <div className="flex h-full w-full items-center justify-center"></div>
           )}
           dataIcon={<File size={24} />}
           defaultView="table"
@@ -111,10 +110,8 @@ export default function ContentDetailsPage() {
           })}
         />
       </div>
-
-      <div className="w-1/2 rounded-lg overflow-hidden shadow-lg self-stretch">
-        {renderContent(content)}
-      </div>
+      {/*RIGHT SIDE*/}
+      <Card className="w-1/2 overflow-hidden">{renderContent(content)}</Card>
     </div>
   );
 }
@@ -142,7 +139,7 @@ function renderContent(content: ContentEntity) {
     return (
       <Image
         alt={content.description}
-        className="w-full h-full object-contain"
+        className="h-full w-full object-contain"
         height={516}
         src={url}
         width={516}
@@ -150,11 +147,11 @@ function renderContent(content: ContentEntity) {
     );
   } else if (mimeType === "application/pdf") {
     return (
-      <iframe className="w-full h-full" src={url} title="PDF Document"></iframe>
+      <iframe className="h-full w-full" src={url} title="PDF Document"></iframe>
     );
   } else {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex h-full items-center justify-center">
         <p>Cannot preview this content type. Please download to view.</p>
       </div>
     );

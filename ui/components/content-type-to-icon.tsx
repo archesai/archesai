@@ -13,34 +13,30 @@ export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {
       case "application/vnd.ms-excel":
       case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
       case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        return <FileText className="h-5 w-5" />;
+        return <FileText className="h-5 w-5 text-muted-foreground" />;
       case "audio/mp3":
       case "audio/mpeg":
-        return <Music className="h-5 w-5" />;
+        return <Music className="h-5 w-5 text-muted-foreground" />;
       case "image/gif":
       case "image/jpeg":
       case "image/png":
       case "image/svg+xml":
-        return <Image className="h-5 w-5" />;
+        return <Image className="h-5 w-5 text-muted-foreground" />;
 
       case "video/mp4":
       case "video/mpeg":
-        return <Video className="h-5 w-5" />;
+        return <Video className="h-5 w-5 text-muted-foreground" />;
       default:
-        return <FileText className="h-5 w-5" />;
+        return <FileText className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
   return (
     <HoverCard>
       <HoverCardTrigger asChild>{getLabel(contentType)}</HoverCardTrigger>
-      <HoverCardContent>
-        <div className="flex items-center space-x-4">
-          {getLabel(contentType)}
-          <div className="space-y-1">
-            <p className="text-sm">{contentType}</p>
-          </div>
-        </div>
+      <HoverCardContent className="flex w-auto items-center gap-2 p-2">
+        {getLabel(contentType)}
+        <p className="text-sm">{contentType}</p>
       </HoverCardContent>
     </HoverCard>
   );

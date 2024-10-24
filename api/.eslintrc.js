@@ -4,16 +4,17 @@ module.exports = {
     node: true,
   },
   extends: [
-    "plugin:@typescript-eslint/recommended",
     "plugin:perfectionist/recommended-natural-legacy",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: "tsconfig.json",
     sourceType: "module",
-    tsconfigRootDir: __dirname,
+    ecmaVersion: 2020,
   },
-  plugins: ["@typescript-eslint/eslint-plugin"],
+  plugins: ["@typescript-eslint", "prettier"],
   root: true,
   ignorePatterns: [".eslintrc.js"],
   rules: {

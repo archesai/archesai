@@ -20,19 +20,17 @@ export const CreditQuota = () => {
     );
   }
   return (
-    <div className="bg-muted inter p-3 w-full rounded-lg text-xs flex flex-col gap-3.5 ">
-      <div className="flex justify-between text-gray-alpha-500 items-center">
+    <div className="inter flex w-full flex-col gap-2 rounded-lg bg-muted p-2 text-xs">
+      <div className="text-gray-alpha-500 flex items-center justify-between">
         <div className="font-semibold">Credit Usage</div>
         <div>
           <Link className="outline-black" href="/organization/billing">
-            <Badge className="font-medium inter text-xs" variant="default">
-              Upgrade
-            </Badge>
+            <Badge>Upgrade</Badge>
           </Link>
         </div>
       </div>
-      <div className="font-medium flex items-center gap-2.5">
-        <div className="stack gap-0.5 flex-grow">
+      <div className="flex items-center gap-2">
+        <div className="flex flex-grow flex-col gap-2">
           <div className="inter flex justify-between">
             <div>Total</div>
             <div className="tabular-nums">{organization?.credits}</div>
@@ -42,12 +40,10 @@ export const CreditQuota = () => {
             <div className="tabular-nums">{organization?.credits}</div>
           </div>
         </div>
-        <div>
-          <CreditCircularChart
-            remaining={organization?.credits || 0}
-            total={60000}
-          />
-        </div>
+        <CreditCircularChart
+          remaining={organization?.credits || 0}
+          total={60000}
+        />
       </div>
     </div>
   );

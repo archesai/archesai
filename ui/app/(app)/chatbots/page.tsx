@@ -30,14 +30,12 @@ export default function ChatbotsPageContent() {
           accessorKey: "name",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <Link
-                  className="max-w-[500px] truncate font-medium text-primary"
-                  href={`/chatbots/single/chat?chatbotId=${row.original.id}`}
-                >
-                  {row.original.name}
-                </Link>
-              </div>
+              <Link
+                className="max-w-[500px] truncate font-medium text-primary"
+                href={`/chatbots/single?chatbotId=${row.original.id}`}
+              >
+                {row.original.name}
+              </Link>
             );
           },
           header: ({ column }) => (
@@ -47,11 +45,7 @@ export default function ChatbotsPageContent() {
         {
           accessorKey: "llmBase",
           cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <Badge variant="secondary">{row.original.llmBase}</Badge>
-              </div>
-            );
+            return <Badge variant="secondary">{row.original.llmBase}</Badge>;
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Language Model" />
@@ -61,9 +55,7 @@ export default function ChatbotsPageContent() {
           accessorKey: "description",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="font-medium">{row.original.description}</span>
-              </div>
+              <span className="font-medium">{row.original.description}</span>
             );
           },
           enableSorting: false,
@@ -73,9 +65,9 @@ export default function ChatbotsPageContent() {
         },
       ]}
       content={() => (
-        <div className="flex w-full justify-center items-center h-full">
+        <div className="flex h-full w-full items-center justify-center">
           <svg
-            className="dark:fill-white fill-black"
+            className="fill-black dark:fill-white"
             height="100px"
             role="img"
             viewBox="0 0 24 24"
@@ -101,7 +93,7 @@ export default function ChatbotsPageContent() {
       })}
       getEditFormFromItem={(chatbot) => <ChatbotForm chatbotId={chatbot.id} />}
       handleSelect={(chatbot) =>
-        router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
+        router.push(`/chatbots/single?chatbotId=${chatbot.id}`)
       }
       itemType="chatbot"
       useFindAll={useChatbotsControllerFindAll}

@@ -49,15 +49,15 @@ const featureList: string[] = [
 
 export const Features = () => {
   return (
-    <section className="container py-24 sm:py-32 space-y-8" id="features">
-      <h2 className="text-3xl lg:text-4xl font-bold md:text-center">
+    <section className="container space-y-8 py-24 sm:py-32" id="features">
+      <h2 className="text-3xl font-bold md:text-center lg:text-4xl">
         Many{" "}
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+        <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
           Great Features
         </span>
       </h2>
 
-      <div className="flex flex-wrap md:justify-center gap-4">
+      <div className="flex flex-wrap gap-4 md:justify-center">
         {featureList.map((feature: string) => (
           <div key={feature}>
             <Badge className="text-sm" variant="secondary">
@@ -67,7 +67,7 @@ export const Features = () => {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {features.map(({ description, image, title }: FeatureProps) => (
           <Card key={title}>
             <CardHeader>
@@ -79,7 +79,7 @@ export const Features = () => {
             <CardFooter>
               <Image
                 alt={title}
-                className="w-[200px] lg:w-[300px] mx-auto"
+                className="mx-auto w-[200px] lg:w-[300px]"
                 height={200}
                 src={image}
                 width={200}

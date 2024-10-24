@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { SquareX, X } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "../ui/button";
@@ -62,10 +62,10 @@ export const DeleteItems = <TDeleteVariables,>({
       <DialogTrigger asChild>
         {variant === "sm" ? (
           <div
-            className="text-destructive cursor-pointer"
+            className="cursor-pointer text-destructive"
             onClick={() => setOpenConfirmDelete(true)}
           >
-            <SquareX className="h-5 w-5" />
+            <Trash className="h-5 w-5 text-destructive" />
           </div>
         ) : variant === "md" ? (
           <div className="w-full" onClick={() => setOpenConfirmDelete(true)}>
@@ -82,10 +82,9 @@ export const DeleteItems = <TDeleteVariables,>({
         )}
       </DialogTrigger>
 
-      <DialogContent className="p-0 gap-0">
-        <div className="flex flex-col items-center justify-center p-5 gap-3">
-          <X />
-
+      <DialogContent className="gap-0 p-4">
+        <div className="flex flex-col items-center justify-center gap-3 p-5">
+          <Trash className="text-destructive" />
           <p className="text-center">
             {t(
               `Are you sure you want to permanently delete the following ${itemType}${
@@ -95,15 +94,15 @@ export const DeleteItems = <TDeleteVariables,>({
           </p>
           {
             <ScrollArea>
-              <div className="max-h-72 px-6 py-4">
+              <div className="max-h-72 p-4">
                 {items?.map((item, i) => <p key={i}>{item.name}</p>)}
               </div>
             </ScrollArea>
           }
         </div>
         <Separator />
-        <DialogFooter className="bg-gray-50 dark:bg-black flex rounded-lg p-6">
-          <div className="flex gap-4 w-full items-center">
+        <DialogFooter className="flex rounded-lg bg-gray-50 p-6 dark:bg-black">
+          <div className="flex w-full items-center gap-4">
             <Button
               className="w-full"
               onClick={() => setOpenConfirmDelete(false)}

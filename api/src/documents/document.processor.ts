@@ -63,15 +63,6 @@ export class DocumentProcessor {
     return embeddings;
   }
 
-  private mergeAndFilterEmbeddings(
-    embeddings: { embedding: number[] }[],
-    textContent: { page: number; text: string; tokens: number }[]
-  ) {
-    return textContent.map((textContent, index) => {
-      return { ...textContent, ...embeddings[index] };
-    });
-  }
-
   @OnQueueActive()
   async onActive(job: Job) {
     const content = job.data.content as ContentEntity;
@@ -98,10 +89,6 @@ export class DocumentProcessor {
     try {
       await this.jobsService.updateStatus(content.job.id, "ERROR");
       await this.jobsService.setJobError(content.job.id, error?.message);
-      // await this.organizationsService.addCredits(
-      //   content.orgname,
-      //   (content.maxFrames / 12) * 1000
-      // );
     } catch {}
 
     this.logger.error(
@@ -188,19 +175,9 @@ export class DocumentProcessor {
       Math.ceil(tokensUsed / 50)
     );
 
-    // Merge and filter embeddings
-    const t2 = Date.now();
-    const populatedTextContent = this.mergeAndFilterEmbeddings(
-      embeddings,
-      textContent
-    );
-    this.logger.log(
-      `Merged and filtered embeddings for ${content.name}. Completed in ${
-        (Date.now() - t2) / 1000
-      }s`
-    );
-    progress = 0.6;
-    await this.jobsService.setProgress(content.job.id, progress);
+    const populatedTextContent = textContent.map((textContent, index) => {
+      return { ...textContent, ...embeddings[index] };
+    });
 
     const uploadPreviewPromise = (async () => {
       const previewFilename = `${content.name}-preview.png`;

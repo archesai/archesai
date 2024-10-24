@@ -60,33 +60,33 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="stack gap-2">
-      <div className="flex flex-col space-y-2 text-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
           Forgot Password
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-md text-muted-foreground">
           Enter your email address to receive a password reset link.
         </p>
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
         {/* Display Success Message */}
         {message && (
-          <div className="text-green-600 mb-4" role="alert">
+          <div className="text-green-600" role="alert">
             {message}
           </div>
         )}
 
         {/* Display Error Message */}
         {error && (
-          <div className="text-red-600 mb-4" role="alert">
+          <div className="text-red-600" role="alert">
             {error}
           </div>
         )}
 
         <Form {...form}>
           <form
-            className="space-y-4"
+            className="flex flex-col gap-2"
             noValidate
             onSubmit={form.handleSubmit(onSubmit)}
           >
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
 
             {/* Submit Button */}
             <Button
-              className="w-full"
+              className="mt-5 w-full"
               disabled={form.formState.isSubmitting}
               type="submit"
             >
@@ -128,7 +128,7 @@ export default function ForgotPasswordPage() {
         </Form>
 
         {/* Redirect to Login */}
-        <div className="mt-4 text-center text-sm">
+        <div className="text-center text-sm">
           Remembered your password?{" "}
           <Link className="underline" href="/auth/login">
             Login

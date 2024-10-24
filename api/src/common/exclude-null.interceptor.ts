@@ -25,7 +25,7 @@ function recursivelyStripNullValues(value: unknown): unknown {
       Object.entries(value).map(([key, value]) => [
         key,
         recursivelyStripNullValues(value),
-      ]),
+      ])
     );
   }
   if (value !== null) {

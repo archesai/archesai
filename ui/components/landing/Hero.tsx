@@ -6,18 +6,18 @@ import { useRouter } from "next/navigation";
 export const Hero = () => {
   const router = useRouter();
   return (
-    <section className="z-10 container grid place-items-center py-20 md:py-32 gap-10 h-screen mt-10 max-w-4xl">
-      <div className="text-center space-y-6 z-10 ">
-        <main className="text-5xl md:text-5xl font-bold">
+    <section className="container z-10 mt-10 grid h-screen max-w-4xl place-items-center gap-10 py-20 md:py-32">
+      <div className="z-10 space-y-6 text-center">
+        <main className="text-5xl font-bold md:text-5xl">
           Elevate Your Business with AI-Driven Solutions
         </main>
 
-        <p className="text-xl text-muted-foreground md:w-10/12 mx-auto">
+        <p className="mx-auto text-xl text-muted-foreground md:w-10/12">
           Create intelligent chatbots, generate vibrant AI visuals, and
           integrate seamlessly using our API or no-code widgets.
         </p>
 
-        <div className="space-y-4 md:space-y-0 md:space-x-4">
+        <div className="space-y-4 md:space-x-4 md:space-y-0">
           <Button
             className="w-full md:w-1/3"
             onClick={() => router.push("/chatbots")}
@@ -34,7 +34,7 @@ export const Hero = () => {
             target="_blank"
           >
             Github Repository
-            <GitHubLogoIcon className="ml-2 w-5 h-5" />
+            <GitHubLogoIcon className="ml-2 h-5 w-5" />
           </a>
         </div>
       </div>

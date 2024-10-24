@@ -26,11 +26,7 @@ export default function MembersPageContent() {
         {
           accessorKey: "role",
           cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <Badge variant="outline">{row.original.role}</Badge>
-              </div>
-            );
+            return <Badge variant="outline">{row.original.role}</Badge>;
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Role" />
@@ -40,9 +36,7 @@ export default function MembersPageContent() {
           accessorKey: "inviteEmail",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="font-medium">{row.original.inviteEmail}</span>
-              </div>
+              <span className="font-medium">{row.original.inviteEmail}</span>
             );
           },
           header: ({ column }) => (
@@ -53,15 +47,13 @@ export default function MembersPageContent() {
           accessorKey: "inviteAccepted",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                  {row.original.inviteAccepted ? (
-                    <CheckIcon className="text-primary" />
-                  ) : (
-                    <XIcon className="text-red-950" />
-                  )}
-                </span>
-              </div>
+              <span className="max-w-[500px] truncate font-medium">
+                {row.original.inviteAccepted ? (
+                  <CheckIcon className="text-primary" />
+                ) : (
+                  <XIcon className="text-red-950" />
+                )}
+              </span>
             );
           },
           header: ({ column }) => (
@@ -70,7 +62,7 @@ export default function MembersPageContent() {
         },
       ]}
       content={() => (
-        <div className="flex w-full justify-center items-center h-full">
+        <div className="flex h-full w-full items-center justify-center">
           <User className="opacity-30" size={100} />
         </div>
       )}

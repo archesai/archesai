@@ -2,6 +2,7 @@
 import { DataTablePagination } from "@/components/datatable/data-table-pagination";
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -43,8 +44,6 @@ import { endOfDay } from "date-fns";
 import { FilePenLine, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Button } from "../ui/button";
-
 export interface BaseItem {
   id: string;
   name: string;
@@ -58,18 +57,16 @@ interface DataTableProps<
   columns: ColumnDef<TItem, TDeleteVariables>[];
   content: (item: TItem) => JSX.Element;
   createForm?: React.ReactNode;
-
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
-
   findAllPathParams: TFindAllPathParams;
   findAllQueryParams?: object;
   getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables;
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
-
   hoverContent?: (item: TItem) => JSX.Element;
   itemType: string;
+  minimal?: boolean;
   useFindAll: (s: any) => {
     data:
       | {
@@ -107,6 +104,7 @@ export function DataTable<
   handleSelect,
   hoverContent,
   itemType,
+  minimal,
   useFindAll,
   useRemove,
 }: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
@@ -183,8 +181,7 @@ export function DataTable<
                   className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
                   variant="ghost"
                 >
-                  <DotsHorizontalIcon className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
+                  <DotsHorizontalIcon className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
@@ -254,88 +251,81 @@ export function DataTable<
       sorting,
     },
   });
+
   const [hover, setHover] = useState(-1);
 
   const grid_view = (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+    <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
       {createForm ? (
         <Card
-          className={`m-30 bg-transparent shadow-sm relative w-full cursor-pointer overflow-visible transition-all hover:bg-gray-200 hover:dark:bg-gray-900 border-2 border-dashed border-gray-400 after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none flex items-center justify-center`}
+          className={`flex h-48 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-secondary`}
           onClick={async () => {
             setFormOpen(true);
           }}
         >
-          <div className="h-48 relative overflow-hidden group  flex flex-col items-center justify-center">
-            <PlusSquare className="h-6 w-h-6 text-primary" />
-            <span className="mt-2 text-md">Create {itemType}</span>
-          </div>
+          <PlusSquare className="w-h-6 h-6 text-primary" />
+          <span className="text-md">Create {itemType}</span>
         </Card>
       ) : null}
-      {data?.results.length ? (
-        data?.results.map((item, i) => {
-          const isItemSelected = selectedItems.includes(item.id);
-          return (
-            <Card
-              className={`shadow-sm relative w-full ${isItemSelected ? "ring-4 ring-blue-500" : ""} overflow-visible after:content-[''] after:absolute after:w-full after:h-full after:top-0 after:left-0 after:border-radius-inherit after:z-10 after:transition-shadow after:pointer-events-none`}
-              key={i}
+      {data?.results.map((item, i) => {
+        const isItemSelected = selectedItems.includes(item.id);
+        return (
+          <Card
+            className={`relative w-full shadow-sm ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            key={i}
+          >
+            <div
+              className="group relative h-48 cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
+              onClick={async () => handleSelect(item)}
+              onMouseEnter={() => setHover(i)}
+              onMouseLeave={() => setHover(-1)}
             >
-              <div
-                className="h-48 rounded-t-sm cursor-pointer relative overflow-hidden group hover:bg-gray-200 hover:dark:bg-gray-900 transition-all"
-                onClick={async () => handleSelect(item)}
-                onMouseEnter={() => setHover(i)}
-                onMouseLeave={() => setHover(-1)}
-              >
-                {content(item)}
-              </div>
-              <hr />
+              {content(item)}
+            </div>
+            <hr />
 
-              <div className="flex justify-between items-center mt-auto p-2">
-                <div className="flex items-center min-w-0">
-                  <Checkbox
-                    aria-label={`Select ${item.name}`}
-                    checked={isItemSelected}
-                    className=" text-blue-600 rounded focus:ring-blue-500"
-                    onCheckedChange={() => toggleSelection(item.id)}
-                  />
-                  <h5 className="text-base leading-tight overflow-hidden text-ellipsis whitespace-nowrap pl-2">
-                    {item.name}
-                  </h5>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {getEditFormFromItem ? (
-                    <FilePenLine
-                      className=" text-primary cursor-pointer h-5 w-5"
-                      onClick={() => {
-                        setFinalForm(getEditFormFromItem?.(item));
-                        setFormOpen(true);
-                      }}
-                    />
-                  ) : null}
-                  <DeleteItems
-                    deleteFunction={async (vars) => {
-                      await deleteItem(vars);
-                      setSelectedItems([]);
-                    }}
-                    deleteVariables={[getDeleteVariablesFromItem(item)]}
-                    items={[
-                      {
-                        id: item.id,
-                        name: item.name,
-                      },
-                    ]}
-                    itemType={itemType}
-                  />
-                </div>
+            <div className="mt-auto flex items-center justify-between p-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <Checkbox
+                  aria-label={`Select ${item.name}`}
+                  checked={isItemSelected}
+                  className="rounded text-blue-600 focus:ring-blue-500"
+                  onCheckedChange={() => toggleSelection(item.id)}
+                />
+                <h5 className="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight">
+                  {item.name}
+                </h5>
               </div>
-              {hoverContent && hover === i && hoverContent(item)}
-            </Card>
-          );
-        })
-      ) : (
-        <div className="flex justify-center items-center col-span-full row-span-full pt-12">
-          No {itemType}s found
-        </div>
-      )}
+              <div className="flex flex-shrink-0 items-center gap-2">
+                {getEditFormFromItem ? (
+                  <FilePenLine
+                    className="h-5 w-5 cursor-pointer text-primary"
+                    onClick={() => {
+                      setFinalForm(getEditFormFromItem?.(item));
+                      setFormOpen(true);
+                    }}
+                  />
+                ) : null}
+                <DeleteItems
+                  deleteFunction={async (vars) => {
+                    await deleteItem(vars);
+                    setSelectedItems([]);
+                  }}
+                  deleteVariables={[getDeleteVariablesFromItem(item)]}
+                  items={[
+                    {
+                      id: item.id,
+                      name: item.name,
+                    },
+                  ]}
+                  itemType={itemType}
+                />
+              </div>
+            </div>
+            {hoverContent && hover === i && hoverContent(item)}
+          </Card>
+        );
+      })}
     </div>
   );
 
@@ -347,7 +337,11 @@ export function DataTable<
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead colSpan={header.colSpan} key={header.id}>
+                  <TableHead
+                    className="h-8 text-base"
+                    colSpan={header.colSpan}
+                    key={header.id}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -364,11 +358,12 @@ export function DataTable<
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
+                className="transition-all hover:bg-slate-200 hover:dark:bg-slate-900"
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell className="py-2" key={cell.id}>
+                  <TableCell className="p-2" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -390,41 +385,45 @@ export function DataTable<
   );
 
   return (
-    <div className="flex space-y-4 flex-col justify-between backdrop-blur-sm h-full">
-      <div className="space-y-4">
+    <div className="flex h-full flex-grow flex-col gap-3">
+      {!minimal && (
         <DataTableToolbar
           data={data?.results || []}
           itemType={itemType}
           table={table}
         />
-        {selectedItems.length > 0 && (
-          <DeleteItems
-            deleteFunction={async (vars) => {
-              await deleteItem(vars);
-              setSelectedItems([]);
-            }}
-            deleteVariables={selectedItems.map((id) =>
-              getDeleteVariablesFromItem(
-                data?.results.find((i) => i.id === id) as TItem
-              )
-            )}
-            items={selectedItems.map((id) => {
-              const item = data?.results.find((i) => i.id === id);
-              return {
-                id: item?.id || "",
-                name: item?.name || "",
-              };
-            })}
-            itemType={itemType}
-            variant="lg"
-          />
-        )}
+      )}
+      {selectedItems.length > 0 && (
+        <DeleteItems
+          deleteFunction={async (vars) => {
+            await deleteItem(vars);
+            setSelectedItems([]);
+          }}
+          deleteVariables={selectedItems.map((id) =>
+            getDeleteVariablesFromItem(
+              data?.results.find((i) => i.id === id) as TItem
+            )
+          )}
+          items={selectedItems.map((id) => {
+            const item = data?.results.find((i) => i.id === id);
+            return {
+              id: item?.id || "",
+              name: item?.name || "",
+            };
+          })}
+          itemType={itemType}
+          variant="lg"
+        />
+      )}
 
-        {view === "grid" ? grid_view : table_view}
-      </div>
-      <div>
-        <DataTablePagination data={data as any} />
-      </div>
+      <div className="grow"> {view === "grid" ? grid_view : table_view}</div>
+
+      {!minimal && (
+        <div className="self-auto">
+          <DataTablePagination data={data as any} />
+        </div>
+      )}
+
       {/* THIS IS THE FORM DIALOG */}
       <Dialog
         onOpenChange={(o) => {

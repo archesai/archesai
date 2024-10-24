@@ -41,24 +41,21 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="h-8 border-dashed" size="sm" variant="outline">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+        <Button className="h-8 gap-2 border-dashed" size="sm" variant="outline">
+          <PlusCircledIcon className="h-5 w-5" />
           {title}
           {selectedValues?.size > 0 && (
             <>
-              <Separator className="mx-2 h-4" orientation="vertical" />
+              <Separator className="h-4" orientation="vertical" />
               <Badge
-                className="rounded-sm px-1 font-normal lg:hidden"
+                className="rounded-sm font-normal lg:hidden"
                 variant="secondary"
               >
                 {selectedValues.size}
               </Badge>
-              <div className="hidden space-x-1 lg:flex">
+              <div className="hidden gap-1 lg:flex">
                 {selectedValues.size > 2 ? (
-                  <Badge
-                    className="rounded-sm px-1 font-normal"
-                    variant="secondary"
-                  >
+                  <Badge className="rounded-sm font-normal" variant="secondary">
                     {selectedValues.size} selected
                   </Badge>
                 ) : (
@@ -66,7 +63,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
-                        className="rounded-sm px-1 font-normal"
+                        className="rounded-sm font-normal"
                         key={option.value}
                         variant="secondary"
                       >
@@ -89,6 +86,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem
+                    className="flex gap-2"
                     key={option.value}
                     onSelect={() => {
                       if (isSelected) {
@@ -104,20 +102,20 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        "flex h-5 w-5 items-center justify-center rounded-sm border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className={cn("h-4 w-4")} />
+                      <CheckIcon className={cn("h-5 w-5")} />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <option.icon className="h-5 w-5 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
+                      <span className="ml-auto flex h-5 w-5 items-center justify-center font-mono text-xs">
                         {facets.get(option.value)}
                       </span>
                     )}

@@ -43,16 +43,13 @@ export const TabsSection = () => {
   })?.href;
 
   return (
-    <Tabs className="relative w-full bg-background" value={activeTab}>
-      <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+    <Tabs value={activeTab}>
+      <TabsList className="w-full justify-start rounded-none border-b bg-background shadow-sm">
         {currentTabs.map((tab) => {
           const isActive = tab.href === activeTab;
           return (
             <TabsTrigger
-              className={`relative rounded-none px-4 pb-3 pt-2 font-normal shadow-none transition-all
-    ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}
-    [&::after]:content-[''] [&::after]:absolute [&::after]:left-0 [&::after]:bottom-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all
-  `}
+              className={`relative p-3 font-normal shadow-none transition-all [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}`}
               key={tab.href}
               onClick={() => {
                 const url = new URL(

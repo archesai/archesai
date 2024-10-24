@@ -37,24 +37,24 @@ const features: FeatureProps[] = [
 
 export const HowItWorks = () => {
   return (
-    <section className="container text-center py-24 sm:py-32" id="howItWorks">
-      <h2 className="text-3xl md:text-4xl font-bold ">
+    <section className="container py-24 text-center sm:py-32" id="howItWorks">
+      <h2 className="text-3xl font-bold md:text-4xl">
         How It{" "}
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+        <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
           Works{" "}
         </span>
         Step-by-Step Guide
       </h2>
-      <p className="md:w-3/4 mx-auto mt-4 mb-8 text-xl text-muted-foreground">
+      <p className="mx-auto mb-8 mt-4 text-xl text-muted-foreground md:w-3/4">
         Discover how Arches AI empowers your business with advanced AI
         solutions. Here’s a simple guide on how to get started.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
         {features.map(({ description, icon, title }: FeatureProps) => (
           <Card className="bg-muted/50" key={title}>
             <CardHeader>
-              <CardTitle className="grid gap-4 place-items-center">
+              <CardTitle className="grid place-items-center gap-4">
                 {icon}
                 {title}
               </CardTitle>

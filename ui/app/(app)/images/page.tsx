@@ -32,10 +32,8 @@ export default function ContentPage() {
           accessorKey: "name",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <div className="flex space-x-2 justify-center text-muted-foreground max-w-10">
-                  <ContentTypeToIcon contentType={row.original.mimeType} />
-                </div>
+              <div className="flex gap-2">
+                <ContentTypeToIcon contentType={row.original.mimeType} />
                 <Link
                   className="max-w-[200px] truncate font-medium text-primary"
                   href={`/content/single?contentId=${row.original.id}`}
@@ -53,11 +51,9 @@ export default function ContentPage() {
           accessorKey: "description",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="font-light">
-                  {row.original.description || "No Description"}
-                </span>
-              </div>
+              <span className="font-light">
+                {row.original.description || "No Description"}
+              </span>
             );
           },
           header: ({ column }) => (
@@ -67,11 +63,7 @@ export default function ContentPage() {
         {
           accessorKey: "status",
           cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <JobStatusButton job={row.original.job} />
-              </div>
-            );
+            return <JobStatusButton job={row.original.job} />;
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Status" />
@@ -81,11 +73,9 @@ export default function ContentPage() {
           accessorKey: "createdAt",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="font-medium">
-                  {new Date(row.original.createdAt).toLocaleDateString()}
-                </span>
-              </div>
+              <span className="font-medium">
+                {new Date(row.original.createdAt).toLocaleDateString()}
+              </span>
             );
           },
           header: ({ column }) => (
@@ -94,7 +84,7 @@ export default function ContentPage() {
         },
       ]}
       content={(item) => (
-        <div className="flex w-full justify-center items-center h-full">
+        <div className="flex h-full w-full items-center justify-center">
           {item.job.status !== "COMPLETE" ? (
             <JobStatusButton job={item.job} />
           ) : (

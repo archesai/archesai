@@ -32,14 +32,17 @@ export function DataTablePagination<TData>({
   const { limit, page, setLimit, setPage } = useFilterItems();
   const { selectedItems } = useSelectItems({ items: data?.results || [] });
   return (
-    <div className="flex items-center justify-between px-2 backdrop-blur-md">
-      <div className="flex-1 text-sm text-muted-foreground sm:block hidden">
+    <div className="flex items-center justify-between">
+      {/* Display the number of items found and selected on left side*/}
+      <div className="hidden text-sm text-muted-foreground sm:block">
         {data?.metadata?.totalResults} found - {selectedItems.length} of{" "}
         {Math.min(limit, data?.results.length)} item(s) selected.
       </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-0 sm:space-x-2">
-          <p className="text-sm font-medium sm:block hidden">Rows per page</p>
+      {/* Pagination controls on right side*/}
+      <div className="flex items-center gap-2 lg:gap-3">
+        {/* Rows per page dropdown */}
+        <div className="flex items-center gap-2">
+          <p className="hidden text-sm font-medium sm:block">Rows per page</p>
           <Select
             onValueChange={(value) => {
               setLimit(Number(value));
@@ -58,21 +61,22 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        {/* Pagination controls */}
+        <div className="flex items-center justify-center text-sm font-medium">
           Page {page + 1} of{" "}
           {isNaN(Math.max(Math.ceil(data?.metadata?.totalResults / limit), 1))
             ? 1
             : Math.max(Math.ceil(data?.metadata?.totalResults / limit), 1)}
         </div>
-        <div className="flex items-center space-x-2">
+        {/* Previous and Next page buttons */}
+        <div className="flex items-center gap-2">
           <Button
             className="hidden h-8 w-8 p-0 lg:flex"
             disabled={page === 0}
             onClick={() => setPage(0)}
             variant="outline"
           >
-            <span className="sr-only">Go to first page</span>
-            <DoubleArrowLeftIcon className="h-4 w-4" />
+            <DoubleArrowLeftIcon className="h-5 w-5" />
           </Button>
           <Button
             className="h-8 w-8 p-0"
@@ -80,8 +84,7 @@ export function DataTablePagination<TData>({
             onClick={() => setPage(page - 1)}
             variant="outline"
           >
-            <span className="sr-only">Go to previous page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <ChevronLeftIcon className="h-5 w-5" />
           </Button>
           <Button
             className="h-8 w-8 p-0"
@@ -91,8 +94,7 @@ export function DataTablePagination<TData>({
             onClick={() => setPage(page + 1)}
             variant="outline"
           >
-            <span className="sr-only">Go to next page</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <ChevronRightIcon className="h-5 w-5" />
           </Button>
           <Button
             className="hidden h-8 w-8 p-0 lg:flex"
@@ -104,8 +106,7 @@ export function DataTablePagination<TData>({
             }
             variant="outline"
           >
-            <span className="sr-only">Go to last page</span>
-            <DoubleArrowRightIcon className="h-4 w-4" />
+            <DoubleArrowRightIcon className="h-5 w-5" />
           </Button>
         </div>
       </div>

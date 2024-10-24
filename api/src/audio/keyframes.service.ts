@@ -14,7 +14,7 @@ export class KeyframesService {
     url: string,
     framerate: number,
     fn: string,
-    isTranslation: boolean,
+    isTranslation: boolean
   ) {
     this.installPolyfill();
     const context = new AudioContext();
@@ -22,7 +22,7 @@ export class KeyframesService {
     const arrayBuffer = await retry(
       this.logger,
       () => fetch(url).then((response) => response.arrayBuffer()),
-      5,
+      5
     );
 
     const audioBuffer = await context.decodeAudioData(arrayBuffer);
@@ -54,8 +54,8 @@ export class KeyframesService {
       .map((x) => x / max)
       .map((x, ind) =>
         math.evaluate(
-          fn.replace("x", x.toString()).replace("y", ind.toString()),
-        ),
+          fn.replace("x", x.toString()).replace("y", ind.toString())
+        )
       );
     const string = this.getString(filteredData, isTranslation);
 
@@ -81,7 +81,7 @@ export class KeyframesService {
     function decodeAudioData_polyfill(
       audioData,
       successCallback,
-      errorCallback,
+      errorCallback
     ) {
       if (arguments.length > 1) {
         // Callback
@@ -89,7 +89,7 @@ export class KeyframesService {
       } else {
         // Promise
         return new Promise((success, reject) =>
-          this.decodeAudioData_original(audioData, success, reject),
+          this.decodeAudioData_original(audioData, success, reject)
         );
       }
     }

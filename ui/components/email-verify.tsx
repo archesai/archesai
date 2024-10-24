@@ -9,13 +9,13 @@ export function VerifyEmailAlert() {
     useEmailVerificationControllerRequest();
   const { toast } = useToast();
   return (
-    <Alert className="bg-primary border-none rounded-none">
-      <RocketIcon className="h-4 w-4" color="white" />
-      <AlertTitle className="text-white font-normal">
+    <Alert className="rounded-none border-none bg-primary">
+      <RocketIcon className="h-5 w-5" color="white" />
+      <AlertTitle className="font-normal text-white">
         <span className="flex gap-1">
           Please
           <div
-            className="font-semibold cursor-pointer"
+            className="cursor-pointer font-semibold"
             onClick={async () => {
               try {
                 await requestEmailVerification({});

@@ -2,7 +2,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -92,9 +91,10 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   return (
     <Card className={showCard ? "" : "border-none shadow-none"}>
       <CardHeader>
-        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
+      <Separator />
       <Form {...form}>
         <form
           noValidate
@@ -138,7 +138,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 }
           )}
         >
-          <CardContent className="flex flex-col gap-4">
+          <CardContent className="flex flex-col gap-4 p-4">
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
               .map((fieldConfig) => (
@@ -147,7 +147,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   key={fieldConfig.name}
                   name={fieldConfig.name}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col col-span-1">
+                    <FormItem className="col-span-1 flex flex-col">
                       <FormLabel>{fieldConfig.label}</FormLabel>
                       <FormControl>
                         {fieldConfig.renderControl ? (
@@ -178,11 +178,11 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
               ))}
           </CardContent>
           <Separator />
-          <CardFooter className="bg-gray-50 dark:bg-black flex pt-6 rounded-lg">
+          <div className="flex rounded-lg bg-gray-50 p-4 dark:bg-black">
             {(onSubmitCreate || onSubmitUpdate) && (
-              <div className="flex gap-4 w-full items-center">
+              <div className="flex w-full items-center gap-2">
                 <Button
-                  className="w-full"
+                  className="flex w-full gap-2"
                   disabled={
                     form.formState.isSubmitting || !form.formState.isDirty
                   }
@@ -190,9 +190,11 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   type="submit"
                 >
                   {form.formState.isSubmitting && (
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    <ReloadIcon className="h-5 w-5 animate-spin" />
                   )}
-                  Submit
+                  <span>
+                    {isUpdateForm ? "Update" : "Create"} {itemType}
+                  </span>
                 </Button>
                 <Button
                   className="w-full"
@@ -209,7 +211,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 </Button>
               </div>
             )}
-          </CardFooter>
+          </div>
         </form>
       </Form>
     </Card>

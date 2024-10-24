@@ -1,19 +1,20 @@
 import {
   Breadcrumb,
-  BreadcrumbItem,
+  // BreadcrumbItem,
   BreadcrumbList,
-  BreadcrumbSeparator,
+  // BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { siteConfig } from "@/config/site";
-import Link from "next/link";
+// import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react"; // Adjust the import path as necessary
 
 import { getOriginalPath } from "./tabs-section";
+import { Separator } from "./ui/separator";
 
 export const Breadcrumbs = () => {
   const pathname = usePathname() as string;
-  const pathnames = pathname.split("/").filter((x) => x);
+  // const pathnames = pathname.split("/").filter((x) => x);
 
   let Icon = null;
   const entries = Object.entries(siteConfig.links);
@@ -32,10 +33,11 @@ export const Breadcrumbs = () => {
   }
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="hidden text-sm md:flex">
       <BreadcrumbList>
-        <Icon className="h-5 w-5  text-muted-foreground" strokeWidth={1.5} />
-        {pathnames.map((value, index) => {
+        <Icon className="h-5 w-5 text-gray-400" />
+
+        {/* {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
           // const isLast = index === pathnames.length - 1;
           const isLast = false;
@@ -44,6 +46,7 @@ export const Breadcrumbs = () => {
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ")
             .slice(0, 13);
+
           return (
             <React.Fragment key={to}>
               <BreadcrumbItem>
@@ -58,7 +61,8 @@ export const Breadcrumbs = () => {
               {index < pathnames.length - 1 && <BreadcrumbSeparator />}
             </React.Fragment>
           );
-        })}
+        })} */}
+        <Separator orientation="vertical" />
       </BreadcrumbList>
     </Breadcrumb>
   );

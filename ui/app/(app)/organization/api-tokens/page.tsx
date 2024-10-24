@@ -29,15 +29,13 @@ export default function ApiTokensPageContent() {
           accessorKey: "role",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <Badge
-                  variant={
-                    row.original.role === "ADMIN" ? "default" : "secondary"
-                  }
-                >
-                  {row.original.role}
-                </Badge>
-              </div>
+              <Badge
+                variant={
+                  row.original.role === "ADMIN" ? "default" : "secondary"
+                }
+              >
+                {row.original.role}
+              </Badge>
             );
           },
           header: ({ column }) => (
@@ -48,11 +46,9 @@ export default function ApiTokensPageContent() {
           accessorKey: "name",
           cell: ({ row }) => {
             return (
-              <div className="flex space-x-2">
-                <span className="max-w-[500px] truncate font-medium">
-                  {row.original.name}
-                </span>
-              </div>
+              <span className="max-w-[500px] truncate font-medium">
+                {row.original.name}
+              </span>
             );
           },
           header: ({ column }) => (
@@ -62,11 +58,7 @@ export default function ApiTokensPageContent() {
         {
           accessorKey: "key",
           cell: ({ row }) => {
-            return (
-              <div className="flex space-x-2">
-                <span className="font-medium">{row.original.key}</span>
-              </div>
-            );
+            return <span className="font-medium">{row.original.key}</span>;
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Value" />
@@ -74,7 +66,7 @@ export default function ApiTokensPageContent() {
         },
       ]}
       content={() => (
-        <div className="flex w-full justify-center items-center h-full">
+        <div className="flex h-full w-full items-center justify-center">
           <User className="opacity-30" size={100} />
         </div>
       )}

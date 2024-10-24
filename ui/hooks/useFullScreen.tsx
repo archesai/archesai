@@ -11,7 +11,7 @@ export const useFullScreen = () => {
   const { collapseSidebar, expandSidebar } = useSidebar();
 
   useEffect(() => {
-    if (pathname !== "/chatbots/single/chat") {
+    if (pathname !== "/chatbots/single") {
       setIsFullScreen(false);
     }
   }, [pathname]);

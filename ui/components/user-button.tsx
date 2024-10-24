@@ -57,18 +57,17 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="User menu"
-          className={`relative flex items-center justify-between ${
+          className={`flex h-auto items-center justify-between ${
             size === "lg"
-              ? "p-2 pl-2 text-sm leading-6 font-semibold w-full"
-              : "p-0 h-9 w-9 rounded-full"
+              ? "w-full p-2 font-semibold leading-6"
+              : "h-8 w-8 rounded-full p-0"
           }`}
-          variant="ghost"
+          variant="secondary"
         >
           {size === "lg" ? (
             <>
-              <div className="flex items-center gap-x-2.5 max-w-[calc(100%-24px)]">
-                <Avatar className="h-9 w-9">
+              <div className="flex min-w-0 items-center gap-2">
+                <Avatar className="h-10 w-10">
                   <AvatarImage
                     alt={user?.displayName || "User"}
                     src={
@@ -86,25 +85,23 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
-                <div className="overflow-hidden flex-grow">
-                  <div className="text-start overflow-hidden">
-                    <p
-                      aria-hidden="true"
-                      className="text-sm text-dark font-medium truncate"
-                    >
-                      {user?.displayName}
-                    </p>
-                    <p
-                      aria-hidden="true"
-                      className="text-xs font-normal truncate overflow-ellipsis text-gray-alpha-500"
-                    >
-                      {defaultOrgname}
-                    </p>
-                  </div>
+                <div className="overflow-hidden text-start">
+                  <p
+                    aria-hidden="true"
+                    className="text-dark truncate text-sm font-medium"
+                  >
+                    {user?.displayName}
+                  </p>
+                  <p
+                    aria-hidden="true"
+                    className="text-gray-alpha-500 truncate text-xs font-normal"
+                  >
+                    {defaultOrgname}
+                  </p>
                 </div>
               </div>
               <svg
-                className="text-gray-alpha-950 mr-1 flex-shrink-0 transition-transform duration-200 rotate-90 [button[data-state=open]_&]:rotate-0"
+                className="text-gray-alpha-950 flex-shrink-0 rotate-90 transition-transform duration-200 [button[data-state=open]_&]:rotate-0"
                 fill="currentColor"
                 height="14"
                 stroke="currentColor"
@@ -117,7 +114,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
               </svg>
             </>
           ) : (
-            <Avatar className="h-9 w-9">
+            <Avatar className="h-8 w-8">
               <AvatarImage
                 alt={user?.displayName || "User"}
                 src={
@@ -140,7 +137,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56" forceMount>
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
+          <div className="flex flex-col gap-1">
             <p className="text-sm font-medium leading-none">
               {user?.displayName}
             </p>

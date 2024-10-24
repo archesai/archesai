@@ -54,7 +54,7 @@ export const siteConfig = {
     ],
     "/chatbots/single": [
       {
-        href: "/chatbots/single/chat",
+        href: "/chatbots/single",
         Icon: MessageSquare,
         title: "Chat",
       },

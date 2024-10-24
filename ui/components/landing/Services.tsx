@@ -38,16 +38,16 @@ const serviceList: ServiceProps[] = [
 export const Services = () => {
   return (
     <section className="container py-24 sm:py-32">
-      <div className="grid lg:grid-cols-[1fr,1fr] gap-8 place-items-center">
+      <div className="grid place-items-center gap-8 lg:grid-cols-[1fr,1fr]">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold">
-            <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+          <h2 className="text-3xl font-bold md:text-4xl">
+            <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
               Client-Centric{" "}
             </span>
             Services
           </h2>
 
-          <p className="text-muted-foreground text-xl mt-4 mb-8 ">
+          <p className="mb-8 mt-4 text-xl text-muted-foreground">
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
             dolor.
           </p>
@@ -55,8 +55,8 @@ export const Services = () => {
           <div className="flex flex-col gap-8">
             {serviceList.map(({ description, icon, title }: ServiceProps) => (
               <Card key={title}>
-                <CardHeader className="space-y-1 flex md:flex-row justify-start items-start gap-4">
-                  <div className="mt-1 bg-primary/20 p-1 rounded-2xl">
+                <CardHeader className="flex items-start justify-start gap-4 space-y-1 md:flex-row">
+                  <div className="mt-1 rounded-2xl bg-primary/20 p-1">
                     {icon}
                   </div>
                   <div>
@@ -73,7 +73,7 @@ export const Services = () => {
 
         <Image
           alt="About services"
-          className="w-[300px] md:w-[500px] lg:w-[600px] object-contain"
+          className="w-[300px] object-contain md:w-[500px] lg:w-[600px]"
           height={300}
           src={"/cube-leg.png"}
           width={500}

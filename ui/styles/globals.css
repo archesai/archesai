@@ -16,7 +16,7 @@
     /* BLUE  */
     --primary: 229 100% 62%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
+    --secondary: 217 30% 92%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -48,7 +48,7 @@
     /* BLUE  */
     --primary: 229 100% 62%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 222, 47%, 11%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
@@ -80,6 +80,17 @@ html {
   scroll-behavior: smooth;
 }
 
+@keyframes shadow-slide {
+  from {
+    background: hsl(var(--primary) / 2%);
+    right: 0px;
+  }
+  to {
+    background: hsl(var(--primary) / 5%);
+    right: 0px;
+  }
+}
+
 .shadow {
   position: absolute;
   background: hsl(var(--primary) / 20%);
@@ -109,33 +120,4 @@ html {
 
 .pulse {
   animation: pulse 0.5s infinite;
-}
-
-@keyframes shadow-slide {
-  from {
-    background: hsl(var(--primary) / 2%);
-    right: 0px;
-  }
-  to {
-    background: hsl(var(--primary) / 5%);
-    right: 0px;
-  }
-}
-
-.stack {
-  display: flex;
-  flex-direction: column;
-}
-
-.hstack {
-  display: flex;
-}
-
-.full-height-scrollable {
-  height: calc(100vh - 40vh);
-  overflow-y: auto;
-}
-
-.fill-remaining-height {
-  height: calc(100vh - 25vh);
 }

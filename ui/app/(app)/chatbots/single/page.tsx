@@ -38,17 +38,20 @@ import { cn } from "@/lib/utils";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Bolt, Layers, RefreshCcw } from "lucide-react";
 import { Maximize, Minimize } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 export default function ChatbotChatPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const pathname = usePathname() as string;
+  const searchParams = useSearchParams();
   const [threadId, setThreadId] = useState<string>("");
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
-  const searchParams = useSearchParams();
   const chatbotId = searchParams?.get("chatbotId");
+  const tid = searchParams?.get("threadId");
+  const [enableFetching, setEnableFetching] = useState(false);
 
   const { data: content } = useContentControllerFindAll({
     pathParams: {
@@ -58,6 +61,13 @@ export default function ChatbotChatPage() {
       limit: 3,
     },
   });
+
+  useEffect(() => {
+    if (tid) {
+      setThreadId(tid as string);
+      setEnableFetching(true);
+    }
+  }, [tid]);
 
   const { streamChatMessage } = useStreamChat();
 
@@ -74,7 +84,7 @@ export default function ChatbotChatPage() {
       },
     },
     {
-      enabled: false,
+      enabled: enableFetching,
     }
   );
 
@@ -90,7 +100,6 @@ export default function ChatbotChatPage() {
 
   const { mutateAsync: createThread } = useThreadsControllerCreate();
   const { mutateAsync: createMessage } = useMessagesControllerCreate();
-
   const handleSend = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
@@ -164,23 +173,23 @@ export default function ChatbotChatPage() {
   const [showThreads, setShowThreads] = useState(false);
 
   return (
-    <div className="flex h-full relative group gap-3">
+    <div className="relative flex h-full gap-6">
       {/* Full Screen Button */}
-      <div className="hidden md:flex flex-col bg-transparent text-bg absolute top-0 left-0 z-10 gap-1">
+      <div className="absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex">
         <Button
-          className={`${isFullScreen ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          className={`${isFullScreen ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
           onClick={toggleFullscreen}
           size="icon"
           variant={"ghost"}
         >
           {isFullScreen ? (
-            <Minimize className="h-5 w-5 " />
+            <Minimize className="h-5 w-5" />
           ) : (
             <Maximize className="h-5 w-5" />
           )}
         </Button>
         <Button
-          className={`${showThreads ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          className={`${showThreads ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
           onClick={() => {
             setShowConfiguration(false);
             setShowThreads(!showThreads);
@@ -188,10 +197,10 @@ export default function ChatbotChatPage() {
           size="icon"
           variant={"ghost"}
         >
-          <Layers className={`h-5 w-5 `} />
+          <Layers className={`h-5 w-5`} />
         </Button>
         <Button
-          className={`${showConfiguration ? "text-primary bg-muted hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
+          className={`${showConfiguration ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
           onClick={() => {
             setShowThreads(false);
             setShowConfiguration(!showConfiguration);
@@ -212,31 +221,32 @@ export default function ChatbotChatPage() {
           <RefreshCcw className="h-5 w-5" />
         </Button>
       </div>
+
       {/* Chat Body */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {/* Message Area */}
         <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4 xl:pr-56 xl:pl-52 pl-8 pr-10">
+          <div className="flex flex-col gap-4 px-8 xl:px-52">
             {messages &&
               messages.results
                 ?.slice()
                 .reverse()
                 .map((msg) => (
-                  <div className="flex flex-col space-y-2" key={msg.id}>
+                  <div className="flex flex-col gap-2" key={msg.id}>
                     {/* User Message */}
                     <div className="flex justify-end py-2">
-                      <div className=" bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg px-4 py-2">
+                      <div className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
                         {msg.question}
                       </div>
                     </div>
                     {/* Bot Response */}
-                    <div className="flex items-start space-x-2 py-2">
+                    <div className="flex items-start gap-2 py-2">
                       {/* <Avatar>
                         <LogoSVG scale={0.124} size="sm" />
                       </Avatar> */}
                       {msg.id === "pending" ? (
                         <div className="flex items-center justify-center">
-                          <div className="pulse bg-black h-4 w-4 rounded-full"></div>
+                          <div className="pulse h-5 w-5 rounded-full bg-black"></div>
                         </div>
                       ) : (
                         <div className="rounded-lg py-2">
@@ -286,17 +296,17 @@ export default function ChatbotChatPage() {
 
         {/* Input Form */}
         <form
-          className="flex-shrink-0 h-16"
+          className="h-16 flex-shrink-0"
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
         >
-          <div className="flex items-center space-x-2 pb-1">
+          <div className="flex items-center gap-2">
             <Popover onOpenChange={setOpen} open={open}>
               <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
                 <Textarea
-                  className="text-md flex-1 resize-none bg-background text-gray-800 dark:text-gray-200 rounded-lg  max-h-40 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                  className="text-md max-h-40 flex-1 resize-none rounded-lg bg-background text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200"
                   onChange={handleChange}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -346,7 +356,7 @@ export default function ChatbotChatPage() {
             <Button
               className={cn(
                 "flex items-center justify-center p-2",
-                !message.trim() && "opacity-50 cursor-not-allowed"
+                !message.trim() && "cursor-not-allowed opacity-50"
               )}
               disabled={!message.trim()}
               type="submit"
@@ -366,13 +376,15 @@ export default function ChatbotChatPage() {
           </div>
         </form>
       </div>
+
+      {/* Right Sidebar */}
       {showConfiguration && (
-        <div className="md:flex hidden flex-col w-1/4">
+        <div className="hidden w-1/3 flex-col md:flex">
           <ChatbotForm chatbotId={chatbotId as string} />
         </div>
       )}
       {showThreads && (
-        <div className="md:flex hidden flex-col">
+        <div className="1/3 hidden flex-col md:flex">
           <DataTable<
             ThreadEntity,
             ThreadsControllerFindAllPathParams,
@@ -383,8 +395,18 @@ export default function ChatbotChatPage() {
                 accessorKey: "name",
                 cell: ({ row }) => {
                   return (
-                    <div className="flex space-x-2">
-                      <span className="max-w-[500px] truncate font-medium">
+                    <div className="flex gap-2">
+                      <span
+                        className="max-w-[500px] truncate font-medium"
+                        onClick={() =>
+                          router.push(
+                            `${pathname}?${new URLSearchParams({
+                              chatbotId: chatbotId as string,
+                              threadId: row.original.id as any,
+                            })}`
+                          )
+                        }
+                      >
                         {row.original.name}
                       </span>
                     </div>
@@ -396,7 +418,7 @@ export default function ChatbotChatPage() {
               },
             ]}
             content={() => (
-              <div className="flex w-full justify-center items-center h-full">
+              <div className="flex h-full w-full items-center justify-center">
                 <Layers className="text-muted-foreground" />
               </div>
             )}
@@ -414,9 +436,10 @@ export default function ChatbotChatPage() {
               },
             })}
             handleSelect={(chatbot) =>
-              router.push(`/chatbots/single/chat?chatbotId=${chatbot.id}`)
+              router.push(`/chatbots/single?chatbotId=${chatbot.id}`)
             }
             itemType="thread"
+            minimal={true}
             useFindAll={useThreadsControllerFindAll}
             useRemove={useThreadsControllerRemove}
           />

@@ -1,42 +1,43 @@
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useSidebar } from "@/hooks/useSidebar";
+import { Menu } from "lucide-react";
+
 import { Breadcrumbs } from "./breadcrumbs";
 import { CommandMenu } from "./command-menu";
 import { ModeToggle } from "./mode-toggle";
+import { Sidebar } from "./sidebar";
+import { Button } from "./ui/button";
 import { UserButton } from "./user-button";
 
-export const PageHeader = ({
-  description,
-  title,
-}: {
-  description: string;
-  title: string;
-}) => {
+export const PageHeader = () => {
+  const { toggleSidebar } = useSidebar();
   return (
-    <header className="hidden md:block bg-background">
-      <div className="bg-true-white/80 backdrop-blur-md">
-        <div className="hstack justify-between items-center w-full px-4 py-[10px]">
+    <header className="flex w-full items-center justify-between bg-background p-3 py-3">
+      <Sheet>
+        <div className="flex items-center gap-3">
+          <SheetTrigger asChild>
+            <Button
+              className="mr-3 flex h-8 w-8 md:hidden"
+              onClick={toggleSidebar}
+              size="icon"
+              variant="secondary"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
           <Breadcrumbs />
-          <div className="stack gap-0.5 py-3 pt-0 pr-6 max-w-[64rem]">
-            <h2
-              aria-level={1}
-              className="text-xl text-dark font-semibold origin-left line-clamp-1 transform-none"
-              data-testid="page-title"
-            >
-              {title}
-            </h2>
-            <span
-              aria-level={2}
-              className="text-sm text-muted-foreground min-h-[1em] opacity-100 transform-none hidden md:block"
-            >
-              {description}
-            </span>
-          </div>
-          <div className="hstack items-center gap-2">
-            <CommandMenu />
-            <ModeToggle />
-            <UserButton size="sm" />
-          </div>
         </div>
-      </div>
+
+        <SheetContent className="w-64 p-0" side="left">
+          <Sidebar />
+        </SheetContent>
+
+        <div className="flex flex-grow items-center justify-end gap-3">
+          <CommandMenu />
+          <ModeToggle />
+          <UserButton size="sm" />
+        </div>
+      </Sheet>
     </header>
   );
 };

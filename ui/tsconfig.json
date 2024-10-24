@@ -1,6 +1,17 @@
 {
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "components/ui/**.tsx",
+    "generated/**.ts"
+  ],
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,16 +29,15 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules/**/*.ts",
-    ".next",
-    "dist",
-    "components/ui/**.tsx",
-    "generated/**.ts",
-    "electron/**/**.ts"
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx"
   ]
 }

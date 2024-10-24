@@ -94,18 +94,18 @@ const faqs = [
 export const FAQ = () => {
   return (
     <section className="container py-24 sm:py-32" id="faq">
-      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <h2 className="mb-4 text-3xl font-bold md:text-4xl">
         Frequently Asked{" "}
-        <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
+        <span className="bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent">
           Questions
         </span>
       </h2>
 
       {faqs.map(({ category, questions }, i) => (
         <React.Fragment key={i}>
-          <h3 className="font-bold text-lg mt-8">{category}</h3>
+          <h3 className="mt-8 text-lg font-bold">{category}</h3>
           <Accordion
-            className="w-full AccordionRoot"
+            className="AccordionRoot w-full"
             collapsible
             key={i}
             type="single"
@@ -123,10 +123,10 @@ export const FAQ = () => {
         </React.Fragment>
       ))}
 
-      <h3 className="font-medium mt-4">
+      <h3 className="mt-4 font-medium">
         Still have questions?{" "}
         <a
-          className="text-primary transition-all border-primary hover:border-b-2"
+          className="border-primary text-primary transition-all hover:border-b-2"
           href="#"
           rel="noreferrer noopener"
         >

@@ -10,6 +10,7 @@ import { Table } from "@tanstack/react-table";
 import { GridIcon, ListIcon } from "lucide-react";
 
 import { Checkbox } from "../ui/checkbox";
+import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 // import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DatePickerWithRange } from "./date-range-picker";
@@ -32,11 +33,10 @@ export function DataTableToolbar<TData>({
     useSelectItems({ items: data || [] });
 
   return (
-    <div className="flex flex-wrap items-center space-x-2 gap-2 md:gap-0">
+    <div className="flex flex-wrap items-center gap-2">
       <Checkbox
         aria-label="Select all"
         checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
-        className="translate-y-[2px]"
         onCheckedChange={() => toggleSelectAll()}
       />
       <Input
@@ -45,7 +45,7 @@ export function DataTableToolbar<TData>({
         placeholder={`Search ${itemType}s...`}
         value={query}
       />
-      {/* {table.getColumn("llmBase") && (
+      {table.getColumn("llmBase") && (
         <DataTableFacetedFilter
           column={table.getColumn("llmBase")}
           options={[
@@ -56,15 +56,15 @@ export function DataTableToolbar<TData>({
           ]}
           title="Language Model"
         />
-      )} */}
+      )}
       {isFiltered && (
         <Button
-          className="h-8 px-2 lg:px-3"
+          className="flex h-8 gap-2 p-2"
           onClick={() => table.resetColumnFilters()}
           variant="ghost"
         >
-          Reset
-          <Cross2Icon className="ml-2 h-4 w-4" />
+          <span>Reset</span>
+          <Cross2Icon className="h-5 w-5" />
         </Button>
       )}
 
@@ -78,24 +78,30 @@ export function DataTableToolbar<TData>({
 export function ViewToggle() {
   const { setView, view } = useToggleView();
   return (
-    <div className="flex h-8 gap-2">
+    <div className="hidden h-8 gap-2 md:flex">
       <Button
-        className={`flex items-center justify-center h-full transition-colors ${
-          view === "table" ? "bg-secondary text-primary" : "bg-transparent"
+        className={`flex h-full items-center justify-center transition-colors ${
+          view === "table"
+            ? "bg-secondary text-primary"
+            : "bg-transparent text-muted-foreground"
         }`}
         onClick={() => setView("table")}
+        size="icon"
         variant={"secondary"}
       >
-        <ListIcon className="w-5 h-5" />
+        <ListIcon className="h-5 w-5" />
       </Button>
       <Button
-        className={`flex items-center justify-center h-full  transition-colors ${
-          view === "grid" ? "bg-secondary text-primary" : "bg-transparent"
+        className={`flex h-full items-center justify-center transition-colors ${
+          view === "grid"
+            ? "bg-secondary text-primary"
+            : "bg-transparent text-muted-foreground"
         }`}
         onClick={() => setView("grid")}
+        size="icon"
         variant={"secondary"}
       >
-        <GridIcon className="w-5 h-5" />
+        <GridIcon className="h-5 w-5" />
       </Button>
     </div>
   );

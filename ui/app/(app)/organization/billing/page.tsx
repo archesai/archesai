@@ -95,7 +95,7 @@ export default function BillingPageContent() {
   } = useBillingControllerCancelSubscriptionPlan();
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       {/* New Card for Available Plans */}
       <Card>
         <CardHeader>
@@ -135,6 +135,7 @@ export default function BillingPageContent() {
                       <TableCell>
                         {organization?.plan === plan.metadata?.key ? (
                           <Button
+                            className="flex gap-2"
                             disabled={
                               clickedButtonIndex === plans.indexOf(plan) &&
                               cancelSubscriptionLoading
@@ -157,12 +158,13 @@ export default function BillingPageContent() {
                           >
                             {clickedButtonIndex === plans.indexOf(plan) &&
                               cancelSubscriptionLoading && (
-                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                <ReloadIcon className="h-5 w-5 animate-spin" />
                               )}
-                            Cancel Plan
+                            <span>Cancel Plan</span>
                           </Button>
                         ) : organization?.plan === "FREE" ? (
                           <Button
+                            className="flex gap-2"
                             disabled={
                               clickedButtonIndex === plans.indexOf(plan) &&
                               createCheckoutSessionLoading
@@ -182,12 +184,13 @@ export default function BillingPageContent() {
                           >
                             {clickedButtonIndex === plans.indexOf(plan) &&
                               createCheckoutSessionLoading && (
-                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                <ReloadIcon className="h-5 w-5 animate-spin" />
                               )}
-                            Subscribe
+                            <span>Subscribe</span>
                           </Button>
                         ) : (
                           <Button
+                            className="flex gap-2"
                             disabled={
                               clickedButtonIndex === plans.indexOf(plan) &&
                               switchSubscriptionLoading
@@ -220,9 +223,9 @@ export default function BillingPageContent() {
                           >
                             {clickedButtonIndex === plans.indexOf(plan) &&
                               switchSubscriptionLoading && (
-                                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                                <ReloadIcon className="h-5 w-5 animate-spin" />
                               )}
-                            Subscribe
+                            <span>Subscribe</span>
                           </Button>
                         )}
                       </TableCell>
@@ -237,7 +240,7 @@ export default function BillingPageContent() {
         </CardContent>
       </Card>
 
-      <Card className="mt-4">
+      <Card>
         <CardHeader>
           <CardTitle className="text-xl">Payment Methods</CardTitle>
           <CardDescription>
@@ -294,6 +297,6 @@ export default function BillingPageContent() {
           )}
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }

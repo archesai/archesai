@@ -23,13 +23,15 @@ export class AudioService {
     audioUrl: string,
     framerate: number,
     fn: string,
-    isTranslation: boolean,
+    isTranslation: boolean
+
+    
   ) => {
     return this.keyframesService.getKeyframes(
       audioUrl,
       framerate,
       fn,
-      isTranslation,
+      isTranslation
     );
   };
 
@@ -54,16 +56,16 @@ export class AudioService {
                   Authorization: "5fa360fa-9974-47fc-bcb8-39142bf4dcea",
                   "Content-Type": "application/json",
                 },
-              },
+              }
             )
             .pipe(
               catchError((err: AxiosError) => {
                 this.logger.error("Could not hit moises endpoint", err.message);
                 throw new InternalServerErrorException(err.message);
-              }),
-            ),
+              })
+            )
         ),
-      5,
+      5
     );
     this.logger.log("Moises response: " + JSON.stringify(moisesResponse));
     const moisesJobId = moisesResponse.id;
@@ -84,13 +86,13 @@ export class AudioService {
                 catchError((err: AxiosError) => {
                   this.logger.error(
                     "Could not hit moises endpoint",
-                    err.message,
+                    err.message
                   );
                   throw new InternalServerErrorException(err.message);
-                }),
-              ),
+                })
+              )
           ),
-        5,
+        5
       );
       this.logger.log("Got status from moises" + moisesCheckJobResponse.status);
       if (moisesCheckJobResponse.status == "SUCCEEDED") {
@@ -110,7 +112,7 @@ export class AudioService {
     orgname: string,
     audioUrl: string,
     startTime: number,
-    duration: number,
+    duration: number
   ): Promise<string> => {
     const inputTmpPath = ospath.join(os.tmpdir(), "original.mp3");
     const outputTmpPath = ospath.join(os.tmpdir(), "trimmed.mp3");
@@ -147,7 +149,7 @@ export class AudioService {
               mimetype: "audio/mp3", // You may want to detect this automatically, e.g. with the `file-type` package
               originalname: ospath.basename(outputTmpPath),
               size: fs.statSync(outputTmpPath).size,
-            } as Express.Multer.File,
+            } as Express.Multer.File
           );
 
           fs.unlinkSync(outputTmpPath);
@@ -162,6 +164,6 @@ export class AudioService {
   constructor(
     @Inject(STORAGE_SERVICE) private storageService: StorageService,
     private httpService: HttpService,
-    private keyframesService: KeyframesService,
+    private keyframesService: KeyframesService
   ) {}
 }

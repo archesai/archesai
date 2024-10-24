@@ -8,19 +8,19 @@ export interface StorageService {
   download(
     orgname: string,
     path: string,
-    destination?: string,
+    destination?: string
   ): Promise<{ buffer: Buffer }>;
   getMetaData(orgname: string, path: string): Promise<{ metadata: any }>;
   getSignedUrl(
     orgname: string,
     path: string,
-    action: "read" | "write",
+    action: "read" | "write"
   ): Promise<string>;
   listDirectory(orgname: string, path: string): Promise<StorageItemDto[]>;
   upload(
     orgname: string,
     path: string,
-    file: Express.Multer.File,
+    file: Express.Multer.File
   ): Promise<string>;
   uploadFromUrl(orgname: string, path: string, url: string): Promise<string>;
 }

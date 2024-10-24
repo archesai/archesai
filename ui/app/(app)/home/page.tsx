@@ -21,14 +21,6 @@ const cardData = [
     title: "Manage Content",
   },
   {
-    buttonText: "Create Chatbot",
-    colorClass: "text-sky-600", // Purple for AI and communication-based features
-    description: "Set up a chatbot using imported data.",
-    icon: MessageSquareIcon,
-    link: "/chatbots",
-    title: "Create Chatbot",
-  },
-  {
     buttonText: "Create Image",
     colorClass: "text-indigo-600", // Pink for creativity and AI-generated content
     description: "Create images using generative AI.",
@@ -36,40 +28,46 @@ const cardData = [
     link: "/images",
     title: "Create Image",
   },
+  {
+    buttonText: "Create Chatbot",
+    colorClass: "text-green-600", // Purple for AI and communication-based features
+    description: "Set up a chatbot using imported data.",
+    icon: MessageSquareIcon,
+    link: "/chatbots",
+    title: "Create Chatbot",
+  },
 ];
 
 export default function HomePage() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col justify-start h-full">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {cardData.map((card, index) => (
-          <Card
-            className={`flex flex-col text-center hover:shadow-lg ${card.colorClass} transition-shadow justify-between`}
-            key={index}
-          >
-            <CardHeader>
-              <card.icon className="mx-auto mb-2 w-12 h-12" />
-              <CardTitle className="text-xl font-semibold text-foreground">
-                {card.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{card.description}</p>
-            </CardContent>
-            <CardFooter className="justify-center">
-              <Button
-                className="h-8"
-                onClick={() => router.push(card.link)}
-                variant={"secondary"}
-              >
-                {card.buttonText}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      {cardData.map((card, index) => (
+        <Card
+          className={`flex flex-col text-center hover:shadow-lg ${card.colorClass} justify-between transition-shadow`}
+          key={index}
+        >
+          <CardHeader className="flex flex-col gap-2">
+            <card.icon className="mx-auto h-12 w-12 opacity-80" />
+            <CardTitle className="text-xl font-medium text-foreground">
+              {card.title}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">{card.description}</p>
+          </CardContent>
+          <CardFooter className="justify-center">
+            <Button
+              className="h-8"
+              onClick={() => router.push(card.link)}
+              variant={"secondary"}
+            >
+              {card.buttonText}
+            </Button>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 }

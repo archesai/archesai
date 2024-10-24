@@ -53,21 +53,19 @@ export function CommandMenu({ ...props }: DialogProps) {
   }, []);
 
   return (
-    <div>
+    <div className="w-full">
       <Button
         className={cn(
-          "relative h-8 w-full justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none pr-12"
+          "h-8 w-full justify-between gap-2 rounded-lg bg-muted/50 text-base font-normal text-muted-foreground"
         )}
         onClick={() => setOpen(true)}
         variant="outline"
         {...props}
       >
-        <span className="hidden lg:inline-flex">
-          Type a command or search...
-        </span>
-        <span className="inline-flex lg:hidden">Search...</span>
-        <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 flex">
-          <span className="text-xs">⌘</span>K
+        <span className="inline-flex">Type a command or search...</span>
+        <kbd className="pointer-events-none flex h-5 select-none items-center gap-1 rounded border bg-muted p-2 font-mono text-[10px] font-medium">
+          <span className="text-xs">⌘</span>
+          <span>K</span>
         </kbd>
       </Button>
       <CommandDialog onOpenChange={setOpen} open={open}>
@@ -85,6 +83,7 @@ export function CommandMenu({ ...props }: DialogProps) {
             >
               {links.map((navItem) => (
                 <CommandItem
+                  className="flex gap-2"
                   key={navItem.href}
                   onClick={() => {
                     runCommand(() => router.push(navItem.href as string));
@@ -94,26 +93,26 @@ export function CommandMenu({ ...props }: DialogProps) {
                   }}
                   value={navItem.title}
                 >
-                  <navItem.Icon className="mr-2 h-4 w-4" />
-                  {navItem.title}
+                  <navItem.Icon className="h-5 w-5" />
+                  <span>{navItem.title}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
           ))}
           <CommandSeparator />
           <CommandGroup heading="Theme">
-            <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-              <SunIcon className="mr-2 h-4 w-4" />
-              Light
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
-              <MoonIcon className="mr-2 h-4 w-4" />
-              Dark
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
-              <LaptopIcon className="mr-2 h-4 w-4" />
-              System
-            </CommandItem>
+            {["light", "dark", "system"].map((theme) => (
+              <CommandItem
+                className="flex gap-2"
+                key={theme}
+                onSelect={() => runCommand(() => setTheme(theme))}
+              >
+                {theme === "light" && <SunIcon className="h-5 w-5" />}
+                {theme === "dark" && <MoonIcon className="h-5 w-5" />}
+                {theme === "system" && <LaptopIcon className="h-5 w-5" />}
+                <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+              </CommandItem>
+            ))}
           </CommandGroup>
         </CommandList>
       </CommandDialog>

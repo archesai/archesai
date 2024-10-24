@@ -19,6 +19,9 @@ models:
 lint:
 	cd api && npm run lint && cd ../ui && npm run lint
 
+format:
+	cd api && npm run format && cd ../ui && npm run format
+	
 test:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
 

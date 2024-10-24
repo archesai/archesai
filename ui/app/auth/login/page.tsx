@@ -30,7 +30,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { signInWithEmailAndPassword, signInWithGoogle, user } = useAuth();
   const [formError, setFormError] = useState<null | string>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     if (user) {
@@ -47,8 +46,6 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-    setFormError(null);
     try {
       await signInWithEmailAndPassword(data.email, data.password);
       // Redirect handled by useEffect
@@ -60,13 +57,10 @@ export default function LoginPage() {
       } else {
         setFormError("An unexpected error occurred. Please try again.");
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsSubmitting(true);
     try {
       await signInWithGoogle();
       // Redirect handled by useEffect
@@ -77,23 +71,21 @@ export default function LoginPage() {
       } else {
         setFormError("An unexpected error occurred. Please try again.");
       }
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="stack gap-2">
-      <div className="flex flex-col space-y-2 text-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
         <p className="text-sm text-muted-foreground">
           Enter your email and password to login to your account
         </p>
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
         <Form {...form}>
           <form
-            className="space-y-4"
+            className="flex flex-col gap-2"
             noValidate
             onSubmit={form.handleSubmit(onSubmit)}
           >
@@ -160,14 +152,18 @@ export default function LoginPage() {
 
             {/* Display Form Error */}
             {formError && (
-              <div className="text-red-600 text-center" role="alert">
+              <div className="text-center text-red-600" role="alert">
                 {formError}
               </div>
             )}
 
             {/* Submit Button */}
-            <Button className="w-full" disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Logging in..." : "Login"}
+            <Button
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+              type="submit"
+            >
+              {form.formState.isSubmitting ? "Logging in..." : "Login"}
             </Button>
           </form>
         </Form>
@@ -175,17 +171,19 @@ export default function LoginPage() {
         {/* Conditional Firebase Login Button */}
         {process.env.NEXT_PUBLIC_USE_FIREBASE === "true" && (
           <Button
-            className="w-full mt-2"
-            disabled={isSubmitting}
+            className="w-full"
+            disabled={form.formState.isSubmitting}
             onClick={handleGoogleSignIn}
             variant="outline"
           >
-            {isSubmitting ? "Processing..." : "Login with Google"}
+            {form.formState.isSubmitting
+              ? "Processing..."
+              : "Login with Google"}
           </Button>
         )}
 
         {/* Redirect to Register */}
-        <div className="mt-4 text-center text-sm">
+        <div className="text-center text-sm">
           Don&apos;t have an account?{" "}
           <Link className="underline" href="/auth/register">
             Sign up
