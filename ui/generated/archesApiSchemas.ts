@@ -937,6 +937,26 @@ export type MessageEntity = {
   topK?: number;
 };
 
+export type CreateContentDto = {
+  /**
+   * The animation's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * @example https://example.com/example.mp4
+   */
+  url: string;
+  /**
+   * The tool IDs to run with this content
+   *
+   * @example tool-id-1
+   * @example tool-id-2
+   */
+  toolIds: string[];
+};
+
 export type JobEntity = {
   /**
    * The creation date of this item
@@ -965,6 +985,24 @@ export type JobEntity = {
    */
   error: string;
   /**
+   * The input to the tool
+   *
+   * @example https://example.com/example.mp4
+   */
+  input: string;
+  /**
+   * The tool name that was used to process the content in this job
+   *
+   * @example Text Extraction
+   */
+  name: string;
+  /**
+   * The output of the tool
+   *
+   * @example Hello, world!
+   */
+  output: string;
+  /**
    * The percent progress of the current job
    *
    * @example 0.9
@@ -989,6 +1027,12 @@ export type JobEntity = {
    * @example COMPLETE
    */
   status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
+  /**
+   * The tool id that was used to process the content in this job
+   *
+   * @example extract-text
+   */
+  toolId: string;
 };
 
 export type ContentEntity = {
@@ -1005,7 +1049,6 @@ export type ContentEntity = {
    * @example 32411590-a8e0-11ed-afa1-0242ac120002
    */
   id: string;
-  buildArgs: Record<string, any>;
   /**
    * The number of credits used to process this content
    *
@@ -1019,9 +1062,9 @@ export type ContentEntity = {
    */
   description: string;
   /**
-   * This job associated with this content's build process
+   * This job associated with this content's indexing process
    */
-  job: JobEntity;
+  jobs: JobEntity[];
   /**
    * @example application/pdf
    */
@@ -1051,17 +1094,12 @@ export type ContentEntity = {
    */
   text: string;
   /**
-   * @example video/mp4
-   */
-  type: "DOCUMENT" | "ANIMATION" | "IMAGE";
-  /**
    * @example https://example.com/example.mp4
    */
   url: string;
 };
 
 export type UpdateContentDto = {
-  buildArgs?: Record<string, any>;
   /**
    * The animation's name
    *
@@ -1069,16 +1107,19 @@ export type UpdateContentDto = {
    */
   name?: string;
   /**
-   * @example video/mp4
-   */
-  type?: "DOCUMENT" | "ANIMATION" | "IMAGE";
-  /**
    * @example https://example.com/example.mp4
    */
   url?: string;
+  /**
+   * The tool IDs to run with this content
+   *
+   * @example tool-id-1
+   * @example tool-id-2
+   */
+  toolIds?: string[];
 };
 
-export type VectorRecordEntity = {
+export type TextChunkEntity = {
   /**
    * The creation date of this item
    *
@@ -1140,58 +1181,87 @@ export type RequestEmailChangeDto = {
   email: string;
 };
 
-export type CreateImageDto = {
+export type ToolEntity = {
   /**
-   * The animation's name
+   * The creation date of this item
    *
-   * @example my-file.pdf
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The tool description
+   *
+   * @example This tool converts a file to text, regardless of the file type.
+   */
+  description: string;
+  /**
+   * The tools input type
+   *
+   * @example FILE
+   */
+  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  /**
+   * The tool's name
+   *
+   * @example extract-text
    */
   name: string;
   /**
-   * The height of the image
+   * The organization name
    *
-   * @example 1024
+   * @example my-organization
    */
-  height: number;
+  orgname: string;
   /**
-   * The image prompt
+   * The tools output type
    *
-   * @example a person standing on the moon
+   * @example TEXT
    */
-  prompt: string;
+  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
   /**
-   * The width of the image
+   * The tools output text
    *
-   * @example 1024
+   * @example Hello, world!
    */
-  width: number;
-};
-
-export type CreateDocumentDto = {
-  /**
-   * The animation's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
+  text: string;
   /**
    * @example https://example.com/example.mp4
    */
   url: string;
+};
+
+export type UpdateToolDto = {
   /**
-   * The size of the documents text segments
+   * The tool description
    *
-   * @default 200
-   * @example 200
+   * @example This tool converts a file to text, regardless of the file type.
    */
-  chunkSize?: number;
+  description?: string;
   /**
-   * The delimiter used to separate the document into text segments. If left blank, only chunkSize will be used.
+   * The tools input type
    *
-   * @default
-   * @example
+   * @example FILE
    */
-  delimiter?: string;
+  inputType?: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  /**
+   * The tool's name
+   *
+   * @example extract-text
+   */
+  name?: string;
+  /**
+   * The tools output type
+   *
+   * @example TEXT
+   */
+  outputType?: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
 };
 
 export type Metadata = {

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Content, JobStatus, Prisma } from "@prisma/client";
+import { Content, Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
@@ -22,12 +22,15 @@ export class ContentRepository
   async create(orgname: string, createContentDto: CreateContentDto) {
     return this.prisma.content.create({
       data: {
-        buildArgs: createContentDto.buildArgs,
-        job: {
-          create: {
-            error: "",
-            orgname,
-            status: JobStatus.QUEUED,
+        jobs: {
+          createMany: {
+            data: createContentDto.toolIds.map((id) => ({
+              input: createContentDto.url,
+              orgname,
+              output: "",
+              status: "QUEUED",
+              toolId: id,
+            })),
           },
         },
         mimeType: "",
@@ -37,12 +40,14 @@ export class ContentRepository
             orgname,
           },
         },
-        type: createContentDto.type,
+        tools: {
+          connect: createContentDto.toolIds.map((id) => ({ id })),
+        },
         url: createContentDto.url,
       },
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
     });
   }
@@ -60,13 +65,12 @@ export class ContentRepository
               OR: [{ name: { contains: contentQueryDto.searchTerm } }],
             }
           : undefined),
-        ...(contentQueryDto.type ? { type: contentQueryDto.type } : undefined),
       },
     });
     const content = await this.prisma.content.findMany({
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
       orderBy: {
         [contentQueryDto.sortBy]: contentQueryDto.sortDirection,
@@ -84,7 +88,6 @@ export class ContentRepository
               OR: [{ name: { contains: contentQueryDto.searchTerm } }],
             }
           : undefined),
-        ...(contentQueryDto.type ? { type: contentQueryDto.type } : undefined),
       },
     });
     return { count, results: content };
@@ -93,8 +96,8 @@ export class ContentRepository
   async findOne(id: string) {
     return this.prisma.content.findUniqueOrThrow({
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
       where: { id },
     });
@@ -108,8 +111,8 @@ export class ContentRepository
         },
       },
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
       where: {
         id,
@@ -133,8 +136,8 @@ export class ContentRepository
         name: updateContentDto.name,
       },
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
       where: {
         id,
@@ -146,8 +149,8 @@ export class ContentRepository
     return this.prisma.content.update({
       data: raw,
       include: {
-        job: true,
-        vectorRecords: true,
+        jobs: true,
+        textChunks: true,
       },
       where: {
         id,

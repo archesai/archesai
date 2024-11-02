@@ -1,5 +1,5 @@
 "use client";
-import { ContentTypeToIcon } from "@/components/content-type-to-icon";
+// import { ContentTypeToIcon } from "@/components/content-type-to-icon";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import ImportCard from "@/components/import-card";
@@ -35,9 +35,9 @@ export default function ContentPage() {
             cell: ({ row }) => {
               return (
                 <div className="flex gap-2">
-                  <ContentTypeToIcon contentType={row.original.mimeType} />
+                  {/* <ContentTypeToIcon contentType={row.original.mimeType} /> */}
                   <Link
-                    className="max-w-[200px] shrink truncate text-base font-medium text-primary"
+                    className="max-w-[200px] shrink truncate text-base font-medium text-primary md:text-sm"
                     href={`/content/single?contentId=${row.original.id}`}
                   >
                     {row.original.name}
@@ -53,7 +53,7 @@ export default function ContentPage() {
             accessorKey: "description",
             cell: ({ row }) => {
               return (
-                <span className="text-base font-light">
+                <span className="text-base md:text-sm">
                   {row.original.description || "No Description"}
                 </span>
               );
@@ -61,7 +61,11 @@ export default function ContentPage() {
             enableHiding: false,
             enableSorting: false,
             header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Description" />
+              <DataTableColumnHeader
+                className="-ml-2 text-sm"
+                column={column}
+                title="Description"
+              />
             ),
           },
 
@@ -69,7 +73,7 @@ export default function ContentPage() {
             accessorKey: "createdAt",
             cell: ({ row }) => {
               return (
-                <span className="text-base font-light">
+                <span className="font-light">
                   {new Date(row.original.createdAt).toLocaleDateString()}
                 </span>
               );
@@ -79,29 +83,40 @@ export default function ContentPage() {
             ),
           },
           {
-            accessorKey: "status",
+            accessorKey: "tools",
             cell: ({ row }) => {
-              return <JobStatusButton job={row.original.job} />;
+              return (
+                <>
+                  {row.original.jobs.map((job) => {
+                    return <JobStatusButton job={job} />;
+                  })}
+                </>
+              );
             },
             header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Status" />
+              <DataTableColumnHeader column={column} title="Tools" />
             ),
           },
         ]}
-        content={(item) => (
-          <div className="flex h-full w-full items-center justify-center">
-            {item.job.status !== "COMPLETE" ? (
-              <JobStatusButton job={item.job} />
-            ) : (
-              <Image
-                alt="source image"
-                height={256}
-                src={item.previewImage}
-                width={256}
-              />
-            )}
-          </div>
-        )}
+        content={(item) => {
+          const pendingJobs = item.jobs.filter(
+            (job) => job.status !== "COMPLETE"
+          );
+          return (
+            <div className="flex h-full w-full items-center justify-center">
+              {pendingJobs.length && pendingJobs[0].status !== "COMPLETE" ? (
+                <JobStatusButton job={pendingJobs[0]} />
+              ) : (
+                <Image
+                  alt="source image"
+                  height={256}
+                  src={item.previewImage}
+                  width={256}
+                />
+              )}
+            </div>
+          );
+        }}
         dataIcon={<File size={24} />}
         defaultView="table"
         findAllPathParams={{

@@ -16,7 +16,7 @@ export const Sidebar = () => {
   const pathname = usePathname() as string;
 
   // Sections to display in the sidebar
-  const sidebarSections = ["home", "create", "data", "settings"];
+  const sidebarSections = ["home", "data", "manage", "studio", "settings"];
 
   // Collect links grouped by section
   const linksBySection: {

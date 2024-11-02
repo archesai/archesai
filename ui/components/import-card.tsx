@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  useDocumentsControllerCreate,
+  useContentControllerCreate,
   useStorageControllerGetReadUrl,
   useStorageControllerGetWriteUrl,
 } from "@/generated/archesApiComponents";
@@ -29,7 +29,7 @@ export default function ImportCard() {
 
   const { mutateAsync: getWriteUrl } = useStorageControllerGetWriteUrl();
   const { mutateAsync: getReadUrl } = useStorageControllerGetReadUrl();
-  const { mutateAsync: indexDocument } = useDocumentsControllerCreate();
+  const { mutateAsync: indexDocument } = useContentControllerCreate();
 
   const handleFiles = (files: FileList | null) => {
     if (files) {
@@ -98,6 +98,7 @@ export default function ImportCard() {
             await indexDocument({
               body: {
                 name: file.name,
+                toolIds: ["extract-text", "summarize"],
                 url: readUrlResponse.read,
               },
               pathParams: {
@@ -160,7 +161,7 @@ export default function ImportCard() {
         description: "Files uploaded successfully.",
         title: "Upload Complete",
       });
-      router.push("/content");
+      router.push(`/content`);
     } catch (error) {
       console.error("An error occurred during file upload:", error);
       toast({
@@ -183,7 +184,7 @@ export default function ImportCard() {
         {/* Drop Area */}
         <Card
           className={cn(
-            "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed bg-transparent p-8 transition-colors duration-300",
+            "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed bg-transparent p-8 transition-colors duration-300",
             dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
             selectedFiles.length > 0 ? "w-1/2" : ""
           )}

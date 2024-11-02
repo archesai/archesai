@@ -275,7 +275,7 @@ export function DataTable<
             key={i}
           >
             <div
-              className="group relative h-48 cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
+              className="group relative h-40 cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
@@ -338,7 +338,7 @@ export function DataTable<
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead
-                    className="h-8 text-base"
+                    className="text-base"
                     colSpan={header.colSpan}
                     key={header.id}
                   >

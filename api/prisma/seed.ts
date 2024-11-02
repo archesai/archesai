@@ -58,25 +58,49 @@ async function main() {
     },
   });
 
+  await prismaService.tool.createMany({
+    data: [
+      {
+        description:
+          "Extract text from a file. This tool supports all file types.",
+        id: "extract-text",
+        inputType: "TEXT",
+        name: "Text Extraction",
+        orgname: user.defaultOrgname,
+        outputType: "TEXT",
+      },
+      {
+        description: "Create an image from text.",
+        id: "text-to-image",
+        inputType: "TEXT",
+        name: "Text to Image",
+        orgname: user.defaultOrgname,
+        outputType: "IMAGE",
+      },
+    ],
+  });
+
   try {
     for (let i = 0; i < 100; i++) {
       const fakeDate = faker.date.past({ years: 1 });
       await prismaService.content.create({
         data: {
-          buildArgs: {},
           createdAt: fakeDate,
           credits: faker.number.int(10000),
           description: faker.lorem.paragraphs(2),
-          job: {
-            create: {
-              createdAt: fakeDate,
-              error: "",
-              organization: {
-                connect: {
+          jobs: {
+            createMany: {
+              data: [
+                {
+                  createdAt: fakeDate,
+                  error: "",
+                  input: faker.internet.url(),
                   orgname: user.defaultOrgname,
+                  output: faker.lorem.sentence(),
+                  status: "COMPLETE",
+                  toolId: "extract-text",
                 },
-              },
-              status: "COMPLETE",
+              ],
             },
           },
           mimeType: "application/pdf",
@@ -87,7 +111,6 @@ async function main() {
             },
           },
           previewImage: "https://picsum.photos/200/300",
-          type: "DOCUMENT",
           url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
         },
       });

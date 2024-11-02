@@ -33,7 +33,7 @@ export class LoaderService {
     totalTokens: number;
   }> {
     this.logger.log(
-      `Extracting text from ${url} with ${chunkSize} chunk size and ${delimiter} delimiter`
+      `Extracting text from ${url.split("?")[0]} with ${chunkSize} chunk size and ${delimiter} delimiter`
     );
 
     try {

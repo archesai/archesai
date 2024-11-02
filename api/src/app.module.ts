@@ -1,5 +1,5 @@
 import { HttpModule } from "@nestjs/axios";
-import { BullModule } from "@nestjs/bull";
+import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
@@ -16,13 +16,11 @@ import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
 import { ChatbotsModule } from "./chatbots/chatbots.module";
 import { ContentModule } from "./content/content.module";
-import { DocumentsModule } from "./documents/documents.module";
 import { EmailModule } from "./email/email.module";
 import { EmailChangeModule } from "./email-change/email-change.module";
 import { EmailVerificationModule } from "./email-verification/email-verification.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { FirebaseModule } from "./firebase/firebase.module";
-import { ImagesModule } from "./images/images.module";
 import { JobsModule } from "./jobs/jobs.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
@@ -33,9 +31,10 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
+import { TextChunksModule } from "./text-chunks/text-chunks.module";
 import { ThreadsModule } from "./threads/threads.module";
+import { ToolsModule } from "./tools/tools.module";
 import { UsersModule } from "./users/users.module";
-import { VectorRecordModule } from "./vector-records/vector-record.module";
 import { WebsocketsGateway } from "./websockets/websockets.gateway";
 import { WebsocketsModule } from "./websockets/websockets.module";
 
@@ -168,7 +167,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        redis: {
+        connection: {
           host: configService.get("REDIS_HOST"),
           password: configService.get("REDIS_AUTH"),
           port: Number(configService.get("REDIS_PORT")),
@@ -204,11 +203,10 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     FirebaseModule,
     PasswordResetModule,
     EmailChangeModule,
-    VectorRecordModule,
+    TextChunksModule,
     ARTokensModule,
-    ImagesModule,
-    DocumentsModule,
     SpeechModule,
+    ToolsModule,
   ],
   providers: [WebsocketsGateway],
 })

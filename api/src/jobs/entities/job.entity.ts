@@ -20,6 +20,9 @@ export class JobEntity extends BaseEntity implements Job {
   @Expose()
   completedAt: Date;
 
+  @ApiHideProperty()
+  contentId: string;
+
   @ApiProperty({
     description: "The error message if the job failed",
     example: "Could not process the document",
@@ -27,9 +30,31 @@ export class JobEntity extends BaseEntity implements Job {
   @Expose()
   error: string;
 
+  @ApiProperty({
+    description: "The input to the tool",
+    example: "https://example.com/example.mp4",
+  })
+  @Expose()
+  input: string;
+
+  @ApiProperty({
+    description:
+      "The tool name that was used to process the content in this job",
+    example: "Text Extraction",
+  })
+  @Expose()
+  name: string;
+
   // Private Properties
   @ApiHideProperty()
   orgname: string;
+
+  @ApiProperty({
+    description: "The output of the tool",
+    example: "Hello, world!",
+  })
+  @Expose()
+  output: string;
 
   @ApiProperty({
     description: "The percent progress of the current job",
@@ -61,9 +86,17 @@ export class JobEntity extends BaseEntity implements Job {
   @Expose()
   status: JobStatus;
 
+  @ApiProperty({
+    description: "The tool id that was used to process the content in this job",
+    example: "extract-text",
+  })
+  @Expose()
+  toolId: string;
+
   constructor(job: Job) {
     super();
     Object.assign(this, job);
     this.resourceLink = `/organizations/${job.orgname}/content/${job.id}`;
+    this.name = this.toolId;
   }
 }

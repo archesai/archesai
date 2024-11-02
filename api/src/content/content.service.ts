@@ -1,5 +1,7 @@
+import { InjectQueue } from "@nestjs/bullmq";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Content, Job, Prisma } from "@prisma/client";
+import { Queue } from "bullmq";
 
 import { BaseService } from "../common/base.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
@@ -20,7 +22,8 @@ export class ContentService
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentRepository: ContentRepository,
-    private websocketsService: WebsocketsService
+    private websocketsService: WebsocketsService,
+    @InjectQueue("tool") private readonly toolQueue: Queue
   ) {}
 
   async create(
@@ -31,7 +34,22 @@ export class ContentService
       orgname,
       createContentDto
     );
-    return new ContentEntity(content);
+    this.websocketsService.socket.to(orgname).emit("update");
+    const contentEntity = new ContentEntity(content);
+    contentEntity.jobs.forEach((job) => {
+      this.toolQueue.add(
+        job.toolId,
+        {
+          content: contentEntity,
+          job,
+        },
+        {
+          jobId: job.id,
+        }
+      );
+    });
+
+    return contentEntity;
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
@@ -51,8 +69,8 @@ export class ContentService
   }
 
   async populateReadUrl(
-    content: { job: Job } & Content
-  ): Promise<{ job: Job } & Content> {
+    content: { jobs: Job[] } & Content
+  ): Promise<{ jobs: Job[] } & Content> {
     if (
       content.url.startsWith(
         `https://storage.googleapis.com/archesai/storage/${content.orgname}/`

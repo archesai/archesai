@@ -6,8 +6,8 @@ import { EmbeddingsModule } from "../embeddings/embeddings.module";
 import { LLMModule } from "../llm/llm.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { PrismaModule } from "../prisma/prisma.module";
+import { TextChunksModule } from "../text-chunks/text-chunks.module";
 import { ThreadsModule } from "../threads/threads.module";
-import { VectorRecordModule } from "../vector-records/vector-record.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
 import { MessageRepository } from "./message.repository";
 import { MessagesController } from "./messages.controller";
@@ -24,7 +24,7 @@ import { MessagesService } from "./messages.service";
     ChatbotsModule,
     ThreadsModule,
     ContentModule,
-    VectorRecordModule,
+    TextChunksModule,
   ],
   providers: [MessagesService, MessageRepository],
 })

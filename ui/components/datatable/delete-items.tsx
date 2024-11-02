@@ -82,8 +82,8 @@ export const DeleteItems = <TDeleteVariables,>({
         )}
       </DialogTrigger>
 
-      <DialogContent className="gap-0 p-4">
-        <div className="flex flex-col items-center justify-center gap-3 p-5">
+      <DialogContent className="gap-0 p-0">
+        <div className="flex flex-col items-center justify-center gap-3 p-4">
           <Trash className="text-destructive" />
           <p className="text-center">
             {t(

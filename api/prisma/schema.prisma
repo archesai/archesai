@@ -24,10 +24,11 @@ enum AuthProviderType {
   TWITTER
 }
 
-enum ContentType {
-  DOCUMENT
-  ANIMATION
+enum ToolIOType {
+  TEXT
   IMAGE
+  VIDEO
+  AUDIO
 }
 
 enum JobStatus {
@@ -55,21 +56,39 @@ model Content {
   text        String?
 
   url          String?
-  credits      Int         @default(0)
+  credits      Int     @default(0)
   mimeType     String
-  type         ContentType
   previewImage String?
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  job   Job?    @relation(fields: [jobId], references: [id])
-  jobId String? @unique
+  jobs       Job[]
+  tools      Tool[]
+  textChunks TextChunk[]
+  citations  Citation[]
+}
 
-  vectorRecords VectorRecord[]
-  citations     Citation[]
+model Tool {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  buildArgs Json
+  name        String
+  description String?
+
+  inputType  ToolIOType
+  outputType ToolIOType
+
+  text String?
+  url  String?
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  jobs Job[]
+
+  content Content[]
 }
 
 model Job {
@@ -86,7 +105,14 @@ model Job {
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  content Content?
+  tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  toolId String
+
+  input  String
+  output String
+
+  content   Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId String?
 }
 
 model Chatbot {
@@ -185,13 +211,13 @@ model User {
   arTokens      ARToken[]
 }
 
-model VectorRecord {
+model TextChunk {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   text      String
-  embedding Unsupported("vector")
+  embedding Unsupported("vector")?
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
@@ -211,13 +237,14 @@ model Organization {
   credits          Int      @default(0)
   plan             PlanType @default(FREE)
 
-  members       Member[]
-  apiTokens     ApiToken[]
-  threads       Thread[]
-  chatbots      Chatbot[]
-  jobs          Job[]
-  content       Content[]
-  vectorRecords VectorRecord[]
+  members    Member[]
+  apiTokens  ApiToken[]
+  threads    Thread[]
+  chatbots   Chatbot[]
+  jobs       Job[]
+  content    Content[]
+  textChunks TextChunk[]
+  tools      Tool[]
 }
 
 model Member {

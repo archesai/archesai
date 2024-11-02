@@ -1,3 +1,4 @@
+import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 
 import { PrismaModule } from "../prisma/prisma.module";
@@ -10,7 +11,17 @@ import { ContentService } from "./content.service";
 @Module({
   controllers: [ContentController],
   exports: [ContentService],
-  imports: [PrismaModule, StorageModule.forRoot(), WebsocketsModule],
+  imports: [
+    PrismaModule,
+    StorageModule.forRoot(),
+    WebsocketsModule,
+    BullModule.registerQueue({
+      defaultJobOptions: {
+        attempts: 1,
+      },
+      name: "tool",
+    }),
+  ],
   providers: [ContentService, ContentRepository],
 })
 export class ContentModule {}

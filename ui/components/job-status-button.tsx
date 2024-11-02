@@ -38,6 +38,9 @@ export const JobStatusButton = ({ job }: { job: JobEntity }) => {
       </PopoverTrigger>
       <PopoverContent className="overflow-auto p-4 text-sm">
         <div>
+          <strong className="font-semibold">Tool:</strong> {job.toolId}
+        </div>
+        <div>
           <strong className="font-semibold">Status:</strong> {job.status}
         </div>
         <div>

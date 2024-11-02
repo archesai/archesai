@@ -11,8 +11,8 @@ import { LLMService } from "../llm/llm.service";
 import { MessageQueryDto } from "../messages/dto/message-query.dto";
 import { MessageEntity } from "../messages/entities/message.entity";
 import { OrganizationsService } from "../organizations/organizations.service";
+import { TextChunksService } from "../text-chunks/text-chunks.service";
 import { ThreadsService } from "../threads/threads.service";
-import { VectorRecordService } from "../vector-records/vector-record.service";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 import { MessageRepository } from "./message.repository";
@@ -30,7 +30,7 @@ export class MessagesService {
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
     private contentService: ContentService,
-    private vectorRecordService: VectorRecordService
+    private textChunksService: TextChunksService
   ) {}
 
   async create(
@@ -162,8 +162,8 @@ export class MessagesService {
       //           continue;
       //         }
       //         const contentId = match.id.split("__")[0];
-      //         const vectorRecord = await this.vectorRecordService.findOne(match.id);
-      //         const text = vectorRecord.text;
+      //         const textChunk = await this.textChunksService.findOne(match.id);
+      //         const text = textChunk.text;
       //         if (!text) {
       //           continue;
       //         }

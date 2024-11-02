@@ -10,7 +10,7 @@ import { Table } from "@tanstack/react-table";
 import { GridIcon, ListIcon } from "lucide-react";
 
 import { Checkbox } from "../ui/checkbox";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+// import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DataTableViewOptions } from "./data-table-view-options";
 // import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { DatePickerWithRange } from "./date-range-picker";
@@ -45,7 +45,7 @@ export function DataTableToolbar<TData>({
         placeholder={`Search ${itemType}s...`}
         value={query}
       />
-      {table.getColumn("llmBase") && (
+      {/* {table.getColumn("llmBase") && (
         <DataTableFacetedFilter
           column={table.getColumn("llmBase")}
           options={[
@@ -56,7 +56,7 @@ export function DataTableToolbar<TData>({
           ]}
           title="Language Model"
         />
-      )}
+      )} */}
       {isFiltered && (
         <Button
           className="flex h-8 gap-2 p-2"

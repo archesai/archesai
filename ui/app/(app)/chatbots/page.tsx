@@ -54,13 +54,15 @@ export default function ChatbotsPageContent() {
         {
           accessorKey: "description",
           cell: ({ row }) => {
-            return (
-              <span className="font-medium">{row.original.description}</span>
-            );
+            return <span className="text-sm">{row.original.description}</span>;
           },
           enableSorting: false,
           header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Description" />
+            <DataTableColumnHeader
+              className="text-sm"
+              column={column}
+              title="Description"
+            />
           ),
         },
       ]}

@@ -14,7 +14,7 @@ export class JobRepository
 
   async findAll(orgname: string, jobQueryDto: JobQueryDto) {
     const count = await this.prisma.job.count({
-      where: { ...jobQueryDto, orgname },
+      where: { orgname },
     });
     const results = await this.prisma.job.findMany({
       orderBy: {
@@ -22,7 +22,7 @@ export class JobRepository
       },
       skip: jobQueryDto.offset,
       take: jobQueryDto.limit,
-      where: { ...jobQueryDto, orgname },
+      where: { orgname },
     });
     return { count, results };
   }

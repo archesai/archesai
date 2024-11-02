@@ -11,13 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContentControllerFindOne } from "@/generated/archesApiComponents";
 import {
-  useVectorRecordControllerFindAll,
-  VectorRecordControllerFindAllPathParams,
+  TextChunksControllerFindAllPathParams,
+  useTextChunksControllerFindAll,
 } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
-import { VectorRecordEntity } from "@/generated/archesApiSchemas";
+import { TextChunkEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { File } from "lucide-react";
@@ -73,42 +74,60 @@ export default function ContentDetailsPage() {
               <Badge variant="secondary">
                 {format(new Date(content.createdAt), "PPP")}
               </Badge>
+              {content.jobs.map((job) => {
+                return <Badge variant="secondary">{job.toolId}</Badge>;
+              })}
             </div>
           </CardContent>
         </Card>
-        <DataTable<
-          { name: string } & VectorRecordEntity,
-          VectorRecordControllerFindAllPathParams,
-          undefined
+
+        <Tabs
+          className="flex h-full flex-col gap-1"
+          defaultValue={content.jobs[0].toolId}
         >
-          columns={[
-            {
-              accessorKey: "text",
-              cell: ({ row }) => {
-                return row.original.text;
-              },
-              header: ({ column }) => (
-                <DataTableColumnHeader column={column} title="Text" />
-              ),
-            },
-          ]}
-          content={() => (
-            <div className="flex h-full w-full items-center justify-center"></div>
-          )}
-          dataIcon={<File size={24} />}
-          defaultView="table"
-          findAllPathParams={{
-            contentId: contentId as string,
-            orgname: defaultOrgname,
-          }}
-          getDeleteVariablesFromItem={() => {}}
-          handleSelect={() => {}}
-          itemType="vector"
-          useFindAll={useVectorRecordControllerFindAll}
-          useRemove={() => ({
-            mutateAsync: async () => {},
-          })}
-        />
+          <TabsList>
+            {content.jobs.map((job) => {
+              return <TabsTrigger value={job.toolId}>{job.toolId}</TabsTrigger>;
+            })}
+          </TabsList>
+          <TabsContent className="grow" value="extract-text">
+            <DataTable<
+              { name: string } & TextChunkEntity,
+              TextChunksControllerFindAllPathParams,
+              undefined
+            >
+              columns={[
+                {
+                  accessorKey: "text",
+                  cell: ({ row }) => {
+                    return row.original.text;
+                  },
+                  header: ({ column }) => (
+                    <DataTableColumnHeader column={column} title="Text" />
+                  ),
+                },
+              ]}
+              content={() => (
+                <div className="flex h-full w-full items-center justify-center"></div>
+              )}
+              dataIcon={<File size={24} />}
+              defaultView="table"
+              findAllPathParams={{
+                contentId: contentId as string,
+                orgname: defaultOrgname,
+              }}
+              getDeleteVariablesFromItem={() => {}}
+              handleSelect={() => {}}
+              itemType="vector"
+              useFindAll={useTextChunksControllerFindAll}
+              useRemove={() => ({
+                mutateAsync: async () => {},
+              })}
+            />
+          </TabsContent>
+          <TabsContent value="image-to-text"></TabsContent>
+          <TabsContent value="password">Change your password here.</TabsContent>
+        </Tabs>
       </div>
       {/*RIGHT SIDE*/}
       <Card className="w-1/2 overflow-hidden">{renderContent(content)}</Card>

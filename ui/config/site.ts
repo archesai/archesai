@@ -7,11 +7,11 @@ import {
   DollarSign,
   HelpCircle,
   HomeIcon,
-  Image,
   KeySquare,
   // Layers,
   Lock,
   MessageSquare,
+  PackageCheck,
   Server,
   User,
   Users,
@@ -48,7 +48,7 @@ export const siteConfig = {
       {
         href: "/chatbots",
         Icon: MessageSquare,
-        section: "create",
+        section: "studio",
         title: "Chatbot",
       },
     ],
@@ -71,7 +71,7 @@ export const siteConfig = {
       {
         href: "/content/single",
         Icon: Server,
-        title: "Detils",
+        title: "Details",
       },
     ],
     "/home": [
@@ -82,14 +82,7 @@ export const siteConfig = {
         title: "Home",
       },
     ],
-    "/images": [
-      {
-        href: "/images",
-        Icon: Image,
-        section: "create",
-        title: "Image",
-      },
-    ],
+
     "/organization": [
       {
         href: "/organization",
@@ -140,6 +133,20 @@ export const siteConfig = {
         Icon: KeySquare,
         tab: "Security",
         title: "Security",
+      },
+    ],
+    "/tools": [
+      {
+        href: "/tools",
+        Icon: PackageCheck,
+        section: "manage",
+        tab: "All",
+        title: "Tools",
+      },
+      {
+        href: "/tools/jobs",
+        Icon: PackageCheck,
+        tab: "Jobs",
       },
     ],
   } as Record<
