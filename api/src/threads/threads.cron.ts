@@ -10,7 +10,7 @@ export class ThreadsCron {
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async cleanupUnused() {
-    this.logger.log("Running cleanupUnused cron job");
+    this.logger.log("Running cleanupUnused cronjob");
     const numRemoved = await this.threadsService.cleanupUnused();
     this.logger.log("Removed " + numRemoved + " unused threads");
   }

@@ -13,7 +13,7 @@ export class TextChunkEntity extends BaseEntity implements TextChunk {
   orgname: string;
 
   @ApiProperty({
-    description: "The job that created this vector record",
+    description: "The text content of the chunk",
   })
   @Expose()
   text: string;

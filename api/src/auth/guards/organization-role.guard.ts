@@ -3,6 +3,8 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
@@ -11,6 +13,7 @@ import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class OrganizationRoleGuard implements CanActivate {
+  private readonly logger = new Logger(OrganizationRoleGuard.name);
   constructor(private reflector: Reflector) {}
 
   canActivate(
@@ -36,9 +39,10 @@ export class OrganizationRoleGuard implements CanActivate {
       (val) => val.orgname == orgname
     );
     if (!membership) {
-      throw new ForbiddenException(
-        "You aress not authorized to access this endpoint"
+      this.logger.error(
+        `User ${currentUser.username} is not a member of organization ${orgname}`
       );
+      throw new NotFoundException();
     }
 
     const roles = this.reflector.getAllAndOverride<string[]>("roles", [
@@ -50,6 +54,9 @@ export class OrganizationRoleGuard implements CanActivate {
     }
 
     if (!roles.includes(membership.role)) {
+      this.logger.error(
+        `User ${currentUser.username} does not have the required role in organization ${orgname}`
+      );
       throw new ForbiddenException(
         "You are not authorized to access this endpoint"
       );

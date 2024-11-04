@@ -1,6 +1,4 @@
-// src/auth/strategies/jwt.strategy.ts
-
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
@@ -10,6 +8,8 @@ import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger: Logger = new Logger("JWT Strategy");
+
   constructor(
     private configService: ConfigService,
     private usersService: UsersService
@@ -22,6 +22,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any): Promise<CurrentUserDto> {
+    if (!payload.sub) {
+      return null;
+    }
+    this.logger.log(`Validating JWT: ${payload.sub}`);
     const { sub: id } = payload;
     return this.usersService.findOne(id);
   }

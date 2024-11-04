@@ -53,13 +53,15 @@ export class MemberEntity extends BaseEntity implements Member {
   @ApiProperty({
     description: "The username of this member",
     example: "jonathan",
+    required: false,
+    type: String,
   })
   @Expose()
-  username: string;
+  username: null | string;
 
   constructor(member: Member) {
     super();
     Object.assign(this, member);
-    this.name = this.username;
+    this.name = this.username || "";
   }
 }

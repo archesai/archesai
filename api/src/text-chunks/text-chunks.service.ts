@@ -1,13 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { TextChunk } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
+import { PaginatedDto } from "../common/paginated.dto";
 import { TextChunkQueryDto } from "./dto/text-chunk-query.dto";
+import { TextChunkEntity } from "./entities/text-chunk.entity";
 import { TextChunkRepository } from "./text-chunk.repository";
 
 @Injectable()
 export class TextChunksService
-  implements BaseService<TextChunk, undefined, TextChunkQueryDto, undefined>
+  implements
+    BaseService<TextChunkEntity, undefined, TextChunkQueryDto, undefined>
 {
   private logger = new Logger(TextChunksService.name);
   constructor(private textChunkRepository: TextChunkRepository) {}
@@ -17,15 +19,26 @@ export class TextChunksService
     textChunkQueryDto: TextChunkQueryDto,
     contentId?: string
   ) {
-    return this.textChunkRepository.findAll(
+    const { count, results } = await this.textChunkRepository.findAll(
       orgname,
       textChunkQueryDto,
       contentId
     );
+    const textChunkEntities = results.map(
+      (textChunk) => new TextChunkEntity(textChunk)
+    );
+    return new PaginatedDto<TextChunkEntity>({
+      metadata: {
+        limit: textChunkQueryDto.limit,
+        offset: textChunkQueryDto.offset,
+        totalResults: count,
+      },
+      results: textChunkEntities,
+    });
   }
 
   async findOne(id: string) {
-    return this.textChunkRepository.findOne(id);
+    return new TextChunkEntity(await this.textChunkRepository.findOne(id));
   }
 
   async query(

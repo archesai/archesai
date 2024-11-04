@@ -17,6 +17,6 @@ export class CreateApiTokenDto extends PickType(ApiTokenEntity, [
     required: false,
   })
   @IsOptional()
-  @IsString({ each: true })
+  @IsString({ always: false, each: true })
   chatbotIds?: string[] = [];
 }

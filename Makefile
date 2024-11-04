@@ -1,5 +1,6 @@
-PROFILE ?= local
+PROFILE ?= stage
 CONTAINER ?= arches-api
+TEST_FILE ?= ""
 
 build:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
@@ -13,6 +14,10 @@ seed:
 migrations:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm arches-api-seed /bin/sh -c 'npm run migrations:dev'
 
+# This will curl bob:3001/-json to schema.json
+generate:
+	cd ui && npm run gen && cd .. && cd api/test && curl -X GET "http://bob:3001/-yaml"  > openapi-spec.yaml
+
 models:
 	docker exec -it arches-ollama bash -c "echo llama3.1 mxbai-embed-large | xargs -n1 ollama pull"
 
@@ -22,7 +27,7 @@ lint:
 format:
 	cd api && npm run format && cd ../ui && npm run format
 	
-test:
+test: generate
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
 
 stop:

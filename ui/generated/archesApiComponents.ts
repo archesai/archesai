@@ -9,6 +9,367 @@ import type * as Fetcher from "./archesApiFetcher";
 import { archesApiFetch } from "./archesApiFetcher";
 import type * as Schemas from "./archesApiSchemas";
 
+export type PipelinesControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type PipelinesControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
+
+export type PipelinesControllerCreateVariables = {
+  body: Schemas.CreatePipelineDto;
+  pathParams: PipelinesControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new pipeline. ADMIN ONLY.
+ */
+export const fetchPipelinesControllerCreate = (
+  variables: PipelinesControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.PipelineEntity,
+    PipelinesControllerCreateError,
+    Schemas.CreatePipelineDto,
+    {},
+    {},
+    PipelinesControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/pipelines",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new pipeline. ADMIN ONLY.
+ */
+export const usePipelinesControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.PipelineEntity,
+      PipelinesControllerCreateError,
+      PipelinesControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.PipelineEntity,
+    PipelinesControllerCreateError,
+    PipelinesControllerCreateVariables
+  >({
+    mutationFn: (variables: PipelinesControllerCreateVariables) =>
+      fetchPipelinesControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type PipelinesControllerFindAllPathParams = {
+  orgname: string;
+};
+
+export type PipelinesControllerFindAllQueryParams = {
+  /**
+   * The end date to search to
+   */
+  endDate?: string;
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   */
+  limit?: number;
+  /**
+   * The offset of the returned results
+   *
+   * @default 0
+   */
+  offset?: number;
+  /**
+   * Search term
+   *
+   * @default
+   */
+  searchTerm?: string;
+  /**
+   * The field to sort the results by
+   *
+   * @default createdAt
+   */
+  sortBy?: "createdAt";
+  /**
+   * The direction to sort the results by
+   *
+   * @default desc
+   */
+  sortDirection?: "asc" | "desc";
+  /**
+   * The start date to search from
+   */
+  startDate?: string;
+};
+
+export type PipelinesControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+
+export type PipelinesControllerFindAllResponse = Schemas.PaginatedDto & {
+  results?: Schemas.PipelineEntity[];
+};
+
+export type PipelinesControllerFindAllVariables = {
+  pathParams: PipelinesControllerFindAllPathParams;
+  queryParams?: PipelinesControllerFindAllQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get all pipelines. ADMIN ONLY.
+ */
+export const fetchPipelinesControllerFindAll = (
+  variables: PipelinesControllerFindAllVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    PipelinesControllerFindAllResponse,
+    PipelinesControllerFindAllError,
+    undefined,
+    {},
+    PipelinesControllerFindAllQueryParams,
+    PipelinesControllerFindAllPathParams
+  >({
+    url: "/organizations/{orgname}/pipelines",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get all pipelines. ADMIN ONLY.
+ */
+export const usePipelinesControllerFindAll = <
+  TData = PipelinesControllerFindAllResponse,
+>(
+  variables: PipelinesControllerFindAllVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      PipelinesControllerFindAllResponse,
+      PipelinesControllerFindAllError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    PipelinesControllerFindAllResponse,
+    PipelinesControllerFindAllError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/pipelines",
+      operationId: "pipelinesControllerFindAll",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchPipelinesControllerFindAll(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type PipelinesControllerFindOnePathParams = {
+  orgname: string;
+  pipelineId: string;
+};
+
+export type PipelinesControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+
+export type PipelinesControllerFindOneVariables = {
+  pathParams: PipelinesControllerFindOnePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get a pipeline. ADMIN ONLY.
+ */
+export const fetchPipelinesControllerFindOne = (
+  variables: PipelinesControllerFindOneVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.PipelineEntity,
+    PipelinesControllerFindOneError,
+    undefined,
+    {},
+    {},
+    PipelinesControllerFindOnePathParams
+  >({
+    url: "/organizations/{orgname}/pipelines/{pipelineId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a pipeline. ADMIN ONLY.
+ */
+export const usePipelinesControllerFindOne = <TData = Schemas.PipelineEntity,>(
+  variables: PipelinesControllerFindOneVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.PipelineEntity,
+      PipelinesControllerFindOneError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.PipelineEntity,
+    PipelinesControllerFindOneError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/pipelines/{pipelineId}",
+      operationId: "pipelinesControllerFindOne",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchPipelinesControllerFindOne(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type PipelinesControllerRemovePathParams = {
+  orgname: string;
+  pipelineId: string;
+};
+
+export type PipelinesControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+
+export type PipelinesControllerRemoveVariables = {
+  pathParams: PipelinesControllerRemovePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Delete a pipeline. ADMIN ONLY.
+ */
+export const fetchPipelinesControllerRemove = (
+  variables: PipelinesControllerRemoveVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    PipelinesControllerRemoveError,
+    undefined,
+    {},
+    {},
+    PipelinesControllerRemovePathParams
+  >({
+    url: "/organizations/{orgname}/pipelines/{pipelineId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Delete a pipeline. ADMIN ONLY.
+ */
+export const usePipelinesControllerRemove = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      PipelinesControllerRemoveError,
+      PipelinesControllerRemoveVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    PipelinesControllerRemoveError,
+    PipelinesControllerRemoveVariables
+  >({
+    mutationFn: (variables: PipelinesControllerRemoveVariables) =>
+      fetchPipelinesControllerRemove({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type PipelinesControllerUpdatePathParams = {
+  orgname: string;
+  pipelineId: string;
+};
+
+export type PipelinesControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+
+export type PipelinesControllerUpdateVariables = {
+  body?: Schemas.UpdatePipelineDto;
+  pathParams: PipelinesControllerUpdatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Update a pipeline. ADMIN ONLY.
+ */
+export const fetchPipelinesControllerUpdate = (
+  variables: PipelinesControllerUpdateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.PipelineEntity,
+    PipelinesControllerUpdateError,
+    Schemas.UpdatePipelineDto,
+    {},
+    {},
+    PipelinesControllerUpdatePathParams
+  >({
+    url: "/organizations/{orgname}/pipelines/{pipelineId}",
+    method: "patch",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Update a pipeline. ADMIN ONLY.
+ */
+export const usePipelinesControllerUpdate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.PipelineEntity,
+      PipelinesControllerUpdateError,
+      PipelinesControllerUpdateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.PipelineEntity,
+    PipelinesControllerUpdateError,
+    PipelinesControllerUpdateVariables
+  >({
+    mutationFn: (variables: PipelinesControllerUpdateVariables) =>
+      fetchPipelinesControllerUpdate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type AuthControllerLoginError = Fetcher.ErrorWrapper<undefined>;
 
 export type AuthControllerLoginVariables = {
@@ -17,7 +378,7 @@ export type AuthControllerLoginVariables = {
 
 export const fetchAuthControllerLogin = (
   variables: AuthControllerLoginVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -36,7 +397,7 @@ export const useAuthControllerLogin = (
       AuthControllerLoginVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -57,7 +418,7 @@ export type AuthControllerRefreshTokenVariables =
 
 export const fetchAuthControllerRefreshToken = (
   variables: AuthControllerRefreshTokenVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -76,7 +437,7 @@ export const useAuthControllerRefreshToken = (
       AuthControllerRefreshTokenVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -101,7 +462,7 @@ export type AuthControllerRegisterVariables = {
  */
 export const fetchAuthControllerRegister = (
   variables: AuthControllerRegisterVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -123,7 +484,7 @@ export const useAuthControllerRegister = (
       AuthControllerRegisterVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -144,7 +505,7 @@ export type UserControllerDeactivateVariables =
 
 export const fetchUserControllerDeactivate = (
   variables: UserControllerDeactivateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -163,7 +524,7 @@ export const useUserControllerDeactivate = (
       UserControllerDeactivateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -186,7 +547,7 @@ export type UserControllerFindOneVariables = ArchesApiContext["fetcherOptions"];
  */
 export const fetchUserControllerFindOne = (
   variables: UserControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.UserEntity,
@@ -200,7 +561,7 @@ export const fetchUserControllerFindOne = (
 /**
  * Get a user. ADMIN ONLY.
  */
-export const useUserControllerFindOne = <TData = Schemas.UserEntity>(
+export const useUserControllerFindOne = <TData = Schemas.UserEntity,>(
   variables: UserControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -209,7 +570,7 @@ export const useUserControllerFindOne = <TData = Schemas.UserEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -241,7 +602,7 @@ export type UserControllerUpdateVariables = {
  */
 export const fetchUserControllerUpdate = (
   variables: UserControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.UserEntity,
@@ -263,7 +624,7 @@ export const useUserControllerUpdate = (
       UserControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -277,8 +638,13 @@ export const useUserControllerUpdate = (
   });
 };
 
-export type OrganizationsControllerCreateError =
-  Fetcher.ErrorWrapper<undefined>;
+export type OrganizationsControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type OrganizationsControllerCreateVariables = {
   body: Schemas.CreateOrganizationDto;
@@ -289,7 +655,7 @@ export type OrganizationsControllerCreateVariables = {
  */
 export const fetchOrganizationsControllerCreate = (
   variables: OrganizationsControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -311,7 +677,7 @@ export const useOrganizationsControllerCreate = (
       OrganizationsControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -341,7 +707,7 @@ export type OrganizationsControllerDeleteVariables = {
  */
 export const fetchOrganizationsControllerDelete = (
   variables: OrganizationsControllerDeleteVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -368,7 +734,7 @@ export const useOrganizationsControllerDelete = (
       OrganizationsControllerDeleteVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -398,7 +764,7 @@ export type OrganizationsControllerFindOneVariables = {
  */
 export const fetchOrganizationsControllerFindOne = (
   variables: OrganizationsControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -423,7 +789,7 @@ export const useOrganizationsControllerFindOne = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -440,7 +806,7 @@ export const useOrganizationsControllerFindOne = <
     queryFn: ({ signal }) =>
       fetchOrganizationsControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -464,7 +830,7 @@ export type OrganizationsControllerUpdateVariables = {
  */
 export const fetchOrganizationsControllerUpdate = (
   variables: OrganizationsControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -486,7 +852,7 @@ export const useOrganizationsControllerUpdate = (
       OrganizationsControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -516,7 +882,7 @@ export type BillingControllerCancelSubscriptionPlanVariables = {
  */
 export const fetchBillingControllerCancelSubscriptionPlan = (
   variables: BillingControllerCancelSubscriptionPlanVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -543,7 +909,7 @@ export const useBillingControllerCancelSubscriptionPlan = (
       BillingControllerCancelSubscriptionPlanVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -581,7 +947,7 @@ export type BillingControllerChangeSubscriptionPlanVariables = {
  */
 export const fetchBillingControllerChangeSubscriptionPlan = (
   variables: BillingControllerChangeSubscriptionPlanVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -608,7 +974,7 @@ export const useBillingControllerChangeSubscriptionPlan = (
       BillingControllerChangeSubscriptionPlanVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -641,7 +1007,7 @@ export type BillingControllerCreateBillingPortalVariables = {
  */
 export const fetchBillingControllerCreateBillingPortal = (
   variables: BillingControllerCreateBillingPortalVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
@@ -668,7 +1034,7 @@ export const useBillingControllerCreateBillingPortal = (
       BillingControllerCreateBillingPortalVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -706,7 +1072,7 @@ export type BillingControllerCreateCheckoutSessionVariables = {
  */
 export const fetchBillingControllerCreateCheckoutSession = (
   variables: BillingControllerCreateCheckoutSessionVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
@@ -733,7 +1099,7 @@ export const useBillingControllerCreateCheckoutSession = (
       BillingControllerCreateCheckoutSessionVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -762,7 +1128,7 @@ export type BillingControllerGetPlansVariables =
  */
 export const fetchBillingControllerGetPlans = (
   variables: BillingControllerGetPlansVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     BillingControllerGetPlansResponse,
@@ -787,7 +1153,7 @@ export const useBillingControllerGetPlans = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -804,7 +1170,7 @@ export const useBillingControllerGetPlans = <
     queryFn: ({ signal }) =>
       fetchBillingControllerGetPlans(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -830,7 +1196,7 @@ export type BillingControllerListPaymentMethodsVariables = {
  */
 export const fetchBillingControllerListPaymentMethods = (
   variables: BillingControllerListPaymentMethodsVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     BillingControllerListPaymentMethodsResponse,
@@ -860,7 +1226,7 @@ export const useBillingControllerListPaymentMethods = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -877,7 +1243,7 @@ export const useBillingControllerListPaymentMethods = <
     queryFn: ({ signal }) =>
       fetchBillingControllerListPaymentMethods(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -901,7 +1267,7 @@ export type BillingControllerRemovePaymentMethodVariables = {
  */
 export const fetchBillingControllerRemovePaymentMethod = (
   variables: BillingControllerRemovePaymentMethodVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -928,7 +1294,7 @@ export const useBillingControllerRemovePaymentMethod = (
       BillingControllerRemovePaymentMethodVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -949,7 +1315,13 @@ export type ApiTokensControllerCreatePathParams = {
   orgname: string;
 };
 
-export type ApiTokensControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type ApiTokensControllerCreateVariables = {
   body: Schemas.CreateApiTokenDto;
@@ -961,7 +1333,7 @@ export type ApiTokensControllerCreateVariables = {
  */
 export const fetchApiTokensControllerCreate = (
   variables: ApiTokensControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -988,7 +1360,7 @@ export const useApiTokensControllerCreate = (
       ApiTokensControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1067,7 +1439,7 @@ export type ApiTokensControllerFindAllVariables = {
  */
 export const fetchApiTokensControllerFindAll = (
   variables: ApiTokensControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     ApiTokensControllerFindAllResponse,
@@ -1097,7 +1469,7 @@ export const useApiTokensControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -1114,7 +1486,7 @@ export const useApiTokensControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchApiTokensControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1137,7 +1509,7 @@ export type ApiTokensControllerFindOneVariables = {
  */
 export const fetchApiTokensControllerFindOne = (
   variables: ApiTokensControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -1156,7 +1528,7 @@ export const fetchApiTokensControllerFindOne = (
 /**
  * Get a API token. ADMIN ONLY.
  */
-export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity>(
+export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity,>(
   variables: ApiTokensControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -1165,7 +1537,7 @@ export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -1182,7 +1554,7 @@ export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity>(
     queryFn: ({ signal }) =>
       fetchApiTokensControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1205,7 +1577,7 @@ export type ApiTokensControllerRemoveVariables = {
  */
 export const fetchApiTokensControllerRemove = (
   variables: ApiTokensControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -1232,7 +1604,7 @@ export const useApiTokensControllerRemove = (
       ApiTokensControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1263,7 +1635,7 @@ export type ApiTokensControllerUpdateVariables = {
  */
 export const fetchApiTokensControllerUpdate = (
   variables: ApiTokensControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -1290,7 +1662,7 @@ export const useApiTokensControllerUpdate = (
       ApiTokensControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1308,7 +1680,13 @@ export type MembersControllerCreatePathParams = {
   orgname: string;
 };
 
-export type MembersControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type MembersControllerCreateVariables = {
   body: Schemas.CreateMemberDto;
@@ -1320,7 +1698,7 @@ export type MembersControllerCreateVariables = {
  */
 export const fetchMembersControllerCreate = (
   variables: MembersControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -1347,7 +1725,7 @@ export const useMembersControllerCreate = (
       MembersControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1422,7 +1800,7 @@ export type MembersControllerFindAllVariables = {
  */
 export const fetchMembersControllerFindAll = (
   variables: MembersControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     MembersControllerFindAllResponse,
@@ -1452,7 +1830,7 @@ export const useMembersControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -1469,7 +1847,7 @@ export const useMembersControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchMembersControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1491,7 +1869,7 @@ export type MembersControllerJoinVariables = {
  */
 export const fetchMembersControllerJoin = (
   variables: MembersControllerJoinVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -1518,7 +1896,7 @@ export const useMembersControllerJoin = (
       MembersControllerJoinVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1548,7 +1926,7 @@ export type MembersControllerRemoveVariables = {
  */
 export const fetchMembersControllerRemove = (
   variables: MembersControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -1575,7 +1953,7 @@ export const useMembersControllerRemove = (
       MembersControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1606,7 +1984,7 @@ export type MembersControllerUpdateVariables = {
  */
 export const fetchMembersControllerUpdate = (
   variables: MembersControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -1633,7 +2011,7 @@ export const useMembersControllerUpdate = (
       MembersControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1659,7 +2037,7 @@ export type EmailVerificationControllerConfirmVariables = {
  */
 export const fetchEmailVerificationControllerConfirm = (
   variables: EmailVerificationControllerConfirmVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -1686,7 +2064,7 @@ export const useEmailVerificationControllerConfirm = (
       EmailVerificationControllerConfirmVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1714,7 +2092,7 @@ export type EmailVerificationControllerRequestVariables =
  */
 export const fetchEmailVerificationControllerRequest = (
   variables: EmailVerificationControllerRequestVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -1741,7 +2119,7 @@ export const useEmailVerificationControllerRequest = (
       EmailVerificationControllerRequestVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1763,7 +2141,13 @@ export type ThreadsControllerCreatePathParams = {
   chatbotId: string;
 };
 
-export type ThreadsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ThreadsControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type ThreadsControllerCreateVariables = {
   body?: Schemas.CreateThreadDto;
@@ -1775,7 +2159,7 @@ export type ThreadsControllerCreateVariables = {
  */
 export const fetchThreadsControllerCreate = (
   variables: ThreadsControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ThreadEntity,
@@ -1802,7 +2186,7 @@ export const useThreadsControllerCreate = (
       ThreadsControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -1889,7 +2273,7 @@ export type ThreadsControllerFindAllVariables = {
  */
 export const fetchThreadsControllerFindAll = (
   variables: ThreadsControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     ThreadsControllerFindAllResponse,
@@ -1919,7 +2303,7 @@ export const useThreadsControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -1936,7 +2320,7 @@ export const useThreadsControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchThreadsControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -1960,7 +2344,7 @@ export type ThreadsControllerFindOneVariables = {
  */
 export const fetchThreadsControllerFindOne = (
   variables: ThreadsControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ThreadEntity,
@@ -1979,7 +2363,7 @@ export const fetchThreadsControllerFindOne = (
 /**
  * Get a thread. ADMIN ONLY.
  */
-export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity>(
+export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity,>(
   variables: ThreadsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -1988,7 +2372,7 @@ export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -2005,7 +2389,7 @@ export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity>(
     queryFn: ({ signal }) =>
       fetchThreadsControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2029,7 +2413,7 @@ export type ThreadsControllerRemoveVariables = {
  */
 export const fetchThreadsControllerRemove = (
   variables: ThreadsControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -2056,7 +2440,7 @@ export const useThreadsControllerRemove = (
       ThreadsControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2090,7 +2474,7 @@ export type StorageControllerDeleteVariables = {
  */
 export const fetchStorageControllerDelete = (
   variables: StorageControllerDeleteVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -2117,7 +2501,7 @@ export const useStorageControllerDelete = (
       StorageControllerDeleteVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2147,7 +2531,7 @@ export type StorageControllerGetReadUrlVariables = {
  */
 export const fetchStorageControllerGetReadUrl = (
   variables: StorageControllerGetReadUrlVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ReadUrlDto,
@@ -2174,7 +2558,7 @@ export const useStorageControllerGetReadUrl = (
       StorageControllerGetReadUrlVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2204,7 +2588,7 @@ export type StorageControllerGetWriteUrlVariables = {
  */
 export const fetchStorageControllerGetWriteUrl = (
   variables: StorageControllerGetWriteUrlVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.WriteUrlDto,
@@ -2231,7 +2615,7 @@ export const useStorageControllerGetWriteUrl = (
       StorageControllerGetWriteUrlVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2268,7 +2652,7 @@ export type StorageControllerListDirectoryVariables = {
  */
 export const fetchStorageControllerListDirectory = (
   variables: StorageControllerListDirectoryVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     StorageControllerListDirectoryResponse,
@@ -2298,7 +2682,7 @@ export const useStorageControllerListDirectory = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -2315,7 +2699,7 @@ export const useStorageControllerListDirectory = <
     queryFn: ({ signal }) =>
       fetchStorageControllerListDirectory(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2326,7 +2710,13 @@ export type ChatbotsControllerCreatePathParams = {
   orgname: string;
 };
 
-export type ChatbotsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ChatbotsControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type ChatbotsControllerCreateVariables = {
   body: Schemas.CreateChatbotDto;
@@ -2338,7 +2728,7 @@ export type ChatbotsControllerCreateVariables = {
  */
 export const fetchChatbotsControllerCreate = (
   variables: ChatbotsControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ChatbotEntity,
@@ -2365,7 +2755,7 @@ export const useChatbotsControllerCreate = (
       ChatbotsControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2444,7 +2834,7 @@ export type ChatbotsControllerFindAllVariables = {
  */
 export const fetchChatbotsControllerFindAll = (
   variables: ChatbotsControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     ChatbotsControllerFindAllResponse,
@@ -2474,7 +2864,7 @@ export const useChatbotsControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -2491,7 +2881,7 @@ export const useChatbotsControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchChatbotsControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2514,7 +2904,7 @@ export type ChatbotsControllerFindOneVariables = {
  */
 export const fetchChatbotsControllerFindOne = (
   variables: ChatbotsControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ChatbotEntity,
@@ -2533,7 +2923,7 @@ export const fetchChatbotsControllerFindOne = (
 /**
  * Get a chatbot. ADMIN ONLY.
  */
-export const useChatbotsControllerFindOne = <TData = Schemas.ChatbotEntity>(
+export const useChatbotsControllerFindOne = <TData = Schemas.ChatbotEntity,>(
   variables: ChatbotsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -2542,7 +2932,7 @@ export const useChatbotsControllerFindOne = <TData = Schemas.ChatbotEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -2559,7 +2949,7 @@ export const useChatbotsControllerFindOne = <TData = Schemas.ChatbotEntity>(
     queryFn: ({ signal }) =>
       fetchChatbotsControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2582,7 +2972,7 @@ export type ChatbotsControllerRemoveVariables = {
  */
 export const fetchChatbotsControllerRemove = (
   variables: ChatbotsControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -2609,7 +2999,7 @@ export const useChatbotsControllerRemove = (
       ChatbotsControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2640,7 +3030,7 @@ export type ChatbotsControllerUpdateVariables = {
  */
 export const fetchChatbotsControllerUpdate = (
   variables: ChatbotsControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ChatbotEntity,
@@ -2667,7 +3057,7 @@ export const useChatbotsControllerUpdate = (
       ChatbotsControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2687,7 +3077,13 @@ export type MessagesControllerCreatePathParams = {
   threadId: string;
 };
 
-export type MessagesControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type MessagesControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type MessagesControllerCreateVariables = {
   body: Schemas.CreateMessageDto;
@@ -2699,7 +3095,7 @@ export type MessagesControllerCreateVariables = {
  */
 export const fetchMessagesControllerCreate = (
   variables: MessagesControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.MessageEntity,
@@ -2726,7 +3122,7 @@ export const useMessagesControllerCreate = (
       MessagesControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2787,7 +3183,7 @@ export type MessagesControllerFindAllVariables = {
  */
 export const fetchMessagesControllerFindAll = (
   variables: MessagesControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     MessagesControllerFindAllResponse,
@@ -2817,7 +3213,7 @@ export const useMessagesControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -2834,7 +3230,7 @@ export const useMessagesControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchMessagesControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -2845,7 +3241,13 @@ export type ContentControllerCreatePathParams = {
   orgname: string;
 };
 
-export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
 
 export type ContentControllerCreateVariables = {
   body: Schemas.CreateContentDto;
@@ -2857,7 +3259,7 @@ export type ContentControllerCreateVariables = {
  */
 export const fetchContentControllerCreate = (
   variables: ContentControllerCreateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -2884,7 +3286,7 @@ export const useContentControllerCreate = (
       ContentControllerCreateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -2959,7 +3361,7 @@ export type ContentControllerFindAllVariables = {
  */
 export const fetchContentControllerFindAll = (
   variables: ContentControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     ContentControllerFindAllResponse,
@@ -2989,7 +3391,7 @@ export const useContentControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -3006,7 +3408,7 @@ export const useContentControllerFindAll = <
     queryFn: ({ signal }) =>
       fetchContentControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3029,7 +3431,7 @@ export type ContentControllerFindOneVariables = {
  */
 export const fetchContentControllerFindOne = (
   variables: ContentControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -3048,7 +3450,7 @@ export const fetchContentControllerFindOne = (
 /**
  * Get a content. ADMIN ONLY.
  */
-export const useContentControllerFindOne = <TData = Schemas.ContentEntity>(
+export const useContentControllerFindOne = <TData = Schemas.ContentEntity,>(
   variables: ContentControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3057,7 +3459,7 @@ export const useContentControllerFindOne = <TData = Schemas.ContentEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -3074,7 +3476,7 @@ export const useContentControllerFindOne = <TData = Schemas.ContentEntity>(
     queryFn: ({ signal }) =>
       fetchContentControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3097,7 +3499,7 @@ export type ContentControllerRemoveVariables = {
  */
 export const fetchContentControllerRemove = (
   variables: ContentControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -3124,7 +3526,7 @@ export const useContentControllerRemove = (
       ContentControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3155,7 +3557,7 @@ export type ContentControllerUpdateVariables = {
  */
 export const fetchContentControllerUpdate = (
   variables: ContentControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -3182,7 +3584,7 @@ export const useContentControllerUpdate = (
       ContentControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3254,11 +3656,11 @@ export type TextChunksControllerFindAllVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get all vector records. ADMIN ONLY.
+ * Get all text chunks. ADMIN ONLY.
  */
 export const fetchTextChunksControllerFindAll = (
   variables: TextChunksControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     TextChunksControllerFindAllResponse,
@@ -3275,7 +3677,7 @@ export const fetchTextChunksControllerFindAll = (
   });
 
 /**
- * Get all vector records. ADMIN ONLY.
+ * Get all text chunks. ADMIN ONLY.
  */
 export const useTextChunksControllerFindAll = <
   TData = TextChunksControllerFindAllResponse,
@@ -3288,7 +3690,7 @@ export const useTextChunksControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -3299,13 +3701,13 @@ export const useTextChunksControllerFindAll = <
   >({
     queryKey: queryKeyFn({
       path: "/organizations/{orgname}/content/{contentId}/text-chunks",
-      operationId: "TextChunksControllerFindAll",
+      operationId: "textChunksControllerFindAll",
       variables,
     }),
     queryFn: ({ signal }) =>
       fetchTextChunksControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
@@ -3315,6 +3717,7 @@ export const useTextChunksControllerFindAll = <
 export type TextChunksControllerFindOnePathParams = {
   orgname: string;
   contentId: string;
+  textChunkId: string;
 };
 
 export type TextChunksControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
@@ -3324,11 +3727,11 @@ export type TextChunksControllerFindOneVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get a vector record. ADMIN ONLY.
+ * Get a text chunk. ADMIN ONLY.
  */
 export const fetchTextChunksControllerFindOne = (
   variables: TextChunksControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TextChunkEntity,
@@ -3345,9 +3748,11 @@ export const fetchTextChunksControllerFindOne = (
   });
 
 /**
- * Get a vector record. ADMIN ONLY.
+ * Get a text chunk. ADMIN ONLY.
  */
-export const useTextChunksControllerFindOne = <TData = Schemas.TextChunkEntity>(
+export const useTextChunksControllerFindOne = <
+  TData = Schemas.TextChunkEntity,
+>(
   variables: TextChunksControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3356,7 +3761,7 @@ export const useTextChunksControllerFindOne = <TData = Schemas.TextChunkEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -3367,24 +3772,24 @@ export const useTextChunksControllerFindOne = <TData = Schemas.TextChunkEntity>(
   >({
     queryKey: queryKeyFn({
       path: "/organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}",
-      operationId: "TextChunksControllerFindOne",
+      operationId: "textChunksControllerFindOne",
       variables,
     }),
     queryFn: ({ signal }) =>
       fetchTextChunksControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal
+        signal,
       ),
     ...options,
     ...queryOptions,
   });
 };
 
-export type JobsControllerFindAllPathParams = {
+export type RunsControllerFindAllPathParams = {
   orgname: string;
 };
 
-export type JobsControllerFindAllQueryParams = {
+export type RunsControllerFindAllQueryParams = {
   /**
    * The end date to search to
    */
@@ -3425,190 +3830,135 @@ export type JobsControllerFindAllQueryParams = {
   startDate?: string;
 };
 
-export type JobsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type JobsControllerFindAllResponse = Schemas.PaginatedDto & {
-  results?: Schemas.JobEntity[];
+export type RunsControllerFindAllResponse = Schemas.PaginatedDto & {
+  results?: Schemas.RunEntity[];
 };
 
-export type JobsControllerFindAllVariables = {
-  pathParams: JobsControllerFindAllPathParams;
-  queryParams?: JobsControllerFindAllQueryParams;
+export type RunsControllerFindAllVariables = {
+  pathParams: RunsControllerFindAllPathParams;
+  queryParams?: RunsControllerFindAllQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get all jobs. ADMIN ONLY.
+ * Get all runs. ADMIN ONLY.
  */
-export const fetchJobsControllerFindAll = (
-  variables: JobsControllerFindAllVariables,
-  signal?: AbortSignal
+export const fetchRunsControllerFindAll = (
+  variables: RunsControllerFindAllVariables,
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    JobsControllerFindAllResponse,
-    JobsControllerFindAllError,
+    RunsControllerFindAllResponse,
+    RunsControllerFindAllError,
     undefined,
     {},
-    JobsControllerFindAllQueryParams,
-    JobsControllerFindAllPathParams
+    RunsControllerFindAllQueryParams,
+    RunsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/jobs",
+    url: "/organizations/{orgname}/runs",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get all jobs. ADMIN ONLY.
+ * Get all runs. ADMIN ONLY.
  */
-export const useJobsControllerFindAll = <TData = JobsControllerFindAllResponse>(
-  variables: JobsControllerFindAllVariables,
+export const useRunsControllerFindAll = <
+  TData = RunsControllerFindAllResponse,
+>(
+  variables: RunsControllerFindAllVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      JobsControllerFindAllResponse,
-      JobsControllerFindAllError,
+      RunsControllerFindAllResponse,
+      RunsControllerFindAllError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    JobsControllerFindAllResponse,
-    JobsControllerFindAllError,
+    RunsControllerFindAllResponse,
+    RunsControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/jobs",
-      operationId: "jobsControllerFindAll",
+      path: "/organizations/{orgname}/runs",
+      operationId: "runsControllerFindAll",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchJobsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
+      fetchRunsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
     ...options,
     ...queryOptions,
   });
 };
 
-export type JobsControllerFindOnePathParams = {
+export type RunsControllerFindOnePathParams = {
   orgname: string;
   id: string;
 };
 
-export type JobsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
 
-export type JobsControllerFindOneVariables = {
-  pathParams: JobsControllerFindOnePathParams;
+export type RunsControllerFindOneVariables = {
+  pathParams: RunsControllerFindOnePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get a job. ADMIN ONLY.
+ * Get a run. ADMIN ONLY.
  */
-export const fetchJobsControllerFindOne = (
-  variables: JobsControllerFindOneVariables,
-  signal?: AbortSignal
+export const fetchRunsControllerFindOne = (
+  variables: RunsControllerFindOneVariables,
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.JobEntity,
-    JobsControllerFindOneError,
+    Schemas.RunEntity,
+    RunsControllerFindOneError,
     undefined,
     {},
     {},
-    JobsControllerFindOnePathParams
+    RunsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/jobs/{id}",
+    url: "/organizations/{orgname}/runs/{id}",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get a job. ADMIN ONLY.
+ * Get a run. ADMIN ONLY.
  */
-export const useJobsControllerFindOne = <TData = Schemas.JobEntity>(
-  variables: JobsControllerFindOneVariables,
+export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
+  variables: RunsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.JobEntity,
-      JobsControllerFindOneError,
+      Schemas.RunEntity,
+      RunsControllerFindOneError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    Schemas.JobEntity,
-    JobsControllerFindOneError,
+    Schemas.RunEntity,
+    RunsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/jobs/{id}",
-      operationId: "jobsControllerFindOne",
+      path: "/organizations/{orgname}/runs/{id}",
+      operationId: "runsControllerFindOne",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchJobsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
+      fetchRunsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
     ...queryOptions,
-  });
-};
-
-export type JobsControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
-
-export type JobsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
-
-export type JobsControllerRemoveVariables = {
-  pathParams: JobsControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Delete a job. ADMIN ONLY.
- */
-export const fetchJobsControllerRemove = (
-  variables: JobsControllerRemoveVariables,
-  signal?: AbortSignal
-) =>
-  archesApiFetch<
-    undefined,
-    JobsControllerRemoveError,
-    undefined,
-    {},
-    {},
-    JobsControllerRemovePathParams
-  >({
-    url: "/organizations/{orgname}/jobs/{id}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-/**
- * Delete a job. ADMIN ONLY.
- */
-export const useJobsControllerRemove = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      JobsControllerRemoveError,
-      JobsControllerRemoveVariables
-    >,
-    "mutationFn"
-  >
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    JobsControllerRemoveError,
-    JobsControllerRemoveVariables
-  >({
-    mutationFn: (variables: JobsControllerRemoveVariables) =>
-      fetchJobsControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
   });
 };
 
@@ -3624,7 +3974,7 @@ export type PasswordResetControllerConfirmVariables = {
  */
 export const fetchPasswordResetControllerConfirm = (
   variables: PasswordResetControllerConfirmVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -3651,7 +4001,7 @@ export const usePasswordResetControllerConfirm = (
       PasswordResetControllerConfirmVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3677,7 +4027,7 @@ export type PasswordResetControllerRequestVariables = {
  */
 export const fetchPasswordResetControllerRequest = (
   variables: PasswordResetControllerRequestVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -3704,7 +4054,7 @@ export const usePasswordResetControllerRequest = (
       PasswordResetControllerRequestVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3729,7 +4079,7 @@ export type EmailChangeControllerConfirmVariables = {
  */
 export const fetchEmailChangeControllerConfirm = (
   variables: EmailChangeControllerConfirmVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -3756,7 +4106,7 @@ export const useEmailChangeControllerConfirm = (
       EmailChangeControllerConfirmVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3781,7 +4131,7 @@ export type EmailChangeControllerRequestVariables = {
  */
 export const fetchEmailChangeControllerRequest = (
   variables: EmailChangeControllerRequestVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -3808,7 +4158,7 @@ export const useEmailChangeControllerRequest = (
       EmailChangeControllerRequestVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -3818,6 +4168,69 @@ export const useEmailChangeControllerRequest = (
   >({
     mutationFn: (variables: EmailChangeControllerRequestVariables) =>
       fetchEmailChangeControllerRequest({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ToolsControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type ToolsControllerCreateError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
+
+export type ToolsControllerCreateVariables = {
+  body: Schemas.CreateToolDto;
+  pathParams: ToolsControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new tool. ADMIN ONLY.
+ */
+export const fetchToolsControllerCreate = (
+  variables: ToolsControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ToolEntity,
+    ToolsControllerCreateError,
+    Schemas.CreateToolDto,
+    {},
+    {},
+    ToolsControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/tools",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new tool. ADMIN ONLY.
+ */
+export const useToolsControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ToolEntity,
+      ToolsControllerCreateError,
+      ToolsControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ToolEntity,
+    ToolsControllerCreateError,
+    ToolsControllerCreateVariables
+  >({
+    mutationFn: (variables: ToolsControllerCreateVariables) =>
+      fetchToolsControllerCreate({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
@@ -3883,7 +4296,7 @@ export type ToolsControllerFindAllVariables = {
  */
 export const fetchToolsControllerFindAll = (
   variables: ToolsControllerFindAllVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     ToolsControllerFindAllResponse,
@@ -3913,7 +4326,7 @@ export const useToolsControllerFindAll = <
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -3950,7 +4363,7 @@ export type ToolsControllerFindOneVariables = {
  */
 export const fetchToolsControllerFindOne = (
   variables: ToolsControllerFindOneVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ToolEntity,
@@ -3969,7 +4382,7 @@ export const fetchToolsControllerFindOne = (
 /**
  * Get a tool. ADMIN ONLY.
  */
-export const useToolsControllerFindOne = <TData = Schemas.ToolEntity>(
+export const useToolsControllerFindOne = <TData = Schemas.ToolEntity,>(
   variables: ToolsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3978,7 +4391,7 @@ export const useToolsControllerFindOne = <TData = Schemas.ToolEntity>(
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
-  >
+  >,
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
@@ -4015,7 +4428,7 @@ export type ToolsControllerRemoveVariables = {
  */
 export const fetchToolsControllerRemove = (
   variables: ToolsControllerRemoveVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
@@ -4042,7 +4455,7 @@ export const useToolsControllerRemove = (
       ToolsControllerRemoveVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -4073,7 +4486,7 @@ export type ToolsControllerUpdateVariables = {
  */
 export const fetchToolsControllerUpdate = (
   variables: ToolsControllerUpdateVariables,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.ToolEntity,
@@ -4100,7 +4513,7 @@ export const useToolsControllerUpdate = (
       ToolsControllerUpdateVariables
     >,
     "mutationFn"
-  >
+  >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
@@ -4115,6 +4528,16 @@ export const useToolsControllerUpdate = (
 };
 
 export type QueryOperation =
+  | {
+      path: "/organizations/{orgname}/pipelines";
+      operationId: "pipelinesControllerFindAll";
+      variables: PipelinesControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/pipelines/{pipelineId}";
+      operationId: "pipelinesControllerFindOne";
+      variables: PipelinesControllerFindOneVariables;
+    }
   | {
       path: "/user";
       operationId: "userControllerFindOne";
@@ -4192,23 +4615,23 @@ export type QueryOperation =
     }
   | {
       path: "/organizations/{orgname}/content/{contentId}/text-chunks";
-      operationId: "TextChunksControllerFindAll";
+      operationId: "textChunksControllerFindAll";
       variables: TextChunksControllerFindAllVariables;
     }
   | {
       path: "/organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}";
-      operationId: "TextChunksControllerFindOne";
+      operationId: "textChunksControllerFindOne";
       variables: TextChunksControllerFindOneVariables;
     }
   | {
-      path: "/organizations/{orgname}/jobs";
-      operationId: "jobsControllerFindAll";
-      variables: JobsControllerFindAllVariables;
+      path: "/organizations/{orgname}/runs";
+      operationId: "runsControllerFindAll";
+      variables: RunsControllerFindAllVariables;
     }
   | {
-      path: "/organizations/{orgname}/jobs/{id}";
-      operationId: "jobsControllerFindOne";
-      variables: JobsControllerFindOneVariables;
+      path: "/organizations/{orgname}/runs/{id}";
+      operationId: "runsControllerFindOne";
+      variables: RunsControllerFindOneVariables;
     }
   | {
       path: "/organizations/{orgname}/tools";

@@ -15,7 +15,6 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
-import { PaginatedDto } from "../common/paginated.dto";
 import { ContentService } from "./content.service";
 import { ContentQueryDto } from "./dto/content-query.dto";
 import { CreateContentDto } from "./dto/create-content.dto";
@@ -27,7 +26,12 @@ import { ContentEntity } from "./entities/content.entity";
 @Controller("organizations/:orgname/content")
 export class ContentController
   implements
-    BaseController<ContentEntity, undefined, ContentQueryDto, UpdateContentDto>
+    BaseController<
+      ContentEntity,
+      CreateContentDto,
+      ContentQueryDto,
+      UpdateContentDto
+    >
 {
   constructor(private readonly contentService: ContentService) {}
 
@@ -37,9 +41,7 @@ export class ContentController
     @Param("orgname") orgname: string,
     @Body() createContentDto: CreateContentDto
   ) {
-    return new ContentEntity(
-      await this.contentService.create(orgname, createContentDto)
-    );
+    return this.contentService.create(orgname, createContentDto);
   }
 
   @ApiCrudOperation(Operation.FIND_ALL, "content", ContentEntity, true)
@@ -48,24 +50,7 @@ export class ContentController
     @Param("orgname") orgname: string,
     @Query() contentQueryDto: ContentQueryDto
   ) {
-    const { count, results } = await this.contentService.findAll(
-      orgname,
-      contentQueryDto
-    );
-    const contentEntities = await Promise.all(
-      results.map(async (content) => {
-        const populated = await this.contentService.populateReadUrl(content);
-        return new ContentEntity(populated);
-      })
-    );
-    return new PaginatedDto<ContentEntity>({
-      metadata: {
-        limit: contentQueryDto.limit,
-        offset: contentQueryDto.offset,
-        totalResults: count,
-      },
-      results: contentEntities,
-    });
+    return this.contentService.findAll(orgname, contentQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "content", ContentEntity, true)
@@ -74,7 +59,7 @@ export class ContentController
     @Param("orgname") orgname: string,
     @Param("contentId") contentId: string
   ) {
-    return new ContentEntity(await this.contentService.findOne(contentId));
+    return this.contentService.findOne(contentId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "content", ContentEntity, true)
@@ -93,8 +78,6 @@ export class ContentController
     @Param("contentId") contentId: string,
     @Body() updateContentDto: UpdateContentDto
   ) {
-    return new ContentEntity(
-      await this.contentService.update(orgname, contentId, updateContentDto)
-    );
+    return this.contentService.update(orgname, contentId, updateContentDto);
   }
 }

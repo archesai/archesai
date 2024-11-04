@@ -39,7 +39,6 @@ export class MessagesService {
     threadId: string,
     createMessageDto: CreateMessageDto
   ) {
-    console.log(createMessageDto);
     try {
       // Create tokenizer
       const tokenizer = new GPT3Tokenizer({ type: "gpt3" });

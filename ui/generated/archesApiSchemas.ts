@@ -3,6 +3,106 @@
  *
  * @version v1
  */
+export type CreatePipelineToolDto = {
+  /**
+   * @example tool-id-uuid
+   */
+  toolId: string;
+  /**
+   * @example depends-on-id-uuid
+   */
+  dependsOnId?: string;
+};
+
+export type CreatePipelineDto = {
+  /**
+   * @example This is a sample pipeline
+   */
+  description?: string;
+  /**
+   * @example My Pipeline
+   */
+  name: string;
+  /**
+   * An array of pipeline tools to be added to the pipeline
+   */
+  pipelineTools: CreatePipelineToolDto[];
+};
+
+export type PipelineToolEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * @example depends-on-id-uuid
+   */
+  dependsOnId?: string;
+  /**
+   * The name of the tool
+   *
+   * @example Tool Name
+   */
+  tool: string;
+  /**
+   * @example tool-id-uuid
+   */
+  toolId: string;
+};
+
+export type PipelineEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * @example This is a sample pipeline
+   */
+  description?: string;
+  /**
+   * @example My Pipeline
+   */
+  name: string;
+  /**
+   * @example my-organization
+   */
+  orgname: string;
+  pipelineTools: PipelineToolEntity[];
+};
+
+export type UpdatePipelineDto = {
+  /**
+   * @example This is a sample pipeline
+   */
+  description?: string;
+  /**
+   * @example My Pipeline
+   */
+  name?: string;
+  /**
+   * An array of pipeline tools to be added to the pipeline
+   */
+  pipelineTools?: CreatePipelineToolDto[];
+};
+
 export type LoginDto = {
   /**
    * The user's e-mail
@@ -97,7 +197,7 @@ export type MemberEntity = {
    *
    * @example jonathan
    */
-  username: string;
+  username?: string;
 };
 
 export type UserEntity = {
@@ -444,7 +544,7 @@ export type CreateApiTokenDto = {
    * @default *
    * @example archesai.com,localhost:3000
    */
-  domains?: string;
+  domains: string;
   /**
    * The name of the API token
    *
@@ -505,7 +605,7 @@ export type ApiTokenEntity = {
    * @default *
    * @example archesai.com,localhost:3000
    */
-  domains?: string;
+  domains: string;
   /**
    * The API token key. This will only be shown once
    *
@@ -939,7 +1039,7 @@ export type MessageEntity = {
 
 export type CreateContentDto = {
   /**
-   * The animation's name
+   * The content's name
    *
    * @example my-file.pdf
    */
@@ -947,92 +1047,13 @@ export type CreateContentDto = {
   /**
    * @example https://example.com/example.mp4
    */
-  url: string;
+  url?: string;
   /**
    * The tool IDs to run with this content
    *
-   * @example tool-id-1
-   * @example tool-id-2
+   * @example tool-id-uuid
    */
-  toolIds: string[];
-};
-
-export type JobEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The time that the job was completed
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  completedAt: string;
-  /**
-   * The error message if the job failed
-   *
-   * @example Could not process the document
-   */
-  error: string;
-  /**
-   * The input to the tool
-   *
-   * @example https://example.com/example.mp4
-   */
-  input: string;
-  /**
-   * The tool name that was used to process the content in this job
-   *
-   * @example Text Extraction
-   */
-  name: string;
-  /**
-   * The output of the tool
-   *
-   * @example Hello, world!
-   */
-  output: string;
-  /**
-   * The percent progress of the current job
-   *
-   * @example 0.9
-   */
-  progress: number;
-  /**
-   * The link to the resource that is being processed
-   *
-   * @example /organizations/archesai/documents/documentId
-   */
-  resourceLink: string;
-  /**
-   * The time that the job was started
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  startedAt: string;
-  /**
-   * The status of the current animation processing
-   *
-   * @example COMPLETE
-   */
-  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
-  /**
-   * The tool id that was used to process the content in this job
-   *
-   * @example extract-text
-   */
-  toolId: string;
+  pipelineId: string;
 };
 
 export type ContentEntity = {
@@ -1056,21 +1077,19 @@ export type ContentEntity = {
    */
   credits: number;
   /**
-   * The animation's name
+   * The content's description
    *
    * @example my-file.pdf
    */
-  description: string;
+  description?: string;
   /**
-   * This job associated with this content's indexing process
-   */
-  jobs: JobEntity[];
-  /**
+   * The MIME type of the content
+   *
    * @example application/pdf
    */
-  mimeType: string;
+  mimeType?: string;
   /**
-   * The animation's name
+   * The content's name
    *
    * @example my-file.pdf
    */
@@ -1082,26 +1101,20 @@ export type ContentEntity = {
    */
   orgname: string;
   /**
-   * The preview image of the animation
+   * The preview image of the content
    *
    * @example https://preview-image.com/example.png
    */
-  previewImage: string;
-  /**
-   * The content's text
-   *
-   * @example Hello, world!
-   */
-  text: string;
+  previewImage?: string;
   /**
    * @example https://example.com/example.mp4
    */
-  url: string;
+  url?: string;
 };
 
 export type UpdateContentDto = {
   /**
-   * The animation's name
+   * The content's name
    *
    * @example my-file.pdf
    */
@@ -1113,10 +1126,9 @@ export type UpdateContentDto = {
   /**
    * The tool IDs to run with this content
    *
-   * @example tool-id-1
-   * @example tool-id-2
+   * @example tool-id-uuid
    */
-  toolIds?: string[];
+  pipelineId?: string;
 };
 
 export type TextChunkEntity = {
@@ -1134,9 +1146,86 @@ export type TextChunkEntity = {
    */
   id: string;
   /**
-   * The job that created this vector record
+   * The text content of the chunk
    */
   text: string;
+};
+
+export type RunEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The timestamp when the run completed
+   *
+   * @format date-time
+   * @example 2024-11-04T19:02:55.988Z
+   */
+  completedAt?: string;
+  /**
+   * The error message, if any, associated with the run
+   *
+   * @example An unexpected error occurred.
+   */
+  error?: string;
+  /**
+   * The name of the run
+   *
+   * @example Data Processing Run
+   */
+  name: string;
+  /**
+   * The organization name associated with the run
+   *
+   * @example my-organization
+   */
+  orgname: string;
+  /**
+   * The parent run ID, if this run is a child run ie a tool run that is part of a pipeline run
+   */
+  parentRunId?: string;
+  /**
+   * The pipeline ID associated with the run, if applicable
+   */
+  pipelineId?: string;
+  /**
+   * The progress of the run as a percentage
+   *
+   * @default 0
+   * @example 50.5
+   */
+  progress: number;
+  /**
+   * The timestamp when the run started
+   *
+   * @format date-time
+   * @example 2024-11-04T19:02:55.988Z
+   */
+  startedAt?: string;
+  /**
+   * The status of the run
+   *
+   * @default QUEUED
+   */
+  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
+  /**
+   * The tool used in the run, if applicable
+   */
+  toolId?: string;
+  /**
+   * The type of the run
+   */
+  type: "TOOL_RUN" | "PIPELINE_RUN";
 };
 
 export type ConfirmPasswordResetDto = {
@@ -1179,6 +1268,39 @@ export type RequestEmailChangeDto = {
    * @example user@archesai.com
    */
   email: string;
+};
+
+export type CreateToolDto = {
+  /**
+   * The tool description
+   *
+   * @example This tool converts a file to text, regardless of the file type.
+   */
+  description: string;
+  /**
+   * The tools input type
+   *
+   * @example FILE
+   */
+  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  /**
+   * The tool's name
+   *
+   * @example extract-text
+   */
+  name: string;
+  /**
+   * The tools output type
+   *
+   * @example TEXT
+   */
+  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  /**
+   * The tool's base path
+   *
+   * @example extract-text
+   */
+  toolBase: string;
 };
 
 export type ToolEntity = {
@@ -1226,15 +1348,11 @@ export type ToolEntity = {
    */
   outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
   /**
-   * The tools output text
+   * The tool's base path
    *
-   * @example Hello, world!
+   * @example extract-text
    */
-  text: string;
-  /**
-   * @example https://example.com/example.mp4
-   */
-  url: string;
+  toolBase: string;
 };
 
 export type UpdateToolDto = {
@@ -1262,6 +1380,12 @@ export type UpdateToolDto = {
    * @example TEXT
    */
   outputType?: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  /**
+   * The tool's base path
+   *
+   * @example extract-text
+   */
+  toolBase?: string;
 };
 
 export type Metadata = {

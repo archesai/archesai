@@ -1,17 +1,23 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Chatbot } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
+import { PaginatedDto } from "../common/paginated.dto";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { ChatbotRepository } from "./chatbot.repository";
 import { ChatbotQueryDto } from "./dto/chatbot-query.dto";
 import { CreateChatbotDto } from "./dto/create-chatbot.dto";
 import { UpdateChatbotDto } from "./dto/update-chatbot.dto";
+import { ChatbotEntity } from "./entities/chatbot.entity";
 
 @Injectable()
 export class ChatbotsService
   implements
-    BaseService<Chatbot, CreateChatbotDto, ChatbotQueryDto, UpdateChatbotDto>
+    BaseService<
+      ChatbotEntity,
+      CreateChatbotDto,
+      ChatbotQueryDto,
+      UpdateChatbotDto
+    >
 {
   constructor(
     private chatbotRepository: ChatbotRepository,
@@ -24,15 +30,29 @@ export class ChatbotsService
       createChatbotDto
     );
     this.websocketsService.socket.to(orgname).emit("update");
-    return chatbot;
+    return new ChatbotEntity(chatbot);
   }
 
   async findAll(orgname: string, chatbotQueryDto: ChatbotQueryDto) {
-    return this.chatbotRepository.findAll(orgname, chatbotQueryDto);
+    const { count, results } = await this.chatbotRepository.findAll(
+      orgname,
+      chatbotQueryDto
+    );
+    const chatbotEntities = results.map(
+      (chatbot) => new ChatbotEntity(chatbot)
+    );
+    return new PaginatedDto<ChatbotEntity>({
+      metadata: {
+        limit: chatbotQueryDto.limit,
+        offset: chatbotQueryDto.offset,
+        totalResults: count,
+      },
+      results: chatbotEntities,
+    });
   }
 
   async findOne(chatbotId: string) {
-    return this.chatbotRepository.findOne(chatbotId);
+    return new ChatbotEntity(await this.chatbotRepository.findOne(chatbotId));
   }
 
   async remove(orgname: string, chatbotId: string) {
@@ -57,6 +77,6 @@ export class ChatbotsService
       updateChatbotDto
     );
     this.websocketsService.socket.to(orgname).emit("update");
-    return chatbot;
+    return new ChatbotEntity(chatbot);
   }
 }

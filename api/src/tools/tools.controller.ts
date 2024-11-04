@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -14,7 +15,7 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
-import { PaginatedDto } from "../common/paginated.dto";
+import { CreateToolDto } from "./dto/create-tool.dto";
 import { ToolQueryDto } from "./dto/tool-query.dto";
 import { UpdateToolDto } from "./dto/update-tool.dto";
 import { ToolEntity } from "./entities/tool.entity";
@@ -24,9 +25,19 @@ import { ToolsService } from "./tools.service";
 @ApiTags("Tools")
 @Controller("organizations/:orgname/tools")
 export class ToolsController
-  implements BaseController<ToolEntity, undefined, ToolQueryDto, UpdateToolDto>
+  implements
+    BaseController<ToolEntity, CreateToolDto, ToolQueryDto, UpdateToolDto>
 {
   constructor(private readonly toolsService: ToolsService) {}
+
+  @ApiCrudOperation(Operation.CREATE, "tool", ToolEntity, true)
+  @Post("/")
+  async create(
+    @Param("orgname") orgname: string,
+    @Body() createToolDto: CreateToolDto
+  ) {
+    return this.toolsService.create(orgname, createToolDto);
+  }
 
   @ApiCrudOperation(Operation.FIND_ALL, "tool", ToolEntity, true)
   @Get("/")
@@ -34,24 +45,7 @@ export class ToolsController
     @Param("orgname") orgname: string,
     @Query() toolQueryDto: ToolQueryDto
   ) {
-    const { count, results } = await this.toolsService.findAll(
-      orgname,
-      toolQueryDto
-    );
-    const toolsEntities = await Promise.all(
-      results.map(async (tools) => {
-        const populated = await this.toolsService.populateReadUrl(tools);
-        return new ToolEntity(populated);
-      })
-    );
-    return new PaginatedDto<ToolEntity>({
-      metadata: {
-        limit: toolQueryDto.limit,
-        offset: toolQueryDto.offset,
-        totalResults: count,
-      },
-      results: toolsEntities,
-    });
+    return this.toolsService.findAll(orgname, toolQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "tool", ToolEntity, true)
@@ -60,7 +54,7 @@ export class ToolsController
     @Param("orgname") orgname: string,
     @Param("toolId") toolId: string
   ) {
-    return new ToolEntity(await this.toolsService.findOne(toolId));
+    return this.toolsService.findOne(toolId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "tools", ToolEntity, true)
@@ -76,8 +70,6 @@ export class ToolsController
     @Param("toolId") toolId: string,
     @Body() updateContentDto: UpdateToolDto
   ) {
-    return new ToolEntity(
-      await this.toolsService.update(orgname, toolId, updateContentDto)
-    );
+    return this.toolsService.update(orgname, toolId, updateContentDto);
   }
 }

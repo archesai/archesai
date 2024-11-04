@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import * as bcrypt from "bcryptjs";
@@ -9,6 +9,8 @@ import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
+  private readonly logger: Logger = new Logger("Local Strategy");
+
   constructor(private usersService: UsersService) {
     super({ usernameField: "email" });
   }

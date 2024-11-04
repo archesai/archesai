@@ -41,6 +41,7 @@ async function bootstrap() {
         enableImplicitConversion: true,
         exposeDefaultValues: true,
       },
+      // forbidNonWhitelisted: true, FIXME
       whitelist: true,
     })
   );

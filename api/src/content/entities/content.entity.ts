@@ -1,10 +1,9 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Content, Job, Organization } from "@prisma/client";
+import { ApiProperty } from "@nestjs/swagger";
+import { Content } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
-import { JobEntity } from "../../jobs/entities/job.entity";
 
 @Exclude()
 export class ContentEntity extends BaseEntity implements Content {
@@ -17,35 +16,31 @@ export class ContentEntity extends BaseEntity implements Content {
   credits: number;
 
   @ApiProperty({
-    description: "The animation's name",
+    description: "The content's description",
     example: "my-file.pdf",
+    required: false,
+    type: String,
   })
   @Expose()
   @IsString()
-  description: string;
+  description: null | string;
 
   @ApiProperty({
-    description: "This job associated with this content's indexing process",
-    type: [JobEntity],
+    description: "The MIME type of the content",
+    example: "application/pdf",
+    required: false,
+    type: String,
   })
   @Expose()
-  jobs: JobEntity[];
-
-  @ApiProperty({ example: "application/pdf" })
-  @Expose()
-  mimeType: string;
+  mimeType: null | string;
 
   @ApiProperty({
-    description: "The animation's name",
+    description: "The content's name",
     example: "my-file.pdf",
   })
   @Expose()
   @IsString()
   name: string;
-
-  // Private Properties
-  @ApiHideProperty()
-  organization: Organization;
 
   @ApiProperty({
     description: "The organization name",
@@ -56,27 +51,26 @@ export class ContentEntity extends BaseEntity implements Content {
   orgname: string;
 
   @ApiProperty({
-    description: "The preview image of the animation",
+    description: "The preview image of the content",
     example: "https://preview-image.com/example.png",
+    required: false,
+    type: String,
   })
   @Expose()
   @IsString()
-  previewImage: string;
+  previewImage: null | string;
 
   @ApiProperty({
-    description: "The content's text",
-    example: "Hello, world!",
+    example: "https://example.com/example.mp4",
+    required: false,
+    type: String,
   })
-  text: string;
-
-  @ApiProperty({ example: "https://example.com/example.mp4" })
   @Expose()
   @IsString()
-  url: string;
+  url: null | string;
 
-  constructor(content: { jobs: Job[] } & Content) {
+  constructor(content: Content) {
     super();
     Object.assign(this, content);
-    this.jobs = this.jobs.map((job) => new JobEntity(job));
   }
 }

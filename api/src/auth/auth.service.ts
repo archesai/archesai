@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { AuthProviderType } from "@prisma/client";
@@ -10,6 +10,8 @@ import { RegisterDto } from "./dto/register.dto";
 
 @Injectable()
 export class AuthService {
+  private readonly logger: Logger = new Logger(AuthService.name);
+
   constructor(
     protected jwtService: JwtService,
     protected usersService: UsersService,
@@ -18,16 +20,18 @@ export class AuthService {
 
   // Generate Access Token
   private generateAccessToken(userId: string) {
+    this.logger.log("Generating access token for user: " + userId);
     return this.jwtService.sign(
       { sub: userId },
       {
-        expiresIn: "15m", // Set access token expiration to 15 minutes
+        expiresIn: "7d", // Set access token expiration to 15 minutes
       }
     );
   }
 
   // Generate Refresh Token
   private generateRefreshToken(userId: string) {
+    this.logger.log("Generating refresh token for user: " + userId);
     return this.jwtService.sign(
       { sub: userId },
       {
@@ -38,6 +42,7 @@ export class AuthService {
   }
 
   async login(user: CurrentUserDto) {
+    this.logger.log("Logging in user: " + user.id);
     const accessToken = this.generateAccessToken(user.id);
     const refreshToken = this.generateRefreshToken(user.id);
 
@@ -52,6 +57,7 @@ export class AuthService {
 
   // Refresh Access Token using Refresh Token
   async refreshAccessToken(refreshToken: string) {
+    this.logger.log("Refreshing access token using refresh token");
     const payload = this.jwtService.verify(refreshToken, {
       // secret: this.configService.get("JWT_REFRESH_SECRET"),
     });
@@ -76,17 +82,19 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
+    this.logger.log("Registering user: " + registerDto.email);
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    const orgname =
+      registerDto.email.split("@")[0] +
+      "-" +
+      Math.random().toString(36).substring(2, 6);
     const user = await this.usersService.create({
       email: registerDto.email,
       emailVerified: this.configService.get("FEATURE_EMAIL") === false,
       password: hashedPassword,
       photoUrl: "",
       // username: registerDto.username,
-      username:
-        registerDto.email.split("@")[0] +
-        "-" +
-        Math.random().toString(36).substring(2, 6),
+      username: orgname,
     });
     return this.usersService.syncAuthProvider(
       user.email,
@@ -96,6 +104,7 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
+    this.logger.log("Verifying jwt token: " + token);
     return this.jwtService.verify(token);
   }
 }

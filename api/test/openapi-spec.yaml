@@ -1,0 +1,4111 @@
+openapi: 3.0.0
+paths:
+  /organizations/{orgname}/pipelines:
+    post:
+      operationId: PipelinesController_create
+      summary: Create a new pipeline
+      description: Create a new pipeline. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePipelineDto'
+      responses:
+        '201':
+          description: Successfully created a new pipeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineEntity'
+        '400':
+          description: Bad request when creating the pipeline
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Pipelines
+      security:
+        - bearer: []
+    get:
+      operationId: PipelinesController_findAll
+      summary: Get all pipelines
+      description: Get all pipelines. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/PipelineEntity'
+                        type: array
+                title: PaginatedResponseOfPipelineEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Pipelines
+      security:
+        - bearer: []
+  /organizations/{orgname}/pipelines/{pipelineId}:
+    get:
+      operationId: PipelinesController_findOne
+      summary: Get a pipeline
+      description: Get a pipeline. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: pipelineId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the pipeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Pipelines
+      security:
+        - bearer: []
+    delete:
+      operationId: PipelinesController_remove
+      summary: Delete a pipeline
+      description: Delete a pipeline. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: pipelineId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the pipeline
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Pipelines
+      security:
+        - bearer: []
+    patch:
+      operationId: PipelinesController_update
+      summary: Update a pipeline
+      description: Update a pipeline. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: pipelineId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePipelineDto'
+      responses:
+        '200':
+          description: Successfully updated the pipeline
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Pipelines
+      security:
+        - bearer: []
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      summary: Login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '401':
+          description: Invalid credentials
+      tags:
+        - Authentication
+  /auth/refresh-token:
+    post:
+      operationId: AuthController_refreshToken
+      summary: Refresh Access Token
+      parameters: []
+      responses:
+        '201':
+          description: The new access token has been generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '401':
+          description: Invalid refresh token
+      tags:
+        - Authentication
+  /auth/register:
+    post:
+      operationId: AuthController_register
+      summary: Register
+      description: >-
+        This endpoint will register a new account and return a JWT token which
+        should be provided in your auth headers
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '201':
+          description: User was created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '404':
+          description: User already exists with provided email
+      tags:
+        - Authentication
+  /user/deactivate:
+    post:
+      operationId: UserController_deactivate
+      summary: Deactivate
+      parameters: []
+      responses:
+        '201':
+          description: User was deleted successfully
+        '401':
+          description: Unauthorized
+      tags:
+        - User
+      security:
+        - bearer: []
+  /user:
+    get:
+      operationId: UserController_findOne
+      summary: Get a user
+      description: Get a user. ADMIN ONLY.
+      parameters: []
+      responses:
+        '200':
+          description: Successfully retrieved the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - User
+      security:
+        - bearer: []
+    patch:
+      operationId: UserController_update
+      summary: Update a user
+      description: Update a user. ADMIN ONLY.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: Successfully updated the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - User
+      security:
+        - bearer: []
+  /organizations:
+    post:
+      operationId: OrganizationsController_create
+      summary: Create a new organization
+      description: Create a new organization. ADMIN ONLY.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationDto'
+      responses:
+        '201':
+          description: Successfully created a new organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationEntity'
+        '400':
+          description: Bad request when creating the organization
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization
+      security:
+        - bearer: []
+  /organizations/{orgname}:
+    delete:
+      operationId: OrganizationsController_delete
+      summary: Delete a organization
+      description: Delete a organization. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the organization
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization
+      security:
+        - bearer: []
+    get:
+      operationId: OrganizationsController_findOne
+      summary: Get a organization
+      description: Get a organization. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization
+      security:
+        - bearer: []
+    patch:
+      operationId: OrganizationsController_update
+      summary: Update a organization
+      description: Update a organization. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationDto'
+      responses:
+        '200':
+          description: Successfully updated the organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/subscription/cancel:
+    post:
+      operationId: BillingController_cancelSubscriptionPlan
+      summary: Cancel subscription plan
+      description: Cancel the subscription plan for an organization
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successfully canceled subscription plan
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/subscription:
+    post:
+      operationId: BillingController_changeSubscriptionPlan
+      summary: Switch subscription plan
+      description: Switch subscription plan for an organization
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: planId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successfully switched subscription plan
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/portal:
+    post:
+      operationId: BillingController_createBillingPortal
+      summary: Create a billing portal for an organization
+      description: >-
+        This endpoint will create a billing portal for an organization to edit
+        their subscription and billing information. Only available on
+        archesai.com. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successfully created URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingUrlEntity'
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/checkout:
+    post:
+      operationId: BillingController_createCheckoutSession
+      summary: Create a checkout session for an organization
+      description: >-
+        This endpoint will create a checkout session for an organization to
+        purchase a subscription or one-time product. Only available on
+        archesai.com. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: planId
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Successfully created checkout session URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingUrlEntity'
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /plans:
+    get:
+      operationId: BillingController_getPlans
+      summary: List billing plans
+      description: Get a list of available billing plans
+      parameters: []
+      responses:
+        '200':
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanEntity'
+      tags:
+        - Organization - Billing
+        - Plans
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/payment-methods:
+    get:
+      operationId: BillingController_listPaymentMethods
+      summary: List payment methods
+      description: List payment methods for an organization
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of payment methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethodEntity'
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /organizations/{orgname}/billing/payment-methods/{paymentMethodId}:
+    delete:
+      operationId: BillingController_removePaymentMethod
+      summary: Remove payment method
+      description: Remove a payment method from an organization
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: paymentMethodId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+      tags:
+        - Organization - Billing
+      security:
+        - bearer: []
+  /organizations/{orgname}/api-tokens:
+    post:
+      operationId: ApiTokensController_create
+      summary: Create a new API token
+      description: Create a new API token. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiTokenDto'
+      responses:
+        '201':
+          description: Successfully created a new API token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiTokenEntity'
+        '400':
+          description: Bad request when creating the API token
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - API Tokens
+      security:
+        - bearer: []
+    get:
+      operationId: ApiTokensController_findAll
+      summary: Get all API tokens
+      description: Get all API tokens. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+        - name: name
+          required: true
+          in: query
+          description: The name to search for
+          example: API Token 1
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ApiTokenEntity'
+                        type: array
+                title: PaginatedResponseOfApiTokenEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - API Tokens
+      security:
+        - bearer: []
+  /organizations/{orgname}/api-tokens/{id}:
+    get:
+      operationId: ApiTokensController_findOne
+      summary: Get a API token
+      description: Get a API token. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the API token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiTokenEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - API Tokens
+      security:
+        - bearer: []
+    delete:
+      operationId: ApiTokensController_remove
+      summary: Delete a API token
+      description: Delete a API token. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the API token
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - API Tokens
+      security:
+        - bearer: []
+    patch:
+      operationId: ApiTokensController_update
+      summary: Update a API token
+      description: Update a API token. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateApiTokenDto'
+      responses:
+        '200':
+          description: Successfully updated the API token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiTokenEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - API Tokens
+      security:
+        - bearer: []
+  /organizations/{orgname}/members:
+    post:
+      operationId: MembersController_create
+      summary: Create a new member
+      description: Create a new member. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberDto'
+      responses:
+        '201':
+          description: Successfully created a new member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberEntity'
+        '400':
+          description: Bad request when creating the member
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+    get:
+      operationId: MembersController_findAll
+      summary: Get all members
+      description: Get all members. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: username
+            enum:
+              - createdAt
+              - username
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/MemberEntity'
+                        type: array
+                title: PaginatedResponseOfMemberEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+  /organizations/{orgname}/members/join:
+    post:
+      operationId: MembersController_join
+      summary: Accept invitation to this organization
+      description: Accept invitation to this organization. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Member was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Email not verified
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+  /organizations/{orgname}/members/{memberId}:
+    delete:
+      operationId: MembersController_remove
+      summary: Delete a member
+      description: Delete a member. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: memberId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the member
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+    patch:
+      operationId: MembersController_update
+      summary: Update a member
+      description: Update a member. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: memberId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberDto'
+      responses:
+        '200':
+          description: Successfully updated the member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+  /auth/email-verification/confirm:
+    post:
+      operationId: EmailVerificationController_confirm
+      summary: Confirm e-mail verification
+      description: This endpoint will confirm your e-mail with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmEmailVerificationDto'
+      responses:
+        '201':
+          description: E-mail verification confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '400':
+          description: Already Verified
+        '401':
+          description: Unauthorized
+      tags:
+        - Authentication - Email Verification
+  /auth/email-verification/request:
+    post:
+      operationId: EmailVerificationController_request
+      summary: Resend e-mail verification
+      description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+      parameters: []
+      responses:
+        '201':
+          description: E-mail verification link sent
+        '400':
+          description: Already Verified
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      tags:
+        - Authentication - Email Verification
+      security:
+        - bearer: []
+  /organizations/{orgname}/chatbots/{chatbotId}/threads:
+    post:
+      operationId: ThreadsController_create
+      summary: Create a new thread
+      description: Create a new thread. USER and ADMIN can access this endpoint.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateThreadDto'
+      responses:
+        '201':
+          description: Successfully created a new thread
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadEntity'
+        '400':
+          description: Bad request when creating the thread
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads
+      security:
+        - bearer: []
+    get:
+      operationId: ThreadsController_findAll
+      summary: Get all threads
+      description: Get all threads. ADMIN ONLY.
+      parameters:
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+              - credits
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+        - name: aggregateGranularity
+          required: false
+          in: query
+          description: The granularity to use for ranged aggregates
+          schema:
+            enum:
+              - day
+              - month
+              - week
+              - year
+            type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Whether or not to include aggregates in the response
+          schema:
+            default: false
+            type: boolean
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ThreadEntity'
+                        type: array
+                      aggregates:
+                        $ref: '#/components/schemas/ThreadAggregates'
+                title: PaginatedResponseOfThreadEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads
+      security:
+        - bearer: []
+  /organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}:
+    get:
+      operationId: ThreadsController_findOne
+      summary: Get a thread
+      description: Get a thread. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: threadId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the thread
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads
+      security:
+        - bearer: []
+    delete:
+      operationId: ThreadsController_remove
+      summary: Delete a thread
+      description: Delete a thread. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: threadId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the thread
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/delete:
+    delete:
+      operationId: StorageController_delete
+      summary: Delete file or directory
+      description: >-
+        This endpoint will delete a file or directory in the organization's
+        secure storage at the specified path. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Path was successfully deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/read:
+    post:
+      operationId: StorageController_getReadUrl
+      summary: Read file
+      description: >-
+        This endpoint will return a url for reading a file in the organization's
+        secure storage. It will be valid for 15 minutes. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathDto'
+      responses:
+        '201':
+          description: Read  url was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUrlDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/write:
+    post:
+      operationId: StorageController_getWriteUrl
+      summary: Write file
+      description: >-
+        This endpoint will return a url for writing to a file location in the
+        organization's secure storage. You must write your file to the url
+        returned by this endpoint. If you use is isDir param, it will create a
+        directory instead of a file and you do not need to write to the url.
+        ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathDto'
+      responses:
+        '201':
+          description: Write urls was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WriteUrlDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/items:
+    get:
+      operationId: StorageController_listDirectory
+      summary: Show directory
+      description: >-
+        This endpoint will return a list of files and directories in the
+        organization's secure storage at the specified path. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Path was successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageItemDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/chatbots:
+    post:
+      operationId: ChatbotsController_create
+      summary: Create a new chatbot
+      description: Create a new chatbot. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatbotDto'
+      responses:
+        '201':
+          description: Successfully created a new chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatbotEntity'
+        '400':
+          description: Bad request when creating the chatbot
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots
+      security:
+        - bearer: []
+    get:
+      operationId: ChatbotsController_findAll
+      summary: Get all chatbots
+      description: Get all chatbots. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+              - llmBase
+              - name
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+        - name: name
+          required: true
+          in: query
+          description: The name to search for
+          example: Chatbot 1
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ChatbotEntity'
+                        type: array
+                title: PaginatedResponseOfChatbotEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots
+      security:
+        - bearer: []
+  /organizations/{orgname}/chatbots/{chatbotId}:
+    get:
+      operationId: ChatbotsController_findOne
+      summary: Get a chatbot
+      description: Get a chatbot. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatbotEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots
+      security:
+        - bearer: []
+    delete:
+      operationId: ChatbotsController_remove
+      summary: Delete a chatbot
+      description: Delete a chatbot. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the chatbot
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots
+      security:
+        - bearer: []
+    patch:
+      operationId: ChatbotsController_update
+      summary: Update a chatbot
+      description: Update a chatbot. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateChatbotDto'
+      responses:
+        '200':
+          description: Successfully updated the chatbot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatbotEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots
+      security:
+        - bearer: []
+  /organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages:
+    post:
+      operationId: MessagesController_create
+      summary: Create a new message
+      description: Create a new message. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: threadId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageDto'
+      responses:
+        '201':
+          description: Successfully created a new message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '400':
+          description: Bad request when creating the message
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads - Messages
+      security:
+        - bearer: []
+    get:
+      operationId: MessagesController_findAll
+      summary: Get all messages
+      description: Get all messages. ADMIN ONLY.
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: chatbotId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: threadId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/MessageEntity'
+                        type: array
+                title: PaginatedResponseOfMessageEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Chatbots - Threads - Messages
+      security:
+        - bearer: []
+  /organizations/{orgname}/content:
+    post:
+      operationId: ContentController_create
+      summary: Create a new content
+      description: Create a new content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContentDto'
+      responses:
+        '201':
+          description: Successfully created a new content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '400':
+          description: Bad request when creating the content
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    get:
+      operationId: ContentController_findAll
+      summary: Get all contents
+      description: Get all contents. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+              - name
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ContentEntity'
+                        type: array
+                title: PaginatedResponseOfContentEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+  /organizations/{orgname}/content/{contentId}:
+    get:
+      operationId: ContentController_findOne
+      summary: Get a content
+      description: Get a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    delete:
+      operationId: ContentController_remove
+      summary: Delete a content
+      description: Delete a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    patch:
+      operationId: ContentController_update
+      summary: Update a content
+      description: Update a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContentDto'
+      responses:
+        '200':
+          description: Successfully updated the content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+  /organizations/{orgname}/content/{contentId}/text-chunks:
+    get:
+      operationId: TextChunksController_findAll
+      summary: Get all text chunks
+      description: Get all text chunks. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/TextChunkEntity'
+                        type: array
+                title: PaginatedResponseOfTextChunkEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content - Text Chunks
+      security:
+        - bearer: []
+  /organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}:
+    get:
+      operationId: TextChunksController_findOne
+      summary: Get a text chunk
+      description: Get a text chunk. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: textChunkId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the text chunk
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TextChunkEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content - Text Chunks
+      security:
+        - bearer: []
+  /organizations/{orgname}/runs:
+    get:
+      operationId: RunsController_findAll
+      summary: Get all runs
+      description: Get all runs. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/RunEntity'
+                        type: array
+                title: PaginatedResponseOfRunEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Runs
+      security:
+        - bearer: []
+  /organizations/{orgname}/runs/{id}:
+    get:
+      operationId: RunsController_findOne
+      summary: Get a run
+      description: Get a run. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Runs
+      security:
+        - bearer: []
+  /auth/password-reset/confirm:
+    post:
+      operationId: PasswordResetController_confirm
+      summary: Confirm password change
+      description: This endpoint will confirm your password change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmPasswordResetDto'
+      responses:
+        '201':
+          description: Password change confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+      tags:
+        - Authentication - Password Reset
+  /auth/password-reset/request:
+    post:
+      operationId: PasswordResetController_request
+      summary: Request password reset
+      description: This endpoint will request a password reset link
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestPasswordResetDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Authentication - Password Reset
+  /auth/email-change/confirm:
+    post:
+      operationId: EmailChangeController_confirm
+      summary: Confirm e-mail change
+      description: This endpoint will confirm your e-mail change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmEmailChangeDto'
+      responses:
+        '201':
+          description: E-mail change confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+      tags:
+        - Authentication - Email Change
+  /auth/email-change/request:
+    post:
+      operationId: EmailChangeController_request
+      summary: Confirm e-mail change
+      description: This endpoint will request your e-mail change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestEmailChangeDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Authentication - Email Change
+      security:
+        - bearer: []
+  /organizations/{orgname}/tools:
+    post:
+      operationId: ToolsController_create
+      summary: Create a new tool
+      description: Create a new tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateToolDto'
+      responses:
+        '201':
+          description: Successfully created a new tool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '400':
+          description: Bad request when creating the tool
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    get:
+      operationId: ToolsController_findAll
+      summary: Get all tools
+      description: Get all tools. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: searchTerm
+          required: false
+          in: query
+          description: Search term
+          schema:
+            default: ''
+            type: string
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            enum:
+              - createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - properties:
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ToolEntity'
+                        type: array
+                title: PaginatedResponseOfToolEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+  /organizations/{orgname}/tools/{toolId}:
+    get:
+      operationId: ToolsController_findOne
+      summary: Get a tool
+      description: Get a tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the tool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    delete:
+      operationId: ToolsController_remove
+      summary: Delete a tools
+      description: Delete a tools. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the tools
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    patch:
+      operationId: ToolsController_update
+      summary: Update a tools
+      description: Update a tools. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateToolDto'
+      responses:
+        '200':
+          description: Successfully updated the tools
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+info:
+  title: Arches AI API
+  description: The Arches AI API
+  version: v1
+  contact: {}
+tags: []
+servers:
+  - url: http://bob:3001
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    CreatePipelineToolDto:
+      type: object
+      properties:
+        toolId:
+          type: string
+          example: tool-id-uuid
+        dependsOnId:
+          type: string
+          example: depends-on-id-uuid
+      required:
+        - toolId
+    CreatePipelineDto:
+      type: object
+      properties:
+        description:
+          type: string
+          example: This is a sample pipeline
+        name:
+          type: string
+          example: My Pipeline
+        pipelineTools:
+          description: An array of pipeline tools to be added to the pipeline
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePipelineToolDto'
+      required:
+        - name
+        - pipelineTools
+    PipelineToolEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        dependsOnId:
+          type: string
+          example: depends-on-id-uuid
+        tool:
+          type: string
+          description: The name of the tool
+          example: Tool Name
+        toolId:
+          type: string
+          example: tool-id-uuid
+      required:
+        - createdAt
+        - id
+        - tool
+        - toolId
+    PipelineEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        description:
+          type: string
+          example: This is a sample pipeline
+        name:
+          type: string
+          example: My Pipeline
+        orgname:
+          type: string
+          example: my-organization
+        pipelineTools:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineToolEntity'
+      required:
+        - createdAt
+        - id
+        - name
+        - orgname
+        - pipelineTools
+    UpdatePipelineDto:
+      type: object
+      properties:
+        description:
+          type: string
+          example: This is a sample pipeline
+        name:
+          type: string
+          example: My Pipeline
+        pipelineTools:
+          description: An array of pipeline tools to be added to the pipeline
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePipelineToolDto'
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The user's e-mail
+          example: example@archesai.com
+        password:
+          type: string
+          description: The password to create and/or login to an account
+          example: password
+          minLength: 7
+      required:
+        - email
+        - password
+    TokenDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The authorization token that can be used to access Arches AI
+          example: supersecretauthorizationtoken
+        refreshToken:
+          type: string
+          description: The refresh token that can be used to get a new access token
+          example: supersecretauthorizationtoken
+      required:
+        - accessToken
+        - refreshToken
+    RegisterDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The user's e-mail
+          example: example@archesai.com
+        password:
+          type: string
+          description: The password to create and/or login to an account
+          example: password
+          minLength: 7
+      required:
+        - email
+        - password
+    MemberEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        inviteAccepted:
+          type: boolean
+          description: Whether the invite was accepted
+          example: false
+        inviteEmail:
+          type: string
+          description: The invited email of this member
+          example: invited-user@archesai.com
+        name:
+          type: string
+          description: The name of this member
+          example: jonathan
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        role:
+          type: string
+          description: The role of the member
+          enum:
+            - USER
+            - ADMIN
+        username:
+          type: string
+          description: The username of this member
+          example: jonathan
+      required:
+        - createdAt
+        - id
+        - inviteAccepted
+        - inviteEmail
+        - name
+        - orgname
+        - role
+    UserEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        defaultOrgname:
+          type: string
+          description: The user's default organization name
+          example: my-organization
+        displayName:
+          type: string
+          description: The user's display name
+          example: John Smith
+        email:
+          type: string
+          description: The user's e-mail
+          example: example@archesai.com
+        emailVerified:
+          type: boolean
+          description: Whether or not the user's e-mail has been verified
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Smith
+        memberships:
+          description: The memberships of the currently signed in user
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberEntity'
+        photoUrl:
+          type: string
+          description: The user's photo url
+          example: /avatar.png
+        username:
+          type: string
+          description: The user's username
+          example: jonathan
+          minLength: 5
+      required:
+        - createdAt
+        - id
+        - defaultOrgname
+        - displayName
+        - email
+        - emailVerified
+        - firstName
+        - lastName
+        - memberships
+        - photoUrl
+        - username
+    UpdateUserDto:
+      type: object
+      properties:
+        defaultOrgname:
+          type: string
+          description: The user's default organization name
+          example: my-organization
+        firstName:
+          type: string
+          description: The user's first name
+          example: John
+        lastName:
+          type: string
+          description: The user's last name
+          example: Smith
+    CreateOrganizationDto:
+      type: object
+      properties:
+        billingEmail:
+          type: string
+          description: The billing email to use for the organization
+          example: example@test.com
+        orgname:
+          type: string
+          description: The name of the organization to create
+          example: organization-name
+      required:
+        - billingEmail
+        - orgname
+    OrganizationEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        billingEmail:
+          type: string
+          description: The billing email to use for the organization
+          example: example@test.com
+        credits:
+          type: number
+          description: The number of credits you have remaining for this organization
+          example: 500000
+        orgname:
+          type: string
+          description: The name of the organization to create
+          example: organization-name
+        plan:
+          type: string
+          description: The plan that the organization is subscribed to
+          enum:
+            - FREE
+            - BASIC
+            - STANDARD
+            - PREMIUM
+            - UNLIMITED
+          example: FREE
+      required:
+        - createdAt
+        - id
+        - billingEmail
+        - credits
+        - orgname
+        - plan
+    UpdateOrganizationDto:
+      type: object
+      properties:
+        billingEmail:
+          type: string
+          description: The billing email to use for the organization
+          example: example@test.com
+      required:
+        - billingEmail
+    BillingUrlEntity:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The url that will bring you to the necessary stripe page
+          example: www.stripe.com/checkout/filchat-io
+      required:
+        - url
+    PlanEntity:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: The currency of the plan
+          example: usd
+        description:
+          type: string
+          example: A plan for a small business
+        id:
+          type: string
+          description: The ID of the plan
+          example: prod_1234567890
+        metadata:
+          type: object
+        name:
+          type: string
+          description: The name of the plan
+          example: Small Business Plan
+        priceId:
+          type: string
+          description: The ID of the price associated with the plan
+          example: price_1234567890
+        priceMetadata:
+          type: object
+        recurring:
+          type: object
+        unitAmount:
+          type: number
+          description: The amount in cents to be charged on the interval specified
+          example: 1000
+      required:
+        - currency
+        - id
+        - name
+        - priceId
+        - unitAmount
+    Address:
+      type: object
+      properties:
+        city:
+          type: object
+          description: City/District/Suburb/Town/Village.
+          example: San Francisco
+          nullable: true
+        country:
+          type: object
+          description: Two-letter country code (ISO 3166-1 alpha-2).
+          example: US
+          nullable: true
+        line1:
+          type: object
+          description: Address line 1 (e.g., street, PO Box, or company name).
+          example: 123 Main Street
+          nullable: true
+        line2:
+          type: object
+          description: Address line 2 (e.g., apartment, suite, unit, or building).
+          example: Apt 4B
+          nullable: true
+        postal_code:
+          type: object
+          description: ZIP or postal code.
+          example: '94111'
+          nullable: true
+        state:
+          type: object
+          description: State/County/Province/Region.
+          example: CA
+          nullable: true
+      required:
+        - city
+        - country
+        - line1
+        - line2
+        - postal_code
+        - state
+    BillingDetails:
+      type: object
+      properties:
+        address:
+          description: Billing address associated with the payment method.
+          allOf:
+            - $ref: '#/components/schemas/Address'
+        email:
+          type: object
+          description: Email address associated with the payment method.
+          example: customer@example.com
+          nullable: true
+        name:
+          type: object
+          description: Full name associated with the payment method.
+          example: Jane Doe
+          nullable: true
+        phone:
+          type: object
+          description: Phone number associated with the payment method.
+          example: '+1234567890'
+          nullable: true
+      required:
+        - address
+        - email
+        - name
+        - phone
+    CardDetails:
+      type: object
+      properties:
+        brand:
+          type: string
+          description: Card brand (e.g., Visa, MasterCard).
+          example: visa
+        country:
+          type: string
+          description: Two-letter ISO code representing the country of the card.
+          example: US
+        exp_month:
+          type: number
+          description: Two-digit number representing the card’s expiration month.
+          example: 12
+        exp_year:
+          type: number
+          description: Four-digit number representing the card’s expiration year.
+          example: 2024
+        fingerprint:
+          type: object
+          description: Unencrypted PAN tokens (optional, sensitive).
+          nullable: true
+        funding:
+          type: string
+          description: Card funding type (credit, debit, prepaid, unknown).
+          example: credit
+        last4:
+          type: string
+          description: The last four digits of the card.
+          example: '4242'
+      required:
+        - brand
+        - country
+        - exp_month
+        - exp_year
+        - fingerprint
+        - funding
+        - last4
+    PaymentMethodEntity:
+      type: object
+      properties:
+        billing_details:
+          description: Billing details associated with the payment method.
+          allOf:
+            - $ref: '#/components/schemas/BillingDetails'
+        card:
+          description: If the PaymentMethod is a card, this contains the card details.
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/CardDetails'
+        customer:
+          type: object
+          description: ID of the customer this payment method is saved to.
+          example: cus_J0a1b2c3d4e5f6g7h8i9
+          nullable: true
+        id:
+          type: string
+          description: Unique identifier for the payment method
+          example: pm_1J2Y3A4B5C6D7E8F9G0H
+        type:
+          type: string
+          description: The type of the PaymentMethod. An example value is "card".
+          example: card
+      required:
+        - billing_details
+        - card
+        - customer
+        - id
+        - type
+    CreateApiTokenDto:
+      type: object
+      properties:
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+        chatbotIds:
+          default: []
+          description: >-
+            The ids of the chatbot this token will have access to. This can not
+            be changed later.
+          example:
+            - chatbot1
+            - chatbot2
+          type: array
+          items:
+            type: string
+      required:
+        - domains
+        - name
+        - role
+    ChatbotsFieldItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        name:
+          type: string
+          description: The chatbot name
+          example: Arches AI Documentation Chatbot
+      required:
+        - id
+        - name
+    ApiTokenEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        chatbots:
+          description: The chatbots this API token has access to
+          example:
+            - id: uuid-uuid-uuid-uuid
+              name: Arches API Documentation Chatbot
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatbotsFieldItem'
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        key:
+          type: string
+          description: The API token key. This will only be shown once
+          example: '********1234567890'
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+        username:
+          type: string
+          description: The username of the user who owns this API token
+          example: jonathan
+      required:
+        - createdAt
+        - id
+        - chatbots
+        - domains
+        - key
+        - name
+        - orgname
+        - role
+        - username
+    UpdateApiTokenDto:
+      type: object
+      properties:
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+        chatbotIds:
+          default: []
+          description: >-
+            The ids of the chatbot this token will have access to. This can not
+            be changed later.
+          example:
+            - chatbot1
+            - chatbot2
+          type: array
+          items:
+            type: string
+    CreateMemberDto:
+      type: object
+      properties:
+        inviteEmail:
+          type: string
+          description: The invited email of this member
+          example: invited-user@archesai.com
+        role:
+          type: string
+          description: The role of the member
+          enum:
+            - USER
+            - ADMIN
+      required:
+        - inviteEmail
+        - role
+    UpdateMemberDto:
+      type: object
+      properties:
+        inviteEmail:
+          type: string
+          description: The invited email of this member
+          example: invited-user@archesai.com
+        role:
+          type: string
+          description: The role of the member
+          enum:
+            - USER
+            - ADMIN
+    ConfirmEmailVerificationDto:
+      type: object
+      properties:
+        token:
+          type: string
+          description: >-
+            The token used to verify the e-mail. This should have been provided
+            in an e-mail
+          example: supersecre
+      required:
+        - token
+    CreateThreadDto:
+      type: object
+      properties:
+        name:
+          type: string
+          default: New Chat
+          description: The chat thread name
+          example: What are the morals of the story in Aesop's Fables?
+        id:
+          type: string
+          description: >-
+            Optional. The id to use as the chat id. If taken, this endpoint will
+            return a 409.
+          example: chatId1
+    ThreadEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        credits:
+          type: number
+          description: The total number of credits used in this chat
+          example: 10000
+        name:
+          type: string
+          default: New Chat
+          description: The chat thread name
+          example: What are the morals of the story in Aesop's Fables?
+        numMessages:
+          type: number
+          description: The total number of messages in this chat
+          example: 10000
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+      required:
+        - createdAt
+        - id
+        - credits
+        - name
+        - numMessages
+        - orgname
+    PathDto:
+      type: object
+      properties:
+        isDir:
+          type: boolean
+          default: false
+          description: Whether or not this path points to a directory
+          example: false
+        path:
+          type: string
+          description: The path that the file should upload to
+          example: /location/in/storage
+      required:
+        - path
+    ReadUrlDto:
+      type: object
+      properties:
+        read:
+          type: string
+          description: >-
+            A read-only url that you can use to download the file from secure
+            storage
+          example: www.example.com?token=read-token
+      required:
+        - read
+    WriteUrlDto:
+      type: object
+      properties:
+        write:
+          type: string
+          description: A write-only url that you can use to upload a file to secure storage
+          example: www.example.com?token=write-token
+      required:
+        - write
+    StorageItemDto:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: Whether or not this is a directory
+          example: true
+        id:
+          type: string
+          description: The id of the storage item
+          example: '14'
+        isDir:
+          type: boolean
+          description: Whether or not this is a directory
+          example: true
+        name:
+          type: string
+          description: The path that the file is located in
+          example: /location/in/storage
+        size:
+          type: number
+          description: The size of the item in bytes
+          example: 12341234
+      required:
+        - createdAt
+        - id
+        - isDir
+        - name
+        - size
+    CreateChatbotDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The chatbot description
+          example: You are a chatbot designed to answer questions about Arches AI
+        llmBase:
+          type: string
+          default: GPT_3_5_TURBO_16_K
+          description: The base LLM that the chatbot will use
+        name:
+          type: string
+          description: The chatbot name
+          example: Arches AI Documentation Chatbot
+      required:
+        - description
+        - name
+    ChatbotEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        description:
+          type: string
+          description: The chatbot description
+          example: You are a chatbot designed to answer questions about Arches AI
+        llmBase:
+          type: string
+          default: GPT_3_5_TURBO_16_K
+          description: The base LLM that the chatbot will use
+        name:
+          type: string
+          description: The chatbot name
+          example: Arches AI Documentation Chatbot
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+      required:
+        - createdAt
+        - id
+        - description
+        - name
+        - orgname
+    UpdateChatbotDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The chatbot description
+          example: You are a chatbot designed to answer questions about Arches AI
+        llmBase:
+          type: string
+          default: GPT_3_5_TURBO_16_K
+          description: The base LLM that the chatbot will use
+        name:
+          type: string
+          description: The chatbot name
+          example: Arches AI Documentation Chatbot
+    CreateMessageDto:
+      type: object
+      properties:
+        answerLength:
+          type: number
+          default: 240
+          description: The max length of the answer given by the bot
+          example: 240
+        contextLength:
+          type: number
+          default: 1000
+          description: The max length of the context given to the bot
+          example: 3000
+        question:
+          type: string
+          description: The question in this message
+          example: What is the name of this document?
+        similarityCutoff:
+          type: number
+          default: 0.7
+          description: The sililarity cutoff used in this message
+          example: 0.7
+        temperature:
+          type: number
+          default: 0.7
+          description: The temperature for the LLM
+          example: 0.7
+        topK:
+          type: number
+          default: 5
+          description: The max number of sources returned included in the context
+          example: 10
+      required:
+        - question
+    CitationEntity:
+      type: object
+      properties:
+        similarity:
+          type: number
+          description: The similarity of this source to the query
+          example: 0.82
+      required:
+        - similarity
+    MessageEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        answer:
+          type: string
+          description: The answer given by the bot
+          example: The name of this document is Aesop's Fables
+        answerLength:
+          type: number
+          default: 240
+          description: The max length of the answer given by the bot
+          example: 240
+        citations:
+          description: The sources used in this message
+          type: array
+          items:
+            $ref: '#/components/schemas/CitationEntity'
+        contextLength:
+          type: number
+          default: 1000
+          description: The max length of the context given to the bot
+          example: 3000
+        credits:
+          type: number
+          description: The number of credits used in this message
+          example: 14
+        question:
+          type: string
+          description: The question in this message
+          example: What is the name of this document?
+        similarityCutoff:
+          type: number
+          default: 0.7
+          description: The sililarity cutoff used in this message
+          example: 0.7
+        temperature:
+          type: number
+          default: 0.7
+          description: The temperature for the LLM
+          example: 0.7
+        threadId:
+          type: string
+          description: The id of the thread this message belongs to
+          example: thread1
+        topK:
+          type: number
+          default: 5
+          description: The max number of sources returned included in the context
+          example: 10
+      required:
+        - createdAt
+        - id
+        - answer
+        - citations
+        - credits
+        - question
+        - threadId
+    CreateContentDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        url:
+          type: string
+          example: https://example.com/example.mp4
+        pipelineId:
+          type: string
+          description: The tool IDs to run with this content
+          example:
+            - tool-id-uuid
+      required:
+        - name
+        - pipelineId
+    ContentEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        credits:
+          type: number
+          description: The number of credits used to process this content
+          example: 0
+        description:
+          type: string
+          description: The content's description
+          example: my-file.pdf
+        mimeType:
+          type: string
+          description: The MIME type of the content
+          example: application/pdf
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        previewImage:
+          type: string
+          description: The preview image of the content
+          example: https://preview-image.com/example.png
+        url:
+          type: string
+          example: https://example.com/example.mp4
+      required:
+        - createdAt
+        - id
+        - credits
+        - name
+        - orgname
+    UpdateContentDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        url:
+          type: string
+          example: https://example.com/example.mp4
+        pipelineId:
+          type: string
+          description: The tool IDs to run with this content
+          example:
+            - tool-id-uuid
+    TextChunkEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        text:
+          type: string
+          description: The text content of the chunk
+      required:
+        - createdAt
+        - id
+        - text
+    RunEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        completedAt:
+          format: date-time
+          type: string
+          description: The timestamp when the run completed
+          example: '2024-11-04T19:02:55.988Z'
+        error:
+          type: string
+          description: The error message, if any, associated with the run
+          example: An unexpected error occurred.
+        name:
+          type: string
+          description: The name of the run
+          example: Data Processing Run
+        orgname:
+          type: string
+          description: The organization name associated with the run
+          example: my-organization
+        parentRunId:
+          type: string
+          description: >-
+            The parent run ID, if this run is a child run ie a tool run that is
+            part of a pipeline run
+        pipelineId:
+          type: string
+          description: The pipeline ID associated with the run, if applicable
+        progress:
+          type: number
+          default: 0
+          description: The progress of the run as a percentage
+          example: 50.5
+        startedAt:
+          format: date-time
+          type: string
+          description: The timestamp when the run started
+          example: '2024-11-04T19:02:55.988Z'
+        status:
+          type: string
+          default: QUEUED
+          description: The status of the run
+          enum:
+            - QUEUED
+            - PROCESSING
+            - COMPLETE
+            - ERROR
+        toolId:
+          type: string
+          description: The tool used in the run, if applicable
+        type:
+          type: string
+          description: The type of the run
+          enum:
+            - TOOL_RUN
+            - PIPELINE_RUN
+      required:
+        - createdAt
+        - id
+        - name
+        - orgname
+        - progress
+        - status
+        - type
+    ConfirmPasswordResetDto:
+      type: object
+      properties:
+        newPassword:
+          type: string
+          description: The new password
+          example: newPassword
+        token:
+          type: string
+          description: >-
+            The token used to reset the password. This should have been provided
+            in an e-mail
+          example: supersecre
+      required:
+        - newPassword
+        - token
+    RequestPasswordResetDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The e-mail address to send the password reset link to
+          example: user@archesai.com
+      required:
+        - email
+    ConfirmEmailChangeDto:
+      type: object
+      properties:
+        token:
+          type: string
+          description: >-
+            The token used to change the e-mail. This should have been provided
+            in an e-mail
+          example: supersecre
+      required:
+        - token
+    RequestEmailChangeDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The e-mail address to update to
+          example: user@archesai.com
+      required:
+        - email
+    CreateToolDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The tool description
+          example: This tool converts a file to text, regardless of the file type.
+        inputType:
+          type: string
+          description: The tools input type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: FILE
+        name:
+          type: string
+          description: The tool's name
+          example: extract-text
+        outputType:
+          type: string
+          description: The tools output type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: TEXT
+        toolBase:
+          type: string
+          description: The tool's base path
+          example: extract-text
+      required:
+        - description
+        - inputType
+        - name
+        - outputType
+        - toolBase
+    ToolEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        description:
+          type: string
+          description: The tool description
+          example: This tool converts a file to text, regardless of the file type.
+        inputType:
+          type: string
+          description: The tools input type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: FILE
+        name:
+          type: string
+          description: The tool's name
+          example: extract-text
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        outputType:
+          type: string
+          description: The tools output type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: TEXT
+        toolBase:
+          type: string
+          description: The tool's base path
+          example: extract-text
+      required:
+        - createdAt
+        - id
+        - description
+        - inputType
+        - name
+        - orgname
+        - outputType
+        - toolBase
+    UpdateToolDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The tool description
+          example: This tool converts a file to text, regardless of the file type.
+        inputType:
+          type: string
+          description: The tools input type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: FILE
+        name:
+          type: string
+          description: The tool's name
+          example: extract-text
+        outputType:
+          type: string
+          description: The tools output type
+          enum:
+            - TEXT
+            - IMAGE
+            - VIDEO
+            - AUDIO
+          example: TEXT
+        toolBase:
+          type: string
+          description: The tool's base path
+          example: extract-text
+    Metadata:
+      type: object
+      properties:
+        limit:
+          type: number
+          description: The number of results per page
+          example: 10
+        offset:
+          type: number
+          description: The current page
+          example: 1
+        totalResults:
+          type: number
+          description: The total number of results
+          example: 100
+      required:
+        - limit
+        - offset
+        - totalResults
+    _PaginatedDto:
+      type: object
+      properties:
+        metadata:
+          description: The metadata for the paginated results
+          allOf:
+            - $ref: '#/components/schemas/Metadata'
+      required:
+        - metadata
+    GranularSum:
+      type: object
+      properties:
+        from:
+          format: date-time
+          type: string
+        sum:
+          type: number
+        to:
+          format: date-time
+          type: string
+      required:
+        - from
+        - sum
+        - to
+    GranularCount:
+      type: object
+      properties:
+        count:
+          type: number
+        from:
+          format: date-time
+          type: string
+        to:
+          format: date-time
+          type: string
+      required:
+        - count
+        - from
+        - to
+    ThreadAggregates:
+      type: object
+      properties:
+        credits:
+          description: The number of credits used in chat threads over specific timeframes
+          type: array
+          items:
+            $ref: '#/components/schemas/GranularSum'
+        threadsCreated:
+          description: The number of threads created over specific timeframes
+          type: array
+          items:
+            $ref: '#/components/schemas/GranularCount'

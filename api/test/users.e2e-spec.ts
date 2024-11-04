@@ -1,54 +1,44 @@
 import { INestApplication } from "@nestjs/common";
-import request from "supertest";
 
-import { createApp } from "./util";
+import {
+  createApp,
+  deactivateUser,
+  getOrganization,
+  getUser,
+  registerUser,
+  setEmailVerifiedByEmail,
+} from "./util";
 
-describe("User Onboard", () => {
+describe("Users", () => {
   let app: INestApplication;
-  let token: string;
+  let accessToken: string;
 
   const credentials = {
-    email: "onboard@archesai.com",
+    email: "users-test-admin@archesai.com",
     password: "password",
-    username: "admin",
+    username: "users-test-admin",
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createApp();
     await app.init();
+
+    accessToken = (await registerUser(app, credentials)).accessToken;
   });
 
-  it("should create an internal user on first api call", async () => {
-    // Create user
-    let res = await request(app.getHttpServer())
-      .post("/auth/register")
-      .send(credentials);
-    expect(res.status).toBe(201);
-    token = res.body.apiToken;
-
-    // Check user data
-    res = await request(app.getHttpServer())
-      .get("/user")
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(200);
-    expect(res.body.email).toBe("onboard@archesai.com");
-    expect(res.body.defaultOrgname).toBeTruthy();
-    const orgname = res.body.defaultOrgname;
-
-    // check organization data
-    res = await request(app.getHttpServer())
-      .get("/organizations/" + orgname)
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(200);
-
-    // Delete user
-    res = await request(app.getHttpServer())
-      .post("/auth/deactivate")
-      .send(credentials);
-    expect(res.status).toBe(201);
-  });
-
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
+  });
+
+  it("should create an internal user on first API call", async () => {
+    // Verify user data
+    const user = await getUser(app, accessToken);
+    await setEmailVerifiedByEmail(app, user.email);
+
+    // Verify organization data
+    await getOrganization(app, user.defaultOrgname, accessToken);
+
+    // Deactivate the user
+    await deactivateUser(app, accessToken);
   });
 });

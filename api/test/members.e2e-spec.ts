@@ -3,160 +3,121 @@ import request from "supertest";
 
 import { OrganizationsService } from "../src/organizations/organizations.service";
 import { UsersService } from "../src/users/users.service";
-import { createApp } from "./util";
+import { createApp, getUser, registerUser } from "./util";
 
 describe("Members", () => {
   let app: INestApplication;
-  let token: string;
+  let usersService: UsersService;
+  let organizationsService: OrganizationsService;
+  let accessToken: string;
+  let orgname: string;
 
   const credentials = {
-    email: "member-test-admin@archesai.com",
+    email: "admin@archesai.com",
     password: "password",
-    username: "member-test-admin",
+    username: "admin",
   };
 
-  beforeEach(async () => {
+  const invitedUser = {
+    email: "invitedUser@archesai.com",
+    password: "password2",
+    username: "invitedUser",
+  };
+
+  const uninvitedUser = {
+    email: "uninvitedUser@archesai.com",
+    password: "password",
+    username: "uninvitedUser",
+  };
+
+  beforeAll(async () => {
     app = await createApp();
     await app.init();
+
+    usersService = app.get<UsersService>(UsersService);
+    organizationsService = app.get<OrganizationsService>(OrganizationsService);
+
+    accessToken = (await registerUser(app, credentials)).accessToken;
+
+    orgname = (await getUser(app, accessToken)).defaultOrgname;
+
+    await usersService.setEmailVerifiedByEmail(credentials.email);
+    await organizationsService.setPlan(orgname, "UNLIMITED");
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it("Should allow admins to add members", async () => {
-    // Create user
-    let res = await request(app.getHttpServer())
-      .post("/auth/register")
-      .send(credentials);
-    expect(res.status).toBe(201);
-    token = res.body.apiToken;
+    // Invite user with invalid role
+    await inviteUser(invitedUser.email, "BADROLE", 400);
 
-    // Verify email
-    const usersService = app.get<UsersService>(UsersService);
-    const organizationsService =
-      app.get<OrganizationsService>(OrganizationsService);
+    // Invite user with valid role
+    await inviteUser(invitedUser.email, "ADMIN", 201);
 
-    await usersService.setEmailVerifiedByEmail(credentials.email);
+    // Register uninvited user
+    const uninvitedRes = await registerUser(app, uninvitedUser);
+    const uninvitedUserToken = uninvitedRes.accessToken;
 
-    // Get organization name
-    res = await request(app.getHttpServer())
-      .get("/user")
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(200);
-    const orgname = res.body.defaultOrgname;
+    // Register invited user
+    const invitedRes = await registerUser(app, invitedUser);
+    const invitedUserToken = invitedRes.accessToken;
 
-    // Invite user without API plan
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members`)
-      .send({
-        inviteEmail: "jonathankingfc@archesai.com",
-        role: "BADROLE",
-      })
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(403);
-    await organizationsService.setPlan(orgname, "API");
+    // Attempt to join with various scenarios
+    await joinOrganization(invitedUserToken, 403); // Not verified
+    await joinOrganization(uninvitedUserToken, 403); // Not verified
 
-    // Invite user with bad role
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members`)
-      .send({
-        inviteEmail: "jonathankingfc@archesai.com",
-        role: "BADROLE",
-      })
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(400);
+    await usersService.setEmailVerifiedByEmail(uninvitedUser.email);
+    await joinOrganization(uninvitedUserToken, 404); // Uninvited
 
-    // Invite user
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members`)
-      .send({
-        firstName: "jonathan",
-        inviteEmail: "jonathankingfc@archesai.com",
-        role: "ADMIN",
-      })
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(201);
+    await usersService.setEmailVerifiedByEmail(invitedUser.email);
+    await joinOrganization(invitedUserToken, 201); // Verified and invited
 
-    // Create user
-    res = await request(app.getHttpServer()).post("/auth/register").send({
-      email: "jonathankingfc@archesai.com",
-      password: "password",
-      username: "jonathankingfc",
-    });
-    expect(res.status).toBe(201);
-    const invitedUserToken = res.body.apiToken;
-
-    // Create user
-    res = await request(app.getHttpServer()).post("/auth/register").send({
-      email: "uninviteduser@archesai.com",
-      password: "password",
-      username: "uninviteduser",
-    });
-    expect(res.status).toBe(201);
-    const uninvitedUserToken = res.body.apiToken;
-
-    // Try to join as invited but not e-mail verified and fail
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members/join`)
-      .send({})
-      .set("Authorization", "Bearer " + invitedUserToken);
-    expect(res.status).toBe(403);
-
-    // Try to join as uninvited and not e-mail verified and fail
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members/join`)
-      .send({})
-      .set("Authorization", "Bearer " + uninvitedUserToken);
-    expect(res.status).toBe(403);
-
-    // // Verify email
-    await usersService.setEmailVerifiedByEmail("uninviteduser@archesai.com");
-
-    // Try to join as uninvited fail
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members/join`)
-      .send({})
-      .set("Authorization", "Bearer " + uninvitedUserToken);
-    expect(res.status).toBe(404);
-
-    // Try to join as invited as verified and succeed
-    await usersService.setEmailVerifiedByEmail("jonathankingfc@archesai.com");
-    res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members/join`)
-      .send({})
-      .set("Authorization", "Bearer " + invitedUserToken);
-    expect(res.status).toBe(201);
-
-    // Check and see added as member
-    res = await request(app.getHttpServer())
+    // Verify invited user added as member
+    const memberRes = await request(app.getHttpServer())
       .get(`/organizations/${orgname}/members`)
       .set("Authorization", "Bearer " + invitedUserToken);
-    expect(res.status).toBe(200);
-    expect(res.body.metadata.totalResults).toBe(2);
+    expect(memberRes.status).toBe(200);
+    expect(memberRes.body.metadata.totalResults).toBe(2);
 
-    // Uninvited user should get 404 since not a member
-    res = await request(app.getHttpServer())
+    // Verify uninvited user not a member
+    const nonMemberRes = await request(app.getHttpServer())
       .get(`/organizations/${orgname}/members`)
       .set("Authorization", "Bearer " + uninvitedUserToken);
-    expect(res.status).toBe(404);
+    expect(nonMemberRes.status).toBe(404);
 
-    // Delete users
-    res = await request(app.getHttpServer())
+    // Cleanup: delete users and organization
+    await cleanupOrganizationAndUsers();
+  });
+
+  const inviteUser = async (email, role, expectedStatus) => {
+    const res = await request(app.getHttpServer())
+      .post(`/organizations/${orgname}/members`)
+      .send({ inviteEmail: email, role })
+      .set("Authorization", "Bearer " + accessToken);
+    expect(res).toSatisfyApiSpec();
+    expect(res.status).toBe(expectedStatus);
+  };
+
+  const joinOrganization = async (userToken, expectedStatus) => {
+    const res = await request(app.getHttpServer())
+      .post(`/organizations/${orgname}/members/join`)
+      .send({})
+      .set("Authorization", "Bearer " + userToken);
+    expect(res.status).toBe(expectedStatus);
+  };
+
+  const cleanupOrganizationAndUsers = async () => {
+    await request(app.getHttpServer())
       .delete(`/organizations/${orgname}`)
-      .set("Authorization", "Bearer " + token);
+      .set("Authorization", "Bearer " + accessToken);
 
-    res = await request(app.getHttpServer())
-      .post("/auth/deactivate")
-      .send(credentials);
-    expect(res.status).toBe(201);
-    res = await request(app.getHttpServer())
-      .post("/auth/deactivate")
-      .send({ email: "jonathankingfc@archesai.com", password: "password" });
-    expect(res.status).toBe(201);
-    res = await request(app.getHttpServer())
-      .post("/auth/deactivate")
-      .send({ email: "uninviteduser@archesai.com", password: "password" });
-    expect(res.status).toBe(201);
-  });
+    await deactivateUser(credentials);
+    await deactivateUser(invitedUser);
+    await deactivateUser(uninvitedUser);
+  };
 
-  afterEach(async () => {
-    await app.close();
-  });
+  const deactivateUser = (user) =>
+    request(app.getHttpServer()).post("/auth/deactivate").send(user);
 });

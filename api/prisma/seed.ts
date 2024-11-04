@@ -5,7 +5,9 @@ import * as bcrypt from "bcryptjs";
 
 import { AppModule } from "../src/app.module";
 import { CurrentUserDto } from "../src/auth/decorators/current-user.decorator";
+import { ChatbotsService } from "../src/chatbots/chatbots.service";
 import { OrganizationsService } from "../src/organizations/organizations.service";
+import { PipelinesService } from "../src/pipelines/pipelines.service";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { UsersService } from "../src/users/users.service";
 
@@ -18,6 +20,8 @@ async function main() {
 
   const organizationsService =
     app.get<OrganizationsService>(OrganizationsService);
+  const chatbotsService = app.get<ChatbotsService>(ChatbotsService);
+  const pipelinesService = app.get<PipelinesService>(PipelinesService);
 
   // Create init user
   let user = null as CurrentUserDto;
@@ -26,6 +30,8 @@ async function main() {
   const hashedPassword = await bcrypt.hash("password", 10);
 
   try {
+    const orgname =
+      email.split("@")[0] + "-" + Math.random().toString(36).substring(2, 6);
     user = await usersService.create({
       email: email,
       emailVerified: true,
@@ -34,8 +40,7 @@ async function main() {
       password: hashedPassword,
       photoUrl:
         "https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179",
-      username:
-        email.split("@")[0] + "-" + Math.random().toString(36).substring(2, 6),
+      username: orgname,
     });
     user = await usersService.syncAuthProvider(
       email,
@@ -47,38 +52,17 @@ async function main() {
     await organizationsService.setPlan(user.defaultOrgname, "UNLIMITED");
     await organizationsService.addCredits(user.defaultOrgname, 1000000000);
   } catch (e) {
-    console.log("User already exists");
+    console.log("User already exists", e);
     user = await usersService.findOneByEmail(email);
     console.log(user);
   }
 
-  const chatbot = await prismaService.chatbot.findFirst({
-    where: {
-      orgname: user.defaultOrgname,
-    },
-  });
+  const chatbots = await chatbotsService.findAll(user.defaultOrgname, {});
+  const chatbot = chatbots.results[0];
 
-  await prismaService.tool.createMany({
-    data: [
-      {
-        description:
-          "Extract text from a file. This tool supports all file types.",
-        id: "extract-text",
-        inputType: "TEXT",
-        name: "Text Extraction",
-        orgname: user.defaultOrgname,
-        outputType: "TEXT",
-      },
-      {
-        description: "Create an image from text.",
-        id: "text-to-image",
-        inputType: "TEXT",
-        name: "Text to Image",
-        orgname: user.defaultOrgname,
-        outputType: "IMAGE",
-      },
-    ],
-  });
+  const pipelines = await pipelinesService.findAll(user.defaultOrgname, {});
+
+  console.log(pipelines);
 
   try {
     for (let i = 0; i < 100; i++) {
@@ -88,21 +72,6 @@ async function main() {
           createdAt: fakeDate,
           credits: faker.number.int(10000),
           description: faker.lorem.paragraphs(2),
-          jobs: {
-            createMany: {
-              data: [
-                {
-                  createdAt: fakeDate,
-                  error: "",
-                  input: faker.internet.url(),
-                  orgname: user.defaultOrgname,
-                  output: faker.lorem.sentence(),
-                  status: "COMPLETE",
-                  toolId: "extract-text",
-                },
-              ],
-            },
-          },
           mimeType: "application/pdf",
           name: faker.commerce.productName(),
           organization: {

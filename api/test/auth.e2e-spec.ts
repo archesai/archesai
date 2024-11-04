@@ -1,48 +1,37 @@
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
-import { createApp } from "./util";
+import { createApp, deactivateUser, getUser, registerUser } from "./util";
 
 describe("Auth", () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createApp();
     await app.init();
   });
 
   it("Should protect private endpoints like /user", async () => {
     // Try to get /auth/me endpoint and fail
-    let res = await request(app.getHttpServer()).get("/user");
+    const res = await request(app.getHttpServer()).get("/user");
     expect(res.status).toBe(401);
 
     // Create account
     const credentials = {
-      email: "admin@archesai.com",
+      email: "auth-test@archesai.com",
       password: "password",
-      username: "admin",
+      username: "auth-test",
     };
 
-    res = await request(app.getHttpServer())
-      .post("/auth/register")
-      .send(credentials);
-    expect(res.status).toBe(201);
-    const token = res.body.apiToken;
+    const tokenDto = await registerUser(app, credentials);
+    const accessToken = tokenDto.accessToken;
 
-    // Get /auth/me endpoint and pass
-    res = await request(app.getHttpServer())
-      .get("/user")
-      .set("Authorization", "Bearer " + token);
-    expect(res.status).toBe(200);
+    await getUser(app, accessToken);
 
-    // Delete user
-    res = await request(app.getHttpServer())
-      .post("/auth/deactivate")
-      .send(credentials);
-    expect(res.status).toBe(201);
+    await deactivateUser(app, accessToken);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 });

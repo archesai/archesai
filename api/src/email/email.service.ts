@@ -13,7 +13,7 @@ export class EmailService {
         user: this.configService.get("EMAIL_USER"),
       },
       service: this.configService.get("EMAIL_SERVICE"),
-    });
+    }) as any; // FIXME
   }
 
   async sendMail(options: Mail.Options) {

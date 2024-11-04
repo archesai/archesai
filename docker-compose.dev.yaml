@@ -42,7 +42,9 @@ services:
       - ./api:/usr/src/app
     env_file:
       - ./api/.env.${PROFILE}
-    command: /bin/sh -c 'npm run test:e2e'
+    environment:
+      - NODE_ENV=test
+    command: /bin/sh -c 'npm run test:e2e -- $TEST_FILE'
     working_dir: /usr/src/app
     profiles:
       - test
@@ -58,7 +60,7 @@ services:
       - ./api:/usr/src/app
     env_file:
       - ./api/.env.${PROFILE}
-    command: /bin/sh -c 'npm run seed'
+    command: /bin/sh -c 'npm run db:seed'
     working_dir: /usr/src/app
     profiles:
       - test

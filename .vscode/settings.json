@@ -4,7 +4,8 @@
     // "**/node_modules": true,
     // "**/dist": true,
     // "**/.next": true
-  }
+  },
+  "makefile.configureOnOpen": false
   // "editor.formatOnSave": true,
   // "editor.defaultFormatter": "esbenp.prettier-vscode",
   // "[javascript]": {

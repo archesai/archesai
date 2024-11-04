@@ -15,6 +15,7 @@ import {
   Server,
   User,
   Users,
+  Workflow,
 } from "lucide-react";
 
 export const siteConfig = {
@@ -115,6 +116,14 @@ export const siteConfig = {
         title: "API Tokens",
       },
     ],
+    "/pipelines": [
+      {
+        href: "/pipelines",
+        Icon: Workflow,
+        section: "manage",
+        title: "Pipelines",
+      },
+    ],
     "/profile": [
       {
         href: "/profile",
@@ -144,9 +153,9 @@ export const siteConfig = {
         title: "Tools",
       },
       {
-        href: "/tools/jobs",
+        href: "/tools/runs",
         Icon: PackageCheck,
-        tab: "Jobs",
+        tab: "Runs",
       },
     ],
   } as Record<

@@ -1,9 +1,9 @@
-import { InjectQueue } from "@nestjs/bullmq";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { Content, Job, Prisma } from "@prisma/client";
-import { Queue } from "bullmq";
+import { Content, Prisma } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
+import { PaginatedDto } from "../common/paginated.dto";
+import { PipelinesService } from "../pipelines/pipelines.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { ContentRepository } from "./content.repository";
@@ -15,7 +15,12 @@ import { ContentEntity } from "./entities/content.entity";
 @Injectable()
 export class ContentService
   implements
-    BaseService<Content, CreateContentDto, ContentQueryDto, UpdateContentDto>
+    BaseService<
+      ContentEntity,
+      CreateContentDto,
+      ContentQueryDto,
+      UpdateContentDto
+    >
 {
   private logger = new Logger(ContentService.name);
   constructor(
@@ -23,54 +28,51 @@ export class ContentService
     private storageService: StorageService,
     private contentRepository: ContentRepository,
     private websocketsService: WebsocketsService,
-    @InjectQueue("tool") private readonly toolQueue: Queue
+    private pipelinesService: PipelinesService
   ) {}
 
-  async create(
-    orgname: string,
-    createContentDto: CreateContentDto
-  ): Promise<ContentEntity> {
+  async create(orgname: string, createContentDto: CreateContentDto) {
     const content = await this.contentRepository.create(
       orgname,
       createContentDto
     );
     this.websocketsService.socket.to(orgname).emit("update");
     const contentEntity = new ContentEntity(content);
-    contentEntity.jobs.forEach((job) => {
-      this.toolQueue.add(
-        job.toolId,
-        {
-          content: contentEntity,
-          job,
-        },
-        {
-          jobId: job.id,
-        }
-      );
-    });
-
+    await this.pipelinesService.runPipeline(contentEntity);
     return contentEntity;
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
-    return this.contentRepository.findAll(orgname, contentQueryDto);
+    const { count, results } = await this.contentRepository.findAll(
+      orgname,
+      contentQueryDto
+    );
+    const contentEntities = results.map(
+      (content) => new ContentEntity(content)
+    );
+    return new PaginatedDto<ContentEntity>({
+      metadata: {
+        limit: contentQueryDto.limit,
+        offset: contentQueryDto.offset,
+        totalResults: count,
+      },
+      results: contentEntities,
+    });
   }
 
   async findOne(id: string) {
     const content = await this.contentRepository.findOne(id);
     const populated = await this.populateReadUrl(content);
-    return populated;
+    return new ContentEntity(populated);
   }
 
   async incrementCredits(orgname: string, id: string, credits: number) {
     const content = await this.contentRepository.incrementCredits(id, credits);
     this.websocketsService.socket.to(orgname).emit("update");
-    return content;
+    return new ContentEntity(content);
   }
 
-  async populateReadUrl(
-    content: { jobs: Job[] } & Content
-  ): Promise<{ jobs: Job[] } & Content> {
+  async populateReadUrl(content: Content) {
     if (
       content.url.startsWith(
         `https://storage.googleapis.com/archesai/storage/${content.orgname}/`
@@ -115,12 +117,12 @@ export class ContentService
       updateContentDto
     );
     this.websocketsService.socket.to(orgname).emit("update");
-    return content;
+    return new ContentEntity(content);
   }
 
   async updateRaw(orgname: string, id: string, raw: Prisma.ContentUpdateInput) {
     const content = await this.contentRepository.updateRaw(orgname, id, raw);
     this.websocketsService.socket.to(orgname).emit("update");
-    return content;
+    return new ContentEntity(content);
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Tool, ToolIOType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
 
@@ -50,17 +50,12 @@ export class ToolEntity extends BaseEntity implements Tool {
   outputType: ToolIOType;
 
   @ApiProperty({
-    description: "The tools output text",
-    example: "Hello, world!",
+    description: "The tool's base path",
+    example: "extract-text",
   })
   @Expose()
-  @IsOptional()
-  text: string;
-
-  @ApiProperty({ example: "https://example.com/example.mp4" })
-  @Expose()
   @IsString()
-  url: string;
+  toolBase: string;
 
   constructor(tool: Tool) {
     super();

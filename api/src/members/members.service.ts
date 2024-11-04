@@ -1,39 +1,60 @@
-import { Injectable } from "@nestjs/common";
-import { Member } from "@prisma/client";
+import { Injectable, Logger } from "@nestjs/common";
 
 import { BaseService } from "../common/base.service";
+import { PaginatedDto } from "../common/paginated.dto";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { MemberQueryDto } from "./dto/member-query.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
+import { MemberEntity } from "./entities/member.entity";
 import { MemberRepository } from "./member.repository";
 
 @Injectable()
 export class MembersService
   implements
-    BaseService<Member, CreateMemberDto, MemberQueryDto, UpdateMemberDto>
+    BaseService<MemberEntity, CreateMemberDto, MemberQueryDto, UpdateMemberDto>
 {
+  private readonly logger = new Logger(MembersService.name);
   constructor(private memberRepository: MemberRepository) {}
 
   async acceptMember(orgname: string, inviteEmail: string, username: string) {
-    return this.memberRepository.acceptMember(orgname, inviteEmail, username);
+    this.logger.log(
+      `Accepting member ${inviteEmail} to organization ${orgname}`
+    );
+    return new MemberEntity(
+      await this.memberRepository.acceptMember(orgname, inviteEmail, username)
+    );
   }
 
   async create(orgname: string, createMemberDto: CreateMemberDto) {
     const member = await this.memberRepository.create(orgname, createMemberDto);
     // await this.authService.sendEmailInvite(createMemberDto.inviteEmail); // FIXME
-    return member;
+    return new MemberEntity(member);
   }
 
   async findAll(orgname: string, memberQueryDto: MemberQueryDto) {
-    return this.memberRepository.findAll(orgname, memberQueryDto);
+    const { count, results } = await this.memberRepository.findAll(
+      orgname,
+      memberQueryDto
+    );
+    const memberEntities = results.map((member) => new MemberEntity(member));
+    return new PaginatedDto<MemberEntity>({
+      metadata: {
+        limit: memberQueryDto.limit,
+        offset: memberQueryDto.offset,
+        totalResults: count,
+      },
+      results: memberEntities,
+    });
   }
 
   async findById(id: string) {
-    return this.memberRepository.findById(id);
+    return new MemberEntity(await this.memberRepository.findById(id));
   }
 
   async findByInviteEmail(orgname: string, inviteEmail: string) {
-    return this.memberRepository.findByInviteEmail(orgname, inviteEmail);
+    return new MemberEntity(
+      await this.memberRepository.findByInviteEmail(orgname, inviteEmail)
+    );
   }
 
   async remove(orgname: string, id: string) {
@@ -41,6 +62,8 @@ export class MembersService
   }
 
   async update(orgname: string, id: string, updateMemberDto: UpdateMemberDto) {
-    return this.memberRepository.update(orgname, id, updateMemberDto);
+    return new MemberEntity(
+      await this.memberRepository.update(orgname, id, updateMemberDto)
+    );
   }
 }

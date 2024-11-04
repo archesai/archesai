@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from "@nestjs/swagger";
-import { IsArray } from "class-validator";
+import { IsString } from "class-validator";
 
 import { ContentEntity } from "../entities/content.entity";
 
@@ -9,10 +9,8 @@ export class CreateContentDto extends PickType(ContentEntity, [
 ] as const) {
   @ApiProperty({
     description: "The tool IDs to run with this content",
-    example: ["tool-id-1", "tool-id-2"],
+    example: ["tool-id-uuid"],
   })
-  @IsArray({
-    always: true,
-  })
-  toolIds: string[];
+  @IsString()
+  pipelineId: string;
 }

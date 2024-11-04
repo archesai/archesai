@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { User } from "@prisma/client";
 import { AuthProviderType } from "@prisma/client";
@@ -11,6 +11,7 @@ import { UserRepository } from "./user.repository";
 
 @Injectable()
 export class UsersService {
+  private readonly logger: Logger = new Logger(UsersService.name);
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
@@ -19,6 +20,7 @@ export class UsersService {
   ) {}
 
   async create(createUser: CreateUserInput) {
+    this.logger.log("Creating user " + JSON.stringify(createUser, null, 2));
     const user = await this.userRepository.create({
       emailVerified:
         this.configService.get("FEATURE_EMAIL") === true

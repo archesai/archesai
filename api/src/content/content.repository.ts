@@ -22,31 +22,15 @@ export class ContentRepository
   async create(orgname: string, createContentDto: CreateContentDto) {
     return this.prisma.content.create({
       data: {
-        jobs: {
-          createMany: {
-            data: createContentDto.toolIds.map((id) => ({
-              input: createContentDto.url,
-              orgname,
-              output: "",
-              status: "QUEUED",
-              toolId: id,
-            })),
-          },
-        },
-        mimeType: "",
         name: createContentDto.name,
         organization: {
           connect: {
             orgname,
           },
         },
-        tools: {
-          connect: createContentDto.toolIds.map((id) => ({ id })),
-        },
         url: createContentDto.url,
       },
       include: {
-        jobs: true,
         textChunks: true,
       },
     });
@@ -69,7 +53,6 @@ export class ContentRepository
     });
     const content = await this.prisma.content.findMany({
       include: {
-        jobs: true,
         textChunks: true,
       },
       orderBy: {
@@ -96,7 +79,6 @@ export class ContentRepository
   async findOne(id: string) {
     return this.prisma.content.findUniqueOrThrow({
       include: {
-        jobs: true,
         textChunks: true,
       },
       where: { id },
@@ -111,7 +93,6 @@ export class ContentRepository
         },
       },
       include: {
-        jobs: true,
         textChunks: true,
       },
       where: {
@@ -136,7 +117,6 @@ export class ContentRepository
         name: updateContentDto.name,
       },
       include: {
-        jobs: true,
         textChunks: true,
       },
       where: {
@@ -149,7 +129,6 @@ export class ContentRepository
     return this.prisma.content.update({
       data: raw,
       include: {
-        jobs: true,
         textChunks: true,
       },
       where: {

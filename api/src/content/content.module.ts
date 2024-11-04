@@ -1,6 +1,6 @@
-import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 
+import { PipelinesModule } from "../pipelines/pipelines.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { StorageModule } from "../storage/storage.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
@@ -15,12 +15,7 @@ import { ContentService } from "./content.service";
     PrismaModule,
     StorageModule.forRoot(),
     WebsocketsModule,
-    BullModule.registerQueue({
-      defaultJobOptions: {
-        attempts: 1,
-      },
-      name: "tool",
-    }),
+    PipelinesModule,
   ],
   providers: [ContentService, ContentRepository],
 })

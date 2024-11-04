@@ -12,7 +12,7 @@ import { Reflector } from "@nestjs/core";
 import { ApiTokensService } from "../../api-tokens/api-tokens.service";
 @Injectable()
 export class RestrictedAPIKeyGuard implements CanActivate {
-  private readonly logger: Logger = new Logger("RestrictedAPIKeyGuard");
+  private readonly logger: Logger = new Logger("Restricted API Key Guard");
 
   constructor(
     private reflector: Reflector,
@@ -37,6 +37,7 @@ export class RestrictedAPIKeyGuard implements CanActivate {
       if (!orgname) {
         return true;
       }
+      this.logger.log(`Validating API Key is valid for this resource`);
       // Make sure if there was a domain in their header that this request is authorized for it
       if (domains && domains != "*") {
         const url = new URL(request.headers.origin);

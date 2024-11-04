@@ -9,6 +9,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
+import { format } from "date-fns";
 import { File } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -71,12 +72,12 @@ export default function ContentPage() {
               <DataTableColumnHeader
                 className="-ml-2 text-sm"
                 column={column}
-                title="Input Type"
+                title="Input"
               />
             ),
           },
           {
-            accessorKey: "Output Type",
+            accessorKey: "outputType",
             cell: ({ row }) => {
               return <span>{row.original.outputType}</span>;
             },
@@ -86,7 +87,7 @@ export default function ContentPage() {
               <DataTableColumnHeader
                 className="-ml-2 text-sm"
                 column={column}
-                title="Output Type"
+                title="Output"
               />
             ),
           },
@@ -95,12 +96,19 @@ export default function ContentPage() {
             cell: ({ row }) => {
               return (
                 <span className="font-light">
-                  {new Date(row.original.createdAt).toLocaleDateString()}
+                  {format(
+                    new Date(row.original.createdAt),
+                    "yyyy-MM-dd HH:mm:ss"
+                  )}
                 </span>
               );
             },
             header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Created" />
+              <DataTableColumnHeader
+                className="-ml-2 text-sm"
+                column={column}
+                title="Created"
+              />
             ),
           },
         ]}

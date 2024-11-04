@@ -31,7 +31,12 @@ enum ToolIOType {
   AUDIO
 }
 
-enum JobStatus {
+enum RunType {
+  TOOL_RUN
+  PIPELINE_RUN
+}
+
+enum RunStatus {
   QUEUED
   PROCESSING
   COMPLETE
@@ -53,20 +58,73 @@ model Content {
 
   name        String
   description String?
-  text        String?
 
   url          String?
   credits      Int     @default(0)
-  mimeType     String
+  mimeType     String?
   previewImage String?
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  jobs       Job[]
-  tools      Tool[]
   textChunks TextChunk[]
   citations  Citation[]
+
+  runInputs  RunInputContent[]
+  runOutputs RunOutputContent[]
+}
+
+model RunInputContent {
+  runId     String
+  contentId String
+
+  run     Run     @relation(fields: [runId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@id([runId, contentId])
+}
+
+model RunOutputContent {
+  runId     String
+  contentId String
+
+  run     Run     @relation(fields: [runId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@id([runId, contentId])
+}
+
+model Run {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name   String
+  type   RunType
+  status RunStatus @default(QUEUED)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+  progress    Float     @default(0)
+  error       String?
+
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  // if using tool
+  tool   Tool?   @relation(fields: [toolId], references: [id])
+  toolId String?
+
+  // if using pipeline
+  pipeline    Pipeline? @relation(fields: [pipelineId], references: [id])
+  pipelineId  String?
+  parentRun   Run?      @relation("ParentChildRuns", fields: [parentRunId], references: [id])
+  parentRunId String?
+  childRuns   Run[]     @relation("ParentChildRuns")
+
+  // Relations to Content via join tables
+  inputContents  RunInputContent[]
+  outputContents RunOutputContent[]
 }
 
 model Tool {
@@ -80,39 +138,44 @@ model Tool {
   inputType  ToolIOType
   outputType ToolIOType
 
-  text String?
-  url  String?
+  toolBase String
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  jobs Job[]
-
-  content Content[]
+  pipelineTools PipelineTool[]
+  runs          Run[]
 }
 
-model Job {
+model Pipeline {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  startedAt   DateTime?
-  completedAt DateTime?
-  status      JobStatus @default(QUEUED)
-  progress    Float?    @default(0)
-  error       String?
+  name        String
+  description String?
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
+  pipelineTools PipelineTool[]
+  runs          Run[]
+}
+
+model PipelineTool {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  pipelineId String
+
   tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
   toolId String
 
-  input  String
-  output String
-
-  content   Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  contentId String?
+  dependsOn   PipelineTool?  @relation("ToolDependencies", fields: [dependsOnId], references: [id])
+  dependsOnId String?
+  dependents  PipelineTool[] @relation("ToolDependencies")
 }
 
 model Chatbot {
@@ -237,14 +300,18 @@ model Organization {
   credits          Int      @default(0)
   plan             PlanType @default(FREE)
 
-  members    Member[]
-  apiTokens  ApiToken[]
-  threads    Thread[]
-  chatbots   Chatbot[]
-  jobs       Job[]
+  members   Member[]
+  apiTokens ApiToken[]
+
   content    Content[]
   textChunks TextChunk[]
-  tools      Tool[]
+
+  chatbots Chatbot[]
+  threads  Thread[]
+
+  tools     Tool[]
+  pipelines Pipeline[]
+  runs      Run[]
 }
 
 model Member {

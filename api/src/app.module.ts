@@ -21,14 +21,15 @@ import { EmailChangeModule } from "./email-change/email-change.module";
 import { EmailVerificationModule } from "./email-verification/email-verification.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { FirebaseModule } from "./firebase/firebase.module";
-import { JobsModule } from "./jobs/jobs.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
 import { MessagesModule } from "./messages/messages.module";
 import { OrganizationsModule } from "./organizations/organizations.module";
 import { PasswordResetModule } from "./password-reset/password-reset.module";
+import { PipelinesModule } from "./pipelines/pipelines.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
+import { RunsModule } from "./runs/runs.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
 import { TextChunksModule } from "./text-chunks/text-chunks.module";
@@ -41,18 +42,23 @@ import { WebsocketsModule } from "./websockets/websockets.module";
 @Module({
   controllers: [],
   imports: [
+    PipelinesModule,
     LoggerModule.forRoot({
       pinoHttp: {
         ...(process.env.NODE_ENV !== "production"
-          ? {
-              autoLogging: false, // This will disable automatic logging of HTTP requests
-              transport: {
-                target: "pino-pretty",
-                // options: {
-                //   singleLine: true,
-                // },
-              },
-            }
+          ? process.env.NODE_ENV === "test"
+            ? {
+                level: "silent",
+              }
+            : {
+                autoLogging: false, // This will disable automatic logging of HTTP requests
+                transport: {
+                  target: "pino-pretty",
+                  // options: {
+                  //   singleLine: true,
+                  // },
+                },
+              }
           : {
               formatters: {
                 level(label) {
@@ -197,7 +203,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     AudioModule,
     ScheduleModule.forRoot(),
     MessagesModule,
-    JobsModule,
     ContentModule,
     RunpodModule,
     FirebaseModule,
@@ -207,6 +212,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ARTokensModule,
     SpeechModule,
     ToolsModule,
+    RunsModule,
   ],
   providers: [WebsocketsGateway],
 })

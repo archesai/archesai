@@ -37,6 +37,7 @@ export class UserRepository {
     const user = this.prisma.user.create({
       data: {
         ...createUser,
+        defaultOrgname: createUser.username,
         memberships: {
           connect: prexistingMemberships.map((m) => {
             return {

@@ -22,7 +22,9 @@ export class ApiTokenRepository
   async create(
     orgname: string,
     createApiTokenDto: CreateApiTokenDto,
-    snippet?: string
+    snippet?: string,
+    id?: string,
+    uid?: string
   ) {
     return this.prisma.apiToken.create({
       data: {
@@ -30,6 +32,7 @@ export class ApiTokenRepository
           connect: createApiTokenDto.chatbotIds.map((id) => ({ id })),
         },
         domains: createApiTokenDto.domains,
+        id,
         key: snippet,
         name: createApiTokenDto.name,
         organization: {
@@ -38,6 +41,11 @@ export class ApiTokenRepository
           },
         },
         role: createApiTokenDto.role,
+        user: {
+          connect: {
+            id: uid,
+          },
+        },
       },
       include: {
         chatbots: {

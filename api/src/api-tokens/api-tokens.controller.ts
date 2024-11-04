@@ -10,13 +10,15 @@ import {
 import { Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import { Roles } from "../auth/decorators/roles.decorator";
+import {
+  CurrentUser,
+  CurrentUserDto,
+} from "../auth/decorators/current-user.decorator";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
-import { PaginatedDto } from "../common/paginated.dto";
 import { ApiTokensService } from "./api-tokens.service";
 import { ApiTokenQueryDto } from "./dto/api-token-query.dto";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
@@ -24,8 +26,7 @@ import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
 import { ApiTokenEntity } from "./entities/api-token.entity";
 
 @ApiBearerAuth()
-@ApiTags("Organization - API Tokens")
-@Roles("ADMIN")
+@ApiTags("API Tokens")
 @Controller()
 export class ApiTokensController
   implements
@@ -42,13 +43,14 @@ export class ApiTokensController
   @Post("/organizations/:orgname/api-tokens")
   async create(
     @Param("orgname") orgname: string,
-    @Body() createTokenDto: CreateApiTokenDto
+    @Body() createTokenDto: CreateApiTokenDto,
+    @CurrentUser() currentUserDto?: CurrentUserDto
   ) {
-    const apiToken = await this.apiTokensService.create(
+    return this.apiTokensService.create(
       orgname,
-      createTokenDto
+      createTokenDto,
+      currentUserDto.id
     );
-    return new ApiTokenEntity(apiToken);
   }
 
   @ApiCrudOperation(Operation.FIND_ALL, "API token", ApiTokenEntity, true)
@@ -57,26 +59,13 @@ export class ApiTokensController
     @Param("orgname") orgname: string,
     @Query() apiTokenQueryDto: ApiTokenQueryDto
   ) {
-    const { count, results } = await this.apiTokensService.findAll(
-      orgname,
-      apiTokenQueryDto
-    );
-
-    return new PaginatedDto<ApiTokenEntity>({
-      metadata: {
-        limit: 10,
-        offset: 0,
-        totalResults: count,
-      },
-      results: results.map((val) => new ApiTokenEntity(val)),
-    });
+    return this.apiTokensService.findAll(orgname, apiTokenQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "API token", ApiTokenEntity, true)
   @Get("/organizations/:orgname/api-tokens/:id")
   async findOne(@Param("orgname") orgname: string, @Param("id") id: string) {
-    const apiToken = await this.apiTokensService.findOne(orgname, id);
-    return new ApiTokenEntity(apiToken);
+    return this.apiTokensService.findOne(orgname, id);
   }
 
   @ApiCrudOperation(Operation.DELETE, "API token", ApiTokenEntity, true)
@@ -92,11 +81,6 @@ export class ApiTokensController
     @Param("id") id: string,
     @Body() updateApiTokenDto: UpdateApiTokenDto
   ) {
-    const apiToken = await this.apiTokensService.update(
-      orgname,
-      id,
-      updateApiTokenDto
-    );
-    return new ApiTokenEntity(apiToken);
+    return this.apiTokensService.update(orgname, id, updateApiTokenDto);
   }
 }

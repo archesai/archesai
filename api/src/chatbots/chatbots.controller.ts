@@ -16,7 +16,6 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
-import { PaginatedDto } from "../common/paginated.dto";
 import { ChatbotsService } from "./chatbots.service";
 import { ChatbotQueryDto } from "./dto/chatbot-query.dto";
 import { CreateChatbotDto } from "./dto/create-chatbot.dto";
@@ -55,18 +54,7 @@ export class ChatbotsController
     @Param("orgname") orgname: string,
     @Query() chatbotQueryDto: ChatbotQueryDto
   ) {
-    const { count, results } = await this.chatbotsService.findAll(
-      orgname,
-      chatbotQueryDto
-    );
-    return new PaginatedDto<ChatbotEntity>({
-      metadata: {
-        limit: chatbotQueryDto.limit,
-        offset: chatbotQueryDto.offset,
-        totalResults: count,
-      },
-      results: results.map((chatbot) => new ChatbotEntity(chatbot)),
-    });
+    return this.chatbotsService.findAll(orgname, chatbotQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "chatbot", ChatbotEntity, true)
@@ -75,7 +63,7 @@ export class ChatbotsController
     @Param("orgname") orgname: string,
     @Param("chatbotId") chatbotId: string
   ) {
-    return new ChatbotEntity(await this.chatbotsService.findOne(chatbotId));
+    return this.chatbotsService.findOne(chatbotId);
   }
 
   @Delete(":chatbotId")
@@ -94,8 +82,6 @@ export class ChatbotsController
     @Param("chatbotId") chatbotId: string,
     @Body() updateChatbotDto: UpdateChatbotDto
   ) {
-    return new ChatbotEntity(
-      await this.chatbotsService.update(orgname, chatbotId, updateChatbotDto)
-    );
+    return this.chatbotsService.update(orgname, chatbotId, updateChatbotDto);
   }
 }

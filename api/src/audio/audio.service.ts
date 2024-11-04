@@ -17,15 +17,13 @@ import { KeyframesService } from "./keyframes.service";
 
 @Injectable()
 export class AudioService {
-  private readonly logger: Logger = new Logger("AudioService");
+  private readonly logger: Logger = new Logger("Audio Service");
 
   getKeyframes = async (
     audioUrl: string,
     framerate: number,
     fn: string,
     isTranslation: boolean
-
-    
   ) => {
     return this.keyframesService.getKeyframes(
       audioUrl,

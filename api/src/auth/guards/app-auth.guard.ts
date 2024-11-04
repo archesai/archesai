@@ -3,7 +3,10 @@ import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 
 @Injectable()
-export class AppAuthGuard extends AuthGuard(["jwt"]) implements CanActivate {
+export class AppAuthGuard
+  extends AuthGuard(["jwt", "api-key-auth"])
+  implements CanActivate
+{
   constructor(private reflector: Reflector) {
     super();
   }

@@ -1,7 +1,6 @@
-import { ApiHideProperty, ApiProperty, PickType } from "@nestjs/swagger";
-import { ApiToken, Organization, RoleType, User } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
+import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ApiToken, RoleType } from "@prisma/client";
+import { IsEnum, IsString, ValidateNested } from "class-validator";
 
 import { ChatbotEntity } from "../../chatbots/entities/chatbot.entity";
 import { BaseEntity } from "../../common/base-entity.dto";
@@ -19,8 +18,6 @@ export class ApiTokenEntity extends BaseEntity implements ApiToken {
     ],
     type: [ChatbotsFieldItem],
   })
-  @Expose()
-  @IsOptional()
   @ValidateNested({ each: true })
   chatbots: ChatbotsFieldItem[];
 
@@ -28,54 +25,40 @@ export class ApiTokenEntity extends BaseEntity implements ApiToken {
     default: "*",
     description: "The domains that can access this API token",
     example: "archesai.com,localhost:3000",
-    required: false,
   })
-  @Expose()
   @IsString()
-  domains: string = "*";
+  domains: string;
 
   @ApiProperty({
     description: "The API token key. This will only be shown once",
     example: "********1234567890",
   })
-  @Expose()
   key: string;
 
   @ApiProperty({
     description: "The name of the API token",
     example: "My Token",
   })
-  @Expose()
   @IsString()
   name: string;
-
-  // Private Properties
-  @ApiHideProperty()
-  @Exclude()
-  organization: Organization;
 
   @ApiProperty({
     description: "The organization name",
     example: "my-organization",
   })
-  @Expose()
   orgname: string;
 
-  // Public Properties
-  @ApiProperty({ description: "The role of the API token", enum: RoleType })
-  @Expose()
+  @ApiProperty({
+    description: "The role of the API token",
+    enum: RoleType,
+  })
   @IsEnum(RoleType)
   role: RoleType;
-
-  @ApiHideProperty()
-  @Exclude()
-  user: User;
 
   @ApiProperty({
     description: "The username of the user who owns this API token",
     example: "jonathan",
   })
-  @Expose()
   username: string;
 
   constructor(

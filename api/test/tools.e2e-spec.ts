@@ -1,0 +1,94 @@
+import { CreateToolDto } from "@/src/tools/dto/create-tool.dto";
+import { ToolEntity } from "@/src/tools/entities/tool.entity";
+import { INestApplication } from "@nestjs/common";
+import request from "supertest";
+
+import {
+  createApp,
+  getUser,
+  registerUser,
+  setEmailVerifiedByEmail,
+} from "./util";
+
+describe("Tools", () => {
+  let app: INestApplication;
+  let accessToken: string;
+  let orgname: string;
+
+  const credentials = {
+    email: "tools-test@archesai.com",
+    password: "password",
+    username: "tools-test",
+  };
+
+  beforeAll(async () => {
+    app = await createApp();
+    await app.init();
+
+    accessToken = (await registerUser(app, credentials)).accessToken;
+
+    const user = await getUser(app, accessToken);
+    orgname = user.defaultOrgname;
+    await setEmailVerifiedByEmail(app, user.email);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("should create default tools on user creation", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/organizations/${orgname}/tools`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res).toSatisfyApiSpec();
+    expect(res.status).toBe(200);
+  });
+
+  it("should create a new tool", async () => {
+    const newTool: CreateToolDto = {
+      description: "A new tool for testing purposes",
+      inputType: "TEXT",
+      name: "New Tool",
+      outputType: "TEXT",
+      toolBase: "extract-text",
+    };
+
+    await createTool(newTool);
+  });
+
+  it("should update an existing tool", async () => {
+    const newTool: CreateToolDto = {
+      description: "A new tool for testing purposes",
+      inputType: "TEXT",
+      name: "New Tool",
+      outputType: "TEXT",
+      toolBase: "extract-text",
+    };
+
+    const tool = await createTool(newTool);
+
+    // request to update tool
+    const res = await request(app.getHttpServer())
+      .patch(`/organizations/${orgname}/tools/${tool.id}`) // or .patch depending on your API
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({
+        name: "Updated Tool",
+      });
+    expect(res).toSatisfyApiSpec();
+    expect(res.status).toBe(200); // or the appropriate success status code
+    expect(res.body).toMatchObject({
+      ...tool,
+      name: "Updated Tool",
+    }); // or adjust to match the expected response
+  });
+
+  const createTool = async (tool: CreateToolDto) => {
+    const res = await request(app.getHttpServer())
+      .post(`/organizations/${orgname}/tools`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send(tool);
+    expect(res).toSatisfyApiSpec();
+    expect(res.status).toBe(201);
+    return res.body as ToolEntity;
+  };
+});

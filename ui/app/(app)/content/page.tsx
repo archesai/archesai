@@ -3,7 +3,6 @@
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import ImportCard from "@/components/import-card";
-import { JobStatusButton } from "@/components/job-status-button";
 import {
   ContentControllerFindAllPathParams,
   ContentControllerRemoveVariables,
@@ -12,6 +11,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
+import { format } from "date-fns";
 import { File } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,24 +74,18 @@ export default function ContentPage() {
             cell: ({ row }) => {
               return (
                 <span className="font-light">
-                  {new Date(row.original.createdAt).toLocaleDateString()}
+                  {format(
+                    new Date(row.original.createdAt),
+                    "yyyy-MM-dd HH:mm:ss"
+                  )}
                 </span>
               );
             },
-            header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Created" />
-            ),
           },
           {
             accessorKey: "tools",
-            cell: ({ row }) => {
-              return (
-                <>
-                  {row.original.jobs.map((job) => {
-                    return <JobStatusButton job={job} />;
-                  })}
-                </>
-              );
+            cell: ({}) => {
+              return <></>;
             },
             header: ({ column }) => (
               <DataTableColumnHeader column={column} title="Tools" />
@@ -99,21 +93,14 @@ export default function ContentPage() {
           },
         ]}
         content={(item) => {
-          const pendingJobs = item.jobs.filter(
-            (job) => job.status !== "COMPLETE"
-          );
           return (
             <div className="flex h-full w-full items-center justify-center">
-              {pendingJobs.length && pendingJobs[0].status !== "COMPLETE" ? (
-                <JobStatusButton job={pendingJobs[0]} />
-              ) : (
-                <Image
-                  alt="source image"
-                  height={256}
-                  src={item.previewImage}
-                  width={256}
-                />
-              )}
+              <Image
+                alt="source image"
+                height={256}
+                src={item.previewImage || ""}
+                width={256}
+              />
             </div>
           );
         }}

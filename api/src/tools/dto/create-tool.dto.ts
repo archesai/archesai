@@ -7,4 +7,5 @@ export class CreateToolDto extends PickType(ToolEntity, [
   "description",
   "inputType",
   "outputType",
+  "toolBase",
 ] as const) {}

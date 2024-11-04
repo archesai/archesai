@@ -1,7 +1,8 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { ForbiddenException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Organization, PlanType } from "@prisma/client";
+import { v4 } from "uuid";
 
 import { CurrentUserDto } from "../auth/decorators/current-user.decorator";
 import { BillingService } from "../billing/billing.service";
@@ -11,6 +12,7 @@ import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 
 @Injectable()
 export class OrganizationsService {
+  private readonly logger = new Logger(OrganizationsService.name);
   constructor(
     @Inject(forwardRef(() => BillingService))
     private billingService: BillingService,
@@ -19,6 +21,7 @@ export class OrganizationsService {
   ) {}
 
   async addCredits(orgname: string, numCredits: number) {
+    this.logger.log(`Adding ${numCredits} credits to ${orgname}`);
     return this.prisma.organization.update({
       data: { credits: { increment: Math.ceil(numCredits) } },
       where: { orgname },
@@ -26,6 +29,7 @@ export class OrganizationsService {
   }
 
   async checkCredits(orgname: string, numCredits: number) {
+    this.logger.log(`Checking ${numCredits} credits for ${orgname}`);
     const organization = await this.findOneByName(orgname);
     if (organization.plan != "PREMIUM" && organization.credits <= numCredits) {
       throw new ForbiddenException(
@@ -42,17 +46,27 @@ export class OrganizationsService {
     user: CurrentUserDto,
     createOrganizationDto: CreateOrganizationDto
   ): Promise<Organization> {
-    const billingEnabled = this.configService.get("FEATURE_BILLING") === true;
+    this.logger.log(
+      `Creating organization for user ${user.username}: ${JSON.stringify(
+        createOrganizationDto,
+        null,
+        2
+      )}`
+    );
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
+    const billingEnabled = this.configService.get("FEATURE_BILLING") === true;
     let stripeCustomerId = createOrganizationDto.orgname;
     if (billingEnabled) {
+      this.logger.log("BILLING ENABLED - Creating stripe customer");
       const stripeCustomer = await this.billingService.createCustomer(
         createOrganizationDto.orgname,
         createOrganizationDto.billingEmail
       );
       stripeCustomerId = stripeCustomer.id;
     }
-    const organization = await this.prisma.organization.create({
+
+    // Create organization and tools
+    let organization = await this.prisma.organization.create({
       data: {
         ...createOrganizationDto,
         chatbots: {
@@ -71,6 +85,8 @@ export class OrganizationsService {
               ? 0
               : 0
             : 100000000, // if this is their first org and their e-mail is verified, give them free credits
+
+        // Add them as an admin to this organization
         members: {
           create: {
             inviteAccepted: true,
@@ -85,7 +101,97 @@ export class OrganizationsService {
         },
         plan: billingEnabled ? PlanType.FREE : PlanType.UNLIMITED,
         stripeCustomerId: stripeCustomerId,
+        tools: {
+          createMany: {
+            data: [
+              {
+                description:
+                  "Extract text from a file. This tool supports all file types.",
+                inputType: "TEXT",
+                name: "Extract Text",
+                outputType: "TEXT",
+                toolBase: "extract-text",
+              },
+              {
+                description: "Create an image from text.",
+                inputType: "TEXT",
+                name: "Text to Image",
+                outputType: "IMAGE",
+                toolBase: "text-to-image",
+              },
+              {
+                description:
+                  "Summarize text. This tool supports all languages.",
+                inputType: "TEXT",
+                name: "Summarize",
+                outputType: "TEXT",
+                toolBase: "summarize",
+              },
+              {
+                description:
+                  "Create embeddings from text. This tool supports all languages.",
+                inputType: "TEXT",
+                name: "Create Embeddings",
+                outputType: "TEXT", // FIXME make this none
+                toolBase: "create-embeddings",
+              },
+              {
+                description:
+                  "Convert text to speech. This tool supports all languages.",
+                inputType: "TEXT",
+                name: "Text to Speech",
+                outputType: "AUDIO",
+                toolBase: "text-to-speech",
+              },
+            ],
+          },
+        },
       },
+    });
+
+    const tools = await this.prisma.tool.findMany({
+      where: { orgname: organization.orgname },
+    });
+
+    // Create default pipeline
+    const initialId = v4();
+    organization = await this.prisma.organization.update({
+      data: {
+        pipelines: {
+          create: {
+            description:
+              "This is a default pipeline for indexing arbitrary documents. It extracts text from the document, creates an image from the text, summarizes the text, creates embeddings from the text, and converts the text to speech.",
+            name: "Default",
+            pipelineTools: {
+              createMany: {
+                data: [
+                  {
+                    id: initialId,
+                    toolId: tools.find((t) => t.name == "Extract Text").id,
+                  },
+                  {
+                    dependsOnId: initialId,
+                    toolId: tools.find((t) => t.name == "Text to Image").id,
+                  },
+                  {
+                    dependsOnId: initialId,
+                    toolId: tools.find((t) => t.name == "Summarize").id,
+                  },
+                  {
+                    dependsOnId: initialId,
+                    toolId: tools.find((t) => t.name == "Create Embeddings").id,
+                  },
+                  {
+                    dependsOnId: initialId,
+                    toolId: tools.find((t) => t.name == "Text to Speech").id,
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      where: { id: organization.id },
     });
 
     await this.prisma.user.update({

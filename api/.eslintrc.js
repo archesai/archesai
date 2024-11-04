@@ -7,6 +7,7 @@ module.exports = {
     "plugin:perfectionist/recommended-natural-legacy",
     "plugin:@typescript-eslint/recommended",
     "prettier",
+    "plugin:jest/recommended",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -16,7 +17,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "prettier"],
   root: true,
-  ignorePatterns: [".eslintrc.js", "dist", "test", "**/*.spec.ts"],
+  ignorePatterns: [".eslintrc.js", "dist"],
   rules: {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/interface-name-prefix": "off",

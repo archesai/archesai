@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { AuthProviderType } from "@prisma/client";
 import { ExtractJwt, Strategy } from "passport-firebase-jwt";
@@ -12,6 +12,8 @@ export class FirebaseStrategy extends PassportStrategy(
   Strategy,
   "firebase-auth"
 ) {
+  private readonly logger: Logger = new Logger("Firebase Strategy");
+
   constructor(
     private firebaseService: FirebaseService,
     private usersService: UsersService
@@ -22,6 +24,7 @@ export class FirebaseStrategy extends PassportStrategy(
   }
 
   async validate(token: string): Promise<CurrentUserDto> {
+    this.logger.log(`Validating Firebase Token: ${token}`);
     const decodedToken = await this.firebaseService.firebase
       .auth()
       .verifyIdToken(token);
@@ -30,16 +33,17 @@ export class FirebaseStrategy extends PassportStrategy(
       const user = await this.usersService.findOneByEmail(decodedToken.email);
       return user;
     } catch (e) {
+      const username =
+        user.email.split("@")[0] +
+        "-" +
+        Math.random().toString(36).substring(2, 6);
       user = await this.usersService.create({
         email: decodedToken.email,
         emailVerified: true,
         password: null,
         photoUrl: decodedToken.picture,
         // plus - and a random string of 4 letters
-        username:
-          decodedToken.email.split("@")[0] +
-          "-" +
-          Math.random().toString(36).substring(2, 6),
+        username,
       });
     } finally {
       user = await this.usersService.syncAuthProvider(
