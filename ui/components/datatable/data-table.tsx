@@ -261,7 +261,7 @@ export function DataTable<
       }
       {createForm ? (
         <Card
-          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-secondary`}
+          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900`}
           onClick={async () => {
             setFormOpen(true);
           }}
@@ -277,14 +277,14 @@ export function DataTable<
         const isItemSelected = selectedItems.includes(item.id);
         return (
           <Card
-            className={`relative flex aspect-auto h-64 flex-col shadow-sm ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            className={`relative flex aspect-auto h-64 flex-col shadow-sm hover:bg-gray-200 hover:dark:bg-gray-900 ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={i}
           >
             {
               // THIS IS THE INSIDE TOP CONTENT
             }
             <div
-              className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
+              className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
@@ -376,7 +376,7 @@ export function DataTable<
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
-                className="transition-all hover:bg-slate-200 hover:dark:bg-slate-900"
+                className="transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >

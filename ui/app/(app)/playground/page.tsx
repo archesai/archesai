@@ -27,8 +27,7 @@ export default function PlaygroundPage() {
       {
         // TOP PART
       }
-
-      <div className="flex justify-end gap-2">
+      <div className="-mt-0 flex justify-end gap-2 lg:-mt-12">
         <PresetSelector presets={presets} />
         <PresetSave />
         <div className="hidden space-x-2 md:flex">

@@ -24,16 +24,18 @@ import {
 
 export const siteConfig = {
   description:
-    "Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.",
+    "Arches AI is a platform that provides tools to transform data into various forms of content.",
   name: "Arches AI",
   ogImage: "https://ui.shadcn.com/og.jpg",
   routes: [
     {
+      description: "Try out your tools here. If you like them, save them.",
       href: "/playground",
       Icon: SquareTerminal,
       title: "Playground",
     },
     {
+      description: "Browse and manage your content here.",
       // children: [
       //   {
       //     href: "/content/view",
@@ -48,16 +50,20 @@ export const siteConfig = {
     {
       children: [
         {
+          description: "View and manage your tools.",
           href: "/tools/view",
           Icon: SquareTerminal,
           title: "Explore Tools",
         },
         {
+          description:
+            "View your tool runs. You can track progress, retry or cancel runs.",
           href: "/tools/runs",
           Icon: PackageCheck,
           title: "Tool Runs",
         },
       ],
+      description: "Explore and run tools.",
       href: "/tools",
       Icon: PackageCheck,
       title: "Tools",
@@ -65,11 +71,13 @@ export const siteConfig = {
     {
       children: [
         {
+          description: "View and manage your pipelines.",
           href: "/pipelines/view",
           Icon: Workflow,
           title: "View Pipelines",
         },
       ],
+      description: "Create and manage pipelines.",
       href: "/pipelines",
       Icon: Workflow,
       title: "Pipelines",
@@ -77,16 +85,19 @@ export const siteConfig = {
     {
       children: [
         {
+          description: "Create and manage chatbots.",
           href: "/chatbots/view",
           Icon: Bot,
           title: "Chatbots",
         },
         {
+          description: "View and manage chatbot threads.",
           href: "/chatbots/threads",
           Icon: ListMinus,
           title: "Threads",
         },
       ],
+      description: "Create and manage chatbots.",
       href: "/chatbots",
       Icon: MessageSquare,
       title: "Chat",
@@ -94,18 +105,21 @@ export const siteConfig = {
     {
       children: [
         {
+          description: "Update your profile information.",
           href: "/profile/general",
           Icon: User,
           showInTabs: true,
           title: "Profile",
         },
         {
+          description: "Update your security settings.",
           href: "/profile/security",
           Icon: KeySquare,
           showInTabs: true,
           title: "Security",
         },
       ],
+      description: "View your profile information.",
       href: "/profile",
       Icon: User,
       title: "Account",
@@ -113,25 +127,30 @@ export const siteConfig = {
     {
       children: [
         {
+          description:
+            "View and update your organization's general information.",
           href: "/organization/general",
           Icon: Building2,
           showInTabs: true,
           title: "General",
         },
         {
+          description:
+            "View and update your organization's billing information. Upgrade your plan.",
           href: "/organization/billing",
           Icon: CreditCard,
           showInTabs: true,
           title: "Billing",
         },
         {
+          description: "View and manage your organization's members.",
           href: "/organization/members",
           Icon: Users,
           showInTabs: true,
-
           title: "Members",
         },
         {
+          description: "View and manage your organization's API tokens.",
           href: "/organization/api-tokens",
           Icon: Lock,
           showInTabs: true,

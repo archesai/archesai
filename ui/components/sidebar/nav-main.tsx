@@ -26,14 +26,14 @@ export function NavMain() {
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {siteConfig.routes.map((rootRoute) => {
+        {siteConfig.routes.map((rootRoute, i) => {
           const isActive = rootRoute?.children?.some((route) =>
-            window.location.pathname.startsWith(route.href)
+            pathname.startsWith(route.href)
           );
 
           if (!rootRoute?.children?.length) {
             return (
-              <SidebarMenuItem>
+              <SidebarMenuItem key={i}>
                 <Link href={rootRoute.href}>
                   <SidebarMenuButton
                     className={`${pathname === rootRoute.href ? "bg-muted" : ""}`}
