@@ -20,6 +20,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useToolsControllerFindAll } from "@/generated/archesApiComponents";
+import { ToolEntity } from "@/generated/archesApiSchemas";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { PopoverProps } from "@radix-ui/react-popover";
@@ -51,10 +54,17 @@ interface ModelSelectorProps extends PopoverProps {
   types: readonly ModelType[];
 }
 
-export function ModelSelector({ models, types, ...props }: ModelSelectorProps) {
+export function ModelSelector({ ...props }: ModelSelectorProps) {
   const [open, setOpen] = React.useState(false);
-  const [selectedModel, setSelectedModel] = React.useState<Model>(models[0]);
-  const [peekedModel, setPeekedModel] = React.useState<Model>(models[0]);
+  const [selectedModel, setSelectedModel] = React.useState<ToolEntity>();
+  const [peekedModel, setPeekedModel] = React.useState<ToolEntity>();
+  const { defaultOrgname } = useAuth();
+  const { data: tools } = useToolsControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
+    },
+  });
+  const toolBases = tools?.results?.map((tool) => tool.toolBase) ?? [];
 
   return (
     <div className="grid gap-2">
@@ -75,38 +85,35 @@ export function ModelSelector({ models, types, ...props }: ModelSelectorProps) {
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            aria-label="Select a model"
+            aria-label="Select a tool"
             className="w-full justify-between"
             role="combobox"
             variant="outline"
           >
-            {selectedModel ? selectedModel.name : "Select a model..."}
+            {selectedModel ? selectedModel.name : "Select a tool..."}
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-[250px] p-0">
           <HoverCard>
-            <HoverCardContent
-              align="start"
-              className="min-h-[280px]"
-              forceMount
-              side="left"
-            >
+            <HoverCardContent align="start" forceMount side="left">
               <div className="grid gap-2">
-                <h4 className="font-medium leading-none">{peekedModel.name}</h4>
+                <h4 className="font-medium leading-none">
+                  {peekedModel?.name}
+                </h4>
                 <div className="text-sm text-muted-foreground">
-                  {peekedModel.description}
+                  {peekedModel?.description}
                 </div>
-                {peekedModel.strengths ? (
+                {/* {peekedModel?.strengths ? (
                   <div className="mt-4 grid gap-2">
                     <h5 className="text-sm font-medium leading-none">
                       Strengths
                     </h5>
                     <ul className="text-sm text-muted-foreground">
-                      {peekedModel.strengths}
+                      {peekedModel?.strengths}
                     </ul>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
             </HoverCardContent>
             <Command loop>
@@ -114,20 +121,20 @@ export function ModelSelector({ models, types, ...props }: ModelSelectorProps) {
                 <CommandInput placeholder="Search Models..." />
                 <CommandEmpty>No Models found.</CommandEmpty>
                 <HoverCardTrigger />
-                {types.map((type) => (
-                  <CommandGroup heading={type} key={type}>
-                    {models
-                      .filter((model) => model.type === type)
-                      .map((model) => (
+                {toolBases.map((toolBase) => (
+                  <CommandGroup heading={toolBase} key={toolBase}>
+                    {tools?.results
+                      ?.filter((tool) => tool.toolBase === toolBase)
+                      .map((tool) => (
                         <ModelItem
-                          isSelected={selectedModel?.id === model.id}
-                          key={model.id}
-                          model={model}
-                          onPeek={(model) => setPeekedModel(model)}
+                          isSelected={selectedModel?.id === tool.id}
+                          key={tool.id}
+                          onPeek={(tool) => setPeekedModel(tool)}
                           onSelect={() => {
-                            setSelectedModel(model);
+                            setSelectedModel(tool);
                             setOpen(false);
                           }}
+                          tool={tool}
                         />
                       ))}
                   </CommandGroup>
@@ -143,22 +150,21 @@ export function ModelSelector({ models, types, ...props }: ModelSelectorProps) {
 
 interface ModelItemProps {
   isSelected: boolean;
-  model: Model;
-  onPeek: (model: Model) => void;
+  onPeek: (model: ToolEntity) => void;
   onSelect: () => void;
+  tool: ToolEntity;
 }
 
-function ModelItem({ isSelected, model, onPeek, onSelect }: ModelItemProps) {
+function ModelItem({ isSelected, onPeek, onSelect, tool }: ModelItemProps) {
   const ref = React.useRef<HTMLDivElement>(null);
 
   useMutationObserver(ref, (mutations) => {
     mutations.forEach((mutation) => {
       if (
-        mutation.type === "attributes" &&
         mutation.attributeName === "aria-selected" &&
         ref.current?.getAttribute("aria-selected") === "true"
       ) {
-        onPeek(model);
+        onPeek(tool);
       }
     });
   });
@@ -166,11 +172,11 @@ function ModelItem({ isSelected, model, onPeek, onSelect }: ModelItemProps) {
   return (
     <CommandItem
       className="data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground"
-      key={model.id}
+      key={tool.id}
       onSelect={onSelect}
       ref={ref}
     >
-      {model.name}
+      {tool.name}
       <CheckIcon
         className={cn(
           "ml-auto h-4 w-4",

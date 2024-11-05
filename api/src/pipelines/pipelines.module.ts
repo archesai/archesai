@@ -1,4 +1,3 @@
-import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 
 import { PrismaModule } from "../prisma/prisma.module";
@@ -10,13 +9,7 @@ import { PipelinesService } from "./pipelines.service";
 @Module({
   controllers: [PipelinesController],
   exports: [PipelinesService],
-  imports: [
-    PrismaModule,
-    WebsocketsModule,
-    BullModule.registerFlowProducer({
-      name: "flow",
-    }),
-  ],
+  imports: [PrismaModule, WebsocketsModule],
   providers: [PipelinesService, PipelineRepository],
 })
 export class PipelinesModule {}

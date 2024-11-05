@@ -1,11 +1,8 @@
-import { InjectFlowProducer } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { FlowProducer } from "bullmq";
 
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
-import { ContentEntity } from "../content/entities/content.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { PipelineQueryDto } from "./dto/pipeline-query.dto";
@@ -27,8 +24,7 @@ export class PipelinesService
 
   constructor(
     private pipelineRepository: PipelineRepository,
-    private websocketsService: WebsocketsService,
-    @InjectFlowProducer("flow") private readonly flowProducer: FlowProducer
+    private websocketsService: WebsocketsService
   ) {}
 
   async create(
@@ -68,17 +64,6 @@ export class PipelinesService
   async remove(orgname: string, pipelineId: string): Promise<void> {
     await this.pipelineRepository.remove(orgname, pipelineId);
     this.websocketsService.socket.to(orgname).emit("update");
-  }
-
-  async runPipeline(content: ContentEntity) {
-    await this.flowProducer.add({
-      data: {
-        content: content,
-        toolId: "extract-text",
-      },
-      name: "extract-text",
-      queueName: "tool",
-    });
   }
 
   async update(

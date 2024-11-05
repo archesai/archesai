@@ -1,6 +1,8 @@
 // runs.service.ts
+import { InjectFlowProducer, InjectQueue } from "@nestjs/bullmq";
 import { Injectable } from "@nestjs/common";
 import { RunStatus } from "@prisma/client";
+import { FlowProducer, Queue } from "bullmq";
 
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
@@ -15,8 +17,49 @@ export class RunsService
 {
   constructor(
     private readonly runRepository: RunRepository,
-    private websocketsService: WebsocketsService
+    private websocketsService: WebsocketsService,
+    @InjectFlowProducer("flow") private readonly flowProducer: FlowProducer,
+    @InjectQueue("run") private readonly runQueue: Queue
   ) {}
+
+  async createPipelineRun(
+    orgname: string,
+    pipelineId: string,
+    runInputContentIds: string[]
+  ) {
+    const run = await this.runRepository.createPipelineRun(
+      orgname,
+      pipelineId,
+      runInputContentIds
+    );
+    this.websocketsService.socket.to(orgname).emit("update");
+
+    await this.flowProducer.add({
+      data: {
+        // content: content,
+        toolId: "extract-text",
+      },
+      name: "extract-text",
+      queueName: "tool",
+    });
+    return new RunEntity(run);
+  }
+
+  async createToolRun(
+    orgname: string,
+    toolId: string,
+    runInputContentIds: string[]
+  ) {
+    const run = await this.runRepository.createToolRun(
+      orgname,
+      toolId,
+      runInputContentIds
+    );
+    this.websocketsService.socket.to(orgname).emit("update");
+    const runEntity = new RunEntity(run);
+    // await this.runQueue.add("as", runEntity);
+    return runEntity;
+  }
 
   async findAll(orgname: string, runQueryDto: RunQueryDto) {
     const { count, results } = await this.runRepository.findAll(

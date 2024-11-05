@@ -28,16 +28,12 @@ import { RunsService } from "./runs.service";
       },
       name: "run",
     }),
-
+    BullModule.registerFlowProducer({
+      name: "flow",
+    }),
     forwardRef(() => RunpodModule),
     StorageModule.forRoot(),
     WebsocketsModule,
-    BullModule.registerQueue({
-      defaultJobOptions: {
-        attempts: 1,
-      },
-      name: "tool",
-    }),
     OrganizationsModule,
     ContentModule,
     LoaderModule,

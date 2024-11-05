@@ -37,9 +37,7 @@ export class ContentService
       createContentDto
     );
     this.websocketsService.socket.to(orgname).emit("update");
-    const contentEntity = new ContentEntity(content);
-    await this.pipelinesService.runPipeline(contentEntity);
-    return contentEntity;
+    return new ContentEntity(content);
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {

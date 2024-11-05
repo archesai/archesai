@@ -5,13 +5,11 @@ import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { Metadata } from "next";
 
 import { CodeViewer } from "./components/code-viewer";
-import { MaxLengthSelector } from "./components/maxlength-selector";
 import { ModelSelector } from "./components/model-selector";
 import { PresetActions } from "./components/preset-actions";
 import { PresetSave } from "./components/preset-save";
 import { PresetSelector } from "./components/preset-selector";
 import { PresetShare } from "./components/preset-share";
-import { TemperatureSelector } from "./components/temperature-selector";
 import { TopPSelector } from "./components/top-p-selector";
 import { models, types } from "./data/models";
 import { presets } from "./data/presets";
@@ -46,8 +44,6 @@ export default function PlaygroundPage() {
         }
         <div className="hidden flex-col space-y-4 sm:flex md:order-2">
           <ModelSelector models={models} types={types} />
-          <TemperatureSelector defaultValue={[0.56]} />
-          <MaxLengthSelector defaultValue={[256]} />
           <TopPSelector defaultValue={[0.9]} />
         </div>
 

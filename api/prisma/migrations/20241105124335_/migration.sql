@@ -27,9 +27,11 @@ CREATE TABLE "Content" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "url" TEXT,
+    "text" TEXT,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "url" TEXT,
+    "embedding" vector,
     "credits" INTEGER NOT NULL DEFAULT 0,
     "mimeType" TEXT,
     "previewImage" TEXT,
@@ -114,19 +116,6 @@ CREATE TABLE "PipelineTool" (
 );
 
 -- CreateTable
-CREATE TABLE "Chatbot" (
-    "id" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" TEXT NOT NULL DEFAULT 'Default Search Chatbot',
-    "llmBase" TEXT NOT NULL,
-    "description" TEXT DEFAULT 'You are an AI-powered search chatbot. You can answer questions about documents.',
-    "orgname" TEXT NOT NULL,
-
-    CONSTRAINT "Chatbot_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Thread" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -134,7 +123,6 @@ CREATE TABLE "Thread" (
     "name" TEXT NOT NULL DEFAULT 'New Thread',
     "credits" INTEGER NOT NULL DEFAULT 0,
     "orgname" TEXT NOT NULL,
-    "chatbotId" TEXT NOT NULL,
 
     CONSTRAINT "Thread_pkey" PRIMARY KEY ("id")
 );
@@ -145,25 +133,9 @@ CREATE TABLE "Message" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "question" TEXT NOT NULL,
     "answer" TEXT NOT NULL,
-    "contextLength" INTEGER NOT NULL,
-    "answerLength" INTEGER NOT NULL,
-    "topK" INTEGER NOT NULL,
-    "similarityCutoff" DOUBLE PRECISION NOT NULL DEFAULT 0.7,
-    "temperature" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "credits" INTEGER NOT NULL DEFAULT 0,
     "threadId" TEXT NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Citation" (
-    "id" TEXT NOT NULL,
-    "similarity" DOUBLE PRECISION NOT NULL,
-    "messageId" TEXT NOT NULL,
-    "contentId" TEXT NOT NULL,
-
-    CONSTRAINT "Citation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -194,19 +166,6 @@ CREATE TABLE "User" (
     "refreshToken" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "TextChunk" (
-    "id" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "text" TEXT NOT NULL,
-    "embedding" vector,
-    "orgname" TEXT NOT NULL,
-    "contentId" TEXT NOT NULL,
-
-    CONSTRAINT "TextChunk_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -264,12 +223,6 @@ CREATE TABLE "ARToken" (
     CONSTRAINT "ARToken_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "_ApiTokenToChatbot" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "AuthProvider_provider_providerId_key" ON "AuthProvider"("provider", "providerId");
 
@@ -290,12 +243,6 @@ CREATE UNIQUE INDEX "Member_inviteEmail_orgname_key" ON "Member"("inviteEmail", 
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Member_username_orgname_key" ON "Member"("username", "orgname");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_ApiTokenToChatbot_AB_unique" ON "_ApiTokenToChatbot"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_ApiTokenToChatbot_B_index" ON "_ApiTokenToChatbot"("B");
 
 -- AddForeignKey
 ALTER TABLE "Content" ADD CONSTRAINT "Content_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -340,31 +287,13 @@ ALTER TABLE "PipelineTool" ADD CONSTRAINT "PipelineTool_toolId_fkey" FOREIGN KEY
 ALTER TABLE "PipelineTool" ADD CONSTRAINT "PipelineTool_dependsOnId_fkey" FOREIGN KEY ("dependsOnId") REFERENCES "PipelineTool"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Chatbot" ADD CONSTRAINT "Chatbot_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Thread" ADD CONSTRAINT "Thread_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Thread" ADD CONSTRAINT "Thread_chatbotId_fkey" FOREIGN KEY ("chatbotId") REFERENCES "Chatbot"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Message" ADD CONSTRAINT "Message_threadId_fkey" FOREIGN KEY ("threadId") REFERENCES "Thread"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Citation" ADD CONSTRAINT "Citation_messageId_fkey" FOREIGN KEY ("messageId") REFERENCES "Message"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Citation" ADD CONSTRAINT "Citation_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "AuthProvider" ADD CONSTRAINT "AuthProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TextChunk" ADD CONSTRAINT "TextChunk_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "TextChunk" ADD CONSTRAINT "TextChunk_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Member" ADD CONSTRAINT "Member_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -380,9 +309,3 @@ ALTER TABLE "ApiToken" ADD CONSTRAINT "ApiToken_username_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "ARToken" ADD CONSTRAINT "ARToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ApiTokenToChatbot" ADD CONSTRAINT "_ApiTokenToChatbot_A_fkey" FOREIGN KEY ("A") REFERENCES "ApiToken"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_ApiTokenToChatbot" ADD CONSTRAINT "_ApiTokenToChatbot_B_fkey" FOREIGN KEY ("B") REFERENCES "Chatbot"("id") ON DELETE CASCADE ON UPDATE CASCADE;
