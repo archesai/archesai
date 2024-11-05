@@ -74,7 +74,7 @@ export const useAuth = () => {
     const data = (await result.json()) as TokenDto;
     setAccessToken(data.accessToken);
     setRefreshToken(data.refreshToken);
-    router.push("/home");
+    router.push("/playground");
   };
 
   const getNewRefreshToken = async () => {
@@ -115,7 +115,7 @@ export const useAuth = () => {
       const data = (await response.json()) as TokenDto;
       setAccessToken(data.accessToken);
       setRefreshToken(data.refreshToken);
-      router.push("/home");
+      router.push("/playground");
     } catch (error) {
       await logout();
       console.error("Error signing in with Google: ", error);
@@ -141,7 +141,7 @@ export const useAuth = () => {
     const data = (await result.json()) as TokenDto;
     setAccessToken(data.accessToken);
     setRefreshToken(data.refreshToken);
-    router.push("/home");
+    router.push("/playground");
   };
 
   const logout = async () => {

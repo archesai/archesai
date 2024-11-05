@@ -4,6 +4,7 @@ import { Run, RunStatus } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
+import { RunToolDto } from "../tools/dto/run-tool.dto";
 import { RunQueryDto } from "./dto/run-query.dto";
 
 @Injectable()
@@ -103,11 +104,7 @@ export class RunRepository
     });
   }
 
-  async createToolRun(
-    orgname: string,
-    toolId: string,
-    runInputContentIds: string[]
-  ) {
+  async createToolRun(orgname: string, toolId: string, runToolDto: RunToolDto) {
     const run = await this.prisma.run.create({
       data: {
         name: "Tool Run",
@@ -119,7 +116,7 @@ export class RunRepository
     });
 
     await this.prisma.runInputContent.createMany({
-      data: runInputContentIds.map((contentId) => ({
+      data: runToolDto.runInputContentIds.map((contentId) => ({
         contentId,
         runId: run.id,
       })),

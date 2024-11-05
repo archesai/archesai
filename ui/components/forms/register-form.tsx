@@ -32,7 +32,7 @@ export default function RegisterForm() {
 
   useEffect(() => {
     if (user) {
-      router.push("/home");
+      router.push("/playground");
     }
   }, [user, router]);
 

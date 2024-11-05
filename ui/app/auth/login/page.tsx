@@ -33,7 +33,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push("/home");
+      router.push("/playground");
     }
   }, [user, router]);
 

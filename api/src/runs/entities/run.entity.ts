@@ -116,8 +116,6 @@ export class RunEntity extends BaseEntity {
   @IsEnum(RunType)
   type: RunType;
 
-  // Additional relationships can be added here if needed
-
   constructor(run: RunEntity) {
     super();
     Object.assign(this, run);

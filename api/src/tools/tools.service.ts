@@ -3,8 +3,11 @@ import { Prisma } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
+import { RunEntity } from "../runs/entities/run.entity";
+import { RunsService } from "../runs/runs.service";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateToolDto } from "./dto/create-tool.dto";
+import { RunToolDto } from "./dto/run-tool.dto";
 import { ToolQueryDto } from "./dto/tool-query.dto";
 import { UpdateToolDto } from "./dto/update-tool.dto";
 import { ToolEntity } from "./entities/tool.entity";
@@ -18,7 +21,8 @@ export class ToolsService
   private logger = new Logger(ToolsService.name);
   constructor(
     private toolsRepository: ToolRepository,
-    private websocketsService: WebsocketsService
+    private websocketsService: WebsocketsService,
+    private runsService: RunsService
   ) {}
 
   async create(
@@ -49,9 +53,17 @@ export class ToolsService
     return new ToolEntity(await this.toolsRepository.findOne(id));
   }
 
-  async remove(orgname: string, toolsId: string): Promise<void> {
-    await this.toolsRepository.remove(orgname, toolsId);
+  async remove(orgname: string, toolId: string): Promise<void> {
+    await this.toolsRepository.remove(orgname, toolId);
     this.websocketsService.socket.to(orgname).emit("update");
+  }
+
+  async run(
+    orgname: string,
+    toolId: string,
+    runToolDto: RunToolDto
+  ): Promise<RunEntity> {
+    return this.runsService.runTool(orgname, toolId, runToolDto);
   }
 
   async update(orgname: string, id: string, updateToolDto: UpdateToolDto) {

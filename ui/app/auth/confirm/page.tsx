@@ -94,7 +94,7 @@ export default function ConfirmPage() {
             setMessage("Your email has been successfully updated!");
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
-            router.push("/home");
+            router.push("/playground");
           } catch (err: any) {
             console.error(err);
             setError(
@@ -113,7 +113,7 @@ export default function ConfirmPage() {
             setMessage("Your email has been successfully verified!");
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
-            router.push("/home");
+            router.push("/playground");
           } catch (err: any) {
             console.error(err);
             // setError(
@@ -146,7 +146,7 @@ export default function ConfirmPage() {
       setMessage("Your password has been successfully reset!");
       setAccessToken(accessToken);
       setRefreshToken(refreshToken);
-      router.push("/home");
+      router.push("/playground");
     } catch (err: any) {
       console.error("Password reset error:", err);
       setError(
@@ -261,7 +261,7 @@ export default function ConfirmPage() {
             {/* Navigate to Home if Email is Verified */}
             {user?.emailVerified && (
               <Button asChild>
-                <Link href="/home">Go to Home</Link>
+                <Link href="/playground">Go to Home</Link>
               </Button>
             )}
           </div>

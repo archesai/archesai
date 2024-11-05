@@ -57,7 +57,7 @@ describe("Content", () => {
   ) => {
     const res = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/content`)
-      .send({ name: "book.pdf", pipelineId: "", url: readUrl })
+      .send({ name: "book.pdf", url: readUrl })
       .set("Authorization", `Bearer ${accessToken}`);
     expect(res).toSatisfyApiSpec();
     expect(res.status).toBe(expectedStatus);

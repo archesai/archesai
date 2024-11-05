@@ -6,6 +6,8 @@ import { FlowProducer, Queue } from "bullmq";
 
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
+import { ContentService } from "../content/content.service";
+import { RunToolDto } from "../tools/dto/run-tool.dto";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { RunQueryDto } from "./dto/run-query.dto";
 import { RunEntity } from "./entities/run.entity";
@@ -19,10 +21,31 @@ export class RunsService
     private readonly runRepository: RunRepository,
     private websocketsService: WebsocketsService,
     @InjectFlowProducer("flow") private readonly flowProducer: FlowProducer,
-    @InjectQueue("run") private readonly runQueue: Queue
+    @InjectQueue("run") private readonly runQueue: Queue,
+    private contentService: ContentService
   ) {}
 
-  async createPipelineRun(
+  async findAll(orgname: string, runQueryDto: RunQueryDto) {
+    const { count, results } = await this.runRepository.findAll(
+      orgname,
+      runQueryDto
+    );
+    const runEntities = results.map((run) => new RunEntity(run));
+    return new PaginatedDto<RunEntity>({
+      metadata: {
+        limit: runQueryDto.limit,
+        offset: runQueryDto.offset,
+        totalResults: count,
+      },
+      results: runEntities,
+    });
+  }
+
+  async findOne(orgname: string, id: string) {
+    return new RunEntity(await this.runRepository.findOne(orgname, id));
+  }
+
+  async runPipeline(
     orgname: string,
     pipelineId: string,
     runInputContentIds: string[]
@@ -45,40 +68,31 @@ export class RunsService
     return new RunEntity(run);
   }
 
-  async createToolRun(
-    orgname: string,
-    toolId: string,
-    runInputContentIds: string[]
-  ) {
+  async runTool(orgname: string, toolId: string, runToolDto: RunToolDto) {
+    if (runToolDto.text) {
+      const content = await this.contentService.create(orgname, {
+        name: "Input Text",
+        url: runToolDto.text,
+      });
+      runToolDto.runInputContentIds = [content.id];
+    }
+    if (runToolDto.runInputContentIds) {
+      // vefify that the content exists
+      for (const contentId of runToolDto.runInputContentIds) {
+        await this.contentService.findOne(contentId);
+      }
+    }
+
     const run = await this.runRepository.createToolRun(
       orgname,
       toolId,
-      runInputContentIds
+      runToolDto
     );
+
     this.websocketsService.socket.to(orgname).emit("update");
     const runEntity = new RunEntity(run);
     // await this.runQueue.add("as", runEntity);
     return runEntity;
-  }
-
-  async findAll(orgname: string, runQueryDto: RunQueryDto) {
-    const { count, results } = await this.runRepository.findAll(
-      orgname,
-      runQueryDto
-    );
-    const runEntities = results.map((run) => new RunEntity(run));
-    return new PaginatedDto<RunEntity>({
-      metadata: {
-        limit: runQueryDto.limit,
-        offset: runQueryDto.offset,
-        totalResults: count,
-      },
-      results: runEntities,
-    });
-  }
-
-  async findOne(orgname: string, id: string) {
-    return new RunEntity(await this.runRepository.findOne(orgname, id));
   }
 
   async setProgress(id: string, progress: number) {

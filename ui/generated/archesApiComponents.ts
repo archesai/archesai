@@ -3992,6 +3992,70 @@ export const useToolsControllerUpdate = (
   });
 };
 
+export type ToolsControllerRunPathParams = {
+  orgname: string;
+  toolId: string;
+};
+
+export type ToolsControllerRunError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    message?: string | any[];
+    statusCode?: number;
+  };
+}>;
+
+export type ToolsControllerRunVariables = {
+  body?: Schemas.RunToolDto;
+  pathParams: ToolsControllerRunPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new run. ADMIN ONLY.
+ */
+export const fetchToolsControllerRun = (
+  variables: ToolsControllerRunVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.RunEntity,
+    ToolsControllerRunError,
+    Schemas.RunToolDto,
+    {},
+    {},
+    ToolsControllerRunPathParams
+  >({
+    url: "/organizations/{orgname}/tools/{toolId}/run",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new run. ADMIN ONLY.
+ */
+export const useToolsControllerRun = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.RunEntity,
+      ToolsControllerRunError,
+      ToolsControllerRunVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.RunEntity,
+    ToolsControllerRunError,
+    ToolsControllerRunVariables
+  >({
+    mutationFn: (variables: ToolsControllerRunVariables) =>
+      fetchToolsControllerRun({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/organizations/{orgname}/pipelines";

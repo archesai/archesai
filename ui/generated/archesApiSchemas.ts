@@ -842,12 +842,6 @@ export type CreateContentDto = {
    * @example https://example.com/example.mp4
    */
   url?: string;
-  /**
-   * The tool IDs to run with this content
-   *
-   * @example tool-id-uuid
-   */
-  pipelineId: string;
 };
 
 export type ContentEntity = {
@@ -923,12 +917,6 @@ export type UpdateContentDto = {
    * @example https://example.com/example.mp4
    */
   url?: string;
-  /**
-   * The tool IDs to run with this content
-   *
-   * @example tool-id-uuid
-   */
-  pipelineId?: string;
 };
 
 export type RunEntity = {
@@ -1133,6 +1121,28 @@ export type ToolEntity = {
    * @example extract-text
    */
   toolBase: string;
+};
+
+export type RunToolDto = {
+  /**
+   * If using already created content, specify the content IDs to use as input for the run.
+   *
+   * @example content-id-1
+   * @example content-id-2
+   */
+  runInputContentIds?: string[];
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is the text to use as input for the run.
+   */
+  text?: string;
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is a url to use as input for the run.
+   */
+  url?: string;
 };
 
 export type UpdateToolDto = {

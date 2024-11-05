@@ -1,8 +1,10 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useToolsControllerRun } from "@/generated/archesApiComponents";
+import { useAuth } from "@/hooks/useAuth";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
-import { Metadata } from "next";
 
 import { CodeViewer } from "./components/code-viewer";
 import { ModelSelector } from "./components/model-selector";
@@ -13,12 +15,9 @@ import { PresetShare } from "./components/preset-share";
 import { TopPSelector } from "./components/top-p-selector";
 import { presets } from "./data/presets";
 
-export const metadata: Metadata = {
-  description: "The OpenAI Playground built using the components.",
-  title: "Playground",
-};
-
 export default function PlaygroundPage() {
+  const { mutateAsync: runTool } = useToolsControllerRun();
+  const { defaultOrgname } = useAuth();
   return (
     <div className="flex h-full flex-col gap-4">
       {
@@ -73,7 +72,21 @@ export default function PlaygroundPage() {
               <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
             </div>
             <div className="flex items-center space-x-2">
-              <Button>Submit</Button>
+              <Button
+                onClick={async () => {
+                  await runTool({
+                    body: {
+                      text: "We is going to the market.",
+                    },
+                    pathParams: {
+                      orgname: defaultOrgname,
+                      toolId: "9437b5da-77c2-4ec4-80f4-eb775f2f17af",
+                    },
+                  });
+                }}
+              >
+                Submit
+              </Button>
               <Button variant="secondary">
                 <span className="sr-only">Show history</span>
                 <CounterClockwiseClockIcon className="h-4 w-4" />

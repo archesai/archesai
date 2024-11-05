@@ -6,28 +6,18 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 import {
   useContentControllerCreate,
-  usePipelinesControllerFindAll,
   useStorageControllerGetReadUrl,
   useStorageControllerGetWriteUrl,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 
 import { Badge } from "./ui/badge";
 
 export default function ImportCard() {
   const { defaultOrgname } = useAuth();
-  const { data: pipelines } = usePipelinesControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
-    },
-  });
-
-  const router = useRouter();
-
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -106,7 +96,6 @@ export default function ImportCard() {
             await indexDocument({
               body: {
                 name: file.name,
-                pipelineId: pipelines?.results?.[0].id || "",
                 url: readUrlResponse.read,
               },
               pathParams: {
@@ -169,7 +158,6 @@ export default function ImportCard() {
         description: "Files uploaded successfully.",
         title: "Upload Complete",
       });
-      router.push(`/content`);
     } catch (error) {
       console.error("An error occurred during file upload:", error);
       toast({
