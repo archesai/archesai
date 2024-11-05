@@ -1,9 +1,5 @@
-// ChatbotChatPage.tsx
 "use client";
 
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import ChatbotForm from "@/components/forms/chatbot-form";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -23,26 +19,18 @@ import {
   useMessagesControllerFindAll,
   useThreadsControllerCreate,
 } from "@/generated/archesApiComponents";
-import {
-  ThreadsControllerFindAllPathParams,
-  ThreadsControllerRemoveVariables,
-  useThreadsControllerFindAll,
-  useThreadsControllerRemove,
-} from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
-import { ThreadEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
 import { PopoverTrigger } from "@radix-ui/react-popover";
-import { Bolt, Layers, RefreshCcw } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { RefreshCcw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 export default function ChatbotChatPage() {
   const { toast } = useToast();
-  const router = useRouter();
-  const pathname = usePathname() as string;
+
   const searchParams = useSearchParams();
   const [threadId, setThreadId] = useState<string>("");
   const { defaultOrgname } = useAuth();
@@ -106,7 +94,6 @@ export default function ChatbotChatPage() {
       try {
         const thread = await createThread({
           pathParams: {
-            chatbotId: chatbotId as string,
             orgname: defaultOrgname,
           },
         });
@@ -166,35 +153,10 @@ export default function ChatbotChatPage() {
   const [open, setOpen] = useState(false);
   const [, setSelectedContent] = useState<ContentEntity[]>([]);
 
-  const [showConfiguration, setShowConfiguration] = useState(true);
-  const [showThreads, setShowThreads] = useState(false);
-
   return (
     <div className="relative flex h-full gap-6">
       {/* Full Screen Button */}
       <div className="absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex">
-        <Button
-          className={`${showThreads ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
-          onClick={() => {
-            setShowConfiguration(false);
-            setShowThreads(!showThreads);
-          }}
-          size="icon"
-          variant={"ghost"}
-        >
-          <Layers className={`h-5 w-5`} />
-        </Button>
-        <Button
-          className={`${showConfiguration ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
-          onClick={() => {
-            setShowThreads(false);
-            setShowConfiguration(!showConfiguration);
-          }}
-          size="icon"
-          variant={"ghost"}
-        >
-          <Bolt className="h-5 w-5" />
-        </Button>
         <Button
           className="text-muted-foreground hover:text-primary"
           onClick={() => {
@@ -361,75 +323,6 @@ export default function ChatbotChatPage() {
           </div>
         </form>
       </div>
-
-      {/* Right Sidebar */}
-      {showConfiguration && (
-        <div className="hidden w-1/3 flex-col md:flex">
-          <ChatbotForm chatbotId={chatbotId as string} />
-        </div>
-      )}
-      {showThreads && (
-        <div className="1/3 hidden flex-col md:flex">
-          <DataTable<
-            ThreadEntity,
-            ThreadsControllerFindAllPathParams,
-            ThreadsControllerRemoveVariables
-          >
-            columns={[
-              {
-                accessorKey: "name",
-                cell: ({ row }) => {
-                  return (
-                    <div className="flex gap-2">
-                      <span
-                        className="max-w-[500px] truncate font-medium"
-                        onClick={() =>
-                          router.push(
-                            `${pathname}?${new URLSearchParams({
-                              chatbotId: chatbotId as string,
-                              threadId: row.original.id as any,
-                            })}`
-                          )
-                        }
-                      >
-                        {row.original.name}
-                      </span>
-                    </div>
-                  );
-                },
-                header: ({ column }) => (
-                  <DataTableColumnHeader column={column} title="Name" />
-                ),
-              },
-            ]}
-            content={() => (
-              <div className="flex h-full w-full items-center justify-center">
-                <Layers className="text-muted-foreground" />
-              </div>
-            )}
-            dataIcon={<Layers size={24} />}
-            defaultView="table"
-            findAllPathParams={{
-              chatbotId: chatbotId as string,
-              orgname: defaultOrgname,
-            }}
-            getDeleteVariablesFromItem={(thread) => ({
-              pathParams: {
-                chatbotId: chatbotId as string,
-                orgname: defaultOrgname,
-                threadId: thread.id,
-              },
-            })}
-            handleSelect={(chatbot) =>
-              router.push(`/chatbots/single?chatbotId=${chatbot.id}`)
-            }
-            itemType="thread"
-            minimal={true}
-            useFindAll={useThreadsControllerFindAll}
-            useRemove={useThreadsControllerRemove}
-          />
-        </div>
-      )}
     </div>
   );
 }

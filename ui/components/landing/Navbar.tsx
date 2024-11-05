@@ -134,12 +134,14 @@ export const Navbar = () => {
           </div>
           <div className="hidden items-center gap-2 md:flex">
             <ModeToggle h={"h-10"} />
-            <Button variant={"outline"}>
-              <Link href="/auth/login">Log in</Link>
-            </Button>
-            <Button>
-              <Link href="/auth/register">Sign up for free</Link>
-            </Button>
+
+            <Link href="/auth/login">
+              <Button variant={"outline"}>Log in</Button>
+            </Link>
+
+            <Link href="/auth/register">
+              <Button>Sign up for free </Button>
+            </Link>
           </div>
         </NavigationMenuList>
       </NavigationMenu>

@@ -74,14 +74,14 @@ export default function ContentDetailsPage() {
               <Badge variant="secondary">
                 {format(new Date(content.createdAt), "PPP")}
               </Badge>
-              {content.jobs.map((job) => {
+              {/* {content.jobs.map((job) => {
                 return <Badge variant="secondary">{job.toolId}</Badge>;
-              })}
+              })} */}
             </div>
           </CardContent>
         </Card>
 
-        <Tabs
+        {/* <Tabs
           className="flex h-full flex-col gap-1"
           defaultValue={content.jobs[0].toolId}
         >
@@ -127,7 +127,7 @@ export default function ContentDetailsPage() {
           </TabsContent>
           <TabsContent value="image-to-text"></TabsContent>
           <TabsContent value="password">Change your password here.</TabsContent>
-        </Tabs>
+        </Tabs> */}
       </div>
       {/*RIGHT SIDE*/}
       <Card className="w-1/2 overflow-hidden">{renderContent(content)}</Card>
@@ -138,7 +138,7 @@ export default function ContentDetailsPage() {
 function renderContent(content: ContentEntity) {
   const { mimeType, url } = content;
 
-  if (mimeType.startsWith("video/") || mimeType.startsWith("audio/")) {
+  if (mimeType?.startsWith("video/") || mimeType?.startsWith("audio/")) {
     return (
       <ReactPlayer
         config={{
@@ -154,13 +154,13 @@ function renderContent(content: ContentEntity) {
         width="100%"
       />
     );
-  } else if (mimeType.startsWith("image/")) {
+  } else if (mimeType?.startsWith("image/")) {
     return (
       <Image
-        alt={content.description}
+        alt={content.description || ""}
         className="h-full w-full object-contain"
         height={516}
-        src={url}
+        src={url || ""}
         width={516}
       />
     );

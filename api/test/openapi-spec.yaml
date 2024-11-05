@@ -1171,18 +1171,13 @@ paths:
         - Authentication - Email Verification
       security:
         - bearer: []
-  /organizations/{orgname}/chatbots/{chatbotId}/threads:
+  /organizations/{orgname}/threads:
     post:
       operationId: ThreadsController_create
       summary: Create a new thread
       description: Create a new thread. USER and ADMIN can access this endpoint.
       parameters:
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -1218,7 +1213,7 @@ paths:
         '404':
           description: Not Found
       tags:
-        - Chatbots - Threads
+        - Threads
       security:
         - bearer: []
     get:
@@ -1279,6 +1274,13 @@ paths:
           description: The start date to search from
           schema:
             type: string
+        - name: chatbotId
+          required: false
+          in: query
+          description: The chatbot ID
+          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
+          schema:
+            type: string
         - name: aggregateGranularity
           required: false
           in: query
@@ -1298,11 +1300,6 @@ paths:
             default: false
             type: boolean
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -1330,21 +1327,16 @@ paths:
         '404':
           description: Not Found
       tags:
-        - Chatbots - Threads
+        - Threads
       security:
         - bearer: []
-  /organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}:
+  /organizations/{orgname}/threads/{threadId}:
     get:
       operationId: ThreadsController_findOne
       summary: Get a thread
       description: Get a thread. ADMIN ONLY.
       parameters:
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -1368,7 +1360,7 @@ paths:
         '404':
           description: Not Found
       tags:
-        - Chatbots - Threads
+        - Threads
       security:
         - bearer: []
     delete:
@@ -1377,11 +1369,6 @@ paths:
       description: Delete a thread. ADMIN ONLY.
       parameters:
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -1401,7 +1388,7 @@ paths:
         '404':
           description: Not Found
       tags:
-        - Chatbots - Threads
+        - Threads
       security:
         - bearer: []
   /organizations/{orgname}/storage/delete:
@@ -3431,6 +3418,10 @@ components:
     CreateThreadDto:
       type: object
       properties:
+        chatbotId:
+          type: string
+          description: The chatbot ID
+          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
         name:
           type: string
           default: New Chat
@@ -3439,9 +3430,9 @@ components:
         id:
           type: string
           description: >-
-            Optional. The id to use as the chat id. If taken, this endpoint will
-            return a 409.
-          example: chatId1
+            Optional. The id to use as the thread id. If taken, this endpoint
+            will return a 409.
+          example: custom-thread-id
     ThreadEntity:
       type: object
       properties:
@@ -3454,6 +3445,10 @@ components:
           type: string
           description: The item's unique identifier
           example: 32411590-a8e0-11ed-afa1-0242ac120002
+        chatbotId:
+          type: string
+          description: The chatbot ID
+          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
         credits:
           type: number
           description: The total number of credits used in this chat
@@ -3475,7 +3470,6 @@ components:
         - createdAt
         - id
         - credits
-        - name
         - numMessages
         - orgname
     PathDto:
@@ -3831,7 +3825,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run completed
-          example: '2024-11-05T03:35:32.085Z'
+          example: '2024-11-05T06:57:42.874Z'
         error:
           type: string
           description: The error message, if any, associated with the run
@@ -3861,7 +3855,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run started
-          example: '2024-11-05T03:35:32.085Z'
+          example: '2024-11-05T06:57:42.874Z'
         status:
           type: string
           default: QUEUED

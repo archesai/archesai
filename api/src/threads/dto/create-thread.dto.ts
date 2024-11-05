@@ -5,12 +5,12 @@ import { IsOptional, IsString } from "class-validator";
 import { ThreadEntity } from "../entities/thread.entity";
 
 export class CreateThreadDto extends IntersectionType(
-  PartialType(PickType(ThreadEntity, ["name"] as const))
+  PartialType(PickType(ThreadEntity, ["name", "chatbotId"] as const))
 ) {
   @ApiProperty({
     description:
-      "Optional. The id to use as the chat id. If taken, this endpoint will return a 409.",
-    example: "chatId1",
+      "Optional. The id to use as the thread id. If taken, this endpoint will return a 409.",
+    example: "custom-thread-id",
     required: false,
   })
   @IsOptional()

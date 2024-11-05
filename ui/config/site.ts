@@ -1,4 +1,5 @@
 import {
+  Bot,
   // Award,
   // Bolt,
   Building2,
@@ -8,11 +9,14 @@ import {
   // HelpCircle,
   // HomeIcon,
   KeySquare,
+  ListMinus,
   // Layers,
   Lock,
   MessageSquare,
   PackageCheck,
   Server,
+  Settings2,
+  SquareTerminal,
   User,
   Users,
   Workflow,
@@ -25,33 +29,86 @@ export const siteConfig = {
   ogImage: "https://ui.shadcn.com/og.jpg",
   routes: [
     {
-      children: [
-        {
-          href: "/chatbots/view",
-          Icon: MessageSquare,
-          title: "View",
-        },
-      ],
-      href: "/chatbots",
-      Icon: MessageSquare,
-      title: "Chatbots",
+      href: "/playground",
+      Icon: SquareTerminal,
+      title: "Playground",
+    },
+    {
+      // children: [
+      //   {
+      //     href: "/content/view",
+      //     Icon: Server,
+      //     title: "Browse",
+      //   },
+      // ],
+      href: "/content/view",
+      Icon: Server,
+      title: "Content",
     },
     {
       children: [
         {
-          href: "/content/view",
-          Icon: Server,
-          title: "View",
+          href: "/tools/view",
+          Icon: SquareTerminal,
+          title: "Explore Tools",
         },
         {
-          href: "/content/single",
-          Icon: Server,
-          title: "View Single Content",
+          href: "/tools/runs",
+          Icon: PackageCheck,
+          title: "Tool Runs",
         },
       ],
-      href: "/content",
-      Icon: Server,
-      title: "Content",
+      href: "/tools",
+      Icon: PackageCheck,
+      title: "Tools",
+    },
+    {
+      children: [
+        {
+          href: "/pipelines/view",
+          Icon: Workflow,
+          title: "View Pipelines",
+        },
+      ],
+      href: "/pipelines",
+      Icon: Workflow,
+      title: "Pipelines",
+    },
+    {
+      children: [
+        {
+          href: "/chatbots/view",
+          Icon: Bot,
+          title: "Chatbots",
+        },
+        {
+          href: "/chatbots/threads",
+          Icon: ListMinus,
+          title: "Threads",
+        },
+      ],
+      href: "/chatbots",
+      Icon: MessageSquare,
+      title: "Chat",
+    },
+    {
+      children: [
+        {
+          href: "/profile/general",
+          Icon: User,
+          showInTabs: true,
+          title: "Profile",
+        },
+        {
+          href: "/profile/security",
+          Icon: KeySquare,
+          showInTabs: true,
+          title: "Security",
+        },
+      ],
+      href: "/profile",
+      Icon: User,
+      title: "Account",
     },
     {
       children: [
@@ -82,56 +139,8 @@ export const siteConfig = {
         },
       ],
       href: "/organization",
-      Icon: Building2,
-      title: "Organization",
-    },
-    {
-      children: [
-        {
-          href: "/pipelines/view",
-          Icon: Workflow,
-          title: "View Pipelines",
-        },
-      ],
-      href: "/pipelines",
-      Icon: Workflow,
-      title: "Pipelines",
-    },
-    {
-      children: [
-        {
-          href: "/profile/general",
-          Icon: User,
-          showInTabs: true,
-          title: "General",
-        },
-        {
-          href: "/profile/security",
-          Icon: KeySquare,
-          showInTabs: true,
-          title: "Security",
-        },
-      ],
-      href: "/profile",
-      Icon: User,
-      title: "Profile",
-    },
-    {
-      children: [
-        {
-          href: "/tools/view",
-          Icon: PackageCheck,
-          title: "View Tools",
-        },
-        {
-          href: "/tools/runs",
-          Icon: PackageCheck,
-          title: "View Tool Runs",
-        },
-      ],
-      href: "/tools",
-      Icon: PackageCheck,
-      title: "Tools",
+      Icon: Settings2,
+      title: "Settings",
     },
   ],
   url: "https://archesai.com",

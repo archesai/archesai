@@ -21,8 +21,8 @@ import { ThreadEntity } from "./entities/thread.entity";
 import { ThreadsService } from "./threads.service";
 
 @ApiBearerAuth()
-@ApiTags("Chatbots - Threads")
-@Controller("/organizations/:orgname/chatbots/:chatbotId/threads")
+@ApiTags("Threads")
+@Controller("/organizations/:orgname/threads")
 export class ThreadsController {
   constructor(private readonly threadsService: ThreadsService) {}
 
@@ -30,11 +30,10 @@ export class ThreadsController {
   @Post()
   async create(
     @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string,
     @Body() createThreadDto: CreateThreadDto
   ) {
     return new ThreadEntity(
-      await this.threadsService.create(orgname, chatbotId, createThreadDto)
+      await this.threadsService.create(orgname, createThreadDto)
     );
   }
 
@@ -48,12 +47,10 @@ export class ThreadsController {
   @Get()
   async findAll(
     @Query() threadQueryDto: ThreadQueryDto,
-    @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string
+    @Param("orgname") orgname: string
   ) {
     const { aggregates, count, threads } = await this.threadsService.findAll(
       orgname,
-      chatbotId,
       threadQueryDto
     );
     return new PaginatedDto<ThreadEntity, ThreadAggregates>({
@@ -71,11 +68,10 @@ export class ThreadsController {
   @Get(":threadId")
   async findOne(
     @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string,
     @Param("threadId") threadId: string
   ) {
     return new ThreadEntity(
-      await this.threadsService.findOne(orgname, chatbotId, threadId)
+      await this.threadsService.findOne(orgname, threadId)
     );
   }
 
@@ -83,9 +79,8 @@ export class ThreadsController {
   @Delete(":threadId")
   async remove(
     @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string,
     @Param("threadId") threadId: string
   ) {
-    return this.threadsService.remove(orgname, chatbotId, threadId);
+    return this.threadsService.remove(orgname, threadId);
   }
 }

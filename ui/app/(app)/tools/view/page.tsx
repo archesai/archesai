@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { Badge } from "@/components/ui/badge";
 import {
   ToolsControllerFindAllPathParams,
   ToolsControllerRemoveVariables,
@@ -10,7 +11,7 @@ import {
 import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-import { File } from "lucide-react";
+import { PackageCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -64,7 +65,11 @@ export default function ContentPage() {
           {
             accessorKey: "inputType",
             cell: ({ row }) => {
-              return <span>{row.original.inputType}</span>;
+              return (
+                <Badge className="text-primary" variant={"secondary"}>
+                  {row.original.inputType}
+                </Badge>
+              );
             },
             enableHiding: false,
             enableSorting: false,
@@ -79,7 +84,11 @@ export default function ContentPage() {
           {
             accessorKey: "outputType",
             cell: ({ row }) => {
-              return <span>{row.original.outputType}</span>;
+              return (
+                <Badge className="text-primary" variant={"secondary"}>
+                  {row.original.outputType}
+                </Badge>
+              );
             },
             enableHiding: false,
             enableSorting: false,
@@ -112,10 +121,7 @@ export default function ContentPage() {
             ),
           },
         ]}
-        content={() => (
-          <div className="flex h-full w-full items-center justify-center"></div>
-        )}
-        dataIcon={<File size={24} />}
+        dataIcon={<PackageCheck />}
         defaultView="table"
         findAllPathParams={{
           orgname: defaultOrgname,

@@ -81,6 +81,9 @@ export default function ContentPage() {
                 </span>
               );
             },
+            header: ({ column }) => (
+              <DataTableColumnHeader column={column} title="Created" />
+            ),
           },
           {
             accessorKey: "tools",

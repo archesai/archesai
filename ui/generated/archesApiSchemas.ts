@@ -700,6 +700,12 @@ export type ConfirmEmailVerificationDto = {
 
 export type CreateThreadDto = {
   /**
+   * The chatbot ID
+   *
+   * @example fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
+   */
+  chatbotId?: string;
+  /**
    * The chat thread name
    *
    * @default New Chat
@@ -707,9 +713,9 @@ export type CreateThreadDto = {
    */
   name?: string;
   /**
-   * Optional. The id to use as the chat id. If taken, this endpoint will return a 409.
+   * Optional. The id to use as the thread id. If taken, this endpoint will return a 409.
    *
-   * @example chatId1
+   * @example custom-thread-id
    */
   id?: string;
 };
@@ -729,6 +735,12 @@ export type ThreadEntity = {
    */
   id: string;
   /**
+   * The chatbot ID
+   *
+   * @example fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
+   */
+  chatbotId?: string;
+  /**
    * The total number of credits used in this chat
    *
    * @example 10000
@@ -740,7 +752,7 @@ export type ThreadEntity = {
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
    */
-  name: string;
+  name?: string;
   /**
    * The total number of messages in this chat
    *
@@ -1169,7 +1181,7 @@ export type RunEntity = {
    * The timestamp when the run completed
    *
    * @format date-time
-   * @example 2024-11-05T03:35:32.085Z
+   * @example 2024-11-05T06:57:42.874Z
    */
   completedAt?: string;
   /**
@@ -1209,7 +1221,7 @@ export type RunEntity = {
    * The timestamp when the run started
    *
    * @format date-time
-   * @example 2024-11-05T03:35:32.085Z
+   * @example 2024-11-05T06:57:42.874Z
    */
   startedAt?: string;
   /**

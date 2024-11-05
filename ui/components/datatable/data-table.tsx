@@ -46,7 +46,7 @@ import { useEffect, useState } from "react";
 
 export interface BaseItem {
   id: string;
-  name: string;
+  name?: string;
 }
 
 interface DataTableProps<
@@ -55,7 +55,7 @@ interface DataTableProps<
   TDeleteVariables,
 > {
   columns: ColumnDef<TItem, TDeleteVariables>[];
-  content: (item: TItem) => JSX.Element;
+  content?: (item: TItem) => JSX.Element;
   createForm?: React.ReactNode;
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
@@ -95,7 +95,7 @@ export function DataTable<
   content,
   createForm,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  dataIcon,
+  dataIcon: DataIcon,
   defaultView,
   findAllPathParams,
   findAllQueryParams,
@@ -210,7 +210,7 @@ export function DataTable<
                     items={[
                       {
                         id: row.original.id,
-                        name: row.original.name,
+                        name: row.original.name || row.original.id,
                       },
                     ]}
                     itemType={itemType}
@@ -256,6 +256,9 @@ export function DataTable<
 
   const grid_view = (
     <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+      {
+        // THIS IS THE CREATE FORM CARD
+      }
       {createForm ? (
         <Card
           className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-secondary`}
@@ -267,6 +270,9 @@ export function DataTable<
           <span className="text-md">Create {itemType}</span>
         </Card>
       ) : null}
+      {
+        // THIS IS THE DATA CARDS
+      }
       {data?.results.map((item, i) => {
         const isItemSelected = selectedItems.includes(item.id);
         return (
@@ -274,16 +280,28 @@ export function DataTable<
             className={`relative flex aspect-auto h-64 flex-col shadow-sm ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={i}
           >
+            {
+              // THIS IS THE INSIDE TOP CONTENT
+            }
             <div
               className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
             >
-              {content(item)}
+              {content ? (
+                content(item)
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  {DataIcon}
+                </div>
+              )}
             </div>
             <hr />
 
+            {
+              // THIS IS THE FOOTER
+            }
             <div className="mt-auto flex items-center justify-between p-2">
               <div className="flex min-w-0 items-center gap-2">
                 <Checkbox
@@ -292,9 +310,9 @@ export function DataTable<
                   className="rounded text-blue-600 focus:ring-blue-500"
                   onCheckedChange={() => toggleSelection(item.id)}
                 />
-                <h5 className="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight">
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight">
                   {item.name}
-                </h5>
+                </span>
               </div>
               <div className="flex flex-shrink-0 items-center gap-2">
                 {getEditFormFromItem ? (
@@ -315,7 +333,7 @@ export function DataTable<
                   items={[
                     {
                       id: item.id,
-                      name: item.name,
+                      name: item.name || item.id,
                     },
                   ]}
                   itemType={itemType}

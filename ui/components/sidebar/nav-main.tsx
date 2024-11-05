@@ -18,16 +18,36 @@ import {
 import { siteConfig } from "@/config/site";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain() {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {siteConfig.routes.map((rootRoute) => {
-          const isActive = rootRoute.children.some((route) =>
+          const isActive = rootRoute?.children?.some((route) =>
             window.location.pathname.startsWith(route.href)
           );
+
+          if (!rootRoute?.children?.length) {
+            return (
+              <SidebarMenuItem>
+                <Link href={rootRoute.href}>
+                  <SidebarMenuButton
+                    className={`${pathname === rootRoute.href ? "bg-muted" : ""}`}
+                    tooltip={rootRoute.title}
+                  >
+                    {rootRoute.Icon && <rootRoute.Icon />}
+
+                    <span>{rootRoute.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            );
+          }
+
           return (
             <Collapsible
               asChild
@@ -50,9 +70,7 @@ export function NavMain() {
                         <SidebarMenuSubButton
                           asChild
                           className={`${
-                            window.location.pathname === route.href
-                              ? "bg-muted"
-                              : ""
+                            pathname === route.href ? "bg-muted" : ""
                           }`}
                         >
                           <Link href={route.href}>

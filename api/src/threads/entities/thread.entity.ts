@@ -1,17 +1,21 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Message, Thread } from "@prisma/client";
-import { Organization } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Thread } from "@prisma/client";
+import { Expose } from "class-transformer";
+import { IsOptional, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
 
 export class ThreadEntity extends BaseEntity implements Thread {
-  @ApiHideProperty()
-  @Exclude()
+  @ApiProperty({
+    description: "The chatbot ID",
+    example: "fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b",
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @Expose()
   chatbotId: string;
 
-  // Public Properties
   @ApiProperty({
     description: "The total number of credits used in this chat",
     example: 10000,
@@ -19,14 +23,11 @@ export class ThreadEntity extends BaseEntity implements Thread {
   @Expose()
   credits: number;
 
-  @ApiHideProperty()
-  @Exclude()
-  messages: Message[];
-
   @ApiProperty({
     default: "New Chat",
     description: "The chat thread name",
     example: "What are the morals of the story in Aesop's Fables?",
+    required: false,
   })
   @Expose()
   @IsOptional()
@@ -38,11 +39,6 @@ export class ThreadEntity extends BaseEntity implements Thread {
   })
   @Expose()
   numMessages: number;
-
-  // Private Properties
-  @ApiHideProperty()
-  @Exclude()
-  organization: Organization;
 
   @ApiProperty({
     description: "The organization name",

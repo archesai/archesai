@@ -21,25 +21,17 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Folder,
   Forward,
-  type LucideIcon,
+  ListMinus,
   MoreHorizontal,
   Trash2,
 } from "lucide-react";
+import Link from "next/link";
 
-export function NavProjects({
-  projects,
-}: {
-  projects: {
-    icon: LucideIcon;
-    name: string;
-    url: string;
-  }[];
-}) {
+export function RecentThreads() {
   const { isMobile } = useSidebar();
   const { defaultOrgname } = useAuth();
   const { data: threads } = useThreadsControllerFindAll({
     pathParams: {
-      chatbotId: "default",
       orgname: defaultOrgname,
     },
   });
@@ -48,13 +40,15 @@ export function NavProjects({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Recent Threads</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        {threads?.results?.map((thread) => (
+          <SidebarMenuItem key={thread.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
+              <Link
+                href={`/chatbots/single?chatbotId=${thread.chatbotId}&threadId=${thread.id}`}
+              >
+                <ListMinus />
+                <span>{thread.name}</span>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -88,7 +82,7 @@ export function NavProjects({
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
+            <Link href="/chatbots/threads">More</Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

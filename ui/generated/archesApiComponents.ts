@@ -2149,7 +2149,6 @@ export const useEmailVerificationControllerRequest = (
 
 export type ThreadsControllerCreatePathParams = {
   orgname: string;
-  chatbotId: string;
 };
 
 export type ThreadsControllerCreateError = Fetcher.ErrorWrapper<{
@@ -2180,7 +2179,7 @@ export const fetchThreadsControllerCreate = (
     {},
     ThreadsControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads",
+    url: "/organizations/{orgname}/threads",
     method: "post",
     ...variables,
     signal,
@@ -2213,7 +2212,6 @@ export const useThreadsControllerCreate = (
 
 export type ThreadsControllerFindAllPathParams = {
   orgname: string;
-  chatbotId: string;
 };
 
 export type ThreadsControllerFindAllQueryParams = {
@@ -2256,6 +2254,10 @@ export type ThreadsControllerFindAllQueryParams = {
    */
   startDate?: string;
   /**
+   * The chatbot ID
+   */
+  chatbotId?: string;
+  /**
    * The granularity to use for ranged aggregates
    */
   aggregateGranularity?: "day" | "month" | "week" | "year";
@@ -2294,7 +2296,7 @@ export const fetchThreadsControllerFindAll = (
     ThreadsControllerFindAllQueryParams,
     ThreadsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads",
+    url: "/organizations/{orgname}/threads",
     method: "get",
     ...variables,
     signal,
@@ -2324,7 +2326,7 @@ export const useThreadsControllerFindAll = <
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads",
+      path: "/organizations/{orgname}/threads",
       operationId: "threadsControllerFindAll",
       variables,
     }),
@@ -2340,7 +2342,6 @@ export const useThreadsControllerFindAll = <
 
 export type ThreadsControllerFindOnePathParams = {
   orgname: string;
-  chatbotId: string;
   threadId: string;
 };
 
@@ -2365,7 +2366,7 @@ export const fetchThreadsControllerFindOne = (
     {},
     ThreadsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}",
+    url: "/organizations/{orgname}/threads/{threadId}",
     method: "get",
     ...variables,
     signal,
@@ -2393,7 +2394,7 @@ export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity,>(
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}",
+      path: "/organizations/{orgname}/threads/{threadId}",
       operationId: "threadsControllerFindOne",
       variables,
     }),
@@ -2409,7 +2410,6 @@ export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity,>(
 
 export type ThreadsControllerRemovePathParams = {
   orgname: string;
-  chatbotId: string;
   threadId: string;
 };
 
@@ -2434,7 +2434,7 @@ export const fetchThreadsControllerRemove = (
     {},
     ThreadsControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}",
+    url: "/organizations/{orgname}/threads/{threadId}",
     method: "delete",
     ...variables,
     signal,
@@ -4597,12 +4597,12 @@ export type QueryOperation =
       variables: MembersControllerFindAllVariables;
     }
   | {
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads";
+      path: "/organizations/{orgname}/threads";
       operationId: "threadsControllerFindAll";
       variables: ThreadsControllerFindAllVariables;
     }
   | {
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}";
+      path: "/organizations/{orgname}/threads/{threadId}";
       operationId: "threadsControllerFindOne";
       variables: ThreadsControllerFindOneVariables;
     }

@@ -78,7 +78,7 @@ export function CommandMenu({ ...props }: DialogProps) {
           <CommandEmpty>No results found.</CommandEmpty>
           {siteConfig.routes.map((rootRoute) => (
             <CommandGroup heading={rootRoute.title} key={rootRoute.title}>
-              {rootRoute.children.map((route) => (
+              {rootRoute.children?.map((route) => (
                 <CommandItem
                   className="flex gap-2"
                   key={route.href}

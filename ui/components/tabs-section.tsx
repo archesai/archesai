@@ -10,10 +10,10 @@ export const TabsSection = () => {
 
   const currentTabs = siteConfig.routes
     .find((route) => pathname.startsWith(route.href))
-    ?.children.filter((tab: any) => tab?.showInTabs);
+    ?.children?.filter((tab: any) => tab?.showInTabs);
 
   if (!currentTabs || currentTabs.length === 0) {
-    return <div className="border-b shadow-sm"></div>; // Or return a placeholder if needed
+    return <div className="border-b"></div>; // Or return a placeholder if needed
   }
 
   const activeTab = currentTabs.find((tab) => pathname === tab.href)?.href;

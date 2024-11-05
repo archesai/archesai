@@ -11,7 +11,7 @@ import {
 import { PipelineEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-import { File } from "lucide-react";
+import { Workflow } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -109,10 +109,7 @@ export default function ContentPage() {
             ),
           },
         ]}
-        content={() => (
-          <div className="flex h-full w-full items-center justify-center"></div>
-        )}
-        dataIcon={<File size={24} />}
+        dataIcon={<Workflow />}
         defaultView="table"
         findAllPathParams={{
           orgname: defaultOrgname,

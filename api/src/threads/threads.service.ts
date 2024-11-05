@@ -20,27 +20,23 @@ export class ThreadsService {
 
   async create(
     orgname: string,
-    chatbotId: string,
+
     createThreadDto: CreateThreadDto
   ) {
-    const thread = await this.threadRepository.create(
-      orgname,
-      chatbotId,
-      createThreadDto
-    );
+    const thread = await this.threadRepository.create(orgname, createThreadDto);
     this.websocketsService.socket.to(orgname).emit("update");
     return thread;
   }
 
   async findAll(
     orgname: string,
-    chatbotId: string,
+
     threadQueryDto: ThreadQueryDto
   ) {
-    return this.threadRepository.findAll(orgname, chatbotId, threadQueryDto);
+    return this.threadRepository.findAll(orgname, threadQueryDto);
   }
 
-  async findOne(orgname: string, chatbotId: string, threadId: string) {
+  async findOne(orgname: string, threadId: string) {
     return this.threadRepository.findOne(threadId);
   }
 
@@ -48,7 +44,7 @@ export class ThreadsService {
     return this.threadRepository.incrementCredits(orgname, threadId, credits);
   }
 
-  async remove(orgname: string, chatbotId: string, threadId: string) {
+  async remove(orgname: string, threadId: string) {
     await this.threadRepository.delete(threadId);
     this.websocketsService.socket.to(orgname).emit("update");
   }
