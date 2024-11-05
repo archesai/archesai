@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { ApiOperation } from "@nestjs/swagger";
 
 import {
@@ -25,6 +30,21 @@ export class EmailChangeController {
     description: "E-mail change confirmed",
     status: 201,
     type: TokenDto,
+  })
+  @ApiBadRequestResponse({
+    description: "Invalid token",
+    schema: {
+      properties: {
+        message: {
+          example: "Invalid or expired token.",
+          type: "string",
+        },
+        statusCode: {
+          example: 400,
+          type: "number",
+        },
+      },
+    },
   })
   @IsPublic()
   @Post("confirm")

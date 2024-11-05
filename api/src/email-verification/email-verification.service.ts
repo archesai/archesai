@@ -7,7 +7,7 @@ import { AuthService } from "../auth/auth.service";
 import { EmailService } from "../email/email.service";
 import { getEmailVerificationHtml } from "../email/templates";
 import { UsersService } from "../users/users.service";
-import { ConfirmEmailVerificationDto } from "./dto/confirm-password-reset.dto";
+import { ConfirmEmailVerificationDto } from "./dto/confirm-password-verification.dto";
 
 @Injectable()
 export class EmailVerificationService {

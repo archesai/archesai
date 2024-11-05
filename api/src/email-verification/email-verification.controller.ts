@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
@@ -11,7 +12,7 @@ import { CurrentUserDto } from "../auth/decorators/current-user.decorator";
 import { IsPublic } from "../auth/decorators/is-public.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { TokenDto } from "../auth/dto/token.dto";
-import { ConfirmEmailVerificationDto } from "./dto/confirm-password-reset.dto";
+import { ConfirmEmailVerificationDto } from "./dto/confirm-password-verification.dto";
 import { EmailVerificationService } from "./email-verification.service";
 
 @ApiTags("Authentication - Email Verification")
@@ -24,6 +25,21 @@ export class EmailVerificationController {
   @ApiOperation({
     description: "This endpoint will confirm your e-mail with a token",
     summary: "Confirm e-mail verification",
+  })
+  @ApiBadRequestResponse({
+    description: "Invalid token",
+    schema: {
+      properties: {
+        message: {
+          example: "Invalid or expired token.",
+          type: "string",
+        },
+        statusCode: {
+          example: 400,
+          type: "number",
+        },
+      },
+    },
   })
   @ApiResponse({ description: "Already Verified", status: 400 })
   @ApiResponse({ description: "Unauthorized", status: 401 })

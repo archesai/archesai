@@ -2025,8 +2025,19 @@ export const useMembersControllerUpdate = (
   });
 };
 
-export type EmailVerificationControllerConfirmError =
-  Fetcher.ErrorWrapper<undefined>;
+export type EmailVerificationControllerConfirmError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    /**
+     * @example Invalid or expired token.
+     */
+    message?: string;
+    /**
+     * @example 400
+     */
+    statusCode?: number;
+  };
+}>;
 
 export type EmailVerificationControllerConfirmVariables = {
   body: Schemas.ConfirmEmailVerificationDto;
@@ -4068,7 +4079,19 @@ export const usePasswordResetControllerRequest = (
   });
 };
 
-export type EmailChangeControllerConfirmError = Fetcher.ErrorWrapper<undefined>;
+export type EmailChangeControllerConfirmError = Fetcher.ErrorWrapper<{
+  status: 400;
+  payload: {
+    /**
+     * @example Invalid or expired token.
+     */
+    message?: string;
+    /**
+     * @example 400
+     */
+    statusCode?: number;
+  };
+}>;
 
 export type EmailChangeControllerConfirmVariables = {
   body: Schemas.ConfirmEmailChangeDto;

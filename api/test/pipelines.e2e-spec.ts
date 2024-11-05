@@ -85,7 +85,6 @@ describe("Pipelines", () => {
     const res = await request(app.getHttpServer())
       .get(`/organizations/${orgname}/pipelines`)
       .set("Authorization", `Bearer ${accessToken}`);
-    console.log(JSON.stringify(res.body, null, 2));
     expect(res).toSatisfyApiSpec();
     expect(res.status).toBe(200);
     return res.body.results[0] as PipelineEntity;

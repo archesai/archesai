@@ -1137,7 +1137,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenDto'
         '400':
-          description: Already Verified
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    example: Invalid or expired token.
+                    type: string
+                  statusCode:
+                    example: 400
+                    type: number
         '401':
           description: Unauthorized
       tags:
@@ -2451,6 +2461,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenDto'
+        '400':
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    example: Invalid or expired token.
+                    type: string
+                  statusCode:
+                    example: 400
+                    type: number
       tags:
         - Authentication - Email Change
   /auth/email-change/request:
@@ -3809,7 +3831,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run completed
-          example: '2024-11-04T19:02:55.988Z'
+          example: '2024-11-05T03:35:32.085Z'
         error:
           type: string
           description: The error message, if any, associated with the run
@@ -3839,7 +3861,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run started
-          example: '2024-11-04T19:02:55.988Z'
+          example: '2024-11-05T03:35:32.085Z'
         status:
           type: string
           default: QUEUED

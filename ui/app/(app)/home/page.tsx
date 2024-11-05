@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 const cardData = [
   {
     buttonText: "Manage Content",
-    colorClass: "text-blue-600", // Blue for file handling and imports
+    colorClass: "text-blue-500", // Blue for file handling and imports
     description: "View and manage your content.",
     icon: Server,
     link: "/content",
@@ -22,7 +22,7 @@ const cardData = [
   },
   {
     buttonText: "Create Image",
-    colorClass: "text-indigo-600", // Pink for creativity and AI-generated content
+    colorClass: "text-blue-500", // Pink for creativity and AI-generated content
     description: "Create images using generative AI.",
     icon: Image,
     link: "/images",
@@ -30,7 +30,7 @@ const cardData = [
   },
   {
     buttonText: "Create Chatbot",
-    colorClass: "text-green-600", // Purple for AI and communication-based features
+    colorClass: "text-blue-500", // Purple for AI and communication-based features
     description: "Set up a chatbot using imported data.",
     icon: MessageSquareIcon,
     link: "/chatbots",
@@ -45,10 +45,10 @@ export default function HomePage() {
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {cardData.map((card, index) => (
         <Card
-          className={`flex flex-col text-center hover:shadow-lg ${card.colorClass} justify-between transition-shadow`}
+          className={`flex flex-col text-center hover:shadow-lg ${card.colorClass} justify-between p-6 transition-shadow`}
           key={index}
         >
-          <CardHeader className="flex flex-col gap-2">
+          <CardHeader className="flex flex-col gap-2 p-0">
             <card.icon className="mx-auto h-12 w-12 opacity-80" />
             <CardTitle className="text-xl font-medium text-foreground">
               {card.title}
@@ -57,7 +57,7 @@ export default function HomePage() {
           <CardContent>
             <p className="text-muted-foreground">{card.description}</p>
           </CardContent>
-          <CardFooter className="justify-center">
+          <CardFooter className="justify-center p-0">
             <Button
               className="h-8"
               onClick={() => router.push(card.link)}

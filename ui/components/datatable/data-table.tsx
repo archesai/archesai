@@ -258,7 +258,7 @@ export function DataTable<
     <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
       {createForm ? (
         <Card
-          className={`flex h-48 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-secondary`}
+          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-secondary`}
           onClick={async () => {
             setFormOpen(true);
           }}
@@ -271,11 +271,11 @@ export function DataTable<
         const isItemSelected = selectedItems.includes(item.id);
         return (
           <Card
-            className={`relative w-full shadow-sm ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            className={`relative flex aspect-auto h-64 flex-col shadow-sm ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={i}
           >
             <div
-              className="group relative h-40 cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
+              className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
               onClick={async () => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}
