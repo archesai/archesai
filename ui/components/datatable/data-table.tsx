@@ -139,13 +139,18 @@ export function DataTable<
   const { data } = useFindAll({
     pathParams: findAllPathParams,
     queryParams: {
-      endDate: endOfDay(range.to).toISOString(),
+      ...(range?.to
+        ? { endDate: range?.to && endOfDay(range.to).toISOString() }
+        : {}),
+      ...(range?.to
+        ? { startDate: range?.from && range.from.toISOString() }
+        : {}),
       limit,
       name: query,
       offset: page * limit,
       sortBy: sortBy as "createdAt",
       sortDirection: sortDirection,
-      startDate: range.from.toISOString(),
+
       ...findAllQueryParams,
     },
   });
