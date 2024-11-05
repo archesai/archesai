@@ -3281,6 +3281,10 @@ export type RunsControllerFindAllQueryParams = {
    * The start date to search from
    */
   startDate?: string;
+  /**
+   * The tool used in the run, if applicable
+   */
+  toolId?: string;
 };
 
 export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;

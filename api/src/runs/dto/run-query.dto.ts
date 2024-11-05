@@ -1,3 +1,9 @@
 import { SearchQueryDto } from "@/src/common/search-query";
+import { IntersectionType, PickType } from "@nestjs/swagger";
 
-export class RunQueryDto extends SearchQueryDto {}
+import { RunEntity } from "../entities/run.entity";
+
+export class RunQueryDto extends IntersectionType(
+  SearchQueryDto,
+  PickType(RunEntity, ["toolId"] as const)
+) {}

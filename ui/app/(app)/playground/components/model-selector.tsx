@@ -46,9 +46,14 @@ const useMutationObserver = (
   }, [ref, callback, options]);
 };
 
-export function ModelSelector({ ...props }) {
+export function ModelSelector({
+  selectedTool,
+  setSelectedTool,
+}: {
+  selectedTool?: ToolEntity;
+  setSelectedTool: (model: ToolEntity) => void;
+}) {
   const [open, setOpen] = React.useState(false);
-  const [selectedModel, setSelectedModel] = React.useState<ToolEntity>();
   const [peekedModel, setPeekedModel] = React.useState<ToolEntity>();
   const { defaultOrgname } = useAuth();
   const { data: tools } = useToolsControllerFindAll({
@@ -57,7 +62,11 @@ export function ModelSelector({ ...props }) {
     },
   });
   const toolBases = tools?.results?.map((tool) => tool.toolBase) ?? [];
-
+  React.useEffect(() => {
+    if (tools?.results?.length) {
+      setSelectedTool(tools.results[0]);
+    }
+  }, [tools]);
   return (
     <div className="grid gap-2">
       <HoverCard openDelay={200}>
@@ -73,7 +82,7 @@ export function ModelSelector({ ...props }) {
           for natural language tasks, others specialize in code. Learn more.
         </HoverCardContent>
       </HoverCard>
-      <Popover onOpenChange={setOpen} open={open} {...props}>
+      <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
@@ -82,7 +91,7 @@ export function ModelSelector({ ...props }) {
             role="combobox"
             variant="outline"
           >
-            {selectedModel ? selectedModel.name : "Select a tool..."}
+            {selectedTool ? selectedTool.name : "Select a tool..."}
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -96,21 +105,11 @@ export function ModelSelector({ ...props }) {
                 <div className="text-sm text-muted-foreground">
                   {peekedModel?.description}
                 </div>
-                {/* {peekedModel?.strengths ? (
-                  <div className="mt-4 grid gap-2">
-                    <h5 className="text-sm font-medium leading-none">
-                      Strengths
-                    </h5>
-                    <ul className="text-sm text-muted-foreground">
-                      {peekedModel?.strengths}
-                    </ul>
-                  </div>
-                ) : null} */}
               </div>
             </HoverCardContent>
             <Command loop>
               <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
-                <CommandInput placeholder="Search Models..." />
+                <CommandInput placeholder="Search tools..." />
                 <CommandEmpty>No Models found.</CommandEmpty>
                 <HoverCardTrigger />
                 {toolBases.map((toolBase) => (
@@ -119,11 +118,11 @@ export function ModelSelector({ ...props }) {
                       ?.filter((tool) => tool.toolBase === toolBase)
                       .map((tool) => (
                         <ModelItem
-                          isSelected={selectedModel?.id === tool.id}
+                          isSelected={selectedTool?.id === tool.id}
                           key={tool.id}
                           onPeek={(tool) => setPeekedModel(tool)}
                           onSelect={() => {
-                            setSelectedModel(tool);
+                            setSelectedTool(tool);
                             setOpen(false);
                           }}
                           tool={tool}

@@ -5,6 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { RunEntity } from "@/generated/archesApiSchemas";
+import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { CheckCircle2, CircleX, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
@@ -13,6 +14,8 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
 
   const renderIcon = () => {
     switch (run.status) {
+      case "QUEUED":
+        return <CounterClockwiseClockIcon className="text-primary" />;
       case "COMPLETE":
         return <CheckCircle2 className="text-teal-600" />;
       case "ERROR":
@@ -32,7 +35,12 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button className="flex items-center" size="icon" variant="link">
+        <Button
+          className="flex w-full items-center justify-between"
+          size="sm"
+          variant="secondary"
+        >
+          <div>{run.name}</div>
           {renderIcon()}
         </Button>
       </PopoverTrigger>

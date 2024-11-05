@@ -99,7 +99,7 @@ export class RunsService
     );
 
     this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "tools"],
+      queryKey: ["organizations", orgname, "runs"],
     });
     const runEntity = new RunEntity(run);
     // await this.runQueue.add("as", runEntity);

@@ -135,6 +135,7 @@ export class RunRepository
           lte: runQueryDto.endDate,
         },
         orgname,
+        toolId: runQueryDto.toolId,
       },
     });
     const results = await this.prisma.run.findMany({
@@ -149,6 +150,7 @@ export class RunRepository
           lte: runQueryDto.endDate,
         },
         orgname,
+        toolId: runQueryDto.toolId,
       },
     });
     return { count, results };

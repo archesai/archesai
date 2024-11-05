@@ -1946,6 +1946,12 @@ paths:
           description: The start date to search from
           schema:
             type: string
+        - name: toolId
+          required: false
+          in: query
+          description: The tool used in the run, if applicable
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully returned paginated results
@@ -2315,6 +2321,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ToolEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+  /organizations/{orgname}/tools/{toolId}/run:
+    post:
+      operationId: ToolsController_run
+      summary: Create a new run
+      description: Create a new run. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunToolDto'
+      responses:
+        '201':
+          description: Successfully created a new run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunEntity'
+        '400':
+          description: Bad request when creating the run
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    anyOf:
+                      - type: string
+                      - type: array
+                  statusCode:
+                    type: number
+                type: object
         '401':
           description: Unauthorized
         '403':
@@ -3144,14 +3202,8 @@ components:
         url:
           type: string
           example: https://example.com/example.mp4
-        pipelineId:
-          type: string
-          description: The tool IDs to run with this content
-          example:
-            - tool-id-uuid
       required:
         - name
-        - pipelineId
     ContentEntity:
       type: object
       properties:
@@ -3211,11 +3263,6 @@ components:
         url:
           type: string
           example: https://example.com/example.mp4
-        pipelineId:
-          type: string
-          description: The tool IDs to run with this content
-          example:
-            - tool-id-uuid
     RunEntity:
       type: object
       properties:
@@ -3428,6 +3475,31 @@ components:
         - orgname
         - outputType
         - toolBase
+    RunToolDto:
+      type: object
+      properties:
+        runInputContentIds:
+          description: >-
+            If using already created content, specify the content IDs to use as
+            input for the run.
+          example:
+            - content-id-1
+            - content-id-2
+          type: array
+          items:
+            type: string
+        text:
+          type: string
+          description: >-
+            If using direct text input, specify the text to use as input for the
+            run. It will automatically be added as content.
+          example: This is the text to use as input for the run.
+        url:
+          type: string
+          description: >-
+            If using direct text input, specify the text to use as input for the
+            run. It will automatically be added as content.
+          example: This is a url to use as input for the run.
     UpdateToolDto:
       type: object
       properties:

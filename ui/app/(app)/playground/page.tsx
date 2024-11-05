@@ -1,10 +1,16 @@
 "use client";
+import { RunStatusButton } from "@/components/run-status-button";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToolsControllerRun } from "@/generated/archesApiComponents";
+import {
+  useRunsControllerFindAll,
+  useToolsControllerRun,
+} from "@/generated/archesApiComponents";
+import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
 import { CodeViewer } from "./components/code-viewer";
 import { ModelSelector } from "./components/model-selector";
@@ -12,12 +18,27 @@ import { PresetActions } from "./components/preset-actions";
 import { PresetSave } from "./components/preset-save";
 import { PresetSelector } from "./components/preset-selector";
 import { PresetShare } from "./components/preset-share";
-import { TopPSelector } from "./components/top-p-selector";
 import { presets } from "./data/presets";
 
 export default function PlaygroundPage() {
-  const { mutateAsync: runTool } = useToolsControllerRun();
   const { defaultOrgname } = useAuth();
+  const [selectedTool, setSelectedTool] = useState<ToolEntity>();
+  const { mutateAsync: runTool } = useToolsControllerRun();
+  const { data: runs } = useRunsControllerFindAll(
+    {
+      pathParams: {
+        orgname: defaultOrgname,
+      },
+      queryParams: {
+        toolId: selectedTool?.id,
+      },
+    },
+    {
+      enabled: !!selectedTool,
+    }
+  );
+
+  console.log(runs);
   return (
     <div
       className="flex flex-col gap-4"
@@ -26,7 +47,7 @@ export default function PlaygroundPage() {
       }}
     >
       {
-        // TOP PART
+        // PRESET SELECTOR CODE VIEWER
       }
       <div className="-mt-0 flex justify-end gap-2 lg:-mt-12">
         <PresetSelector presets={presets} />
@@ -43,15 +64,21 @@ export default function PlaygroundPage() {
       }
       <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
         {
-          // SIDEBAR
+          // FORM
         }
-        <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-          <ModelSelector />
-          <TopPSelector defaultValue={[0.9]} />
+        <div className="hidden flex-col gap-3 sm:flex md:order-2">
+          <ModelSelector
+            selectedTool={selectedTool}
+            setSelectedTool={setSelectedTool}
+          />
+          <Label>Runs</Label>
+          {runs?.results?.map((run) => (
+            <RunStatusButton key={run.id} run={run} />
+          ))}
         </div>
 
         {
-          // MAIN CONTENT
+          // CONTENT
         }
         <div className="flex flex-1 md:order-1">
           <div className="flex flex-1 flex-col space-y-4">
@@ -78,6 +105,7 @@ export default function PlaygroundPage() {
             </div>
             <div className="flex items-center space-x-2">
               <Button
+                disabled={!selectedTool}
                 onClick={async () => {
                   await runTool({
                     body: {
@@ -85,7 +113,7 @@ export default function PlaygroundPage() {
                     },
                     pathParams: {
                       orgname: defaultOrgname,
-                      toolId: "9437b5da-77c2-4ec4-80f4-eb775f2f17af",
+                      toolId: selectedTool?.id || "",
                     },
                   });
                 }}
