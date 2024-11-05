@@ -1,28 +1,30 @@
+import { ContentService } from "@/src/content/content.service";
+import { Logger } from "@nestjs/common";
 import * as ospath from "path";
 
-import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
 import { RunpodService } from "../../runpod/runpod.service";
-import { RunEntity } from "../../runs/entities/run.entity";
 import { StorageService } from "../../storage/storage.service";
 
 export const processTextToImage = async (
-  content: ContentEntity,
-  run: RunEntity,
+  runId: string,
+  runInputContents: ContentEntity[],
+  logger: Logger,
+  contentService: ContentService,
   runpodService: RunpodService,
-  storageService: StorageService,
-  contentService: ContentService
+  storageService: StorageService
 ) => {
+  logger.log(`Processing text to image for run ${runId}`);
   const input = {
     input: {
       prompt: "a man running in a circle",
     },
   };
 
+  const orgname = runInputContents[0].orgname;
+
   const { image_url } = await runpodService.runPod(
-    content.orgname,
-    content.id,
-    run.id,
+    runId,
     "y55cw5fvbum8q6",
     input
   );
@@ -31,17 +33,14 @@ export const processTextToImage = async (
 
   // Convert the remaining base64 string to a buffer
   const buffer = Buffer.from(base64String, "base64");
-  const path = `images/${content.id}.png`;
+  const path = `images/${runId}.png`;
 
   // Use the upload function
-  const url = await storageService.upload(content.orgname, path, {
+  const url = await storageService.upload(orgname, path, {
     buffer: buffer,
     originalname: ospath.basename(path),
     size: buffer.length,
   } as Express.Multer.File);
-
-  await contentService.updateRaw(content.orgname, content.id, {
-    previewImage: url,
-    url,
-  });
+  logger.log(`Text to image completed and uploaded for run ${runId}`);
+  return url;
 };

@@ -16,13 +16,7 @@ export class RunpodService {
     private readonly runsService: RunsService
   ) {}
 
-  async runPod(
-    orgname: string,
-    contentId: string,
-    jobId: string,
-    podId: string,
-    input: any
-  ) {
+  async runPod(jobId: string, podId: string, input: any) {
     // START RUNPOD JOB
     this.logger.log("Running runpod");
     const { data: runpodCreateResponse } = await retry(

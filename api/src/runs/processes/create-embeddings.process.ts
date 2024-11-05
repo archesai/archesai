@@ -11,10 +11,11 @@ const chunkArray = <T>(array: T[], chunkSize: number): T[][] =>
   );
 
 export const processCreateEmbeddings = async (
-  content: ContentEntity,
+  runId: string,
+  runInputContentIds: ContentEntity[],
   logger: Logger,
-  openAiEmbeddingsService: OpenAiEmbeddingsService,
-  contentService: ContentService
+  contentService: ContentService,
+  openAiEmbeddingsService: OpenAiEmbeddingsService
 ) => {
   const t1 = Date.now();
   let embeddings = [] as {

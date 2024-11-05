@@ -2,30 +2,33 @@ import { ContentService } from "@/src/content/content.service";
 import { ContentEntity } from "@/src/content/entities/content.entity";
 import { SpeechService } from "@/src/speech/speech.service";
 import { StorageService } from "@/src/storage/storage.service";
+import { Logger } from "@nestjs/common";
 
 export const processTextToSpeech = async (
-  content: ContentEntity,
+  runId: string,
+  runInputContents: ContentEntity[],
+  logger: Logger,
+  contentService: ContentService,
   storageService: StorageService,
-  speechService: SpeechService,
-  contentService: ContentService
+  speechService: SpeechService
 ) => {
-  const textContent = await contentService.findAll(content.id, {});
+  logger.log(`Processing text to speech for run ${runId}`);
   const audioBuffer = await speechService.generateSpeech(
-    textContent.results.map((x) => x.text).join(" ")
+    runInputContents.map((x) => x.text).join(" ")
   );
+
   const multerFile = {
     buffer: audioBuffer,
     mimetype: "audio/mpeg",
-    originalname: `${content.name}.mp3`,
+    originalname: `${runId}.mp3`,
     size: audioBuffer.length,
   } as Express.Multer.File;
   const url = await storageService.upload(
-    content.orgname,
-    `contents/${content.name}.mp3`,
+    runInputContents[0].orgname,
+    `contents/${runId}.mp3`,
     multerFile
   );
-  // await contentService.updateRaw(content.orgname, content.id, {
-  //   audio: url,
-  // });
-  console.log(url);
+
+  logger.log(`Text to speech completed and uploaded for run ${runId}`);
+  return url;
 };

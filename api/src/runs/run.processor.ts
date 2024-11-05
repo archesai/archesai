@@ -85,41 +85,47 @@ export class RunProcessor extends WorkerHost {
     switch (tool.name) {
       case "extract-text":
         return processExtractText(
-          content,
+          job.id,
+          [content],
           this.logger,
-          this.loaderService,
           this.contentService,
+          this.loaderService,
           this.storageService
         );
       case "text-to-image":
         return processTextToImage(
-          content,
-          job.data.job,
+          job.id,
+          [content],
+          this.logger,
+          this.contentService,
           this.runpodService,
-          this.storageService,
-          this.contentService
+          this.storageService
         );
       case "text-to-speech":
         return processTextToSpeech(
-          content,
+          job.id,
+          [content],
+          this.logger,
+          this.contentService,
           this.storageService,
-          this.speechService,
-          this.contentService
+          this.speechService
         );
       case "summarize":
         return processSummarize(
-          content,
+          job.id,
+          [content],
           this.logger,
-          this.loaderService,
           this.contentService,
+          this.loaderService,
           this.llmService
         );
       case "create-embeddings":
         return processCreateEmbeddings(
-          content,
+          job.id,
+          [content],
           this.logger,
-          this.openAiEmbeddingsService,
-          this.contentService
+          this.contentService,
+          this.openAiEmbeddingsService
         );
       default:
         this.logger.error(`Unknown toolId ${job.name}`);

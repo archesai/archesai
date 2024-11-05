@@ -6,10 +6,11 @@ import { ContentEntity } from "../../content/entities/content.entity";
 import { LoaderService } from "../../loader/loader.service";
 
 export const processExtractText = async (
-  content: ContentEntity,
+  runId: string,
+  runInputContentIds: ContentEntity[],
   logger: Logger,
-  loaderService: LoaderService,
   contentService: ContentService,
+  loaderService: LoaderService,
   storageService: StorageService
 ) => {
   // hit loader endpoint
