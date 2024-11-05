@@ -26,7 +26,7 @@ export const TabsSection = () => {
           console.log(tab.href, activeTab, isActive);
           return (
             <TabsTrigger
-              className={`relative h-8 font-normal shadow-none transition-all hover:bg-gray-200 hover:dark:bg-gray-900 [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}`}
+              className={`relative h-8 font-normal shadow-none transition-all hover:bg-muted [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}`}
               key={tab.href}
               onClick={() => {
                 router.push(tab.href);

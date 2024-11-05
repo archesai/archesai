@@ -260,15 +260,15 @@ export function DataTable<
         // THIS IS THE CREATE FORM CARD
       }
       {createForm ? (
-        <Card
-          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-gray-200 hover:dark:bg-gray-900`}
+        <div
+          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-muted`}
           onClick={async () => {
             setFormOpen(true);
           }}
         >
           <PlusSquare className="w-h-6 h-6 text-primary" />
           <span className="text-md">Create {itemType}</span>
-        </Card>
+        </div>
       ) : null}
       {
         // THIS IS THE DATA CARDS
@@ -277,7 +277,7 @@ export function DataTable<
         const isItemSelected = selectedItems.includes(item.id);
         return (
           <Card
-            className={`relative flex aspect-auto h-64 flex-col shadow-sm hover:bg-gray-200 hover:dark:bg-gray-900 ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            className={`relative flex aspect-auto h-64 flex-col shadow-sm transition-all hover:bg-muted ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={i}
           >
             {
@@ -376,7 +376,7 @@ export function DataTable<
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
-                className="transition-all hover:bg-gray-200 hover:dark:bg-gray-900"
+                className="transition-all hover:bg-muted"
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >
