@@ -41,7 +41,7 @@ export function RecentThreads() {
       <SidebarGroupLabel>Recent Threads</SidebarGroupLabel>
       <SidebarMenu>
         {threads?.results?.map((thread) => (
-          <SidebarMenuItem key={thread.name}>
+          <SidebarMenuItem key={thread.id}>
             <SidebarMenuButton asChild>
               <Link href={`/chatbots/chat?threadId=${thread.id}`}>
                 <ListMinus />

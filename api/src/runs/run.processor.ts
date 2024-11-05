@@ -11,7 +11,6 @@ import { OrganizationsService } from "../organizations/organizations.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import { ToolEntity } from "../tools/entities/tool.entity";
 import { processCreateEmbeddings } from "./processes/create-embeddings.process";
 import { processExtractText } from "./processes/extract-text.process";
 import { processSummarize } from "./processes/summarize.process";
@@ -40,27 +39,19 @@ export class RunProcessor extends WorkerHost {
 
   @OnWorkerEvent("active")
   async onActive(job: Job) {
-    const content = job.data.content as ContentEntity;
-    const toolId = job.data.toolId as ToolEntity;
-    this.logger.log(
-      `Processing job ${job.id} for content ${content.id} with tool ${toolId}`
-    );
+    this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
     await this.runsService.updateStatus(job.id.toString(), "PROCESSING");
   }
 
   @OnWorkerEvent("completed")
   async onCompleted(job: Job) {
-    const content = job.data.content as ContentEntity;
-    this.logger.log(`Completed job ${job.id} for content ${content.id}`);
+    this.logger.log(`Completed job ${job.id}`);
     await this.runsService.updateStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
   async onError(job: Job, error: any) {
-    const content = job.data.content as ContentEntity;
-    this.logger.error(
-      `Failed job ${job.id} for content ${content.id}: ${error?.message}`
-    );
+    this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
       await this.runsService.updateStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
@@ -69,10 +60,7 @@ export class RunProcessor extends WorkerHost {
 
   @OnWorkerEvent("failed")
   async onFailed(job: Job, error: any) {
-    const content = job.data.content as ContentEntity;
-    this.logger.error(
-      `Failed job ${job.id} for content ${content.id}: ${error?.message}`
-    );
+    this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
       await this.runsService.updateStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
@@ -80,13 +68,12 @@ export class RunProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    const content = job.data.content as ContentEntity;
-    const tool = job.data.tool as ToolEntity;
-    switch (tool.name) {
+    const runInputContents = job.data.runInputContents as ContentEntity[];
+    switch (job.name) {
       case "extract-text":
         return processExtractText(
           job.id,
-          [content],
+          runInputContents,
           this.logger,
           this.contentService,
           this.loaderService,
@@ -95,7 +82,7 @@ export class RunProcessor extends WorkerHost {
       case "text-to-image":
         return processTextToImage(
           job.id,
-          [content],
+          runInputContents,
           this.logger,
           this.contentService,
           this.runpodService,
@@ -104,7 +91,7 @@ export class RunProcessor extends WorkerHost {
       case "text-to-speech":
         return processTextToSpeech(
           job.id,
-          [content],
+          runInputContents,
           this.logger,
           this.contentService,
           this.storageService,
@@ -113,7 +100,7 @@ export class RunProcessor extends WorkerHost {
       case "summarize":
         return processSummarize(
           job.id,
-          [content],
+          runInputContents,
           this.logger,
           this.contentService,
           this.loaderService,
@@ -122,7 +109,7 @@ export class RunProcessor extends WorkerHost {
       case "create-embeddings":
         return processCreateEmbeddings(
           job.id,
-          [content],
+          runInputContents,
           this.logger,
           this.contentService,
           this.openAiEmbeddingsService

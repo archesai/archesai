@@ -14,11 +14,13 @@ export const processSummarize = async (
   loaderService: LoaderService,
   llmService: LLMService
 ) => {
+  logger.log(`Summarizing content for run ${runId}`);
   const start = Date.now();
   const c = loaderService.getFirstTokens(
-    runInputContents.map((x) => x.text),
+    runInputContents.map((x) => x.text).filter((x) => x),
     3000
   );
+  logger.log(`Got first tokens for content for run ${runId}`);
   const { summary } = await retry(
     logger,
     async () => await llmService.createSummary(c),

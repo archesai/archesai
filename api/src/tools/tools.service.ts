@@ -65,7 +65,8 @@ export class ToolsService
     toolId: string,
     runToolDto: RunToolDto
   ): Promise<RunEntity> {
-    return this.runsService.runTool(orgname, toolId, runToolDto);
+    const tool = await this.toolsRepository.findOne(toolId);
+    return this.runsService.runTool(orgname, tool, runToolDto);
   }
 
   async update(orgname: string, id: string, updateToolDto: UpdateToolDto) {

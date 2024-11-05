@@ -7,7 +7,9 @@ import { FlowProducer, Queue } from "bullmq";
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
 import { ContentService } from "../content/content.service";
+import { ContentEntity } from "../content/entities/content.entity";
 import { RunToolDto } from "../tools/dto/run-tool.dto";
+import { ToolEntity } from "../tools/entities/tool.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { RunQueryDto } from "./dto/run-query.dto";
 import { RunEntity } from "./entities/run.entity";
@@ -70,7 +72,7 @@ export class RunsService
     return new RunEntity(run);
   }
 
-  async runTool(orgname: string, toolId: string, runToolDto: RunToolDto) {
+  async runTool(orgname: string, tool: ToolEntity, runToolDto: RunToolDto) {
     if (runToolDto.runInputContentIds) {
       // vefify that the content exists
       for (const contentId of runToolDto.runInputContentIds) {
@@ -94,16 +96,30 @@ export class RunsService
 
     const run = await this.runRepository.createToolRun(
       orgname,
-      toolId,
+      tool.id,
       runToolDto
     );
+
+    const runInputContents: ContentEntity[] = [];
+    for (const contentId of runToolDto.runInputContentIds) {
+      runInputContents.push(await this.contentService.findOne(contentId));
+    }
 
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "runs"],
     });
-    const runEntity = new RunEntity(run);
-    // await this.runQueue.add("as", runEntity);
-    return runEntity;
+
+    await this.runQueue.add(
+      tool.toolBase,
+      {
+        runInputContents,
+      },
+      {
+        jobId: run.id,
+      }
+    );
+
+    return new RunEntity(run);
   }
 
   async setProgress(id: string, progress: number) {
@@ -118,7 +134,9 @@ export class RunsService
 
   async setRunError(id: string, error: string) {
     const run = new RunEntity(await this.runRepository.setRunError(id, error));
-    this.websocketsService.socket.to(run.orgname).emit("update");
+    this.websocketsService.socket.to(run.orgname).emit("update", {
+      queryKey: ["organizations", run.orgname, "runs"],
+    });
     return run;
   }
 
@@ -138,7 +156,9 @@ export class RunsService
     const run = new RunEntity(
       await this.runRepository.updateStatus(id, status)
     );
-    this.websocketsService.socket.to(run.orgname).emit("update");
+    this.websocketsService.socket.to(run.orgname).emit("update", {
+      queryKey: ["organizations", run.orgname, "runs"],
+    });
     return run;
   }
 }

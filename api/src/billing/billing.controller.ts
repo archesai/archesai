@@ -269,7 +269,9 @@ export class BillingController {
         );
       }
 
-      this.websocketsService.socket.to(orgname).emit("update");
+      this.websocketsService.socket.to(orgname).emit("update", {
+        queryKey: ["organizations", orgname, "billing"],
+      });
     }
 
     await this.billingService.detachPaymentMethod(paymentMethodId);
