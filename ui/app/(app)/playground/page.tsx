@@ -11,7 +11,6 @@ import { PresetSave } from "./components/preset-save";
 import { PresetSelector } from "./components/preset-selector";
 import { PresetShare } from "./components/preset-share";
 import { TopPSelector } from "./components/top-p-selector";
-import { models, types } from "./data/models";
 import { presets } from "./data/presets";
 
 export const metadata: Metadata = {
@@ -43,7 +42,7 @@ export default function PlaygroundPage() {
           // SIDEBAR
         }
         <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-          <ModelSelector models={models} types={types} />
+          <ModelSelector />
           <TopPSelector defaultValue={[0.9]} />
         </div>
 
@@ -57,14 +56,18 @@ export default function PlaygroundPage() {
                 <div className="flex flex-1 flex-col space-y-2">
                   <Label htmlFor="input">Input</Label>
                   <Textarea
-                    className="flex-1 lg:min-h-[580px]"
+                    className="flex-1"
                     id="input"
                     placeholder="We is going to the market."
                   />
                 </div>
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-1 flex-col space-y-2">
                   <Label htmlFor="instructions">Instructions</Label>
-                  <Textarea id="instructions" placeholder="Fix the grammar." />
+                  <Textarea
+                    className="flex-1"
+                    id="instructions"
+                    placeholder="Fix the grammar."
+                  />
                 </div>
               </div>
               <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />

@@ -25,10 +25,7 @@ import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { PopoverProps } from "@radix-ui/react-popover";
 import * as React from "react";
-
-import { Model, ModelType } from "../data/models";
 
 const useMutationObserver = (
   ref: React.MutableRefObject<HTMLElement | null>,
@@ -49,12 +46,7 @@ const useMutationObserver = (
   }, [ref, callback, options]);
 };
 
-interface ModelSelectorProps extends PopoverProps {
-  models: Model[];
-  types: readonly ModelType[];
-}
-
-export function ModelSelector({ ...props }: ModelSelectorProps) {
+export function ModelSelector({ ...props }) {
   const [open, setOpen] = React.useState(false);
   const [selectedModel, setSelectedModel] = React.useState<ToolEntity>();
   const [peekedModel, setPeekedModel] = React.useState<ToolEntity>();
