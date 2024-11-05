@@ -32,19 +32,14 @@ export const siteConfig = {
       description: "Try out your tools here. If you like them, save them.",
       href: "/playground",
       Icon: SquareTerminal,
+      section: "Build",
       title: "Playground",
     },
     {
       description: "Browse and manage your content here.",
-      // children: [
-      //   {
-      //     href: "/content/view",
-      //     Icon: Server,
-      //     title: "Browse",
-      //   },
-      // ],
       href: "/content/view",
       Icon: Server,
+      section: "Explore",
       title: "Content",
     },
     {
@@ -66,6 +61,7 @@ export const siteConfig = {
       description: "Explore and run tools.",
       href: "/tools",
       Icon: PackageCheck,
+      section: "Build",
       title: "Tools",
     },
     {
@@ -80,6 +76,7 @@ export const siteConfig = {
       description: "Create and manage pipelines.",
       href: "/pipelines",
       Icon: Workflow,
+      section: "Build",
       title: "Pipelines",
     },
     {
@@ -99,6 +96,7 @@ export const siteConfig = {
       description: "Create and manage chatbots.",
       href: "/chatbots",
       Icon: MessageSquare,
+      section: "Studio",
       title: "Chat",
     },
     {
@@ -121,6 +119,7 @@ export const siteConfig = {
       description: "View your profile information.",
       href: "/profile",
       Icon: User,
+      section: "Settings",
       title: "Account",
     },
     {
@@ -158,6 +157,7 @@ export const siteConfig = {
       ],
       href: "/organization",
       Icon: Settings2,
+      section: "Settings",
       title: "Settings",
     },
   ],

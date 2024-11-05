@@ -949,7 +949,7 @@ export type RunEntity = {
    * The timestamp when the run completed
    *
    * @format date-time
-   * @example 2024-11-05T11:28:21.029Z
+   * @example 2024-11-05T11:42:02.258Z
    */
   completedAt?: string;
   /**
@@ -989,7 +989,7 @@ export type RunEntity = {
    * The timestamp when the run started
    *
    * @format date-time
-   * @example 2024-11-05T11:28:21.030Z
+   * @example 2024-11-05T11:42:02.258Z
    */
   startedAt?: string;
   /**

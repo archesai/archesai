@@ -21,7 +21,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher />
       </SidebarHeader>
       <hr />
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         <NavMain />
         <RecentThreads />
       </SidebarContent>

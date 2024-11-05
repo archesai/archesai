@@ -15,7 +15,7 @@ import { BaseEntity } from "../../common/base-entity.dto"; // Assuming these enu
 export class RunEntity extends BaseEntity {
   @ApiProperty({
     description: "The timestamp when the run completed",
-    example: new Date().toISOString(),
+    example: "2024-11-05T11:42:02.258Z",
     required: false,
     type: Date,
   })
@@ -81,7 +81,7 @@ export class RunEntity extends BaseEntity {
 
   @ApiProperty({
     description: "The timestamp when the run started",
-    example: new Date().toISOString(),
+    example: "2024-11-05T11:42:02.258Z",
     required: false,
     type: Date,
   })
