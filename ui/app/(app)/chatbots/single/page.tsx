@@ -32,12 +32,10 @@ import {
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { ThreadEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
-import { useFullScreen } from "@/hooks/useFullScreen";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { Bolt, Layers, RefreshCcw } from "lucide-react";
-import { Maximize, Minimize } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
@@ -168,7 +166,6 @@ export default function ChatbotChatPage() {
   const [open, setOpen] = useState(false);
   const [, setSelectedContent] = useState<ContentEntity[]>([]);
 
-  const { isFullScreen, toggleFullscreen } = useFullScreen();
   const [showConfiguration, setShowConfiguration] = useState(true);
   const [showThreads, setShowThreads] = useState(false);
 
@@ -176,18 +173,6 @@ export default function ChatbotChatPage() {
     <div className="relative flex h-full gap-6">
       {/* Full Screen Button */}
       <div className="absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex">
-        <Button
-          className={`${isFullScreen ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
-          onClick={toggleFullscreen}
-          size="icon"
-          variant={"ghost"}
-        >
-          {isFullScreen ? (
-            <Minimize className="h-5 w-5" />
-          ) : (
-            <Maximize className="h-5 w-5" />
-          )}
-        </Button>
         <Button
           className={`${showThreads ? "bg-muted text-primary hover:text-primary" : "text-muted-foreground hover:text-primary"}`}
           onClick={() => {

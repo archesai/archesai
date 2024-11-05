@@ -76,25 +76,22 @@ export function CommandMenu({ ...props }: DialogProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {Object.entries(siteConfig.links).map(([heading, links]) => (
-            <CommandGroup
-              heading={heading.charAt(0).toUpperCase() + heading.slice(1)}
-              key={heading}
-            >
-              {links.map((navItem) => (
+          {siteConfig.routes.map((rootRoute) => (
+            <CommandGroup heading={rootRoute.title} key={rootRoute.title}>
+              {rootRoute.children.map((route) => (
                 <CommandItem
                   className="flex gap-2"
-                  key={navItem.href}
+                  key={route.href}
                   onClick={() => {
-                    runCommand(() => router.push(navItem.href as string));
+                    runCommand(() => router.push(route.href as string));
                   }}
                   onSelect={() => {
-                    runCommand(() => router.push(navItem.href as string));
+                    runCommand(() => router.push(route.href as string));
                   }}
-                  value={navItem.title}
+                  value={route.title}
                 >
-                  <navItem.Icon className="h-5 w-5" />
-                  <span>{navItem.title}</span>
+                  <route.Icon className="h-5 w-5" />
+                  <span>{route.title}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -1,9 +1,9 @@
 "use client";
+import { useSidebar } from "@/components/ui/sidebar";
 import { useOrganizationsControllerFindOne } from "@/generated/archesApiComponents";
-import { useSidebar } from "@/hooks/useSidebar";
 
 export const CreditQuota = () => {
-  const { isCollapsed } = useSidebar();
+  const { open } = useSidebar();
   const { defaultOrgname } = useAuth();
   const { data: organization } = useOrganizationsControllerFindOne({
     pathParams: {
@@ -11,7 +11,7 @@ export const CreditQuota = () => {
     },
   });
 
-  if (isCollapsed) {
+  if (!open) {
     return (
       <CreditCircularChart
         remaining={organization?.credits || 0}

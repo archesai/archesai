@@ -1,12 +1,12 @@
 import {
-  Award,
+  // Award,
   // Bolt,
   Building2,
-  Compass,
+  // Compass,
   CreditCard,
-  DollarSign,
-  HelpCircle,
-  HomeIcon,
+  // DollarSign,
+  // HelpCircle,
+  // HomeIcon,
   KeySquare,
   // Layers,
   Lock,
@@ -21,155 +21,119 @@ import {
 export const siteConfig = {
   description:
     "Beautifully designed components that you can copy and paste into your apps. Accessible. Customizable. Open Source.",
-  links: {
-    "/": [
-      {
-        href: "/#features",
-        Icon: Compass,
-        title: "Features",
-      },
-      {
-        href: "/#testimonials",
-        Icon: Award,
-        title: "Testimonials",
-      },
-      {
-        href: "/#pricing",
-        Icon: DollarSign,
-        title: "Pricing",
-      },
-      {
-        badge: undefined,
-        href: "/#faq",
-        Icon: HelpCircle,
-        title: "FAQ",
-      },
-    ],
-    "/chatbots": [
-      {
-        href: "/chatbots",
-        Icon: MessageSquare,
-        section: "studio",
-        title: "Chatbot",
-      },
-    ],
-    "/chatbots/single": [
-      {
-        href: "/chatbots/single",
-        Icon: MessageSquare,
-        title: "Chat",
-      },
-    ],
-    "/content": [
-      {
-        href: "/content",
-        Icon: Server,
-        section: "data",
-        title: "Content",
-      },
-    ],
-    "/content/single": [
-      {
-        href: "/content/single",
-        Icon: Server,
-        title: "Details",
-      },
-    ],
-    "/home": [
-      {
-        href: "/home",
-        Icon: HomeIcon,
-        section: "home",
-        title: "Home",
-      },
-    ],
-
-    "/organization": [
-      {
-        href: "/organization",
-        Icon: Building2,
-        section: "settings",
-        title: "Organization",
-      },
-      {
-        href: "/organization/general",
-        Icon: Building2,
-        tab: "General",
-        title: "Organization",
-      },
-      {
-        href: "/organization/billing",
-        Icon: CreditCard,
-        tab: "Billing",
-        title: "Billing",
-      },
-      {
-        href: "/organization/members",
-        Icon: Users,
-        tab: "Members",
-        title: "Members",
-      },
-      {
-        href: "/organization/api-tokens",
-        Icon: Lock,
-        tab: "API Tokens",
-        title: "API Tokens",
-      },
-    ],
-    "/pipelines": [
-      {
-        href: "/pipelines",
-        Icon: Workflow,
-        section: "manage",
-        title: "Pipelines",
-      },
-    ],
-    "/profile": [
-      {
-        href: "/profile",
-        Icon: User,
-        section: "settings",
-        title: "Profile",
-      },
-      {
-        href: "/profile/general",
-        Icon: User,
-        tab: "General",
-        title: "Profile",
-      },
-      {
-        href: "/profile/security",
-        Icon: KeySquare,
-        tab: "Security",
-        title: "Security",
-      },
-    ],
-    "/tools": [
-      {
-        href: "/tools",
-        Icon: PackageCheck,
-        section: "manage",
-        tab: "All",
-        title: "Tools",
-      },
-      {
-        href: "/tools/runs",
-        Icon: PackageCheck,
-        tab: "Runs",
-      },
-    ],
-  } as Record<
-    string,
-    {
-      href: string;
-      Icon: any;
-      section?: string;
-      tab?: string;
-      title: string;
-    }[]
-  >,
   name: "Arches AI",
   ogImage: "https://ui.shadcn.com/og.jpg",
+  routes: [
+    {
+      children: [
+        {
+          href: "/chatbots/view",
+          Icon: MessageSquare,
+          title: "View",
+        },
+      ],
+      href: "/chatbots",
+      Icon: MessageSquare,
+      title: "Chatbots",
+    },
+    {
+      children: [
+        {
+          href: "/content/view",
+          Icon: Server,
+          title: "View",
+        },
+        {
+          href: "/content/single",
+          Icon: Server,
+          title: "View Single Content",
+        },
+      ],
+      href: "/content",
+      Icon: Server,
+      title: "Content",
+    },
+    {
+      children: [
+        {
+          href: "/organization/general",
+          Icon: Building2,
+          showInTabs: true,
+          title: "General",
+        },
+        {
+          href: "/organization/billing",
+          Icon: CreditCard,
+          showInTabs: true,
+          title: "Billing",
+        },
+        {
+          href: "/organization/members",
+          Icon: Users,
+          showInTabs: true,
+
+          title: "Members",
+        },
+        {
+          href: "/organization/api-tokens",
+          Icon: Lock,
+          showInTabs: true,
+          title: "API Tokens",
+        },
+      ],
+      href: "/organization",
+      Icon: Building2,
+      title: "Organization",
+    },
+    {
+      children: [
+        {
+          href: "/pipelines/view",
+          Icon: Workflow,
+          title: "View Pipelines",
+        },
+      ],
+      href: "/pipelines",
+      Icon: Workflow,
+      title: "Pipelines",
+    },
+    {
+      children: [
+        {
+          href: "/profile/general",
+          Icon: User,
+          showInTabs: true,
+          title: "General",
+        },
+        {
+          href: "/profile/security",
+          Icon: KeySquare,
+          showInTabs: true,
+          title: "Security",
+        },
+      ],
+      href: "/profile",
+      Icon: User,
+      title: "Profile",
+    },
+    {
+      children: [
+        {
+          href: "/tools/view",
+          Icon: PackageCheck,
+          title: "View Tools",
+        },
+        {
+          href: "/tools/runs",
+          Icon: PackageCheck,
+          title: "View Tool Runs",
+        },
+      ],
+      href: "/tools",
+      Icon: PackageCheck,
+      title: "Tools",
+    },
+  ],
   url: "https://archesai.com",
 };
 
