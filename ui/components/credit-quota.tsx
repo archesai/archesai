@@ -25,7 +25,9 @@ export const CreditQuota = () => {
         <div className="font-semibold">Credit Usage</div>
         <div>
           <Link className="outline-black" href="/organization/billing">
-            <Badge>Upgrade</Badge>
+            <Badge className="text-primary" variant="secondary">
+              Upgrade
+            </Badge>
           </Link>
         </div>
       </div>

@@ -29,11 +29,7 @@ export default function ApiTokensPageContent() {
           accessorKey: "role",
           cell: ({ row }) => {
             return (
-              <Badge
-                variant={
-                  row.original.role === "ADMIN" ? "default" : "secondary"
-                }
-              >
+              <Badge className="text-primary" variant="secondary">
                 {row.original.role}
               </Badge>
             );

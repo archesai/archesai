@@ -71,7 +71,10 @@ export default function ContentPage() {
                 <div className="flex gap-1">
                   {row.original.pipelineTools?.map((pipelineTool) => {
                     return (
-                      <Badge className="text-nowrap" variant={"secondary"}>
+                      <Badge
+                        className="text-nowrap text-primary"
+                        variant="secondary"
+                      >
                         {pipelineTool.tool}
                       </Badge>
                     );

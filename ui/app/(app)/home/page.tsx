@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 const cardData = [
   {
     buttonText: "Manage Content",
-    colorClass: "text-blue-500", // Blue for file handling and imports
+    colorClass: "text-primary", // Blue for file handling and imports
     description: "View and manage your content.",
     icon: Server,
     link: "/content",
@@ -22,7 +22,7 @@ const cardData = [
   },
   {
     buttonText: "Create Image",
-    colorClass: "text-blue-500", // Pink for creativity and AI-generated content
+    colorClass: "text-primary", // Pink for creativity and AI-generated content
     description: "Create images using generative AI.",
     icon: Image,
     link: "/images",
@@ -30,7 +30,7 @@ const cardData = [
   },
   {
     buttonText: "Create Chatbot",
-    colorClass: "text-blue-500", // Purple for AI and communication-based features
+    colorClass: "text-primary", // Purple for AI and communication-based features
     description: "Set up a chatbot using imported data.",
     icon: MessageSquareIcon,
     link: "/chatbots",

@@ -26,7 +26,11 @@ export default function MembersPageContent() {
         {
           accessorKey: "role",
           cell: ({ row }) => {
-            return <Badge variant="outline">{row.original.role}</Badge>;
+            return (
+              <Badge className="text-primary" variant="secondary">
+                {row.original.role}
+              </Badge>
+            );
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Role" />

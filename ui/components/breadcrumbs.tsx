@@ -35,7 +35,7 @@ export const Breadcrumbs = () => {
   return (
     <Breadcrumb className="hidden text-sm md:flex">
       <BreadcrumbList>
-        <Icon className="h-5 w-5 text-gray-400" />
+        <Icon className="h-5 w-5 text-primary opacity-80" />
 
         {/* {pathnames.map((value, index) => {
           const to = `/${pathnames.slice(0, index + 1).join("/")}`;
