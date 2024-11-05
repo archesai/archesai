@@ -62,10 +62,10 @@ export default function AppLayout({
           <div className="flex-1 overflow-auto p-4">
             {description && (
               <div className="flex h-16 flex-col">
-                <div className="text-xl font-semibold text-gray-700">
+                <div className="text-xl font-semibold text-foreground">
                   {title}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   {description}
                 </div>
               </div>

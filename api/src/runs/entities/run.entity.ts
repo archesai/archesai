@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { RunStatus, RunType } from "@prisma/client";
+import { Run, RunStatus, RunType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import {
   IsDate,
@@ -12,7 +12,7 @@ import {
 import { BaseEntity } from "../../common/base-entity.dto"; // Assuming these enums are defined in your Prisma schema
 
 @Exclude()
-export class RunEntity extends BaseEntity {
+export class RunEntity extends BaseEntity implements Run {
   @ApiProperty({
     description: "The timestamp when the run completed",
     example: "2024-11-05T11:42:02.258Z",

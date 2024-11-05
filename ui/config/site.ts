@@ -29,7 +29,7 @@ export const siteConfig = {
   ogImage: "https://ui.shadcn.com/og.jpg",
   routes: [
     {
-      description: "Try out your tools here. If you like them, save them.",
+      description: "Try out your tools here.",
       href: "/playground",
       Icon: SquareTerminal,
       section: "Build",

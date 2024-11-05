@@ -19,7 +19,12 @@ export default function PlaygroundPage() {
   const { mutateAsync: runTool } = useToolsControllerRun();
   const { defaultOrgname } = useAuth();
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div
+      className="flex flex-col gap-4"
+      style={{
+        height: "calc(100% - 64px)",
+      }}
+    >
       {
         // TOP PART
       }
@@ -48,9 +53,9 @@ export default function PlaygroundPage() {
         {
           // MAIN CONTENT
         }
-        <div className="md:order-1">
-          <div className="flex flex-col space-y-4">
-            <div className="grid h-full gap-6 lg:grid-cols-2">
+        <div className="flex flex-1 md:order-1">
+          <div className="flex flex-1 flex-col space-y-4">
+            <div className="grid flex-1 gap-6 lg:grid-cols-2">
               <div className="flex flex-col space-y-4">
                 <div className="flex flex-1 flex-col space-y-2">
                   <Label htmlFor="input">Input</Label>
@@ -69,7 +74,7 @@ export default function PlaygroundPage() {
                   />
                 </div>
               </div>
-              <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
+              <div className="rounded-md border bg-muted" />
             </div>
             <div className="flex items-center space-x-2">
               <Button

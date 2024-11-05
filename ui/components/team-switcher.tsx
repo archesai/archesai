@@ -70,7 +70,9 @@ export function TeamSwitcher() {
               }
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <LogoSVG scale={0.1} size="sm" />
+                <div className="-mt-0.5">
+                  <LogoSVG scale={0.1} size="sm" />
+                </div>
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">

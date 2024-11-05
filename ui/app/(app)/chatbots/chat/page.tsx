@@ -239,7 +239,6 @@ export default function ChatbotChatPage() {
 
         {/* Input Form */}
         <form
-          className="h-16 flex-shrink-0"
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
