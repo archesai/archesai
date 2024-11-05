@@ -15,7 +15,9 @@ export function PresetSave() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Save</Button>
+        <Button size={"sm"} variant="secondary">
+          Save
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[475px]">
         <DialogHeader>

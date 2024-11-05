@@ -39,6 +39,7 @@ export function PresetSelector({ presets, ...props }: PresetSelectorProps) {
           aria-label="Load a preset..."
           className="flex-1 justify-between md:max-w-[200px] lg:max-w-[300px]"
           role="combobox"
+          size="sm"
           variant="outline"
         >
           {selectedPreset ? selectedPreset.name : "Load a preset..."}

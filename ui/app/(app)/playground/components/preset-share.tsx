@@ -12,7 +12,9 @@ export function PresetShare() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="secondary">Share</Button>
+        <Button size="sm" variant="secondary">
+          Share
+        </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[520px]">
         <div className="flex flex-col space-y-2 text-center sm:text-left">

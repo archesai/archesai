@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function PlaygroundPage() {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col gap-4">
       {
         // TOP PART
       }
@@ -41,50 +41,45 @@ export default function PlaygroundPage() {
       {
         // MAIN
       }
-      <div className="container h-full py-6">
-        <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
-          {
-            // SIDEBAR
-          }
-          <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-            <ModelSelector models={models} types={types} />
-            <TemperatureSelector defaultValue={[0.56]} />
-            <MaxLengthSelector defaultValue={[256]} />
-            <TopPSelector defaultValue={[0.9]} />
-          </div>
+      <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
+        {
+          // SIDEBAR
+        }
+        <div className="hidden flex-col space-y-4 sm:flex md:order-2">
+          <ModelSelector models={models} types={types} />
+          <TemperatureSelector defaultValue={[0.56]} />
+          <MaxLengthSelector defaultValue={[256]} />
+          <TopPSelector defaultValue={[0.9]} />
+        </div>
 
-          {
-            // MAIN CONTENT
-          }
-          <div className="md:order-1">
-            <div className="flex flex-col space-y-4">
-              <div className="grid h-full gap-6 lg:grid-cols-2">
-                <div className="flex flex-col space-y-4">
-                  <div className="flex flex-1 flex-col space-y-2">
-                    <Label htmlFor="input">Input</Label>
-                    <Textarea
-                      className="flex-1 lg:min-h-[580px]"
-                      id="input"
-                      placeholder="We is going to the market."
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <Label htmlFor="instructions">Instructions</Label>
-                    <Textarea
-                      id="instructions"
-                      placeholder="Fix the grammar."
-                    />
-                  </div>
+        {
+          // MAIN CONTENT
+        }
+        <div className="md:order-1">
+          <div className="flex flex-col space-y-4">
+            <div className="grid h-full gap-6 lg:grid-cols-2">
+              <div className="flex flex-col space-y-4">
+                <div className="flex flex-1 flex-col space-y-2">
+                  <Label htmlFor="input">Input</Label>
+                  <Textarea
+                    className="flex-1 lg:min-h-[580px]"
+                    id="input"
+                    placeholder="We is going to the market."
+                  />
                 </div>
-                <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="instructions">Instructions</Label>
+                  <Textarea id="instructions" placeholder="Fix the grammar." />
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button>Submit</Button>
-                <Button variant="secondary">
-                  <span className="sr-only">Show history</span>
-                  <CounterClockwiseClockIcon className="h-4 w-4" />
-                </Button>
-              </div>
+              <div className="mt-[21px] min-h-[400px] rounded-md border bg-muted lg:min-h-[700px]" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button>Submit</Button>
+              <Button variant="secondary">
+                <span className="sr-only">Show history</span>
+                <CounterClockwiseClockIcon className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
