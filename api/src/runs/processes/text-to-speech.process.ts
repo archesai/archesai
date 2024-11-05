@@ -1,15 +1,15 @@
+import { ContentService } from "@/src/content/content.service";
 import { ContentEntity } from "@/src/content/entities/content.entity";
 import { SpeechService } from "@/src/speech/speech.service";
 import { StorageService } from "@/src/storage/storage.service";
-import { TextChunksService } from "@/src/text-chunks/text-chunks.service";
 
 export const processTextToSpeech = async (
   content: ContentEntity,
   storageService: StorageService,
   speechService: SpeechService,
-  textChunksService: TextChunksService
+  contentService: ContentService
 ) => {
-  const textContent = await textChunksService.findAll(content.id, {});
+  const textContent = await contentService.findAll(content.id, {});
   const audioBuffer = await speechService.generateSpeech(
     textContent.results.map((x) => x.text).join(" ")
   );

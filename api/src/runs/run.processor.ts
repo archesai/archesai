@@ -11,7 +11,6 @@ import { OrganizationsService } from "../organizations/organizations.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import { TextChunksService } from "../text-chunks/text-chunks.service";
 import { ToolEntity } from "../tools/entities/tool.entity";
 import { processCreateEmbeddings } from "./processes/create-embeddings.process";
 import { processExtractText } from "./processes/extract-text.process";
@@ -34,7 +33,6 @@ export class RunProcessor extends WorkerHost {
     private loaderService: LoaderService,
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
-    private textChunksService: TextChunksService,
     private speechService: SpeechService
   ) {
     super();
@@ -91,8 +89,7 @@ export class RunProcessor extends WorkerHost {
           this.logger,
           this.loaderService,
           this.contentService,
-          this.storageService,
-          this.textChunksService
+          this.storageService
         );
       case "text-to-image":
         return processTextToImage(
@@ -107,7 +104,7 @@ export class RunProcessor extends WorkerHost {
           content,
           this.storageService,
           this.speechService,
-          this.textChunksService
+          this.contentService
         );
       case "summarize":
         return processSummarize(
@@ -115,15 +112,14 @@ export class RunProcessor extends WorkerHost {
           this.logger,
           this.loaderService,
           this.contentService,
-          this.llmService,
-          this.textChunksService
+          this.llmService
         );
       case "create-embeddings":
         return processCreateEmbeddings(
           content,
           this.logger,
-          this.textChunksService,
-          this.openAiEmbeddingsService
+          this.openAiEmbeddingsService,
+          this.contentService
         );
       default:
         this.logger.error(`Unknown toolId ${job.name}`);

@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "npx eslint --ext .ts,.tsx .",
+    "lint": "npx eslint --ext .ts,.tsx . && npx tsc --noEmit",
     "format": "npx eslint --fix --ext .ts,.tsx .",
     "gen": "npx openapi-codegen gen archesApi"
   },

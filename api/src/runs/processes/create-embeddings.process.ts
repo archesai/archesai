@@ -1,4 +1,4 @@
-import { TextChunksService } from "@/src/text-chunks/text-chunks.service";
+import { ContentService } from "@/src/content/content.service";
 import { Logger } from "@nestjs/common";
 
 import { retry } from "../../common/retry";
@@ -13,15 +13,15 @@ const chunkArray = <T>(array: T[], chunkSize: number): T[][] =>
 export const processCreateEmbeddings = async (
   content: ContentEntity,
   logger: Logger,
-  textChunksService: TextChunksService,
-  openAiEmbeddingsService: OpenAiEmbeddingsService
+  openAiEmbeddingsService: OpenAiEmbeddingsService,
+  contentService: ContentService
 ) => {
   const t1 = Date.now();
   let embeddings = [] as {
     embedding: number[];
     tokens: number;
   }[];
-  const textChunks = await textChunksService.findAll(content.id, {});
+  const textChunks = await contentService.findAll(content.id, {});
   const textContentChunks = chunkArray(textChunks.results, 100);
   for (const textContentChunk of textContentChunks) {
     const embeddingsChunk = await retry(
@@ -46,7 +46,7 @@ export const processCreateEmbeddings = async (
   });
 
   const start = Date.now();
-  await textChunksService.upsertVectors(
+  await contentService.upsertVectors(
     content.orgname,
     content.id,
     populatedTextContent

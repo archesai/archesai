@@ -36,11 +36,6 @@ export class ThreadRepository {
   async create(orgname: string, createThreadDto: CreateThreadDto) {
     return this.prisma.thread.create({
       data: {
-        chatbot: {
-          connect: {
-            id: createThreadDto.chatbotId,
-          },
-        },
         id: createThreadDto.id ? createThreadDto.id : undefined,
         name: createThreadDto.name,
         organization: {
@@ -67,7 +62,7 @@ export class ThreadRepository {
 
   async findAll(orgname: string, threadQueryDto: ThreadQueryDto) {
     const count = await this.prisma.thread.count({
-      where: { chatbotId: threadQueryDto.chatbotId, orgname },
+      where: { orgname },
     });
 
     let aggregates: ThreadAggregates = null as {
@@ -83,7 +78,6 @@ export class ThreadRepository {
               COALESCE(SUM("credits"), 0)::numeric AS "dailyCredits"
           FROM "Thread"
           WHERE "orgname" = ${orgname}
-          AND "chatbotId" = ${threadQueryDto.chatbotId}
           GROUP BY day
           ORDER BY day;
       `;
@@ -121,7 +115,7 @@ export class ThreadRepository {
       },
       skip: threadQueryDto.offset,
       take: threadQueryDto.limit,
-      where: { chatbotId: threadQueryDto.chatbotId, orgname },
+      where: { orgname },
     });
     return { aggregates, count, threads };
   }

@@ -69,14 +69,6 @@ export class OrganizationsService {
     let organization = await this.prisma.organization.create({
       data: {
         ...createOrganizationDto,
-        chatbots: {
-          create: {
-            description:
-              "You are an AI called Arches AI and you are designed to help people understand documents. You always answer the user's question as briefly and concisely as possible, unless the user asks you to elaborate. If the answer was found in the text, you include a direct citation. If the answer was not found in the text, you tell the user. If the user asks something like 'what is this?', they are usually talking about the included documents as a whole. You always respond in the same language that the most recent question was asked. In your citation, do not include any file names",
-            llmBase: "gpt-4",
-            name: "Default",
-          },
-        },
         credits:
           // If this is their first org and their e-mail is verified, give them free credits
           // Otherwise, if billing is disabled, give them free credits

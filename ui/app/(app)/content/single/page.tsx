@@ -1,7 +1,5 @@
 "use client";
 
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,17 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useContentControllerFindOne } from "@/generated/archesApiComponents";
-import {
-  TextChunksControllerFindAllPathParams,
-  useTextChunksControllerFindAll,
-} from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
-import { TextChunkEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
-import { File } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";

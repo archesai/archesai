@@ -1274,13 +1274,6 @@ paths:
           description: The start date to search from
           schema:
             type: string
-        - name: chatbotId
-          required: false
-          in: query
-          description: The chatbot ID
-          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
-          schema:
-            type: string
         - name: aggregateGranularity
           required: false
           in: query
@@ -1534,259 +1527,13 @@ paths:
         - Storage
       security:
         - bearer: []
-  /organizations/{orgname}/chatbots:
-    post:
-      operationId: ChatbotsController_create
-      summary: Create a new chatbot
-      description: Create a new chatbot. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateChatbotDto'
-      responses:
-        '201':
-          description: Successfully created a new chatbot
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChatbotEntity'
-        '400':
-          description: Bad request when creating the chatbot
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    anyOf:
-                      - type: string
-                      - type: array
-                  statusCode:
-                    type: number
-                type: object
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Chatbots
-      security:
-        - bearer: []
-    get:
-      operationId: ChatbotsController_findAll
-      summary: Get all chatbots
-      description: Get all chatbots. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: endDate
-          required: false
-          in: query
-          description: The end date to search to
-          schema:
-            type: string
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            default: 10
-            type: number
-        - name: offset
-          required: false
-          in: query
-          description: The offset of the returned results
-          schema:
-            default: 0
-            type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
-        - name: sortBy
-          required: false
-          in: query
-          description: The field to sort the results by
-          schema:
-            default: createdAt
-            enum:
-              - createdAt
-              - llmBase
-              - name
-            type: string
-        - name: sortDirection
-          required: false
-          in: query
-          description: The direction to sort the results by
-          schema:
-            default: desc
-            enum:
-              - asc
-              - desc
-            type: string
-        - name: startDate
-          required: false
-          in: query
-          description: The start date to search from
-          schema:
-            type: string
-        - name: name
-          required: true
-          in: query
-          description: The name to search for
-          example: Chatbot 1
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully returned paginated results
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
-                  - properties:
-                      results:
-                        items:
-                          $ref: '#/components/schemas/ChatbotEntity'
-                        type: array
-                title: PaginatedResponseOfChatbotEntity
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Chatbots
-      security:
-        - bearer: []
-  /organizations/{orgname}/chatbots/{chatbotId}:
-    get:
-      operationId: ChatbotsController_findOne
-      summary: Get a chatbot
-      description: Get a chatbot. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully retrieved the chatbot
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChatbotEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Chatbots
-      security:
-        - bearer: []
-    delete:
-      operationId: ChatbotsController_remove
-      summary: Delete a chatbot
-      description: Delete a chatbot. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully deleted the chatbot
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Chatbots
-      security:
-        - bearer: []
-    patch:
-      operationId: ChatbotsController_update
-      summary: Update a chatbot
-      description: Update a chatbot. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateChatbotDto'
-      responses:
-        '200':
-          description: Successfully updated the chatbot
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChatbotEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Chatbots
-      security:
-        - bearer: []
-  /organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages:
+  /organizations/{orgname}/threads/{threadId}/messages:
     post:
       operationId: MessagesController_create
       summary: Create a new message
       description: Create a new message. ADMIN ONLY.
       parameters:
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -1870,11 +1617,6 @@ paths:
               - createdAt
             type: string
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: chatbotId
           required: true
           in: path
           schema:
@@ -2139,136 +1881,6 @@ paths:
           description: Not Found
       tags:
         - Content
-      security:
-        - bearer: []
-  /organizations/{orgname}/content/{contentId}/text-chunks:
-    get:
-      operationId: TextChunksController_findAll
-      summary: Get all text chunks
-      description: Get all text chunks. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: endDate
-          required: false
-          in: query
-          description: The end date to search to
-          schema:
-            type: string
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            default: 10
-            type: number
-        - name: offset
-          required: false
-          in: query
-          description: The offset of the returned results
-          schema:
-            default: 0
-            type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
-        - name: sortBy
-          required: false
-          in: query
-          description: The field to sort the results by
-          schema:
-            default: createdAt
-            enum:
-              - createdAt
-            type: string
-        - name: sortDirection
-          required: false
-          in: query
-          description: The direction to sort the results by
-          schema:
-            default: desc
-            enum:
-              - asc
-              - desc
-            type: string
-        - name: startDate
-          required: false
-          in: query
-          description: The start date to search from
-          schema:
-            type: string
-        - name: contentId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully returned paginated results
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
-                  - properties:
-                      results:
-                        items:
-                          $ref: '#/components/schemas/TextChunkEntity'
-                        type: array
-                title: PaginatedResponseOfTextChunkEntity
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content - Text Chunks
-      security:
-        - bearer: []
-  /organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}:
-    get:
-      operationId: TextChunksController_findOne
-      summary: Get a text chunk
-      description: Get a text chunk. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: contentId
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: textChunkId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully retrieved the text chunk
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TextChunkEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content - Text Chunks
       security:
         - bearer: []
   /organizations/{orgname}/runs:
@@ -3260,35 +2872,10 @@ components:
           enum:
             - USER
             - ADMIN
-        chatbotIds:
-          default: []
-          description: >-
-            The ids of the chatbot this token will have access to. This can not
-            be changed later.
-          example:
-            - chatbot1
-            - chatbot2
-          type: array
-          items:
-            type: string
       required:
         - domains
         - name
         - role
-    ChatbotsFieldItem:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        name:
-          type: string
-          description: The chatbot name
-          example: Arches AI Documentation Chatbot
-      required:
-        - id
-        - name
     ApiTokenEntity:
       type: object
       properties:
@@ -3301,14 +2888,6 @@ components:
           type: string
           description: The item's unique identifier
           example: 32411590-a8e0-11ed-afa1-0242ac120002
-        chatbots:
-          description: The chatbots this API token has access to
-          example:
-            - id: uuid-uuid-uuid-uuid
-              name: Arches API Documentation Chatbot
-          type: array
-          items:
-            $ref: '#/components/schemas/ChatbotsFieldItem'
         domains:
           type: string
           default: '*'
@@ -3339,7 +2918,6 @@ components:
       required:
         - createdAt
         - id
-        - chatbots
         - domains
         - key
         - name
@@ -3364,17 +2942,6 @@ components:
           enum:
             - USER
             - ADMIN
-        chatbotIds:
-          default: []
-          description: >-
-            The ids of the chatbot this token will have access to. This can not
-            be changed later.
-          example:
-            - chatbot1
-            - chatbot2
-          type: array
-          items:
-            type: string
     CreateMemberDto:
       type: object
       properties:
@@ -3418,10 +2985,6 @@ components:
     CreateThreadDto:
       type: object
       properties:
-        chatbotId:
-          type: string
-          description: The chatbot ID
-          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
         name:
           type: string
           default: New Chat
@@ -3445,10 +3008,6 @@ components:
           type: string
           description: The item's unique identifier
           example: 32411590-a8e0-11ed-afa1-0242ac120002
-        chatbotId:
-          type: string
-          description: The chatbot ID
-          example: fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
         credits:
           type: number
           description: The total number of credits used in this chat
@@ -3536,116 +3095,15 @@ components:
         - isDir
         - name
         - size
-    CreateChatbotDto:
-      type: object
-      properties:
-        description:
-          type: string
-          description: The chatbot description
-          example: You are a chatbot designed to answer questions about Arches AI
-        llmBase:
-          type: string
-          default: GPT_3_5_TURBO_16_K
-          description: The base LLM that the chatbot will use
-        name:
-          type: string
-          description: The chatbot name
-          example: Arches AI Documentation Chatbot
-      required:
-        - description
-        - name
-    ChatbotEntity:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        description:
-          type: string
-          description: The chatbot description
-          example: You are a chatbot designed to answer questions about Arches AI
-        llmBase:
-          type: string
-          default: GPT_3_5_TURBO_16_K
-          description: The base LLM that the chatbot will use
-        name:
-          type: string
-          description: The chatbot name
-          example: Arches AI Documentation Chatbot
-        orgname:
-          type: string
-          description: The organization name
-          example: my-organization
-      required:
-        - createdAt
-        - id
-        - description
-        - name
-        - orgname
-    UpdateChatbotDto:
-      type: object
-      properties:
-        description:
-          type: string
-          description: The chatbot description
-          example: You are a chatbot designed to answer questions about Arches AI
-        llmBase:
-          type: string
-          default: GPT_3_5_TURBO_16_K
-          description: The base LLM that the chatbot will use
-        name:
-          type: string
-          description: The chatbot name
-          example: Arches AI Documentation Chatbot
     CreateMessageDto:
       type: object
       properties:
-        answerLength:
-          type: number
-          default: 240
-          description: The max length of the answer given by the bot
-          example: 240
-        contextLength:
-          type: number
-          default: 1000
-          description: The max length of the context given to the bot
-          example: 3000
         question:
           type: string
           description: The question in this message
           example: What is the name of this document?
-        similarityCutoff:
-          type: number
-          default: 0.7
-          description: The sililarity cutoff used in this message
-          example: 0.7
-        temperature:
-          type: number
-          default: 0.7
-          description: The temperature for the LLM
-          example: 0.7
-        topK:
-          type: number
-          default: 5
-          description: The max number of sources returned included in the context
-          example: 10
       required:
         - question
-    CitationEntity:
-      type: object
-      properties:
-        similarity:
-          type: number
-          description: The similarity of this source to the query
-          example: 0.82
-      required:
-        - similarity
     MessageEntity:
       type: object
       properties:
@@ -3662,54 +3120,18 @@ components:
           type: string
           description: The answer given by the bot
           example: The name of this document is Aesop's Fables
-        answerLength:
-          type: number
-          default: 240
-          description: The max length of the answer given by the bot
-          example: 240
-        citations:
-          description: The sources used in this message
-          type: array
-          items:
-            $ref: '#/components/schemas/CitationEntity'
-        contextLength:
-          type: number
-          default: 1000
-          description: The max length of the context given to the bot
-          example: 3000
-        credits:
-          type: number
-          description: The number of credits used in this message
-          example: 14
         question:
           type: string
           description: The question in this message
           example: What is the name of this document?
-        similarityCutoff:
-          type: number
-          default: 0.7
-          description: The sililarity cutoff used in this message
-          example: 0.7
-        temperature:
-          type: number
-          default: 0.7
-          description: The temperature for the LLM
-          example: 0.7
         threadId:
           type: string
           description: The id of the thread this message belongs to
           example: thread1
-        topK:
-          type: number
-          default: 5
-          description: The max number of sources returned included in the context
-          example: 10
       required:
         - createdAt
         - id
         - answer
-        - citations
-        - credits
         - question
         - threadId
     CreateContentDto:
@@ -3766,6 +3188,10 @@ components:
           type: string
           description: The preview image of the content
           example: https://preview-image.com/example.png
+        text:
+          type: string
+          description: The content's text, if text content
+          example: Hello world. I am a text.
         url:
           type: string
           example: https://example.com/example.mp4
@@ -3790,25 +3216,6 @@ components:
           description: The tool IDs to run with this content
           example:
             - tool-id-uuid
-    TextChunkEntity:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        text:
-          type: string
-          description: The text content of the chunk
-      required:
-        - createdAt
-        - id
-        - text
     RunEntity:
       type: object
       properties:
@@ -3825,7 +3232,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run completed
-          example: '2024-11-05T06:57:42.874Z'
+          example: '2024-11-05T11:28:21.029Z'
         error:
           type: string
           description: The error message, if any, associated with the run
@@ -3855,7 +3262,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run started
-          example: '2024-11-05T06:57:42.874Z'
+          example: '2024-11-05T11:28:21.030Z'
         status:
           type: string
           default: QUEUED

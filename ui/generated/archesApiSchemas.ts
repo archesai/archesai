@@ -555,28 +555,6 @@ export type CreateApiTokenDto = {
    * The role of the API token
    */
   role: "USER" | "ADMIN";
-  /**
-   * The ids of the chatbot this token will have access to. This can not be changed later.
-   *
-   * @example chatbot1
-   * @example chatbot2
-   */
-  chatbotIds?: string[];
-};
-
-export type ChatbotsFieldItem = {
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The chatbot name
-   *
-   * @example Arches AI Documentation Chatbot
-   */
-  name: string;
 };
 
 export type ApiTokenEntity = {
@@ -593,12 +571,6 @@ export type ApiTokenEntity = {
    * @example 32411590-a8e0-11ed-afa1-0242ac120002
    */
   id: string;
-  /**
-   * The chatbots this API token has access to
-   *
-   * @example {"id":"uuid-uuid-uuid-uuid","name":"Arches API Documentation Chatbot"}
-   */
-  chatbots: ChatbotsFieldItem[];
   /**
    * The domains that can access this API token
    *
@@ -654,13 +626,6 @@ export type UpdateApiTokenDto = {
    * The role of the API token
    */
   role?: "USER" | "ADMIN";
-  /**
-   * The ids of the chatbot this token will have access to. This can not be changed later.
-   *
-   * @example chatbot1
-   * @example chatbot2
-   */
-  chatbotIds?: string[];
 };
 
 export type CreateMemberDto = {
@@ -700,12 +665,6 @@ export type ConfirmEmailVerificationDto = {
 
 export type CreateThreadDto = {
   /**
-   * The chatbot ID
-   *
-   * @example fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
-   */
-  chatbotId?: string;
-  /**
    * The chat thread name
    *
    * @default New Chat
@@ -734,12 +693,6 @@ export type ThreadEntity = {
    * @example 32411590-a8e0-11ed-afa1-0242ac120002
    */
   id: string;
-  /**
-   * The chatbot ID
-   *
-   * @example fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b
-   */
-  chatbotId?: string;
   /**
    * The total number of credits used in this chat
    *
@@ -835,139 +788,13 @@ export type StorageItemDto = {
   size: number;
 };
 
-export type CreateChatbotDto = {
-  /**
-   * The chatbot description
-   *
-   * @example You are a chatbot designed to answer questions about Arches AI
-   */
-  description: string;
-  /**
-   * The base LLM that the chatbot will use
-   *
-   * @default GPT_3_5_TURBO_16_K
-   */
-  llmBase?: string;
-  /**
-   * The chatbot name
-   *
-   * @example Arches AI Documentation Chatbot
-   */
-  name: string;
-};
-
-export type ChatbotEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The chatbot description
-   *
-   * @example You are a chatbot designed to answer questions about Arches AI
-   */
-  description: string;
-  /**
-   * The base LLM that the chatbot will use
-   *
-   * @default GPT_3_5_TURBO_16_K
-   */
-  llmBase?: string;
-  /**
-   * The chatbot name
-   *
-   * @example Arches AI Documentation Chatbot
-   */
-  name: string;
-  /**
-   * The organization name
-   *
-   * @example my-organization
-   */
-  orgname: string;
-};
-
-export type UpdateChatbotDto = {
-  /**
-   * The chatbot description
-   *
-   * @example You are a chatbot designed to answer questions about Arches AI
-   */
-  description?: string;
-  /**
-   * The base LLM that the chatbot will use
-   *
-   * @default GPT_3_5_TURBO_16_K
-   */
-  llmBase?: string;
-  /**
-   * The chatbot name
-   *
-   * @example Arches AI Documentation Chatbot
-   */
-  name?: string;
-};
-
 export type CreateMessageDto = {
-  /**
-   * The max length of the answer given by the bot
-   *
-   * @default 240
-   * @example 240
-   */
-  answerLength?: number;
-  /**
-   * The max length of the context given to the bot
-   *
-   * @default 1000
-   * @example 3000
-   */
-  contextLength?: number;
   /**
    * The question in this message
    *
    * @example What is the name of this document?
    */
   question: string;
-  /**
-   * The sililarity cutoff used in this message
-   *
-   * @default 0.7
-   * @example 0.7
-   */
-  similarityCutoff?: number;
-  /**
-   * The temperature for the LLM
-   *
-   * @default 0.7
-   * @example 0.7
-   */
-  temperature?: number;
-  /**
-   * The max number of sources returned included in the context
-   *
-   * @default 5
-   * @example 10
-   */
-  topK?: number;
-};
-
-export type CitationEntity = {
-  /**
-   * The similarity of this source to the query
-   *
-   * @example 0.82
-   */
-  similarity: number;
 };
 
 export type MessageEntity = {
@@ -991,62 +818,17 @@ export type MessageEntity = {
    */
   answer: string;
   /**
-   * The max length of the answer given by the bot
-   *
-   * @default 240
-   * @example 240
-   */
-  answerLength?: number;
-  /**
-   * The sources used in this message
-   */
-  citations: CitationEntity[];
-  /**
-   * The max length of the context given to the bot
-   *
-   * @default 1000
-   * @example 3000
-   */
-  contextLength?: number;
-  /**
-   * The number of credits used in this message
-   *
-   * @example 14
-   */
-  credits: number;
-  /**
    * The question in this message
    *
    * @example What is the name of this document?
    */
   question: string;
   /**
-   * The sililarity cutoff used in this message
-   *
-   * @default 0.7
-   * @example 0.7
-   */
-  similarityCutoff?: number;
-  /**
-   * The temperature for the LLM
-   *
-   * @default 0.7
-   * @example 0.7
-   */
-  temperature?: number;
-  /**
    * The id of the thread this message belongs to
    *
    * @example thread1
    */
   threadId: string;
-  /**
-   * The max number of sources returned included in the context
-   *
-   * @default 5
-   * @example 10
-   */
-  topK?: number;
 };
 
 export type CreateContentDto = {
@@ -1119,6 +901,12 @@ export type ContentEntity = {
    */
   previewImage?: string;
   /**
+   * The content's text, if text content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
    * @example https://example.com/example.mp4
    */
   url?: string;
@@ -1143,26 +931,6 @@ export type UpdateContentDto = {
   pipelineId?: string;
 };
 
-export type TextChunkEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The text content of the chunk
-   */
-  text: string;
-};
-
 export type RunEntity = {
   /**
    * The creation date of this item
@@ -1181,7 +949,7 @@ export type RunEntity = {
    * The timestamp when the run completed
    *
    * @format date-time
-   * @example 2024-11-05T06:57:42.874Z
+   * @example 2024-11-05T11:28:21.029Z
    */
   completedAt?: string;
   /**
@@ -1221,7 +989,7 @@ export type RunEntity = {
    * The timestamp when the run started
    *
    * @format date-time
-   * @example 2024-11-05T06:57:42.874Z
+   * @example 2024-11-05T11:28:21.030Z
    */
   startedAt?: string;
   /**

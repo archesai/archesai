@@ -31,9 +31,7 @@ export default function ChatbotsPageContent() {
                 <span
                   className="max-w-[500px] truncate font-medium"
                   onClick={() =>
-                    router.push(
-                      `/chatbots/single?chatbotId=${row.original.chatbotId}&threadId=${row.original.id}`
-                    )
+                    router.push(`/chatbots/chat?threadId=${row.original.id}`)
                   }
                 >
                   {row.original.name}
@@ -58,7 +56,7 @@ export default function ChatbotsPageContent() {
         },
       })}
       handleSelect={(chatbot) =>
-        router.push(`/chatbots/single?chatbotId=${chatbot.id}`)
+        router.push(`/chatbots/chat?threadId=${chatbot.id}`)
       }
       itemType="thread"
       useFindAll={useThreadsControllerFindAll}

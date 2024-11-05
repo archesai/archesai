@@ -30,10 +30,39 @@ export class ContentRepository
         },
         url: createContentDto.url,
       },
-      include: {
-        textChunks: true,
-      },
     });
+  }
+
+  async fetchAll(
+    orgname: string,
+    ids: string[]
+  ): Promise<{
+    vectors: {
+      [vectorId: string]: number[];
+    };
+  }> {
+    const vectors = {};
+
+    // Use raw SQL query because 'embedding' is an unsupported type
+    const records = await this.prisma.$queryRaw<
+      Array<{ embedding: number[]; id: string }>
+    >(Prisma.sql`
+      SELECT id, embedding::float8[] AS embedding
+      FROM "TextChunk"
+      WHERE 
+        orgname = ${orgname}
+        ${
+          ids.length
+            ? Prisma.sql`AND id IN (${Prisma.join(ids)})`
+            : Prisma.empty
+        }
+    `);
+
+    for (const record of records) {
+      vectors[record.id] = record.embedding;
+    }
+
+    return { vectors };
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
@@ -52,9 +81,6 @@ export class ContentRepository
       },
     });
     const content = await this.prisma.content.findMany({
-      include: {
-        textChunks: true,
-      },
       orderBy: {
         [contentQueryDto.sortBy]: contentQueryDto.sortDirection,
       },
@@ -78,9 +104,6 @@ export class ContentRepository
 
   async findOne(id: string) {
     return this.prisma.content.findUniqueOrThrow({
-      include: {
-        textChunks: true,
-      },
       where: { id },
     });
   }
@@ -92,18 +115,55 @@ export class ContentRepository
           increment: credits,
         },
       },
-      include: {
-        textChunks: true,
-      },
+
       where: {
         id,
       },
     });
   }
 
+  // Query vectors similar to a given embedding
+  async query(
+    orgname: string,
+    embedding: number[],
+    topK: number,
+    contentIds?: string[]
+  ): Promise<{ id: string; score: number }[]> {
+    const results = await this.prisma.$queryRaw<
+      { id: string; score: number }[]
+    >(Prisma.sql`
+      SELECT
+        id,
+        1 - (embedding <#> ${embedding}::vector) AS score
+      FROM
+        "TextChunk"
+      WHERE
+        orgname = ${orgname}
+        ${
+          contentIds?.length
+            ? Prisma.sql`AND "contentId" IN (${Prisma.join(contentIds)})`
+            : Prisma.empty
+        }
+      ORDER BY
+        embedding <#> ${embedding}::vector ASC
+      LIMIT ${topK};
+    `);
+
+    return results;
+  }
+
   async remove(orgname: string, id: string) {
     await this.prisma.content.delete({
       where: { id },
+    });
+  }
+
+  async removeMany(orgname: string, ids: string[]): Promise<void> {
+    await this.prisma.content.deleteMany({
+      where: {
+        id: { in: ids },
+        orgname,
+      },
     });
   }
 
@@ -116,9 +176,6 @@ export class ContentRepository
       data: {
         name: updateContentDto.name,
       },
-      include: {
-        textChunks: true,
-      },
       where: {
         id,
       },
@@ -128,12 +185,72 @@ export class ContentRepository
   async updateRaw(orgname: string, id: string, raw: Prisma.ContentUpdateInput) {
     return this.prisma.content.update({
       data: raw,
-      include: {
-        textChunks: true,
-      },
       where: {
         id,
       },
     });
+  }
+
+  async upsertTextChunks(
+    orgname: string,
+    contentId: string,
+    records: {
+      text: string;
+    }[]
+  ): Promise<void> {
+    if (!records.length) {
+      return;
+    }
+
+    await this.prisma.content.createMany({
+      data: records.map((record) => ({
+        contentId,
+        name: record.text.slice(0, 50),
+        orgname,
+        text: record.text,
+      })),
+    });
+  }
+
+  // Upsert vectors with embeddings and text
+  async upsertVectors(
+    orgname: string,
+    contentId: string,
+    records: {
+      embedding: number[];
+      textChunkId: string;
+    }[]
+  ): Promise<void> {
+    // Construct the VALUES clause using Prisma.sql and Prisma.join
+    if (!records.length) {
+      return;
+    }
+    const valuesSql = Prisma.join(
+      records.map(
+        (record) =>
+          Prisma.sql`(
+            ${record.textChunkId},
+            ${orgname},
+            ARRAY[${Prisma.join(record.embedding)}]::vector,
+            ${contentId},
+            NOW()
+          )`
+      ),
+      `, `
+    );
+
+    // Construct the full query using Prisma.sql tagged template
+    const query = Prisma.sql`
+      INSERT INTO "TextChunk" (id, orgname, embedding, "contentId", "updatedAt")
+      VALUES ${valuesSql}
+      ON CONFLICT (id) DO UPDATE SET
+        orgname = EXCLUDED.orgname,
+        embedding = EXCLUDED.embedding,
+        "contentId" = EXCLUDED."contentId",
+        "updatedAt" = NOW();
+    `;
+
+    // Execute the query using $executeRaw with the Prisma.sql object
+    await this.prisma.$executeRaw(query);
   }
 }

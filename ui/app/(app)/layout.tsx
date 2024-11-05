@@ -60,7 +60,7 @@ export default function AppLayout({
           <PageHeader />
           <TabsSection />
           <div className="flex-1 overflow-auto p-4">
-            {title && (
+            {description && (
               <div className="flex h-16 flex-col">
                 <div className="text-xl font-semibold text-gray-700">
                   {title}

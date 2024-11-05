@@ -5,7 +5,6 @@ import * as bcrypt from "bcryptjs";
 
 import { AppModule } from "../src/app.module";
 import { CurrentUserDto } from "../src/auth/decorators/current-user.decorator";
-import { ChatbotsService } from "../src/chatbots/chatbots.service";
 import { OrganizationsService } from "../src/organizations/organizations.service";
 import { PipelinesService } from "../src/pipelines/pipelines.service";
 import { PrismaService } from "../src/prisma/prisma.service";
@@ -20,7 +19,6 @@ async function main() {
 
   const organizationsService =
     app.get<OrganizationsService>(OrganizationsService);
-  const chatbotsService = app.get<ChatbotsService>(ChatbotsService);
   const pipelinesService = app.get<PipelinesService>(PipelinesService);
 
   // Create init user
@@ -57,9 +55,6 @@ async function main() {
     console.log(user);
   }
 
-  const chatbots = await chatbotsService.findAll(user.defaultOrgname, {});
-  const chatbot = chatbots.results[0];
-
   const pipelines = await pipelinesService.findAll(user.defaultOrgname, {});
 
   console.log(pipelines);
@@ -85,16 +80,12 @@ async function main() {
       });
       await prismaService.thread.create({
         data: {
-          chatbotId: chatbot.id,
           credits: faker.number.int(10000),
           messages: {
             createMany: {
               data: new Array(100).fill({
                 answer: faker.lorem.sentence(),
-                answerLength: faker.number.int(100),
-                contextLength: faker.number.int(100),
                 question: faker.lorem.sentence(),
-                topK: faker.number.int(10),
               }),
             },
           },
@@ -104,11 +95,6 @@ async function main() {
       });
       await prismaService.apiToken.create({
         data: {
-          chatbots: {
-            connect: {
-              id: chatbot.id,
-            },
-          },
           key: "*******-2131",
           name: faker.commerce.productName(),
           organization: {

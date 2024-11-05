@@ -1,19 +1,15 @@
-import { ApiProperty, IntersectionType, PickType } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsOptional } from "class-validator";
 
 import { Granularity } from "../../common/aggregated-field.dto";
 import { SearchQueryDto } from "../../common/search-query";
-import { ThreadEntity } from "../entities/thread.entity";
 
 export enum SortByField {
   CREATED = "createdAt",
   CREDITS = "credits",
 }
 
-export class ThreadQueryDto extends IntersectionType(
-  SearchQueryDto,
-  PickType(ThreadEntity, ["chatbotId"] as const)
-) {
+export class ThreadQueryDto extends SearchQueryDto {
   @ApiProperty({
     default: undefined,
     description: "The granularity to use for ranged aggregates",

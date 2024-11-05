@@ -3,7 +3,6 @@ import {
   ExecutionContext,
   HttpException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
@@ -31,7 +30,7 @@ export class RestrictedAPIKeyGuard implements CanActivate {
     try {
       const bearerToken = request.headers.authorization.split(" ")[1];
 
-      const { domains, id, orgname } = JSON.parse(
+      const { domains, orgname } = JSON.parse(
         Buffer.from(bearerToken.split(".")[1], "base64").toString()
       );
       if (!orgname) {
@@ -48,30 +47,6 @@ export class RestrictedAPIKeyGuard implements CanActivate {
           .split(":")[0];
         if (!domains.split(",").includes(origin)) {
           throw new UnauthorizedException("Unauthorized domain");
-        }
-      }
-
-      // Verify token is valid for this chatbot if we are looking at an chatbot
-      const chatbotId = request.params.chatbotId;
-      if (chatbotId) {
-        // Get current token
-        const tokens = await this.apiTokensService.findAll(orgname, {});
-        if (!tokens || !tokens.results.find((t) => t.id == id)) {
-          throw new UnauthorizedException("Token not found");
-        }
-        const token = tokens.results.find((t) => t.id == id);
-        // admin tokens are valid for all chatbots
-        if (token.role == "ADMIN") {
-          return true;
-        }
-
-        const isTokenValidForChatbot = Boolean(
-          token.chatbots.find((val) => val.id == chatbotId)
-        );
-        if (!isTokenValidForChatbot) {
-          throw new NotFoundException(
-            "You tried to access an chatbot that doesn't exist or that you don't have access to."
-          );
         }
       }
     } catch (error) {

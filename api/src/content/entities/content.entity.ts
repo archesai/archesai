@@ -61,6 +61,16 @@ export class ContentEntity extends BaseEntity implements Content {
   previewImage: null | string;
 
   @ApiProperty({
+    description: "The content's text, if text content",
+    example: "Hello world. I am a text.",
+    required: false,
+    type: String,
+  })
+  @Expose()
+  @IsString()
+  text: null | string;
+
+  @ApiProperty({
     example: "https://example.com/example.mp4",
     required: false,
     type: String,

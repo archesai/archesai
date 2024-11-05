@@ -1,21 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Thread } from "@prisma/client";
 import { Expose } from "class-transformer";
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
 
 export class ThreadEntity extends BaseEntity implements Thread {
-  @ApiProperty({
-    description: "The chatbot ID",
-    example: "fa9023b1-7b7b-4b7b-8b7b-7b7b7b7b7b7b",
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  @Expose()
-  chatbotId: string;
-
   @ApiProperty({
     description: "The total number of credits used in this chat",
     example: 10000,

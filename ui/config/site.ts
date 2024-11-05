@@ -85,16 +85,15 @@ export const siteConfig = {
     {
       children: [
         {
-          description: "Create and manage chatbots.",
-          href: "/chatbots/view",
+          href: "/chatbots/chat",
           Icon: Bot,
-          title: "Chatbots",
+          title: "New Thread",
         },
         {
           description: "View and manage chatbot threads.",
           href: "/chatbots/threads",
           Icon: ListMinus,
-          title: "Threads",
+          title: "History",
         },
       ],
       description: "Create and manage chatbots.",

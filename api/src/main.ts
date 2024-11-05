@@ -6,10 +6,7 @@ import session from "express-session";
 import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
 
 import { ApiTokensService } from "./api-tokens/api-tokens.service";
-import {
-  ApiTokenEntity,
-  ChatbotsFieldItem,
-} from "./api-tokens/entities/api-token.entity";
+import { ApiTokenEntity } from "./api-tokens/entities/api-token.entity";
 import { AppModule } from "./app.module";
 import { AppAuthGuard } from "./auth/guards/app-auth.guard";
 import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
@@ -84,12 +81,7 @@ async function bootstrap() {
   );
 
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [
-      _PaginatedDto,
-      ChatbotsFieldItem,
-      ThreadAggregates,
-      ApiTokenEntity,
-    ],
+    extraModels: [_PaginatedDto, ThreadAggregates, ApiTokenEntity],
   });
 
   SwaggerModule.setup("/", app, document, {

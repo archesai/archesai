@@ -1,26 +1,10 @@
-import { ApiProperty, PickType } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { ApiToken, RoleType } from "@prisma/client";
-import { IsEnum, IsString, ValidateNested } from "class-validator";
+import { IsEnum, IsString } from "class-validator";
 
-import { ChatbotEntity } from "../../chatbots/entities/chatbot.entity";
 import { BaseEntity } from "../../common/base-entity.dto";
 
-export class ChatbotsFieldItem extends PickType(ChatbotEntity, [
-  "id",
-  "name",
-]) {}
-
 export class ApiTokenEntity extends BaseEntity implements ApiToken {
-  @ApiProperty({
-    description: "The chatbots this API token has access to",
-    example: [
-      { id: "uuid-uuid-uuid-uuid", name: "Arches API Documentation Chatbot" },
-    ],
-    type: [ChatbotsFieldItem],
-  })
-  @ValidateNested({ each: true })
-  chatbots: ChatbotsFieldItem[];
-
   @ApiProperty({
     default: "*",
     description: "The domains that can access this API token",
@@ -61,13 +45,8 @@ export class ApiTokenEntity extends BaseEntity implements ApiToken {
   })
   username: string;
 
-  constructor(
-    token: {
-      chatbots: { id: string; name: string }[];
-    } & ApiToken
-  ) {
+  constructor(apiToken: ApiToken) {
     super();
-    Object.assign(this, token);
-    this.chatbots = token.chatbots.map((a) => ({ id: a.id, name: a.name }));
+    Object.assign(this, apiToken);
   }
 }

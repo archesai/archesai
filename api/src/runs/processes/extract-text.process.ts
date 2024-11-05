@@ -1,5 +1,4 @@
 import { StorageService } from "@/src/storage/storage.service";
-import { TextChunksService } from "@/src/text-chunks/text-chunks.service";
 import { Logger } from "@nestjs/common";
 
 import { ContentService } from "../../content/content.service";
@@ -11,8 +10,7 @@ export const processExtractText = async (
   logger: Logger,
   loaderService: LoaderService,
   contentService: ContentService,
-  storageService: StorageService,
-  textChunksService: TextChunksService
+  storageService: StorageService
 ) => {
   // hit loader endpoint
   const { mimeType, preview, textContent, title } =
@@ -52,7 +50,7 @@ export const processExtractText = async (
 
   const uploadTextChunks = (async () => {
     const start = Date.now();
-    await textChunksService.upsertTextChunks(
+    await contentService.upsertTextChunks(
       content.orgname,
       content.id,
       textContent

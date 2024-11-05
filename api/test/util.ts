@@ -82,12 +82,9 @@ export const resetDatabase = async () => {
     prisma.tool.deleteMany(),
     prisma.thread.deleteMany(),
     prisma.message.deleteMany(),
-    prisma.textChunk.deleteMany(),
     prisma.pipelineTool.deleteMany(),
     prisma.pipeline.deleteMany(),
     prisma.content.deleteMany(),
-    prisma.citation.deleteMany(),
-    prisma.chatbot.deleteMany(),
     prisma.aRToken.deleteMany(),
     prisma.run.deleteMany(),
     // Add more tables as needed

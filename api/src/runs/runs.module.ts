@@ -10,7 +10,6 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { RunpodModule } from "../runpod/runpod.module";
 import { SpeechModule } from "../speech/speech.module";
 import { StorageModule } from "../storage/storage.module";
-import { TextChunksModule } from "../text-chunks/text-chunks.module";
 import { WebsocketsModule } from "../websockets/websockets.module";
 import { RunProcessor } from "./run.processor";
 import { RunRepository } from "./run.repository";
@@ -45,7 +44,6 @@ import { RunsService } from "./runs.service";
     LLMModule,
     EmbeddingsModule,
     SpeechModule,
-    TextChunksModule,
   ],
 
   providers: [RunsService, RunRepository, RunProcessor],

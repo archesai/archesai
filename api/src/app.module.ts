@@ -14,7 +14,6 @@ import { ARTokensModule } from "./ar-tokens/ar-tokens.module";
 import { AudioModule } from "./audio/audio.module";
 import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
-import { ChatbotsModule } from "./chatbots/chatbots.module";
 import { ContentModule } from "./content/content.module";
 import { EmailModule } from "./email/email.module";
 import { EmailChangeModule } from "./email-change/email-change.module";
@@ -32,7 +31,6 @@ import { RunpodModule } from "./runpod/runpod.module";
 import { RunsModule } from "./runs/runs.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
-import { TextChunksModule } from "./text-chunks/text-chunks.module";
 import { ThreadsModule } from "./threads/threads.module";
 import { ToolsModule } from "./tools/tools.module";
 import { UsersModule } from "./users/users.module";
@@ -199,7 +197,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ThreadsModule,
     StorageModule.forRoot(),
     WebsocketsModule,
-    ChatbotsModule,
     AudioModule,
     ScheduleModule.forRoot(),
     MessagesModule,
@@ -208,7 +205,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     FirebaseModule,
     PasswordResetModule,
     EmailChangeModule,
-    TextChunksModule,
     ARTokensModule,
     SpeechModule,
     ToolsModule,

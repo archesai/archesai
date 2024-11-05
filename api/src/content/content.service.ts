@@ -71,7 +71,6 @@ export class ContentService
     this.websocketsService.socket.to(orgname).emit("update");
     return new ContentEntity(content);
   }
-
   async populateReadUrl(content: Content) {
     if (
       content.url.startsWith(
@@ -101,9 +100,22 @@ export class ContentService
     return content;
   }
 
+  async query(
+    orgname: string,
+    embedding: number[],
+    topK: number,
+    contentIds?: string[]
+  ) {
+    return this.contentRepository.query(orgname, embedding, topK, contentIds);
+  }
+
   async remove(orgname: string, contentId: string): Promise<void> {
     await this.contentRepository.remove(orgname, contentId);
     this.websocketsService.socket.to(orgname).emit("update");
+  }
+
+  async removeMany(orgname: string, ids: string[]) {
+    return this.contentRepository.removeMany(orgname, ids);
   }
 
   async update(
@@ -124,5 +136,26 @@ export class ContentService
     const content = await this.contentRepository.updateRaw(orgname, id, raw);
     this.websocketsService.socket.to(orgname).emit("update");
     return new ContentEntity(content);
+  }
+
+  async upsertTextChunks(
+    orgname: string,
+    contentId: string,
+    records: {
+      text: string;
+    }[]
+  ): Promise<void> {
+    return this.contentRepository.upsertTextChunks(orgname, contentId, records);
+  }
+
+  async upsertVectors(
+    orgname: string,
+    contentId: string,
+    records: {
+      embedding: number[];
+      textChunkId: string;
+    }[]
+  ): Promise<void> {
+    return this.contentRepository.upsertVectors(orgname, contentId, records);
   }
 }

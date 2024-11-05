@@ -11,41 +11,15 @@ export class MessageRepository {
   async create(
     threadId: string,
     createMessageDto: CreateMessageDto,
-    answer: string,
-    credits: number,
-    citations: {
-      contentId: string;
-      similarity: number;
-      text: string;
-    }[]
+    answer: string
   ) {
     return this.prisma.message.create({
       data: {
         answer,
-        answerLength: createMessageDto.answerLength,
-        citations: {
-          createMany: {
-            data: citations.map((citation) => ({
-              contentId: citation.contentId,
-              similarity: citation.similarity,
-            })),
-          },
-        },
-        contextLength: createMessageDto.contextLength,
-        credits,
         question: createMessageDto.question,
-        temperature: createMessageDto.temperature,
         thread: {
           connect: {
             id: threadId,
-          },
-        },
-        topK: createMessageDto.topK,
-      },
-      include: {
-        citations: {
-          include: {
-            message: true,
           },
         },
       },
@@ -61,13 +35,6 @@ export class MessageRepository {
       where: { threadId },
     });
     const messages = await this.prisma.message.findMany({
-      include: {
-        citations: {
-          include: {
-            message: true,
-          },
-        },
-      },
       orderBy: {
         [messageQueryDto.sortBy]: messageQueryDto.sortDirection,
       },

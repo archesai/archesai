@@ -60,7 +60,6 @@ export default function ChatbotChatPage() {
   const { data: messages } = useMessagesControllerFindAll(
     {
       pathParams: {
-        chatbotId: chatbotId as string,
         orgname: defaultOrgname,
         threadId: threadId as string,
       },
@@ -110,9 +109,7 @@ export default function ChatbotChatPage() {
       setMessage("");
       streamChatMessage(defaultOrgname, chatbotId as string, currentThreadId, {
         answer: "",
-        citations: [],
         createdAt: new Date().toISOString(),
-        credits: 0,
         id: "pending",
         question: message.trim(),
         threadId: currentThreadId,
@@ -122,7 +119,6 @@ export default function ChatbotChatPage() {
           question: message.trim(),
         },
         pathParams: {
-          chatbotId: chatbotId as string,
           orgname: defaultOrgname,
           threadId: currentThreadId,
         },

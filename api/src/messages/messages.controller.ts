@@ -14,9 +14,7 @@ import { MessagesService } from "./messages.service";
 
 @ApiTags("Chatbots - Threads - Messages")
 @ApiBearerAuth()
-@Controller(
-  "/organizations/:orgname/chatbots/:chatbotId/threads/:threadId/messages"
-)
+@Controller("/organizations/:orgname/threads/:threadId/messages")
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
@@ -24,7 +22,6 @@ export class MessagesController {
   @Post()
   async create(
     @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string,
     @Param("threadId") threadId: string,
     @Body() createMessageDto: CreateMessageDto,
     @Req() req: Request
@@ -37,12 +34,7 @@ export class MessagesController {
     // Listen for the aborted event on the request
     req.socket.on("close", handleRequestClose);
     const message = new MessageEntity(
-      await this.messagesService.create(
-        orgname,
-        chatbotId,
-        threadId,
-        createMessageDto
-      )
+      await this.messagesService.create(orgname, threadId, createMessageDto)
     );
     req.socket.off("close", handleRequestClose);
     return message;
@@ -53,12 +45,10 @@ export class MessagesController {
   async findAll(
     @Query() messageQueryDto: MessageQueryDto,
     @Param("orgname") orgname: string,
-    @Param("chatbotId") chatbotId: string,
     @Param("threadId") threadId: string
   ) {
     const { count, results } = await this.messagesService.findAll(
       orgname,
-      chatbotId,
       threadId,
       messageQueryDto
     );

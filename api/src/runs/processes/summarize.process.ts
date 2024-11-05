@@ -1,4 +1,3 @@
-import { TextChunksService } from "@/src/text-chunks/text-chunks.service";
 import { Logger } from "@nestjs/common";
 
 import { retry } from "../../common/retry";
@@ -12,10 +11,9 @@ export const processSummarize = async (
   logger: Logger,
   loaderService: LoaderService,
   contentService: ContentService,
-  llmService: LLMService,
-  textChunksService: TextChunksService
+  llmService: LLMService
 ) => {
-  const textContent = await textChunksService.findAll(content.id, {});
+  const textContent = await contentService.findAll(content.id, {});
   const start = Date.now();
   const c = loaderService.getFirstTokens(
     textContent.results.map((x) => x.text),

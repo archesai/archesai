@@ -5,7 +5,7 @@ import { IsOptional, IsString } from "class-validator";
 import { ThreadEntity } from "../entities/thread.entity";
 
 export class CreateThreadDto extends IntersectionType(
-  PartialType(PickType(ThreadEntity, ["name", "chatbotId"] as const))
+  PartialType(PickType(ThreadEntity, ["name"] as const))
 ) {
   @ApiProperty({
     description:

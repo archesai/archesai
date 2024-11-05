@@ -28,9 +28,6 @@ export class ApiTokenRepository
   ) {
     return this.prisma.apiToken.create({
       data: {
-        chatbots: {
-          connect: createApiTokenDto.chatbotIds.map((id) => ({ id })),
-        },
         domains: createApiTokenDto.domains,
         id,
         key: snippet,
@@ -47,14 +44,6 @@ export class ApiTokenRepository
           },
         },
       },
-      include: {
-        chatbots: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
     });
   }
 
@@ -63,14 +52,6 @@ export class ApiTokenRepository
       where: { name: { contains: apiTokenQueryDto.name }, orgname },
     });
     const results = await this.prisma.apiToken.findMany({
-      include: {
-        chatbots: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
       orderBy: {
         [apiTokenQueryDto.sortBy]: apiTokenQueryDto.sortDirection,
       },
@@ -83,14 +64,6 @@ export class ApiTokenRepository
 
   async findOne(orgname: string, id: string) {
     return this.prisma.apiToken.findUniqueOrThrow({
-      include: {
-        chatbots: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
       where: { id },
     });
   }
@@ -108,25 +81,9 @@ export class ApiTokenRepository
   ) {
     return this.prisma.apiToken.update({
       data: {
-        ...(updateApiTokenDto.chatbotIds && {
-          chatbots: {
-            set: updateApiTokenDto.chatbotIds.map((id) => ({ id })),
-          },
-        }),
-        ...(updateApiTokenDto.domains && {
-          domains: updateApiTokenDto.domains,
-        }),
-        ...(updateApiTokenDto.name && { name: updateApiTokenDto.name }),
-        ...(updateApiTokenDto.role && { role: updateApiTokenDto.role }),
+        ...updateApiTokenDto,
       },
-      include: {
-        chatbots: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
+
       where: { id },
     });
   }

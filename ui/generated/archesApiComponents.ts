@@ -2254,10 +2254,6 @@ export type ThreadsControllerFindAllQueryParams = {
    */
   startDate?: string;
   /**
-   * The chatbot ID
-   */
-  chatbotId?: string;
-  /**
    * The granularity to use for ranged aggregates
    */
   aggregateGranularity?: "day" | "month" | "week" | "year";
@@ -2717,374 +2713,8 @@ export const useStorageControllerListDirectory = <
   });
 };
 
-export type ChatbotsControllerCreatePathParams = {
-  orgname: string;
-};
-
-export type ChatbotsControllerCreateError = Fetcher.ErrorWrapper<{
-  status: 400;
-  payload: {
-    message?: string | any[];
-    statusCode?: number;
-  };
-}>;
-
-export type ChatbotsControllerCreateVariables = {
-  body: Schemas.CreateChatbotDto;
-  pathParams: ChatbotsControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Create a new chatbot. ADMIN ONLY.
- */
-export const fetchChatbotsControllerCreate = (
-  variables: ChatbotsControllerCreateVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerCreateError,
-    Schemas.CreateChatbotDto,
-    {},
-    {},
-    ChatbotsControllerCreatePathParams
-  >({
-    url: "/organizations/{orgname}/chatbots",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * Create a new chatbot. ADMIN ONLY.
- */
-export const useChatbotsControllerCreate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ChatbotEntity,
-      ChatbotsControllerCreateError,
-      ChatbotsControllerCreateVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerCreateError,
-    ChatbotsControllerCreateVariables
-  >({
-    mutationFn: (variables: ChatbotsControllerCreateVariables) =>
-      fetchChatbotsControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type ChatbotsControllerFindAllPathParams = {
-  orgname: string;
-};
-
-export type ChatbotsControllerFindAllQueryParams = {
-  /**
-   * The end date to search to
-   */
-  endDate?: string;
-  /**
-   * The limit of the number of results returned
-   *
-   * @default 10
-   */
-  limit?: number;
-  /**
-   * The offset of the returned results
-   *
-   * @default 0
-   */
-  offset?: number;
-  /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
-   * The field to sort the results by
-   *
-   * @default createdAt
-   */
-  sortBy?: "createdAt" | "llmBase" | "name";
-  /**
-   * The direction to sort the results by
-   *
-   * @default desc
-   */
-  sortDirection?: "asc" | "desc";
-  /**
-   * The start date to search from
-   */
-  startDate?: string;
-  /**
-   * The name to search for
-   */
-  name: string;
-};
-
-export type ChatbotsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChatbotsControllerFindAllResponse = Schemas.PaginatedDto & {
-  results?: Schemas.ChatbotEntity[];
-};
-
-export type ChatbotsControllerFindAllVariables = {
-  pathParams: ChatbotsControllerFindAllPathParams;
-  queryParams: ChatbotsControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get all chatbots. ADMIN ONLY.
- */
-export const fetchChatbotsControllerFindAll = (
-  variables: ChatbotsControllerFindAllVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    ChatbotsControllerFindAllResponse,
-    ChatbotsControllerFindAllError,
-    undefined,
-    {},
-    ChatbotsControllerFindAllQueryParams,
-    ChatbotsControllerFindAllPathParams
-  >({
-    url: "/organizations/{orgname}/chatbots",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get all chatbots. ADMIN ONLY.
- */
-export const useChatbotsControllerFindAll = <
-  TData = ChatbotsControllerFindAllResponse,
->(
-  variables: ChatbotsControllerFindAllVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      ChatbotsControllerFindAllResponse,
-      ChatbotsControllerFindAllError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    ChatbotsControllerFindAllResponse,
-    ChatbotsControllerFindAllError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/chatbots",
-      operationId: "chatbotsControllerFindAll",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchChatbotsControllerFindAll(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ChatbotsControllerFindOnePathParams = {
-  orgname: string;
-  chatbotId: string;
-};
-
-export type ChatbotsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChatbotsControllerFindOneVariables = {
-  pathParams: ChatbotsControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get a chatbot. ADMIN ONLY.
- */
-export const fetchChatbotsControllerFindOne = (
-  variables: ChatbotsControllerFindOneVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerFindOneError,
-    undefined,
-    {},
-    {},
-    ChatbotsControllerFindOnePathParams
-  >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get a chatbot. ADMIN ONLY.
- */
-export const useChatbotsControllerFindOne = <TData = Schemas.ChatbotEntity,>(
-  variables: ChatbotsControllerFindOneVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ChatbotEntity,
-      ChatbotsControllerFindOneError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerFindOneError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/chatbots/{chatbotId}",
-      operationId: "chatbotsControllerFindOne",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchChatbotsControllerFindOne(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ChatbotsControllerRemovePathParams = {
-  orgname: string;
-  chatbotId: string;
-};
-
-export type ChatbotsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChatbotsControllerRemoveVariables = {
-  pathParams: ChatbotsControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Delete a chatbot. ADMIN ONLY.
- */
-export const fetchChatbotsControllerRemove = (
-  variables: ChatbotsControllerRemoveVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    ChatbotsControllerRemoveError,
-    undefined,
-    {},
-    {},
-    ChatbotsControllerRemovePathParams
-  >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-/**
- * Delete a chatbot. ADMIN ONLY.
- */
-export const useChatbotsControllerRemove = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ChatbotsControllerRemoveError,
-      ChatbotsControllerRemoveVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    ChatbotsControllerRemoveError,
-    ChatbotsControllerRemoveVariables
-  >({
-    mutationFn: (variables: ChatbotsControllerRemoveVariables) =>
-      fetchChatbotsControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type ChatbotsControllerUpdatePathParams = {
-  orgname: string;
-  chatbotId: string;
-};
-
-export type ChatbotsControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
-
-export type ChatbotsControllerUpdateVariables = {
-  body?: Schemas.UpdateChatbotDto;
-  pathParams: ChatbotsControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Update a chatbot. ADMIN ONLY.
- */
-export const fetchChatbotsControllerUpdate = (
-  variables: ChatbotsControllerUpdateVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerUpdateError,
-    Schemas.UpdateChatbotDto,
-    {},
-    {},
-    ChatbotsControllerUpdatePathParams
-  >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}",
-    method: "patch",
-    ...variables,
-    signal,
-  });
-
-/**
- * Update a chatbot. ADMIN ONLY.
- */
-export const useChatbotsControllerUpdate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ChatbotEntity,
-      ChatbotsControllerUpdateError,
-      ChatbotsControllerUpdateVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ChatbotEntity,
-    ChatbotsControllerUpdateError,
-    ChatbotsControllerUpdateVariables
-  >({
-    mutationFn: (variables: ChatbotsControllerUpdateVariables) =>
-      fetchChatbotsControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
 export type MessagesControllerCreatePathParams = {
   orgname: string;
-  chatbotId: string;
   threadId: string;
 };
 
@@ -3116,7 +2746,7 @@ export const fetchMessagesControllerCreate = (
     {},
     MessagesControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages",
+    url: "/organizations/{orgname}/threads/{threadId}/messages",
     method: "post",
     ...variables,
     signal,
@@ -3149,7 +2779,6 @@ export const useMessagesControllerCreate = (
 
 export type MessagesControllerFindAllPathParams = {
   orgname: string;
-  chatbotId: string;
   threadId: string;
 };
 
@@ -3204,7 +2833,7 @@ export const fetchMessagesControllerFindAll = (
     MessagesControllerFindAllQueryParams,
     MessagesControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages",
+    url: "/organizations/{orgname}/threads/{threadId}/messages",
     method: "get",
     ...variables,
     signal,
@@ -3234,7 +2863,7 @@ export const useMessagesControllerFindAll = <
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages",
+      path: "/organizations/{orgname}/threads/{threadId}/messages",
       operationId: "messagesControllerFindAll",
       variables,
     }),
@@ -3606,193 +3235,6 @@ export const useContentControllerUpdate = (
     mutationFn: (variables: ContentControllerUpdateVariables) =>
       fetchContentControllerUpdate({ ...fetcherOptions, ...variables }),
     ...options,
-  });
-};
-
-export type TextChunksControllerFindAllPathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type TextChunksControllerFindAllQueryParams = {
-  /**
-   * The end date to search to
-   */
-  endDate?: string;
-  /**
-   * The limit of the number of results returned
-   *
-   * @default 10
-   */
-  limit?: number;
-  /**
-   * The offset of the returned results
-   *
-   * @default 0
-   */
-  offset?: number;
-  /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
-   * The field to sort the results by
-   *
-   * @default createdAt
-   */
-  sortBy?: "createdAt";
-  /**
-   * The direction to sort the results by
-   *
-   * @default desc
-   */
-  sortDirection?: "asc" | "desc";
-  /**
-   * The start date to search from
-   */
-  startDate?: string;
-};
-
-export type TextChunksControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
-
-export type TextChunksControllerFindAllResponse = Schemas.PaginatedDto & {
-  results?: Schemas.TextChunkEntity[];
-};
-
-export type TextChunksControllerFindAllVariables = {
-  pathParams: TextChunksControllerFindAllPathParams;
-  queryParams?: TextChunksControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get all text chunks. ADMIN ONLY.
- */
-export const fetchTextChunksControllerFindAll = (
-  variables: TextChunksControllerFindAllVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    TextChunksControllerFindAllResponse,
-    TextChunksControllerFindAllError,
-    undefined,
-    {},
-    TextChunksControllerFindAllQueryParams,
-    TextChunksControllerFindAllPathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}/text-chunks",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get all text chunks. ADMIN ONLY.
- */
-export const useTextChunksControllerFindAll = <
-  TData = TextChunksControllerFindAllResponse,
->(
-  variables: TextChunksControllerFindAllVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      TextChunksControllerFindAllResponse,
-      TextChunksControllerFindAllError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    TextChunksControllerFindAllResponse,
-    TextChunksControllerFindAllError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{contentId}/text-chunks",
-      operationId: "textChunksControllerFindAll",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchTextChunksControllerFindAll(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type TextChunksControllerFindOnePathParams = {
-  orgname: string;
-  contentId: string;
-  textChunkId: string;
-};
-
-export type TextChunksControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
-
-export type TextChunksControllerFindOneVariables = {
-  pathParams: TextChunksControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get a text chunk. ADMIN ONLY.
- */
-export const fetchTextChunksControllerFindOne = (
-  variables: TextChunksControllerFindOneVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.TextChunkEntity,
-    TextChunksControllerFindOneError,
-    undefined,
-    {},
-    {},
-    TextChunksControllerFindOnePathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get a text chunk. ADMIN ONLY.
- */
-export const useTextChunksControllerFindOne = <
-  TData = Schemas.TextChunkEntity,
->(
-  variables: TextChunksControllerFindOneVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.TextChunkEntity,
-      TextChunksControllerFindOneError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    Schemas.TextChunkEntity,
-    TextChunksControllerFindOneError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}",
-      operationId: "textChunksControllerFindOne",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchTextChunksControllerFindOne(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
   });
 };
 
@@ -4612,17 +4054,7 @@ export type QueryOperation =
       variables: StorageControllerListDirectoryVariables;
     }
   | {
-      path: "/organizations/{orgname}/chatbots";
-      operationId: "chatbotsControllerFindAll";
-      variables: ChatbotsControllerFindAllVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/chatbots/{chatbotId}";
-      operationId: "chatbotsControllerFindOne";
-      variables: ChatbotsControllerFindOneVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/chatbots/{chatbotId}/threads/{threadId}/messages";
+      path: "/organizations/{orgname}/threads/{threadId}/messages";
       operationId: "messagesControllerFindAll";
       variables: MessagesControllerFindAllVariables;
     }
@@ -4635,16 +4067,6 @@ export type QueryOperation =
       path: "/organizations/{orgname}/content/{contentId}";
       operationId: "contentControllerFindOne";
       variables: ContentControllerFindOneVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/content/{contentId}/text-chunks";
-      operationId: "textChunksControllerFindAll";
-      variables: TextChunksControllerFindAllVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/content/{contentId}/text-chunks/{textChunkId}";
-      operationId: "textChunksControllerFindOne";
-      variables: TextChunksControllerFindOneVariables;
     }
   | {
       path: "/organizations/{orgname}/runs";
