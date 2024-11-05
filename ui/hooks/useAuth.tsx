@@ -25,13 +25,14 @@ export const useAuth = () => {
       const data = JSON.parse(atob(payload));
       const exp = data.exp;
       const now = Math.floor(Date.now() / 1000);
+      let currentToken = accessToken;
       if (exp < now) {
-        await getNewRefreshToken();
+        currentToken = (await getNewRefreshToken()) || "";
       }
 
       const response = await fetch(baseUrl + "/user", {
         headers: {
-          Authorization: "Bearer " + accessToken,
+          Authorization: "Bearer " + currentToken,
         },
         method: "GET",
         mode: "cors",
@@ -95,6 +96,7 @@ export const useAuth = () => {
 
     setAccessToken(data.accessToken);
     setRefreshToken(data.refreshToken);
+    return data.accessToken;
   };
 
   const signInWithGoogle = async () => {

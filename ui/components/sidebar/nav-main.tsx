@@ -28,9 +28,9 @@ export function NavMain() {
 
   return (
     <>
-      {sections.map((section) => {
+      {sections.map((section, i) => {
         return (
-          <SidebarGroup>
+          <SidebarGroup key={i}>
             <SidebarGroupLabel>{section}</SidebarGroupLabel>
             <SidebarMenu>
               {siteConfig.routes
