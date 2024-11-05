@@ -36,7 +36,9 @@ export class ContentService
       orgname,
       createContentDto
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
     return new ContentEntity(content);
   }
 
@@ -66,7 +68,9 @@ export class ContentService
 
   async incrementCredits(orgname: string, id: string, credits: number) {
     const content = await this.contentRepository.incrementCredits(id, credits);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
     return new ContentEntity(content);
   }
   async populateReadUrl(content: Content) {
@@ -109,7 +113,9 @@ export class ContentService
 
   async remove(orgname: string, contentId: string): Promise<void> {
     await this.contentRepository.remove(orgname, contentId);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
   }
 
   async removeMany(orgname: string, ids: string[]) {
@@ -126,13 +132,17 @@ export class ContentService
       id,
       updateContentDto
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
     return new ContentEntity(content);
   }
 
   async updateRaw(orgname: string, id: string, raw: Prisma.ContentUpdateInput) {
     const content = await this.contentRepository.updateRaw(orgname, id, raw);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
     return new ContentEntity(content);
   }
 

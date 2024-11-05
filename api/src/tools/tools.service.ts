@@ -55,7 +55,9 @@ export class ToolsService
 
   async remove(orgname: string, toolId: string): Promise<void> {
     await this.toolsRepository.remove(orgname, toolId);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "tools"],
+    });
   }
 
   async run(
@@ -68,13 +70,17 @@ export class ToolsService
 
   async update(orgname: string, id: string, updateToolDto: UpdateToolDto) {
     const tool = await this.toolsRepository.update(orgname, id, updateToolDto);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "tools"],
+    });
     return new ToolEntity(tool);
   }
 
   async updateRaw(orgname: string, id: string, raw: Prisma.ToolUpdateInput) {
     const tool = await this.toolsRepository.updateRaw(orgname, id, raw);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "tools"],
+    });
     return new ToolEntity(tool);
   }
 }

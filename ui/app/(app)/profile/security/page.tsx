@@ -40,9 +40,8 @@ export default function ProfileSecuritySettingsPage() {
           </CardDescription>
         </CardHeader>
         <Separator />
-        <div className="flex justify-end rounded-lg bg-gray-50 p-4 dark:bg-black">
+        <div className="flex justify-end rounded-lg bg-gray-50 p-4 py-2 dark:bg-black">
           <Button
-            className="flex h-8 w-full gap-2"
             disabled={requestPasswordResetPending}
             onClick={async () =>
               await requestPasswordReset(
@@ -70,6 +69,7 @@ export default function ProfileSecuritySettingsPage() {
                 }
               )
             }
+            size={"sm"}
           >
             {requestPasswordResetPending && (
               <ReloadIcon className="h-5 w-5 animate-spin" />
@@ -87,9 +87,8 @@ export default function ProfileSecuritySettingsPage() {
           </CardDescription>
         </CardHeader>
         <Separator />
-        <div className="flex justify-end rounded-lg bg-gray-50 p-4 dark:bg-black">
+        <div className="flex justify-end rounded-lg bg-gray-50 p-4 py-2 dark:bg-black">
           <Button
-            className="flex h-8 w-full gap-2"
             disabled={deactivatePending}
             onClick={async () =>
               await deactivateAccount(
@@ -109,6 +108,7 @@ export default function ProfileSecuritySettingsPage() {
                 }
               )
             }
+            size="sm"
             variant={"destructive"}
           >
             {deactivatePending && (

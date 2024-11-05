@@ -233,7 +233,9 @@ export class MessagesService {
       answer
     );
 
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "threads", threadId, "messages"],
+    });
     return message;
   }
 

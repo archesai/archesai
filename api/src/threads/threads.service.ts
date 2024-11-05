@@ -24,7 +24,9 @@ export class ThreadsService {
     createThreadDto: CreateThreadDto
   ) {
     const thread = await this.threadRepository.create(orgname, createThreadDto);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "threads"],
+    });
     return thread;
   }
 
@@ -46,7 +48,9 @@ export class ThreadsService {
 
   async remove(orgname: string, threadId: string) {
     await this.threadRepository.delete(threadId);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "threads"],
+    });
   }
 
   async updateThreadName(orgname: string, threadId: string, name: string) {

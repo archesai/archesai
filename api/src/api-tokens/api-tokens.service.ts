@@ -58,7 +58,9 @@ export class ApiTokensService
       id,
       userId
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "api-tokens"],
+    });
 
     apiToken.key = token;
 
@@ -90,7 +92,9 @@ export class ApiTokensService
 
   async remove(orgname: string, id: string) {
     await this.apiTokenRepository.remove(orgname, id);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "api-tokens"],
+    });
   }
 
   async update(
@@ -103,7 +107,9 @@ export class ApiTokensService
       id,
       updateApiTokenDto
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "api-tokens"],
+    });
     return new ApiTokenEntity(apiToken);
   }
 }

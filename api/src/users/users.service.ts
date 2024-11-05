@@ -78,7 +78,9 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.update(id, updateUserDto);
-    this.websocketsService.socket.to(user.defaultOrgname).emit("update");
+    this.websocketsService.socket.to(user.defaultOrgname).emit("update", {
+      queryKey: ["user"],
+    });
     return user;
   }
 

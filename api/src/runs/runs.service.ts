@@ -1,6 +1,6 @@
 // runs.service.ts
 import { InjectFlowProducer, InjectQueue } from "@nestjs/bullmq";
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { RunStatus } from "@prisma/client";
 import { FlowProducer, Queue } from "bullmq";
 
@@ -55,7 +55,9 @@ export class RunsService
       pipelineId,
       runInputContentIds
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "piplines"],
+    });
 
     await this.flowProducer.add({
       data: {
@@ -69,18 +71,25 @@ export class RunsService
   }
 
   async runTool(orgname: string, toolId: string, runToolDto: RunToolDto) {
-    if (runToolDto.text) {
-      const content = await this.contentService.create(orgname, {
-        name: "Input Text",
-        url: runToolDto.text,
-      });
-      runToolDto.runInputContentIds = [content.id];
-    }
     if (runToolDto.runInputContentIds) {
       // vefify that the content exists
       for (const contentId of runToolDto.runInputContentIds) {
         await this.contentService.findOne(contentId);
       }
+    } else if (runToolDto.text) {
+      const content = await this.contentService.create(orgname, {
+        name: "Input Text",
+        url: runToolDto.text,
+      });
+      runToolDto.runInputContentIds = [content.id];
+    } else if (runToolDto.url) {
+      const content = await this.contentService.create(orgname, {
+        name: "Input URL",
+        url: runToolDto.url,
+      });
+      runToolDto.runInputContentIds = [content.id];
+    } else {
+      throw new BadRequestException("No input provided");
     }
 
     const run = await this.runRepository.createToolRun(
@@ -89,7 +98,9 @@ export class RunsService
       runToolDto
     );
 
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "tools"],
+    });
     const runEntity = new RunEntity(run);
     // await this.runQueue.add("as", runEntity);
     return runEntity;

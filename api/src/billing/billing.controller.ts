@@ -306,7 +306,11 @@ export class BillingController {
             organization.orgname,
             Number(credits) * quantity
           );
-          this.websocketsService.socket.to(organization.orgname).emit("update");
+          this.websocketsService.socket
+            .to(organization.orgname)
+            .emit("update", {
+              queryKey: ["organizations", organization.orgname],
+            });
         }
       }
     }
@@ -331,7 +335,9 @@ export class BillingController {
       } else {
         await this.organizationsService.setPlan(organization.orgname, "FREE");
       }
-      this.websocketsService.socket.to(organization.orgname).emit("update");
+      this.websocketsService.socket.to(organization.orgname).emit("update", {
+        queryKey: ["organizations", organization.orgname],
+      });
     }
   }
 }

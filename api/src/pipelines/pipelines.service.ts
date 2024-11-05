@@ -63,7 +63,9 @@ export class PipelinesService
 
   async remove(orgname: string, pipelineId: string): Promise<void> {
     await this.pipelineRepository.remove(orgname, pipelineId);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "piplines"],
+    });
   }
 
   async update(
@@ -76,7 +78,9 @@ export class PipelinesService
       id,
       updatePipelineDto
     );
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "piplines"],
+    });
     return new PipelineEntity(pipeline);
   }
 
@@ -86,7 +90,9 @@ export class PipelinesService
     raw: Prisma.PipelineUpdateInput
   ) {
     const pipeline = await this.pipelineRepository.updateRaw(orgname, id, raw);
-    this.websocketsService.socket.to(orgname).emit("update");
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "piplines"],
+    });
     return new PipelineEntity(pipeline);
   }
 }
