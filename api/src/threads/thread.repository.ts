@@ -61,8 +61,21 @@ export class ThreadRepository {
   }
 
   async findAll(orgname: string, threadQueryDto: ThreadQueryDto) {
+    const whereConditions = {
+      createdAt: {
+        gte: threadQueryDto.startDate,
+        lte: threadQueryDto.endDate,
+      },
+      orgname,
+    };
+    if (threadQueryDto.filters) {
+      threadQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+
     const count = await this.prisma.thread.count({
-      where: { orgname },
+      where: whereConditions,
     });
 
     let aggregates: ThreadAggregates = null as {
@@ -115,7 +128,7 @@ export class ThreadRepository {
       },
       skip: threadQueryDto.offset,
       take: threadQueryDto.limit,
-      where: { orgname },
+      where: whereConditions,
     });
     return { aggregates, count, threads };
   }

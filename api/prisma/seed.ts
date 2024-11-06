@@ -6,7 +6,6 @@ import * as bcrypt from "bcryptjs";
 import { AppModule } from "../src/app.module";
 import { CurrentUserDto } from "../src/auth/decorators/current-user.decorator";
 import { OrganizationsService } from "../src/organizations/organizations.service";
-import { PipelinesService } from "../src/pipelines/pipelines.service";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { UsersService } from "../src/users/users.service";
 
@@ -19,7 +18,6 @@ async function main() {
 
   const organizationsService =
     app.get<OrganizationsService>(OrganizationsService);
-  const pipelinesService = app.get<PipelinesService>(PipelinesService);
 
   // Create init user
   let user = null as CurrentUserDto;

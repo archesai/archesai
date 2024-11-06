@@ -1,5 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { BadRequestException } from "@nestjs/common";
+import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import {
+  IsArray,
   IsDateString,
   IsEnum,
   IsNumber,
@@ -8,13 +11,19 @@ import {
   IsString,
 } from "class-validator";
 
-export enum SortByField {
-  CREATED = "createdAt",
-}
-
 export enum SortDirection {
   ASCENDING = "asc",
   DESCENDING = "desc",
+}
+
+export class FilterField {
+  @ApiProperty({ description: "Field to filter by", type: String })
+  @IsString()
+  field: string;
+
+  @ApiProperty({ description: "Value to filter for", type: String })
+  @IsString()
+  value: string;
 }
 
 export class SearchQueryDto {
@@ -25,6 +34,39 @@ export class SearchQueryDto {
   @IsDateString()
   @IsOptional()
   endDate?: string;
+
+  @ApiProperty({
+    default: [],
+    description: "Filter fields and values",
+    isArray: true,
+    items: {
+      $ref: getSchemaPath(FilterField),
+    },
+    required: false,
+    type: "array",
+  })
+  @IsOptional()
+  @IsArray()
+  @Transform(({ value }) => {
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        if (!Array.isArray(parsed)) {
+          const filters = [parsed];
+          return filters as FilterField[];
+        }
+        return parsed;
+      } catch (error) {
+        throw new BadRequestException(
+          "Invalid filters format. It should be a JSON array."
+        );
+      }
+    } else {
+      const filters = value.map((filter: string) => JSON.parse(filter));
+      return filters as FilterField[];
+    }
+  })
+  filters?: FilterField[] = [];
 
   @ApiProperty({
     default: 10,
@@ -45,20 +87,14 @@ export class SearchQueryDto {
   @IsNumber()
   offset?: number = 0;
 
-  @ApiProperty({ default: "", description: "Search term", required: false })
-  @IsString()
-  @IsOptional()
-  searchTerm?: string = "";
-
   @ApiProperty({
-    default: SortByField.CREATED,
+    default: "createdAt",
     description: "The field to sort the results by",
-    enum: SortByField,
     required: false,
   })
-  @IsEnum(SortByField)
+  @IsString()
   @IsOptional()
-  sortBy? = "createdAt";
+  sortBy?: string = "createdAt";
 
   @ApiProperty({
     default: SortDirection.DESCENDING,
@@ -68,7 +104,7 @@ export class SearchQueryDto {
   })
   @IsEnum(SortDirection)
   @IsOptional()
-  sortDirection? = "desc" as SortDirection;
+  sortDirection?: SortDirection = SortDirection.DESCENDING;
 
   @ApiProperty({
     description: "The start date to search from",

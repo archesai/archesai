@@ -136,12 +136,17 @@ export function DataTable<
       ...(range?.to
         ? { startDate: range?.from && range.from.toISOString() }
         : {}),
+      filters: JSON.stringify([
+        {
+          field: "name",
+          value: query,
+        },
+      ]),
       limit,
       name: query,
       offset: page * limit,
       sortBy: sortBy as "createdAt",
       sortDirection: sortDirection,
-
       ...findAllQueryParams,
     },
   });

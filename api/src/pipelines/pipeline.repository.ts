@@ -50,14 +50,21 @@ export class PipelineRepository
   }
 
   async findAll(orgname: string, pipelineQueryDto: PipelineQueryDto) {
-    const count = await this.prisma.pipeline.count({
-      where: {
-        createdAt: {
-          gte: pipelineQueryDto.startDate,
-          lte: pipelineQueryDto.endDate,
-        },
-        orgname,
+    const whereConditions = {
+      createdAt: {
+        gte: pipelineQueryDto.startDate,
+        lte: pipelineQueryDto.endDate,
       },
+      orgname,
+    };
+    if (pipelineQueryDto.filters) {
+      pipelineQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+
+    const count = await this.prisma.pipeline.count({
+      where: whereConditions,
     });
     const pipelines = await this.prisma.pipeline.findMany({
       include: {
@@ -72,13 +79,7 @@ export class PipelineRepository
       },
       skip: pipelineQueryDto.offset,
       take: pipelineQueryDto.limit,
-      where: {
-        createdAt: {
-          gte: pipelineQueryDto.startDate,
-          lte: pipelineQueryDto.endDate,
-        },
-        orgname,
-      },
+      where: whereConditions,
     });
     return { count, results: pipelines };
   }

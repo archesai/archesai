@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { retry } from "../common/retry";
-import { SortByField, SortDirection } from "../common/search-query";
+import { SortDirection } from "../common/search-query";
 import { ContentService } from "../content/content.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
@@ -54,7 +54,7 @@ export class MessagesService {
     // Get messages
     const messages = await this.messageRepository.findAll(orgname, threadId, {
       limit: 5,
-      sortBy: SortByField.CREATED,
+      sortBy: "createdAt",
       sortDirection: SortDirection.DESCENDING,
     });
     this.logger.log("Got messages");

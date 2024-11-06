@@ -48,8 +48,21 @@ export class ApiTokenRepository
   }
 
   async findAll(orgname: string, apiTokenQueryDto: ApiTokenQueryDto) {
+    const whereConditions = {
+      createdAt: {
+        gte: apiTokenQueryDto.startDate,
+        lte: apiTokenQueryDto.endDate,
+      },
+      orgname,
+    };
+    if (apiTokenQueryDto.filters) {
+      apiTokenQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+
     const count = await this.prisma.apiToken.count({
-      where: { name: { contains: apiTokenQueryDto.name }, orgname },
+      where: whereConditions,
     });
     const results = await this.prisma.apiToken.findMany({
       orderBy: {
@@ -57,7 +70,7 @@ export class ApiTokenRepository
       },
       skip: apiTokenQueryDto.offset,
       take: apiTokenQueryDto.limit,
-      where: { name: { contains: apiTokenQueryDto.name }, orgname },
+      where: whereConditions,
     });
     return { count, results };
   }
@@ -83,7 +96,6 @@ export class ApiTokenRepository
       data: {
         ...updateApiTokenDto,
       },
-
       where: { id },
     });
   }

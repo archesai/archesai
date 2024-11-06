@@ -1359,3 +1359,14 @@ export type ThreadAggregates = {
    */
   threadsCreated?: GranularCount[];
 };
+
+export type FilterField = {
+  /**
+   * Field to filter by
+   */
+  field: string;
+  /**
+   * Value to filter for
+   */
+  value: string;
+};

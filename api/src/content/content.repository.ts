@@ -70,19 +70,20 @@ export class ContentRepository
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
-    const count = await this.prisma.content.count({
-      where: {
-        createdAt: {
-          gte: contentQueryDto.startDate,
-          lte: contentQueryDto.endDate,
-        },
-        orgname,
-        ...(contentQueryDto.searchTerm
-          ? {
-              OR: [{ name: { contains: contentQueryDto.searchTerm } }],
-            }
-          : undefined),
+    const whereConditions = {
+      createdAt: {
+        gte: contentQueryDto.startDate,
+        lte: contentQueryDto.endDate,
       },
+      orgname,
+    };
+    if (contentQueryDto.filters) {
+      contentQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+    const count = await this.prisma.content.count({
+      where: whereConditions,
     });
     const content = await this.prisma.content.findMany({
       orderBy: {
@@ -90,18 +91,7 @@ export class ContentRepository
       },
       skip: contentQueryDto.offset,
       take: contentQueryDto.limit,
-      where: {
-        createdAt: {
-          gte: contentQueryDto.startDate,
-          lte: contentQueryDto.endDate,
-        },
-        orgname,
-        ...(contentQueryDto.searchTerm
-          ? {
-              OR: [{ name: { contains: contentQueryDto.searchTerm } }],
-            }
-          : undefined),
-      },
+      where: whereConditions,
     });
     return { count, results: content };
   }

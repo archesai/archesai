@@ -82,6 +82,10 @@ export type PipelinesControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -94,17 +98,11 @@ export type PipelinesControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -1384,6 +1382,10 @@ export type ApiTokensControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -1396,17 +1398,11 @@ export type ApiTokensControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -1417,10 +1413,6 @@ export type ApiTokensControllerFindAllQueryParams = {
    * The start date to search from
    */
   startDate?: string;
-  /**
-   * The name to search for
-   */
-  name: string;
 };
 
 export type ApiTokensControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
@@ -1431,7 +1423,7 @@ export type ApiTokensControllerFindAllResponse = Schemas.PaginatedDto & {
 
 export type ApiTokensControllerFindAllVariables = {
   pathParams: ApiTokensControllerFindAllPathParams;
-  queryParams: ApiTokensControllerFindAllQueryParams;
+  queryParams?: ApiTokensControllerFindAllQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
@@ -1749,6 +1741,10 @@ export type MembersControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -1761,17 +1757,11 @@ export type MembersControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
-   * @default username
+   * @default createdAt
    */
-  sortBy?: "createdAt" | "username";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -2220,6 +2210,10 @@ export type ThreadsControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -2232,17 +2226,11 @@ export type ThreadsControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt" | "credits";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -2784,6 +2772,14 @@ export type MessagesControllerFindAllPathParams = {
 
 export type MessagesControllerFindAllQueryParams = {
   /**
+   * The end date to search to
+   */
+  endDate?: string;
+  /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -2796,15 +2792,21 @@ export type MessagesControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
+   * The field to sort the results by
+   *
+   * @default createdAt
+   */
+  sortBy?: string;
+  /**
    * The direction to sort the results by
    *
    * @default desc
    */
   sortDirection?: "asc" | "desc";
   /**
-   * @default createdAt
+   * The start date to search from
    */
-  sortBy?: "createdAt";
+  startDate?: string;
 };
 
 export type MessagesControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
@@ -2950,6 +2952,10 @@ export type ContentControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -2962,17 +2968,11 @@ export type ContentControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt" | "name";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -3248,6 +3248,10 @@ export type RunsControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -3260,17 +3264,11 @@ export type RunsControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *
@@ -3281,10 +3279,6 @@ export type RunsControllerFindAllQueryParams = {
    * The start date to search from
    */
   startDate?: string;
-  /**
-   * The tool used in the run, if applicable
-   */
-  toolId?: string;
 };
 
 export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
@@ -3714,6 +3708,10 @@ export type ToolsControllerFindAllQueryParams = {
    */
   endDate?: string;
   /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FilterField[];
+  /**
    * The limit of the number of results returned
    *
    * @default 10
@@ -3726,17 +3724,11 @@ export type ToolsControllerFindAllQueryParams = {
    */
   offset?: number;
   /**
-   * Search term
-   *
-   * @default
-   */
-  searchTerm?: string;
-  /**
    * The field to sort the results by
    *
    * @default createdAt
    */
-  sortBy?: "createdAt";
+  sortBy?: string;
   /**
    * The direction to sort the results by
    *

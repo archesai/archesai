@@ -11,6 +11,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { ApiTokenEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
+import { format } from "date-fns";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -58,6 +59,22 @@ export default function ApiTokensPageContent() {
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Value" />
+          ),
+        },
+        {
+          accessorKey: "createdAt",
+          cell: ({ row }) => {
+            return (
+              <span className="font-light">
+                {format(
+                  new Date(row.original.createdAt),
+                  "yyyy-MM-dd HH:mm:ss"
+                )}
+              </span>
+            );
+          },
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Created" />
           ),
         },
       ]}

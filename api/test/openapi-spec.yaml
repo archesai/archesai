@@ -63,6 +63,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -77,21 +86,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
             type: string
         - name: sortDirection
           required: false
@@ -712,6 +712,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -726,21 +735,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
             type: string
         - name: sortDirection
           required: false
@@ -756,13 +756,6 @@ paths:
           required: false
           in: query
           description: The start date to search from
-          schema:
-            type: string
-        - name: name
-          required: true
-          in: query
-          description: The name to search for
-          example: API Token 1
           schema:
             type: string
       responses:
@@ -951,6 +944,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -965,22 +967,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
-            default: username
-            enum:
-              - createdAt
-              - username
+            default: createdAt
             type: string
         - name: sortDirection
           required: false
@@ -1227,6 +1219,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -1241,22 +1242,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
-              - credits
             type: string
         - name: sortDirection
           required: false
@@ -1584,6 +1575,21 @@ paths:
       summary: Get all messages
       description: Get all messages. ADMIN ONLY.
       parameters:
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -1598,6 +1604,13 @@ paths:
           schema:
             default: 0
             type: number
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            type: string
         - name: sortDirection
           required: false
           in: query
@@ -1608,13 +1621,11 @@ paths:
               - asc
               - desc
             type: string
-        - name: sortBy
+        - name: startDate
           required: false
           in: query
+          description: The start date to search from
           schema:
-            default: createdAt
-            enum:
-              - createdAt
             type: string
         - name: orgname
           required: true
@@ -1713,6 +1724,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -1727,22 +1747,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
-              - name
             type: string
         - name: sortDirection
           required: false
@@ -1900,6 +1910,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -1914,21 +1933,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
             type: string
         - name: sortDirection
           required: false
@@ -1944,12 +1954,6 @@ paths:
           required: false
           in: query
           description: The start date to search from
-          schema:
-            type: string
-        - name: toolId
-          required: false
-          in: query
-          description: The tool used in the run, if applicable
           schema:
             type: string
       responses:
@@ -2162,6 +2166,15 @@ paths:
           description: The end date to search to
           schema:
             type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FilterField'
         - name: limit
           required: false
           in: query
@@ -2176,21 +2189,12 @@ paths:
           schema:
             default: 0
             type: number
-        - name: searchTerm
-          required: false
-          in: query
-          description: Search term
-          schema:
-            default: ''
-            type: string
         - name: sortBy
           required: false
           in: query
           description: The field to sort the results by
           schema:
             default: createdAt
-            enum:
-              - createdAt
             type: string
         - name: sortDirection
           required: false
@@ -3721,3 +3725,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GranularCount'
+    FilterField:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field to filter by
+        value:
+          type: string
+          description: Value to filter for
+      required:
+        - field
+        - value

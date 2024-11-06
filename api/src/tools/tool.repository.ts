@@ -27,14 +27,20 @@ export class ToolRepository
   }
 
   async findAll(orgname: string, toolQueryDto: ToolQueryDto) {
-    const count = await this.prisma.tool.count({
-      where: {
-        createdAt: {
-          gte: toolQueryDto.startDate,
-          lte: toolQueryDto.endDate,
-        },
-        orgname,
+    const whereConditions = {
+      createdAt: {
+        gte: toolQueryDto.startDate,
+        lte: toolQueryDto.endDate,
       },
+      orgname,
+    };
+    if (toolQueryDto.filters) {
+      toolQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+    const count = await this.prisma.tool.count({
+      where: whereConditions,
     });
     const tool = await this.prisma.tool.findMany({
       orderBy: {
@@ -42,13 +48,7 @@ export class ToolRepository
       },
       skip: toolQueryDto.offset,
       take: toolQueryDto.limit,
-      where: {
-        createdAt: {
-          gte: toolQueryDto.startDate,
-          lte: toolQueryDto.endDate,
-        },
-        orgname,
-      },
+      where: whereConditions,
     });
     return { count, results: tool };
   }

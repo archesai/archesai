@@ -132,15 +132,21 @@ export class RunRepository
   }
 
   async findAll(orgname: string, runQueryDto: RunQueryDto) {
-    const count = await this.prisma.run.count({
-      where: {
-        createdAt: {
-          gte: runQueryDto.startDate,
-          lte: runQueryDto.endDate,
-        },
-        orgname,
-        toolId: runQueryDto.toolId,
+    const whereConditions = {
+      createdAt: {
+        gte: runQueryDto.startDate,
+        lte: runQueryDto.endDate,
       },
+      orgname,
+    };
+    if (runQueryDto.filters) {
+      runQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+
+    const count = await this.prisma.run.count({
+      where: whereConditions,
     });
     const results = await this.prisma.run.findMany({
       orderBy: {
@@ -148,14 +154,7 @@ export class RunRepository
       },
       skip: runQueryDto.offset,
       take: runQueryDto.limit,
-      where: {
-        createdAt: {
-          gte: runQueryDto.startDate,
-          lte: runQueryDto.endDate,
-        },
-        orgname,
-        toolId: runQueryDto.toolId,
-      },
+      where: whereConditions,
     });
     return { count, results };
   }

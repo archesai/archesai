@@ -62,14 +62,26 @@ export class MemberRepository
   }
 
   async findAll(orgname: string, memberQueryDto: MemberQueryDto) {
-    const count = await this.prisma.member.count({ where: { orgname } });
+    const whereConditions = {
+      createdAt: {
+        gte: memberQueryDto.startDate,
+        lte: memberQueryDto.endDate,
+      },
+      orgname,
+    };
+    if (memberQueryDto.filters) {
+      memberQueryDto.filters.forEach((filter) => {
+        whereConditions[filter.field] = { contains: filter.value };
+      });
+    }
+    const count = await this.prisma.member.count({ where: whereConditions });
     const members = await this.prisma.member.findMany({
       orderBy: {
         [memberQueryDto.sortBy]: memberQueryDto.sortDirection,
       },
       skip: memberQueryDto.offset,
       take: memberQueryDto.limit,
-      where: { orgname },
+      where: whereConditions,
     });
     return { count, results: members };
   }

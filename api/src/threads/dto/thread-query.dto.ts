@@ -4,11 +4,6 @@ import { IsBoolean, IsEnum, IsOptional } from "class-validator";
 import { Granularity } from "../../common/aggregated-field.dto";
 import { SearchQueryDto } from "../../common/search-query";
 
-export enum SortByField {
-  CREATED = "createdAt",
-  CREDITS = "credits",
-}
-
 export class ThreadQueryDto extends SearchQueryDto {
   @ApiProperty({
     default: undefined,
@@ -28,9 +23,4 @@ export class ThreadQueryDto extends SearchQueryDto {
   @IsBoolean({ always: false })
   @IsOptional()
   aggregates?: boolean = false;
-
-  @ApiProperty({ default: "createdAt", enum: SortByField, required: false })
-  @IsEnum(SortByField, { always: false })
-  @IsOptional()
-  sortBy? = "createdAt" as SortByField.CREATED;
 }

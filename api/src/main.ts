@@ -16,6 +16,7 @@ import { AllExceptionsFilter } from "./common/all-exceptions.filter";
 import { ExcludeNullInterceptor } from "./common/exclude-null.interceptor";
 import { _PaginatedDto } from "./common/paginated.dto";
 import { RedisIoAdapter } from "./common/redis-io.adapter";
+import { FilterField } from "./common/search-query";
 import { ThreadAggregates } from "./threads/dto/thread-aggregates.dto";
 
 async function bootstrap() {
@@ -81,7 +82,7 @@ async function bootstrap() {
   );
 
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [_PaginatedDto, ThreadAggregates, ApiTokenEntity],
+    extraModels: [_PaginatedDto, ThreadAggregates, ApiTokenEntity, FilterField],
   });
 
   SwaggerModule.setup("/", app, document, {

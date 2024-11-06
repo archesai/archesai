@@ -14,11 +14,9 @@ import { useAuth } from "@/hooks/useAuth";
 import * as z from "zod";
 
 const formSchema = z.object({
-  description: z.string().min(1),
-  llmBase: z.enum(["gpt-4o", "gpt-4o-mini"], {
-    message: "Invalid language model. Must be one of 'gpt-4o', 'gpt-4o-mini'.",
-  }),
-  name: z.string().min(1).max(255),
+  domains: z.string(),
+  name: z.string(),
+  role: z.enum(["USER", "ADMIN"]),
 });
 
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
@@ -41,25 +39,36 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
     {
       component: Input,
       defaultValue: apiToken?.name,
-      description: "This is the name that will be used for this chatbot.",
+      description: "This is the name that will be used for this API token.",
       label: "Name",
       name: "name",
       props: {
-        placeholder: "Chatbot name here...",
+        placeholder: "API Token name here...",
       },
       validationRule: formSchema.shape.name,
     },
     {
       component: Input,
-      defaultValue: apiToken?.role,
+      defaultValue: apiToken?.domains || "*",
       description:
-        "This is the LLM base that will be used for this chatbot. Note that different models have different credit usages.",
-      label: "Language Model",
-      name: "llmBase",
+        "These are the domains that will be used for this API token.",
+      label: "Domains",
+      name: "domains",
+      props: {
+        placeholder: "Domains here...",
+      },
+      validationRule: formSchema.shape.domains,
+    },
+    {
+      component: Input,
+      defaultValue: apiToken?.role,
+      description: "This is the role that will be used for this API token.",
+      label: "Role",
+      name: "role",
       props: {
         placeholder: "Search llms...",
       },
-      validationRule: formSchema.shape.llmBase,
+      validationRule: formSchema.shape.role,
     },
   ];
 
