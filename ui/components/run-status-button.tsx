@@ -4,9 +4,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { siteConfig } from "@/config/site";
 import { RunEntity } from "@/generated/archesApiSchemas";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
-import { CheckCircle2, CircleX, Loader2Icon } from "lucide-react";
+import { Ban, CheckCircle2, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
 export const RunStatusButton = ({ run }: { run: RunEntity }) => {
@@ -17,9 +18,9 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
       case "QUEUED":
         return <CounterClockwiseClockIcon className="text-primary" />;
       case "COMPLETE":
-        return <CheckCircle2 className="text-teal-600" />;
+        return <CheckCircle2 className="text-green-600" />;
       case "ERROR":
-        return <CircleX className="text-rose-600" />;
+        return <Ban className="text-red-600" />;
       case "PROCESSING":
         return (
           <div className="flex items-center gap-2">
@@ -32,6 +33,8 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
     }
   };
 
+  const Icon = siteConfig.toolBaseIcons["text-to-image"];
+
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
@@ -40,8 +43,11 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
           size="sm"
           variant="secondary"
         >
-          <div>{run.name}</div>
-          {renderIcon()}
+          <div className="flex flex-1 items-center justify-start gap-1 overflow-hidden truncate">
+            <Icon className="h-4 w-4 shrink-0" />
+            {run.name}
+          </div>
+          <div className="ml-2 flex-shrink-0">{renderIcon()}</div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="overflow-auto p-4 text-sm">

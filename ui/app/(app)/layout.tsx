@@ -4,10 +4,10 @@ import { VerifyEmailAlert } from "@/components/email-verify";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { TabsSection } from "@/components/tabs-section";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { siteConfig } from "@/config/site";
+// import { siteConfig } from "@/config/site";
 import { useAuth } from "@/hooks/useAuth";
 import { useWebsockets } from "@/hooks/useWebsockets";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PageHeader } from "../../components/page-header";
@@ -17,16 +17,16 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  // combine all the routes from siteConfig
-  const routes = siteConfig.routes
-    .map((route) => [route, ...(route.children || [])])
-    .flat();
-  // find the current route
-  const currentRoute = routes.find((route) => pathname === route.href);
-  // get the title and description from the current route
-  const title = currentRoute?.title;
-  const description = currentRoute?.description;
+  // const pathname = usePathname();
+  // // combine all the routes from siteConfig
+  // const routes = siteConfig.routes
+  //   .map((route) => [route, ...(route.children || [])])
+  //   .flat();
+  // // find the current route
+  // const currentRoute = routes.find((route) => pathname === route.href);
+  // // get the title and description from the current route
+  // const title = currentRoute?.title;
+  // const description = currentRoute?.description;
 
   const router = useRouter();
   const { accessToken, getUserFromToken, user } = useAuth();
@@ -60,7 +60,7 @@ export default function AppLayout({
           <PageHeader />
           <TabsSection />
           <div className="flex-1 overflow-auto p-4">
-            {description && (
+            {/* {description && (
               <div className="flex h-16 flex-col">
                 <div className="text-xl font-semibold text-foreground">
                   {title}
@@ -69,7 +69,7 @@ export default function AppLayout({
                   {description}
                 </div>
               </div>
-            )}
+            )} */}
             {children}
           </div>
         </main>

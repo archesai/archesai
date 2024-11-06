@@ -50,11 +50,11 @@ export default function ContentPage() {
             ),
           },
           {
-            accessorKey: "description",
+            accessorKey: "value",
             cell: ({ row }) => {
               return (
                 <span className="text-base md:text-sm">
-                  {row.original.description || "No Description"}
+                  {row.original.text || row.original.url}
                 </span>
               );
             },
@@ -64,7 +64,7 @@ export default function ContentPage() {
               <DataTableColumnHeader
                 className="-ml-2 text-sm"
                 column={column}
-                title="Description"
+                title="Data"
               />
             ),
           },

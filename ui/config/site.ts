@@ -21,6 +21,7 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
+import { BookOpen, Cpu, FileText, Image, Volume2 } from "lucide-react";
 
 export const siteConfig = {
   description:
@@ -161,6 +162,13 @@ export const siteConfig = {
       title: "Settings",
     },
   ],
+  toolBaseIcons: {
+    "create-embeddings": Cpu,
+    "extract-text": FileText,
+    summarize: BookOpen,
+    "text-to-image": Image,
+    "text-to-speech": Volume2,
+  },
   url: "https://archesai.com",
 };
 

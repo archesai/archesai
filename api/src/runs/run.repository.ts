@@ -46,9 +46,11 @@ export class RunRepository
 
     // Step 4: Create child tool runs for each tool in the pipeline
     for (const pipelineTool of pipelineTools) {
+      const createdAt = new Date();
       const toolRun = await this.prisma.run.create({
         data: {
-          name: "Tool Run",
+          createdAt,
+          name: createdAt.toISOString(),
           orgname: orgname,
           parentRunId: pipelineRun.id,
           status: "QUEUED",
@@ -105,9 +107,11 @@ export class RunRepository
   }
 
   async createToolRun(orgname: string, toolId: string, runToolDto: RunToolDto) {
+    const createdAt = new Date();
     const run = await this.prisma.run.create({
       data: {
-        name: "Tool Run",
+        createdAt,
+        name: createdAt.toISOString(),
         orgname,
         status: RunStatus.QUEUED,
         toolId,

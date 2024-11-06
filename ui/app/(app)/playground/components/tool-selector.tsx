@@ -20,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { siteConfig } from "@/config/site";
 import { useToolsControllerFindAll } from "@/generated/archesApiComponents";
 import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,7 +47,9 @@ const useMutationObserver = (
   }, [ref, callback, options]);
 };
 
-export function ModelSelector({
+const toolBaseIcons = siteConfig.toolBaseIcons;
+
+export function ToolSelector({
   selectedTool,
   setSelectedTool,
 }: {
@@ -54,7 +57,7 @@ export function ModelSelector({
   setSelectedTool: (model: ToolEntity) => void;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [peekedModel, setPeekedModel] = React.useState<ToolEntity>();
+  const [peekedTool, setPeekedTool] = React.useState<ToolEntity>();
   const { defaultOrgname } = useAuth();
   const { data: tools } = useToolsControllerFindAll({
     pathParams: {
@@ -71,7 +74,7 @@ export function ModelSelector({
     <div className="grid gap-2">
       <HoverCard openDelay={200}>
         <HoverCardTrigger asChild>
-          <Label htmlFor="model">Model</Label>
+          <Label htmlFor="model">Tool</Label>
         </HoverCardTrigger>
         <HoverCardContent
           align="start"
@@ -91,7 +94,18 @@ export function ModelSelector({
             role="combobox"
             variant="outline"
           >
-            {selectedTool ? selectedTool.name : "Select a tool..."}
+            <div className="flex items-center gap-1">
+              {selectedTool?.toolBase &&
+                Object.entries(toolBaseIcons)
+                  .filter(([toolBase]) => toolBase === selectedTool.toolBase)
+                  .map(([toolBase, Icon]) => (
+                    <div className="flex items-center gap-2" key={toolBase}>
+                      <Icon className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  ))}
+              {selectedTool ? selectedTool.name : "Select a tool..."}
+            </div>
+
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -99,28 +113,35 @@ export function ModelSelector({
           <HoverCard>
             <HoverCardContent align="start" forceMount side="left">
               <div className="grid gap-2">
-                <h4 className="font-medium leading-none">
-                  {peekedModel?.name}
+                <h4 className="flex items-center gap-1 font-medium leading-none">
+                  {Object.entries(toolBaseIcons)
+                    .filter(([toolBase]) => toolBase === peekedTool?.toolBase)
+                    .map(([toolBase, Icon]) => (
+                      <div className="flex items-center gap-2" key={toolBase}>
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    ))}
+                  {peekedTool?.name}
                 </h4>
                 <div className="text-sm text-muted-foreground">
-                  {peekedModel?.description}
+                  {peekedTool?.description}
                 </div>
               </div>
             </HoverCardContent>
             <Command loop>
               <CommandList className="h-[var(--cmdk-list-height)] max-h-[400px]">
                 <CommandInput placeholder="Search tools..." />
-                <CommandEmpty>No Models found.</CommandEmpty>
+                <CommandEmpty>No Tools found.</CommandEmpty>
                 <HoverCardTrigger />
                 {toolBases.map((toolBase) => (
                   <CommandGroup heading={toolBase} key={toolBase}>
                     {tools?.results
                       ?.filter((tool) => tool.toolBase === toolBase)
                       .map((tool) => (
-                        <ModelItem
+                        <ToolItem
                           isSelected={selectedTool?.id === tool.id}
                           key={tool.id}
-                          onPeek={(tool) => setPeekedModel(tool)}
+                          onPeek={(tool) => setPeekedTool(tool)}
                           onSelect={() => {
                             setSelectedTool(tool);
                             setOpen(false);
@@ -139,16 +160,15 @@ export function ModelSelector({
   );
 }
 
-interface ModelItemProps {
+interface ToolItemProps {
   isSelected: boolean;
   onPeek: (model: ToolEntity) => void;
   onSelect: () => void;
   tool: ToolEntity;
 }
 
-function ModelItem({ isSelected, onPeek, onSelect, tool }: ModelItemProps) {
+function ToolItem({ isSelected, onPeek, onSelect, tool }: ToolItemProps) {
   const ref = React.useRef<HTMLDivElement>(null);
-
   useMutationObserver(ref, (mutations) => {
     mutations.forEach((mutation) => {
       if (
@@ -162,11 +182,18 @@ function ModelItem({ isSelected, onPeek, onSelect, tool }: ModelItemProps) {
 
   return (
     <CommandItem
-      className="data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground"
+      className="gap-1 data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground"
       key={tool.id}
       onSelect={onSelect}
       ref={ref}
     >
+      {Object.entries(toolBaseIcons)
+        .filter(([toolBase]) => toolBase === tool?.toolBase)
+        .map(([toolBase, Icon]) => (
+          <div className="flex items-center gap-2" key={toolBase}>
+            <Icon className="h-4 w-4 text-muted-foreground" />
+          </div>
+        ))}
       {tool.name}
       <CheckIcon
         className={cn(
