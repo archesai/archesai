@@ -54,10 +54,9 @@ export default function ContentPage() {
             );
           },
           enableHiding: false,
-          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader
-              className="-ml-2 text-sm"
+              className="text-sm"
               column={column}
               title="Description"
             />

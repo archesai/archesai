@@ -50,7 +50,6 @@ export default function ContentPage() {
             return <span>{row.original.description || "No Description"}</span>;
           },
           enableHiding: false,
-          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader
               className="-ml-2 text-sm"
@@ -69,7 +68,6 @@ export default function ContentPage() {
             );
           },
           enableHiding: false,
-          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader
               className="-ml-2 text-sm"
@@ -88,7 +86,6 @@ export default function ContentPage() {
             );
           },
           enableHiding: false,
-          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader
               className="-ml-2 text-sm"
