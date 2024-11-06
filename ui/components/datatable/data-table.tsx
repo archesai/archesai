@@ -408,7 +408,7 @@ export function DataTable<
   );
 
   return (
-    <div className="flex h-full flex-grow flex-col gap-3">
+    <div className="flex h-full flex-col gap-3">
       {!minimal && (
         <DataTableToolbar
           data={data?.results || []}
@@ -439,7 +439,9 @@ export function DataTable<
         />
       )}
 
-      <div className="grow"> {view === "grid" ? grid_view : table_view}</div>
+      <div className="flex-1 overflow-auto">
+        {view === "grid" ? grid_view : table_view}
+      </div>
 
       {!minimal && (
         <div className="self-auto">
