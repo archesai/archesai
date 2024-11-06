@@ -59,7 +59,7 @@ export class PipelineRepository
     };
     if (pipelineQueryDto.filters) {
       pipelineQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
 

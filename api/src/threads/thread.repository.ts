@@ -70,7 +70,7 @@ export class ThreadRepository {
     };
     if (threadQueryDto.filters) {
       threadQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
 

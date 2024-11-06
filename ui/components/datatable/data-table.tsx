@@ -139,6 +139,7 @@ export function DataTable<
       filters: JSON.stringify([
         {
           field: "name",
+          operator: "contains",
           value: query,
         },
       ]),

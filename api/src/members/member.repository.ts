@@ -71,7 +71,7 @@ export class MemberRepository
     };
     if (memberQueryDto.filters) {
       memberQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
     const count = await this.prisma.member.count({ where: whereConditions });

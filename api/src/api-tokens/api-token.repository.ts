@@ -57,7 +57,7 @@ export class ApiTokenRepository
     };
     if (apiTokenQueryDto.filters) {
       apiTokenQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
 

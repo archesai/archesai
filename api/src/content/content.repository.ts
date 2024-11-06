@@ -79,7 +79,7 @@ export class ContentRepository
     };
     if (contentQueryDto.filters) {
       contentQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
     const count = await this.prisma.content.count({

@@ -50,6 +50,11 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       statusCode = 404;
     }
 
+    if (message.includes("Unknown argument")) {
+      message = "Bad Request";
+      statusCode = 400;
+    }
+
     const errorResponse: any = {
       message,
       statusCode,

@@ -36,7 +36,7 @@ export class ToolRepository
     };
     if (toolQueryDto.filters) {
       toolQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { contains: filter.value };
+        whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
     const count = await this.prisma.tool.count({

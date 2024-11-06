@@ -16,10 +16,23 @@ export enum SortDirection {
   DESCENDING = "desc",
 }
 
+export enum Operator {
+  CONTAINS = "contains",
+  ENDS_WITH = "endsWith",
+  EQUALS = "equals",
+  STARTS_WITH = "startsWith",
+}
 export class FilterField {
   @ApiProperty({ description: "Field to filter by", type: String })
   @IsString()
   field: string;
+
+  @ApiProperty({
+    description: "Operator to use for filtering",
+    enum: Operator,
+    required: false,
+  })
+  operator?: string = Operator.CONTAINS;
 
   @ApiProperty({ description: "Value to filter for", type: String })
   @IsString()
