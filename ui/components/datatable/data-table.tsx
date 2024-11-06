@@ -3,7 +3,6 @@ import { DataTablePagination } from "@/components/datatable/data-table-paginatio
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -18,14 +17,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
@@ -34,15 +25,16 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   ColumnDef,
   ColumnFiltersState,
-  flexRender,
   getCoreRowModel,
   SortingState,
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
-import { FilePenLine, PlusSquare } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { GridView } from "./grid-view";
+import { TableView } from "./table-view";
 
 export interface BaseItem {
   id: string;
@@ -257,156 +249,6 @@ export function DataTable<
     },
   });
 
-  const [hover, setHover] = useState(-1);
-
-  const grid_view = (
-    <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-      {
-        // THIS IS THE CREATE FORM CARD
-      }
-      {createForm ? (
-        <div
-          className={`flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-muted`}
-          onClick={async () => {
-            setFormOpen(true);
-          }}
-        >
-          <PlusSquare className="w-h-6 h-6 text-primary" />
-          <span className="text-md">Create {itemType}</span>
-        </div>
-      ) : null}
-      {
-        // THIS IS THE DATA CARDS
-      }
-      {data?.results.map((item, i) => {
-        const isItemSelected = selectedItems.includes(item.id);
-        return (
-          <Card
-            className={`relative flex aspect-auto h-64 flex-col shadow-sm transition-all hover:bg-muted ${isItemSelected ? "ring-4 ring-blue-500" : ""} after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
-            key={i}
-          >
-            {
-              // THIS IS THE INSIDE TOP CONTENT
-            }
-            <div
-              className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all"
-              onClick={async () => handleSelect(item)}
-              onMouseEnter={() => setHover(i)}
-              onMouseLeave={() => setHover(-1)}
-            >
-              {content ? (
-                content(item)
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  {DataIcon}
-                </div>
-              )}
-            </div>
-            <hr />
-
-            {
-              // THIS IS THE FOOTER
-            }
-            <div className="mt-auto flex items-center justify-between p-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <Checkbox
-                  aria-label={`Select ${item.name}`}
-                  checked={isItemSelected}
-                  className="rounded text-blue-600 focus:ring-blue-500"
-                  onCheckedChange={() => toggleSelection(item.id)}
-                />
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight">
-                  {item.name}
-                </span>
-              </div>
-              <div className="flex flex-shrink-0 items-center gap-2">
-                {getEditFormFromItem ? (
-                  <FilePenLine
-                    className="h-5 w-5 cursor-pointer text-primary"
-                    onClick={() => {
-                      setFinalForm(getEditFormFromItem?.(item));
-                      setFormOpen(true);
-                    }}
-                  />
-                ) : null}
-                <DeleteItems
-                  deleteFunction={async (vars) => {
-                    await deleteItem(vars);
-                    setSelectedItems([]);
-                  }}
-                  deleteVariables={[getDeleteVariablesFromItem(item)]}
-                  items={[
-                    {
-                      id: item.id,
-                      name: item.name || item.id,
-                    },
-                  ]}
-                  itemType={itemType}
-                />
-              </div>
-            </div>
-            {hoverContent && hover === i && hoverContent(item)}
-          </Card>
-        );
-      })}
-    </div>
-  );
-
-  const table_view = (
-    <div className="rounded-md border bg-background shadow-sm">
-      <Table className="w-full table-fixed">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    className="text-base"
-                    colSpan={header.colSpan}
-                    key={header.id}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                className="transition-all hover:bg-muted"
-                data-state={row.getIsSelected() && "selected"}
-                key={row.id}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell className="p-2" key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                className="h-24 text-center"
-                colSpan={columns.length + 2}
-              >
-                No {itemType}s found
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
-  );
-
   return (
     <div className="flex h-full flex-col gap-3">
       {!minimal && (
@@ -440,7 +282,26 @@ export function DataTable<
       )}
 
       <div className="flex-1 overflow-auto">
-        {view === "grid" ? grid_view : table_view}
+        {view === "grid" ? (
+          <GridView
+            content={content}
+            createForm={createForm}
+            data={data?.results || []}
+            DataIcon={DataIcon}
+            deleteItem={deleteItem}
+            getDeleteVariablesFromItem={getDeleteVariablesFromItem}
+            getEditFormFromItem={getEditFormFromItem}
+            handleSelect={handleSelect}
+            hoverContent={hoverContent}
+            itemType={itemType}
+            selectedItems={selectedItems}
+            setFinalForm={setFinalForm}
+            setFormOpen={setFormOpen}
+            toggleSelection={toggleSelection}
+          />
+        ) : (
+          <TableView columns={columns} itemType={itemType} table={table} />
+        )}
       </div>
 
       {!minimal && (
