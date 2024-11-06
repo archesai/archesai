@@ -20,113 +20,111 @@ export default function ContentPage() {
   const { defaultOrgname } = useAuth();
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <DataTable<
-        PipelineEntity,
-        PipelinesControllerFindAllPathParams,
-        PipelinesControllerRemoveVariables
-      >
-        columns={[
-          {
-            accessorKey: "name",
-            cell: ({ row }) => {
-              return (
-                <div className="flex gap-2">
-                  <Link
-                    className="max-w-[200px] shrink truncate font-medium text-primary"
-                    href={`/pipelines/single?pipelineId=${row.original.id}`}
-                  >
-                    {row.original.name}
-                  </Link>
-                </div>
-              );
-            },
-            header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Name" />
-            ),
+    <DataTable<
+      PipelineEntity,
+      PipelinesControllerFindAllPathParams,
+      PipelinesControllerRemoveVariables
+    >
+      columns={[
+        {
+          accessorKey: "name",
+          cell: ({ row }) => {
+            return (
+              <div className="flex gap-2">
+                <Link
+                  className="max-w-[200px] shrink truncate font-medium text-primary"
+                  href={`/pipelines/single?pipelineId=${row.original.id}`}
+                >
+                  {row.original.name}
+                </Link>
+              </div>
+            );
           },
-          {
-            accessorKey: "description",
-            cell: ({ row }) => {
-              return (
-                <span>
-                  {(row.original.description || "No Description").toString()}
-                </span>
-              );
-            },
-            enableHiding: false,
-            enableSorting: false,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Description"
-              />
-            ),
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Name" />
+          ),
+        },
+        {
+          accessorKey: "description",
+          cell: ({ row }) => {
+            return (
+              <span>
+                {(row.original.description || "No Description").toString()}
+              </span>
+            );
           },
-          {
-            accessorKey: "pipelineTools",
-            cell: ({ row }) => {
-              return (
-                <div className="flex gap-1">
-                  {row.original.pipelineTools?.map((pipelineTool) => {
-                    return (
-                      <Badge
-                        className="text-nowrap text-primary"
-                        variant="secondary"
-                      >
-                        {pipelineTool.tool}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              );
-            },
-            enableHiding: false,
-            enableSorting: false,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Input"
-              />
-            ),
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Description"
+            />
+          ),
+        },
+        {
+          accessorKey: "pipelineTools",
+          cell: ({ row }) => {
+            return (
+              <div className="flex gap-1">
+                {row.original.pipelineTools?.map((pipelineTool) => {
+                  return (
+                    <Badge
+                      className="text-nowrap text-primary"
+                      variant="secondary"
+                    >
+                      {pipelineTool.tool}
+                    </Badge>
+                  );
+                })}
+              </div>
+            );
           },
-          {
-            accessorKey: "createdAt",
-            cell: ({ row }) => {
-              return (
-                <span className="font-light">
-                  {format(
-                    new Date(row.original.createdAt),
-                    "yyyy-MM-dd HH:mm:ss"
-                  )}
-                </span>
-              );
-            },
-            header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Created" />
-            ),
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Input"
+            />
+          ),
+        },
+        {
+          accessorKey: "createdAt",
+          cell: ({ row }) => {
+            return (
+              <span className="font-light">
+                {format(
+                  new Date(row.original.createdAt),
+                  "yyyy-MM-dd HH:mm:ss"
+                )}
+              </span>
+            );
           },
-        ]}
-        dataIcon={<Workflow />}
-        defaultView="table"
-        findAllPathParams={{
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Created" />
+          ),
+        },
+      ]}
+      dataIcon={<Workflow />}
+      defaultView="table"
+      findAllPathParams={{
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(pipeline) => ({
+        pathParams: {
           orgname: defaultOrgname,
-        }}
-        getDeleteVariablesFromItem={(pipeline) => ({
-          pathParams: {
-            orgname: defaultOrgname,
-            pipelineId: pipeline.id,
-          },
-        })}
-        handleSelect={(pipeline) =>
-          router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
-        }
-        itemType="pipeline"
-        useFindAll={usePipelinesControllerFindAll}
-        useRemove={usePipelinesControllerRemove}
-      />
-    </div>
+          pipelineId: pipeline.id,
+        },
+      })}
+      handleSelect={(pipeline) =>
+        router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
+      }
+      itemType="pipeline"
+      useFindAll={usePipelinesControllerFindAll}
+      useRemove={usePipelinesControllerRemove}
+    />
   );
 }

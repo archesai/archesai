@@ -20,123 +20,119 @@ export default function ContentPage() {
   const { defaultOrgname } = useAuth();
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <DataTable<
-        ToolEntity,
-        ToolsControllerFindAllPathParams,
-        ToolsControllerRemoveVariables
-      >
-        columns={[
-          {
-            accessorKey: "name",
-            cell: ({ row }) => {
-              return (
-                <div className="flex gap-2">
-                  <Link
-                    className="max-w-[200px] shrink truncate font-medium text-primary"
-                    href={`/tool/single?toolId=${row.original.id}`}
-                  >
-                    {row.original.name}
-                  </Link>
-                </div>
-              );
-            },
-            header: ({ column }) => (
-              <DataTableColumnHeader column={column} title="Name" />
-            ),
+    <DataTable<
+      ToolEntity,
+      ToolsControllerFindAllPathParams,
+      ToolsControllerRemoveVariables
+    >
+      columns={[
+        {
+          accessorKey: "name",
+          cell: ({ row }) => {
+            return (
+              <div className="flex gap-2">
+                <Link
+                  className="max-w-[200px] shrink truncate font-medium text-primary"
+                  href={`/tool/single?toolId=${row.original.id}`}
+                >
+                  {row.original.name}
+                </Link>
+              </div>
+            );
           },
-          {
-            accessorKey: "description",
-            cell: ({ row }) => {
-              return (
-                <span>{row.original.description || "No Description"}</span>
-              );
-            },
-            enableHiding: false,
-            enableSorting: false,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Description"
-              />
-            ),
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Name" />
+          ),
+        },
+        {
+          accessorKey: "description",
+          cell: ({ row }) => {
+            return <span>{row.original.description || "No Description"}</span>;
           },
-          {
-            accessorKey: "inputType",
-            cell: ({ row }) => {
-              return (
-                <Badge className="text-primary" variant={"secondary"}>
-                  {row.original.inputType}
-                </Badge>
-              );
-            },
-            enableHiding: false,
-            enableSorting: false,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Input"
-              />
-            ),
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Description"
+            />
+          ),
+        },
+        {
+          accessorKey: "inputType",
+          cell: ({ row }) => {
+            return (
+              <Badge className="text-primary" variant={"secondary"}>
+                {row.original.inputType}
+              </Badge>
+            );
           },
-          {
-            accessorKey: "outputType",
-            cell: ({ row }) => {
-              return (
-                <Badge className="text-primary" variant={"secondary"}>
-                  {row.original.outputType}
-                </Badge>
-              );
-            },
-            enableHiding: false,
-            enableSorting: false,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Output"
-              />
-            ),
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Input"
+            />
+          ),
+        },
+        {
+          accessorKey: "outputType",
+          cell: ({ row }) => {
+            return (
+              <Badge className="text-primary" variant={"secondary"}>
+                {row.original.outputType}
+              </Badge>
+            );
           },
-          {
-            accessorKey: "createdAt",
-            cell: ({ row }) => {
-              return (
-                <span className="font-light">
-                  {format(
-                    new Date(row.original.createdAt),
-                    "yyyy-MM-dd HH:mm:ss"
-                  )}
-                </span>
-              );
-            },
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                className="-ml-2 text-sm"
-                column={column}
-                title="Created"
-              />
-            ),
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Output"
+            />
+          ),
+        },
+        {
+          accessorKey: "createdAt",
+          cell: ({ row }) => {
+            return (
+              <span className="font-light">
+                {format(
+                  new Date(row.original.createdAt),
+                  "yyyy-MM-dd HH:mm:ss"
+                )}
+              </span>
+            );
           },
-        ]}
-        dataIcon={<PackageCheck />}
-        defaultView="table"
-        findAllPathParams={{
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Created"
+            />
+          ),
+        },
+      ]}
+      dataIcon={<PackageCheck />}
+      defaultView="table"
+      findAllPathParams={{
+        orgname: defaultOrgname,
+      }}
+      getDeleteVariablesFromItem={(tool) => ({
+        pathParams: {
           orgname: defaultOrgname,
-        }}
-        getDeleteVariablesFromItem={(tool) => ({
-          pathParams: {
-            orgname: defaultOrgname,
-            toolId: tool.id,
-          },
-        })}
-        handleSelect={(tool) => router.push(`/tool/single?toolId=${tool.id}`)}
-        itemType="tool"
-        useFindAll={useToolsControllerFindAll}
-        useRemove={useToolsControllerRemove}
-      />
-    </div>
+          toolId: tool.id,
+        },
+      })}
+      handleSelect={(tool) => router.push(`/tool/single?toolId=${tool.id}`)}
+      itemType="tool"
+      useFindAll={useToolsControllerFindAll}
+      useRemove={useToolsControllerRemove}
+    />
   );
 }
