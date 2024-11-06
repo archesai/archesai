@@ -34,7 +34,7 @@ export default function ContentPage() {
                 <div className="flex gap-2">
                   <Link
                     className="max-w-[200px] shrink truncate font-medium text-primary"
-                    href={`/tool/single?toolId=${row.original.id}`}
+                    href={`/pipelines/single?pipelineId=${row.original.id}`}
                   >
                     {row.original.name}
                   </Link>

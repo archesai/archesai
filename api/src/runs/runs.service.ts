@@ -13,6 +13,7 @@ import { ToolEntity } from "../tools/entities/tool.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { RunQueryDto } from "./dto/run-query.dto";
 import { RunEntity } from "./entities/run.entity";
+import { RunDetailedEntity } from "./entities/run-detailed.entity";
 import { RunRepository } from "./run.repository";
 
 @Injectable()
@@ -43,8 +44,8 @@ export class RunsService
     });
   }
 
-  async findOne(orgname: string, id: string) {
-    return new RunEntity(await this.runRepository.findOne(orgname, id));
+  async findOne(orgname: string, id: string): Promise<RunDetailedEntity> {
+    return new RunDetailedEntity(await this.runRepository.findOne(orgname, id));
   }
 
   async runPipeline(
@@ -80,13 +81,13 @@ export class RunsService
       }
     } else if (runToolDto.text) {
       const content = await this.contentService.create(orgname, {
-        name: "Input Text",
-        url: runToolDto.text,
+        name: "Tool Input Text - " + tool.id,
+        text: runToolDto.text,
       });
       runToolDto.runInputContentIds = [content.id];
     } else if (runToolDto.url) {
       const content = await this.contentService.create(orgname, {
-        name: "Input URL",
+        name: "Tool Input URL - " + tool.id,
         url: runToolDto.url,
       });
       runToolDto.runInputContentIds = [content.id];

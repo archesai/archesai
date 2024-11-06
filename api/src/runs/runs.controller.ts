@@ -8,6 +8,7 @@ import {
 import { BaseController } from "../common/base.controller";
 import { RunQueryDto } from "./dto/run-query.dto";
 import { RunEntity } from "./entities/run.entity";
+import { RunDetailedEntity } from "./entities/run-detailed.entity";
 import { RunsService } from "./runs.service";
 
 @ApiBearerAuth()
@@ -27,7 +28,7 @@ export class RunsController
     return this.runsService.findAll(orgname, runQueryDto);
   }
 
-  @ApiCrudOperation(Operation.GET, "run", RunEntity, true)
+  @ApiCrudOperation(Operation.GET, "run", RunDetailedEntity, true)
   @Get(":id")
   findOne(@Param("orgname") orgname: string, @Param("id") id: string) {
     return this.runsService.findOne(orgname, id);

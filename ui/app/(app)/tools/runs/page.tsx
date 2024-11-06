@@ -27,7 +27,7 @@ export default function RunsPage() {
               <div className="flex gap-2">
                 <Link
                   className="max-w-[200px] shrink truncate font-medium text-primary"
-                  href={`/tool/single?toolId=${row.original.id}`}
+                  href={`/runs/single?runId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>

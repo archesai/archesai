@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ArrayMinSize, IsArray, IsOptional, IsString } from "class-validator";
+import { IsArray, IsOptional, IsString } from "class-validator";
 
 export class RunToolDto {
   @ApiProperty({
@@ -10,7 +10,6 @@ export class RunToolDto {
     type: [String],
   })
   @IsArray()
-  @ArrayMinSize(1)
   @IsOptional()
   runInputContentIds?: string[];
 

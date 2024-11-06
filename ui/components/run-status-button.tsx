@@ -10,7 +10,13 @@ import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { Ban, CheckCircle2, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
-export const RunStatusButton = ({ run }: { run: RunEntity }) => {
+export const RunStatusButton = ({
+  onClick,
+  run,
+}: {
+  onClick?: () => void;
+  run: RunEntity;
+}) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const renderIcon = () => {
@@ -39,7 +45,8 @@ export const RunStatusButton = ({ run }: { run: RunEntity }) => {
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
-          className="flex w-full items-center justify-between"
+          className="my-1 flex w-full items-center justify-between"
+          onClick={onClick}
           size="sm"
           variant="secondary"
         >

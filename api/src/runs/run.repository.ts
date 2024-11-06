@@ -162,6 +162,22 @@ export class RunRepository
 
   async findOne(orgname: string, id: string) {
     return this.prisma.run.findUniqueOrThrow({
+      include: {
+        childRuns: true,
+        inputContents: true,
+        outputContents: true,
+        parentRun: true,
+        pipeline: {
+          include: {
+            pipelineTools: {
+              include: {
+                tool: true,
+              },
+            },
+          },
+        },
+        tool: true,
+      },
       where: { id },
     });
   }

@@ -59,19 +59,7 @@ export default function AppLayout({
           {user && !user.emailVerified && <VerifyEmailAlert />}
           <PageHeader />
           <TabsSection />
-          <div className="flex-1 overflow-auto p-4">
-            {/* {description && (
-              <div className="flex h-16 flex-col">
-                <div className="text-xl font-semibold text-foreground">
-                  {title}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {description}
-                </div>
-              </div>
-            )} */}
-            {children}
-          </div>
+          <div className="flex-1 overflow-auto p-4">{children}</div>
         </main>
       </SidebarInset>
     </SidebarProvider>

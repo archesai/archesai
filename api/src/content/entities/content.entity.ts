@@ -61,7 +61,7 @@ export class ContentEntity extends BaseEntity implements Content {
   previewImage: null | string;
 
   @ApiProperty({
-    description: "The content's text, if text content",
+    description: "The content's text, if TEXT content",
     example: "Hello world. I am a text.",
     required: false,
     type: String,
@@ -71,6 +71,8 @@ export class ContentEntity extends BaseEntity implements Content {
   text: null | string;
 
   @ApiProperty({
+    description:
+      "The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content",
     example: "https://example.com/example.mp4",
     required: false,
     type: String,

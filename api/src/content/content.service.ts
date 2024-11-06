@@ -1,5 +1,11 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import { Content, Prisma } from "@prisma/client";
+import * as mime from "mime-types";
 
 import { BaseService } from "../common/base.service";
 import { PaginatedDto } from "../common/paginated.dto";
@@ -30,16 +36,36 @@ export class ContentService
     private websocketsService: WebsocketsService,
     private pipelinesService: PipelinesService
   ) {}
-
   async create(orgname: string, createContentDto: CreateContentDto) {
+    const mimeType = await this.detectMimeTypeFromUrl(createContentDto.url);
     const content = await this.contentRepository.create(
       orgname,
-      createContentDto
+      createContentDto,
+      mimeType
     );
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],
     });
     return new ContentEntity(content);
+  }
+
+  async detectMimeTypeFromUrl(url: string) {
+    try {
+      // Extract the file name from the URL
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const fileName = pathname.split("/").pop();
+
+      if (!fileName) {
+        throw new BadRequestException("Unable to extract file name from URL");
+      }
+
+      // Get MIME type based on file extension
+      const mimeType = mime.lookup(fileName);
+      return mimeType || null;
+    } catch (error) {
+      throw new BadRequestException("Failed to detect MIME type");
+    }
   }
 
   async findAll(orgname: string, contentQueryDto: ContentQueryDto) {

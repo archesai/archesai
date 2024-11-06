@@ -19,16 +19,20 @@ export class ContentRepository
 {
   constructor(private prisma: PrismaService) {}
 
-  async create(orgname: string, createContentDto: CreateContentDto) {
+  async create(
+    orgname: string,
+    createContentDto: CreateContentDto,
+    mimeType?: string
+  ) {
     return this.prisma.content.create({
       data: {
-        name: createContentDto.name,
+        ...createContentDto,
+        mimeType,
         organization: {
           connect: {
             orgname,
           },
         },
-        url: createContentDto.url,
       },
     });
   }

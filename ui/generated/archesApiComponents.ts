@@ -3373,7 +3373,7 @@ export const fetchRunsControllerFindOne = (
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.RunEntity,
+    Schemas.RunDetailedEntity,
     RunsControllerFindOneError,
     undefined,
     {},
@@ -3389,11 +3389,11 @@ export const fetchRunsControllerFindOne = (
 /**
  * Get a run. ADMIN ONLY.
  */
-export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
+export const useRunsControllerFindOne = <TData = Schemas.RunDetailedEntity,>(
   variables: RunsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.RunEntity,
+      Schemas.RunDetailedEntity,
       RunsControllerFindOneError,
       TData
     >,
@@ -3403,7 +3403,7 @@ export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    Schemas.RunEntity,
+    Schemas.RunDetailedEntity,
     RunsControllerFindOneError,
     TData
   >({
