@@ -354,7 +354,7 @@ export function DataTable<
 
   const table_view = (
     <div className="rounded-md border bg-background shadow-sm">
-      <Table>
+      <Table className="w-full table-fixed">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
