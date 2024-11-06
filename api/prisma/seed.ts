@@ -52,12 +52,7 @@ async function main() {
   } catch (e) {
     console.log("User already exists", e);
     user = await usersService.findOneByEmail(email);
-    console.log(user);
   }
-
-  const pipelines = await pipelinesService.findAll(user.defaultOrgname, {});
-
-  console.log(pipelines);
 
   try {
     for (let i = 0; i < 100; i++) {

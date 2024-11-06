@@ -86,7 +86,6 @@ export function DataTable<
   columns,
   content,
   createForm,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   dataIcon: DataIcon,
   defaultView,
   findAllPathParams,
