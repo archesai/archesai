@@ -53,9 +53,9 @@ export default function ContentPage() {
             accessorKey: "value",
             cell: ({ row }) => {
               return (
-                <span className="text-base md:text-sm">
+                <div className="max-w-lg truncate text-wrap text-base md:text-sm">
                   {row.original.text || row.original.url}
-                </span>
+                </div>
               );
             },
             enableHiding: false,

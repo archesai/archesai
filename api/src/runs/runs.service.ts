@@ -28,6 +28,16 @@ export class RunsService
     private contentService: ContentService
   ) {}
 
+  async addRunInputContent(id: string, contents: ContentEntity[]) {
+    const run = new RunEntity(
+      await this.runRepository.addOutputContent(id, contents)
+    );
+    this.websocketsService.socket.to(run.orgname).emit("update", {
+      queryKey: ["organizations", run.orgname, "runs"],
+    });
+    return run;
+  }
+
   async findAll(orgname: string, runQueryDto: RunQueryDto) {
     const { count, results } = await this.runRepository.findAll(
       orgname,
@@ -74,7 +84,7 @@ export class RunsService
   }
 
   async runTool(orgname: string, tool: ToolEntity, runToolDto: RunToolDto) {
-    if (runToolDto.runInputContentIds) {
+    if (!!runToolDto.runInputContentIds?.length) {
       // vefify that the content exists
       for (const contentId of runToolDto.runInputContentIds) {
         await this.contentService.findOne(contentId);

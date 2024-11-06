@@ -85,7 +85,7 @@ export class RunpodService {
 
         await this.runsService.setProgress(
           jobId,
-          Number(rundpodCheckJobResponse.output)
+          Number(rundpodCheckJobResponse.output) || 0.5
         );
       } else if (rundpodCheckJobResponse.status === "FAILED") {
         throw new InternalServerErrorException("Runpod job failed");

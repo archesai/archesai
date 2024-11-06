@@ -11,7 +11,7 @@ export const processTextToSpeech = async (
   contentService: ContentService,
   storageService: StorageService,
   speechService: SpeechService
-) => {
+): Promise<ContentEntity[]> => {
   logger.log(`Processing text to speech for run ${runId}`);
   const audioBuffer = await speechService.generateSpeech(
     runInputContents.map((x) => x.text).join(" ")
@@ -29,6 +29,11 @@ export const processTextToSpeech = async (
     multerFile
   );
 
-  logger.log(`Text to speech completed and uploaded for run ${runId}`);
-  return url;
+  const content = await contentService.create(runInputContents[0].orgname, {
+    name:
+      "Text to Speech Tool -" + runInputContents.map((x) => x.name).join(", "),
+    url,
+  });
+
+  return [new ContentEntity(content)];
 };

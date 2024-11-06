@@ -13,7 +13,7 @@ export const processTextToImage = async (
   contentService: ContentService,
   runpodService: RunpodService,
   storageService: StorageService
-) => {
+): Promise<ContentEntity[]> => {
   logger.log(`Processing text to image for run ${runId}`);
   const input = {
     input: {
@@ -42,5 +42,12 @@ export const processTextToImage = async (
     size: buffer.length,
   } as Express.Multer.File);
   logger.log(`Text to image completed and uploaded for run ${runId}`);
-  return url;
+
+  const content = await contentService.create(runInputContents[0].orgname, {
+    name:
+      "Text to Speech Tool -" + runInputContents.map((x) => x.name).join(", "),
+    url,
+  });
+
+  return [new ContentEntity(content)];
 };

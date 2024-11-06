@@ -25,7 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload.sub) {
       return null;
     }
-    this.logger.log(`Validating JWT: ${payload.sub}`);
     const { sub: id } = payload;
     return this.usersService.findOne(id);
   }

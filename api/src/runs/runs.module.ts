@@ -1,11 +1,11 @@
+import { HttpModule } from "@nestjs/axios";
 import { BullModule } from "@nestjs/bullmq";
 import { forwardRef, Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 
 import { ContentModule } from "../content/content.module";
 import { EmbeddingsModule } from "../embeddings/embeddings.module";
 import { LLMModule } from "../llm/llm.module";
-import { LoaderModule } from "../loader/loader.module";
-import { OrganizationsModule } from "../organizations/organizations.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { RunpodModule } from "../runpod/runpod.module";
 import { SpeechModule } from "../speech/speech.module";
@@ -34,12 +34,12 @@ import { RunsService } from "./runs.service";
     forwardRef(() => RunpodModule),
     StorageModule.forRoot(),
     WebsocketsModule,
-    OrganizationsModule,
     ContentModule,
-    LoaderModule,
     LLMModule,
     EmbeddingsModule,
     SpeechModule,
+    HttpModule,
+    ConfigModule,
   ],
 
   providers: [RunsService, RunRepository, RunProcessor],

@@ -1,13 +1,13 @@
+import { HttpService } from "@nestjs/axios";
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Inject, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { Job } from "bullmq";
 
 import { ContentService } from "../content/content.service";
 import { ContentEntity } from "../content/entities/content.entity";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
-import { LoaderService } from "../loader/loader.service";
-import { OrganizationsService } from "../organizations/organizations.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
@@ -23,16 +23,16 @@ export class RunProcessor extends WorkerHost {
   private readonly logger: Logger = new Logger("Tool Processor");
 
   constructor(
-    private runpodService: RunpodService,
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
-    private organizationsService: OrganizationsService,
     private runsService: RunsService,
     private contentService: ContentService,
-    private loaderService: LoaderService,
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
-    private speechService: SpeechService
+    private speechService: SpeechService,
+    private httpService: HttpService,
+    private configService: ConfigService,
+    private runpodService: RunpodService
   ) {
     super();
   }
@@ -69,18 +69,21 @@ export class RunProcessor extends WorkerHost {
 
   async process(job: Job) {
     const runInputContents = job.data.runInputContents as ContentEntity[];
+    let runOutputContents: ContentEntity[] = [];
     switch (job.name) {
       case "extract-text":
-        return processExtractText(
+        runOutputContents = await processExtractText(
           job.id,
           runInputContents,
           this.logger,
           this.contentService,
-          this.loaderService,
-          this.storageService
+          this.storageService,
+          this.httpService,
+          this.configService
         );
+        break;
       case "text-to-image":
-        return processTextToImage(
+        runOutputContents = await processTextToImage(
           job.id,
           runInputContents,
           this.logger,
@@ -88,8 +91,9 @@ export class RunProcessor extends WorkerHost {
           this.runpodService,
           this.storageService
         );
+        break;
       case "text-to-speech":
-        return processTextToSpeech(
+        runOutputContents = await processTextToSpeech(
           job.id,
           runInputContents,
           this.logger,
@@ -97,25 +101,35 @@ export class RunProcessor extends WorkerHost {
           this.storageService,
           this.speechService
         );
+        break;
       case "summarize":
-        return processSummarize(
+        runOutputContents = await processSummarize(
           job.id,
           runInputContents,
           this.logger,
           this.contentService,
-          this.loaderService,
+
           this.llmService
         );
+        break;
       case "create-embeddings":
-        return processCreateEmbeddings(
+        runOutputContents = await processCreateEmbeddings(
           job.id,
           runInputContents,
           this.logger,
           this.contentService,
           this.openAiEmbeddingsService
         );
+        break;
       default:
         this.logger.error(`Unknown toolId ${job.name}`);
+        throw new Error(`Unknown toolId ${job.name}`);
     }
+
+    this.logger.log(`Adding run output contents to run ${job.id}`);
+    await this.runsService.addRunInputContent(
+      job.id.toString(),
+      runOutputContents
+    );
   }
 }

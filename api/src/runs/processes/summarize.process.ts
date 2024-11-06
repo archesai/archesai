@@ -4,22 +4,20 @@ import { retry } from "../../common/retry";
 import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
 import { LLMService } from "../../llm/llm.service";
-import { LoaderService } from "../../loader/loader.service";
 
 export const processSummarize = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
-  loaderService: LoaderService,
   llmService: LLMService
-) => {
+): Promise<ContentEntity[]> => {
   logger.log(`Summarizing content for run ${runId}`);
   const start = Date.now();
-  const c = loaderService.getFirstTokens(
-    runInputContents.map((x) => x.text).filter((x) => x),
-    3000
-  );
+  const c = runInputContents
+    .map((x) => x.text)
+    .filter((x) => x)
+    .join(" ");
   logger.log(`Got first tokens for content for run ${runId}`);
   const { summary } = await retry(
     logger,
@@ -31,5 +29,14 @@ export const processSummarize = async (
   logger.log(
     "Summary saved. Completed in " + (Date.now() - start) / 1000 + "s"
   );
-  return summary;
+
+  const summaryContent = await contentService.create(
+    runInputContents[0].orgname,
+    {
+      name: "Summary Tool - " + runInputContents.map((x) => x.name).join(", "),
+      text: summary,
+    }
+  );
+
+  return [new ContentEntity(summaryContent)];
 };

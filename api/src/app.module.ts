@@ -19,7 +19,6 @@ import { EmailModule } from "./email/email.module";
 import { EmailChangeModule } from "./email-change/email-change.module";
 import { EmailVerificationModule } from "./email-verification/email-verification.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
-import { FirebaseModule } from "./firebase/firebase.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
 import { MessagesModule } from "./messages/messages.module";
@@ -202,7 +201,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     MessagesModule,
     ContentModule,
     RunpodModule,
-    FirebaseModule,
     PasswordResetModule,
     EmailChangeModule,
     ARTokensModule,

@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 
 import { ApiTokensModule } from "../api-tokens/api-tokens.module";
-import { FirebaseModule } from "../firebase/firebase.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
@@ -22,7 +21,6 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     HttpModule,
     ConfigModule,
     UsersModule,
-    FirebaseModule,
     forwardRef(() => ApiTokensModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],

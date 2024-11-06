@@ -37,7 +37,12 @@ export class ContentService
     private pipelinesService: PipelinesService
   ) {}
   async create(orgname: string, createContentDto: CreateContentDto) {
-    const mimeType = await this.detectMimeTypeFromUrl(createContentDto.url);
+    let mimeType: string;
+    if (createContentDto.url) {
+      mimeType = await this.detectMimeTypeFromUrl(createContentDto.url);
+    } else {
+      mimeType = "text/plain";
+    }
     const content = await this.contentRepository.create(
       orgname,
       createContentDto,
@@ -101,7 +106,7 @@ export class ContentService
   }
   async populateReadUrl(content: Content) {
     if (
-      content.url.startsWith(
+      content.url?.startsWith(
         `https://storage.googleapis.com/archesai/storage/${content.orgname}/`
       )
     ) {

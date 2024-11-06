@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Run, RunStatus } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
+import { ContentEntity } from "../content/entities/content.entity";
 import { PrismaService } from "../prisma/prisma.service";
 import { RunToolDto } from "../tools/dto/run-tool.dto";
 import { RunQueryDto } from "./dto/run-query.dto";
@@ -12,6 +13,18 @@ export class RunRepository
   implements BaseRepository<Run, undefined, RunQueryDto, undefined>
 {
   constructor(private readonly prisma: PrismaService) {}
+
+  async addOutputContent(runId: string, contents: ContentEntity[]) {
+    await this.prisma.runOutputContent.createMany({
+      data: contents.map((content) => ({
+        contentId: content.id,
+        runId,
+      })),
+    });
+    return this.prisma.run.findUnique({
+      where: { id: runId },
+    });
+  }
 
   async createPipelineRun(
     orgname: string,
