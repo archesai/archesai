@@ -47,7 +47,7 @@ export class AuthService {
     const refreshToken = this.generateRefreshToken(user.id);
 
     // Store refresh token in database
-    await this.usersService.updateRefreshToken(user.id, refreshToken);
+    await this.usersService.setRefreshToken(user.id, refreshToken);
 
     return {
       accessToken,
@@ -73,7 +73,7 @@ export class AuthService {
     const newRefreshToken = this.generateRefreshToken(user.id);
 
     // Update refresh token in the database
-    await this.usersService.updateRefreshToken(user.id, newRefreshToken);
+    await this.usersService.setRefreshToken(user.id, refreshToken);
 
     return {
       accessToken: newAccessToken,

@@ -71,11 +71,11 @@ export class ContentService extends BaseService<
   }
 
   async incrementCredits(orgname: string, id: string, credits: number) {
-    const content = await this.contentRepository.incrementCredits(id, credits);
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
-    return this.toEntity(content);
+    return this.toEntity(
+      await this.contentRepository.updateRaw(orgname, id, {
+        credits: { increment: credits },
+      })
+    );
   }
 
   async populateReadUrl(content: Content) {
@@ -106,32 +106,21 @@ export class ContentService extends BaseService<
     return this.contentRepository.query(orgname, embedding, topK, contentIds);
   }
 
-  async removeMany(orgname: string, ids: string[]) {
-    return this.contentRepository.removeMany(orgname, ids);
+  async setPreviewImage(orgname: string, id: string, previewImage: string) {
+    return this.toEntity(
+      await this.contentRepository.updateRaw(orgname, id, { previewImage })
+    );
+  }
+
+  async setTitle(orgname: string, id: string, title: string) {
+    return this.toEntity(
+      await this.contentRepository.updateRaw(orgname, id, {
+        name: title,
+      })
+    );
   }
 
   protected toEntity(model: Content): ContentEntity {
     return new ContentEntity(model);
-  }
-
-  async upsertTextChunks(
-    orgname: string,
-    contentId: string,
-    records: {
-      text: string;
-    }[]
-  ): Promise<void> {
-    return this.contentRepository.upsertTextChunks(orgname, contentId, records);
-  }
-
-  async upsertVectors(
-    orgname: string,
-    contentId: string,
-    records: {
-      embedding: number[];
-      textChunkId: string;
-    }[]
-  ): Promise<void> {
-    return this.contentRepository.upsertVectors(orgname, contentId, records);
   }
 }

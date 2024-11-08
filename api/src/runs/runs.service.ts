@@ -125,7 +125,9 @@ export class RunsService extends BaseService<
 
   async setProgress(id: string, progress: number) {
     const run = new RunEntity(
-      await this.runRepository.setProgress(id, progress)
+      await this.runRepository.updateRaw(null, id, {
+        progress,
+      })
     );
     this.websocketsService.socket
       .to(run.orgname)
@@ -134,34 +136,48 @@ export class RunsService extends BaseService<
   }
 
   async setRunError(id: string, error: string) {
-    const run = new RunEntity(await this.runRepository.setRunError(id, error));
+    const run = new RunEntity(
+      await this.runRepository.updateRaw(null, id, {
+        error,
+      })
+    );
     this.websocketsService.socket.to(run.orgname).emit("update", {
       queryKey: ["organizations", run.orgname, "runs"],
     });
     return run;
   }
 
-  protected toEntity(model: Run): RunEntity {
-    return new RunEntity(model);
-  }
-
-  async updateStatus(id: string, status: RunStatus) {
+  async setStatus(id: string, status: RunStatus) {
     switch (status) {
       case "COMPLETE":
-        await this.runRepository.setCompletedAt(id, new Date());
-        await this.runRepository.setProgress(id, 1);
+        await this.runRepository.updateRaw(null, id, {
+          completedAt: new Date(),
+        });
+        await this.runRepository.updateRaw(null, id, {
+          progress: 1,
+        });
         break;
       case "ERROR":
-        await this.runRepository.setCompletedAt(id, new Date());
+        await this.runRepository.updateRaw(null, id, {
+          completedAt: new Date(),
+        });
         break;
       case "PROCESSING":
-        await this.runRepository.setStartedAt(id, new Date());
+        await this.runRepository.updateRaw(null, id, {
+          startedAt: new Date(),
+        });
         break;
     }
-    const run = await this.runRepository.updateStatus(id, status);
+    const run = await this.runRepository.updateRaw(null, id, {
+      status,
+    });
     this.websocketsService.socket.to(run.orgname).emit("update", {
       queryKey: ["organizations", run.orgname, "runs"],
     });
     return this.toEntity(run);
+  }
+
+  protected toEntity(model: Run): RunEntity {
+    return new RunEntity(model);
   }
 }

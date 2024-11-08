@@ -38,7 +38,7 @@ export class EmailChangeService {
       throw new BadRequestException("New email is missing.");
     }
 
-    const user = await this.usersService.updateEmail(userId, newEmail);
+    const user = await this.usersService.setEmail(userId, newEmail);
     return this.authService.login(user);
   }
 

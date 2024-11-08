@@ -36,4 +36,8 @@ jobs:
         with:
           rdme: openapi https://api.archesai.com/-json --key=${{ secrets.README_SECRET }} --id=64837ab02aa53c002a2ceccd -->
 
-bump
+REPOSITORES WITH INCLUDES
+
+- UserRepository
+- ThreadRepository
+- PipelineRepository

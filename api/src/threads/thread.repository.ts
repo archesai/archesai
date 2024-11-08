@@ -8,6 +8,14 @@ import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";
 
+const THREAD_INCLUDE = {
+  _count: {
+    select: {
+      messages: true,
+    },
+  },
+};
+
 @Injectable()
 export class ThreadRepository extends BaseRepository<
   {
@@ -22,13 +30,7 @@ export class ThreadRepository extends BaseRepository<
   Prisma.ThreadUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.thread, {
-      _count: {
-        select: {
-          messages: true,
-        },
-      },
-    });
+    super(prisma.thread, THREAD_INCLUDE);
   }
 
   async cleanupUnused() {
@@ -110,13 +112,7 @@ export class ThreadRepository extends BaseRepository<
     }
 
     const results = await this.prisma.thread.findMany({
-      include: {
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
-      },
+      include: THREAD_INCLUDE,
       orderBy: {
         [threadQueryDto.sortBy]: threadQueryDto.sortDirection,
       },
@@ -125,25 +121,5 @@ export class ThreadRepository extends BaseRepository<
       where: whereConditions,
     });
     return { aggregates, count, results };
-  }
-
-  async incrementCredits(orgname: string, threadId: string, credits: number) {
-    return this.prisma.thread.update({
-      data: {
-        credits: {
-          increment: Math.ceil(credits),
-        },
-      },
-      where: { id: threadId },
-    });
-  }
-
-  async updateThreadName(orgname: string, threadId: string, name: string) {
-    return this.prisma.thread.update({
-      data: {
-        name,
-      },
-      where: { id: threadId },
-    });
   }
 }

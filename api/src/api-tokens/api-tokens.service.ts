@@ -65,9 +65,10 @@ export class ApiTokensService extends BaseService<
       queryKey: ["organizations", orgname, "api-tokens"],
     });
 
-    apiToken.key = token;
-
-    return this.toEntity(apiToken);
+    return this.toEntity({
+      ...apiToken,
+      key: token,
+    });
   }
 
   protected toEntity(model: ApiToken): ApiTokenEntity {

@@ -3,7 +3,6 @@ import { Logger } from "@nestjs/common";
 import { Thread } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
-import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadEntity } from "./entities/thread.entity";
 import { ThreadRepository } from "./thread.repository";
@@ -22,10 +21,7 @@ export class ThreadsService extends BaseService<
 > {
   private readonly logger: Logger = new Logger("Threads Service");
 
-  constructor(
-    private threadRepository: ThreadRepository,
-    private websocketsService: WebsocketsService
-  ) {
+  constructor(private threadRepository: ThreadRepository) {
     super(threadRepository);
   }
 
@@ -33,8 +29,12 @@ export class ThreadsService extends BaseService<
     return this.threadRepository.cleanupUnused();
   }
 
-  async incrementCredits(orgname: string, threadId: string, credits: number) {
-    return this.threadRepository.incrementCredits(orgname, threadId, credits);
+  async setTitle(orgname: string, id: string, title: string) {
+    return this.toEntity(
+      await this.threadRepository.updateRaw(orgname, id, {
+        name: title,
+      })
+    );
   }
 
   protected toEntity(
@@ -45,9 +45,5 @@ export class ThreadsService extends BaseService<
     } & Thread
   ): ThreadEntity {
     return new ThreadEntity(model);
-  }
-
-  async updateThreadName(orgname: string, threadId: string, name: string) {
-    return this.threadRepository.updateThreadName(orgname, threadId, name);
   }
 }

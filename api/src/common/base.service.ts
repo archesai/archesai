@@ -65,17 +65,6 @@ export abstract class BaseService<
     return this.toEntity(updated);
   }
 
-  async updateRaw(
-    orgname: string,
-    id: string,
-    data: RawUpdateInput,
-    options?: { include?: Include; select?: Select }
-  ): Promise<Entity> {
-    return this.toEntity(
-      await this.repository.updateRaw(orgname, id, data, options)
-    );
-  }
-
   /**
    * Convert the raw repository result to an Entity.
    * Override this method in the concrete service if necessary.

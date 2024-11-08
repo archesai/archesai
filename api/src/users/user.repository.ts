@@ -12,6 +12,11 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
+const USER_INCLUDE = {
+  authProviders: true,
+  memberships: true,
+};
+
 @Injectable()
 export class UserRepository extends BaseRepository<
   {
@@ -25,10 +30,7 @@ export class UserRepository extends BaseRepository<
   Prisma.UserUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.user, {
-      authProviders: true,
-      memberships: true,
-    });
+    super(prisma.user, USER_INCLUDE);
   }
 
   async addAuthProvider(
@@ -45,7 +47,7 @@ export class UserRepository extends BaseRepository<
           },
         },
       },
-      include: { authProviders: true, memberships: true },
+      include: USER_INCLUDE,
       where: { email },
     });
   }
@@ -71,7 +73,7 @@ export class UserRepository extends BaseRepository<
           }),
         },
       },
-      include: { authProviders: true, memberships: true },
+      include: USER_INCLUDE,
     });
     return user;
   }
@@ -81,55 +83,15 @@ export class UserRepository extends BaseRepository<
       data: {
         deactivated: true,
       },
-      include: { authProviders: true, memberships: true },
+      include: USER_INCLUDE,
       where: { id },
     });
   }
 
   async findOneByEmail(email: string) {
     return this.prisma.user.findUniqueOrThrow({
-      include: { authProviders: true, memberships: true },
+      include: USER_INCLUDE,
       where: { email },
-    });
-  }
-
-  async setEmailVerified(id: string) {
-    return this.prisma.user.update({
-      data: {
-        emailVerified: true,
-      },
-      include: { authProviders: true, memberships: true },
-      where: { id },
-    });
-  }
-
-  async setEmailVerifiedByEmail(email: string) {
-    return this.prisma.user.update({
-      data: {
-        emailVerified: true,
-      },
-      include: { authProviders: true, memberships: true },
-      where: { email },
-    });
-  }
-
-  async updateEmail(id: string, email: string) {
-    return this.prisma.user.update({
-      data: {
-        email,
-      },
-      include: { authProviders: true, memberships: true },
-      where: { id },
-    });
-  }
-
-  async updateRefreshToken(id: string, refreshToken: string) {
-    return this.prisma.user.update({
-      data: {
-        refreshToken,
-      },
-      include: { authProviders: true, memberships: true },
-      where: { id },
     });
   }
 }

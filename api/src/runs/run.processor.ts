@@ -40,20 +40,20 @@ export class RunProcessor extends WorkerHost {
   @OnWorkerEvent("active")
   async onActive(job: Job) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
-    await this.runsService.updateStatus(job.id.toString(), "PROCESSING");
+    await this.runsService.setStatus(job.id.toString(), "PROCESSING");
   }
 
   @OnWorkerEvent("completed")
   async onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id}`);
-    await this.runsService.updateStatus(job.id.toString(), "COMPLETE");
+    await this.runsService.setStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
   async onError(job: Job, error: any) {
     this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
-      await this.runsService.updateStatus(job.id.toString(), "ERROR");
+      await this.runsService.setStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
@@ -62,7 +62,7 @@ export class RunProcessor extends WorkerHost {
   async onFailed(job: Job, error: any) {
     this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
-      await this.runsService.updateStatus(job.id.toString(), "ERROR");
+      await this.runsService.setStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
@@ -113,13 +113,12 @@ export class RunProcessor extends WorkerHost {
         );
         break;
       case "create-embeddings":
-        runOutputContents =
-          await processCreateEmbeddings();
-          // job.id,
-          // runInputContents,
-          // this.logger,
-          // this.contentService,
-          // this.openAiEmbeddingsService
+        runOutputContents = await processCreateEmbeddings();
+        // job.id,
+        // runInputContents,
+        // this.logger,
+        // this.contentService,
+        // this.openAiEmbeddingsService
         break;
       default:
         this.logger.error(`Unknown toolId ${job.name}`);

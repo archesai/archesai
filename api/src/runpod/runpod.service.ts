@@ -79,7 +79,7 @@ export class RunpodService {
       } else if (rundpodCheckJobResponse.status === "IN_PROGRESS") {
         if (firstAttempt) {
           // mark as processing
-          await this.runsService.updateStatus(jobId, "PROCESSING");
+          await this.runsService.setStatus(jobId, "PROCESSING");
           firstAttempt = false;
         }
 

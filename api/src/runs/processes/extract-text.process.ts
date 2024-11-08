@@ -32,7 +32,7 @@ export const processExtractText = async (
         })
       )
   );
-  const { preview, textContent, title } = data as {
+  const { preview, title } = data as {
     contentType: string;
     preview: string;
     textContent: { page: number; text: string; tokens: number }[];
@@ -52,9 +52,7 @@ export const processExtractText = async (
 
   // update name
   if (title.indexOf("http") == -1) {
-    content = await contentService.updateRaw(content.orgname, content.id, {
-      name: title,
-    });
+    content = await contentService.setTitle(content.orgname, content.id, title);
   }
 
   const uploadPreviewPromise = (async () => {
@@ -71,23 +69,21 @@ export const processExtractText = async (
       `contents/${content.name}-preview.png`,
       multerFile
     );
-    await contentService.updateRaw(content.orgname, content.id, {
-      previewImage: url,
-    });
+    await contentService.setPreviewImage(content.orgname, content.id, url);
   })();
 
   const uploadTextChunks = (async () => {
-    const start = Date.now();
-    await contentService.upsertTextChunks(
-      content.orgname,
-      content.id,
-      textContent
-    );
-    logger.log(
-      `Upserted embeddings for ${content.name}. Completed in ${
-        (Date.now() - start) / 1000
-      }s`
-    );
+    // const start = Date.now();
+    // await contentService.upsertTextChunks(
+    //   content.orgname,
+    //   content.id,
+    //   textContent
+    // );
+    // logger.log(
+    //   `Upserted embeddings for ${content.name}. Completed in ${
+    //     (Date.now() - start) / 1000
+    //   }s`
+    // ); // FIXME
   })();
 
   // if any of this fail, throw an error

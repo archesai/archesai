@@ -171,39 +171,4 @@ export class RunRepository extends BaseRepository<
       where: { id },
     });
   }
-
-  async setCompletedAt(id: string, completedAt: Date) {
-    return this.prisma.run.update({
-      data: { completedAt },
-      where: { id },
-    });
-  }
-
-  async setProgress(id: string, progress: number) {
-    return this.prisma.run.update({
-      data: { progress },
-      where: { id },
-    });
-  }
-
-  async setRunError(id: string, error: string) {
-    return this.prisma.run.update({
-      data: { error },
-      where: { id },
-    });
-  }
-
-  async setStartedAt(id: string, startedAt: Date) {
-    return this.prisma.run.update({
-      data: { startedAt },
-      where: { id },
-    });
-  }
-
-  async updateStatus(id: string, status: RunStatus) {
-    return this.prisma.run.update({
-      data: { status },
-      where: { id },
-    });
-  }
 }

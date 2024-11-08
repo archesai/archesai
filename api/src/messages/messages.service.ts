@@ -55,7 +55,7 @@ export class MessagesService extends BaseService<
     this.logger.log("Got thread");
     // Update Thread Name if still default
     if (thread.name == "New Thread") {
-      await this.threadsService.updateThreadName(
+      await this.threadsService.setTitle(
         orgname,
         additionalData.threadId,
         createMessageDto.question
