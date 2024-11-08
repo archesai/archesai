@@ -1,47 +1,45 @@
 import { Injectable } from "@nestjs/common";
+import { Message, Prisma } from "@prisma/client";
 
-import { MessageQueryDto } from "../messages/dto/message-query.dto";
+import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
 
 @Injectable()
-export class MessageRepository {
-  constructor(private prisma: PrismaService) {}
+export class MessageRepository extends BaseRepository<
+  Message,
+  CreateMessageDto,
+  undefined,
+  Prisma.MessageInclude,
+  Prisma.MessageSelect
+> {
+  constructor(private prisma: PrismaService) {
+    super(prisma.message);
+  }
 
   async create(
-    threadId: string,
+    orgname: string,
     createMessageDto: CreateMessageDto,
-    answer: string
+    additionalData: {
+      answer: string;
+      threadId: string;
+    }
   ) {
     return this.prisma.message.create({
       data: {
-        answer,
+        answer: additionalData.answer,
+        organization: {
+          connect: {
+            orgname,
+          },
+        },
         question: createMessageDto.question,
         thread: {
           connect: {
-            id: threadId,
+            id: additionalData.threadId,
           },
         },
       },
     });
-  }
-
-  async findAll(
-    orgname: string,
-    threadId: string,
-    messageQueryDto: MessageQueryDto
-  ) {
-    const count = await this.prisma.message.count({
-      where: { threadId },
-    });
-    const messages = await this.prisma.message.findMany({
-      orderBy: {
-        [messageQueryDto.sortBy]: messageQueryDto.sortDirection,
-      },
-      skip: messageQueryDto.offset,
-      take: messageQueryDto.limit,
-      where: { threadId },
-    });
-    return { count, results: messages };
   }
 }

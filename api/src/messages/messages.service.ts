@@ -1,12 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Message, Prisma } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
+import { BaseService } from "../common/base.service";
 import { retry } from "../common/retry";
 import { SortDirection } from "../common/search-query";
 import { ContentService } from "../content/content.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
-import { MessageQueryDto } from "../messages/dto/message-query.dto";
 import { MessageEntity } from "../messages/entities/message.entity";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { ThreadsService } from "../threads/threads.service";
@@ -15,7 +16,15 @@ import { CreateMessageDto } from "./dto/create-message.dto";
 import { MessageRepository } from "./message.repository";
 
 @Injectable()
-export class MessagesService {
+export class MessagesService extends BaseService<
+  MessageEntity,
+  CreateMessageDto,
+  undefined,
+  MessageRepository,
+  Message,
+  Prisma.MessageInclude,
+  Prisma.MessageSelect
+> {
   private readonly logger: Logger = new Logger("Messages Service");
 
   constructor(
@@ -26,22 +35,21 @@ export class MessagesService {
     private llmService: LLMService,
     private openAiEmbeddingsService: OpenAiEmbeddingsService,
     private contentService: ContentService
-  ) {}
+  ) {
+    super(messageRepository);
+  }
 
   async create(
     orgname: string,
-    threadId: string,
-    createMessageDto: CreateMessageDto
+    createMessageDto: CreateMessageDto,
+    threadId: string
   ) {
     // Create tokenizer
     const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
-    const thread = await this.threadsService.findOne(
-      orgname,
-
-      threadId
-    );
-
+    this.logger.log("Searching for thread " + threadId);
+    const thread = await this.threadsService.findOne(orgname, threadId);
+    this.logger.log("Got thread");
     // Update Thread Name if still default
     if (thread.name == "New Thread") {
       await this.threadsService.updateThreadName(
@@ -52,7 +60,14 @@ export class MessagesService {
     }
 
     // Get messages
-    const messages = await this.messageRepository.findAll(orgname, threadId, {
+    const messages = await this.messageRepository.findAll(orgname, {
+      filters: [
+        {
+          field: "threadId",
+          operator: "equals",
+          value: thread.id,
+        },
+      ],
       limit: 5,
       sortBy: "createdAt",
       sortDirection: SortDirection.DESCENDING,
@@ -78,6 +93,7 @@ export class MessagesService {
           answer: answer,
           createdAt: new Date(),
           id: mockId,
+          orgname,
           question: createMessageDto.question,
           threadId: thread.id,
         }),
@@ -228,18 +244,20 @@ export class MessagesService {
 
     // Create answer in db
     const message = await this.messageRepository.create(
-      threadId,
+      orgname,
       createMessageDto,
-      answer
+      {
+        answer,
+        threadId,
+      }
     );
 
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "threads", threadId, "messages"],
     });
-    return message;
+    return this.toEntity(message);
   }
-
-  findAll(orgname: string, threadId: string, messageQueryDto: MessageQueryDto) {
-    return this.messageRepository.findAll(orgname, threadId, messageQueryDto);
+  protected toEntity(model: Message): MessageEntity {
+    return new MessageEntity(model);
   }
 }

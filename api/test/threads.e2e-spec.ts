@@ -6,7 +6,7 @@ import request from "supertest";
 import { UsersService } from "../src/users/users.service";
 import { createApp, getUser, registerUser } from "./util";
 
-describe("Chatbots", () => {
+describe("Threads", () => {
   let app: INestApplication;
   let accessToken: string;
   let orgname: string;
@@ -56,7 +56,6 @@ describe("Chatbots", () => {
         question: "What is the story of the tortoise and the hare?",
       })
       .set("Authorization", `Bearer ${accessToken}`);
-
     expect(chatRes.status).toBe(201);
     expect(chatRes).toSatisfyApiSpec();
     const message = chatRes.body as MessageEntity;

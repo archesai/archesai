@@ -35,7 +35,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
       try {
         user = await this.usersService.findOneByEmail(email);
       } catch (e) {
-        user = await this.usersService.create({
+        user = await this.usersService.create(null, {
           email: email,
           emailVerified: true,
           password: null,

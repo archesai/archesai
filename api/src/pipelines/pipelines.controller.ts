@@ -16,8 +16,8 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
-import { PipelineQueryDto } from "./dto/pipeline-query.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineEntity } from "./entities/pipeline.entity";
 import { PipelinesService } from "./pipelines.service";
@@ -30,7 +30,7 @@ export class PipelinesController
     BaseController<
       PipelineEntity,
       CreatePipelineDto,
-      PipelineQueryDto,
+      SearchQueryDto,
       UpdatePipelineDto
     >
 {
@@ -52,9 +52,9 @@ export class PipelinesController
   @Get("/")
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() pipelineQueryDto: PipelineQueryDto
+    @Query() searchQueryDto: SearchQueryDto
   ) {
-    return this.pipelinesService.findAll(orgname, pipelineQueryDto);
+    return this.pipelinesService.findAll(orgname, searchQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "pipeline", PipelineEntity, true)
@@ -63,7 +63,7 @@ export class PipelinesController
     @Param("orgname") orgname: string,
     @Param("pipelineId") pipelineId: string
   ) {
-    return this.pipelinesService.findOne(pipelineId);
+    return this.pipelinesService.findOne(orgname, pipelineId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "pipeline", PipelineEntity, true)

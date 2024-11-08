@@ -113,13 +113,13 @@ export class RunProcessor extends WorkerHost {
         );
         break;
       case "create-embeddings":
-        runOutputContents = await processCreateEmbeddings(
-          job.id,
-          runInputContents,
-          this.logger,
-          this.contentService,
-          this.openAiEmbeddingsService
-        );
+        runOutputContents =
+          await processCreateEmbeddings();
+          // job.id,
+          // runInputContents,
+          // this.logger,
+          // this.contentService,
+          // this.openAiEmbeddingsService
         break;
       default:
         this.logger.error(`Unknown toolId ${job.name}`);

@@ -1,12 +1,20 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Member, Organization, User } from "@prisma/client";
+import { AuthProvider, Member, Organization, User } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEmail, IsString, MinLength } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
 import { MemberEntity } from "../../members/entities/member.entity";
+import { AuthProviderEntity } from "./auth-provider.entity";
 
 export class UserEntity extends BaseEntity implements User {
+  @Expose()
+  @ApiProperty({
+    description: "The memberships of the currently signed in user",
+    type: [AuthProviderEntity],
+  })
+  authProviders: AuthProviderEntity[];
+
   @Exclude()
   @ApiHideProperty()
   deactivated!: boolean;
@@ -95,11 +103,16 @@ export class UserEntity extends BaseEntity implements User {
   @Expose()
   username!: string;
 
-  constructor(user: { memberships: Member[] } & User) {
+  constructor(
+    user: { authProviders: AuthProvider[]; memberships: Member[] } & User
+  ) {
     super();
     Object.assign(this, user);
     this.memberships = (this.memberships || []).map(
       (membership) => new MemberEntity(membership)
+    );
+    this.authProviders = (this.authProviders || []).map(
+      (authProvider) => new AuthProviderEntity(authProvider)
     );
     this.displayName = this.firstName
       ? this.firstName + " " + this.lastName

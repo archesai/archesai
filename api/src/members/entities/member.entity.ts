@@ -1,6 +1,6 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Member, Organization, RoleType, User } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
+import { Member, RoleType } from "@prisma/client";
+import { Expose } from "class-transformer";
 import { IsEnum, IsNotEmpty } from "class-validator";
 
 import { BaseEntity } from "../../common/base-entity.dto";
@@ -24,16 +24,6 @@ export class MemberEntity extends BaseEntity implements Member {
   inviteEmail: string;
 
   @ApiProperty({
-    description: "The name of this member",
-    example: "jonathan",
-  })
-  name: string;
-
-  @ApiHideProperty()
-  @Exclude()
-  organization: Organization;
-
-  @ApiProperty({
     description: "The organization name",
     example: "my-organization",
   })
@@ -44,11 +34,6 @@ export class MemberEntity extends BaseEntity implements Member {
   @Expose()
   @IsEnum(RoleType)
   role: RoleType;
-
-  // Private Properties
-  @ApiHideProperty()
-  @Exclude()
-  user: User;
 
   @ApiProperty({
     description: "The username of this member",
@@ -62,6 +47,5 @@ export class MemberEntity extends BaseEntity implements Member {
   constructor(member: Member) {
     super();
     Object.assign(this, member);
-    this.name = this.username || "";
   }
 }

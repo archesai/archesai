@@ -3,21 +3,20 @@ import { Content, Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
-import { ContentQueryDto } from "./dto/content-query.dto";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 
 @Injectable()
-export class ContentRepository
-  implements
-    BaseRepository<
-      Content,
-      CreateContentDto,
-      ContentQueryDto,
-      UpdateContentDto
-    >
-{
-  constructor(private prisma: PrismaService) {}
+export class ContentRepository extends BaseRepository<
+  Content,
+  CreateContentDto,
+  UpdateContentDto,
+  Prisma.ContentInclude,
+  Prisma.ContentSelect
+> {
+  constructor(private prisma: PrismaService) {
+    super(prisma.content);
+  }
 
   async create(
     orgname: string,
@@ -69,39 +68,6 @@ export class ContentRepository
     return { vectors };
   }
 
-  async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
-    const whereConditions = {
-      createdAt: {
-        gte: contentQueryDto.startDate,
-        lte: contentQueryDto.endDate,
-      },
-      orgname,
-    };
-    if (contentQueryDto.filters) {
-      contentQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { [filter.operator]: filter.value };
-      });
-    }
-    const count = await this.prisma.content.count({
-      where: whereConditions,
-    });
-    const content = await this.prisma.content.findMany({
-      orderBy: {
-        [contentQueryDto.sortBy]: contentQueryDto.sortDirection,
-      },
-      skip: contentQueryDto.offset,
-      take: contentQueryDto.limit,
-      where: whereConditions,
-    });
-    return { count, results: content };
-  }
-
-  async findOne(id: string) {
-    return this.prisma.content.findUniqueOrThrow({
-      where: { id },
-    });
-  }
-
   async incrementCredits(id: string, credits: number) {
     return this.prisma.content.update({
       data: {
@@ -146,32 +112,11 @@ export class ContentRepository
     return results;
   }
 
-  async remove(orgname: string, id: string) {
-    await this.prisma.content.delete({
-      where: { id },
-    });
-  }
-
   async removeMany(orgname: string, ids: string[]): Promise<void> {
     await this.prisma.content.deleteMany({
       where: {
         id: { in: ids },
         orgname,
-      },
-    });
-  }
-
-  async update(
-    orgname: string,
-    id: string,
-    updateContentDto: UpdateContentDto
-  ) {
-    return this.prisma.content.update({
-      data: {
-        name: updateContentDto.name,
-      },
-      where: {
-        id,
       },
     });
   }

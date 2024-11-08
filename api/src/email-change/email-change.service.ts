@@ -46,7 +46,7 @@ export class EmailChangeService {
     userId: string,
     requestEmailChangeDto: RequestEmailChangeDto
   ): Promise<void> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOne(null, userId);
     let newEmailInUse = false;
     try {
       await this.usersService.findOneByEmail(requestEmailChangeDto.email);

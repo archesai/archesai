@@ -13,7 +13,6 @@ import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
-import { PaginatedDto } from "../common/paginated.dto";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";
@@ -32,9 +31,7 @@ export class ThreadsController {
     @Param("orgname") orgname: string,
     @Body() createThreadDto: CreateThreadDto
   ) {
-    return new ThreadEntity(
-      await this.threadsService.create(orgname, createThreadDto)
-    );
+    return this.threadsService.create(orgname, createThreadDto);
   }
 
   @ApiCrudOperation(
@@ -49,19 +46,7 @@ export class ThreadsController {
     @Query() threadQueryDto: ThreadQueryDto,
     @Param("orgname") orgname: string
   ) {
-    const { aggregates, count, threads } = await this.threadsService.findAll(
-      orgname,
-      threadQueryDto
-    );
-    return new PaginatedDto<ThreadEntity, ThreadAggregates>({
-      aggregates,
-      metadata: {
-        limit: threadQueryDto.limit,
-        offset: threadQueryDto.offset,
-        totalResults: count,
-      },
-      results: threads.map((thread) => new ThreadEntity(thread)),
-    });
+    return this.threadsService.findAll(orgname, threadQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "thread", ThreadEntity, true)
@@ -70,9 +55,7 @@ export class ThreadsController {
     @Param("orgname") orgname: string,
     @Param("threadId") threadId: string
   ) {
-    return new ThreadEntity(
-      await this.threadsService.findOne(orgname, threadId)
-    );
+    return this.threadsService.findOne(orgname, threadId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "thread", ThreadEntity, true)

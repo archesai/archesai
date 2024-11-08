@@ -30,7 +30,7 @@ export class EmailVerificationService {
   }
 
   async request(userId: string): Promise<void> {
-    const user = await this.usersService.findOne(userId);
+    const user = await this.usersService.findOne(null, userId);
 
     const token = await this.arTokensService.createToken(
       ARTokenType.EMAIL_VERIFICATION,

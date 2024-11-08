@@ -1,27 +1,54 @@
 import { StorageService } from "@/src/storage/storage.service";
-import { Logger } from "@nestjs/common";
+import { HttpService } from "@nestjs/axios";
+import { BadRequestException, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { AxiosError } from "axios";
+import { catchError, firstValueFrom } from "rxjs";
 
 import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
-import { LoaderService } from "../../loader/loader.service";
 
 export const processExtractText = async (
   runId: string,
-  runInputContentIds: ContentEntity[],
+  runInputContents: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
-  loaderService: LoaderService,
-  storageService: StorageService
-) => {
-  // hit loader endpoint
-  const { mimeType, preview, textContent, title } =
-    await loaderService.extractUrl(content.url, 200);
-  logger.log(`Extracted text from ${content.name} with ${mimeType}`);
+  storageService: StorageService,
+  httpService: HttpService,
+  configService: ConfigService
+): Promise<ContentEntity[]> => {
+  logger.log(`Extracting text for run ${runId}`);
 
-  // update content type
-  await contentService.updateRaw(content.orgname, content.id, {
-    mimeType,
-  });
+  let content = runInputContents[0];
+  const { data } = await firstValueFrom(
+    httpService
+      .post(configService.get("LOADER_ENDPOINT"), {
+        url: content.url,
+      })
+      .pipe(
+        catchError((err: AxiosError) => {
+          logger.error("Error hitting loader endpoint: " + err.message);
+          throw new BadRequestException();
+        })
+      )
+  );
+  const { preview, textContent, title } = data as {
+    contentType: string;
+    preview: string;
+    textContent: { page: number; text: string; tokens: number }[];
+    title: string;
+  };
+
+  logger.log(`Extracted text for ${content.name}`);
+
+  // const sanitizedTextContent = textContent.map((data) => ({
+  //   ...data,
+  //   text: data.text
+  //     .replaceAll(/\0/g, "")
+  //     .replaceAll(/[^ -~\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD\n]/g, ""),
+  // }));
+
+  // const totalTokens = textContent.reduce((acc, curr) => acc + curr.tokens, 0);
 
   // update name
   if (title.indexOf("http") == -1) {
@@ -65,4 +92,5 @@ export const processExtractText = async (
 
   // if any of this fail, throw an error
   await Promise.all([uploadTextChunks, uploadPreviewPromise]);
+  return;
 };

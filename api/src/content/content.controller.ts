@@ -15,8 +15,8 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { ContentService } from "./content.service";
-import { ContentQueryDto } from "./dto/content-query.dto";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { ContentEntity } from "./entities/content.entity";
@@ -29,7 +29,7 @@ export class ContentController
     BaseController<
       ContentEntity,
       CreateContentDto,
-      ContentQueryDto,
+      SearchQueryDto,
       UpdateContentDto
     >
 {
@@ -48,9 +48,9 @@ export class ContentController
   @Get("/")
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() contentQueryDto: ContentQueryDto
+    @Query() searchQueryDto: SearchQueryDto
   ) {
-    return this.contentService.findAll(orgname, contentQueryDto);
+    return this.contentService.findAll(orgname, searchQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "content", ContentEntity, true)
@@ -59,16 +59,16 @@ export class ContentController
     @Param("orgname") orgname: string,
     @Param("contentId") contentId: string
   ) {
-    return this.contentService.findOne(contentId);
+    return this.contentService.findOne(orgname, contentId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "content", ContentEntity, true)
   @Delete("/:contentId")
-  remove(
+  async remove(
     @Param("orgname") orgname: string,
     @Param("contentId") contentId: string
   ) {
-    return this.contentService.remove(orgname, contentId);
+    await this.contentService.remove(orgname, contentId);
   }
 
   @ApiCrudOperation(Operation.UPDATE, "content", ContentEntity, true)

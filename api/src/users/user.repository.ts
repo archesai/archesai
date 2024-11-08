@@ -1,13 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { AuthProviderType } from "@prisma/client";
+import {
+  AuthProvider,
+  AuthProviderType,
+  Member,
+  Prisma,
+  User,
+} from "@prisma/client";
 
+import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { CreateUserInput } from "./types/create-user.type";
 
 @Injectable()
-export class UserRepository {
-  constructor(private prisma: PrismaService) {}
+export class UserRepository extends BaseRepository<
+  {
+    authProviders: AuthProvider[];
+    memberships: Member[];
+  } & User,
+  CreateUserDto,
+  UpdateUserDto,
+  Prisma.UserInclude,
+  Prisma.UserSelect
+> {
+  constructor(private prisma: PrismaService) {
+    super(prisma.user, {
+      authProviders: true,
+      memberships: true,
+    });
+  }
 
   async addAuthProvider(
     email: string,
@@ -28,16 +49,16 @@ export class UserRepository {
     });
   }
 
-  async create(createUser: CreateUserInput) {
+  async create(orgname: string, createUserDto: CreateUserDto) {
     const prexistingMemberships = await this.prisma.member.findMany({
       where: {
-        inviteEmail: createUser.email,
+        inviteEmail: createUserDto.email,
       },
     });
     const user = this.prisma.user.create({
       data: {
-        ...createUser,
-        defaultOrgname: createUser.username,
+        ...createUserDto,
+        defaultOrgname: createUserDto.username,
         memberships: {
           connect: prexistingMemberships.map((m) => {
             return {
@@ -64,29 +85,11 @@ export class UserRepository {
     });
   }
 
-  async findAll() {
-    return this.prisma.user.findMany({
-      include: { authProviders: true, memberships: true },
-      where: { deactivated: false },
-    });
-  }
-
-  async findOne(id: string) {
-    return this.prisma.user.findUniqueOrThrow({
-      include: { authProviders: true, memberships: true },
-      where: { id },
-    });
-  }
-
   async findOneByEmail(email: string) {
     return this.prisma.user.findUniqueOrThrow({
       include: { authProviders: true, memberships: true },
       where: { email },
     });
-  }
-
-  async remove(id: string) {
-    await this.prisma.user.delete({ where: { id } });
   }
 
   async setEmailVerified(id: string) {
@@ -107,17 +110,6 @@ export class UserRepository {
       include: { authProviders: true, memberships: true },
       where: { email },
     });
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.prisma.user.update({
-      data: {
-        ...updateUserDto,
-      },
-      include: { authProviders: true, memberships: true },
-      where: { id },
-    });
-    return user;
   }
 
   async updateEmail(id: string, email: string) {

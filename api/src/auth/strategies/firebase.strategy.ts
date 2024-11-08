@@ -62,7 +62,7 @@ export class FirebaseStrategy extends PassportStrategy(
         user.email.split("@")[0] +
         "-" +
         Math.random().toString(36).substring(2, 6);
-      user = await this.usersService.create({
+      user = await this.usersService.create(null, {
         email: decodedToken.email,
         emailVerified: true,
         password: null,

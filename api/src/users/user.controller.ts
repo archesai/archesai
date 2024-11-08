@@ -35,7 +35,7 @@ export class UserController {
   @ApiOperation({ summary: "Deactivate" })
   @Post("/deactivate")
   async deactivate(@CurrentUser() user: CurrentUserDto) {
-    return this.usersService.remove(user.id);
+    return this.usersService.deactivate(user.id);
   }
 
   @ApiCrudOperation(Operation.GET, "user", UserEntity, true)
@@ -51,7 +51,7 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto
   ) {
     return new UserEntity(
-      await this.usersService.update(user.id, updateUserDto)
+      await this.usersService.update(null, user.id, updateUserDto)
     );
   }
 }

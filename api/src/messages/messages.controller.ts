@@ -6,24 +6,27 @@ import {
   ApiCrudOperation,
   Operation,
 } from "../common/api-crud-operation.decorator";
-import { PaginatedDto } from "../common/paginated.dto";
+import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { CreateMessageDto } from "./dto/create-message.dto";
-import { MessageQueryDto } from "./dto/message-query.dto";
 import { MessageEntity } from "./entities/message.entity";
 import { MessagesService } from "./messages.service";
 
 @ApiTags("Chatbots - Threads - Messages")
 @ApiBearerAuth()
 @Controller("/organizations/:orgname/threads/:threadId/messages")
-export class MessagesController {
+export class MessagesController
+  implements
+    BaseController<MessageEntity, CreateMessageDto, SearchQueryDto, undefined>
+{
   constructor(private readonly messagesService: MessagesService) {}
 
   @ApiCrudOperation(Operation.CREATE, "message", MessageEntity, true)
   @Post()
   async create(
     @Param("orgname") orgname: string,
-    @Param("threadId") threadId: string,
     @Body() createMessageDto: CreateMessageDto,
+    @Param("threadId") threadId: string,
     @Req() req: Request
   ) {
     const controller = new AbortController();
@@ -33,9 +36,12 @@ export class MessagesController {
     };
     // Listen for the aborted event on the request
     req.socket.on("close", handleRequestClose);
-    const message = new MessageEntity(
-      await this.messagesService.create(orgname, threadId, createMessageDto)
+    const message = await this.messagesService.create(
+      orgname,
+      createMessageDto,
+      threadId
     );
+
     req.socket.off("close", handleRequestClose);
     return message;
   }
@@ -43,22 +49,20 @@ export class MessagesController {
   @ApiCrudOperation(Operation.FIND_ALL, "message", MessageEntity, true)
   @Get()
   async findAll(
-    @Query() messageQueryDto: MessageQueryDto,
     @Param("orgname") orgname: string,
+    @Query() searchQueryDto: SearchQueryDto,
     @Param("threadId") threadId: string
   ) {
-    const { count, results } = await this.messagesService.findAll(
-      orgname,
-      threadId,
-      messageQueryDto
-    );
-    return new PaginatedDto<MessageEntity>({
-      metadata: {
-        limit: messageQueryDto.limit,
-        offset: messageQueryDto.offset,
-        totalResults: count,
-      },
-      results: results.map((message) => new MessageEntity(message)),
+    return this.messagesService.findAll(orgname, {
+      filters: [
+        {
+          field: "threadId",
+          operator: "equals",
+          value: threadId,
+        },
+        ...searchQueryDto.filters,
+      ],
+      ...searchQueryDto,
     });
   }
 }

@@ -1,66 +1,72 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { User } from "@prisma/client";
-import { AuthProviderType } from "@prisma/client";
+import {
+  AuthProvider,
+  AuthProviderType,
+  Member,
+  Prisma,
+  User,
+} from "@prisma/client";
 
+import { BaseService } from "../common/base.service";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { WebsocketsService } from "../websockets/websockets.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { CreateUserInput } from "./types/create-user.type";
+import { UserEntity } from "./entities/user.entity";
 import { UserRepository } from "./user.repository";
 
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService<
+  UserEntity,
+  undefined,
+  UpdateUserDto,
+  UserRepository,
+  { memberships: Member[] } & User,
+  Prisma.UserInclude,
+  Prisma.UserSelect
+> {
   private readonly logger: Logger = new Logger(UsersService.name);
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
     private configService: ConfigService,
     private websocketsService: WebsocketsService
-  ) {}
+  ) {
+    super(userRepository);
+  }
 
-  async create(createUser: CreateUserInput) {
-    this.logger.log("Creating user " + JSON.stringify(createUser, null, 2));
-    const user = await this.userRepository.create({
+  async create(orgname: string, createUserDto: CreateUserDto) {
+    const user = await this.userRepository.create("", {
       emailVerified:
         this.configService.get("FEATURE_EMAIL") === true
-          ? createUser.emailVerified
+          ? createUserDto.emailVerified
           : true,
-      ...createUser,
+      ...createUserDto,
     });
     await this.organizationsService.createAndInitialize(user, {
       billingEmail: user.email,
       orgname: user.username,
     });
-    return this.findOne(user.id);
+    return this.toEntity(await this.userRepository.findOne("", user.id));
   }
 
   async deactivate(id: string) {
     await this.userRepository.deactivate(id);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.findAll();
-  }
-
-  async findOne(id: string) {
-    return this.userRepository.findOne(id);
-  }
-
   async findOneByEmail(email: string) {
-    return this.userRepository.findOneByEmail(email);
-  }
-
-  async remove(id: string) {
-    await this.userRepository.remove(id);
+    return this.toEntity(await this.userRepository.findOneByEmail(email));
   }
 
   async setEmailVerified(id: string) {
-    return this.userRepository.setEmailVerified(id);
+    return this.toEntity(await this.userRepository.setEmailVerified(id));
   }
 
   async setEmailVerifiedByEmail(email: string) {
-    return this.userRepository.setEmailVerifiedByEmail(email);
+    return this.toEntity(
+      await this.userRepository.setEmailVerifiedByEmail(email)
+    );
   }
 
   async syncAuthProvider(
@@ -73,15 +79,13 @@ export class UsersService {
     if (!user.authProviders.some((p) => p.provider === provider)) {
       return this.userRepository.addAuthProvider(email, provider, providerId);
     }
-    return user;
+    return this.toEntity(user);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.update(id, updateUserDto);
-    this.websocketsService.socket.to(user.defaultOrgname).emit("update", {
-      queryKey: ["user"],
-    });
-    return user;
+  protected toEntity(
+    model: { authProviders: AuthProvider[]; memberships: Member[] } & User
+  ): UserEntity {
+    return new UserEntity(model);
   }
 
   async updateEmail(id: string, email: string) {
@@ -89,6 +93,8 @@ export class UsersService {
   }
 
   async updateRefreshToken(id: string, refreshToken: string) {
-    return this.userRepository.updateRefreshToken(id, refreshToken);
+    return this.toEntity(
+      await this.userRepository.updateRefreshToken(id, refreshToken)
+    );
   }
 }

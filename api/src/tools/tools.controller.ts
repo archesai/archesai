@@ -15,10 +15,10 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { RunEntity } from "../runs/entities/run.entity";
 import { CreateToolDto } from "./dto/create-tool.dto";
 import { RunToolDto } from "./dto/run-tool.dto";
-import { ToolQueryDto } from "./dto/tool-query.dto";
 import { UpdateToolDto } from "./dto/update-tool.dto";
 import { ToolEntity } from "./entities/tool.entity";
 import { ToolsService } from "./tools.service";
@@ -28,7 +28,7 @@ import { ToolsService } from "./tools.service";
 @Controller("organizations/:orgname/tools")
 export class ToolsController
   implements
-    BaseController<ToolEntity, CreateToolDto, ToolQueryDto, UpdateToolDto>
+    BaseController<ToolEntity, CreateToolDto, SearchQueryDto, UpdateToolDto>
 {
   constructor(private readonly toolsService: ToolsService) {}
 
@@ -45,9 +45,9 @@ export class ToolsController
   @Get("/")
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() toolQueryDto: ToolQueryDto
+    @Query() searchQueryDto: SearchQueryDto
   ) {
-    return this.toolsService.findAll(orgname, toolQueryDto);
+    return this.toolsService.findAll(orgname, searchQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "tool", ToolEntity, true)
@@ -56,13 +56,16 @@ export class ToolsController
     @Param("orgname") orgname: string,
     @Param("toolId") toolId: string
   ) {
-    return this.toolsService.findOne(toolId);
+    return this.toolsService.findOne(orgname, toolId);
   }
 
   @ApiCrudOperation(Operation.DELETE, "tools", ToolEntity, true)
   @Delete("/:toolId")
-  remove(@Param("orgname") orgname: string, @Param("toolId") toolId: string) {
-    return this.toolsService.remove(orgname, toolId);
+  async remove(
+    @Param("orgname") orgname: string,
+    @Param("toolId") toolId: string
+  ) {
+    await this.toolsService.remove(orgname, toolId);
   }
 
   @ApiCrudOperation(Operation.CREATE, "run", RunEntity, true)

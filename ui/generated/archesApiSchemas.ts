@@ -150,6 +150,34 @@ export type RegisterDto = {
   password: string;
 };
 
+export type AuthProviderEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The auth provider's provider
+   */
+  provider: "LOCAL" | "FIREBASE" | "TWITTER";
+  /**
+   * The auth provider's provider ID
+   */
+  providerId: string;
+  /**
+   * The auth provider's user ID
+   */
+  userId: string;
+};
+
 export type MemberEntity = {
   /**
    * The creation date of this item
@@ -176,12 +204,6 @@ export type MemberEntity = {
    * @example invited-user@archesai.com
    */
   inviteEmail: string;
-  /**
-   * The name of this member
-   *
-   * @example jonathan
-   */
-  name: string;
   /**
    * The organization name
    *
@@ -214,6 +236,10 @@ export type UserEntity = {
    * @example 32411590-a8e0-11ed-afa1-0242ac120002
    */
   id: string;
+  /**
+   * The memberships of the currently signed in user
+   */
+  authProviders: AuthProviderEntity[];
   /**
    * The user's default organization name
    *
@@ -1365,6 +1391,10 @@ export type FilterField = {
    * Field to filter by
    */
   field: string;
+  /**
+   * Operator to use for filtering
+   */
+  operator?: "contains" | "endsWith" | "equals" | "startsWith";
   /**
    * Value to filter for
    */

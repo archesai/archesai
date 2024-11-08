@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Message } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsString } from "class-validator";
@@ -13,6 +13,10 @@ export class MessageEntity extends BaseEntity implements Message {
   @Expose()
   answer: string;
 
+  @ApiHideProperty()
+  @Expose()
+  orgname: string;
+
   @ApiProperty({
     description: "The question in this message",
     example: "What is the name of this document?",
@@ -21,7 +25,6 @@ export class MessageEntity extends BaseEntity implements Message {
   @IsString()
   question: string;
 
-  // Public Properties
   @ApiProperty({
     description: "The id of the thread this message belongs to",
     example: "thread1",

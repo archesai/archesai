@@ -199,6 +199,9 @@ model Message {
   question String
   answer   String
 
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
   thread   Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
   threadId String
 }
@@ -255,6 +258,7 @@ model Organization {
   tools     Tool[]
   pipelines Pipeline[]
   runs      Run[]
+  messages  Message[]
 }
 
 model Member {

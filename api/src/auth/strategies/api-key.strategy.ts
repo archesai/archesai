@@ -27,7 +27,7 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key-auth") {
   async validate(payload: any): Promise<CurrentUserDto> {
     this.logger.log(`Validating API Key: ${payload.id}`);
     const { id, orgname, role, uid } = payload;
-    const user = await this.usersService.findOne(uid);
+    const user = await this.usersService.findOne(null, uid);
     user.memberships = user.memberships.filter((m) => m.orgname == orgname);
     if (!user.memberships.length) {
       return null;

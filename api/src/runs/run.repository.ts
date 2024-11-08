@@ -1,18 +1,23 @@
 // run.repository.ts
 import { Injectable } from "@nestjs/common";
-import { Run, RunStatus } from "@prisma/client";
+import { Prisma, Run, RunStatus } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { ContentEntity } from "../content/entities/content.entity";
 import { PrismaService } from "../prisma/prisma.service";
 import { RunToolDto } from "../tools/dto/run-tool.dto";
-import { RunQueryDto } from "./dto/run-query.dto";
 
 @Injectable()
-export class RunRepository
-  implements BaseRepository<Run, undefined, RunQueryDto, undefined>
-{
-  constructor(private readonly prisma: PrismaService) {}
+export class RunRepository extends BaseRepository<
+  Run,
+  undefined,
+  undefined,
+  Prisma.RunInclude,
+  Prisma.RunSelect
+> {
+  constructor(private readonly prisma: PrismaService) {
+    super(prisma.run);
+  }
 
   async addOutputContent(runId: string, contents: ContentEntity[]) {
     await this.prisma.runOutputContent.createMany({
@@ -142,34 +147,6 @@ export class RunRepository
     return this.prisma.run.findUnique({
       where: { id: run.id },
     });
-  }
-
-  async findAll(orgname: string, runQueryDto: RunQueryDto) {
-    const whereConditions = {
-      createdAt: {
-        gte: runQueryDto.startDate,
-        lte: runQueryDto.endDate,
-      },
-      orgname,
-    };
-    if (runQueryDto.filters) {
-      runQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { [filter.operator]: filter.value };
-      });
-    }
-
-    const count = await this.prisma.run.count({
-      where: whereConditions,
-    });
-    const results = await this.prisma.run.findMany({
-      orderBy: {
-        [runQueryDto.sortBy]: runQueryDto.sortDirection,
-      },
-      skip: runQueryDto.offset,
-      take: runQueryDto.limit,
-      where: whereConditions,
-    });
-    return { count, results };
   }
 
   async findOne(orgname: string, id: string) {

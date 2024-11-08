@@ -28,7 +28,7 @@ async function main() {
   try {
     const orgname =
       email.split("@")[0] + "-" + Math.random().toString(36).substring(2, 6);
-    user = await usersService.create({
+    user = await usersService.create(null, {
       email: email,
       emailVerified: true,
       firstName: "Jonathan",

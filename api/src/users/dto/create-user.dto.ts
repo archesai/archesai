@@ -1,4 +1,4 @@
-export type CreateUserInput = {
+export class CreateUserDto {
   email: string;
   emailVerified: boolean;
   firstName?: string;
@@ -6,4 +6,4 @@ export type CreateUserInput = {
   password?: string;
   photoUrl: string;
   username: string;
-};
+}

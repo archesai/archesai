@@ -1,6 +1,6 @@
 import { BaseEntity } from "@/src/common/base-entity.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { Pipeline } from "@prisma/client";
+import { Pipeline, PipelineTool, Tool } from "@prisma/client";
 import { IsString } from "class-validator";
 
 import { PipelineToolEntity } from "./pipeline-tool.entity";
@@ -24,7 +24,9 @@ export class PipelineEntity extends BaseEntity implements Pipeline {
   @ApiProperty({ type: [PipelineToolEntity] })
   pipelineTools: PipelineToolEntity[];
 
-  constructor(pipeline: { pipelineTools: PipelineToolEntity[] } & Pipeline) {
+  constructor(
+    pipeline: { pipelineTools: ({ tool: Tool } & PipelineTool)[] } & Pipeline
+  ) {
     super();
     Object.assign(this, pipeline);
     this.pipelineTools = pipeline.pipelineTools.map(

@@ -19,8 +19,8 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { ApiTokensService } from "./api-tokens.service";
-import { ApiTokenQueryDto } from "./dto/api-token-query.dto";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
 import { ApiTokenEntity } from "./entities/api-token.entity";
@@ -33,7 +33,7 @@ export class ApiTokensController
     BaseController<
       ApiTokenEntity,
       CreateApiTokenDto,
-      ApiTokenQueryDto,
+      SearchQueryDto,
       UpdateApiTokenDto
     >
 {
@@ -57,9 +57,9 @@ export class ApiTokensController
   @Get("/organizations/:orgname/api-tokens")
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() apiTokenQueryDto: ApiTokenQueryDto
+    @Query() searchQueryDto: SearchQueryDto
   ) {
-    return this.apiTokensService.findAll(orgname, apiTokenQueryDto);
+    return this.apiTokensService.findAll(orgname, searchQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "API token", ApiTokenEntity, true)
@@ -71,7 +71,7 @@ export class ApiTokensController
   @ApiCrudOperation(Operation.DELETE, "API token", ApiTokenEntity, true)
   @Delete("/organizations/:orgname/api-tokens/:id")
   async remove(@Param("orgname") orgname: string, @Param("id") id: string) {
-    return this.apiTokensService.remove(orgname, id);
+    await this.apiTokensService.remove(orgname, id);
   }
 
   @ApiCrudOperation(Operation.UPDATE, "API token", ApiTokenEntity, true)

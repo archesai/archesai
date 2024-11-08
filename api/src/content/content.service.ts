@@ -8,34 +8,33 @@ import { Content, Prisma } from "@prisma/client";
 import * as mime from "mime-types";
 
 import { BaseService } from "../common/base.service";
-import { PaginatedDto } from "../common/paginated.dto";
-import { PipelinesService } from "../pipelines/pipelines.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { ContentRepository } from "./content.repository";
-import { ContentQueryDto } from "./dto/content-query.dto";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { ContentEntity } from "./entities/content.entity";
 
 @Injectable()
-export class ContentService
-  implements
-    BaseService<
-      ContentEntity,
-      CreateContentDto,
-      ContentQueryDto,
-      UpdateContentDto
-    >
-{
+export class ContentService extends BaseService<
+  ContentEntity,
+  CreateContentDto,
+  UpdateContentDto,
+  ContentRepository,
+  Content,
+  Prisma.ContentInclude,
+  Prisma.ContentSelect
+> {
   private logger = new Logger(ContentService.name);
   constructor(
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentRepository: ContentRepository,
-    private websocketsService: WebsocketsService,
-    private pipelinesService: PipelinesService
-  ) {}
+    private websocketsService: WebsocketsService
+  ) {
+    super(contentRepository);
+  }
+
   async create(orgname: string, createContentDto: CreateContentDto) {
     let mimeType: string;
     if (createContentDto.url) {
@@ -51,7 +50,7 @@ export class ContentService
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],
     });
-    return new ContentEntity(content);
+    return this.toEntity(content);
   }
 
   async detectMimeTypeFromUrl(url: string) {
@@ -73,37 +72,14 @@ export class ContentService
     }
   }
 
-  async findAll(orgname: string, contentQueryDto: ContentQueryDto) {
-    const { count, results } = await this.contentRepository.findAll(
-      orgname,
-      contentQueryDto
-    );
-    const contentEntities = results.map(
-      (content) => new ContentEntity(content)
-    );
-    return new PaginatedDto<ContentEntity>({
-      metadata: {
-        limit: contentQueryDto.limit,
-        offset: contentQueryDto.offset,
-        totalResults: count,
-      },
-      results: contentEntities,
-    });
-  }
-
-  async findOne(id: string) {
-    const content = await this.contentRepository.findOne(id);
-    const populated = await this.populateReadUrl(content);
-    return new ContentEntity(populated);
-  }
-
   async incrementCredits(orgname: string, id: string, credits: number) {
     const content = await this.contentRepository.incrementCredits(id, credits);
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],
     });
-    return new ContentEntity(content);
+    return this.toEntity(content);
   }
+
   async populateReadUrl(content: Content) {
     if (
       content.url?.startsWith(
@@ -130,7 +106,7 @@ export class ContentService
       }
     }
 
-    return content;
+    return this.toEntity(content);
   }
 
   async query(
@@ -142,31 +118,12 @@ export class ContentService
     return this.contentRepository.query(orgname, embedding, topK, contentIds);
   }
 
-  async remove(orgname: string, contentId: string): Promise<void> {
-    await this.contentRepository.remove(orgname, contentId);
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
-  }
-
   async removeMany(orgname: string, ids: string[]) {
     return this.contentRepository.removeMany(orgname, ids);
   }
 
-  async update(
-    orgname: string,
-    id: string,
-    updateContentDto: UpdateContentDto
-  ) {
-    const content = await this.contentRepository.update(
-      orgname,
-      id,
-      updateContentDto
-    );
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
-    return new ContentEntity(content);
+  protected toEntity(model: any): ContentEntity {
+    return new ContentEntity(model);
   }
 
   async updateRaw(orgname: string, id: string, raw: Prisma.ContentUpdateInput) {
@@ -174,7 +131,7 @@ export class ContentService
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],
     });
-    return new ContentEntity(content);
+    return this.toEntity(content);
   }
 
   async upsertTextChunks(

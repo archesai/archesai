@@ -1,14 +1,34 @@
 import { Injectable } from "@nestjs/common";
+import { Prisma, Thread } from "@prisma/client";
 
 import { GranularCount, GranularSum } from "../common/aggregated-field.dto";
+import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";
 
 @Injectable()
-export class ThreadRepository {
-  constructor(private prisma: PrismaService) {}
+export class ThreadRepository extends BaseRepository<
+  {
+    _count: {
+      messages: number;
+    };
+  } & Thread,
+  CreateThreadDto,
+  undefined,
+  Prisma.ThreadInclude,
+  Prisma.ThreadSelect
+> {
+  constructor(private prisma: PrismaService) {
+    super(prisma.thread, {
+      _count: {
+        select: {
+          messages: true,
+        },
+      },
+    });
+  }
 
   async cleanupUnused() {
     // First, fetch all threads with no messagess.
@@ -31,33 +51,6 @@ export class ThreadRepository {
 
     // Optionally, return the number of deleted threads.
     return threads.length;
-  }
-
-  async create(orgname: string, createThreadDto: CreateThreadDto) {
-    return this.prisma.thread.create({
-      data: {
-        id: createThreadDto.id ? createThreadDto.id : undefined,
-        name: createThreadDto.name,
-        organization: {
-          connect: {
-            orgname,
-          },
-        },
-      },
-      include: {
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
-      },
-    });
-  }
-
-  async delete(id: string) {
-    await this.prisma.thread.delete({
-      where: { id },
-    });
   }
 
   async findAll(orgname: string, threadQueryDto: ThreadQueryDto) {
@@ -115,7 +108,7 @@ export class ThreadRepository {
       };
     }
 
-    const threads = await this.prisma.thread.findMany({
+    const results = await this.prisma.thread.findMany({
       include: {
         _count: {
           select: {
@@ -130,20 +123,7 @@ export class ThreadRepository {
       take: threadQueryDto.limit,
       where: whereConditions,
     });
-    return { aggregates, count, threads };
-  }
-
-  async findOne(id: string) {
-    return this.prisma.thread.findUniqueOrThrow({
-      include: {
-        _count: {
-          select: {
-            messages: true,
-          },
-        },
-      },
-      where: { id },
-    });
+    return { aggregates, count, results };
   }
 
   async incrementCredits(orgname: string, threadId: string, credits: number) {

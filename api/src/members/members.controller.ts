@@ -24,8 +24,8 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
+import { SearchQueryDto } from "../common/search-query";
 import { CreateMemberDto } from "./dto/create-member.dto";
-import { MemberQueryDto } from "./dto/member-query.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { MemberEntity } from "./entities/member.entity";
 import { MembersService } from "./members.service";
@@ -38,7 +38,7 @@ export class MembersController
     BaseController<
       MemberEntity,
       CreateMemberDto,
-      MemberQueryDto,
+      SearchQueryDto,
       UpdateMemberDto
     >
 {
@@ -57,9 +57,9 @@ export class MembersController
   @Get("/organizations/:orgname/members")
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() memberQueryDto: MemberQueryDto
+    @Query() searchQueryDto: SearchQueryDto
   ) {
-    return this.membersService.findAll(orgname, memberQueryDto);
+    return this.membersService.findAll(orgname, searchQueryDto);
   }
 
   @ApiOperation({
@@ -88,7 +88,7 @@ export class MembersController
     @Param("orgname") orgname: string,
     @Param("memberId") memberId: string
   ) {
-    return this.membersService.remove(orgname, memberId);
+    await this.membersService.remove(orgname, memberId);
   }
 
   @ApiCrudOperation(Operation.UPDATE, "member", MemberEntity, true)

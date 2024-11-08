@@ -1,23 +1,30 @@
 import { Injectable } from "@nestjs/common";
-import { Pipeline, Prisma } from "@prisma/client";
+import { Pipeline, PipelineTool, Prisma, Tool } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
-import { PipelineQueryDto } from "./dto/pipeline-query.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 
 @Injectable()
-export class PipelineRepository
-  implements
-    BaseRepository<
-      Pipeline,
-      CreatePipelineDto,
-      PipelineQueryDto,
-      UpdatePipelineDto
-    >
-{
-  constructor(private prisma: PrismaService) {}
+export class PipelineRepository extends BaseRepository<
+  {
+    pipelineTools: ({ tool: Tool } & PipelineTool)[];
+  } & Pipeline,
+  CreatePipelineDto,
+  UpdatePipelineDto,
+  Prisma.PipelineInclude,
+  Prisma.PipelineSelect
+> {
+  constructor(private prisma: PrismaService) {
+    super(prisma.pipeline, {
+      pipelineTools: {
+        include: {
+          tool: true,
+        },
+      },
+    });
+  }
 
   async create(orgname: string, createPipelineDto: CreatePipelineDto) {
     return this.prisma.pipeline.create({
@@ -46,60 +53,6 @@ export class PipelineRepository
           },
         },
       },
-    });
-  }
-
-  async findAll(orgname: string, pipelineQueryDto: PipelineQueryDto) {
-    const whereConditions = {
-      createdAt: {
-        gte: pipelineQueryDto.startDate,
-        lte: pipelineQueryDto.endDate,
-      },
-      orgname,
-    };
-    if (pipelineQueryDto.filters) {
-      pipelineQueryDto.filters.forEach((filter) => {
-        whereConditions[filter.field] = { [filter.operator]: filter.value };
-      });
-    }
-
-    const count = await this.prisma.pipeline.count({
-      where: whereConditions,
-    });
-    const pipelines = await this.prisma.pipeline.findMany({
-      include: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
-      orderBy: {
-        [pipelineQueryDto.sortBy]: pipelineQueryDto.sortDirection,
-      },
-      skip: pipelineQueryDto.offset,
-      take: pipelineQueryDto.limit,
-      where: whereConditions,
-    });
-    return { count, results: pipelines };
-  }
-
-  async findOne(id: string) {
-    return this.prisma.pipeline.findUniqueOrThrow({
-      include: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
-      where: { id },
-    });
-  }
-
-  async remove(orgname: string, id: string) {
-    await this.prisma.pipeline.delete({
-      where: { id },
     });
   }
 
@@ -149,26 +102,6 @@ export class PipelineRepository
 
         //
       },
-      include: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
-      where: {
-        id,
-      },
-    });
-  }
-
-  async updateRaw(
-    orgname: string,
-    id: string,
-    raw: Prisma.PipelineUpdateInput
-  ) {
-    return this.prisma.pipeline.update({
-      data: raw,
       include: {
         pipelineTools: {
           include: {

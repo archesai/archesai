@@ -50,7 +50,7 @@ export class WebsocketsGateway
       const { sub: id } = await this.authService.verifyToken(
         socket.handshake.auth.token
       );
-      const user = await this.usersService.findOne(id);
+      const user = await this.usersService.findOne(null, id);
       this.logger.log(`Connected with websockets ${user.defaultOrgname}`);
       socket.join(user.defaultOrgname);
     } catch (error) {

@@ -6,7 +6,7 @@ import {
   Operation,
 } from "../common/api-crud-operation.decorator";
 import { BaseController } from "../common/base.controller";
-import { RunQueryDto } from "./dto/run-query.dto";
+import { SearchQueryDto } from "../common/search-query";
 import { RunEntity } from "./entities/run.entity";
 import { RunDetailedEntity } from "./entities/run-detailed.entity";
 import { RunsService } from "./runs.service";
@@ -15,7 +15,7 @@ import { RunsService } from "./runs.service";
 @ApiTags("Runs")
 @Controller("/organizations/:orgname/runs")
 export class RunsController
-  implements BaseController<RunEntity, undefined, RunQueryDto, undefined>
+  implements BaseController<RunEntity, undefined, SearchQueryDto, undefined>
 {
   constructor(private readonly runsService: RunsService) {}
 
@@ -23,9 +23,9 @@ export class RunsController
   @Get()
   async findAll(
     @Param("orgname") orgname: string,
-    @Query() runQueryDto: RunQueryDto
+    @Query() searchQuery: SearchQueryDto
   ) {
-    return this.runsService.findAll(orgname, runQueryDto);
+    return this.runsService.findAll(orgname, searchQuery);
   }
 
   @ApiCrudOperation(Operation.GET, "run", RunDetailedEntity, true)

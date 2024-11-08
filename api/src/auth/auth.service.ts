@@ -62,7 +62,7 @@ export class AuthService {
       // secret: this.configService.get("JWT_REFRESH_SECRET"),
     });
 
-    const user = await this.usersService.findOne(payload.sub);
+    const user = await this.usersService.findOne(null, payload.sub);
 
     if (!user || user.refreshToken !== refreshToken) {
       throw new UnauthorizedException();
@@ -88,7 +88,7 @@ export class AuthService {
       registerDto.email.split("@")[0] +
       "-" +
       Math.random().toString(36).substring(2, 6);
-    const user = await this.usersService.create({
+    const user = await this.usersService.create(null, {
       email: registerDto.email,
       emailVerified: this.configService.get("FEATURE_EMAIL") === false,
       password: hashedPassword,
