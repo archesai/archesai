@@ -1,10 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Member } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
-import { MemberEntity } from "./entities/member.entity";
+import { MemberEntity, MemberModel } from "./entities/member.entity";
 import { MemberRepository } from "./member.repository";
 
 @Injectable()
@@ -13,7 +12,7 @@ export class MembersService extends BaseService<
   CreateMemberDto,
   UpdateMemberDto,
   MemberRepository,
-  Member
+  MemberModel
 > {
   private readonly logger = new Logger(MembersService.name);
   constructor(private memberRepository: MemberRepository) {
@@ -29,7 +28,7 @@ export class MembersService extends BaseService<
     );
   }
 
-  protected toEntity(model: Member): MemberEntity {
+  protected toEntity(model: MemberModel): MemberEntity {
     return new MemberEntity(model);
   }
 }

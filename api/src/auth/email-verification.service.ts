@@ -3,11 +3,11 @@ import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 
 import { ARTokensService } from "../ar-tokens/ar-tokens.service";
-import { AuthService } from "../auth/auth.service";
 import { EmailService } from "../email/email.service";
 import { getEmailVerificationHtml } from "../email/templates";
 import { UsersService } from "../users/users.service";
-import { ConfirmEmailVerificationDto } from "./dto/confirm-password-verification.dto";
+import { AuthService } from "./auth.service";
+import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
 
 @Injectable()
 export class EmailVerificationService {
@@ -19,10 +19,10 @@ export class EmailVerificationService {
     private readonly arTokensService: ARTokensService
   ) {}
 
-  async confirm(confirmEmailVerificationDto: ConfirmEmailVerificationDto) {
+  async confirm(confirmationTokenDto: ConfirmationTokenDto) {
     const { userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_VERIFICATION,
-      confirmEmailVerificationDto.token
+      confirmationTokenDto.token
     );
 
     const user = await this.usersService.setEmailVerified(userId);

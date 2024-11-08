@@ -8,6 +8,9 @@ import { OrganizationsModule } from "../organizations/organizations.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { EmailChangeService } from "./email-change.service";
+import { EmailVerificationService } from "./email-verification.service";
+import { PasswordResetService } from "./password-reset.service";
 import { ApiKeyStrategy } from "./strategies/api-key.strategy";
 import { FirebaseStrategy } from "./strategies/firebase.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
@@ -40,6 +43,10 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     FirebaseStrategy,
     TwitterStrategy,
     ApiKeyStrategy,
+    // Additional Services
+    PasswordResetService,
+    EmailVerificationService,
+    EmailChangeService,
   ],
 })
 export class AuthModule {}

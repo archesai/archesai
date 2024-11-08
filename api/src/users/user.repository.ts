@@ -1,16 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import {
-  AuthProvider,
-  AuthProviderType,
-  Member,
-  Prisma,
-  User,
-} from "@prisma/client";
+import { AuthProviderType, Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserWithMembershipsAndAuthProvidersModel } from "./entities/user.entity";
 
 const USER_INCLUDE = {
   authProviders: true,
@@ -19,10 +14,7 @@ const USER_INCLUDE = {
 
 @Injectable()
 export class UserRepository extends BaseRepository<
-  {
-    authProviders: AuthProvider[];
-    memberships: Member[];
-  } & User,
+  UserWithMembershipsAndAuthProvidersModel,
   CreateUserDto,
   UpdateUserDto,
   Prisma.UserInclude,

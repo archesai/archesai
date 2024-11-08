@@ -1,12 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Content } from "@prisma/client";
+import { Content as _PrismaContent } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/dto/base.entity.dto";
 
+export type ContentModel = _PrismaContent;
+
 @Exclude()
-export class ContentEntity extends BaseEntity implements Content {
+export class ContentEntity extends BaseEntity implements ContentModel {
   @ApiProperty({
     description: "The number of credits used to process this content",
     example: 0,
@@ -81,7 +83,7 @@ export class ContentEntity extends BaseEntity implements Content {
   @IsString()
   url: null | string;
 
-  constructor(content: Content) {
+  constructor(content: ContentModel) {
     super();
     Object.assign(this, content);
   }

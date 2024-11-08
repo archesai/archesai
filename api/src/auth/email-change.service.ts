@@ -5,17 +5,16 @@ import {
   ConflictException,
   Injectable,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 
+import { ARTokensService } from "../ar-tokens/ar-tokens.service";
 import { EmailService } from "../email/email.service";
 import { getEmailChangeConfirmationHtml } from "../email/templates";
-import { RequestEmailChangeDto } from "./dto/request-email-change.dto"; // HTML Email Templates
-import { ConfigService } from "@nestjs/config";
-
-import { ARTokensService } from "../ar-tokens/ar-tokens.service";
 import { UsersService } from "../users/users.service"; // Import TokenService
-import { AuthService } from "../auth/auth.service";
-import { ConfirmEmailChangeDto } from "./dto/confirm-email-change.dto";
+import { AuthService } from "./auth.service";
+import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
+import { EmailRequestDto } from "./dto/email-request.dto";
 
 @Injectable()
 export class EmailChangeService {
@@ -27,10 +26,10 @@ export class EmailChangeService {
     private readonly authService: AuthService
   ) {}
 
-  async confirm(confirmEmailChangeDto: ConfirmEmailChangeDto) {
+  async confirm(confirmationTokenDto: ConfirmationTokenDto) {
     const { additionalData, userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_CHANGE,
-      confirmEmailChangeDto.token
+      confirmationTokenDto.token
     );
 
     const newEmail = additionalData?.newEmail;
@@ -44,12 +43,12 @@ export class EmailChangeService {
 
   async request(
     userId: string,
-    requestEmailChangeDto: RequestEmailChangeDto
+    emailRequestDto: EmailRequestDto
   ): Promise<void> {
     const user = await this.usersService.findOne(null, userId);
     let newEmailInUse = false;
     try {
-      await this.usersService.findOneByEmail(requestEmailChangeDto.email);
+      await this.usersService.findOneByEmail(emailRequestDto.email);
       newEmailInUse = true;
     } catch (e) {}
     if (newEmailInUse) {
@@ -61,7 +60,7 @@ export class EmailChangeService {
       ARTokenType.EMAIL_CHANGE,
       user.id,
       24, // 24 hours expiry
-      { newEmail: requestEmailChangeDto.email }
+      { newEmail: emailRequestDto.email }
     );
 
     // Create an email change confirmation link containing the token
@@ -79,7 +78,7 @@ export class EmailChangeService {
     await this.emailService.sendMail({
       html: htmlContent,
       subject: "Confirm Your Email Change",
-      to: requestEmailChangeDto.email,
+      to: emailRequestDto.email,
     });
   }
 }

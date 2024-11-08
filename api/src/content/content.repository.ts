@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { Content, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
+import { ContentModel } from "./entities/content.entity";
 
 @Injectable()
 export class ContentRepository extends BaseRepository<
-  Content,
+  ContentModel,
   CreateContentDto,
   UpdateContentDto,
   Prisma.ContentInclude,

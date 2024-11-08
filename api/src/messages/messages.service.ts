@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Message } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { BaseService } from "../common/base.service";
@@ -8,7 +7,10 @@ import { retry } from "../common/retry";
 import { ContentService } from "../content/content.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
-import { MessageEntity } from "../messages/entities/message.entity";
+import {
+  MessageEntity,
+  MessageModel,
+} from "../messages/entities/message.entity";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { ThreadsService } from "../threads/threads.service";
 import { WebsocketsService } from "../websockets/websockets.service";
@@ -21,7 +23,7 @@ export class MessagesService extends BaseService<
   CreateMessageDto,
   undefined,
   MessageRepository,
-  Message
+  MessageModel
 > {
   private readonly logger: Logger = new Logger("Messages Service");
 
@@ -267,7 +269,7 @@ export class MessagesService extends BaseService<
     return this.toEntity(message);
   }
 
-  protected toEntity(model: Message): MessageEntity {
+  protected toEntity(model: MessageModel): MessageEntity {
     return new MessageEntity(model);
   }
 }

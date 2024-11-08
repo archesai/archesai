@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, Thread } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { GranularCount, GranularSum } from "../common/dto/aggregated-field.dto";
@@ -7,6 +7,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";
+import { ThreadModelWithCount } from "./entities/thread.entity";
 
 const THREAD_INCLUDE = {
   _count: {
@@ -18,11 +19,7 @@ const THREAD_INCLUDE = {
 
 @Injectable()
 export class ThreadRepository extends BaseRepository<
-  {
-    _count: {
-      messages: number;
-    };
-  } & Thread,
+  ThreadModelWithCount,
   CreateThreadDto,
   undefined,
   Prisma.ThreadInclude,

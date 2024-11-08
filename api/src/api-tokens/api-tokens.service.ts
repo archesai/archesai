@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { ApiToken } from "@prisma/client";
 import { v4 } from "uuid";
 
 import { BaseService } from "../common/base.service";
@@ -9,7 +8,7 @@ import { WebsocketsService } from "../websockets/websockets.service";
 import { ApiTokenRepository } from "./api-token.repository";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
-import { ApiTokenEntity } from "./entities/api-token.entity";
+import { ApiTokenEntity, ApiTokenModel } from "./entities/api-token.entity";
 
 @Injectable()
 export class ApiTokensService extends BaseService<
@@ -17,7 +16,7 @@ export class ApiTokensService extends BaseService<
   CreateApiTokenDto,
   UpdateApiTokenDto,
   ApiTokenRepository,
-  ApiToken
+  ApiTokenModel
 > {
   constructor(
     private apiTokenRepository: ApiTokenRepository,
@@ -71,7 +70,7 @@ export class ApiTokensService extends BaseService<
     });
   }
 
-  protected toEntity(model: ApiToken): ApiTokenEntity {
+  protected toEntity(model: ApiTokenModel): ApiTokenEntity {
     return new ApiTokenEntity(model);
   }
 }

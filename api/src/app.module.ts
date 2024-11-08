@@ -16,14 +16,11 @@ import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
 import { ContentModule } from "./content/content.module";
 import { EmailModule } from "./email/email.module";
-import { EmailChangeModule } from "./email-change/email-change.module";
-import { EmailVerificationModule } from "./email-verification/email-verification.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
 import { MessagesModule } from "./messages/messages.module";
 import { OrganizationsModule } from "./organizations/organizations.module";
-import { PasswordResetModule } from "./password-reset/password-reset.module";
 import { PipelinesModule } from "./pipelines/pipelines.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
@@ -192,7 +189,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ApiTokensModule,
     EmbeddingsModule,
     LLMModule,
-    EmailVerificationModule,
     ThreadsModule,
     StorageModule.forRoot(),
     WebsocketsModule,
@@ -201,8 +197,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     MessagesModule,
     ContentModule,
     RunpodModule,
-    PasswordResetModule,
-    EmailChangeModule,
     ARTokensModule,
     SpeechModule,
     ToolsModule,

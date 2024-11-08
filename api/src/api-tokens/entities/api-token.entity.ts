@@ -1,10 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { ApiToken, RoleType } from "@prisma/client";
+import { ApiToken as _PrismaApiToken, RoleType } from "@prisma/client";
 import { IsEnum, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/dto/base.entity.dto";
 
-export class ApiTokenEntity extends BaseEntity implements ApiToken {
+export type ApiTokenModel = _PrismaApiToken;
+
+export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
   @ApiProperty({
     default: "*",
     description: "The domains that can access this API token",
@@ -45,7 +47,7 @@ export class ApiTokenEntity extends BaseEntity implements ApiToken {
   })
   username: string;
 
-  constructor(apiToken: ApiToken) {
+  constructor(apiToken: ApiTokenModel) {
     super();
     Object.assign(this, apiToken);
   }

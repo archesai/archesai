@@ -17,7 +17,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint", "prettier"],
   root: true,
-  ignorePatterns: [".eslintrc.js", "dist"],
+  ignorePatterns: [".eslintrc.js", "dist", "metadata.ts"],
   rules: {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/interface-name-prefix": "off",

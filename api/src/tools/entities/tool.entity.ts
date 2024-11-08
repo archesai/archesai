@@ -1,12 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Tool, ToolIOType } from "@prisma/client";
+import { Tool as _PrismaTool, ToolIOType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEnum, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/dto/base.entity.dto";
 
+export type ToolModel = _PrismaTool;
+
 @Exclude()
-export class ToolEntity extends BaseEntity implements Tool {
+export class ToolEntity extends BaseEntity implements ToolModel {
   @ApiProperty({
     description: "The tool description",
     example: "This tool converts a file to text, regardless of the file type.",
@@ -57,7 +59,7 @@ export class ToolEntity extends BaseEntity implements Tool {
   @IsString()
   toolBase: string;
 
-  constructor(tool: Tool) {
+  constructor(tool: ToolModel) {
     super();
     Object.assign(this, tool);
   }

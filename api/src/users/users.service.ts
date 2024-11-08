@@ -1,12 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { AuthProvider, AuthProviderType, Member, User } from "@prisma/client";
+import { AuthProviderType } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { OrganizationsService } from "../organizations/organizations.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { UserEntity } from "./entities/user.entity";
+import {
+  UserEntity,
+  UserWithMembershipsAndAuthProvidersModel,
+} from "./entities/user.entity";
 import { UserRepository } from "./user.repository";
 
 @Injectable()
@@ -15,7 +18,7 @@ export class UsersService extends BaseService<
   undefined,
   UpdateUserDto,
   UserRepository,
-  { authProviders: AuthProvider[]; memberships: Member[] } & User
+  UserWithMembershipsAndAuthProvidersModel
 > {
   private readonly logger: Logger = new Logger(UsersService.name);
   constructor(
@@ -92,7 +95,7 @@ export class UsersService extends BaseService<
   }
 
   protected toEntity(
-    model: { authProviders: AuthProvider[]; memberships: Member[] } & User
+    model: UserWithMembershipsAndAuthProvidersModel
   ): UserEntity {
     return new UserEntity(model);
   }

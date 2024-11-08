@@ -4,15 +4,15 @@ import { Injectable } from "@nestjs/common";
 import { ARTokenType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
+import { ARTokensService } from "../ar-tokens/ar-tokens.service";
 import { EmailService } from "../email/email.service";
 import { getPasswordResetHtml } from "../email/templates";
 import { PrismaService } from "../prisma/prisma.service";
-import { ConfirmPasswordResetDto } from "./dto/confirm-password-reset.dto"; // HTML Email Templates
-import { ARTokensService } from "../ar-tokens/ar-tokens.service";
-import { AuthService } from "../auth/auth.service"; // Import TokenService
+import { AuthService } from "./auth.service"; // Import TokenService
 import { ConfigService } from "@nestjs/config";
 
-import { RequestPasswordResetDto } from "./dto/request-password-reset.dto";
+import { ConfirmationTokenWithNewPasswordDto } from "./dto/confirmation-token-with-new-password.dto";
+import { EmailRequestDto } from "./dto/email-request.dto";
 
 @Injectable()
 export class PasswordResetService {
@@ -24,14 +24,16 @@ export class PasswordResetService {
     private readonly configService: ConfigService
   ) {}
 
-  async confirm(confirmResetPasswordDto: ConfirmPasswordResetDto) {
+  async confirm(
+    confirmationTokenWithNewPasswordDto: ConfirmationTokenWithNewPasswordDto
+  ) {
     const { userId } = await this.arTokensService.verifyToken(
       ARTokenType.PASSWORD_RESET,
-      confirmResetPasswordDto.token
+      confirmationTokenWithNewPasswordDto.token
     );
 
     const hashedPassword = await bcrypt.hash(
-      confirmResetPasswordDto.newPassword,
+      confirmationTokenWithNewPasswordDto.newPassword,
       10
     );
     const user = await this.prisma.user.update({
@@ -46,11 +48,9 @@ export class PasswordResetService {
     return this.authService.login(user);
   }
 
-  async request(
-    requestPasswordResetDto: RequestPasswordResetDto
-  ): Promise<void> {
+  async request(emailRequestDto: EmailRequestDto): Promise<void> {
     const user = await this.prisma.user.findUnique({
-      where: { email: requestPasswordResetDto.email },
+      where: { email: emailRequestDto.email },
     });
     if (!user) {
       return;
@@ -70,7 +70,7 @@ export class PasswordResetService {
     await this.emailService.sendMail({
       html: htmlContent,
       subject: "Password Reset Request",
-      to: requestPasswordResetDto.email,
+      to: emailRequestDto.email,
     });
   }
 }

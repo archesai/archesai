@@ -4,7 +4,6 @@ import {
   Injectable,
   Logger,
 } from "@nestjs/common";
-import { Content } from "@prisma/client";
 import * as mime from "mime-types";
 
 import { BaseService } from "../common/base.service";
@@ -13,7 +12,7 @@ import { WebsocketsService } from "../websockets/websockets.service";
 import { ContentRepository } from "./content.repository";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
-import { ContentEntity } from "./entities/content.entity";
+import { ContentEntity, ContentModel } from "./entities/content.entity";
 
 @Injectable()
 export class ContentService extends BaseService<
@@ -21,7 +20,7 @@ export class ContentService extends BaseService<
   CreateContentDto,
   UpdateContentDto,
   ContentRepository,
-  Content
+  ContentModel
 > {
   private logger = new Logger(ContentService.name);
   constructor(
@@ -78,7 +77,7 @@ export class ContentService extends BaseService<
     );
   }
 
-  async populateReadUrl(content: Content) {
+  async populateReadUrl(content: ContentModel) {
     const url = `https://storage.googleapis.com/archesai/storage/${content.orgname}/`;
     if (content.url?.startsWith(url)) {
       const path = content.url.replace(url, "").split("?")[0];
@@ -120,7 +119,7 @@ export class ContentService extends BaseService<
     );
   }
 
-  protected toEntity(model: Content): ContentEntity {
+  protected toEntity(model: ContentModel): ContentEntity {
     return new ContentEntity(model);
   }
 }

@@ -1,11 +1,18 @@
 import { BaseEntity } from "@/src/common/dto/base.entity.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { Pipeline, PipelineTool, Tool } from "@prisma/client";
+import { Pipeline as _PrismaPipeline } from "@prisma/client";
 import { IsString } from "class-validator";
 
-import { PipelineToolEntity } from "./pipeline-tool.entity";
+import { PipelineToolEntity, PipelineToolModel } from "./pipeline-tool.entity";
 
-export class PipelineEntity extends BaseEntity implements Pipeline {
+export type PipelineWithPipelineToolsModel = _PrismaPipeline & {
+  pipelineTools: PipelineToolModel[];
+};
+
+export class PipelineEntity
+  extends BaseEntity
+  implements PipelineWithPipelineToolsModel
+{
   @ApiProperty({
     example: "This is a sample pipeline",
     required: false,
@@ -24,9 +31,7 @@ export class PipelineEntity extends BaseEntity implements Pipeline {
   @ApiProperty({ type: [PipelineToolEntity] })
   pipelineTools: PipelineToolEntity[];
 
-  constructor(
-    pipeline: { pipelineTools: ({ tool: Tool } & PipelineTool)[] } & Pipeline
-  ) {
+  constructor(pipeline: PipelineWithPipelineToolsModel) {
     super();
     Object.assign(this, pipeline);
     this.pipelineTools = pipeline.pipelineTools.map(

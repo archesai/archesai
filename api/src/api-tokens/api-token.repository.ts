@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { ApiToken, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
+import { ApiTokenModel } from "./entities/api-token.entity";
 
 @Injectable()
 export class ApiTokenRepository extends BaseRepository<
-  ApiToken,
+  ApiTokenModel,
   CreateApiTokenDto,
   UpdateApiTokenDto,
   Prisma.ApiTokenInclude,

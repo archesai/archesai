@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { Member, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
+import { MemberModel } from "./entities/member.entity";
 
 @Injectable()
 export class MemberRepository extends BaseRepository<
-  Member,
+  MemberModel,
   CreateMemberDto,
   UpdateMemberDto,
   Prisma.MemberInclude,

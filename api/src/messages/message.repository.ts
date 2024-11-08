@@ -1,13 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { Message, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateMessageDto } from "./dto/create-message.dto";
+import { MessageModel } from "./entities/message.entity";
 
 @Injectable()
 export class MessageRepository extends BaseRepository<
-  Message,
+  MessageModel,
   CreateMessageDto,
   undefined,
   Prisma.MessageInclude,

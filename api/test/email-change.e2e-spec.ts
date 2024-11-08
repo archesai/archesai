@@ -1,9 +1,9 @@
+import { ConfirmationTokenDto } from "@/src/auth/dto/confirmation-token.dto";
+import { EmailRequestDto } from "@/src/auth/dto/email-request.dto";
 import { EmailService } from "@/src/email/email.service";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
-import { ConfirmEmailChangeDto } from "../src/email-change/dto/confirm-email-change.dto";
-import { RequestEmailChangeDto } from "../src/email-change/dto/request-email-change.dto";
 import { createApp, getUser, registerUser } from "./util";
 
 describe("Email Change", () => {
@@ -42,13 +42,13 @@ describe("Email Change", () => {
   });
 
   it("should request an email change", async () => {
-    const requestEmailChangeDto: RequestEmailChangeDto = {
+    const emailRequestDto: EmailRequestDto = {
       email: newEmail,
     };
     const res = await request(app.getHttpServer())
       .post("/auth/email-change/request")
       .set("Authorization", `Bearer ${accessToken}`)
-      .send(requestEmailChangeDto);
+      .send(emailRequestDto);
 
     expect(res.status).toBe(201);
   });
@@ -77,12 +77,12 @@ describe("Email Change", () => {
   });
 
   const confirmEmailChangeExpectStatus = async (
-    confirmEmailChangeDto: ConfirmEmailChangeDto,
+    confirmationTokenDto: ConfirmationTokenDto,
     status: number
   ) => {
     const res = await request(app.getHttpServer())
       .post("/auth/email-change/confirm")
-      .send(confirmEmailChangeDto);
+      .send(confirmationTokenDto);
     expect(res).toSatisfyApiSpec();
     expect(res.status).toBe(status);
   };

@@ -5,12 +5,6 @@ import { Exclude, Expose } from "class-transformer";
 
 import { RunEntity } from "./run.entity";
 
-//    childRuns: true,
-//         inputContents: true,
-//         outputContents: true,
-//         parentRun: true,
-//         pipeline: true,
-//         tool: true,
 @Exclude()
 export class RunDetailedEntity extends RunEntity {
   @ApiProperty({

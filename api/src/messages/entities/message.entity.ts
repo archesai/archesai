@@ -1,11 +1,13 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Message } from "@prisma/client";
+import { Message as _PrismaMessage } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/dto/base.entity.dto";
 
-export class MessageEntity extends BaseEntity implements Message {
+export type MessageModel = _PrismaMessage;
+
+export class MessageEntity extends BaseEntity implements MessageModel {
   @ApiProperty({
     description: "The answer given by the bot",
     example: "The name of this document is Aesop's Fables",
@@ -32,7 +34,7 @@ export class MessageEntity extends BaseEntity implements Message {
   @Expose()
   threadId: string;
 
-  constructor(message: Message) {
+  constructor(message: MessageModel) {
     super();
     Object.assign(this, message);
   }

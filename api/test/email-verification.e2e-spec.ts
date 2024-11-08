@@ -1,5 +1,5 @@
+import { ConfirmationTokenDto } from "@/src/auth/dto/confirmation-token.dto";
 import { EmailService } from "@/src/email/email.service";
-import { ConfirmEmailVerificationDto } from "@/src/email-verification/dto/confirm-password-verification.dto";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
@@ -75,12 +75,12 @@ describe("Email Verification", () => {
   });
 
   const confirmEmailVerificationExpectStatus = async (
-    confirmEmailVerificationDto: ConfirmEmailVerificationDto,
+    confirmationTokenDto: ConfirmationTokenDto,
     status: number
   ) => {
     const res = await request(app.getHttpServer())
       .post("/auth/email-verification/confirm")
-      .send(confirmEmailVerificationDto);
+      .send(confirmationTokenDto);
     expect(res).toSatisfyApiSpec();
     expect(res.status).toBe(status);
   };

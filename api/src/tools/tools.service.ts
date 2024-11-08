@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Tool } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { RunEntity } from "../runs/entities/run.entity";
@@ -8,7 +7,7 @@ import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateToolDto } from "./dto/create-tool.dto";
 import { RunToolDto } from "./dto/run-tool.dto";
 import { UpdateToolDto } from "./dto/update-tool.dto";
-import { ToolEntity } from "./entities/tool.entity";
+import { ToolEntity, ToolModel } from "./entities/tool.entity";
 import { ToolRepository } from "./tool.repository";
 
 @Injectable()
@@ -17,7 +16,7 @@ export class ToolsService extends BaseService<
   CreateToolDto,
   UpdateToolDto,
   ToolRepository,
-  Tool
+  ToolModel
 > {
   private logger = new Logger(ToolsService.name);
   constructor(
@@ -37,7 +36,7 @@ export class ToolsService extends BaseService<
     return this.runsService.runTool(orgname, tool, runToolDto);
   }
 
-  protected toEntity(model: Tool): ToolEntity {
+  protected toEntity(model: ToolModel): ToolEntity {
     return new ToolEntity(model);
   }
 }

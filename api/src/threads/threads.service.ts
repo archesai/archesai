@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
-import { Thread } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
-import { ThreadEntity } from "./entities/thread.entity";
+import { ThreadEntity, ThreadModelWithCount } from "./entities/thread.entity";
 import { ThreadRepository } from "./thread.repository";
 
 @Injectable()
@@ -13,11 +12,7 @@ export class ThreadsService extends BaseService<
   CreateThreadDto,
   undefined,
   ThreadRepository,
-  {
-    _count: {
-      messages: number;
-    };
-  } & Thread
+  ThreadModelWithCount
 > {
   private readonly logger: Logger = new Logger("Threads Service");
 
@@ -37,13 +32,7 @@ export class ThreadsService extends BaseService<
     );
   }
 
-  protected toEntity(
-    model: {
-      _count: {
-        messages: number;
-      };
-    } & Thread
-  ): ThreadEntity {
+  protected toEntity(model: ThreadModelWithCount): ThreadEntity {
     return new ThreadEntity(model);
   }
 }

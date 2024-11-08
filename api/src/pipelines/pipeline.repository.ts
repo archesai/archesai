@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Pipeline, PipelineTool, Prisma, Tool } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
+import { PipelineWithPipelineToolsModel } from "./entities/pipeline.entity";
 
 const PIPELINE_INCLUDE = {
   pipelineTools: {
@@ -16,9 +17,7 @@ const PIPELINE_INCLUDE = {
 
 @Injectable()
 export class PipelineRepository extends BaseRepository<
-  {
-    pipelineTools: ({ tool: Tool } & PipelineTool)[];
-  } & Pipeline,
+  PipelineWithPipelineToolsModel,
   CreatePipelineDto,
   UpdatePipelineDto,
   Prisma.PipelineInclude,

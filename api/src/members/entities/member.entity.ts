@@ -1,11 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Member, RoleType } from "@prisma/client";
+import { Member as _PrismaMember, RoleType } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsEnum, IsNotEmpty } from "class-validator";
 
 import { BaseEntity } from "../../common/dto/base.entity.dto";
 
-export class MemberEntity extends BaseEntity implements Member {
+export type MemberModel = _PrismaMember;
+
+export class MemberEntity extends BaseEntity implements MemberModel {
   @ApiProperty({
     description: "Whether the invite was accepted",
     example: false,
@@ -44,7 +46,7 @@ export class MemberEntity extends BaseEntity implements Member {
   @Expose()
   username: null | string;
 
-  constructor(member: Member) {
+  constructor(member: MemberModel) {
     super();
     Object.assign(this, member);
   }
