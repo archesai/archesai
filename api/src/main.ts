@@ -9,6 +9,7 @@ import { ApiTokensService } from "./api-tokens/api-tokens.service";
 import { ApiTokenEntity } from "./api-tokens/entities/api-token.entity";
 import { AppModule } from "./app.module";
 import { AppAuthGuard } from "./auth/guards/app-auth.guard";
+import { DeactivatedGuard } from "./auth/guards/deactivated.guard";
 import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
 import { OrganizationRoleGuard } from "./auth/guards/organization-role.guard";
 import { RestrictedAPIKeyGuard } from "./auth/guards/restricted-api-key.guard";
@@ -45,6 +46,7 @@ async function bootstrap() {
   );
   app.useGlobalGuards(
     new AppAuthGuard(app.get(Reflector)),
+    new DeactivatedGuard(app.get(Reflector)),
     new EmailVerifiedGuard(app.get(Reflector)),
     new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
     new OrganizationRoleGuard(app.get(Reflector))

@@ -232,6 +232,92 @@ paths:
         - Pipelines
       security:
         - bearer: []
+  /auth/email-change/confirm:
+    post:
+      operationId: AuthController_emailChangeConfirm
+      summary: Confirm e-mail change
+      description: This endpoint will confirm your e-mail change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmationTokenDto'
+      responses:
+        '201':
+          description: E-mail change confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '400':
+          description: ''
+      tags:
+        - Authentication
+  /auth/email-change/request:
+    post:
+      operationId: AuthController_emailChangeRequest
+      summary: Confirm e-mail change
+      description: This endpoint will request your e-mail change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequestDto'
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Authentication
+      security:
+        - bearer: []
+  /auth/email-verification/confirm:
+    post:
+      operationId: AuthController_emailVerificationConfirm
+      summary: Confirm e-mail verification
+      description: This endpoint will confirm your e-mail with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmationTokenDto'
+      responses:
+        '201':
+          description: E-mail verification confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+        '400':
+          description: ''
+        '401':
+          description: ''
+      tags:
+        - Authentication
+  /auth/email-verification/request:
+    post:
+      operationId: AuthController_emailVerificationRequest
+      summary: Resend e-mail verification
+      description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+      parameters: []
+      responses:
+        '201':
+          description: E-mail verification link sent
+        '400':
+          description: Already Verified
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      tags:
+        - Authentication
+      security:
+        - bearer: []
   /auth/login:
     post:
       operationId: AuthController_login
@@ -252,6 +338,44 @@ paths:
                 $ref: '#/components/schemas/TokenDto'
         '401':
           description: Invalid credentials
+      tags:
+        - Authentication
+  /auth/password-reset/confirm:
+    post:
+      operationId: AuthController_passwordResetConfirm
+      summary: Confirm password change
+      description: This endpoint will confirm your password change with a token
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmationTokenWithNewPasswordDto'
+      responses:
+        '201':
+          description: Password change confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenDto'
+      tags:
+        - Authentication
+  /auth/password-reset/request:
+    post:
+      operationId: AuthController_passwordResetRequest
+      summary: Request password reset
+      description: This endpoint will request a password reset link
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequestDto'
+      responses:
+        '201':
+          description: ''
       tags:
         - Authentication
   /auth/refresh-token:
@@ -1109,60 +1233,6 @@ paths:
         - Organization - Members
       security:
         - bearer: []
-  /auth/email-verification/confirm:
-    post:
-      operationId: EmailVerificationController_confirm
-      summary: Confirm e-mail verification
-      description: This endpoint will confirm your e-mail with a token
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConfirmEmailVerificationDto'
-      responses:
-        '201':
-          description: E-mail verification confirmed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
-          description: Invalid token
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    example: Invalid or expired token.
-                    type: string
-                  statusCode:
-                    example: 400
-                    type: number
-        '401':
-          description: Unauthorized
-      tags:
-        - Authentication - Email Verification
-  /auth/email-verification/request:
-    post:
-      operationId: EmailVerificationController_request
-      summary: Resend e-mail verification
-      description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
-      parameters: []
-      responses:
-        '201':
-          description: E-mail verification link sent
-        '400':
-          description: Already Verified
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-      tags:
-        - Authentication - Email Verification
-      security:
-        - bearer: []
   /organizations/{orgname}/threads:
     post:
       operationId: ThreadsController_create
@@ -2013,96 +2083,6 @@ paths:
         - Runs
       security:
         - bearer: []
-  /auth/password-reset/confirm:
-    post:
-      operationId: PasswordResetController_confirm
-      summary: Confirm password change
-      description: This endpoint will confirm your password change with a token
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConfirmPasswordResetDto'
-      responses:
-        '201':
-          description: Password change confirmed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenDto'
-      tags:
-        - Authentication - Password Reset
-  /auth/password-reset/request:
-    post:
-      operationId: PasswordResetController_request
-      summary: Request password reset
-      description: This endpoint will request a password reset link
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RequestPasswordResetDto'
-      responses:
-        '201':
-          description: ''
-      tags:
-        - Authentication - Password Reset
-  /auth/email-change/confirm:
-    post:
-      operationId: EmailChangeController_confirm
-      summary: Confirm e-mail change
-      description: This endpoint will confirm your e-mail change with a token
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConfirmEmailChangeDto'
-      responses:
-        '201':
-          description: E-mail change confirmed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
-          description: Invalid token
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    example: Invalid or expired token.
-                    type: string
-                  statusCode:
-                    example: 400
-                    type: number
-      tags:
-        - Authentication - Email Change
-  /auth/email-change/request:
-    post:
-      operationId: EmailChangeController_request
-      summary: Confirm e-mail change
-      description: This endpoint will request your e-mail change with a token
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RequestEmailChangeDto'
-      responses:
-        '201':
-          description: ''
-      tags:
-        - Authentication - Email Change
-      security:
-        - bearer: []
   /organizations/{orgname}/tools:
     post:
       operationId: ToolsController_create
@@ -2502,6 +2482,40 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreatePipelineToolDto'
+    ConfirmationTokenDto:
+      type: object
+      properties:
+        token:
+          type: string
+          description: >-
+            The token used to verify your authorization event. This token is
+            generated by the server and sent to the user's email.
+          example: supersecre
+      required:
+        - token
+    TokenDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The authorization token that can be used to access Arches AI
+          example: supersecretauthorizationtoken
+        refreshToken:
+          type: string
+          description: The refresh token that can be used to get a new access token
+          example: supersecretauthorizationtoken
+      required:
+        - accessToken
+        - refreshToken
+    EmailRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The e-mail to send the confirmation token to
+          example: user@archesai.com
+      required:
+        - email
     LoginDto:
       type: object
       properties:
@@ -2517,20 +2531,22 @@ components:
       required:
         - email
         - password
-    TokenDto:
+    ConfirmationTokenWithNewPasswordDto:
       type: object
       properties:
-        accessToken:
+        token:
           type: string
-          description: The authorization token that can be used to access Arches AI
-          example: supersecretauthorizationtoken
-        refreshToken:
+          description: >-
+            The token used to verify your authorization event. This token is
+            generated by the server and sent to the user's email.
+          example: supersecre
+        newPassword:
           type: string
-          description: The refresh token that can be used to get a new access token
-          example: supersecretauthorizationtoken
+          description: The new password
+          example: newPassword
       required:
-        - accessToken
-        - refreshToken
+        - token
+        - newPassword
     RegisterDto:
       type: object
       properties:
@@ -2635,6 +2651,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuthProviderEntity'
+        deactivated:
+          type: boolean
+          description: Whether or not the user is deactivated
+          example: false
         defaultOrgname:
           type: string
           description: The user's default organization name
@@ -2676,6 +2696,7 @@ components:
         - createdAt
         - id
         - authProviders
+        - deactivated
         - defaultOrgname
         - displayName
         - email
@@ -3065,17 +3086,6 @@ components:
           enum:
             - USER
             - ADMIN
-    ConfirmEmailVerificationDto:
-      type: object
-      properties:
-        token:
-          type: string
-          description: >-
-            The token used to verify the e-mail. This should have been provided
-            in an e-mail
-          example: supersecre
-      required:
-        - token
     CreateThreadDto:
       type: object
       properties:
@@ -3544,51 +3554,6 @@ components:
         - runInputContentIds
         - runOutputContentIds
         - tool
-    ConfirmPasswordResetDto:
-      type: object
-      properties:
-        newPassword:
-          type: string
-          description: The new password
-          example: newPassword
-        token:
-          type: string
-          description: >-
-            The token used to reset the password. This should have been provided
-            in an e-mail
-          example: supersecre
-      required:
-        - newPassword
-        - token
-    RequestPasswordResetDto:
-      type: object
-      properties:
-        email:
-          type: string
-          description: The e-mail address to send the password reset link to
-          example: user@archesai.com
-      required:
-        - email
-    ConfirmEmailChangeDto:
-      type: object
-      properties:
-        token:
-          type: string
-          description: >-
-            The token used to change the e-mail. This should have been provided
-            in an e-mail
-          example: supersecre
-      required:
-        - token
-    RequestEmailChangeDto:
-      type: object
-      properties:
-        email:
-          type: string
-          description: The e-mail address to update to
-          example: user@archesai.com
-      required:
-        - email
     CreateToolDto:
       type: object
       properties:

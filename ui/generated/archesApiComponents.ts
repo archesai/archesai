@@ -368,6 +368,229 @@ export const usePipelinesControllerUpdate = (
   });
 };
 
+export type AuthControllerEmailChangeConfirmError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerEmailChangeConfirmVariables = {
+  body: Schemas.ConfirmationTokenDto;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will confirm your e-mail change with a token
+ */
+export const fetchAuthControllerEmailChangeConfirm = (
+  variables: AuthControllerEmailChangeConfirmVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.TokenDto,
+    AuthControllerEmailChangeConfirmError,
+    Schemas.ConfirmationTokenDto,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/email-change/confirm",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will confirm your e-mail change with a token
+ */
+export const useAuthControllerEmailChangeConfirm = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.TokenDto,
+      AuthControllerEmailChangeConfirmError,
+      AuthControllerEmailChangeConfirmVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.TokenDto,
+    AuthControllerEmailChangeConfirmError,
+    AuthControllerEmailChangeConfirmVariables
+  >({
+    mutationFn: (variables: AuthControllerEmailChangeConfirmVariables) =>
+      fetchAuthControllerEmailChangeConfirm({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AuthControllerEmailChangeRequestError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerEmailChangeRequestVariables = {
+  body: Schemas.EmailRequestDto;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will request your e-mail change with a token
+ */
+export const fetchAuthControllerEmailChangeRequest = (
+  variables: AuthControllerEmailChangeRequestVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    AuthControllerEmailChangeRequestError,
+    Schemas.EmailRequestDto,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/email-change/request",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will request your e-mail change with a token
+ */
+export const useAuthControllerEmailChangeRequest = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AuthControllerEmailChangeRequestError,
+      AuthControllerEmailChangeRequestVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    AuthControllerEmailChangeRequestError,
+    AuthControllerEmailChangeRequestVariables
+  >({
+    mutationFn: (variables: AuthControllerEmailChangeRequestVariables) =>
+      fetchAuthControllerEmailChangeRequest({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AuthControllerEmailVerificationConfirmError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerEmailVerificationConfirmVariables = {
+  body: Schemas.ConfirmationTokenDto;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will confirm your e-mail with a token
+ */
+export const fetchAuthControllerEmailVerificationConfirm = (
+  variables: AuthControllerEmailVerificationConfirmVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.TokenDto,
+    AuthControllerEmailVerificationConfirmError,
+    Schemas.ConfirmationTokenDto,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/email-verification/confirm",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will confirm your e-mail with a token
+ */
+export const useAuthControllerEmailVerificationConfirm = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.TokenDto,
+      AuthControllerEmailVerificationConfirmError,
+      AuthControllerEmailVerificationConfirmVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.TokenDto,
+    AuthControllerEmailVerificationConfirmError,
+    AuthControllerEmailVerificationConfirmVariables
+  >({
+    mutationFn: (variables: AuthControllerEmailVerificationConfirmVariables) =>
+      fetchAuthControllerEmailVerificationConfirm({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AuthControllerEmailVerificationRequestError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerEmailVerificationRequestVariables =
+  ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+ */
+export const fetchAuthControllerEmailVerificationRequest = (
+  variables: AuthControllerEmailVerificationRequestVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    AuthControllerEmailVerificationRequestError,
+    undefined,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/email-verification/request",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+ */
+export const useAuthControllerEmailVerificationRequest = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AuthControllerEmailVerificationRequestError,
+      AuthControllerEmailVerificationRequestVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    AuthControllerEmailVerificationRequestError,
+    AuthControllerEmailVerificationRequestVariables
+  >({
+    mutationFn: (variables: AuthControllerEmailVerificationRequestVariables) =>
+      fetchAuthControllerEmailVerificationRequest({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type AuthControllerLoginError = Fetcher.ErrorWrapper<undefined>;
 
 export type AuthControllerLoginVariables = {
@@ -405,6 +628,118 @@ export const useAuthControllerLogin = (
   >({
     mutationFn: (variables: AuthControllerLoginVariables) =>
       fetchAuthControllerLogin({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type AuthControllerPasswordResetConfirmError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerPasswordResetConfirmVariables = {
+  body: Schemas.ConfirmationTokenWithNewPasswordDto;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will confirm your password change with a token
+ */
+export const fetchAuthControllerPasswordResetConfirm = (
+  variables: AuthControllerPasswordResetConfirmVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.TokenDto,
+    AuthControllerPasswordResetConfirmError,
+    Schemas.ConfirmationTokenWithNewPasswordDto,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/password-reset/confirm",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will confirm your password change with a token
+ */
+export const useAuthControllerPasswordResetConfirm = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.TokenDto,
+      AuthControllerPasswordResetConfirmError,
+      AuthControllerPasswordResetConfirmVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.TokenDto,
+    AuthControllerPasswordResetConfirmError,
+    AuthControllerPasswordResetConfirmVariables
+  >({
+    mutationFn: (variables: AuthControllerPasswordResetConfirmVariables) =>
+      fetchAuthControllerPasswordResetConfirm({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type AuthControllerPasswordResetRequestError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerPasswordResetRequestVariables = {
+  body: Schemas.EmailRequestDto;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will request a password reset link
+ */
+export const fetchAuthControllerPasswordResetRequest = (
+  variables: AuthControllerPasswordResetRequestVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    AuthControllerPasswordResetRequestError,
+    Schemas.EmailRequestDto,
+    {},
+    {},
+    {}
+  >({
+    url: "/auth/password-reset/request",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will request a password reset link
+ */
+export const useAuthControllerPasswordResetRequest = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AuthControllerPasswordResetRequestError,
+      AuthControllerPasswordResetRequestVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    AuthControllerPasswordResetRequestError,
+    AuthControllerPasswordResetRequestVariables
+  >({
+    mutationFn: (variables: AuthControllerPasswordResetRequestVariables) =>
+      fetchAuthControllerPasswordResetRequest({
+        ...fetcherOptions,
+        ...variables,
+      }),
     ...options,
   });
 };
@@ -2015,128 +2350,6 @@ export const useMembersControllerUpdate = (
   });
 };
 
-export type EmailVerificationControllerConfirmError = Fetcher.ErrorWrapper<{
-  status: 400;
-  payload: {
-    /**
-     * @example Invalid or expired token.
-     */
-    message?: string;
-    /**
-     * @example 400
-     */
-    statusCode?: number;
-  };
-}>;
-
-export type EmailVerificationControllerConfirmVariables = {
-  body: Schemas.ConfirmEmailVerificationDto;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will confirm your e-mail with a token
- */
-export const fetchEmailVerificationControllerConfirm = (
-  variables: EmailVerificationControllerConfirmVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.TokenDto,
-    EmailVerificationControllerConfirmError,
-    Schemas.ConfirmEmailVerificationDto,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/email-verification/confirm",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will confirm your e-mail with a token
- */
-export const useEmailVerificationControllerConfirm = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.TokenDto,
-      EmailVerificationControllerConfirmError,
-      EmailVerificationControllerConfirmVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.TokenDto,
-    EmailVerificationControllerConfirmError,
-    EmailVerificationControllerConfirmVariables
-  >({
-    mutationFn: (variables: EmailVerificationControllerConfirmVariables) =>
-      fetchEmailVerificationControllerConfirm({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
-export type EmailVerificationControllerRequestError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type EmailVerificationControllerRequestVariables =
-  ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
- */
-export const fetchEmailVerificationControllerRequest = (
-  variables: EmailVerificationControllerRequestVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    EmailVerificationControllerRequestError,
-    undefined,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/email-verification/request",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
- */
-export const useEmailVerificationControllerRequest = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      EmailVerificationControllerRequestError,
-      EmailVerificationControllerRequestVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    EmailVerificationControllerRequestError,
-    EmailVerificationControllerRequestVariables
-  >({
-    mutationFn: (variables: EmailVerificationControllerRequestVariables) =>
-      fetchEmailVerificationControllerRequest({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type ThreadsControllerCreatePathParams = {
   orgname: string;
 };
@@ -3410,228 +3623,6 @@ export const useRunsControllerFindOne = <TData = Schemas.RunDetailedEntity,>(
       fetchRunsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
     ...queryOptions,
-  });
-};
-
-export type PasswordResetControllerConfirmError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type PasswordResetControllerConfirmVariables = {
-  body: Schemas.ConfirmPasswordResetDto;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will confirm your password change with a token
- */
-export const fetchPasswordResetControllerConfirm = (
-  variables: PasswordResetControllerConfirmVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.TokenDto,
-    PasswordResetControllerConfirmError,
-    Schemas.ConfirmPasswordResetDto,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/password-reset/confirm",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will confirm your password change with a token
- */
-export const usePasswordResetControllerConfirm = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.TokenDto,
-      PasswordResetControllerConfirmError,
-      PasswordResetControllerConfirmVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.TokenDto,
-    PasswordResetControllerConfirmError,
-    PasswordResetControllerConfirmVariables
-  >({
-    mutationFn: (variables: PasswordResetControllerConfirmVariables) =>
-      fetchPasswordResetControllerConfirm({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type PasswordResetControllerRequestError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type PasswordResetControllerRequestVariables = {
-  body: Schemas.RequestPasswordResetDto;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will request a password reset link
- */
-export const fetchPasswordResetControllerRequest = (
-  variables: PasswordResetControllerRequestVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    PasswordResetControllerRequestError,
-    Schemas.RequestPasswordResetDto,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/password-reset/request",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will request a password reset link
- */
-export const usePasswordResetControllerRequest = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      PasswordResetControllerRequestError,
-      PasswordResetControllerRequestVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    PasswordResetControllerRequestError,
-    PasswordResetControllerRequestVariables
-  >({
-    mutationFn: (variables: PasswordResetControllerRequestVariables) =>
-      fetchPasswordResetControllerRequest({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type EmailChangeControllerConfirmError = Fetcher.ErrorWrapper<{
-  status: 400;
-  payload: {
-    /**
-     * @example Invalid or expired token.
-     */
-    message?: string;
-    /**
-     * @example 400
-     */
-    statusCode?: number;
-  };
-}>;
-
-export type EmailChangeControllerConfirmVariables = {
-  body: Schemas.ConfirmEmailChangeDto;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will confirm your e-mail change with a token
- */
-export const fetchEmailChangeControllerConfirm = (
-  variables: EmailChangeControllerConfirmVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.TokenDto,
-    EmailChangeControllerConfirmError,
-    Schemas.ConfirmEmailChangeDto,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/email-change/confirm",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will confirm your e-mail change with a token
- */
-export const useEmailChangeControllerConfirm = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.TokenDto,
-      EmailChangeControllerConfirmError,
-      EmailChangeControllerConfirmVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.TokenDto,
-    EmailChangeControllerConfirmError,
-    EmailChangeControllerConfirmVariables
-  >({
-    mutationFn: (variables: EmailChangeControllerConfirmVariables) =>
-      fetchEmailChangeControllerConfirm({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type EmailChangeControllerRequestError = Fetcher.ErrorWrapper<undefined>;
-
-export type EmailChangeControllerRequestVariables = {
-  body: Schemas.RequestEmailChangeDto;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will request your e-mail change with a token
- */
-export const fetchEmailChangeControllerRequest = (
-  variables: EmailChangeControllerRequestVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    EmailChangeControllerRequestError,
-    Schemas.RequestEmailChangeDto,
-    {},
-    {},
-    {}
-  >({
-    url: "/auth/email-change/request",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will request your e-mail change with a token
- */
-export const useEmailChangeControllerRequest = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      EmailChangeControllerRequestError,
-      EmailChangeControllerRequestVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    EmailChangeControllerRequestError,
-    EmailChangeControllerRequestVariables
-  >({
-    mutationFn: (variables: EmailChangeControllerRequestVariables) =>
-      fetchEmailChangeControllerRequest({ ...fetcherOptions, ...variables }),
-    ...options,
   });
 };
 

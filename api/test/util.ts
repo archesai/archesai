@@ -23,6 +23,7 @@ import { OrganizationEntity } from "../src/organizations/entities/organization.e
 import { UserEntity } from "../src/users/entities/user.entity";
 import { UsersService } from "../src/users/users.service";
 import { AppModule } from "./../src/app.module"; // This enables path aliasing based on tsconfig.json
+import { DeactivatedGuard } from "@/src/auth/guards/deactivated.guard";
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -50,6 +51,7 @@ export const createApp = async () => {
   );
   app.useGlobalGuards(
     new AppAuthGuard(app.get(Reflector)),
+    new DeactivatedGuard(app.get(Reflector)),
     new EmailVerifiedGuard(app.get(Reflector)),
     new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
     new OrganizationRoleGuard(app.get(Reflector))

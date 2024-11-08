@@ -4,7 +4,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 
 import { ApiTokensModule } from "../api-tokens/api-tokens.module";
+import { ARTokensModule } from "../ar-tokens/ar-tokens.module";
+import { EmailModule } from "../email/email.module";
 import { OrganizationsModule } from "../organizations/organizations.module";
+import { PrismaModule } from "../prisma/prisma.module";
 import { UsersModule } from "../users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
@@ -33,6 +36,9 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
       }),
     }),
     OrganizationsModule,
+    PrismaModule,
+    EmailModule,
+    ARTokensModule,
   ],
   providers: [
     // Services

@@ -20,8 +20,11 @@ export class UserEntity extends BaseEntity implements User {
   })
   authProviders: AuthProviderEntity[];
 
-  @Exclude()
-  @ApiHideProperty()
+  @Expose()
+  @ApiProperty({
+    description: "Whether or not the user is deactivated",
+    example: false,
+  })
   deactivated!: boolean;
 
   @Expose()
