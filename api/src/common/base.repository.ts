@@ -1,4 +1,4 @@
-import { SearchQueryDto } from "./search-query";
+import { SearchQueryDto } from "./dto/search-query.dto";
 
 type PrismaDelegate<PrismaModel, Include, Select> = {
   count: (args: { where: any }) => Promise<number>;

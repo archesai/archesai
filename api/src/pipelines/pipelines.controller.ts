@@ -11,12 +11,12 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
-import { BaseController } from "../common/base.controller";
-import { SearchQueryDto } from "../common/search-query";
+} from "../common/decorators/api-crud-operation.decorator";
+import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineEntity } from "./entities/pipeline.entity";

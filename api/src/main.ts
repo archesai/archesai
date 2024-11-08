@@ -12,11 +12,11 @@ import { AppAuthGuard } from "./auth/guards/app-auth.guard";
 import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
 import { OrganizationRoleGuard } from "./auth/guards/organization-role.guard";
 import { RestrictedAPIKeyGuard } from "./auth/guards/restricted-api-key.guard";
-import { AllExceptionsFilter } from "./common/all-exceptions.filter";
-import { ExcludeNullInterceptor } from "./common/exclude-null.interceptor";
-import { _PaginatedDto } from "./common/paginated.dto";
-import { RedisIoAdapter } from "./common/redis-io.adapter";
-import { FilterField } from "./common/search-query";
+import { RedisIoAdapter } from "./common/adapters/redis-io.adapter";
+import { _PaginatedDto } from "./common/dto/paginated.dto";
+import { FilterField } from "./common/dto/search-query.dto";
+import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
+import { ExcludeNullInterceptor } from "./common/interceptors/exclude-null.interceptor";
 import { ThreadAggregates } from "./threads/dto/thread-aggregates.dto";
 
 async function bootstrap() {

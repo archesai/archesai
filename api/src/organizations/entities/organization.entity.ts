@@ -3,7 +3,7 @@ import { Member, Organization, PlanType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto";
+import { BaseEntity } from "../../common/dto/base.entity.dto";
 
 @Exclude()
 export class OrganizationEntity extends BaseEntity implements Organization {

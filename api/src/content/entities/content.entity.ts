@@ -3,7 +3,7 @@ import { Content } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto";
+import { BaseEntity } from "../../common/dto/base.entity.dto";
 
 @Exclude()
 export class ContentEntity extends BaseEntity implements Content {

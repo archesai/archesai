@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { Prisma, Thread } from "@prisma/client";
 
-import { GranularCount, GranularSum } from "../common/aggregated-field.dto";
 import { BaseRepository } from "../common/base.repository";
+import { GranularCount, GranularSum } from "../common/dto/aggregated-field.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";

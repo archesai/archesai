@@ -19,12 +19,12 @@ import {
   CurrentUser,
   CurrentUserDto,
 } from "../auth/decorators/current-user.decorator";
+import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
-import { BaseController } from "../common/base.controller";
-import { SearchQueryDto } from "../common/search-query";
+} from "../common/decorators/api-crud-operation.decorator";
+import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { MemberEntity } from "./entities/member.entity";

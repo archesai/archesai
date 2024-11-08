@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsOptional } from "class-validator";
 
-import { Granularity } from "../../common/aggregated-field.dto";
-import { SearchQueryDto } from "../../common/search-query";
+import { Granularity } from "../../common/dto/aggregated-field.dto";
+import { SearchQueryDto } from "../../common/dto/search-query.dto";
 
 export class ThreadQueryDto extends SearchQueryDto {
   @ApiProperty({

@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/src/common/base-entity.dto";
+import { BaseEntity } from "@/src/common/dto/base.entity.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { AuthProvider, AuthProviderType } from "@prisma/client";
 import { Expose } from "class-transformer";

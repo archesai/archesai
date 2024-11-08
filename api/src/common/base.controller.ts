@@ -1,4 +1,4 @@
-import { PaginatedDto } from "./paginated.dto";
+import { PaginatedDto } from "./dto/paginated.dto";
 
 export interface BaseController<T, CreateDto, QueryDto, UpdateDto> {
   create?(

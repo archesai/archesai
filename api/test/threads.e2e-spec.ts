@@ -1,4 +1,4 @@
-import { PaginatedDto } from "@/src/common/paginated.dto";
+import { PaginatedDto } from "@/src/common/dto/paginated.dto";
 import { MessageEntity } from "@/src/messages/entities/message.entity";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";

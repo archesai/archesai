@@ -6,7 +6,7 @@ import {
   ApiResponse,
 } from "@nestjs/swagger";
 
-import { Roles } from "../auth/decorators/roles.decorator";
+import { Roles } from "../../auth/decorators/roles.decorator";
 import { ApiPaginatedResponse } from "./paginated.decorator";
 
 export enum Operation {

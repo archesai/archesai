@@ -3,7 +3,7 @@ import { Message } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto";
+import { BaseEntity } from "../../common/dto/base.entity.dto";
 
 export class MessageEntity extends BaseEntity implements Message {
   @ApiProperty({

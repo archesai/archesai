@@ -1,6 +1,6 @@
 import { BaseRepository } from "./base.repository";
-import { PaginatedDto } from "./paginated.dto";
-import { SearchQueryDto } from "./search-query";
+import { PaginatedDto } from "./dto/paginated.dto";
+import { SearchQueryDto } from "./dto/search-query.dto";
 
 export abstract class BaseService<
   Entity,

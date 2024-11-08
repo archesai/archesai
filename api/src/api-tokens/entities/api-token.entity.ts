@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ApiToken, RoleType } from "@prisma/client";
 import { IsEnum, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto";
+import { BaseEntity } from "../../common/dto/base.entity.dto";
 
 export class ApiTokenEntity extends BaseEntity implements ApiToken {
   @ApiProperty({

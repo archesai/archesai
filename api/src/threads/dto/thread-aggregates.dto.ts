@@ -1,6 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import { GranularCount, GranularSum } from "../../common/aggregated-field.dto";
+import {
+  GranularCount,
+  GranularSum,
+} from "../../common/dto/aggregated-field.dto";
 
 export class ThreadAggregates {
   @ApiProperty({

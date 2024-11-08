@@ -14,12 +14,12 @@ import {
   CurrentUser,
   CurrentUserDto,
 } from "../auth/decorators/current-user.decorator";
+import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
-import { BaseController } from "../common/base.controller";
-import { SearchQueryDto } from "../common/search-query";
+} from "../common/decorators/api-crud-operation.decorator";
+import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { ApiTokensService } from "./api-tokens.service";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";

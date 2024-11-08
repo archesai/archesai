@@ -10,12 +10,12 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
-import { BaseController } from "../common/base.controller";
-import { SearchQueryDto } from "../common/search-query";
+} from "../common/decorators/api-crud-operation.decorator";
+import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { RunEntity } from "../runs/entities/run.entity";
 import { CreateToolDto } from "./dto/create-tool.dto";
 import { RunToolDto } from "./dto/run-tool.dto";

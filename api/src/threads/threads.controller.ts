@@ -12,7 +12,7 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
+} from "../common/decorators/api-crud-operation.decorator";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";

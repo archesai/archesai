@@ -9,7 +9,7 @@ import {
   IsString,
 } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto"; // Assuming these enums are defined in your Prisma schema
+import { BaseEntity } from "../../common/dto/base.entity.dto"; // Assuming these enums are defined in your Prisma schema
 
 @Exclude()
 export class RunEntity extends BaseEntity implements Run {

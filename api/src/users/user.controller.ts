@@ -13,7 +13,7 @@ import {
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
+} from "../common/decorators/api-crud-operation.decorator";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersService } from "./users.service";

@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/src/common/base-entity.dto";
+import { BaseEntity } from "@/src/common/dto/base.entity.dto";
 import { ToolEntity } from "@/src/tools/entities/tool.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { PipelineTool, Tool } from "@prisma/client";

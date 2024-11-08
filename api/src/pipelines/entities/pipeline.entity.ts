@@ -1,4 +1,4 @@
-import { BaseEntity } from "@/src/common/base-entity.dto";
+import { BaseEntity } from "@/src/common/dto/base.entity.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { Pipeline, PipelineTool, Tool } from "@prisma/client";
 import { IsString } from "class-validator";

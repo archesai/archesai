@@ -17,7 +17,7 @@ import { Roles } from "../auth/decorators/roles.decorator";
 import {
   ApiCrudOperation,
   Operation,
-} from "../common/api-crud-operation.decorator";
+} from "../common/decorators/api-crud-operation.decorator";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 import { OrganizationEntity } from "./entities/organization.entity";

@@ -3,7 +3,7 @@ import { Tool, ToolIOType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEnum, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/base-entity.dto";
+import { BaseEntity } from "../../common/dto/base.entity.dto";
 
 @Exclude()
 export class ToolEntity extends BaseEntity implements Tool {

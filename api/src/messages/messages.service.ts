@@ -3,8 +3,8 @@ import { Message, Prisma } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { BaseService } from "../common/base.service";
+import { SortDirection } from "../common/dto/search-query.dto";
 import { retry } from "../common/retry";
-import { SortDirection } from "../common/search-query";
 import { ContentService } from "../content/content.service";
 import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
