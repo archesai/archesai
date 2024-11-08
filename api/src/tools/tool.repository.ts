@@ -12,18 +12,10 @@ export class ToolRepository extends BaseRepository<
   CreateToolDto,
   UpdateToolDto,
   Prisma.ToolInclude,
-  Prisma.ToolSelect
+  Prisma.ToolSelect,
+  Prisma.ToolUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.tool);
-  }
-
-  async updateRaw(orgname: string, id: string, raw: Prisma.ToolUpdateInput) {
-    return this.prisma.tool.update({
-      data: raw,
-      where: {
-        id,
-      },
-    });
   }
 }

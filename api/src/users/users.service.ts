@@ -1,12 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import {
-  AuthProvider,
-  AuthProviderType,
-  Member,
-  Prisma,
-  User,
-} from "@prisma/client";
+import { AuthProvider, AuthProviderType, Member, User } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { OrganizationsService } from "../organizations/organizations.service";
@@ -22,9 +16,7 @@ export class UsersService extends BaseService<
   undefined,
   UpdateUserDto,
   UserRepository,
-  { memberships: Member[] } & User,
-  Prisma.UserInclude,
-  Prisma.UserSelect
+  { memberships: Member[] } & User
 > {
   private readonly logger: Logger = new Logger(UsersService.name);
   constructor(

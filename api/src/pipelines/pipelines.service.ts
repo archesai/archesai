@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Pipeline, PipelineTool, Prisma, Tool } from "@prisma/client";
+import { Pipeline, PipelineTool, Tool } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
@@ -15,9 +15,7 @@ export class PipelinesService extends BaseService<
   PipelineRepository,
   {
     pipelineTools: ({ tool: Tool } & PipelineTool)[];
-  } & Pipeline,
-  Prisma.PipelineInclude,
-  Prisma.PipelineSelect
+  } & Pipeline
 > {
   private logger = new Logger(PipelinesService.name);
 

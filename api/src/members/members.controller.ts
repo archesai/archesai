@@ -79,7 +79,7 @@ export class MembersController
     @Param("orgname") orgname: string,
     @CurrentUser() user: CurrentUserDto
   ) {
-    return this.membersService.acceptMember(orgname, user.email, user.username);
+    return this.membersService.join(orgname, user.email, user.username);
   }
 
   @ApiCrudOperation(Operation.DELETE, "member", MemberEntity, true)

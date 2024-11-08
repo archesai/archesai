@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { ApiToken, Prisma } from "@prisma/client";
+import { ApiToken } from "@prisma/client";
 import { v4 } from "uuid";
 
 import { BaseService } from "../common/base.service";
@@ -17,9 +17,7 @@ export class ApiTokensService extends BaseService<
   CreateApiTokenDto,
   UpdateApiTokenDto,
   ApiTokenRepository,
-  ApiToken,
-  Prisma.ApiTokenInclude,
-  Prisma.ApiTokenSelect
+  ApiToken
 > {
   constructor(
     private apiTokenRepository: ApiTokenRepository,

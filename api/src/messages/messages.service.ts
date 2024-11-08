@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Message, Prisma } from "@prisma/client";
+import { Message } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 
 import { BaseService } from "../common/base.service";
@@ -21,9 +21,7 @@ export class MessagesService extends BaseService<
   CreateMessageDto,
   undefined,
   MessageRepository,
-  Message,
-  Prisma.MessageInclude,
-  Prisma.MessageSelect
+  Message
 > {
   private readonly logger: Logger = new Logger("Messages Service");
 
@@ -268,6 +266,7 @@ export class MessagesService extends BaseService<
     });
     return this.toEntity(message);
   }
+
   protected toEntity(model: Message): MessageEntity {
     return new MessageEntity(model);
   }

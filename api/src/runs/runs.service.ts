@@ -1,7 +1,7 @@
 // runs.service.ts
 import { InjectFlowProducer, InjectQueue } from "@nestjs/bullmq";
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Prisma, Run, RunStatus } from "@prisma/client";
+import { Run, RunStatus } from "@prisma/client";
 import { FlowProducer, Queue } from "bullmq";
 
 import { BaseService } from "../common/base.service";
@@ -20,9 +20,7 @@ export class RunsService extends BaseService<
   undefined,
   undefined,
   RunRepository,
-  Run,
-  Prisma.RunInclude,
-  Prisma.RunSelect
+  Run
 > {
   constructor(
     private readonly runRepository: RunRepository,

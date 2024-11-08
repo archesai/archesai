@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Member, Prisma } from "@prisma/client";
+import { Member } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { CreateMemberDto } from "./dto/create-member.dto";
@@ -13,27 +13,19 @@ export class MembersService extends BaseService<
   CreateMemberDto,
   UpdateMemberDto,
   MemberRepository,
-  Member,
-  Prisma.MemberInclude,
-  Prisma.MemberSelect
+  Member
 > {
   private readonly logger = new Logger(MembersService.name);
   constructor(private memberRepository: MemberRepository) {
     super(memberRepository);
   }
 
-  async acceptMember(orgname: string, inviteEmail: string, username: string) {
+  async join(orgname: string, inviteEmail: string, username: string) {
     this.logger.log(
       `Accepting member ${inviteEmail} to organization ${orgname}`
     );
     return this.toEntity(
-      await this.memberRepository.acceptMember(orgname, inviteEmail, username)
-    );
-  }
-
-  async findByInviteEmail(orgname: string, inviteEmail: string) {
-    return this.toEntity(
-      await this.memberRepository.findByInviteEmail(orgname, inviteEmail)
+      await this.memberRepository.join(orgname, inviteEmail, username)
     );
   }
 

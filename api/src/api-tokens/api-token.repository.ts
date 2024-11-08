@@ -12,7 +12,8 @@ export class ApiTokenRepository extends BaseRepository<
   CreateApiTokenDto,
   UpdateApiTokenDto,
   Prisma.ApiTokenInclude,
-  Prisma.ApiTokenSelect
+  Prisma.ApiTokenSelect,
+  Prisma.ApiTokenUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.apiToken);

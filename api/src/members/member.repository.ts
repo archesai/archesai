@@ -12,35 +12,11 @@ export class MemberRepository extends BaseRepository<
   CreateMemberDto,
   UpdateMemberDto,
   Prisma.MemberInclude,
-  Prisma.MemberSelect
+  Prisma.MemberSelect,
+  Prisma.MemberUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.member);
-  }
-
-  async acceptMember(orgname: string, inviteEmail: string, username: string) {
-    // Check org exists first just as added check
-    await this.prisma.organization.findUniqueOrThrow({
-      where: { orgname },
-    });
-
-    // Update Member
-    return this.prisma.member.update({
-      data: {
-        inviteAccepted: true,
-        user: {
-          connect: {
-            username,
-          },
-        },
-      },
-      where: {
-        inviteEmail_orgname: {
-          inviteEmail: inviteEmail,
-          orgname: orgname,
-        },
-      },
-    });
   }
 
   async create(orgname: string, createMemberDto: CreateMemberDto) {
@@ -65,12 +41,24 @@ export class MemberRepository extends BaseRepository<
     });
   }
 
-  async findByInviteEmail(orgname: string, inviteEmail: string) {
-    return this.prisma.member.findUniqueOrThrow({
+  async join(orgname: string, inviteEmail: string, username: string) {
+    await this.prisma.organization.findUniqueOrThrow({
+      where: { orgname },
+    });
+
+    return this.prisma.member.update({
+      data: {
+        inviteAccepted: true,
+        user: {
+          connect: {
+            username,
+          },
+        },
+      },
       where: {
         inviteEmail_orgname: {
-          inviteEmail,
-          orgname,
+          inviteEmail: inviteEmail,
+          orgname: orgname,
         },
       },
     });

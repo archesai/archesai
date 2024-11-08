@@ -18,7 +18,8 @@ export class ThreadRepository extends BaseRepository<
   CreateThreadDto,
   undefined,
   Prisma.ThreadInclude,
-  Prisma.ThreadSelect
+  Prisma.ThreadSelect,
+  Prisma.ThreadUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.thread, {

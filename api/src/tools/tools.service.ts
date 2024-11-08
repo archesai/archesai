@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Prisma, Tool } from "@prisma/client";
+import { Tool } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { RunEntity } from "../runs/entities/run.entity";
@@ -17,9 +17,7 @@ export class ToolsService extends BaseService<
   CreateToolDto,
   UpdateToolDto,
   ToolRepository,
-  Tool,
-  Prisma.ToolInclude,
-  Prisma.ToolSelect
+  Tool
 > {
   private logger = new Logger(ToolsService.name);
   constructor(
@@ -41,13 +39,5 @@ export class ToolsService extends BaseService<
 
   protected toEntity(model: Tool): ToolEntity {
     return new ToolEntity(model);
-  }
-
-  async updateRaw(orgname: string, id: string, raw: Prisma.ToolUpdateInput) {
-    const tool = await this.toolsRepository.updateRaw(orgname, id, raw);
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "tools"],
-    });
-    return this.toEntity(tool);
   }
 }

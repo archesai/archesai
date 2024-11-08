@@ -11,35 +11,31 @@ export abstract class BaseService<
     CreateDto,
     UpdateDto,
     Include,
-    Select
+    Select,
+    RawUpdateInput
   >,
   PrismaModel,
-  Include,
-  Select,
+  Include = any,
+  Select = any,
+  RawUpdateInput = any,
 > {
   constructor(protected readonly repository: Repo) {}
 
   async create(
     orgname: string,
     createDto: CreateDto,
-    additionalData?: object,
-    options?: { include?: Include; select?: Select }
+    additionalData?: object
   ): Promise<Entity> {
     return this.toEntity(
-      await this.repository.create(orgname, createDto, additionalData, options)
+      await this.repository.create(orgname, createDto, additionalData)
     );
   }
 
   async findAll(
     orgname: string,
-    queryDto: SearchQueryDto,
-    options?: { include?: Include; select?: Select }
+    queryDto: SearchQueryDto
   ): Promise<PaginatedDto<Entity>> {
-    const { count, results } = await this.repository.findAll(
-      orgname,
-      queryDto,
-      options
-    );
+    const { count, results } = await this.repository.findAll(orgname, queryDto);
     const entities = results.map((result) => this.toEntity(result));
     return new PaginatedDto<Entity>({
       metadata: {
@@ -51,36 +47,33 @@ export abstract class BaseService<
     });
   }
 
-  async findOne(
-    orgname: string,
-    id: string,
-    options?: { include?: Include; select?: Select }
-  ): Promise<Entity> {
-    const result = await this.repository.findOne(orgname, id, options);
+  async findOne(orgname: string, id: string): Promise<Entity> {
+    const result = await this.repository.findOne(orgname, id);
     return this.toEntity(result);
   }
 
-  async remove(
-    orgname: string,
-    id: string,
-    options?: { include?: Include; select?: Select }
-  ): Promise<void> {
-    return this.repository.remove(orgname, id, options);
+  async remove(orgname: string, id: string): Promise<void> {
+    return this.repository.remove(orgname, id);
   }
 
   async update(
     orgname: string,
     id: string,
-    updateDto: UpdateDto,
+    updateDto: UpdateDto
+  ): Promise<Entity> {
+    const updated = await this.repository.update(orgname, id, updateDto);
+    return this.toEntity(updated);
+  }
+
+  async updateRaw(
+    orgname: string,
+    id: string,
+    data: RawUpdateInput,
     options?: { include?: Include; select?: Select }
   ): Promise<Entity> {
-    const updated = await this.repository.update(
-      orgname,
-      id,
-      updateDto,
-      options
+    return this.toEntity(
+      await this.repository.updateRaw(orgname, id, data, options)
     );
-    return this.toEntity(updated);
   }
 
   /**

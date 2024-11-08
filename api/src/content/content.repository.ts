@@ -12,7 +12,8 @@ export class ContentRepository extends BaseRepository<
   CreateContentDto,
   UpdateContentDto,
   Prisma.ContentInclude,
-  Prisma.ContentSelect
+  Prisma.ContentSelect,
+  Prisma.ContentUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.content);

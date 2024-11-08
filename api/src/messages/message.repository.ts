@@ -11,7 +11,8 @@ export class MessageRepository extends BaseRepository<
   CreateMessageDto,
   undefined,
   Prisma.MessageInclude,
-  Prisma.MessageSelect
+  Prisma.MessageSelect,
+  Prisma.MessageUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.message);

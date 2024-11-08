@@ -21,7 +21,8 @@ export class UserRepository extends BaseRepository<
   CreateUserDto,
   UpdateUserDto,
   Prisma.UserInclude,
-  Prisma.UserSelect
+  Prisma.UserSelect,
+  Prisma.UserUpdateInput
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.user, {

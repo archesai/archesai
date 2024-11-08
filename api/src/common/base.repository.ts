@@ -1,44 +1,12 @@
 import { SearchQueryDto } from "./dto/search-query.dto";
 
-type PrismaDelegate<PrismaModel, Include, Select> = {
-  count: (args: { where: any }) => Promise<number>;
-  create: (args: {
-    data: any;
-    include?: Include;
-    select?: Select;
-  }) => Promise<any & PrismaModel>;
-  delete: (args: {
-    include?: Include;
-    select?: Select;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-  findMany: (args: {
-    include?: Include;
-    orderBy: any;
-    select?: Select;
-    skip: number;
-    take: number;
-    where: any;
-  }) => Promise<(any & PrismaModel)[]>;
-  findUniqueOrThrow: (args: {
-    include?: Include;
-    select?: Select;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-  update: (args: {
-    data: any;
-    include?: Include;
-    select?: Select;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-};
-
 export abstract class BaseRepository<
   PrismaModel,
   CreateDto,
   UpdateDto,
   Include,
   Select,
+  RawUpdateInput,
 > {
   constructor(
     protected readonly delegate: PrismaDelegate<PrismaModel, Include, Select>,
@@ -134,4 +102,51 @@ export abstract class BaseRepository<
       where: { id },
     });
   }
+
+  async updateRaw(
+    orgname: string,
+    id: string,
+    data: RawUpdateInput,
+    options?: { include?: Include; select?: Select }
+  ): Promise<PrismaModel> {
+    return this.delegate.update({
+      data,
+      include: options?.include ?? this.defaultInclude,
+      select: options?.select ?? this.defaultSelect,
+      where: { id },
+    });
+  }
 }
+
+type PrismaDelegate<PrismaModel, Include, Select> = {
+  count: (args: { where: any }) => Promise<number>;
+  create: (args: {
+    data: any;
+    include?: Include;
+    select?: Select;
+  }) => Promise<any & PrismaModel>;
+  delete: (args: {
+    include?: Include;
+    select?: Select;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+  findMany: (args: {
+    include?: Include;
+    orderBy: any;
+    select?: Select;
+    skip: number;
+    take: number;
+    where: any;
+  }) => Promise<(any & PrismaModel)[]>;
+  findUniqueOrThrow: (args: {
+    include?: Include;
+    select?: Select;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+  update: (args: {
+    data: any;
+    include?: Include;
+    select?: Select;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+};

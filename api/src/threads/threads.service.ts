@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
-import { Prisma, Thread } from "@prisma/client";
+import { Thread } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { WebsocketsService } from "../websockets/websockets.service";
@@ -18,9 +18,7 @@ export class ThreadsService extends BaseService<
     _count: {
       messages: number;
     };
-  } & Thread,
-  Prisma.ThreadInclude,
-  Prisma.ThreadSelect
+  } & Thread
 > {
   private readonly logger: Logger = new Logger("Threads Service");
 

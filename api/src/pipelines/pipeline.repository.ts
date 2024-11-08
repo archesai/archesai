@@ -6,6 +6,14 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 
+const PIPELINE_INCLUDE = {
+  pipelineTools: {
+    include: {
+      tool: true,
+    },
+  },
+};
+
 @Injectable()
 export class PipelineRepository extends BaseRepository<
   {
@@ -14,16 +22,11 @@ export class PipelineRepository extends BaseRepository<
   CreatePipelineDto,
   UpdatePipelineDto,
   Prisma.PipelineInclude,
-  Prisma.PipelineSelect
+  Prisma.PipelineSelect,
+  Prisma.PipelineUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.pipeline, {
-      pipelineTools: {
-        include: {
-          tool: true,
-        },
-      },
-    });
+    super(prisma.pipeline, PIPELINE_INCLUDE);
   }
 
   async create(orgname: string, createPipelineDto: CreatePipelineDto) {
@@ -46,13 +49,7 @@ export class PipelineRepository extends BaseRepository<
           },
         },
       },
-      include: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
+      include: PIPELINE_INCLUDE,
     });
   }
 
@@ -62,13 +59,7 @@ export class PipelineRepository extends BaseRepository<
     updatePipelineDto: UpdatePipelineDto
   ) {
     const previousPipeline = await this.prisma.pipeline.findUnique({
-      select: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
+      include: PIPELINE_INCLUDE,
       where: {
         id,
       },
@@ -76,10 +67,10 @@ export class PipelineRepository extends BaseRepository<
     const pipelineToolsToDelete = previousPipeline.pipelineTools.map(
       (tool) => tool.id
     );
+
     return this.prisma.pipeline.update({
       data: {
         name: updatePipelineDto.name,
-
         ...(updatePipelineDto.pipelineTools
           ? {
               pipelineTools: {
@@ -99,16 +90,8 @@ export class PipelineRepository extends BaseRepository<
               },
             }
           : {}),
-
-        //
       },
-      include: {
-        pipelineTools: {
-          include: {
-            tool: true,
-          },
-        },
-      },
+      include: PIPELINE_INCLUDE,
       where: {
         id,
       },

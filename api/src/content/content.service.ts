@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
 } from "@nestjs/common";
-import { Content, Prisma } from "@prisma/client";
+import { Content } from "@prisma/client";
 import * as mime from "mime-types";
 
 import { BaseService } from "../common/base.service";
@@ -21,9 +21,7 @@ export class ContentService extends BaseService<
   CreateContentDto,
   UpdateContentDto,
   ContentRepository,
-  Content,
-  Prisma.ContentInclude,
-  Prisma.ContentSelect
+  Content
 > {
   private logger = new Logger(ContentService.name);
   constructor(
@@ -81,18 +79,9 @@ export class ContentService extends BaseService<
   }
 
   async populateReadUrl(content: Content) {
-    if (
-      content.url?.startsWith(
-        `https://storage.googleapis.com/archesai/storage/${content.orgname}/`
-      )
-    ) {
-      const path = content.url
-        .replace(
-          `https://storage.googleapis.com/archesai/storage/${content.orgname}/`,
-          ""
-        )
-        .split("?")[0];
-
+    const url = `https://storage.googleapis.com/archesai/storage/${content.orgname}/`;
+    if (content.url?.startsWith(url)) {
+      const path = content.url.replace(url, "").split("?")[0];
       try {
         const read = await this.storageService.getSignedUrl(
           content.orgname,
@@ -105,7 +94,6 @@ export class ContentService extends BaseService<
         content.url = "";
       }
     }
-
     return this.toEntity(content);
   }
 
@@ -122,16 +110,8 @@ export class ContentService extends BaseService<
     return this.contentRepository.removeMany(orgname, ids);
   }
 
-  protected toEntity(model: any): ContentEntity {
+  protected toEntity(model: Content): ContentEntity {
     return new ContentEntity(model);
-  }
-
-  async updateRaw(orgname: string, id: string, raw: Prisma.ContentUpdateInput) {
-    const content = await this.contentRepository.updateRaw(orgname, id, raw);
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
-    return this.toEntity(content);
   }
 
   async upsertTextChunks(

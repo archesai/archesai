@@ -13,7 +13,8 @@ export class RunRepository extends BaseRepository<
   undefined,
   undefined,
   Prisma.RunInclude,
-  Prisma.RunSelect
+  Prisma.RunSelect,
+  Prisma.RunUpdateInput
 > {
   constructor(private readonly prisma: PrismaService) {
     super(prisma.run);
