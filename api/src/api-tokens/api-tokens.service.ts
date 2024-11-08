@@ -33,7 +33,9 @@ export class ApiTokensService extends BaseService<
   async create(
     orgname: string,
     createTokenDto: CreateApiTokenDto,
-    userId?: string
+    additionalData: {
+      uid: string;
+    }
   ) {
     const id = v4();
     const token = this.jwtService.sign(
@@ -42,7 +44,7 @@ export class ApiTokensService extends BaseService<
         id,
         orgname,
         role: createTokenDto.role,
-        uid: userId,
+        uid: additionalData.uid,
       },
       {
         expiresIn: `${this.configService.get(
@@ -58,7 +60,7 @@ export class ApiTokensService extends BaseService<
       {
         id,
         snippet,
-        uid: userId,
+        uid: additionalData.uid,
       }
     );
     this.websocketsService.socket.to(orgname).emit("update", {

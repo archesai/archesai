@@ -42,19 +42,24 @@ export class MessagesService extends BaseService<
   async create(
     orgname: string,
     createMessageDto: CreateMessageDto,
-    threadId: string
+    additionalData: {
+      threadId: string;
+    }
   ) {
     // Create tokenizer
     const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
-    this.logger.log("Searching for thread " + threadId);
-    const thread = await this.threadsService.findOne(orgname, threadId);
+    this.logger.log("Searching for thread " + additionalData.threadId);
+    const thread = await this.threadsService.findOne(
+      orgname,
+      additionalData.threadId
+    );
     this.logger.log("Got thread");
     // Update Thread Name if still default
     if (thread.name == "New Thread") {
       await this.threadsService.updateThreadName(
         orgname,
-        threadId,
+        additionalData.threadId,
         createMessageDto.question
       );
     }
@@ -248,12 +253,18 @@ export class MessagesService extends BaseService<
       createMessageDto,
       {
         answer,
-        threadId,
+        threadId: additionalData.threadId,
       }
     );
 
     this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "threads", threadId, "messages"],
+      queryKey: [
+        "organizations",
+        orgname,
+        "threads",
+        additionalData.threadId,
+        "messages",
+      ],
     });
     return this.toEntity(message);
   }

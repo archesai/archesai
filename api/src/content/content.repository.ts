@@ -21,12 +21,14 @@ export class ContentRepository extends BaseRepository<
   async create(
     orgname: string,
     createContentDto: CreateContentDto,
-    mimeType?: string
+    additionalData: {
+      mimeType: string;
+    }
   ) {
     return this.prisma.content.create({
       data: {
         ...createContentDto,
-        mimeType,
+        mimeType: additionalData.mimeType,
         organization: {
           connect: {
             orgname,

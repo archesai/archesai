@@ -49,7 +49,7 @@ export abstract class BaseRepository<
   async create(
     orgname: string,
     createDto: CreateDto,
-    additionalData?: any,
+    additionalData?: object,
     options?: { include?: Include; select?: Select }
   ): Promise<PrismaModel> {
     return this.delegate.create({

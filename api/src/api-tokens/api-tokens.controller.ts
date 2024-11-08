@@ -46,11 +46,9 @@ export class ApiTokensController
     @Body() createTokenDto: CreateApiTokenDto,
     @CurrentUser() currentUserDto?: CurrentUserDto
   ) {
-    return this.apiTokensService.create(
-      orgname,
-      createTokenDto,
-      currentUserDto.id
-    );
+    return this.apiTokensService.create(orgname, createTokenDto, {
+      uid: currentUserDto.id,
+    });
   }
 
   @ApiCrudOperation(Operation.FIND_ALL, "API token", ApiTokenEntity, true)

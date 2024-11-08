@@ -45,7 +45,7 @@ export class ContentService extends BaseService<
     const content = await this.contentRepository.create(
       orgname,
       createContentDto,
-      mimeType
+      { mimeType }
     );
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],

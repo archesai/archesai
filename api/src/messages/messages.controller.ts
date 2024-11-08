@@ -39,7 +39,7 @@ export class MessagesController
     const message = await this.messagesService.create(
       orgname,
       createMessageDto,
-      threadId
+      { threadId }
     );
 
     req.socket.off("close", handleRequestClose);
