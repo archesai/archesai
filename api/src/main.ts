@@ -18,7 +18,7 @@ import { _PaginatedDto } from "./common/dto/paginated.dto";
 import { FilterField } from "./common/dto/search-query.dto";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { ExcludeNullInterceptor } from "./common/interceptors/exclude-null.interceptor";
-import { ThreadAggregates } from "./threads/dto/thread-aggregates.dto";
+import { LabelAggregates } from "./labels/dto/label-aggregates.dto";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -84,7 +84,7 @@ async function bootstrap() {
   );
 
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [_PaginatedDto, ThreadAggregates, ApiTokenEntity, FilterField],
+    extraModels: [_PaginatedDto, LabelAggregates, ApiTokenEntity, FilterField],
   });
 
   SwaggerModule.setup("/", app, document, {

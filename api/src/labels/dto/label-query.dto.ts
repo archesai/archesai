@@ -4,7 +4,7 @@ import { IsBoolean, IsEnum, IsOptional } from "class-validator";
 import { Granularity } from "../../common/dto/aggregated-field.dto";
 import { SearchQueryDto } from "../../common/dto/search-query.dto";
 
-export class ThreadQueryDto extends SearchQueryDto {
+export class LabelQueryDto extends SearchQueryDto {
   @ApiProperty({
     default: undefined,
     description: "The granularity to use for ranged aggregates",

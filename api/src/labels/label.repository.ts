@@ -4,54 +4,54 @@ import { Prisma } from "@prisma/client";
 import { BaseRepository } from "../common/base.repository";
 import { GranularCount, GranularSum } from "../common/dto/aggregated-field.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateThreadDto } from "./dto/create-thread.dto";
-import { ThreadAggregates } from "./dto/thread-aggregates.dto";
-import { ThreadQueryDto } from "./dto/thread-query.dto";
-import { ThreadModel } from "./entities/thread.entity";
+import { CreateLabelDto } from "./dto/create-label.dto";
+import { LabelAggregates } from "./dto/label-aggregates.dto";
+import { LabelQueryDto } from "./dto/label-query.dto";
+import { LabelModel } from "./entities/label.entity";
 
 @Injectable()
-export class ThreadRepository extends BaseRepository<
-  ThreadModel,
-  CreateThreadDto,
+export class LabelRepository extends BaseRepository<
+  LabelModel,
+  CreateLabelDto,
   undefined,
-  Prisma.ThreadInclude,
-  Prisma.ThreadSelect,
-  Prisma.ThreadUpdateInput
+  Prisma.LabelInclude,
+  Prisma.LabelSelect,
+  Prisma.LabelUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.thread);
+    super(prisma.label);
   }
 
-  async findAll(orgname: string, threadQueryDto: ThreadQueryDto) {
+  async findAll(orgname: string, labelQueryDto: LabelQueryDto) {
     const whereConditions = {
       createdAt: {
-        gte: threadQueryDto.startDate,
-        lte: threadQueryDto.endDate,
+        gte: labelQueryDto.startDate,
+        lte: labelQueryDto.endDate,
       },
       orgname,
     };
-    if (threadQueryDto.filters) {
-      threadQueryDto.filters.forEach((filter) => {
+    if (labelQueryDto.filters) {
+      labelQueryDto.filters.forEach((filter) => {
         whereConditions[filter.field] = { [filter.operator]: filter.value };
       });
     }
 
-    const count = await this.prisma.thread.count({
+    const count = await this.prisma.label.count({
       where: whereConditions,
     });
 
-    let aggregates: ThreadAggregates = null as {
+    let aggregates: LabelAggregates = null as {
       credits: GranularSum[];
-      threadsCreated: GranularCount[];
+      labelsCreated: GranularCount[];
     };
 
-    if (threadQueryDto.aggregates) {
+    if (labelQueryDto.aggregates) {
       const rawAggregates = await this.prisma.$queryRaw`
           SELECT 
-              DATE_TRUNC(${threadQueryDto.aggregateGranularity}, "createdAt") AS day, 
+              DATE_TRUNC(${labelQueryDto.aggregateGranularity}, "createdAt") AS day, 
               COUNT(*) AS count,
               COALESCE(SUM("credits"), 0)::numeric AS "dailyCredits"
-          FROM "Thread"
+          FROM "Label"
           WHERE "orgname" = ${orgname}
           GROUP BY day
           ORDER BY day;
@@ -67,7 +67,7 @@ export class ThreadRepository extends BaseRepository<
             new Date(record.day).getTime() + 24 * 60 * 60 * 1000 - 1
           ), // end of the day
         })),
-        threadsCreated: (rawAggregates as any).map((record) => ({
+        labelsCreated: (rawAggregates as any).map((record) => ({
           count: Number(record.count),
           from: record.day,
           to: new Date(
@@ -77,12 +77,12 @@ export class ThreadRepository extends BaseRepository<
       };
     }
 
-    const results = await this.prisma.thread.findMany({
+    const results = await this.prisma.label.findMany({
       orderBy: {
-        [threadQueryDto.sortBy]: threadQueryDto.sortDirection,
+        [labelQueryDto.sortBy]: labelQueryDto.sortDirection,
       },
-      skip: threadQueryDto.offset,
-      take: threadQueryDto.limit,
+      skip: labelQueryDto.offset,
+      take: labelQueryDto.limit,
       where: whereConditions,
     });
     return { aggregates, count, results };

@@ -48,7 +48,7 @@ export const useWebsockets = ({
         streamChatMessage(
           event.orgname,
           event.chatbotId,
-          event.threadId,
+          event.labelId,
           event.message
         );
       });

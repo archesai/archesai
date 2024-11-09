@@ -1,29 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  useContentControllerFindAll,
-  useMessagesControllerCreate,
-  useMessagesControllerFindAll,
-  useThreadsControllerCreate,
-} from "@/generated/archesApiComponents";
-import { ContentEntity } from "@/generated/archesApiSchemas";
+import { useLabelsControllerCreate } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
-import { PopoverTrigger } from "@radix-ui/react-popover";
 import { RefreshCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
@@ -32,25 +16,16 @@ export default function ChatbotChatPage() {
   const { toast } = useToast();
 
   const searchParams = useSearchParams();
-  const [threadId, setThreadId] = useState<string>("");
+  const [labelId, setLabelId] = useState<string>("");
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
   const chatbotId = searchParams?.get("chatbotId");
-  const tid = searchParams?.get("threadId");
+  const tid = searchParams?.get("labelId");
   const [enableFetching, setEnableFetching] = useState(false);
-
-  const { data: content } = useContentControllerFindAll({
-    pathParams: {
-      orgname: defaultOrgname,
-    },
-    queryParams: {
-      limit: 3,
-    },
-  });
 
   useEffect(() => {
     if (tid) {
-      setThreadId(tid as string);
+      setLabelId(tid as string);
       setEnableFetching(true);
     }
   }, [tid]);
@@ -61,7 +36,7 @@ export default function ChatbotChatPage() {
     {
       pathParams: {
         orgname: defaultOrgname,
-        threadId: threadId as string,
+        labelId: labelId as string,
       },
       queryParams: {
         sortBy: "createdAt",
@@ -83,23 +58,23 @@ export default function ChatbotChatPage() {
     }
   }, [messages]);
 
-  const { mutateAsync: createThread } = useThreadsControllerCreate();
+  const { mutateAsync: createLabel } = useLabelsControllerCreate();
   const { mutateAsync: createMessage } = useMessagesControllerCreate();
   const handleSend = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
-    let currentThreadId = threadId;
-    if (!threadId) {
+    let currentLabelId = labelId;
+    if (!labelId) {
       try {
-        const thread = await createThread({
+        const label = await createLabel({
           pathParams: {
             orgname: defaultOrgname,
           },
         });
-        setThreadId(thread.id);
-        currentThreadId = thread.id;
+        setLabelId(label.id);
+        currentLabelId = label.id;
       } catch (error) {
-        console.error("Failed to create thread:", error);
+        console.error("Failed to create label:", error);
         // Optionally, show a toast notification
         return;
       }
@@ -107,12 +82,12 @@ export default function ChatbotChatPage() {
 
     try {
       setMessage("");
-      streamChatMessage(defaultOrgname, chatbotId as string, currentThreadId, {
+      streamChatMessage(defaultOrgname, chatbotId as string, currentLabelId, {
         answer: "",
         createdAt: new Date().toISOString(),
         id: "pending",
         question: message.trim(),
-        threadId: currentThreadId,
+        labelId: currentLabelId,
       });
       await createMessage({
         body: {
@@ -120,7 +95,7 @@ export default function ChatbotChatPage() {
         },
         pathParams: {
           orgname: defaultOrgname,
-          threadId: currentThreadId,
+          labelId: currentLabelId,
         },
       });
     } catch (error) {
@@ -146,8 +121,7 @@ export default function ChatbotChatPage() {
     }
     setMessage(e.target.value);
   };
-  const [open, setOpen] = useState(false);
-  const [, setSelectedContent] = useState<ContentEntity[]>([]);
+  const [, setOpen] = useState(false);
 
   return (
     <div className="relative flex h-full gap-6">
@@ -156,7 +130,7 @@ export default function ChatbotChatPage() {
         <Button
           className="text-muted-foreground hover:text-primary"
           onClick={() => {
-            setThreadId("");
+            setLabelId("");
           }}
           size="icon"
           variant={"ghost"}
@@ -245,56 +219,25 @@ export default function ChatbotChatPage() {
           }}
         >
           <div className="flex items-center gap-2">
-            <Popover onOpenChange={setOpen} open={open}>
-              <PopoverTrigger asChild onClick={(e) => e.preventDefault()}>
-                <Textarea
-                  className="text-md max-h-40 flex-1 resize-none rounded-lg bg-background text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200"
-                  onChange={handleChange}
-                  onInput={(e) => {
-                    const target = e.target as HTMLTextAreaElement;
-                    target.style.height = "auto";
-                    target.style.height = `${target.scrollHeight}px`;
-                  }}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type your message..."
-                  rows={1}
-                  // Auto-resize functionality
-                  style={{
-                    height: "auto",
-                    overflow: "hidden",
-                  }}
-                  value={message}
-                />
-              </PopoverTrigger>
-              <PopoverContent align="start" className="p-0" side="top">
-                <Command>
-                  <CommandInput placeholder="Choose content..." />
-                  <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
-                    <CommandGroup>
-                      {content?.results?.map((status) => (
-                        <CommandItem
-                          key={status.id}
-                          onSelect={(id) => {
-                            const currContent = content?.results?.find(
-                              (c) => c.id === id
-                            );
-                            setSelectedContent((prev) => [
-                              ...(prev || []),
-                              currContent as ContentEntity,
-                            ]);
-                            setOpen(false);
-                          }}
-                          value={status.id}
-                        >
-                          {status.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <Textarea
+              className="text-md max-h-40 flex-1 resize-none rounded-lg bg-background text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200"
+              onChange={handleChange}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = "auto";
+                target.style.height = `${target.scrollHeight}px`;
+              }}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your message..."
+              rows={1}
+              // Auto-resize functionality
+              style={{
+                height: "auto",
+                overflow: "hidden",
+              }}
+              value={message}
+            />
+
             <Button
               className={cn(
                 "flex items-center justify-center p-2",

@@ -12,20 +12,20 @@ export const useStreamChat = () => {
   const streamChatMessage = (
     orgname: string,
     chatbotId: string,
-    threadId: string,
+    labelId: string,
     message: MessageEntity
   ) => {
     queryClient.setQueryData(
       queryKeyFn({
         operationId: "messagesControllerFindAll",
-        path: "/organizations/{orgname}/threads/{threadId}/messages",
+        path: "/organizations/{orgname}/labels/{labelId}/messages",
         variables: {
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
           pathParams: {
             orgname: orgname,
-            threadId: threadId,
+            labelId: labelId,
           },
           queryParams: {
             sortBy: "createdAt",

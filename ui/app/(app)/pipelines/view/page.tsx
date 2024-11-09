@@ -67,13 +67,13 @@ export default function ContentPage() {
           cell: ({ row }) => {
             return (
               <div className="flex gap-1">
-                {row.original.transformations?.map((transformation) => {
+                {row.original.pipelineSteps?.map((step) => {
                   return (
                     <Badge
                       className="text-nowrap text-primary"
                       variant="secondary"
                     >
-                      {transformation.tool}
+                      {step.tool}
                     </Badge>
                   );
                 })}

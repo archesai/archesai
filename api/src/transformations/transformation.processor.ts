@@ -135,7 +135,6 @@ export class TransformationProcessor extends WorkerHost {
     this.logger.log(`Adding run output contents to run ${job.id}`);
     await this.transformationsService.setOutputContent(
       job.id.toString(),
-      "FIXME",
       runOutputContents
     );
   }

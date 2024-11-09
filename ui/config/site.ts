@@ -85,11 +85,11 @@ export const siteConfig = {
         {
           href: "/chatbots/chat",
           Icon: Bot,
-          title: "New Thread",
+          title: "New Label",
         },
         {
-          description: "View and manage chatbot threads.",
-          href: "/chatbots/threads",
+          description: "View and manage chatbot labels.",
+          href: "/chatbots/labels",
           Icon: ListMinus,
           title: "History",
         },

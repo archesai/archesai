@@ -7,7 +7,7 @@ export type CreatePipelineStepDto = {
   /**
    * The ID of the tool that this step uses
    */
-  toolId?: string;
+  toolId: string;
   /**
    * The ID of the pie
    */
@@ -50,11 +50,17 @@ export type PipelineStepEntity = {
   /**
    * The ID of the pipelin that this step belongs to
    */
-  pipelineId?: string;
+  pipelineId: string;
+  /**
+   * The name of the tool
+   *
+   * @example My Tool
+   */
+  tool: string;
   /**
    * The ID of the tool that this step uses
    */
-  toolId?: string;
+  toolId: string;
 };
 
 export type PipelineEntity = {
@@ -162,11 +168,11 @@ export type PipelineRunEntity = {
    */
   status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
   /**
-   * The pipeline ID associated with the run, if applicable
+   * The pipeline ID associated with the pipeline run, if applicable
    */
   pipelineId?: string;
   /**
-   * The thread that the run is associated with, if applicable
+   * The thread that the pipeline run is associated with, if applicable
    */
   threadId?: string;
 };
@@ -854,6 +860,12 @@ export type ContentEntity = {
    */
   previewImage?: string;
   /**
+   * The ID of the transformation that produced this content, if any
+   *
+   * @example transformation-id
+   */
+  producedById?: string;
+  /**
    * The content's text, if TEXT content
    *
    * @example Hello world. I am a text.
@@ -1025,12 +1037,6 @@ export type ThreadEntity = {
    * @example What are the morals of the story in Aesop's Fables?
    */
   name?: string;
-  /**
-   * The total number of messages in this chat
-   *
-   * @example 10000
-   */
-  numMessages: number;
   /**
    * The organization name
    *

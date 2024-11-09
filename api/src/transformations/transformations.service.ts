@@ -23,14 +23,9 @@ export class TransformationsService extends BaseService<
     super(transformationRepository);
   }
 
-  async setOutputContent(
-    pipelineRunId: string,
-    transformationId: string,
-    content: ContentEntity[]
-  ) {
+  async setOutputContent(transformationId: string, content: ContentEntity[]) {
     return this.toEntity(
       await this.transformationRepository.setOutputContent(
-        pipelineRunId,
         transformationId,
         content
       )

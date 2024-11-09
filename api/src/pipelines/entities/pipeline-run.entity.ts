@@ -15,7 +15,8 @@ export class PipelineRunEntity
   orgname: string;
 
   @ApiProperty({
-    description: "The pipeline ID associated with the run, if applicable",
+    description:
+      "The pipeline ID associated with the pipeline run, if applicable",
     required: false,
     type: String,
   })
@@ -23,17 +24,8 @@ export class PipelineRunEntity
   @IsOptional()
   pipelineId: null | string;
 
-  @ApiProperty({
-    description: "The thread that the run is associated with, if applicable",
-    required: false,
-    type: String,
-  })
-  @Expose()
-  @IsOptional()
-  threadId: null | string;
-
-  constructor(run: PipelineRunModel) {
+  constructor(pipelineRun: PipelineRunModel) {
     super();
-    Object.assign(this, run);
+    Object.assign(this, pipelineRun);
   }
 }

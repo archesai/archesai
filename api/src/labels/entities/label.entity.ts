@@ -1,13 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Thread as _PrismaThread } from "@prisma/client";
+import { Label as _PrismaLabel } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsOptional } from "class-validator";
 
 import { BaseEntity } from "../../common/entities/base.entity";
 
-export type ThreadModel = _PrismaThread;
+export type LabelModel = _PrismaLabel;
 
-export class ThreadEntity extends BaseEntity implements ThreadModel {
+export class LabelEntity extends BaseEntity implements LabelModel {
   @ApiProperty({
     description: "The total number of credits used in this chat",
     example: 10000,
@@ -17,7 +17,7 @@ export class ThreadEntity extends BaseEntity implements ThreadModel {
 
   @ApiProperty({
     default: "New Chat",
-    description: "The chat thread name",
+    description: "The chat label name",
     example: "What are the morals of the story in Aesop's Fables?",
     required: false,
   })
@@ -26,21 +26,14 @@ export class ThreadEntity extends BaseEntity implements ThreadModel {
   name: string;
 
   @ApiProperty({
-    description: "The total number of messages in this chat",
-    example: 10000,
-  })
-  @Expose()
-  numMessages: number;
-
-  @ApiProperty({
     description: "The organization name",
     example: "my-organization",
   })
   @Expose()
   orgname: string;
 
-  constructor(thread: ThreadModel) {
+  constructor(label: LabelModel) {
     super();
-    Object.assign(this, thread);
+    Object.assign(this, label);
   }
 }

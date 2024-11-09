@@ -71,10 +71,8 @@ async function main() {
           url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
         },
       });
-      await prismaService.thread.create({
+      await prismaService.label.create({
         data: {
-          credits: faker.number.int(10000),
-
           name: faker.commerce.productName(),
           orgname: user.defaultOrgname,
         },

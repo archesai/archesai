@@ -7,6 +7,7 @@ import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineWithPipelineStepsModel } from "./entities/pipeline.entity";
+import { PipelineRunEntity } from "./entities/pipeline-run.entity";
 
 const PIPELINE_INCLUDE = {
   pipelineSteps: {
@@ -58,60 +59,54 @@ export class PipelineRepository extends BaseRepository<
     pipelineId: string,
     createPipelineRunDto: CreatePipelineRunDto
   ) {
+    const pipeline = await this.findOne(orgname, pipelineId);
     const pipelineRun = await this.prisma.pipelineRun.create({
       data: {
         name: "Pipeline Run",
         orgname,
         pipelineId,
         status: RunStatus.QUEUED,
+        transformations: {
+          createMany: {
+            data: pipeline.pipelineSteps.map((pipelineStep) => ({
+              createdAt: new Date(),
+              name: new Date().toISOString(),
+              pipelineStepId: pipelineStep.id,
+              status: RunStatus.QUEUED,
+            })),
+          },
+        },
       },
     });
 
-    await this.prisma.runContent.createMany({
-      data: createPipelineRunDto.runInputContentIds.map((contentId) => ({
-        contentId,
-        pipelineRunId: pipelineRun.id,
-        role: "INPUT",
-      })),
-    });
-
-    // Step 3: Fetch the pipeline tools in order
-    const pipelineSteps = await this.prisma.pipelineStep.findMany({
-      include: { dependsOn: true, tool: true },
-      orderBy: {
-        /* order as needed */
-      },
-      where: { pipelineId },
-    });
-
-    // Step 4: Create child tool runs for each tool in the pipeline
-    for (const pipelineStep of pipelineSteps) {
-      const createdAt = new Date();
-      const pipelineStepRun = await this.prisma.transformation.create({
+    for (const pipelineStep of pipeline.pipelineSteps) {
+      await this.prisma.transformation.update({
         data: {
-          createdAt,
-          name: createdAt.toISOString(),
-          pipelineRunId: pipelineRun.id,
-          pipelineStepId: pipelineStep.id,
-          status: "QUEUED",
+          inputs: {
+            connect: createPipelineRunDto.runInputContentIds.map(
+              (contentId) => ({
+                id: contentId,
+              })
+            ),
+          },
+        },
+        where: {
+          pipelineRunId_pipelineStepId: {
+            pipelineRunId: pipelineRun.id,
+            pipelineStepId: pipelineStep.id,
+          },
+          pipelineStep: {
+            dependsOnId: null,
+          },
         },
       });
-      if (!pipelineStep.dependsOn) {
-        // If there are no dependencies, the tool can be run immediately
-        await this.prisma.runContent.createMany({
-          data: createPipelineRunDto.runInputContentIds.map((contentId) => ({
-            contentId,
-            pipelineRunId: pipelineRun.id,
-            piplineStepRunId: pipelineStepRun.id,
-            role: "INPUT",
-          })),
-        });
-      }
     }
 
-    return this.prisma.pipelineRun.findUnique({
-      where: { id: pipelineRun.id },
-    });
+    return new PipelineRunEntity(
+      await this.prisma.pipelineRun.findUnique({
+        where: { id: pipelineRun.id },
+      })
+    );
   }
 
   async update(

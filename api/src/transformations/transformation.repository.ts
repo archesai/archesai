@@ -19,18 +19,14 @@ export class TransformationRepository extends BaseRepository<
     super(prisma.transformation);
   }
 
-  async setOutputContent(
-    pipelineRunId: string,
-    transformationId: string,
-    contents: ContentEntity[]
-  ) {
-    await this.prisma.runContent.createMany({
-      data: contents.map((content) => ({
-        contentId: content.id,
-        pipelineRunId,
-        role: "OUTPUT",
-        transformationId,
-      })),
+  async setOutputContent(transformationId: string, contents: ContentEntity[]) {
+    await this.prisma.transformation.update({
+      data: {
+        inputs: {
+          connect: contents.map((content) => ({ id: content.id })),
+        },
+      },
+      where: { id: transformationId },
     });
     return this.prisma.transformation.findUnique({
       where: { id: transformationId },

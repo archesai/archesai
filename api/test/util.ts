@@ -82,7 +82,7 @@ export const resetDatabase = async () => {
     prisma.member.deleteMany(),
     prisma.user.deleteMany(),
     prisma.tool.deleteMany(),
-    prisma.thread.deleteMany(),
+    prisma.label.deleteMany(),
     prisma.content.deleteMany(),
     prisma.aRToken.deleteMany(),
     prisma.pipeline.deleteMany(),

@@ -17,6 +17,7 @@ import { BillingModule } from "./billing/billing.module";
 import { ContentModule } from "./content/content.module";
 import { EmailModule } from "./email/email.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
+import { LabelsModule } from "./labels/labels.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
 import { OrganizationsModule } from "./organizations/organizations.module";
@@ -25,7 +26,6 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
-import { ThreadsModule } from "./threads/threads.module";
 import { ToolsModule } from "./tools/tools.module";
 import { TransformationsModule } from "./transformations/transformations.module";
 import { UsersModule } from "./users/users.module";
@@ -188,7 +188,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ApiTokensModule,
     EmbeddingsModule,
     LLMModule,
-    ThreadsModule,
+    LabelsModule,
     StorageModule.forRoot(),
     WebsocketsModule,
     AudioModule,

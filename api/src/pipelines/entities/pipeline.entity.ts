@@ -3,13 +3,14 @@ import { ApiProperty } from "@nestjs/swagger";
 import {
   Pipeline as _PrismaPipeline,
   PipelineStep as _PrismaPipelineStep,
+  Tool as _PrismaTool,
 } from "@prisma/client";
 import { IsString } from "class-validator";
 
 import { PipelineStepEntity } from "./pipeline-step.entity";
 
 export type PipelineWithPipelineStepsModel = _PrismaPipeline & {
-  pipelineSteps: _PrismaPipelineStep[];
+  pipelineSteps: (_PrismaPipelineStep & { tool: _PrismaTool })[];
 };
 
 export class PipelineEntity

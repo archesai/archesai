@@ -74,6 +74,17 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   previewImage: null | string;
 
   @ApiProperty({
+    description:
+      "The ID of the transformation that produced this content, if any",
+    example: "transformation-id",
+    required: false,
+    type: String,
+  })
+  @Expose()
+  @IsString()
+  producedById: null | string;
+
+  @ApiProperty({
     description: "The content's text, if TEXT content",
     example: "Hello world. I am a text.",
     required: false,

@@ -16,21 +16,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePipelineDto'
+              $ref: "#/components/schemas/CreatePipelineDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
-        '400':
+                $ref: "#/components/schemas/PipelineEntity"
+        "400":
           description: Bad request when creating the pipeline
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -60,7 +60,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -99,24 +99,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/PipelineEntity'
+                          $ref: "#/components/schemas/PipelineEntity"
                         type: array
                 title: PaginatedResponseOfPipelineEntity
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -143,21 +143,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePipelineRunDto'
+              $ref: "#/components/schemas/CreatePipelineRunDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new pipeline run
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineRunEntity'
-        '400':
+                $ref: "#/components/schemas/PipelineRunEntity"
+        "400":
           description: Bad request when creating the pipeline run
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -180,17 +180,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
-        '401':
+                $ref: "#/components/schemas/PipelineEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -212,13 +212,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the pipeline
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -244,19 +244,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePipelineDto'
+              $ref: "#/components/schemas/UpdatePipelineDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
-        '401':
+                $ref: "#/components/schemas/PipelineEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Pipelines
@@ -273,16 +273,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenDto'
+              $ref: "#/components/schemas/ConfirmationTokenDto"
       responses:
-        '201':
+        "201":
           description: E-mail change confirmed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
-          description: ''
+                $ref: "#/components/schemas/TokenDto"
+        "400":
+          description: ""
       tags:
         - Authentication
   /auth/email-change/request:
@@ -296,10 +296,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequestDto'
+              $ref: "#/components/schemas/EmailRequestDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
       tags:
         - Authentication
       security:
@@ -315,18 +315,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenDto'
+              $ref: "#/components/schemas/ConfirmationTokenDto"
       responses:
-        '201':
+        "201":
           description: E-mail verification confirmed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
-          description: ''
-        '401':
-          description: ''
+                $ref: "#/components/schemas/TokenDto"
+        "400":
+          description: ""
+        "401":
+          description: ""
       tags:
         - Authentication
   /auth/email-verification/request:
@@ -336,13 +336,13 @@ paths:
       description: This endpoint will send an e-mail verification link to you. ADMIN ONLY.
       parameters: []
       responses:
-        '201':
+        "201":
           description: E-mail verification link sent
-        '400':
+        "400":
           description: Already Verified
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
       tags:
         - Authentication
@@ -358,15 +358,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginDto'
+              $ref: "#/components/schemas/LoginDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '401':
+                $ref: "#/components/schemas/TokenDto"
+        "401":
           description: Invalid credentials
       tags:
         - Authentication
@@ -381,14 +381,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenWithNewPasswordDto'
+              $ref: "#/components/schemas/ConfirmationTokenWithNewPasswordDto"
       responses:
-        '201':
+        "201":
           description: Password change confirmed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
+                $ref: "#/components/schemas/TokenDto"
       tags:
         - Authentication
   /auth/password-reset/request:
@@ -402,10 +402,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequestDto'
+              $ref: "#/components/schemas/EmailRequestDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
       tags:
         - Authentication
   /auth/refresh-token:
@@ -414,13 +414,13 @@ paths:
       summary: Refresh Access Token
       parameters: []
       responses:
-        '201':
+        "201":
           description: The new access token has been generated.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '401':
+                $ref: "#/components/schemas/TokenDto"
+        "401":
           description: Invalid refresh token
       tags:
         - Authentication
@@ -437,15 +437,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterDto'
+              $ref: "#/components/schemas/RegisterDto"
       responses:
-        '201':
+        "201":
           description: User was created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '404':
+                $ref: "#/components/schemas/TokenDto"
+        "404":
           description: User already exists with provided email
       tags:
         - Authentication
@@ -455,9 +455,9 @@ paths:
       summary: Deactivate
       parameters: []
       responses:
-        '201':
+        "201":
           description: User was deleted successfully
-        '401':
+        "401":
           description: Unauthorized
       tags:
         - User
@@ -470,17 +470,17 @@ paths:
       description: Get a user. ADMIN ONLY.
       parameters: []
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserEntity'
-        '401':
+                $ref: "#/components/schemas/UserEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - User
@@ -496,19 +496,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserDto'
+              $ref: "#/components/schemas/UpdateUserDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserEntity'
-        '401':
+                $ref: "#/components/schemas/UserEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - User
@@ -525,21 +525,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrganizationDto'
+              $ref: "#/components/schemas/CreateOrganizationDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new organization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '400':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "400":
           description: Bad request when creating the organization
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization
@@ -557,13 +557,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the organization
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization
@@ -580,17 +580,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the organization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '401':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization
@@ -611,19 +611,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrganizationDto'
+              $ref: "#/components/schemas/UpdateOrganizationDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the organization
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '401':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization
@@ -641,7 +641,7 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successfully canceled subscription plan
       tags:
         - Organization - Billing
@@ -664,7 +664,7 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successfully switched subscription plan
       tags:
         - Organization - Billing
@@ -685,12 +685,12 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successfully created URL
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingUrlEntity'
+                $ref: "#/components/schemas/BillingUrlEntity"
       tags:
         - Organization - Billing
       security:
@@ -715,12 +715,12 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Successfully created checkout session URL
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingUrlEntity'
+                $ref: "#/components/schemas/BillingUrlEntity"
       tags:
         - Organization - Billing
       security:
@@ -732,14 +732,14 @@ paths:
       description: Get a list of available billing plans
       parameters: []
       responses:
-        '200':
+        "200":
           description: List of plans
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PlanEntity'
+                  $ref: "#/components/schemas/PlanEntity"
       tags:
         - Organization - Billing
         - Plans
@@ -757,14 +757,14 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: List of payment methods
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PaymentMethodEntity'
+                  $ref: "#/components/schemas/PaymentMethodEntity"
       tags:
         - Organization - Billing
       security:
@@ -786,8 +786,8 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
       tags:
         - Organization - Billing
       security:
@@ -808,21 +808,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateApiTokenDto'
+              $ref: "#/components/schemas/CreateApiTokenDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new API token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
-        '400':
+                $ref: "#/components/schemas/ApiTokenEntity"
+        "400":
           description: Bad request when creating the API token
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - API Tokens
@@ -852,7 +852,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -891,24 +891,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/ApiTokenEntity'
+                          $ref: "#/components/schemas/ApiTokenEntity"
                         type: array
                 title: PaginatedResponseOfApiTokenEntity
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - API Tokens
@@ -931,17 +931,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the API token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
-        '401':
+                $ref: "#/components/schemas/ApiTokenEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - API Tokens
@@ -963,13 +963,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the API token
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - API Tokens
@@ -995,19 +995,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateApiTokenDto'
+              $ref: "#/components/schemas/UpdateApiTokenDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the API token
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
-        '401':
+                $ref: "#/components/schemas/ApiTokenEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - API Tokens
@@ -1029,21 +1029,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateContentDto'
+              $ref: "#/components/schemas/CreateContentDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new content
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '400':
+                $ref: "#/components/schemas/ContentEntity"
+        "400":
           description: Bad request when creating the content
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Content
@@ -1073,7 +1073,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -1112,24 +1112,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/ContentEntity'
+                          $ref: "#/components/schemas/ContentEntity"
                         type: array
                 title: PaginatedResponseOfContentEntity
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Content
@@ -1152,17 +1152,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the content
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '401':
+                $ref: "#/components/schemas/ContentEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Content
@@ -1184,13 +1184,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the content
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Content
@@ -1216,19 +1216,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContentDto'
+              $ref: "#/components/schemas/UpdateContentDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the content
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '401':
+                $ref: "#/components/schemas/ContentEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Content
@@ -1253,13 +1253,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Path was successfully deleted
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Storage
@@ -1283,19 +1283,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PathDto'
+              $ref: "#/components/schemas/PathDto"
       responses:
-        '201':
+        "201":
           description: Read  url was successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadUrlDto'
-        '401':
+                $ref: "#/components/schemas/ReadUrlDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Storage
@@ -1322,19 +1322,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PathDto'
+              $ref: "#/components/schemas/PathDto"
       responses:
-        '201':
+        "201":
           description: Write urls was successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WriteUrlDto'
-        '401':
+                $ref: "#/components/schemas/WriteUrlDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Storage
@@ -1359,19 +1359,19 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Path was successfully retrieved
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/StorageItemDto'
-        '401':
+                  $ref: "#/components/schemas/StorageItemDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Storage
@@ -1393,21 +1393,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMemberDto'
+              $ref: "#/components/schemas/CreateMemberDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new member
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
-        '400':
+                $ref: "#/components/schemas/MemberEntity"
+        "400":
           description: Bad request when creating the member
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization - Members
@@ -1437,7 +1437,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -1476,24 +1476,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/MemberEntity'
+                          $ref: "#/components/schemas/MemberEntity"
                         type: array
                 title: PaginatedResponseOfMemberEntity
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization - Members
@@ -1511,17 +1511,17 @@ paths:
           schema:
             type: string
       responses:
-        '201':
+        "201":
           description: Member was successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
-        '401':
+                $ref: "#/components/schemas/MemberEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Email not verified
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization - Members
@@ -1544,13 +1544,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the member
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization - Members
@@ -1576,29 +1576,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateMemberDto'
+              $ref: "#/components/schemas/UpdateMemberDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the member
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
-        '401':
+                $ref: "#/components/schemas/MemberEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Organization - Members
       security:
         - bearer: []
-  /organizations/{orgname}/threads:
+  /organizations/{orgname}/labels:
     post:
-      operationId: ThreadsController_create
-      summary: Create a new thread
-      description: Create a new thread. USER and ADMIN can access this endpoint.
+      operationId: LabelsController_create
+      summary: Create a new label
+      description: Create a new label. USER and ADMIN can access this endpoint.
       parameters:
         - name: orgname
           required: true
@@ -1610,28 +1610,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateThreadDto'
+              $ref: "#/components/schemas/CreateLabelDto"
       responses:
-        '201':
-          description: Successfully created a new thread
+        "201":
+          description: Successfully created a new label
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadEntity'
-        '400':
-          description: Bad request when creating the thread
-        '401':
+                $ref: "#/components/schemas/LabelEntity"
+        "400":
+          description: Bad request when creating the label
+        "401":
           description: Unauthorized
-        '404':
+        "404":
           description: Not Found
       tags:
-        - Threads
+        - Labels
       security:
         - bearer: []
     get:
-      operationId: ThreadsController_findAll
-      summary: Get all threads
-      description: Get all threads. ADMIN ONLY.
+      operationId: LabelsController_findAll
+      summary: Get all labels
+      description: Get all labels. ADMIN ONLY.
       parameters:
         - name: endDate
           required: false
@@ -1647,7 +1647,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -1709,90 +1709,90 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/ThreadEntity'
+                          $ref: "#/components/schemas/LabelEntity"
                         type: array
                       aggregates:
-                        $ref: '#/components/schemas/ThreadAggregates'
-                title: PaginatedResponseOfThreadEntity
-        '401':
+                        $ref: "#/components/schemas/LabelAggregates"
+                title: PaginatedResponseOfLabelEntity
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
-        - Threads
+        - Labels
       security:
         - bearer: []
-  /organizations/{orgname}/threads/{threadId}:
+  /organizations/{orgname}/labels/{labelId}:
     get:
-      operationId: ThreadsController_findOne
-      summary: Get a thread
-      description: Get a thread. ADMIN ONLY.
+      operationId: LabelsController_findOne
+      summary: Get a label
+      description: Get a label. ADMIN ONLY.
       parameters:
         - name: orgname
           required: true
           in: path
           schema:
             type: string
-        - name: threadId
+        - name: labelId
           required: true
           in: path
           schema:
             type: string
       responses:
-        '200':
-          description: Successfully retrieved the thread
+        "200":
+          description: Successfully retrieved the label
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ThreadEntity'
-        '401':
+                $ref: "#/components/schemas/LabelEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
-        - Threads
+        - Labels
       security:
         - bearer: []
     delete:
-      operationId: ThreadsController_remove
-      summary: Delete a thread
-      description: Delete a thread. ADMIN ONLY.
+      operationId: LabelsController_remove
+      summary: Delete a label
+      description: Delete a label. ADMIN ONLY.
       parameters:
         - name: orgname
           required: true
           in: path
           schema:
             type: string
-        - name: threadId
+        - name: labelId
           required: true
           in: path
           schema:
             type: string
       responses:
-        '200':
-          description: Successfully deleted the thread
-        '401':
+        "200":
+          description: Successfully deleted the label
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
-        - Threads
+        - Labels
       security:
         - bearer: []
   /organizations/{orgname}/tools:
@@ -1811,21 +1811,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateToolDto'
+              $ref: "#/components/schemas/CreateToolDto"
       responses:
-        '201':
+        "201":
           description: Successfully created a new tool
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '400':
+                $ref: "#/components/schemas/ToolEntity"
+        "400":
           description: Bad request when creating the tool
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Tools
@@ -1855,7 +1855,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: "#/components/schemas/FilterField"
         - name: limit
           required: false
           in: query
@@ -1894,24 +1894,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
+                  - $ref: "#/components/schemas/_PaginatedDto"
                   - properties:
                       results:
                         items:
-                          $ref: '#/components/schemas/ToolEntity'
+                          $ref: "#/components/schemas/ToolEntity"
                         type: array
                 title: PaginatedResponseOfToolEntity
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Tools
@@ -1934,17 +1934,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully retrieved the tool
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '401':
+                $ref: "#/components/schemas/ToolEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Tools
@@ -1966,13 +1966,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully deleted the tools
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Tools
@@ -1998,19 +1998,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateToolDto'
+              $ref: "#/components/schemas/UpdateToolDto"
       responses:
-        '200':
+        "200":
           description: Successfully updated the tools
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '401':
+                $ref: "#/components/schemas/ToolEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       tags:
         - Tools
@@ -2040,6 +2040,8 @@ components:
         dependsOnId:
           type: string
           description: The ID of the pie
+      required:
+        - toolId
     CreatePipelineDto:
       type: object
       properties:
@@ -2053,7 +2055,7 @@ components:
           description: An array of pipeline tools to be added to the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/CreatePipelineStepDto'
+            $ref: "#/components/schemas/CreatePipelineStepDto"
       required:
         - name
         - pipelineSteps
@@ -2064,7 +2066,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2075,12 +2077,19 @@ components:
         pipelineId:
           type: string
           description: The ID of the pipelin that this step belongs to
+        tool:
+          type: string
+          description: The name of the tool
+          example: My Tool
         toolId:
           type: string
           description: The ID of the tool that this step uses
       required:
         - createdAt
         - id
+        - pipelineId
+        - tool
+        - toolId
     PipelineEntity:
       type: object
       properties:
@@ -2088,7 +2097,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2105,7 +2114,7 @@ components:
         pipelineSteps:
           type: array
           items:
-            $ref: '#/components/schemas/PipelineStepEntity'
+            $ref: "#/components/schemas/PipelineStepEntity"
       required:
         - createdAt
         - id
@@ -2144,7 +2153,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2153,7 +2162,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run completed
-          example: '2024-11-05T11:42:02.258Z'
+          example: "2024-11-05T11:42:02.258Z"
         error:
           type: string
           description: The error message, if any, associated with the run
@@ -2171,7 +2180,7 @@ components:
           format: date-time
           type: string
           description: The timestamp when the run started
-          example: '2024-11-05T11:42:02.258Z'
+          example: "2024-11-05T11:42:02.258Z"
         status:
           type: string
           default: QUEUED
@@ -2183,10 +2192,10 @@ components:
             - ERROR
         pipelineId:
           type: string
-          description: The pipeline ID associated with the run, if applicable
-        threadId:
+          description: The pipeline ID associated with the pipeline run, if applicable
+        labelId:
           type: string
-          description: The thread that the run is associated with, if applicable
+          description: The label that the pipeline run is associated with, if applicable
       required:
         - createdAt
         - id
@@ -2206,7 +2215,7 @@ components:
           description: An array of pipeline tools to be added to the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/CreatePipelineStepDto'
+            $ref: "#/components/schemas/CreatePipelineStepDto"
     ConfirmationTokenDto:
       type: object
       properties:
@@ -2294,7 +2303,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2325,7 +2334,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2366,7 +2375,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2375,7 +2384,7 @@ components:
           description: The memberships of the currently signed in user
           type: array
           items:
-            $ref: '#/components/schemas/AuthProviderEntity'
+            $ref: "#/components/schemas/AuthProviderEntity"
         deactivated:
           type: boolean
           description: Whether or not the user is deactivated
@@ -2407,7 +2416,7 @@ components:
           description: The memberships of the currently signed in user
           type: array
           items:
-            $ref: '#/components/schemas/MemberEntity'
+            $ref: "#/components/schemas/MemberEntity"
         photoUrl:
           type: string
           description: The user's photo url
@@ -2467,7 +2476,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2583,7 +2592,7 @@ components:
         postal_code:
           type: object
           description: ZIP or postal code.
-          example: '94111'
+          example: "94111"
           nullable: true
         state:
           type: object
@@ -2603,7 +2612,7 @@ components:
         address:
           description: Billing address associated with the payment method.
           allOf:
-            - $ref: '#/components/schemas/Address'
+            - $ref: "#/components/schemas/Address"
         email:
           type: object
           description: Email address associated with the payment method.
@@ -2617,7 +2626,7 @@ components:
         phone:
           type: object
           description: Phone number associated with the payment method.
-          example: '+1234567890'
+          example: "+1234567890"
           nullable: true
       required:
         - address
@@ -2654,7 +2663,7 @@ components:
         last4:
           type: string
           description: The last four digits of the card.
-          example: '4242'
+          example: "4242"
       required:
         - brand
         - country
@@ -2669,12 +2678,12 @@ components:
         billing_details:
           description: Billing details associated with the payment method.
           allOf:
-            - $ref: '#/components/schemas/BillingDetails'
+            - $ref: "#/components/schemas/BillingDetails"
         card:
           description: If the PaymentMethod is a card, this contains the card details.
           nullable: true
           allOf:
-            - $ref: '#/components/schemas/CardDetails'
+            - $ref: "#/components/schemas/CardDetails"
         customer:
           type: object
           description: ID of the customer this payment method is saved to.
@@ -2699,7 +2708,7 @@ components:
       properties:
         domains:
           type: string
-          default: '*'
+          default: "*"
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
         name:
@@ -2723,20 +2732,20 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
           example: 32411590-a8e0-11ed-afa1-0242ac120002
         domains:
           type: string
-          default: '*'
+          default: "*"
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
         key:
           type: string
           description: The API token key. This will only be shown once
-          example: '********1234567890'
+          example: "********1234567890"
         name:
           type: string
           description: The name of the API token
@@ -2769,7 +2778,7 @@ components:
       properties:
         domains:
           type: string
-          default: '*'
+          default: "*"
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
         name:
@@ -2806,7 +2815,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2839,6 +2848,10 @@ components:
           type: string
           description: The preview image of the content
           example: https://preview-image.com/example.png
+        producedById:
+          type: string
+          description: The ID of the transformation that produced this content, if any
+          example: transformation-id
         text:
           type: string
           description: The content's text, if TEXT content
@@ -2913,7 +2926,7 @@ components:
         id:
           type: string
           description: The id of the storage item
-          example: '14'
+          example: "14"
         isDir:
           type: boolean
           description: Whether or not this is a directory
@@ -2961,28 +2974,28 @@ components:
           enum:
             - USER
             - ADMIN
-    CreateThreadDto:
+    CreateLabelDto:
       type: object
       properties:
         name:
           type: string
           default: New Chat
-          description: The chat thread name
+          description: The chat label name
           example: What are the morals of the story in Aesop's Fables?
         id:
           type: string
           description: >-
-            Optional. The id to use as the thread id. If taken, this endpoint
+            Optional. The id to use as the label id. If taken, this endpoint
             will return a 409.
-          example: custom-thread-id
-    ThreadEntity:
+          example: custom-label-id
+    LabelEntity:
       type: object
       properties:
         createdAt:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -2994,12 +3007,8 @@ components:
         name:
           type: string
           default: New Chat
-          description: The chat thread name
+          description: The chat label name
           example: What are the morals of the story in Aesop's Fables?
-        numMessages:
-          type: number
-          description: The total number of messages in this chat
-          example: 10000
         orgname:
           type: string
           description: The organization name
@@ -3008,7 +3017,6 @@ components:
         - createdAt
         - id
         - credits
-        - numMessages
         - orgname
     CreateToolDto:
       type: object
@@ -3056,7 +3064,7 @@ components:
           format: date-time
           type: string
           description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The item's unique identifier
@@ -3162,7 +3170,7 @@ components:
         metadata:
           description: The metadata for the paginated results
           allOf:
-            - $ref: '#/components/schemas/Metadata'
+            - $ref: "#/components/schemas/Metadata"
       required:
         - metadata
     GranularSum:
@@ -3195,19 +3203,19 @@ components:
         - count
         - from
         - to
-    ThreadAggregates:
+    LabelAggregates:
       type: object
       properties:
         credits:
-          description: The number of credits used in chat threads over specific timeframes
+          description: The number of credits used in chat labels over specific timeframes
           type: array
           items:
-            $ref: '#/components/schemas/GranularSum'
-        threadsCreated:
-          description: The number of threads created over specific timeframes
+            $ref: "#/components/schemas/GranularSum"
+        labelsCreated:
+          description: The number of labels created over specific timeframes
           type: array
           items:
-            $ref: '#/components/schemas/GranularCount'
+            $ref: "#/components/schemas/GranularCount"
     FilterField:
       type: object
       properties:

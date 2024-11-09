@@ -1,9 +1,9 @@
 {
   "eslint.workingDirectories": ["./ui", "./api"],
   "files.exclude": {
-    // "**/node_modules": true,
-    // "**/dist": true,
-    // "**/.next": true
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true
   },
   "makefile.configureOnOpen": false
   // "editor.formatOnSave": true,

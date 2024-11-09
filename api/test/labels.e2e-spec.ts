@@ -1,3 +1,5 @@
+import { ContentService } from "@/src/content/content.service";
+import { faker } from "@faker-js/faker";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
@@ -27,6 +29,14 @@ describe("Labels", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
+
+    const contentService = app.get(ContentService);
+    for (let i = 0; i < 100; i++) {
+      await contentService.create(orgname, {
+        name: faker.lorem.words(),
+        text: faker.lorem.sentence(),
+      });
+    }
   });
 
   afterAll(async () => {
@@ -46,29 +56,17 @@ describe("Labels", () => {
     labelId = labelRes.body.id;
   });
 
-  it("should be able to create a message in a label", async () => {
-    // Chat with the chatbot
-    const chatRes = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/labels/${labelId}/messages`)
-      .send({
-        question: "What is the story of the tortoise and the hare?",
-      })
-      .set("Authorization", `Bearer ${accessToken}`);
-    expect(chatRes.status).toBe(201);
-    expect(chatRes).toSatisfyApiSpec();
-    const message = chatRes.body;
-    expect(message.answer.length).toBeGreaterThan(0);
-  });
-
-  it("should be able to get messages in a label", async () => {
+  it("should be able to get content with a label", async () => {
     // Get messages
-    const messagesRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/labels/${labelId}/messages`)
+    const contentRes = await request(app.getHttpServer())
+      .get(
+        `/organizations/${orgname}/content?filters=${JSON.stringify([{ field: "labelId", operator: "equals", value: labelId }])}`
+      )
       .set("Authorization", `Bearer ${accessToken}`);
-    expect(messagesRes.status).toBe(200);
-    expect(messagesRes).toSatisfyApiSpec();
-    const messages = messagesRes.body;
-    expect(messages.results.length).toBeGreaterThan(0);
+    expect(contentRes.status).toBe(200);
+    expect(contentRes).toSatisfyApiSpec();
+    const content = contentRes.body;
+    expect(content.results.length).toBeGreaterThan(0);
   });
 
   it("should be able to delete a label", async () => {

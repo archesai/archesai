@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useThreadsControllerFindAll } from "@/generated/archesApiComponents";
+import { useLabelsControllerFindAll } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import {
   Folder,
@@ -27,10 +27,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export function RecentThreads() {
+export function RecentLabels() {
   const { isMobile } = useSidebar();
   const { defaultOrgname } = useAuth();
-  const { data: threads } = useThreadsControllerFindAll({
+  const { data: labels } = useLabelsControllerFindAll({
     pathParams: {
       orgname: defaultOrgname,
     },
@@ -38,14 +38,14 @@ export function RecentThreads() {
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recent Threads</SidebarGroupLabel>
+      <SidebarGroupLabel>Recent Labels</SidebarGroupLabel>
       <SidebarMenu>
-        {threads?.results?.map((thread) => (
-          <SidebarMenuItem key={thread.id}>
+        {labels?.results?.map((label) => (
+          <SidebarMenuItem key={label.id}>
             <SidebarMenuButton asChild>
-              <Link href={`/chatbots/chat?threadId=${thread.id}`}>
+              <Link href={`/chatbots/chat?labelId=${label.id}`}>
                 <ListMinus />
-                <span>{thread.name}</span>
+                <span>{label.name}</span>
               </Link>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -80,7 +80,7 @@ export function RecentThreads() {
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <MoreHorizontal className="text-sidebar-foreground/70" />
-            <Link href="/chatbots/threads">More</Link>
+            <Link href="/chatbots/labels">More</Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

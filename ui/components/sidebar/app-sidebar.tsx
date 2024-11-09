@@ -2,7 +2,7 @@
 
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavUser } from "@/components/sidebar/nav-user";
-import { RecentThreads } from "@/components/sidebar/recent-threads";
+import { RecentLabels } from "@/components/sidebar/recent-labels";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
@@ -23,7 +23,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <hr />
       <SidebarContent className="gap-0">
         <NavMain />
-        <RecentThreads />
+        <RecentLabels />
       </SidebarContent>
       <SidebarFooter>
         <CreditQuota />

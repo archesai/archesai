@@ -2,12 +2,12 @@
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import {
-  ThreadsControllerFindAllPathParams,
-  ThreadsControllerRemoveVariables,
-  useThreadsControllerFindAll,
-  useThreadsControllerRemove,
+  LabelsControllerFindAllPathParams,
+  LabelsControllerRemoveVariables,
+  useLabelsControllerFindAll,
+  useLabelsControllerRemove,
 } from "@/generated/archesApiComponents";
-import { ThreadEntity } from "@/generated/archesApiSchemas";
+import { LabelEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { ListMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,9 +18,9 @@ export default function ChatbotsPageContent() {
 
   return (
     <DataTable<
-      ThreadEntity,
-      ThreadsControllerFindAllPathParams,
-      ThreadsControllerRemoveVariables
+      LabelEntity,
+      LabelsControllerFindAllPathParams,
+      LabelsControllerRemoveVariables
     >
       columns={[
         {
@@ -31,7 +31,7 @@ export default function ChatbotsPageContent() {
                 <span
                   className="max-w-[500px] truncate font-medium"
                   onClick={() =>
-                    router.push(`/chatbots/chat?threadId=${row.original.id}`)
+                    router.push(`/chatbots/chat?labelId=${row.original.id}`)
                   }
                 >
                   {row.original.name}
@@ -49,18 +49,18 @@ export default function ChatbotsPageContent() {
       findAllPathParams={{
         orgname: defaultOrgname,
       }}
-      getDeleteVariablesFromItem={(thread) => ({
+      getDeleteVariablesFromItem={(label) => ({
         pathParams: {
           orgname: defaultOrgname,
-          threadId: thread.id,
+          labelId: label.id,
         },
       })}
       handleSelect={(chatbot) =>
-        router.push(`/chatbots/chat?threadId=${chatbot.id}`)
+        router.push(`/chatbots/chat?labelId=${chatbot.id}`)
       }
-      itemType="thread"
-      useFindAll={useThreadsControllerFindAll}
-      useRemove={useThreadsControllerRemove}
+      itemType="label"
+      useFindAll={useLabelsControllerFindAll}
+      useRemove={useLabelsControllerRemove}
     />
   );
 }

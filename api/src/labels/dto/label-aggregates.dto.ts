@@ -5,19 +5,19 @@ import {
   GranularSum,
 } from "../../common/dto/aggregated-field.dto";
 
-export class ThreadAggregates {
+export class LabelAggregates {
   @ApiProperty({
     description:
-      "The number of credits used in chat threads over specific timeframes",
+      "The number of credits used in chat labels over specific timeframes",
     required: false,
     type: [GranularSum],
   })
   credits: GranularSum[];
 
   @ApiProperty({
-    description: "The number of threads created over specific timeframes",
+    description: "The number of labels created over specific timeframes",
     required: false,
     type: [GranularCount],
   })
-  threadsCreated: GranularCount[];
+  labelsCreated: GranularCount[];
 }

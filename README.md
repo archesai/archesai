@@ -39,5 +39,4 @@ jobs:
 REPOSITORES WITH INCLUDES
 
 - UserRepository
-- ThreadRepository
 - PipelineRepository

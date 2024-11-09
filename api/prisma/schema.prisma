@@ -75,31 +75,10 @@ model Content {
   parentId String?
   children Content[] @relation("ContentParentChildren")
 
-  // Relations to Runs via RunContent
-  runContent RunContent[]
-}
-
-model RunContent {
-  id String @id @default(uuid())
-
-  // Role of the content in the pipelineRun, input or output
-  role RunRole
-
-  // PipelineRun Relation
-  pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
-  pipelineRunId String
-
-  // Content Relation
-  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  contentId String
-
-  // PipelineStep Association if any
-  transformation   Transformation? @relation(fields: [transformationId], references: [id], onDelete: Cascade)
-  transformationId String?
-
-  @@unique([pipelineRunId, contentId, role])
-  @@index([pipelineRunId])
-  @@index([contentId])
+  // Data lineage fields
+  producedBy   Transformation?  @relation("ContentProducedBy", fields: [producedById], references: [id])
+  producedById String?
+  consumedBy   Transformation[] @relation("ContentConsumedBy")
 }
 
 model PipelineRun {
@@ -122,15 +101,8 @@ model PipelineRun {
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
   pipelineId String
 
-  // If being called from a thread
-  thread   Thread? @relation(fields: [threadId], references: [id])
-  threadId String?
-
-  // Relations to Content via RunContent
-  runContent RunContent[]
-
   // Pipeline Step Runs
-  transformation Transformation[]
+  transformations Transformation[]
 }
 
 model Transformation {
@@ -154,7 +126,11 @@ model Transformation {
   pipelineStep   PipelineStep @relation(fields: [pipelineStepId], references: [id], onDelete: Cascade)
   pipelineStepId String
 
-  runContent RunContent[]
+  // Data lineage fields
+  inputs  Content[] @relation("ContentConsumedBy")
+  outputs Content[] @relation("ContentProducedBy")
+
+  @@unique([pipelineRunId, pipelineStepId])
 }
 
 model Tool {
@@ -194,7 +170,7 @@ model Pipeline {
 model PipelineStep {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
 
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   pipelineId String
@@ -206,21 +182,20 @@ model PipelineStep {
   dependsOnId String?
   dependents  PipelineStep[] @relation("ToolDependencies")
 
-  transformation Transformation[]
+  transformations Transformation[]
 }
 
-model Thread {
+model Label {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name    String @default("New Thread")
-  credits Int    @default(0)
+  name String
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  runs PipelineRun[]
+  @@unique([name, orgname])
 }
 
 model AuthProvider {
@@ -271,7 +246,7 @@ model Organization {
   members   Member[]
   apiTokens ApiToken[]
   content   Content[]
-  threads   Thread[]
+  labels    Label[]
   tools     Tool[]
   pipelines Pipeline[]
   runs      PipelineRun[]
