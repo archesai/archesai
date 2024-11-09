@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 import { siteConfig } from "@/config/site";
 import {
   useContentControllerFindAll,
+  usePipelinesControllerCreatePipelineRun,
   useToolsControllerFindAll,
 } from "@/generated/archesApiComponents";
 import {
@@ -44,7 +45,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function PlaygroundPage() {
   const { defaultOrgname } = useAuth();
-  const { mutateAsync: runTool } = useToolsControllerRun();
+  const { mutateAsync: runPipeline } =
+    usePipelinesControllerCreatePipelineRun();
   const [selectedTool, setSelectedTool] = useState<ToolEntity>();
   const [selectedContent, setSelectedContent] = useState<ContentEntity>();
   const [currentRun, setCurrentRun] = useState<PipelineRunEntity>();
@@ -98,7 +100,7 @@ export default function PlaygroundPage() {
       <form
         className="grid h-full gap-3 md:grid-cols-3"
         onSubmit={form.handleSubmit(async (values) => {
-          const run = await runTool(
+          const run = await runPipeline(
             {
               body: {
                 runInputContentIds: values.runInputContentIds,

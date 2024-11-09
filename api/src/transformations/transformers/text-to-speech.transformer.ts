@@ -4,7 +4,7 @@ import { SpeechService } from "@/src/speech/speech.service";
 import { StorageService } from "@/src/storage/storage.service";
 import { Logger } from "@nestjs/common";
 
-export const processTextToSpeech = async (
+export const transformTextToSpeech = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,

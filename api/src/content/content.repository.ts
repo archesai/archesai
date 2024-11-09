@@ -27,9 +27,13 @@ export class ContentRepository extends BaseRepository<
       mimeType: string;
     }
   ) {
+    const { labelIds, ...otherData } = createContentDto;
     return this.prisma.content.create({
       data: {
-        ...createContentDto,
+        ...otherData,
+        labels: labelIds
+          ? { connect: labelIds.map((id) => ({ id })) }
+          : undefined,
         mimeType: additionalData.mimeType,
         organization: {
           connect: {
@@ -68,5 +72,33 @@ export class ContentRepository extends BaseRepository<
     `);
 
     return results;
+  }
+
+  async update(
+    orgname: string,
+    contentId: string,
+    updateContentDto: UpdateContentDto
+  ) {
+    const { labelIds, ...otherData } = updateContentDto;
+
+    const data: Prisma.ContentUpdateInput = {
+      ...otherData,
+    };
+
+    if (labelIds !== undefined) {
+      data.labels = {
+        set: labelIds.map((id) => ({ id })),
+      };
+    }
+    return this.prisma.content.update({
+      data: {
+        ...otherData,
+        labels: labelIds ? { set: labelIds.map((id) => ({ id })) } : undefined,
+      },
+      where: {
+        id: contentId,
+        orgname,
+      },
+    });
   }
 }

@@ -3221,6 +3221,7 @@ components:
             - contains
             - endsWith
             - equals
+            - not
             - startsWith
         value:
           type: string

@@ -6,7 +6,7 @@ import { ContentEntity } from "../../content/entities/content.entity";
 import { RunpodService } from "../../runpod/runpod.service";
 import { StorageService } from "../../storage/storage.service";
 
-export const processTextToImage = async (
+export const transformTextToImage = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,

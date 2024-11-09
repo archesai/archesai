@@ -1,6 +1,6 @@
-import { MessagesControllerFindAllResponse } from "@/generated/archesApiComponents";
+import { ContentControllerFindAllResponse } from "@/generated/archesApiComponents";
 import { queryKeyFn } from "@/generated/archesApiContext";
-import { MessageEntity } from "@/generated/archesApiSchemas";
+import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "./useAuth";
@@ -9,23 +9,21 @@ export const useStreamChat = () => {
   const { accessToken } = useAuth();
   const queryClient = useQueryClient();
 
-  const streamChatMessage = (
+  const streamContent = (
     orgname: string,
-    chatbotId: string,
     labelId: string,
-    message: MessageEntity
+    content: ContentEntity
   ) => {
     queryClient.setQueryData(
       queryKeyFn({
-        operationId: "messagesControllerFindAll",
-        path: "/organizations/{orgname}/labels/{labelId}/messages",
+        operationId: "contentControllerFindAll",
+        path: "/organizations/{orgname}/content",
         variables: {
           headers: {
             authorization: `Bearer ${accessToken}`,
           },
           pathParams: {
             orgname: orgname,
-            labelId: labelId,
           },
           queryParams: {
             sortBy: "createdAt",
@@ -33,7 +31,7 @@ export const useStreamChat = () => {
           },
         },
       }),
-      (oldData: MessagesControllerFindAllResponse) => {
+      (oldData: ContentControllerFindAllResponse) => {
         if (!oldData) {
           oldData = {
             metadata: { limit: 100, offset: 0, totalResults: 0 },
@@ -41,13 +39,13 @@ export const useStreamChat = () => {
           };
         }
         const prevStreamedMessage = oldData.results?.find(
-          (i) => i.id === message.id
+          (i) => i.id === content.id
         );
         if (prevStreamedMessage) {
           return {
             ...oldData,
             results: [
-              { ...prevStreamedMessage, answer: message.answer },
+              { ...prevStreamedMessage, answer: content.text },
               ...(oldData.results || [])
                 .filter((i) => i.createdAt !== prevStreamedMessage?.createdAt)
                 .filter((i) => i.id !== "pending"),
@@ -56,7 +54,7 @@ export const useStreamChat = () => {
         } else {
           return {
             ...oldData,
-            results: [message, ...(oldData.results || [])],
+            results: [content, ...(oldData.results || [])],
           };
         }
       }
@@ -64,6 +62,6 @@ export const useStreamChat = () => {
   };
 
   return {
-    streamChatMessage,
+    streamContent,
   };
 };

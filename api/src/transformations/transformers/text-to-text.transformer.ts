@@ -5,7 +5,7 @@ import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
 import { LLMService } from "../../llm/llm.service";
 
-export const processSummarize = async (
+export const transformTextToText = async (
   runId: string,
   runInput: ContentEntity[],
   logger: Logger,

@@ -10,12 +10,12 @@ import { LLMService } from "../llm/llm.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import { processCreateEmbeddings } from "./processes/create-embeddings.process";
-import { processExtractText } from "./processes/extract-text.process";
-import { processSummarize } from "./processes/summarize.process";
-import { processTextToImage } from "./processes/text-to-image.process";
-import { processTextToSpeech } from "./processes/text-to-speech.process";
 import { TransformationsService } from "./transformations.service";
+import { transformFileToText } from "./transformers/file-to-text.transformer";
+import { transformTextToEmbeddings } from "./transformers/text-to-embeddings.transformer";
+import { transformTextToImage } from "./transformers/text-to-image.transformer";
+import { transformTextToSpeech } from "./transformers/text-to-speech.transformer";
+import { transformTextToText } from "./transformers/text-to-text.transformer";
 
 @Processor("run")
 export class TransformationProcessor extends WorkerHost {
@@ -79,7 +79,7 @@ export class TransformationProcessor extends WorkerHost {
     let runOutputContents: ContentEntity[] = [];
     switch (job.name) {
       case "extract-text":
-        runOutputContents = await processExtractText(
+        runOutputContents = await transformFileToText(
           job.id,
           runInputContents,
           this.logger,
@@ -90,7 +90,7 @@ export class TransformationProcessor extends WorkerHost {
         );
         break;
       case "text-to-image":
-        runOutputContents = await processTextToImage(
+        runOutputContents = await transformTextToImage(
           job.id,
           runInputContents,
           this.logger,
@@ -100,7 +100,7 @@ export class TransformationProcessor extends WorkerHost {
         );
         break;
       case "text-to-speech":
-        runOutputContents = await processTextToSpeech(
+        runOutputContents = await transformTextToSpeech(
           job.id,
           runInputContents,
           this.logger,
@@ -110,7 +110,7 @@ export class TransformationProcessor extends WorkerHost {
         );
         break;
       case "summarize":
-        runOutputContents = await processSummarize(
+        runOutputContents = await transformTextToText(
           job.id,
           runInputContents,
           this.logger,
@@ -120,7 +120,7 @@ export class TransformationProcessor extends WorkerHost {
         );
         break;
       case "create-embeddings":
-        runOutputContents = await processCreateEmbeddings();
+        runOutputContents = await transformTextToEmbeddings();
         // job.id,
         // runInputContents,
         // this.logger,

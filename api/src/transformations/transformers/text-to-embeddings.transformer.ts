@@ -10,7 +10,7 @@ import { ContentEntity } from "../../content/entities/content.entity";
 //     array.slice(i * chunkSize, i * chunkSize + chunkSize)
 //   );
 
-export const processCreateEmbeddings = async () // runId: string,
+export const transformTextToEmbeddings = async () // runId: string,
 // runInputContentIds: ContentEntity[],
 // logger: Logger,
 // contentService: ContentService,

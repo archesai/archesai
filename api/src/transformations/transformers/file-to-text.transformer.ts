@@ -8,7 +8,7 @@ import { catchError, firstValueFrom } from "rxjs";
 import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
 
-export const processExtractText = async (
+export const transformFileToText = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,

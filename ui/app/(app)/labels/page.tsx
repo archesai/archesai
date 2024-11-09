@@ -51,8 +51,8 @@ export default function ChatbotsPageContent() {
       }}
       getDeleteVariablesFromItem={(label) => ({
         pathParams: {
-          orgname: defaultOrgname,
           labelId: label.id,
+          orgname: defaultOrgname,
         },
       })}
       handleSelect={(chatbot) =>

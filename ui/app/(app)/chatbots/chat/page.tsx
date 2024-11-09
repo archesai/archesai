@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { useLabelsControllerCreate } from "@/generated/archesApiComponents";
+import {
+  useContentControllerFindAll,
+  useLabelsControllerCreate,
+  usePipelinesControllerCreatePipelineRun,
+} from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { useStreamChat } from "@/hooks/useStreamChat";
 import { cn } from "@/lib/utils";
@@ -19,7 +23,6 @@ export default function ChatbotChatPage() {
   const [labelId, setLabelId] = useState<string>("");
   const { defaultOrgname } = useAuth();
   const [message, setMessage] = useState<string>("");
-  const chatbotId = searchParams?.get("chatbotId");
   const tid = searchParams?.get("labelId");
   const [enableFetching, setEnableFetching] = useState(false);
 
@@ -30,15 +33,19 @@ export default function ChatbotChatPage() {
     }
   }, [tid]);
 
-  const { streamChatMessage } = useStreamChat();
+  const { streamContent } = useStreamChat();
 
-  const { data: messages } = useMessagesControllerFindAll(
+  const { data: messages } = useContentControllerFindAll(
     {
       pathParams: {
         orgname: defaultOrgname,
-        labelId: labelId as string,
       },
       queryParams: {
+        filters: labelId
+          ? (JSON.stringify({
+              labelId: labelId,
+            }) as any)
+          : undefined,
         sortBy: "createdAt",
         sortDirection: "desc",
       },
@@ -59,7 +66,8 @@ export default function ChatbotChatPage() {
   }, [messages]);
 
   const { mutateAsync: createLabel } = useLabelsControllerCreate();
-  const { mutateAsync: createMessage } = useMessagesControllerCreate();
+  const { mutateAsync: createPipelineRun } =
+    usePipelinesControllerCreatePipelineRun();
   const handleSend = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
@@ -82,20 +90,22 @@ export default function ChatbotChatPage() {
 
     try {
       setMessage("");
-      streamChatMessage(defaultOrgname, chatbotId as string, currentLabelId, {
-        answer: "",
+      streamContent(defaultOrgname, currentLabelId, {
         createdAt: new Date().toISOString(),
+        credits: 0,
+        description: "Pending",
         id: "pending",
-        question: message.trim(),
-        labelId: currentLabelId,
+        name: "Pending",
+        orgname: defaultOrgname,
+        text: message.trim(),
       });
-      await createMessage({
+      await createPipelineRun({
         body: {
-          question: message.trim(),
+          text: message.trim(),
         },
         pathParams: {
           orgname: defaultOrgname,
-          labelId: currentLabelId,
+          pipelineId: "pipeline-id",
         },
       });
     } catch (error) {
@@ -153,7 +163,7 @@ export default function ChatbotChatPage() {
                     {/* User Message */}
                     <div className="flex justify-end py-2">
                       <div className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                        {msg.question}
+                        {msg.text}
                       </div>
                     </div>
                     {/* Bot Response */}
@@ -167,7 +177,7 @@ export default function ChatbotChatPage() {
                         </div>
                       ) : (
                         <div className="rounded-lg py-2">
-                          {(msg.answer as string)
+                          {(msg.text as string)
                             .replaceAll(" -", "\n-")
                             .split(/(```[\s\S]*?```)/g)
                             .map((segment, index) => {

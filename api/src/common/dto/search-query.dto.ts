@@ -20,6 +20,7 @@ export enum Operator {
   CONTAINS = "contains",
   ENDS_WITH = "endsWith",
   EQUALS = "equals",
+  NOT = "not",
   STARTS_WITH = "startsWith",
 }
 export class FilterField {

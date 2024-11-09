@@ -1224,7 +1224,7 @@ export type FilterField = {
   /**
    * Operator to use for filtering
    */
-  operator?: "contains" | "endsWith" | "equals" | "startsWith";
+  operator?: "contains" | "endsWith" | "equals" | "not" | "startsWith";
   /**
    * Value to filter for
    */
