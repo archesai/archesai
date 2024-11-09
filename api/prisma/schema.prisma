@@ -79,6 +79,8 @@ model Content {
   producedBy   Transformation?  @relation("ContentProducedBy", fields: [producedById], references: [id])
   producedById String?
   consumedBy   Transformation[] @relation("ContentConsumedBy")
+
+  labels Label[]
 }
 
 model PipelineRun {
@@ -194,6 +196,7 @@ model Label {
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
+  contents     Content[]
 
   @@unique([name, orgname])
 }
