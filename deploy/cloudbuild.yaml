@@ -2,39 +2,75 @@ options:
   machineType: "E2_HIGHCPU_32"
 
 steps:
-  # Step 1: Detect changes in api/ and nlp/ directories
-  - name: gcr.io/cloud-builders/git
-    id: detect-changes
+  # Step 0: Debug the workspace (Optional)
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: debug-workspace
     entrypoint: bash
     args:
       - "-c"
       - |
-        >/workspace/values.sh
+        echo "Listing contents of /workspace:"
+        ls -la /workspace
+        echo "Current Git status:"
+        git status
 
-        git config --global init.defaultBranch main
-
-        # Fetch the latest commits
-        git fetch origin $BRANCH_NAME
-
-        # Detect changes in ./api/
-        api_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^api/' || true)
-        echo "export _API_CHANGED=$api_changed"  >>/workspace/values.sh
-
-        # Detect changes in ./nlp/
-        nlp_changed=$(git diff --name-only origin/$BRANCH_NAME HEAD | grep '^nlp/' || true)
-        echo "export _NLP_CHANGED=$nlp_changed"  >>/workspace/values.sh
-
-        cat /workspace/values.sh
-
-  # Step 3: Conditionally build arches-api
-  - name: "gcr.io/kaniko-project/executor:latest"
-    id: build-arches-api
-    waitFor: ["detect-changes"]
-    entrypoint: /bin/sh
+  # Step 1: Detect changes in api/ and nlp/ directories
+  - name: "gcr.io/cloud-builders/git"
+    id: detect-changes
+    entrypoint: bash
+    secretEnv:
+      - GITHUB_TOKEN
     args:
       - "-c"
       - |
-        source /workspace/values.sh
+        #!/bin/bash
+        set -e
+        >/workspace/values.sh
+
+        # Set up netrc file for authentication
+        echo "machine github.com login x-access-token password $$GITHUB_TOKEN" > ~/.netrc
+        chmod 600 ~/.netrc
+
+        # Ensure we have the full history
+        git fetch --unshallow
+
+        # Check out the correct branch
+        git checkout $BRANCH_NAME
+
+        # Get the previous commit hash
+        previous_commit=$(git rev-parse HEAD~1)
+
+        # List files changed between the previous commit and the current one
+        changed_files=$(git diff --name-only "$previous_commit" HEAD)
+
+        echo "Changed files:"
+        echo "$changed_files"
+
+        # Detect changes in ./api/
+        if echo "$changed_files" | grep -q '^api/'; then
+          echo "export _API_CHANGED=true" >> /workspace/values.sh
+        else
+          echo "export _API_CHANGED=false" >> /workspace/values.sh
+        fi
+
+        # Detect changes in ./nlp/
+        if echo "$changed_files" | grep -q '^nlp/'; then
+          echo "export _NLP_CHANGED=true" >> /workspace/values.sh
+        else
+          echo "export _NLP_CHANGED=false" >> /workspace/values.sh
+        fi
+
+        cat /workspace/values.sh
+
+  # Step 2: Conditionally build arches-api
+  - name: "gcr.io/kaniko-project/executor:debug"
+    id: build-arches-api
+    waitFor: ["detect-changes"]
+    entrypoint: /busybox/sh
+    args:
+      - "-c"
+      - |
+        . /workspace/values.sh
 
         if [ "$_API_CHANGED" = "true" ]; then
           echo "Changes detected in ./api/. Building arches-api..."
@@ -49,15 +85,15 @@ steps:
           echo "No changes detected in ./api/. Skipping arches-api build."
         fi
 
-  # Step 4: Conditionally build arches-nlp
-  - name: "gcr.io/kaniko-project/executor:latest"
+  # Step 3: Conditionally build arches-nlp
+  - name: "gcr.io/kaniko-project/executor:debug"
     id: build-arches-nlp
     waitFor: ["detect-changes"]
-    entrypoint: /bin/sh
+    entrypoint: /busybox/sh
     args:
       - "-c"
       - |
-        source /workspace/values.sh
+        . /workspace/values.sh
 
         if [ "$_NLP_CHANGED" = "true" ]; then
           echo "Changes detected in ./nlp/. Building arches-nlp..."
@@ -71,33 +107,6 @@ steps:
         else
           echo "No changes detected in ./nlp/. Skipping arches-nlp build."
         fi
-
-  # Step 5: Get latest image tags
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    id: get-latest-image-tags
-    waitFor:
-      - build-arches-api
-      - build-arches-nlp
-    args: ["./deploy/scripts/01_get-release-values.sh"]
-    secretEnv:
-      - GITHUB_TOKEN
-
-  # Step 6: Generate .env file
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    id: generate-dotenv
-    waitFor:
-      - get-latest-image-tags
-    args: ["./deploy/scripts/02_generate-dotenv.sh"]
-
-  # Step 7: Create release in Cloud Deploy
-  - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
-    id: create-release
-    waitFor:
-      - generate-dotenv
-    args: ["./deploy/scripts/03_create-release.sh"]
 
 availableSecrets:
   secretManager:
