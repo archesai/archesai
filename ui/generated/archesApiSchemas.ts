@@ -171,10 +171,6 @@ export type PipelineRunEntity = {
    * The pipeline ID associated with the pipeline run, if applicable
    */
   pipelineId?: string;
-  /**
-   * The thread that the pipeline run is associated with, if applicable
-   */
-  threadId?: string;
 };
 
 export type UpdatePipelineDto = {
@@ -994,23 +990,23 @@ export type UpdateMemberDto = {
   role?: "USER" | "ADMIN";
 };
 
-export type CreateThreadDto = {
+export type CreateLabelDto = {
   /**
-   * The chat thread name
+   * The chat label name
    *
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
    */
   name?: string;
   /**
-   * Optional. The id to use as the thread id. If taken, this endpoint will return a 409.
+   * Optional. The id to use as the label id. If taken, this endpoint will return a 409.
    *
-   * @example custom-thread-id
+   * @example custom-label-id
    */
   id?: string;
 };
 
-export type ThreadEntity = {
+export type LabelEntity = {
   /**
    * The creation date of this item
    *
@@ -1025,13 +1021,7 @@ export type ThreadEntity = {
    */
   id: string;
   /**
-   * The total number of credits used in this chat
-   *
-   * @example 10000
-   */
-  credits: number;
-  /**
-   * The chat thread name
+   * The chat label name
    *
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
@@ -1215,15 +1205,15 @@ export type GranularCount = {
   to: string;
 };
 
-export type ThreadAggregates = {
+export type LabelAggregates = {
   /**
-   * The number of credits used in chat threads over specific timeframes
+   * The number of credits used in chat labels over specific timeframes
    */
   credits?: GranularSum[];
   /**
-   * The number of threads created over specific timeframes
+   * The number of labels created over specific timeframes
    */
-  threadsCreated?: GranularCount[];
+  labelsCreated?: GranularCount[];
 };
 
 export type FilterField = {

@@ -9,13 +9,6 @@ export type LabelModel = _PrismaLabel;
 
 export class LabelEntity extends BaseEntity implements LabelModel {
   @ApiProperty({
-    description: "The total number of credits used in this chat",
-    example: 10000,
-  })
-  @Expose()
-  credits: number;
-
-  @ApiProperty({
     default: "New Chat",
     description: "The chat label name",
     example: "What are the morals of the story in Aesop's Fables?",

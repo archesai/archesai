@@ -2994,68 +2994,68 @@ export const useMembersControllerUpdate = (
   });
 };
 
-export type ThreadsControllerCreatePathParams = {
+export type LabelsControllerCreatePathParams = {
   orgname: string;
 };
 
-export type ThreadsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
 
-export type ThreadsControllerCreateVariables = {
-  body?: Schemas.CreateThreadDto;
-  pathParams: ThreadsControllerCreatePathParams;
+export type LabelsControllerCreateVariables = {
+  body?: Schemas.CreateLabelDto;
+  pathParams: LabelsControllerCreatePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Create a new thread. USER and ADMIN can access this endpoint.
+ * Create a new label. USER and ADMIN can access this endpoint.
  */
-export const fetchThreadsControllerCreate = (
-  variables: ThreadsControllerCreateVariables,
+export const fetchLabelsControllerCreate = (
+  variables: LabelsControllerCreateVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.ThreadEntity,
-    ThreadsControllerCreateError,
-    Schemas.CreateThreadDto,
+    Schemas.LabelEntity,
+    LabelsControllerCreateError,
+    Schemas.CreateLabelDto,
     {},
     {},
-    ThreadsControllerCreatePathParams
+    LabelsControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/threads",
+    url: "/organizations/{orgname}/labels",
     method: "post",
     ...variables,
     signal,
   });
 
 /**
- * Create a new thread. USER and ADMIN can access this endpoint.
+ * Create a new label. USER and ADMIN can access this endpoint.
  */
-export const useThreadsControllerCreate = (
+export const useLabelsControllerCreate = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ThreadEntity,
-      ThreadsControllerCreateError,
-      ThreadsControllerCreateVariables
+      Schemas.LabelEntity,
+      LabelsControllerCreateError,
+      LabelsControllerCreateVariables
     >,
     "mutationFn"
   >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
-    Schemas.ThreadEntity,
-    ThreadsControllerCreateError,
-    ThreadsControllerCreateVariables
+    Schemas.LabelEntity,
+    LabelsControllerCreateError,
+    LabelsControllerCreateVariables
   >({
-    mutationFn: (variables: ThreadsControllerCreateVariables) =>
-      fetchThreadsControllerCreate({ ...fetcherOptions, ...variables }),
+    mutationFn: (variables: LabelsControllerCreateVariables) =>
+      fetchLabelsControllerCreate({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
 
-export type ThreadsControllerFindAllPathParams = {
+export type LabelsControllerFindAllPathParams = {
   orgname: string;
 };
 
-export type ThreadsControllerFindAllQueryParams = {
+export type LabelsControllerFindAllQueryParams = {
   /**
    * The end date to search to
    */
@@ -3104,50 +3104,50 @@ export type ThreadsControllerFindAllQueryParams = {
   aggregates?: boolean;
 };
 
-export type ThreadsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type ThreadsControllerFindAllResponse = Schemas.PaginatedDto & {
-  results?: Schemas.ThreadEntity[];
-  aggregates?: Schemas.ThreadAggregates;
+export type LabelsControllerFindAllResponse = Schemas.PaginatedDto & {
+  results?: Schemas.LabelEntity[];
+  aggregates?: Schemas.LabelAggregates;
 };
 
-export type ThreadsControllerFindAllVariables = {
-  pathParams: ThreadsControllerFindAllPathParams;
-  queryParams?: ThreadsControllerFindAllQueryParams;
+export type LabelsControllerFindAllVariables = {
+  pathParams: LabelsControllerFindAllPathParams;
+  queryParams?: LabelsControllerFindAllQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get all threads. ADMIN ONLY.
+ * Get all labels. ADMIN ONLY.
  */
-export const fetchThreadsControllerFindAll = (
-  variables: ThreadsControllerFindAllVariables,
+export const fetchLabelsControllerFindAll = (
+  variables: LabelsControllerFindAllVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    ThreadsControllerFindAllResponse,
-    ThreadsControllerFindAllError,
+    LabelsControllerFindAllResponse,
+    LabelsControllerFindAllError,
     undefined,
     {},
-    ThreadsControllerFindAllQueryParams,
-    ThreadsControllerFindAllPathParams
+    LabelsControllerFindAllQueryParams,
+    LabelsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/threads",
+    url: "/organizations/{orgname}/labels",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get all threads. ADMIN ONLY.
+ * Get all labels. ADMIN ONLY.
  */
-export const useThreadsControllerFindAll = <
-  TData = ThreadsControllerFindAllResponse,
+export const useLabelsControllerFindAll = <
+  TData = LabelsControllerFindAllResponse,
 >(
-  variables: ThreadsControllerFindAllVariables,
+  variables: LabelsControllerFindAllVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      ThreadsControllerFindAllResponse,
-      ThreadsControllerFindAllError,
+      LabelsControllerFindAllResponse,
+      LabelsControllerFindAllError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
@@ -3156,66 +3156,63 @@ export const useThreadsControllerFindAll = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    ThreadsControllerFindAllResponse,
-    ThreadsControllerFindAllError,
+    LabelsControllerFindAllResponse,
+    LabelsControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/threads",
-      operationId: "threadsControllerFindAll",
+      path: "/organizations/{orgname}/labels",
+      operationId: "labelsControllerFindAll",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchThreadsControllerFindAll(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
+      fetchLabelsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
     ...options,
     ...queryOptions,
   });
 };
 
-export type ThreadsControllerFindOnePathParams = {
+export type LabelsControllerFindOnePathParams = {
   orgname: string;
-  threadId: string;
+  labelId: string;
 };
 
-export type ThreadsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
 
-export type ThreadsControllerFindOneVariables = {
-  pathParams: ThreadsControllerFindOnePathParams;
+export type LabelsControllerFindOneVariables = {
+  pathParams: LabelsControllerFindOnePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get a thread. ADMIN ONLY.
+ * Get a label. ADMIN ONLY.
  */
-export const fetchThreadsControllerFindOne = (
-  variables: ThreadsControllerFindOneVariables,
+export const fetchLabelsControllerFindOne = (
+  variables: LabelsControllerFindOneVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.ThreadEntity,
-    ThreadsControllerFindOneError,
+    Schemas.LabelEntity,
+    LabelsControllerFindOneError,
     undefined,
     {},
     {},
-    ThreadsControllerFindOnePathParams
+    LabelsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/threads/{threadId}",
+    url: "/organizations/{orgname}/labels/{labelId}",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get a thread. ADMIN ONLY.
+ * Get a label. ADMIN ONLY.
  */
-export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity,>(
-  variables: ThreadsControllerFindOneVariables,
+export const useLabelsControllerFindOne = <TData = Schemas.LabelEntity,>(
+  variables: LabelsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.ThreadEntity,
-      ThreadsControllerFindOneError,
+      Schemas.LabelEntity,
+      LabelsControllerFindOneError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
@@ -3224,66 +3221,63 @@ export const useThreadsControllerFindOne = <TData = Schemas.ThreadEntity,>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    Schemas.ThreadEntity,
-    ThreadsControllerFindOneError,
+    Schemas.LabelEntity,
+    LabelsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/threads/{threadId}",
-      operationId: "threadsControllerFindOne",
+      path: "/organizations/{orgname}/labels/{labelId}",
+      operationId: "labelsControllerFindOne",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchThreadsControllerFindOne(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
+      fetchLabelsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
     ...queryOptions,
   });
 };
 
-export type ThreadsControllerRemovePathParams = {
+export type LabelsControllerRemovePathParams = {
   orgname: string;
-  threadId: string;
+  labelId: string;
 };
 
-export type ThreadsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
 
-export type ThreadsControllerRemoveVariables = {
-  pathParams: ThreadsControllerRemovePathParams;
+export type LabelsControllerRemoveVariables = {
+  pathParams: LabelsControllerRemovePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Delete a thread. ADMIN ONLY.
+ * Delete a label. ADMIN ONLY.
  */
-export const fetchThreadsControllerRemove = (
-  variables: ThreadsControllerRemoveVariables,
+export const fetchLabelsControllerRemove = (
+  variables: LabelsControllerRemoveVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
-    ThreadsControllerRemoveError,
+    LabelsControllerRemoveError,
     undefined,
     {},
     {},
-    ThreadsControllerRemovePathParams
+    LabelsControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/threads/{threadId}",
+    url: "/organizations/{orgname}/labels/{labelId}",
     method: "delete",
     ...variables,
     signal,
   });
 
 /**
- * Delete a thread. ADMIN ONLY.
+ * Delete a label. ADMIN ONLY.
  */
-export const useThreadsControllerRemove = (
+export const useLabelsControllerRemove = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ThreadsControllerRemoveError,
-      ThreadsControllerRemoveVariables
+      LabelsControllerRemoveError,
+      LabelsControllerRemoveVariables
     >,
     "mutationFn"
   >,
@@ -3291,11 +3285,11 @@ export const useThreadsControllerRemove = (
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
     undefined,
-    ThreadsControllerRemoveError,
-    ThreadsControllerRemoveVariables
+    LabelsControllerRemoveError,
+    LabelsControllerRemoveVariables
   >({
-    mutationFn: (variables: ThreadsControllerRemoveVariables) =>
-      fetchThreadsControllerRemove({ ...fetcherOptions, ...variables }),
+    mutationFn: (variables: LabelsControllerRemoveVariables) =>
+      fetchLabelsControllerRemove({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
@@ -3709,14 +3703,14 @@ export type QueryOperation =
       variables: MembersControllerFindAllVariables;
     }
   | {
-      path: "/organizations/{orgname}/threads";
-      operationId: "threadsControllerFindAll";
-      variables: ThreadsControllerFindAllVariables;
+      path: "/organizations/{orgname}/labels";
+      operationId: "labelsControllerFindAll";
+      variables: LabelsControllerFindAllVariables;
     }
   | {
-      path: "/organizations/{orgname}/threads/{threadId}";
-      operationId: "threadsControllerFindOne";
-      variables: ThreadsControllerFindOneVariables;
+      path: "/organizations/{orgname}/labels/{labelId}";
+      operationId: "labelsControllerFindOne";
+      variables: LabelsControllerFindOneVariables;
     }
   | {
       path: "/organizations/{orgname}/tools";
