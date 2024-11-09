@@ -83,12 +83,12 @@ export const resetDatabase = async () => {
     prisma.user.deleteMany(),
     prisma.tool.deleteMany(),
     prisma.thread.deleteMany(),
-    prisma.message.deleteMany(),
-    prisma.pipelineTool.deleteMany(),
-    prisma.pipeline.deleteMany(),
     prisma.content.deleteMany(),
     prisma.aRToken.deleteMany(),
-    prisma.run.deleteMany(),
+    prisma.pipeline.deleteMany(),
+    prisma.pipelineStep.deleteMany(),
+    prisma.pipelineRun.deleteMany(),
+    prisma.transformation.deleteMany(),
     // Add more tables as needed
   ]);
 };

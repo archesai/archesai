@@ -19,16 +19,15 @@ import { EmailModule } from "./email/email.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
 import { LLMModule } from "./llm/llm.module";
 import { MembersModule } from "./members/members.module";
-import { MessagesModule } from "./messages/messages.module";
 import { OrganizationsModule } from "./organizations/organizations.module";
 import { PipelinesModule } from "./pipelines/pipelines.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
-import { RunsModule } from "./runs/runs.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
 import { ThreadsModule } from "./threads/threads.module";
 import { ToolsModule } from "./tools/tools.module";
+import { TransformationsModule } from "./transformations/transformations.module";
 import { UsersModule } from "./users/users.module";
 import { WebsocketsGateway } from "./websockets/websockets.gateway";
 import { WebsocketsModule } from "./websockets/websockets.module";
@@ -194,13 +193,12 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     WebsocketsModule,
     AudioModule,
     ScheduleModule.forRoot(),
-    MessagesModule,
     ContentModule,
     RunpodModule,
     ARTokensModule,
     SpeechModule,
     ToolsModule,
-    RunsModule,
+    TransformationsModule,
   ],
   providers: [WebsocketsGateway],
 })

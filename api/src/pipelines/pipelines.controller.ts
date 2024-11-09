@@ -18,8 +18,10 @@ import {
 } from "../common/decorators/api-crud-operation.decorator";
 import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
+import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineEntity } from "./entities/pipeline.entity";
+import { PipelineRunEntity } from "./entities/pipeline-run.entity";
 import { PipelinesService } from "./pipelines.service";
 
 @ApiBearerAuth()
@@ -46,6 +48,20 @@ export class PipelinesController
   ) {
     this.logger.log(JSON.stringify(createPipelineDto, null, 2));
     return this.pipelinesService.create(orgname, createPipelineDto);
+  }
+
+  @ApiCrudOperation(Operation.CREATE, "pipeline run", PipelineRunEntity, true)
+  @Post("/:pipelineId/runs")
+  async createPipelineRun(
+    @Param("orgname") orgname: string,
+    @Param("pipelineId") pipelineId: string,
+    @Body() createPipelineRunDto: CreatePipelineRunDto
+  ) {
+    return this.pipelinesService.createPipelineRun(
+      orgname,
+      pipelineId,
+      createPipelineRunDto
+    );
   }
 
   @ApiCrudOperation(Operation.FIND_ALL, "pipeline", PipelineEntity, true)

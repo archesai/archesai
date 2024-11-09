@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, RunStatus } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
+import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
-import { PipelineWithPipelineToolsModel } from "./entities/pipeline.entity";
+import { PipelineWithPipelineStepsModel } from "./entities/pipeline.entity";
 
 const PIPELINE_INCLUDE = {
-  pipelineTools: {
+  pipelineSteps: {
     include: {
       tool: true,
     },
@@ -17,7 +18,7 @@ const PIPELINE_INCLUDE = {
 
 @Injectable()
 export class PipelineRepository extends BaseRepository<
-  PipelineWithPipelineToolsModel,
+  PipelineWithPipelineStepsModel,
   CreatePipelineDto,
   UpdatePipelineDto,
   Prisma.PipelineInclude,
@@ -37,9 +38,9 @@ export class PipelineRepository extends BaseRepository<
             orgname,
           },
         },
-        pipelineTools: {
+        pipelineSteps: {
           createMany: {
-            data: createPipelineDto.pipelineTools.map((tool) => {
+            data: createPipelineDto.pipelineSteps.map((tool) => {
               return {
                 dependsOnId: tool.dependsOnId,
                 toolId: tool.toolId,
@@ -49,6 +50,67 @@ export class PipelineRepository extends BaseRepository<
         },
       },
       include: PIPELINE_INCLUDE,
+    });
+  }
+
+  async createPipelineRun(
+    orgname: string,
+    pipelineId: string,
+    createPipelineRunDto: CreatePipelineRunDto
+  ) {
+    const pipelineRun = await this.prisma.pipelineRun.create({
+      data: {
+        name: "Pipeline Run",
+        orgname,
+        pipelineId,
+        status: RunStatus.QUEUED,
+      },
+    });
+
+    await this.prisma.runContent.createMany({
+      data: createPipelineRunDto.runInputContentIds.map((contentId) => ({
+        contentId,
+        pipelineRunId: pipelineRun.id,
+        role: "INPUT",
+      })),
+    });
+
+    // Step 3: Fetch the pipeline tools in order
+    const pipelineSteps = await this.prisma.pipelineStep.findMany({
+      include: { dependsOn: true, tool: true },
+      orderBy: {
+        /* order as needed */
+      },
+      where: { pipelineId },
+    });
+
+    // Step 4: Create child tool runs for each tool in the pipeline
+    for (const pipelineStep of pipelineSteps) {
+      const createdAt = new Date();
+      const pipelineStepRun = await this.prisma.transformation.create({
+        data: {
+          createdAt,
+          name: createdAt.toISOString(),
+          pipelineRunId: pipelineRun.id,
+          pipelineStepId: pipelineStep.id,
+          status: "QUEUED",
+        },
+      });
+      if (!pipelineStep.dependsOn) {
+        // If there are no dependencies, the tool can be run immediately
+        await this.prisma.runContent.createMany({
+          data: createPipelineRunDto.runInputContentIds.map((contentId) => ({
+            contentId,
+            pipelineRunId: pipelineRun.id,
+            piplineStepRunId: pipelineStepRun.id,
+            role: "INPUT",
+          })),
+        });
+      }
+    }
+
+    return this.prisma.pipelineRun.findUnique({
+      where: { id: pipelineRun.id },
     });
   }
 
@@ -63,18 +125,18 @@ export class PipelineRepository extends BaseRepository<
         id,
       },
     });
-    const pipelineToolsToDelete = previousPipeline.pipelineTools.map(
+    const pipelineStepsToDelete = previousPipeline.pipelineSteps.map(
       (tool) => tool.id
     );
 
     return this.prisma.pipeline.update({
       data: {
         name: updatePipelineDto.name,
-        ...(updatePipelineDto.pipelineTools
+        ...(updatePipelineDto.pipelineSteps
           ? {
-              pipelineTools: {
+              pipelineSteps: {
                 createMany: {
-                  data: updatePipelineDto.pipelineTools.map((tool) => {
+                  data: updatePipelineDto.pipelineSteps.map((tool) => {
                     return {
                       dependsOnId: tool.dependsOnId,
                       toolId: tool.toolId,
@@ -83,7 +145,7 @@ export class PipelineRepository extends BaseRepository<
                 },
                 deleteMany: {
                   id: {
-                    in: pipelineToolsToDelete,
+                    in: pipelineStepsToDelete,
                   },
                 },
               },

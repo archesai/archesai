@@ -63,17 +63,17 @@ export default function ContentPage() {
           ),
         },
         {
-          accessorKey: "pipelineTools",
+          accessorKey: "transformations",
           cell: ({ row }) => {
             return (
               <div className="flex gap-1">
-                {row.original.pipelineTools?.map((pipelineTool) => {
+                {row.original.transformations?.map((transformation) => {
                   return (
                     <Badge
                       className="text-nowrap text-primary"
                       variant="secondary"
                     >
-                      {pipelineTool.tool}
+                      {transformation.tool}
                     </Badge>
                   );
                 })}

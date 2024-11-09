@@ -17,7 +17,7 @@ import {
 } from "@/generated/archesApiComponents";
 import {
   ContentEntity,
-  RunEntity,
+  PipelineRunEntity,
   ToolEntity,
 } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
@@ -50,7 +50,7 @@ export default function PlaygroundPage() {
   const { mutateAsync: runTool } = useToolsControllerRun();
   const [selectedTool, setSelectedTool] = useState<ToolEntity>();
   const [selectedContent, setSelectedContent] = useState<ContentEntity>();
-  const [currentRun, setCurrentRun] = useState<RunEntity>();
+  const [currentRun, setCurrentRun] = useState<PipelineRunEntity>();
   const form = useForm<FormValues>({
     defaultValues: {
       runInputContentIds: [],
@@ -218,7 +218,7 @@ export default function PlaygroundPage() {
                   setSelectedData={(content: any) => {
                     setSelectedContent(content);
                     field.onChange(
-                      content === null ? [] : content.map((c) => c.id)
+                      content === null ? [] : content.map((c: any) => c.id)
                     );
                   }}
                   useFindAll={() =>

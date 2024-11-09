@@ -7,11 +7,11 @@ import {
 import { IsArray, ValidateNested } from "class-validator";
 
 import { PipelineEntity } from "../entities/pipeline.entity";
-import { PipelineToolEntity } from "../entities/pipeline-tool.entity";
+import { PipelineStepEntity } from "../entities/pipeline-step.entity";
 
-export class CreatePipelineToolDto extends IntersectionType(
-  PickType(PipelineToolEntity, ["toolId"] as const),
-  PartialType(PickType(PipelineToolEntity, ["dependsOnId"] as const))
+export class CreatePipelineStepDto extends IntersectionType(
+  PickType(PipelineStepEntity, ["toolId"] as const),
+  PartialType(PickType(PipelineStepEntity, ["dependsOnId"] as const))
 ) {}
 
 export class CreatePipelineDto extends PickType(PipelineEntity, [
@@ -20,9 +20,9 @@ export class CreatePipelineDto extends PickType(PipelineEntity, [
 ]) {
   @ApiProperty({
     description: "An array of pipeline tools to be added to the pipeline",
-    type: [CreatePipelineToolDto],
+    type: [CreatePipelineStepDto],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  pipelineTools: CreatePipelineToolDto[];
+  pipelineSteps: CreatePipelineStepDto[];
 }

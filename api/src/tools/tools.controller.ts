@@ -16,9 +16,7 @@ import {
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
 import { SearchQueryDto } from "../common/dto/search-query.dto";
-import { RunEntity } from "../runs/entities/run.entity";
 import { CreateToolDto } from "./dto/create-tool.dto";
-import { RunToolDto } from "./dto/run-tool.dto";
 import { UpdateToolDto } from "./dto/update-tool.dto";
 import { ToolEntity } from "./entities/tool.entity";
 import { ToolsService } from "./tools.service";
@@ -66,16 +64,6 @@ export class ToolsController
     @Param("toolId") toolId: string
   ) {
     await this.toolsService.remove(orgname, toolId);
-  }
-
-  @ApiCrudOperation(Operation.CREATE, "run", RunEntity, true)
-  @Post("/:toolId/run")
-  async run(
-    @Param("orgname") orgname: string,
-    @Param("toolId") toolId: string,
-    @Body() runToolDto: RunToolDto
-  ) {
-    return this.toolsService.run(orgname, toolId, runToolDto);
   }
 
   @ApiCrudOperation(Operation.UPDATE, "tools", ToolEntity, true)

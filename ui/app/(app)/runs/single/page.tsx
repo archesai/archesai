@@ -167,7 +167,7 @@ const PipelineDetails: React.FC<PipelineDetailsProps> = ({
             </TableHeader>
             <TableBody>
               {Object.entries(pipeline).map(([key, value]) => {
-                if (key === "pipelineTools") return null;
+                if (key === "transformations") return null;
                 return (
                   <TableRow key={key}>
                     <TableCell className="font-medium capitalize">
@@ -196,7 +196,7 @@ const PipelineDetails: React.FC<PipelineDetailsProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pipeline.pipelineTools.map((tool: any) => (
+              {pipeline.transformations.map((tool: any) => (
                 <TableRow key={tool.id}>
                   <TableCell>{tool.id}</TableCell>
                   <TableCell>{tool.tool}</TableCell>

@@ -1,17 +1,20 @@
-import { BaseEntity } from "@/src/common/dto/base.entity.dto";
+import { BaseEntity } from "@/src/common/entities/base.entity";
 import { ApiProperty } from "@nestjs/swagger";
-import { Pipeline as _PrismaPipeline } from "@prisma/client";
+import {
+  Pipeline as _PrismaPipeline,
+  PipelineStep as _PrismaPipelineStep,
+} from "@prisma/client";
 import { IsString } from "class-validator";
 
-import { PipelineToolEntity, PipelineToolModel } from "./pipeline-tool.entity";
+import { PipelineStepEntity } from "./pipeline-step.entity";
 
-export type PipelineWithPipelineToolsModel = _PrismaPipeline & {
-  pipelineTools: PipelineToolModel[];
+export type PipelineWithPipelineStepsModel = _PrismaPipeline & {
+  pipelineSteps: _PrismaPipelineStep[];
 };
 
 export class PipelineEntity
   extends BaseEntity
-  implements PipelineWithPipelineToolsModel
+  implements PipelineWithPipelineStepsModel
 {
   @ApiProperty({
     example: "This is a sample pipeline",
@@ -28,14 +31,14 @@ export class PipelineEntity
   @ApiProperty({ example: "my-organization" })
   orgname: string;
 
-  @ApiProperty({ type: [PipelineToolEntity] })
-  pipelineTools: PipelineToolEntity[];
+  @ApiProperty({ type: [PipelineStepEntity] })
+  pipelineSteps: PipelineStepEntity[];
 
-  constructor(pipeline: PipelineWithPipelineToolsModel) {
+  constructor(pipeline: PipelineWithPipelineStepsModel) {
     super();
     Object.assign(this, pipeline);
-    this.pipelineTools = pipeline.pipelineTools.map(
-      (pipelineTool) => new PipelineToolEntity(pipelineTool)
+    this.pipelineSteps = pipeline.pipelineSteps.map(
+      (pipelineStep) => new PipelineStepEntity(pipelineStep)
     );
   }
 }

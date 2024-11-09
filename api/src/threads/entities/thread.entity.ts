@@ -1,22 +1,13 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { Thread as _PrismaThread } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsOptional } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto";
+import { BaseEntity } from "../../common/entities/base.entity";
 
-export type ThreadModelWithCount = _PrismaThread & {
-  _count: {
-    messages: number;
-  };
-};
+export type ThreadModel = _PrismaThread;
 
-export class ThreadEntity extends BaseEntity implements ThreadModelWithCount {
-  @ApiHideProperty()
-  _count: {
-    messages: number;
-  };
-
+export class ThreadEntity extends BaseEntity implements ThreadModel {
   @ApiProperty({
     description: "The total number of credits used in this chat",
     example: 10000,
@@ -48,9 +39,8 @@ export class ThreadEntity extends BaseEntity implements ThreadModelWithCount {
   @Expose()
   orgname: string;
 
-  constructor(thread: ThreadModelWithCount) {
+  constructor(thread: ThreadModel) {
     super();
     Object.assign(this, thread);
-    this.numMessages = thread._count.messages;
   }
 }

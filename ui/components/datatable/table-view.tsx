@@ -15,6 +15,7 @@ import { BaseItem } from "./data-table";
 
 interface TableViewProps<TItem extends BaseItem> {
   columns: any[]; // Replace with appropriate type if possible
+  items?: TItem[];
   itemType: string;
   table: any; // Replace with appropriate type from react-table if possible
 }

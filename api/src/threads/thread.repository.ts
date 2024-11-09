@@ -7,19 +7,11 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { ThreadAggregates } from "./dto/thread-aggregates.dto";
 import { ThreadQueryDto } from "./dto/thread-query.dto";
-import { ThreadModelWithCount } from "./entities/thread.entity";
-
-const THREAD_INCLUDE = {
-  _count: {
-    select: {
-      messages: true,
-    },
-  },
-};
+import { ThreadModel } from "./entities/thread.entity";
 
 @Injectable()
 export class ThreadRepository extends BaseRepository<
-  ThreadModelWithCount,
+  ThreadModel,
   CreateThreadDto,
   undefined,
   Prisma.ThreadInclude,
@@ -27,30 +19,7 @@ export class ThreadRepository extends BaseRepository<
   Prisma.ThreadUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.thread, THREAD_INCLUDE);
-  }
-
-  async cleanupUnused() {
-    // First, fetch all threads with no messagess.
-    const threads = await this.prisma.thread.findMany({
-      where: {
-        messages: {
-          none: {},
-        },
-      },
-    });
-
-    // Then, delete each thread one by one.
-    for (const thread of threads) {
-      await this.prisma.thread.delete({
-        where: {
-          id: thread.id,
-        },
-      });
-    }
-
-    // Optionally, return the number of deleted threads.
-    return threads.length;
+    super(prisma.thread);
   }
 
   async findAll(orgname: string, threadQueryDto: ThreadQueryDto) {
@@ -109,7 +78,6 @@ export class ThreadRepository extends BaseRepository<
     }
 
     const results = await this.prisma.thread.findMany({
-      include: THREAD_INCLUDE,
       orderBy: {
         [threadQueryDto.sortBy]: threadQueryDto.sortDirection,
       },

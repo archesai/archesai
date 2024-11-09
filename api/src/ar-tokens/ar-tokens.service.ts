@@ -11,14 +11,6 @@ import { PrismaService } from "../prisma/prisma.service";
 export class ARTokensService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /**
-   * Generates and stores a token for a specific action type.
-   * @param type - The type of token (e.g., PASSWORD_RESET, EMAIL_VERIFICATION, EMAIL_CHANGE).
-   * @param userId - The ID of the user associated with the token.
-   * @param expiresInHours - Token expiry time in hours.
-   * @param additionalData - Optional additional data to store with the token (e.g., newEmail).
-   * @returns The plain token string.
-   */
   async createToken(
     type: ARTokenType,
     userId: string,
@@ -57,13 +49,6 @@ export class ARTokensService {
     return token;
   }
 
-  /**
-   * Verifies a token of a specific type.
-   * @param type - The type of token to verify.
-   * @param token - The plain token string to verify.
-   * @returns An object containing the user ID and any additional data associated with the token.
-   * @throws BadRequestException if token is invalid or expired.
-   */
   async verifyToken(
     type: ARTokenType,
     token: string

@@ -1,12 +1,12 @@
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { useEmailVerificationControllerRequest } from "@/generated/archesApiComponents";
+import { useAuthControllerEmailVerificationRequest } from "@/generated/archesApiComponents";
 import { RocketIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "./ui/use-toast";
 
 export function VerifyEmailAlert() {
   const { mutateAsync: requestEmailVerification } =
-    useEmailVerificationControllerRequest();
+    useAuthControllerEmailVerificationRequest();
   const { toast } = useToast();
   return (
     <Alert className="rounded-none border-none bg-primary">

@@ -7,14 +7,14 @@ import { LLMService } from "../../llm/llm.service";
 
 export const processSummarize = async (
   runId: string,
-  runInputContents: ContentEntity[],
+  runInput: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
   llmService: LLMService
 ): Promise<ContentEntity[]> => {
   logger.log(`Summarizing content for run ${runId}`);
   const start = Date.now();
-  const c = runInputContents
+  const c = runInput
     .map((x) => x.text)
     .filter((x) => x)
     .join(" ");
@@ -30,13 +30,10 @@ export const processSummarize = async (
     "Summary saved. Completed in " + (Date.now() - start) / 1000 + "s"
   );
 
-  const summaryContent = await contentService.create(
-    runInputContents[0].orgname,
-    {
-      name: "Summary Tool - " + runInputContents.map((x) => x.name).join(", "),
-      text: summary,
-    }
-  );
+  const summaryContent = await contentService.create(runInput[0].orgname, {
+    name: "Summary Tool - " + runInput.map((x) => x.name).join(", "),
+    text: summary,
+  });
 
   return [new ContentEntity(summaryContent)];
 };

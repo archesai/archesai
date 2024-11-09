@@ -154,7 +154,7 @@ export class OrganizationsService {
             description:
               "This is a default pipeline for indexing arbitrary documents. It extracts text from the document, creates an image from the text, summarizes the text, creates embeddings from the text, and converts the text to speech.",
             name: "Default",
-            pipelineTools: {
+            pipelineSteps: {
               createMany: {
                 data: [
                   {

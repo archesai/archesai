@@ -3,7 +3,7 @@ import { Content as _PrismaContent } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto";
+import { BaseEntity } from "../../common/entities/base.entity";
 
 export type ContentModel = _PrismaContent;
 
@@ -51,6 +51,17 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   @Expose()
   @IsString()
   orgname: string;
+
+  @ApiProperty({
+    description:
+      "The parent content ID, if this content is a child of another content",
+    example: "content-id",
+    required: false,
+    type: String,
+  })
+  @Expose()
+  @IsString()
+  parentId: null | string;
 
   @ApiProperty({
     description: "The preview image of the content",

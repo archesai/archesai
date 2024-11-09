@@ -19,21 +19,27 @@ import { KeyframesService } from "./keyframes.service";
 export class AudioService {
   private readonly logger: Logger = new Logger("Audio Service");
 
-  getKeyframes = async (
+  constructor(
+    @Inject(STORAGE_SERVICE) private storageService: StorageService,
+    private httpService: HttpService,
+    private keyframesService: KeyframesService
+  ) {}
+
+  getKeyframes(
     audioUrl: string,
     framerate: number,
     fn: string,
     isTranslation: boolean
-  ) => {
+  ) {
     return this.keyframesService.getKeyframes(
       audioUrl,
       framerate,
       fn,
       isTranslation
     );
-  };
+  }
 
-  splitAudio = async (audioUrl: string) => {
+  async splitAudio(audioUrl: string) {
     this.logger.log("Hitting moises' API...");
     const { data: moisesResponse } = await retry(
       this.logger,
@@ -104,14 +110,14 @@ export class AudioService {
         throw new Error("Moises' job failed");
       }
     }
-  };
+  }
 
-  trimAudio = async (
+  async trimAudio(
     orgname: string,
     audioUrl: string,
     startTime: number,
     duration: number
-  ): Promise<string> => {
+  ): Promise<string> {
     const inputTmpPath = ospath.join(os.tmpdir(), "original.mp3");
     const outputTmpPath = ospath.join(os.tmpdir(), "trimmed.mp3");
     const response = await axios.get(audioUrl, {
@@ -157,11 +163,5 @@ export class AudioService {
         .on("error", reject)
         .run();
     });
-  };
-
-  constructor(
-    @Inject(STORAGE_SERVICE) private storageService: StorageService,
-    private httpService: HttpService,
-    private keyframesService: KeyframesService
-  ) {}
+  }
 }

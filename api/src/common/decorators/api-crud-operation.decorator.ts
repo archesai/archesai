@@ -53,13 +53,6 @@ export function ApiCrudOperation<TEntity>(
       specificResponses.push(
         ApiBadRequestResponse({
           description: `Bad request when creating the ${entityName}`,
-          schema: {
-            properties: {
-              message: { anyOf: [{ type: "string" }, { type: "array" }] },
-              statusCode: { type: "number" },
-            },
-            type: "object",
-          },
         })
       );
       break;

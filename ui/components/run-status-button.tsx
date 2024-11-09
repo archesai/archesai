@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { siteConfig } from "@/config/site";
-import { RunEntity } from "@/generated/archesApiSchemas";
+import { PipelineRunEntity } from "@/generated/archesApiSchemas";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { Ban, CheckCircle2, Loader2Icon } from "lucide-react";
 import { useState } from "react";
@@ -15,7 +15,7 @@ export const RunStatusButton = ({
   run,
 }: {
   onClick?: () => void;
-  run: RunEntity;
+  run: PipelineRunEntity;
 }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 

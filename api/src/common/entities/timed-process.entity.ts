@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Run, RunStatus, RunType } from "@prisma/client";
+import { RunStatus } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import {
   IsDate,
@@ -9,10 +9,10 @@ import {
   IsString,
 } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto"; // Assuming these enums are defined in your Prisma schema
+import { BaseEntity } from "./base.entity";
 
 @Exclude()
-export class RunEntity extends BaseEntity implements Run {
+export class TimedProcessEntity extends BaseEntity {
   @ApiProperty({
     description: "The timestamp when the run completed",
     example: "2024-11-05T11:42:02.258Z",
@@ -37,38 +37,11 @@ export class RunEntity extends BaseEntity implements Run {
 
   @ApiProperty({
     description: "The name of the run",
-    example: "Data Processing Run",
+    example: "Data Processing PipelineRun",
   })
   @Expose()
   @IsString()
   name: string;
-
-  @ApiProperty({
-    description: "The organization name associated with the run",
-    example: "my-organization",
-  })
-  @Expose()
-  @IsString()
-  orgname: string;
-
-  @ApiProperty({
-    description:
-      "The parent run ID, if this run is a child run ie a tool run that is part of a pipeline run",
-    required: false,
-    type: String,
-  })
-  @Expose()
-  @IsOptional()
-  parentRunId: null | string;
-
-  @ApiProperty({
-    description: "The pipeline ID associated with the run, if applicable",
-    required: false,
-    type: String,
-  })
-  @Expose()
-  @IsOptional()
-  pipelineId: null | string;
 
   @ApiProperty({
     default: 0,
@@ -98,26 +71,4 @@ export class RunEntity extends BaseEntity implements Run {
   @Expose()
   @IsEnum(RunStatus)
   status: RunStatus;
-
-  @ApiProperty({
-    description: "The tool used in the run, if applicable",
-    required: false,
-    type: String,
-  })
-  @Expose()
-  @IsOptional()
-  toolId: null | string;
-
-  @ApiProperty({
-    description: "The type of the run",
-    enum: RunType,
-  })
-  @Expose()
-  @IsEnum(RunType)
-  type: RunType;
-
-  constructor(run: Run) {
-    super();
-    Object.assign(this, run);
-  }
 }

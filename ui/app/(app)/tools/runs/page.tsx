@@ -6,7 +6,7 @@ import {
   RunsControllerFindAllPathParams,
   useRunsControllerFindAll,
 } from "@/generated/archesApiComponents";
-import { RunEntity } from "@/generated/archesApiSchemas";
+import { PipelineRunEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { PackageCheck } from "lucide-react";
@@ -18,7 +18,7 @@ export default function RunsPage() {
   const { defaultOrgname } = useAuth();
 
   return (
-    <DataTable<RunEntity, RunsControllerFindAllPathParams, undefined>
+    <DataTable<PipelineRunEntity, RunsControllerFindAllPathParams, undefined>
       columns={[
         {
           accessorKey: "name",

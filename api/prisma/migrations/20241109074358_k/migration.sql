@@ -11,7 +11,7 @@ CREATE TYPE "AuthProviderType" AS ENUM ('LOCAL', 'FIREBASE', 'TWITTER');
 CREATE TYPE "ToolIOType" AS ENUM ('TEXT', 'IMAGE', 'VIDEO', 'AUDIO');
 
 -- CreateEnum
-CREATE TYPE "RunType" AS ENUM ('TOOL_RUN', 'PIPELINE_RUN');
+CREATE TYPE "RunRole" AS ENUM ('INPUT', 'OUTPUT');
 
 -- CreateEnum
 CREATE TYPE "RunStatus" AS ENUM ('QUEUED', 'PROCESSING', 'COMPLETE', 'ERROR');
@@ -36,44 +36,55 @@ CREATE TABLE "Content" (
     "mimeType" TEXT,
     "previewImage" TEXT,
     "orgname" TEXT NOT NULL,
+    "parentId" TEXT,
 
     CONSTRAINT "Content_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RunInputContent" (
-    "runId" TEXT NOT NULL,
+CREATE TABLE "RunContent" (
+    "id" TEXT NOT NULL,
+    "role" "RunRole" NOT NULL,
+    "pipelineRunId" TEXT NOT NULL,
     "contentId" TEXT NOT NULL,
+    "transformationId" TEXT,
 
-    CONSTRAINT "RunInputContent_pkey" PRIMARY KEY ("runId","contentId")
+    CONSTRAINT "RunContent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RunOutputContent" (
-    "runId" TEXT NOT NULL,
-    "contentId" TEXT NOT NULL,
-
-    CONSTRAINT "RunOutputContent_pkey" PRIMARY KEY ("runId","contentId")
-);
-
--- CreateTable
-CREATE TABLE "Run" (
+CREATE TABLE "PipelineRun" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "type" "RunType" NOT NULL,
     "status" "RunStatus" NOT NULL DEFAULT 'QUEUED',
     "startedAt" TIMESTAMP(3),
     "completedAt" TIMESTAMP(3),
     "progress" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "error" TEXT,
     "orgname" TEXT NOT NULL,
-    "toolId" TEXT,
-    "pipelineId" TEXT,
-    "parentRunId" TEXT,
+    "pipelineId" TEXT NOT NULL,
+    "threadId" TEXT,
 
-    CONSTRAINT "Run_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PipelineRun_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Transformation" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" "RunStatus" NOT NULL DEFAULT 'QUEUED',
+    "startedAt" TIMESTAMP(3),
+    "completedAt" TIMESTAMP(3),
+    "progress" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "error" TEXT,
+    "pipelineRunId" TEXT NOT NULL,
+    "pipelineStepId" TEXT NOT NULL,
+
+    CONSTRAINT "Transformation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -104,15 +115,15 @@ CREATE TABLE "Pipeline" (
 );
 
 -- CreateTable
-CREATE TABLE "PipelineTool" (
+CREATE TABLE "PipelineStep" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "pipelineId" TEXT NOT NULL,
     "toolId" TEXT NOT NULL,
     "dependsOnId" TEXT,
 
-    CONSTRAINT "PipelineTool_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PipelineStep_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -125,17 +136,6 @@ CREATE TABLE "Thread" (
     "orgname" TEXT NOT NULL,
 
     CONSTRAINT "Thread_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Message" (
-    "id" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "question" TEXT NOT NULL,
-    "answer" TEXT NOT NULL,
-    "threadId" TEXT NOT NULL,
-
-    CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -224,6 +224,15 @@ CREATE TABLE "ARToken" (
 );
 
 -- CreateIndex
+CREATE INDEX "RunContent_pipelineRunId_idx" ON "RunContent"("pipelineRunId");
+
+-- CreateIndex
+CREATE INDEX "RunContent_contentId_idx" ON "RunContent"("contentId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RunContent_pipelineRunId_contentId_role_key" ON "RunContent"("pipelineRunId", "contentId", "role");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "AuthProvider_provider_providerId_key" ON "AuthProvider"("provider", "providerId");
 
 -- CreateIndex
@@ -248,28 +257,31 @@ CREATE UNIQUE INDEX "Member_username_orgname_key" ON "Member"("username", "orgna
 ALTER TABLE "Content" ADD CONSTRAINT "Content_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RunInputContent" ADD CONSTRAINT "RunInputContent_runId_fkey" FOREIGN KEY ("runId") REFERENCES "Run"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Content" ADD CONSTRAINT "Content_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Content"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RunInputContent" ADD CONSTRAINT "RunInputContent_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RunContent" ADD CONSTRAINT "RunContent_pipelineRunId_fkey" FOREIGN KEY ("pipelineRunId") REFERENCES "PipelineRun"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RunOutputContent" ADD CONSTRAINT "RunOutputContent_runId_fkey" FOREIGN KEY ("runId") REFERENCES "Run"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RunContent" ADD CONSTRAINT "RunContent_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RunOutputContent" ADD CONSTRAINT "RunOutputContent_contentId_fkey" FOREIGN KEY ("contentId") REFERENCES "Content"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RunContent" ADD CONSTRAINT "RunContent_transformationId_fkey" FOREIGN KEY ("transformationId") REFERENCES "Transformation"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Run" ADD CONSTRAINT "Run_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PipelineRun" ADD CONSTRAINT "PipelineRun_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Run" ADD CONSTRAINT "Run_toolId_fkey" FOREIGN KEY ("toolId") REFERENCES "Tool"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PipelineRun" ADD CONSTRAINT "PipelineRun_pipelineId_fkey" FOREIGN KEY ("pipelineId") REFERENCES "Pipeline"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Run" ADD CONSTRAINT "Run_pipelineId_fkey" FOREIGN KEY ("pipelineId") REFERENCES "Pipeline"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PipelineRun" ADD CONSTRAINT "PipelineRun_threadId_fkey" FOREIGN KEY ("threadId") REFERENCES "Thread"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Run" ADD CONSTRAINT "Run_parentRunId_fkey" FOREIGN KEY ("parentRunId") REFERENCES "Run"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Transformation" ADD CONSTRAINT "Transformation_pipelineRunId_fkey" FOREIGN KEY ("pipelineRunId") REFERENCES "PipelineRun"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transformation" ADD CONSTRAINT "Transformation_pipelineStepId_fkey" FOREIGN KEY ("pipelineStepId") REFERENCES "PipelineStep"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Tool" ADD CONSTRAINT "Tool_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -278,19 +290,16 @@ ALTER TABLE "Tool" ADD CONSTRAINT "Tool_orgname_fkey" FOREIGN KEY ("orgname") RE
 ALTER TABLE "Pipeline" ADD CONSTRAINT "Pipeline_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PipelineTool" ADD CONSTRAINT "PipelineTool_pipelineId_fkey" FOREIGN KEY ("pipelineId") REFERENCES "Pipeline"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PipelineStep" ADD CONSTRAINT "PipelineStep_pipelineId_fkey" FOREIGN KEY ("pipelineId") REFERENCES "Pipeline"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PipelineTool" ADD CONSTRAINT "PipelineTool_toolId_fkey" FOREIGN KEY ("toolId") REFERENCES "Tool"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PipelineStep" ADD CONSTRAINT "PipelineStep_toolId_fkey" FOREIGN KEY ("toolId") REFERENCES "Tool"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PipelineTool" ADD CONSTRAINT "PipelineTool_dependsOnId_fkey" FOREIGN KEY ("dependsOnId") REFERENCES "PipelineTool"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "PipelineStep" ADD CONSTRAINT "PipelineStep_dependsOnId_fkey" FOREIGN KEY ("dependsOnId") REFERENCES "PipelineStep"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Thread" ADD CONSTRAINT "Thread_orgname_fkey" FOREIGN KEY ("orgname") REFERENCES "Organization"("orgname") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_threadId_fkey" FOREIGN KEY ("threadId") REFERENCES "Thread"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AuthProvider" ADD CONSTRAINT "AuthProvider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

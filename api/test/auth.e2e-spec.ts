@@ -104,7 +104,6 @@ describe("Auth Module E2E Tests", () => {
         .post("/auth/email-change/request")
         .set("Authorization", `Bearer ${accessToken}`)
         .send(emailRequestDto);
-      console.log(res.body);
       expect(res.status).toBe(201);
       expect(res).toSatisfyApiSpec();
       expect(emailChangeToken).not.toBeNull();

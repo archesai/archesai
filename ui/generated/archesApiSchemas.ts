@@ -3,13 +3,13 @@
  *
  * @version v1
  */
-export type CreatePipelineToolDto = {
+export type CreatePipelineStepDto = {
   /**
-   * @example tool-id-uuid
+   * The ID of the tool that this step uses
    */
-  toolId: string;
+  toolId?: string;
   /**
-   * @example depends-on-id-uuid
+   * The ID of the pie
    */
   dependsOnId?: string;
 };
@@ -26,10 +26,10 @@ export type CreatePipelineDto = {
   /**
    * An array of pipeline tools to be added to the pipeline
    */
-  pipelineTools: CreatePipelineToolDto[];
+  pipelineSteps: CreatePipelineStepDto[];
 };
 
-export type PipelineToolEntity = {
+export type PipelineStepEntity = {
   /**
    * The creation date of this item
    *
@@ -44,19 +44,17 @@ export type PipelineToolEntity = {
    */
   id: string;
   /**
-   * @example depends-on-id-uuid
+   * The ID of the pie
    */
   dependsOnId?: string;
   /**
-   * The name of the tool
-   *
-   * @example Tool Name
+   * The ID of the pipelin that this step belongs to
    */
-  tool: string;
+  pipelineId?: string;
   /**
-   * @example tool-id-uuid
+   * The ID of the tool that this step uses
    */
-  toolId: string;
+  toolId?: string;
 };
 
 export type PipelineEntity = {
@@ -85,7 +83,92 @@ export type PipelineEntity = {
    * @example my-organization
    */
   orgname: string;
-  pipelineTools: PipelineToolEntity[];
+  pipelineSteps: PipelineStepEntity[];
+};
+
+export type CreatePipelineRunDto = {
+  /**
+   * If using already created content, specify the content IDs to use as input for the run.
+   *
+   * @example content-id-1
+   * @example content-id-2
+   */
+  runInputContentIds?: string[];
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is the text to use as input for the run.
+   */
+  text?: string;
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is a url to use as input for the run.
+   */
+  url?: string;
+};
+
+export type PipelineRunEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The timestamp when the run completed
+   *
+   * @format date-time
+   * @example 2024-11-05T11:42:02.258Z
+   */
+  completedAt?: string;
+  /**
+   * The error message, if any, associated with the run
+   *
+   * @example An unexpected error occurred.
+   */
+  error?: string;
+  /**
+   * The name of the run
+   *
+   * @example Data Processing PipelineRun
+   */
+  name: string;
+  /**
+   * The progress of the run as a percentage
+   *
+   * @default 0
+   * @example 50.5
+   */
+  progress: number;
+  /**
+   * The timestamp when the run started
+   *
+   * @format date-time
+   * @example 2024-11-05T11:42:02.258Z
+   */
+  startedAt?: string;
+  /**
+   * The status of the run
+   *
+   * @default QUEUED
+   */
+  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
+  /**
+   * The pipeline ID associated with the run, if applicable
+   */
+  pipelineId?: string;
+  /**
+   * The thread that the run is associated with, if applicable
+   */
+  threadId?: string;
 };
 
 export type UpdatePipelineDto = {
@@ -100,7 +183,7 @@ export type UpdatePipelineDto = {
   /**
    * An array of pipeline tools to be added to the pipeline
    */
-  pipelineTools?: CreatePipelineToolDto[];
+  pipelineSteps?: CreatePipelineStepDto[];
 };
 
 export type ConfirmationTokenDto = {
@@ -693,6 +776,186 @@ export type UpdateApiTokenDto = {
   role?: "USER" | "ADMIN";
 };
 
+export type CreateContentDto = {
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+};
+
+export type ContentEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The number of credits used to process this content
+   *
+   * @example 0
+   */
+  credits: number;
+  /**
+   * The content's description
+   *
+   * @example my-file.pdf
+   */
+  description?: string;
+  /**
+   * The MIME type of the content
+   *
+   * @example application/pdf
+   */
+  mimeType?: string;
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * The organization name
+   *
+   * @example my-organization
+   */
+  orgname: string;
+  /**
+   * The parent content ID, if this content is a child of another content
+   *
+   * @example content-id
+   */
+  parentId?: string;
+  /**
+   * The preview image of the content
+   *
+   * @example https://preview-image.com/example.png
+   */
+  previewImage?: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+};
+
+export type UpdateContentDto = {
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name?: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+};
+
+export type PathDto = {
+  /**
+   * Whether or not this path points to a directory
+   *
+   * @default false
+   * @example false
+   */
+  isDir?: boolean;
+  /**
+   * The path that the file should upload to
+   *
+   * @example /location/in/storage
+   */
+  path: string;
+};
+
+export type ReadUrlDto = {
+  /**
+   * A read-only url that you can use to download the file from secure storage
+   *
+   * @example www.example.com?token=read-token
+   */
+  read: string;
+};
+
+export type WriteUrlDto = {
+  /**
+   * A write-only url that you can use to upload a file to secure storage
+   *
+   * @example www.example.com?token=write-token
+   */
+  write: string;
+};
+
+export type StorageItemDto = {
+  /**
+   * Whether or not this is a directory
+   *
+   * @format date-time
+   * @example true
+   */
+  createdAt: string;
+  /**
+   * The id of the storage item
+   *
+   * @example 14
+   */
+  id: string;
+  /**
+   * Whether or not this is a directory
+   *
+   * @example true
+   */
+  isDir: boolean;
+  /**
+   * The path that the file is located in
+   *
+   * @example /location/in/storage
+   */
+  name: string;
+  /**
+   * The size of the item in bytes
+   *
+   * @example 12341234
+   */
+  size: number;
+};
+
 export type CreateMemberDto = {
   /**
    * The invited email of this member
@@ -776,298 +1039,37 @@ export type ThreadEntity = {
   orgname: string;
 };
 
-export type PathDto = {
+export type CreateToolDto = {
   /**
-   * Whether or not this path points to a directory
+   * The tool description
    *
-   * @default false
-   * @example false
+   * @example This tool converts a file to text, regardless of the file type.
    */
-  isDir?: boolean;
+  description: string;
   /**
-   * The path that the file should upload to
+   * The tools input type
    *
-   * @example /location/in/storage
+   * @example FILE
    */
-  path: string;
-};
-
-export type ReadUrlDto = {
+  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
   /**
-   * A read-only url that you can use to download the file from secure storage
+   * The tool's name
    *
-   * @example www.example.com?token=read-token
-   */
-  read: string;
-};
-
-export type WriteUrlDto = {
-  /**
-   * A write-only url that you can use to upload a file to secure storage
-   *
-   * @example www.example.com?token=write-token
-   */
-  write: string;
-};
-
-export type StorageItemDto = {
-  /**
-   * Whether or not this is a directory
-   *
-   * @format date-time
-   * @example true
-   */
-  createdAt: string;
-  /**
-   * The id of the storage item
-   *
-   * @example 14
-   */
-  id: string;
-  /**
-   * Whether or not this is a directory
-   *
-   * @example true
-   */
-  isDir: boolean;
-  /**
-   * The path that the file is located in
-   *
-   * @example /location/in/storage
+   * @example extract-text
    */
   name: string;
   /**
-   * The size of the item in bytes
+   * The tools output type
    *
-   * @example 12341234
+   * @example TEXT
    */
-  size: number;
-};
-
-export type CreateMessageDto = {
+  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
   /**
-   * The question in this message
+   * The tool's base path
    *
-   * @example What is the name of this document?
+   * @example extract-text
    */
-  question: string;
-};
-
-export type MessageEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The answer given by the bot
-   *
-   * @example The name of this document is Aesop's Fables
-   */
-  answer: string;
-  /**
-   * The question in this message
-   *
-   * @example What is the name of this document?
-   */
-  question: string;
-  /**
-   * The id of the thread this message belongs to
-   *
-   * @example thread1
-   */
-  threadId: string;
-};
-
-export type CreateContentDto = {
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-};
-
-export type ContentEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The number of credits used to process this content
-   *
-   * @example 0
-   */
-  credits: number;
-  /**
-   * The content's description
-   *
-   * @example my-file.pdf
-   */
-  description?: string;
-  /**
-   * The MIME type of the content
-   *
-   * @example application/pdf
-   */
-  mimeType?: string;
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-  /**
-   * The organization name
-   *
-   * @example my-organization
-   */
-  orgname: string;
-  /**
-   * The preview image of the content
-   *
-   * @example https://preview-image.com/example.png
-   */
-  previewImage?: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-};
-
-export type UpdateContentDto = {
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name?: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-};
-
-export type RunEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The timestamp when the run completed
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  completedAt?: string;
-  /**
-   * The error message, if any, associated with the run
-   *
-   * @example An unexpected error occurred.
-   */
-  error?: string;
-  /**
-   * The name of the run
-   *
-   * @example Data Processing Run
-   */
-  name: string;
-  /**
-   * The organization name associated with the run
-   *
-   * @example my-organization
-   */
-  orgname: string;
-  /**
-   * The parent run ID, if this run is a child run ie a tool run that is part of a pipeline run
-   */
-  parentRunId?: string;
-  /**
-   * The pipeline ID associated with the run, if applicable
-   */
-  pipelineId?: string;
-  /**
-   * The progress of the run as a percentage
-   *
-   * @default 0
-   * @example 50.5
-   */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  startedAt?: string;
-  /**
-   * The status of the run
-   *
-   * @default QUEUED
-   */
-  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
-  /**
-   * The tool used in the run, if applicable
-   */
-  toolId?: string;
-  /**
-   * The type of the run
-   */
-  type: "TOOL_RUN" | "PIPELINE_RUN";
+  toolBase: string;
 };
 
 export type ToolEntity = {
@@ -1120,162 +1122,6 @@ export type ToolEntity = {
    * @example extract-text
    */
   toolBase: string;
-};
-
-export type RunDetailedEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The timestamp when the run completed
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  completedAt?: string;
-  /**
-   * The error message, if any, associated with the run
-   *
-   * @example An unexpected error occurred.
-   */
-  error?: string;
-  /**
-   * The name of the run
-   *
-   * @example Data Processing Run
-   */
-  name: string;
-  /**
-   * The organization name associated with the run
-   *
-   * @example my-organization
-   */
-  orgname: string;
-  /**
-   * The parent run ID, if this run is a child run ie a tool run that is part of a pipeline run
-   */
-  parentRunId?: string;
-  /**
-   * The pipeline ID associated with the run, if applicable
-   */
-  pipelineId?: string;
-  /**
-   * The progress of the run as a percentage
-   *
-   * @default 0
-   * @example 50.5
-   */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  startedAt?: string;
-  /**
-   * The status of the run
-   *
-   * @default QUEUED
-   */
-  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
-  /**
-   * The tool used in the run, if applicable
-   */
-  toolId?: string;
-  /**
-   * The type of the run
-   */
-  type: "TOOL_RUN" | "PIPELINE_RUN";
-  /**
-   * The child runs associated with the run
-   */
-  childRuns: RunEntity[];
-  /**
-   * The parent run associated with the run
-   */
-  parentRun: RunEntity;
-  /**
-   * The pipeline associated with the run
-   */
-  pipeline: PipelineEntity;
-  /**
-   * The input contents associated with the run
-   */
-  runInputContentIds: string[];
-  /**
-   * The output contents associated with the run
-   */
-  runOutputContentIds: string[];
-  /**
-   * The tool associated with the run
-   */
-  tool: ToolEntity;
-};
-
-export type CreateToolDto = {
-  /**
-   * The tool description
-   *
-   * @example This tool converts a file to text, regardless of the file type.
-   */
-  description: string;
-  /**
-   * The tools input type
-   *
-   * @example FILE
-   */
-  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
-  /**
-   * The tool's name
-   *
-   * @example extract-text
-   */
-  name: string;
-  /**
-   * The tools output type
-   *
-   * @example TEXT
-   */
-  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
-  /**
-   * The tool's base path
-   *
-   * @example extract-text
-   */
-  toolBase: string;
-};
-
-export type RunToolDto = {
-  /**
-   * If using already created content, specify the content IDs to use as input for the run.
-   *
-   * @example content-id-1
-   * @example content-id-2
-   */
-  runInputContentIds?: string[];
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is the text to use as input for the run.
-   */
-  text?: string;
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is a url to use as input for the run.
-   */
-  url?: string;
 };
 
 export type UpdateToolDto = {

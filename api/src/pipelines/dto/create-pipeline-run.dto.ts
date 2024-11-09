@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsOptional, IsString } from "class-validator";
 
-export class RunToolDto {
+export class CreatePipelineRunDto {
   @ApiProperty({
     description:
       "If using already created content, specify the content IDs to use as input for the run.",

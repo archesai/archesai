@@ -74,14 +74,7 @@ async function main() {
       await prismaService.thread.create({
         data: {
           credits: faker.number.int(10000),
-          messages: {
-            createMany: {
-              data: new Array(100).fill({
-                answer: faker.lorem.sentence(),
-                question: faker.lorem.sentence(),
-              }),
-            },
-          },
+
           name: faker.commerce.productName(),
           orgname: user.defaultOrgname,
         },

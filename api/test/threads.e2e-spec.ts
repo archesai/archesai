@@ -1,5 +1,3 @@
-import { PaginatedDto } from "@/src/common/dto/paginated.dto";
-import { MessageEntity } from "@/src/messages/entities/message.entity";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
@@ -58,7 +56,7 @@ describe("Threads", () => {
       .set("Authorization", `Bearer ${accessToken}`);
     expect(chatRes.status).toBe(201);
     expect(chatRes).toSatisfyApiSpec();
-    const message = chatRes.body as MessageEntity;
+    const message = chatRes.body;
     expect(message.answer.length).toBeGreaterThan(0);
   });
 
@@ -69,7 +67,7 @@ describe("Threads", () => {
       .set("Authorization", `Bearer ${accessToken}`);
     expect(messagesRes.status).toBe(200);
     expect(messagesRes).toSatisfyApiSpec();
-    const messages = messagesRes.body as PaginatedDto<MessageEntity>;
+    const messages = messagesRes.body;
     expect(messages.results.length).toBeGreaterThan(0);
   });
 

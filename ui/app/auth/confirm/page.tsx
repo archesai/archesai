@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  useEmailChangeControllerConfirm,
-  useEmailVerificationControllerConfirm,
-  usePasswordResetControllerConfirm,
+  useAuthControllerEmailChangeConfirm,
+  useAuthControllerEmailVerificationConfirm,
+  useAuthControllerPasswordResetConfirm,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,9 +55,11 @@ export default function ConfirmPage() {
 
   const { setAccessToken, setRefreshToken, user } = useAuth();
 
-  const { mutateAsync: verifyEmail } = useEmailVerificationControllerConfirm();
-  const { mutateAsync: resetPassword } = usePasswordResetControllerConfirm();
-  const { mutateAsync: changeEmail } = useEmailChangeControllerConfirm();
+  const { mutateAsync: verifyEmail } =
+    useAuthControllerEmailVerificationConfirm();
+  const { mutateAsync: resetPassword } =
+    useAuthControllerPasswordResetConfirm();
+  const { mutateAsync: changeEmail } = useAuthControllerEmailChangeConfirm();
 
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");

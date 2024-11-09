@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { usePasswordResetControllerRequest } from "@/generated/archesApiComponents"; // Adjust the import path as needed
+import { useAuthControllerPasswordResetRequest } from "@/generated/archesApiComponents"; // Adjust the import path as needed
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useState } from "react";
@@ -27,7 +27,7 @@ export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
   const { mutateAsync: requestPasswordReset } =
-    usePasswordResetControllerRequest();
+    useAuthControllerPasswordResetRequest();
   const [message, setMessage] = useState<string>("");
   const [error, setError] = useState<string>("");
 

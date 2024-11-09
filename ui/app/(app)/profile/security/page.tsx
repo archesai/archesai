@@ -10,7 +10,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  usePasswordResetControllerRequest,
+  useAuthControllerPasswordResetRequest,
   useUserControllerDeactivate,
   useUserControllerFindOne,
 } from "@/generated/archesApiComponents";
@@ -27,7 +27,7 @@ export default function ProfileSecuritySettingsPage() {
   const {
     isPending: requestPasswordResetPending,
     mutateAsync: requestPasswordReset,
-  } = usePasswordResetControllerRequest();
+  } = useAuthControllerPasswordResetRequest();
 
   return (
     <div className="flex flex-col gap-3">

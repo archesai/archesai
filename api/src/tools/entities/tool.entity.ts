@@ -3,7 +3,7 @@ import { Tool as _PrismaTool, ToolIOType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEnum, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto";
+import { BaseEntity } from "../../common/entities/base.entity";
 
 export type ToolModel = _PrismaTool;
 

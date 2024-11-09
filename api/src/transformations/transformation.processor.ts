@@ -6,7 +6,6 @@ import { Job } from "bullmq";
 
 import { ContentService } from "../content/content.service";
 import { ContentEntity } from "../content/entities/content.entity";
-import { OpenAiEmbeddingsService } from "../embeddings/embeddings.openai.service";
 import { LLMService } from "../llm/llm.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
@@ -16,19 +15,18 @@ import { processExtractText } from "./processes/extract-text.process";
 import { processSummarize } from "./processes/summarize.process";
 import { processTextToImage } from "./processes/text-to-image.process";
 import { processTextToSpeech } from "./processes/text-to-speech.process";
-import { RunsService } from "./runs.service";
+import { TransformationsService } from "./transformations.service";
 
 @Processor("run")
-export class RunProcessor extends WorkerHost {
-  private readonly logger: Logger = new Logger("Tool Processor");
+export class TransformationProcessor extends WorkerHost {
+  private readonly logger: Logger = new Logger("Transformation Processor");
 
   constructor(
+    private transformationsService: TransformationsService,
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
-    private runsService: RunsService,
     private contentService: ContentService,
     private llmService: LLMService,
-    private openAiEmbeddingsService: OpenAiEmbeddingsService,
     private speechService: SpeechService,
     private httpService: HttpService,
     private configService: ConfigService,
@@ -40,21 +38,27 @@ export class RunProcessor extends WorkerHost {
   @OnWorkerEvent("active")
   async onActive(job: Job) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
-    await this.runsService.setStatus(job.id.toString(), "PROCESSING");
+    await this.transformationsService.setStatus(
+      job.id.toString(),
+      "PROCESSING"
+    );
   }
 
   @OnWorkerEvent("completed")
   async onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id}`);
-    await this.runsService.setStatus(job.id.toString(), "COMPLETE");
+    await this.transformationsService.setStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
   async onError(job: Job, error: any) {
     this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
-      await this.runsService.setStatus(job.id.toString(), "ERROR");
-      await this.runsService.setRunError(job.id.toString(), error?.message);
+      await this.transformationsService.setStatus(job.id.toString(), "ERROR");
+      await this.transformationsService.setRunError(
+        job.id.toString(),
+        error?.message
+      );
     } catch {}
   }
 
@@ -62,8 +66,11 @@ export class RunProcessor extends WorkerHost {
   async onFailed(job: Job, error: any) {
     this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
-      await this.runsService.setStatus(job.id.toString(), "ERROR");
-      await this.runsService.setRunError(job.id.toString(), error?.message);
+      await this.transformationsService.setStatus(job.id.toString(), "ERROR");
+      await this.transformationsService.setRunError(
+        job.id.toString(),
+        error?.message
+      );
     } catch {}
   }
 
@@ -126,8 +133,9 @@ export class RunProcessor extends WorkerHost {
     }
 
     this.logger.log(`Adding run output contents to run ${job.id}`);
-    await this.runsService.addRunInputContent(
+    await this.transformationsService.setOutputContent(
       job.id.toString(),
+      "FIXME",
       runOutputContents
     );
   }

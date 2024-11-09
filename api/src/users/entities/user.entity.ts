@@ -3,7 +3,7 @@ import { AuthProvider, Member, User } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsEmail, IsString, MinLength } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto";
+import { BaseEntity } from "../../common/entities/base.entity";
 import { MemberEntity } from "../../members/entities/member.entity";
 import { AuthProviderEntity } from "./auth-provider.entity";
 

@@ -3,7 +3,7 @@ import { Member as _PrismaMember, RoleType } from "@prisma/client";
 import { Expose } from "class-transformer";
 import { IsEnum, IsNotEmpty } from "class-validator";
 
-import { BaseEntity } from "../../common/dto/base.entity.dto";
+import { BaseEntity } from "../../common/entities/base.entity";
 
 export type MemberModel = _PrismaMember;
 

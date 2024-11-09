@@ -44,7 +44,7 @@ describe("Pipelines", () => {
     const newPipeline: CreatePipelineDto = {
       description: "A new pipeline for testing purposes",
       name: "New Pipeline",
-      pipelineTools: [],
+      pipelineSteps: [],
     };
 
     await createPipeline(newPipeline);
@@ -60,7 +60,7 @@ describe("Pipelines", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         name: "Updated Pipeline",
-        pipelineTools: [],
+        pipelineSteps: [],
       });
     expect(res).toSatisfyApiSpec();
     expect(res.status).toBe(200); // or the appropriate success status code
