@@ -112,11 +112,9 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$(cat /workspace/api_changed)" = "false" ]; then
-          gcloud container images add-tag \
-            us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:latest \
-            us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
-        fi
+        gcloud container images add-tag \
+          us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:latest \
+          us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-api:$SHORT_SHA
 
   # Step 5: Tag arches-nlp image if no changes
   - name: "gcr.io/cloud-builders/gcloud"
@@ -126,11 +124,9 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$(cat /workspace/nlp_changed)" = "false" ]; then
-          gcloud container images add-tag \
-            us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:latest \
-            us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
-        fi
+        gcloud container images add-tag \
+          us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:latest \
+          us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
 
 availableSecrets:
   secretManager:
