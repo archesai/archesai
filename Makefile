@@ -36,7 +36,7 @@ test: generate
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
 
 stop:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) down
+	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down
 		
 reset:
 	-make stop

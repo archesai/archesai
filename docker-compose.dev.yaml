@@ -8,7 +8,8 @@ services:
       target: development
     volumes:
       - ./api:/usr/src/app
-    command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
+    command: |
+      /bin/sh -c 'npm run migrations:prod && npm run start:dev'
 
   arches-nlp:
     image: arches-nlp:dev
@@ -19,7 +20,6 @@ services:
       - ./nlp/app:/code/app
     command: |
       uvicorn app.main:app --proxy-headers --host 0.0.0.0 --port 80 --reload
-    mem_limit: 2g
 
   arches-ui:
     image: arches-ui:dev

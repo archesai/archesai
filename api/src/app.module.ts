@@ -36,36 +36,56 @@ import { WebsocketsModule } from "./websockets/websockets.module";
   controllers: [],
   imports: [
     PipelinesModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        ...(process.env.NODE_ENV !== "production"
-          ? process.env.NODE_ENV === "test"
-            ? {
-                level: "silent",
-              }
-            : {
-                autoLogging: false, // This will disable automatic logging of HTTP requests
-                transport: {
-                  target: "pino-pretty",
-                  // options: {
-                  //   singleLine: true,
-                  // },
-                },
-              }
-          : {
-              formatters: {
-                level(label) {
-                  return { level: label, severity: label.toUpperCase() };
-                },
-              },
+    LoggerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const loggerConfig = {
+          pinoHttp: {
+            customProps: (req, res) => ({
+              context: "HTTP",
+              statusCode: res?.statusCode,
             }),
-        customProps: (req, res) => ({
-          context: "HTTP",
-          statusCode: res?.statusCode,
-        }),
-        redact: {
-          paths: ["req.headers", "res.headers"],
-        },
+            formatters:
+              configService.get<string>("NODE_ENV") === "production"
+                ? {
+                    level(label: string) {
+                      return { level: label, severity: label.toUpperCase() };
+                    },
+                  }
+                : undefined,
+            level:
+              configService.get("NODE_ENV") === "test" ? "silent" : "debug",
+            redact: {
+              paths: ["req"],
+            },
+            transport: {
+              targets: [
+                {
+                  options: {
+                    host:
+                      configService.get<string>("LOKI_HOST") ||
+                      "http://arches-loki:3100", // Loki service URL in Kubernetes
+                    json: true,
+                    labels: {
+                      app: "archesai",
+                      environment: "production",
+                    },
+                  },
+                  target: "pino-loki",
+                },
+                {
+                  options: {
+                    colorize: true,
+                    singleLine: true,
+                  },
+                  target: "pino-pretty",
+                },
+              ],
+            },
+          },
+        };
+        return loggerConfig;
       },
     }),
     AuthModule,
@@ -203,3 +223,8 @@ import { WebsocketsModule } from "./websockets/websockets.module";
   providers: [WebsocketsGateway],
 })
 export class AppModule {}
+
+// {
+//   target: "pino/file",
+//   options: { destination: "/app-logs/app.log" },
+// },

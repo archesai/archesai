@@ -41,6 +41,7 @@ export class FirebaseStrategy extends PassportStrategy(
       this.configService.get("NODE_ENV") !== "production";
 
     if (!admin.apps.length) {
+      this.logger.log("Initializing Firebase Admin SDK");
       admin.initializeApp({
         credential: admin.credential.cert(firebase_params),
         projectId: useLocalIdentityToolkit
