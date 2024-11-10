@@ -59,7 +59,7 @@ export const RunStatusButton = ({
       </PopoverTrigger>
       <PopoverContent className="overflow-auto p-4 text-sm">
         <div>
-          <strong className="font-semibold">Tool:</strong> {run.toolId}
+          <strong className="font-semibold">Tool:</strong> {run.pipelineId}
         </div>
         <div>
           <strong className="font-semibold">Status:</strong> {run.status}

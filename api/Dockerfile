@@ -1,77 +1,75 @@
 ###################
-# BUILD FOR LOCAL DEVELOPMENT
+# BASE STAGE
 ###################
+FROM node:18-alpine AS base
 
-FROM node:18-alpine As development
-
-# Install curl so we can run tests
-RUN apk add curl ffmpeg
-
-# Create app directory
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy application dependency manifests to the container image.
-# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
-# Copying this first prevents re-running npm install on every code change.
+# Install necessary packages once
+RUN apk add ffmpeg
+
+# Use the default 'node' user provided by the base image
+
+###################
+# DEPENDENCIES STAGE
+###################
+FROM base AS dependencies
+
+# Copy package.json and package-lock.json
 COPY --chown=node:node package*.json ./
 
-# Install app dependencies using the `npm ci` command instead of `npm install`
+# Install all dependencies (including dev)
 RUN npm ci
 
-# Bundle app source
+###################
+# BUILD STAGE
+###################
+FROM dependencies AS build
+
+# Copy source code
 COPY --chown=node:node . .
 
-# Generate Prisma database client code
-RUN npx prisma generate
+# Generate Prisma client and build the application in one layer
+RUN npx prisma generate && npm run build
 
-# Use the node user from the image (instead of the root user)
+###################
+# DEVELOPMENT STAGE
+###################
+FROM dependencies AS development
+
+# Switch to non-root user
 USER node
 
+# Start the development server with hot-reloading (e.g., using nodemon)
+CMD ["npm", "run", "start:dev"]
+
 ###################
-# BUILD FOR PRODUCTION
+# PRODUCTION STAGE
 ###################
+FROM base AS production
 
-FROM node:18-alpine As build
+# Set NODE_ENV to production
+ENV NODE_ENV=production
 
-WORKDIR /usr/src/app
-
+# Copy package.json and package-lock.json
 COPY --chown=node:node package*.json ./
 
-# In order to run `npm run build` we need access to the Nest CLI.
-# The Nest CLI is a dev dependency,
-# In the previous development stage we ran `npm ci` which installed all dependencies.
-# So we can copy over the node_modules directory from the development image into this build image.
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
+# Copy node_modules from dependencies stage
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
 
-COPY --chown=node:node . .
+# Prune dev dependencies
+RUN npm prune --production
 
-# Run the build command which creates the production bundle
-RUN npm run build
+# Copy built application and Prisma migrations from build stage
+COPY --from=build --chown=node:node /usr/src/app/dist ./dist
+COPY --from=build --chown=node:node /usr/src/app/prisma ./prisma
 
-# Set NODE_ENV environment variable
-ENV NODE_ENV production
-
-# Running `npm ci` removes the existing node_modules directory.
-# Passing in --only=production ensures that only the production dependencies are installed.
-# This ensures that the node_modules directory is as optimized as possible.
-RUN npm ci --only=production && npm cache clean --force
-
+# Use the default 'node' user
 USER node
 
-###################
-# PRODUCTION
-###################
+# Expose production port
+EXPOSE 3000
 
-FROM node:18-alpine As production
-
-RUN apk update && apk add ffmpeg
-
-# Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-
-# Copy migrations
-COPY ./prisma /usr/src/app/migrations
-
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+# Start the server
+CMD ["node", "dist/main.js"]

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arches-nlp
+spec:
+  template:
+    spec:
+      volumes:
+        - name: nlp-source
+          hostPath:
+            path: /host/nlp/app # Use the variable here
+      containers:
+        - name: arches-nlp
+          image: arches-nlp:dev
+          command:
+            - uvicorn
+            - app.main:app
+            - --proxy-headers
+            - --host
+            - 0.0.0.0
+            - --port
+            - "80"
+            - --reload
+          volumeMounts:
+            - name: nlp-source
+              mountPath: /code/app

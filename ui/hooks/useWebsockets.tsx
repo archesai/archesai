@@ -13,7 +13,7 @@ export const useWebsockets = ({
   const { accessToken } = useAuth();
   const queryClient = useQueryClient();
 
-  const { streamChatMessage } = useStreamChat();
+  const { streamContent } = useStreamChat();
 
   useEffect(() => {
     if (accessToken) {
@@ -45,12 +45,7 @@ export const useWebsockets = ({
       });
 
       websocket.on("chat", (event) => {
-        streamChatMessage(
-          event.orgname,
-          event.chatbotId,
-          event.labelId,
-          event.message
-        );
+        streamContent(event.orgname, event.labelId, event.content);
       });
 
       return () => {

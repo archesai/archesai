@@ -5,6 +5,11 @@ TEST_FILE ?= ""
 build:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
 
+
+
+build-minikube:
+	eval $$(minikube docker-env) && make build
+
 run:
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d
 

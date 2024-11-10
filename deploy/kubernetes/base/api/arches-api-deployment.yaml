@@ -19,101 +19,24 @@ spec:
       labels:
         component: arches-api
     spec:
+      securityContext:
+        runAsUser: 1000 # Replace with actual UID
+        runAsGroup: 1000 # Replace with actual GID
+        fsGroup: 1000
+      imagePullSecrets:
+        - name: artifact-registry-key
       initContainers:
         - name: arches-api-wait-for-migration
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           imagePullPolicy: IfNotPresent
           args:
             - "job"
-            - "arches-upgrade"
+            - "arches-api-upgrade"
       containers:
         - name: arches-api
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  key: DATABASE_URL
-                  name: arches-api-config-secret
-            - name: FRONTEND_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: FRONTEND_HOST
-                  name: arches-api-config-secret
-            - name: JWT_API_TOKEN_EXPIRATION_TIME
-              valueFrom:
-                secretKeyRef:
-                  key: JWT_API_TOKEN_EXPIRATION_TIME
-                  name: arches-api-config-secret
-            - name: JWT_API_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  key: JWT_API_TOKEN_SECRET
-                  name: arches-api-config-secret
-            - name: LLM_TYPE
-              valueFrom:
-                secretKeyRef:
-                  key: LLM_TYPE
-                  name: arches-api-config-secret
-            - name: EMBEDDING_TYPE
-              valueFrom:
-                secretKeyRef:
-                  key: EMBEDDING_TYPE
-                  name: arches-api-config-secret
-            - name: LOADER_ENDPOINT
-              valueFrom:
-                secretKeyRef:
-                  key: LOADER_ENDPOINT
-                  name: arches-api-config-secret
-            - name: NODE_ENV
-              valueFrom:
-                secretKeyRef:
-                  key: NODE_ENV
-                  name: arches-api-config-secret
-            - name: OPEN_AI_KEY
-              valueFrom:
-                secretKeyRef:
-                  key: OPEN_AI_KEY
-                  name: arches-api-config-secret
-            - name: PORT
-              valueFrom:
-                secretKeyRef:
-                  key: PORT
-                  name: arches-api-config-secret
-            - name: REDIS_AUTH
-              valueFrom:
-                secretKeyRef:
-                  key: REDIS_AUTH
-                  name: arches-api-config-secret
-            - name: REDIS_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: REDIS_HOST
-                  name: arches-api-config-secret
-            - name: REDIS_PORT
-              valueFrom:
-                secretKeyRef:
-                  key: REDIS_PORT
-                  name: arches-api-config-secret
-            - name: SERVER_HOST
-              valueFrom:
-                secretKeyRef:
-                  key: SERVER_HOST
-                  name: arches-api-config-secret
-            - name: STORAGE_TYPE
-              valueFrom:
-                secretKeyRef:
-                  key: STORAGE_TYPE
-                  name: arches-api-config-secret
-            - name: FEATURE_BILLING
-              valueFrom:
-                secretKeyRef:
-                  key: FEATURE_BILLING
-                  name: arches-api-config-secret
-            - name: FEATURE_EMAIL
-              valueFrom:
-                secretKeyRef:
-                  key: FEATURE_EMAIL
-                  name: arches-api-config-secret
+          envFrom:
+            - secretRef:
+                name: arches-api-config-secret
           image: us-east4-docker.pkg.dev/archesai/images/arches-api
           ports:
             - containerPort: 3001

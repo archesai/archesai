@@ -128,6 +128,22 @@ steps:
           us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:latest \
           us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
 
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: create-release
+    waitFor: ["tag-arches-api", "tag-arches-nlp"]
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud components install gke-gcloud-auth-plugin
+        gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
+        gcloud deploy releases create "$SHORT_SHA" \
+            --project=archesai \
+            --region=us-east1 \
+            --delivery-pipeline=arches-deployment \
+            --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${SHORT_SHA} \
+            --skaffold-file=./deploy/skaffold.yaml
+
 availableSecrets:
   secretManager:
     - versionName: projects/archesai/secrets/GH_PAT/versions/1

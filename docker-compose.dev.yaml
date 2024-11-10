@@ -1,7 +1,7 @@
 services:
   # THESE ARE LOCAL DEVELOPMENT VERSIONS OF OUR SERVICES
   arches-api:
-    image: arches-api:local
+    image: arches-api:dev
     build:
       dockerfile: Dockerfile
       context: ./api
@@ -9,10 +9,9 @@ services:
     volumes:
       - ./api:/usr/src/app
     command: /bin/sh -c 'npm run migrations:prod && npm run start:dev'
-    working_dir: /usr/src/app
 
   arches-nlp:
-    image: arches-nlp:local
+    image: arches-nlp:dev
     build:
       dockerfile: Dockerfile
       context: ./nlp
@@ -23,7 +22,7 @@ services:
     mem_limit: 2g
 
   arches-ui:
-    image: arches-ui:local
+    image: arches-ui:dev
     build:
       dockerfile: Dockerfile
       context: ./ui
@@ -33,7 +32,7 @@ services:
 
   arches-api-test-e2e:
     container_name: arches-api-test-e2e
-    image: arches-api:local
+    image: arches-api:dev
     build:
       dockerfile: Dockerfile
       context: ./api
@@ -45,13 +44,12 @@ services:
     environment:
       - NODE_ENV=test
     command: /bin/sh -c 'npm run test:e2e -- $TEST_FILE'
-    working_dir: /usr/src/app
     profiles:
       - test
 
   arches-api-seed:
     container_name: arches-api-seed
-    image: arches-api:local
+    image: arches-api:dev
     build:
       dockerfile: Dockerfile
       context: ./api
@@ -61,6 +59,5 @@ services:
     env_file:
       - ./api/.env.${PROFILE}
     command: /bin/sh -c 'npm run db:seed'
-    working_dir: /usr/src/app
     profiles:
       - test

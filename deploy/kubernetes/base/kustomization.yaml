@@ -9,13 +9,13 @@ resources:
 images:
   - name: us-east4-docker.pkg.dev/archesai/images/arches-api
     newName: us-east4-docker.pkg.dev/archesai/images/arches-api
-    newTag: 804029b
+    newTag: latest
   - name: us-east4-docker.pkg.dev/archesai/images/arches-ui
     newName: us-east4-docker.pkg.dev/archesai/images/arches-ui
-    newTag: f454c0f
+    newTag: latest
   - name: us-east4-docker.pkg.dev/archesai/images/arches-nlp
     newName: us-east4-docker.pkg.dev/archesai/images/arches-nlp
-    newTag: 31133a0
+    newTag: latest
 
 replacements:
   - source:

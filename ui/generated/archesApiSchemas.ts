@@ -797,6 +797,10 @@ export type CreateContentDto = {
    * @example https://example.com/example.mp4
    */
   url?: string;
+  /**
+   * The labels to associate with the content
+   */
+  labelIds?: string[];
 };
 
 export type ContentEntity = {
@@ -894,6 +898,10 @@ export type UpdateContentDto = {
    * @example https://example.com/example.mp4
    */
   url?: string;
+  /**
+   * The labels to associate with the content
+   */
+  labelIds?: string[];
 };
 
 export type PathDto = {

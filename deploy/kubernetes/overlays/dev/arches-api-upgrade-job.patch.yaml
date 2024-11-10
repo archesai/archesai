@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: arches-api-upgrade
+spec:
+  template:
+    spec:
+      volumes:
+        - name: api-source
+          hostPath:
+            path: /host/api
+            type: Directory
+      containers:
+        - name: arches-api-upgrade
+          image: arches-api:dev
+          args:
+            - |
+              npm install && npx prisma migrate deploy --schema /usr/src/app/prisma/schema.prisma
+          volumeMounts:
+            - name: api-source
+              mountPath: /usr/src/app

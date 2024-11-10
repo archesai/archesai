@@ -11,16 +11,18 @@ resources:
   - "./arches-frontend-config.yaml"
   - "./arches-api-managedcertificate.yaml"
   - "./arches-api-ingress.yaml"
+  - "./arches-ui-managedcertificate.yaml"
+  - "./arches-ui-ingress.yaml"
 
 patches:
   - path: "./arches-api-deployment.patch.yaml"
     target:
       kind: Deployment
       name: arches-api
-  - path: "./arches-upgrade-job.patch.yaml"
+  - path: "./arches-api-upgrade-job.patch.yaml"
     target:
       kind: Job
-      name: arches-upgrade
+      name: arches-api-upgrade
   - path: "./arches-api-service-account.patch.yaml"
     target:
       kind: ServiceAccount

@@ -49,7 +49,7 @@ export default function PlaygroundPage() {
     usePipelinesControllerCreatePipelineRun();
   const [selectedTool, setSelectedTool] = useState<ToolEntity>();
   const [selectedContent, setSelectedContent] = useState<ContentEntity>();
-  const [currentRun, setCurrentRun] = useState<PipelineRunEntity>();
+  const [, setCurrentRun] = useState<PipelineRunEntity>();
   const form = useForm<FormValues>({
     defaultValues: {
       runInputContentIds: [],
@@ -58,42 +58,42 @@ export default function PlaygroundPage() {
     },
     resolver: zodResolver(formSchema),
   });
-  const { data: runs } = useRunsControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname,
-      },
-      queryParams: {
-        filters: JSON.stringify([
-          {
-            field: "type",
-            operator: "equals",
-            value: "TOOL_RUN",
-          },
-          {
-            field: "toolId",
-            operator: "equals",
-            value: selectedTool?.id || "",
-          },
-        ]) as any,
-      },
-    },
-    {
-      enabled: !!selectedTool,
-    }
-  );
+  // const { data: runs } = useRunsControllerFindAll(
+  //   {
+  //     pathParams: {
+  //       orgname: defaultOrgname,
+  //     },
+  //     queryParams: {
+  //       filters: JSON.stringify([
+  //         {
+  //           field: "type",
+  //           operator: "equals",
+  //           value: "TOOL_RUN",
+  //         },
+  //         {
+  //           field: "toolId",
+  //           operator: "equals",
+  //           value: selectedTool?.id || "",
+  //         },
+  //       ]) as any,
+  //     },
+  //   },
+  //   {
+  //     enabled: !!selectedTool,
+  //   }
+  // );
 
-  const { data: runDetailed } = useRunsControllerFindOne(
-    {
-      pathParams: {
-        id: currentRun?.id || "",
-        orgname: defaultOrgname,
-      },
-    },
-    {
-      enabled: !!currentRun,
-    }
-  );
+  // const { data: runDetailed } = useRunsControllerFindOne(
+  //   {
+  //     pathParams: {
+  //       id: currentRun?.id || "",
+  //       orgname: defaultOrgname,
+  //     },
+  //   },
+  //   {
+  //     enabled: !!currentRun,
+  //   }
+  // );
 
   return (
     <Form {...form}>
@@ -109,7 +109,7 @@ export default function PlaygroundPage() {
               },
               pathParams: {
                 orgname: defaultOrgname,
-                toolId: values.toolId,
+                pipelineId: values.toolId,
               },
             },
             {
@@ -132,8 +132,8 @@ export default function PlaygroundPage() {
       >
         {/* OUTPUT */}
         <div className="col-span-2 flex flex-1 flex-col gap-2">
-          <div className="flex-1">{runDetailed?.runInputContentIds}</div>
-          <div className="flex-1">{runDetailed?.runOutputContentIds}</div>
+          <div className="flex-1">{}</div>
+          <div className="flex-1">{}</div>
         </div>
 
         {/* SIDEBAR */}
@@ -266,9 +266,9 @@ export default function PlaygroundPage() {
           {/* Tool Runs */}
           <Label>Tool Runs</Label>
           <div>
-            {runs?.results?.map((run) => (
+            {[].map((run, i) => (
               <RunStatusButton
-                key={run.id}
+                key={i}
                 onClick={() => setCurrentRun(run)}
                 run={run}
               />

@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - "../../base"
+
+components:
+  - ../../components/database
+  - ../../components/redis
+  - ../../components/storage
+  - ../../components/ui
+
+patches:
+  - path: "./arches-api-deployment.patch.yaml"
+  - path: "./arches-ui-deployment.patch.yaml"
+  - path: "./arches-nlp-deployment.patch.yaml"
+  - path: "./arches-api-upgrade-job.patch.yaml"

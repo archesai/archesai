@@ -2803,6 +2803,11 @@ components:
           type: string
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
+        labelIds:
+          description: The labels to associate with the content
+          type: array
+          items:
+            type: string
       required:
         - name
     ContentEntity:
@@ -2878,6 +2883,11 @@ components:
           type: string
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
+        labelIds:
+          description: The labels to associate with the content
+          type: array
+          items:
+            type: string
     PathDto:
       type: object
       properties:

@@ -19,6 +19,8 @@ spec:
       labels:
         component: arches-nlp
     spec:
+      imagePullSecrets:
+        - name: artifact-registry-key
       containers:
         - image: us-east4-docker.pkg.dev/archesai/images/arches-nlp
           name: arches-nlp

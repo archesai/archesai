@@ -27,7 +27,7 @@ spec:
               value: "5432"
             - name: POSTGRES_USER
               value: admin
-          image: postgres:latest
+          image: pgvector/pgvector:pg16
           name: arches-postgres
           ports:
             - containerPort: 5432

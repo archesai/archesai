@@ -1,29 +1,41 @@
-# ---- Base Node ----
+# ---- Base Stage ----
 FROM node:18-alpine AS base
 WORKDIR /app
 
-# ---- Dependencies ----
+# ---- Dependencies Stage ----
 FROM base AS dependencies
-COPY package*.json ./
-RUN npm ci
+# Install production dependencies
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
 
-# ---- Copy Files/Build ----
-FROM dependencies AS build
-WORKDIR /app
-COPY . /app
+# ---- Development Dependencies Stage ----
+FROM dependencies AS dev-dependencies
+# Install development dependencies on top of production dependencies
+RUN npm ci --only=development
+
+# ---- Build Stage ----
+FROM dev-dependencies AS build
+# Copy the entire project
+COPY . .
+# Build the application
 RUN npm run build
 
-# ---- Development ----
-FROM dependencies as development
-RUN npm install --only=development
-WORKDIR /app
-COPY . /app
-EXPOSE 3000
+# ---- Development Stage ----
+FROM dev-dependencies AS development
+# Copy source code (excluding build artifacts if using .dockerignore)
+COPY . .
+
+# Use non-root user
 USER node
+# Start the development server
 CMD ["npm", "run", "dev"]
 
-# ---- Release ----
-FROM base AS release
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=build /app ./
+# ---- Production Stage ----
+FROM dependencies AS release
+# Copy built application from build stage
+COPY --from=build /app/dist ./dist
+
+# Use non-root user
+USER node
+# Start the production server
 CMD ["npm", "start"]
