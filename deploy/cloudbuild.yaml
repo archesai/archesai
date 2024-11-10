@@ -62,6 +62,14 @@ steps:
         cat /workspace/api_changed
         cat /workspace/nlp_changed
 
+  - name: node
+    id: lint
+    entrypoint: /bin/sh
+    args:
+      - "-c"
+      - |
+        cd ./api && npm install && cd ../ui && npm install &$ cd .. && make lint
+
   # Step 2: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:debug"
     id: build-arches-api
@@ -130,7 +138,7 @@ steps:
 
   - name: "gcr.io/cloud-builders/gcloud"
     id: create-release
-    waitFor: ["tag-arches-api", "tag-arches-nlp"]
+    waitFor: ["tag-arches-api", "tag-arches-nlp", "lint"]
     entrypoint: "bash"
     args:
       - "-c"
