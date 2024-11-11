@@ -73,6 +73,7 @@ export default function MembersPageContent() {
       createForm={<MemberForm />}
       dataIcon={<User className="opacity-30" size={24} />}
       defaultView="table"
+      filterField="inviteEmail"
       findAllPathParams={{
         orgname: defaultOrgname,
       }}

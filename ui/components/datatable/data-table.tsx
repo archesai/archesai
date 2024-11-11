@@ -51,6 +51,7 @@ interface DataTableProps<
   createForm?: React.ReactNode;
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
+  filterField?: string;
   findAllPathParams: TFindAllPathParams;
   findAllQueryParams?: object;
   getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables;
@@ -88,6 +89,7 @@ export function DataTable<
   createForm,
   dataIcon: DataIcon,
   defaultView,
+  filterField = "name",
   findAllPathParams,
   findAllQueryParams,
   getDeleteVariablesFromItem,
@@ -138,13 +140,12 @@ export function DataTable<
         : {}),
       filters: JSON.stringify([
         {
-          field: "name",
+          field: filterField,
           operator: "contains",
           value: query,
         },
       ]),
       limit,
-      name: query,
       offset: page * limit,
       sortBy: sortBy as "createdAt",
       sortDirection: sortDirection,
