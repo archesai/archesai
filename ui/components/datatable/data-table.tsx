@@ -1,4 +1,6 @@
+// components/DataTable.tsx
 "use client";
+
 import { DataTablePagination } from "@/components/datatable/data-table-pagination";
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
@@ -19,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";
@@ -33,7 +36,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface BaseItem {
   id: string;
@@ -100,7 +103,20 @@ export function DataTable<
   useFindAll,
   useRemove,
 }: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
-  const { limit, page, query, range, sortBy, sortDirection } = useFilterItems();
+  const {
+    limit,
+    page,
+    query,
+    range,
+    setSortBy,
+    setSortDirection,
+    sortBy,
+    sortDirection,
+  } = useFilterItems();
+
+  // Use the useDebounce hook to debounce the query
+  const debouncedQuery = useDebounce(query, 500); // 500ms delay
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([
@@ -113,12 +129,11 @@ export function DataTable<
   const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
     createForm
   );
-  const { setSortBy, setSortDirection } = useFilterItems();
 
   useEffect(() => {
     setSortDirection(sorting[0]?.desc ? "desc" : "asc");
     setSortBy(sorting[0]?.id);
-  }, [sorting]);
+  }, [sorting, setSortDirection, setSortBy]);
 
   const { setView, view } = useToggleView();
 
@@ -126,7 +141,7 @@ export function DataTable<
     if (defaultView) {
       setView(defaultView);
     }
-  }, [defaultView]);
+  }, [defaultView, setView]);
 
   const { data } = useFindAll({
     pathParams: findAllPathParams,
@@ -134,14 +149,14 @@ export function DataTable<
       ...(range?.to
         ? { endDate: range?.to && endOfDay(range.to).toISOString() }
         : {}),
-      ...(range?.to
+      ...(range?.from
         ? { startDate: range?.from && range.from.toISOString() }
         : {}),
       filters: JSON.stringify([
         {
           field: filterField,
           operator: "contains",
-          value: query,
+          value: debouncedQuery, // Use debouncedQuery here
         },
       ]),
       limit,
@@ -151,6 +166,10 @@ export function DataTable<
       ...findAllQueryParams,
     },
   });
+
+  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedData = useMemo(() => data?.results || [], [data]);
+
   const { mutateAsync: deleteItem } = useRemove();
 
   const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
@@ -172,7 +191,7 @@ export function DataTable<
         enableSorting: false,
         id: "select",
       },
-      ...columns,
+      ...memoizedColumns,
       {
         cell: ({ row }) => (
           <div className="flex justify-end">
@@ -294,7 +313,7 @@ export function DataTable<
           <GridView
             content={content}
             createForm={createForm}
-            data={data?.results || []}
+            data={memoizedData}
             DataIcon={DataIcon}
             deleteItem={deleteItem}
             getDeleteVariablesFromItem={getDeleteVariablesFromItem}
