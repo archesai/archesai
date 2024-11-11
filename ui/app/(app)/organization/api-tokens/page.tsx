@@ -30,7 +30,7 @@ export default function ApiTokensPageContent() {
           accessorKey: "role",
           cell: ({ row }) => {
             return (
-              <Badge className="text-primary" variant="secondary">
+              <Badge className="text-primary" variant="outline">
                 {row.original.role}
               </Badge>
             );

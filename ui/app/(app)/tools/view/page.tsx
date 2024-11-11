@@ -62,7 +62,7 @@ export default function ContentPage() {
           accessorKey: "inputType",
           cell: ({ row }) => {
             return (
-              <Badge className="text-primary" variant={"secondary"}>
+              <Badge className="text-primary" variant="outline">
                 {row.original.inputType}
               </Badge>
             );
@@ -80,7 +80,7 @@ export default function ContentPage() {
           accessorKey: "outputType",
           cell: ({ row }) => {
             return (
-              <Badge className="text-primary" variant={"secondary"}>
+              <Badge className="text-primary" variant="outline">
                 {row.original.outputType}
               </Badge>
             );

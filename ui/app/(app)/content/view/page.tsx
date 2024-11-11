@@ -52,11 +52,7 @@ export default function ContentPage() {
             return (
               <div className="flex gap-1">
                 {row.original.labels?.map((label, index) => (
-                  <Badge
-                    className="text-primary"
-                    key={index}
-                    variant={"secondary"}
-                  >
+                  <Badge className="text-primary" key={index} variant="outline">
                     {label.name}
                   </Badge>
                 ))}

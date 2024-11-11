@@ -61,13 +61,12 @@ export default function ContentDetailsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">{content.mimeType}</Badge>
-              <Badge variant="secondary">
+              <Badge className="text-primary" variant="outline">
+                {content.mimeType}
+              </Badge>
+              <Badge className="text-primary" variant="outline">
                 {format(new Date(content.createdAt), "PPP")}
               </Badge>
-              {/* {content.jobs.map((job) => {
-                return <Badge variant="secondary">{job.toolId}</Badge>;
-              })} */}
             </div>
           </CardContent>
         </Card>

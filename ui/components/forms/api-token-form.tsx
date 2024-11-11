@@ -49,13 +49,13 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
     },
     {
       component: Input,
-      defaultValue: apiToken?.domains || "*",
+      defaultValue: apiToken?.domains || "",
       description:
         "These are the domains that will be used for this API token.",
       label: "Domains",
       name: "domains",
       props: {
-        placeholder: "Domains here...",
+        placeholder: "http://example.com, https://example.com",
       },
       validationRule: formSchema.shape.domains,
     },

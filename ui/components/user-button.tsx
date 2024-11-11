@@ -166,7 +166,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                   >
                     {membership.orgname}
                     {defaultOrgname === membership.orgname && (
-                      <Badge className="text-primary" variant="secondary">
+                      <Badge className="text-primary" variant="outline">
                         Current
                       </Badge>
                     )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { DataTableViewOptions } from "@/components/datatable/data-table-view-options";
 import { DatePickerWithRange } from "@/components/datatable/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,9 +11,6 @@ import { useToggleView } from "@/hooks/useToggleView";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 import { GridIcon, ListIcon } from "lucide-react";
-
-// import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
   data: TData[];

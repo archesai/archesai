@@ -27,7 +27,7 @@ export default function MembersPageContent() {
           accessorKey: "role",
           cell: ({ row }) => {
             return (
-              <Badge className="text-primary" variant="secondary">
+              <Badge className="text-primary" variant="outline">
                 {row.original.role}
               </Badge>
             );

@@ -69,10 +69,7 @@ export default function ContentPage() {
               <div className="flex gap-1">
                 {row.original.pipelineSteps?.map((step) => {
                   return (
-                    <Badge
-                      className="text-nowrap bg-background text-primary"
-                      variant="outline"
-                    >
+                    <Badge className="text-primary" variant="outline">
                       {step.tool}
                     </Badge>
                   );

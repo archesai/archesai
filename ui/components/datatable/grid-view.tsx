@@ -3,7 +3,7 @@
 import { DeleteItems } from "@/components/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FilePenLine, PlusSquare } from "lucide-react";
+import { FilePenLine } from "lucide-react";
 import { useState } from "react";
 
 import { BaseItem } from "./data-table";
@@ -27,7 +27,6 @@ interface GridViewProps<TItem extends BaseItem> {
 
 export function GridView<TItem extends BaseItem>({
   content,
-  createForm,
   data,
   DataIcon,
   deleteItem,
@@ -45,17 +44,6 @@ export function GridView<TItem extends BaseItem>({
 
   return (
     <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-      {/* Create Form Card */}
-      {createForm && (
-        <div
-          className="flex aspect-auto h-64 cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-400 shadow-sm transition-all hover:bg-muted"
-          onClick={() => setFormOpen(true)}
-        >
-          <PlusSquare className="w-h-6 h-6 text-primary" />
-          <span className="text-md">Create {itemType}</span>
-        </div>
-      )}
-
       {/* Data Cards */}
       {data.map((item, i) => {
         const isItemSelected = selectedItems.includes(item.id);

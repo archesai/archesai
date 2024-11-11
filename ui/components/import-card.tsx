@@ -214,14 +214,11 @@ export default function ImportCard() {
                 >
                   <span className="flex w-4/5 items-center gap-2 truncate text-foreground">
                     <span>{file.name}</span>
-                    <Badge className="text-primary" variant="secondary">
+                    <Badge className="text-primary" variant="outline">
                       {file.type}
                     </Badge>
                   </span>
-                  <Badge
-                    className="text-nowrap text-primary"
-                    variant="secondary"
-                  >
+                  <Badge className="text-nowrap text-primary" variant="outline">
                     {`${(file.size / 1024).toFixed(2)} KB`}
                   </Badge>
                   <button
