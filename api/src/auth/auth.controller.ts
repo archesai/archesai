@@ -178,7 +178,7 @@ export class AuthController {
   })
   @ApiResponse({
     description: "User already exists with provided email",
-    status: 404,
+    status: 409,
   })
   @ApiResponse({
     description: "User was created successfully",

@@ -8,10 +8,10 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 
-import { ARTokensService } from "../ar-tokens/ar-tokens.service";
 import { EmailService } from "../email/email.service";
 import { getEmailChangeConfirmationHtml } from "../email/templates";
-import { UsersService } from "../users/users.service"; // Import TokenService
+import { UsersService } from "../users/users.service";
+import { ARTokensService } from "./ar-tokens.service"; // Import TokenService
 import { AuthService } from "./auth.service";
 import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
 import { EmailRequestDto } from "./dto/email-request.dto";

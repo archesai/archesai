@@ -10,7 +10,6 @@ import * as Joi from "joi";
 import { LoggerModule } from "nestjs-pino";
 
 import { ApiTokensModule } from "./api-tokens/api-tokens.module";
-import { ARTokensModule } from "./ar-tokens/ar-tokens.module";
 import { AudioModule } from "./audio/audio.module";
 import { AuthModule } from "./auth/auth.module";
 import { BillingModule } from "./billing/billing.module";
@@ -220,7 +219,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ScheduleModule.forRoot(),
     ContentModule,
     RunpodModule,
-    ARTokensModule,
     SpeechModule,
     ToolsModule,
     TransformationsModule,

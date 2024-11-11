@@ -4,10 +4,10 @@ import { Injectable } from "@nestjs/common";
 import { ARTokenType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
-import { ARTokensService } from "../ar-tokens/ar-tokens.service";
 import { EmailService } from "../email/email.service";
 import { getPasswordResetHtml } from "../email/templates";
 import { PrismaService } from "../prisma/prisma.service";
+import { ARTokensService } from "./ar-tokens.service";
 import { AuthService } from "./auth.service"; // Import TokenService
 import { ConfigService } from "@nestjs/config";
 
