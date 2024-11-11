@@ -40,7 +40,7 @@ export class EmailVerificationService {
 
     const verificationLink = `${this.configService.get(
       "FRONTEND_HOST"
-    )}/auth/confirm?type=email-verification&token=${token}`;
+    )}/confirm?type=email-verification&token=${token}`;
 
     const htmlContent = getEmailVerificationHtml(verificationLink);
     await this.emailService.sendMail({

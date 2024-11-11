@@ -1,4 +1,4 @@
-import { LogoSVG } from "@/components/logo-svg";
+import { ArchesLogo } from "@/components/arches-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -16,7 +16,7 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { ModeToggle } from "../mode-toggle";
+import { ModeToggle } from "../../../components/mode-toggle";
 
 interface RouteProps {
   href: string;
@@ -73,7 +73,7 @@ export const Navbar = () => {
         <NavigationMenuList className="flex h-[56px] w-screen justify-between px-4">
           <div className="flex items-center justify-center gap-3">
             <NavigationMenuItem className="flex font-bold">
-              <LogoSVG />
+              <ArchesLogo />
             </NavigationMenuItem>
             {/* mobile */}
             <span className="flex md:hidden">
@@ -87,7 +87,7 @@ export const Navbar = () => {
 
                 <SheetContent side={"left"}>
                   <SheetHeader>
-                    <LogoSVG />
+                    <ArchesLogo />
                   </SheetHeader>
                   <nav className="mt-4 flex flex-col items-center justify-center gap-2">
                     {routeList.map(({ href, label }: RouteProps) => (
@@ -135,11 +135,11 @@ export const Navbar = () => {
           <div className="hidden items-center gap-2 md:flex">
             <ModeToggle h={"h-10"} />
 
-            <Link href="/auth/login">
+            <Link href="/login">
               <Button variant={"outline"}>Log in</Button>
             </Link>
 
-            <Link href="/auth/register">
+            <Link href="/register">
               <Button>Sign up for free </Button>
             </Link>
           </div>

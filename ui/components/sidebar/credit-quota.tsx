@@ -61,7 +61,7 @@ import {
   RadialBarChart,
 } from "recharts";
 
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 
 export const description = "A radial chart with a custom shape";
 

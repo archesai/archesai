@@ -23,11 +23,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import * as React from "react";
 
-import { LogoSVG } from "./logo-svg";
-import { Badge } from "./ui/badge";
-import { useToast } from "./ui/use-toast";
+import { ArchesLogo } from "../arches-logo";
+import { Badge } from "../ui/badge";
+import { useToast } from "../ui/use-toast";
 
-export function TeamSwitcher() {
+export function OrganizationSwitcher() {
   const { defaultOrgname } = useAuth();
   const { data: user } = useUserControllerFindOne({});
   const { data: organization } = useOrganizationsControllerFindOne({
@@ -71,7 +71,7 @@ export function TeamSwitcher() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <div className="-mt-0.5">
-                  <LogoSVG scale={0.1} size="sm" />
+                  <ArchesLogo scale={0.1} size="sm" />
                 </div>
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">

@@ -169,7 +169,7 @@ export default function ChatbotChatPage() {
                     {/* Bot Response */}
                     <div className="flex items-start gap-2 py-2">
                       {/* <Avatar>
-                        <LogoSVG scale={0.124} size="sm" />
+                        <ArchesLogo scale={0.124} size="sm" />
                       </Avatar> */}
                       {msg.id === "pending" ? (
                         <div className="flex items-center justify-center">

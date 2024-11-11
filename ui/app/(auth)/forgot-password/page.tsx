@@ -1,5 +1,3 @@
-// src/pages/auth/forgot-password.tsx
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -130,7 +128,7 @@ export default function ForgotPasswordPage() {
         {/* Redirect to Login */}
         <div className="text-center text-sm">
           Remembered your password?{" "}
-          <Link className="underline" href="/auth/login">
+          <Link className="underline" href="/login">
             Login
           </Link>
         </div>

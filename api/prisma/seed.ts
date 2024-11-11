@@ -69,6 +69,16 @@ async function main() {
     },
   });
 
+  // Create labels
+  for (let i = 0; i < 3; i++) {
+    await prisma.label.create({
+      data: {
+        name: labels[i],
+        orgname: user.defaultOrgname,
+      },
+    });
+  }
+
   // Create a bunch of content
   for (let i = 0; i < 100; i++) {
     const fakeDate = faker.date.past({ years: 1 });
@@ -77,21 +87,19 @@ async function main() {
         createdAt: fakeDate,
         credits: faker.number.int(10000),
         description: faker.lorem.paragraphs(2),
+        labels: {
+          connect: {
+            name_orgname: {
+              name: faker.helpers.arrayElement(labels),
+              orgname: user.defaultOrgname,
+            },
+          },
+        },
         mimeType: "application/pdf",
         name: faker.commerce.productName(),
         orgname: user.defaultOrgname,
         previewImage: "https://picsum.photos/200/300",
         url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
-      },
-    });
-  }
-
-  // Create labels
-  for (let i = 0; i < 3; i++) {
-    await prisma.label.create({
-      data: {
-        name: labels[i],
-        orgname: user.defaultOrgname,
       },
     });
   }

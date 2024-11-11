@@ -1,6 +1,7 @@
 "use client";
 
 import { VerifyEmailAlert } from "@/components/email-verify";
+import { PageHeader } from "@/components/page-header";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { TabsSection } from "@/components/tabs-section";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -9,8 +10,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWebsockets } from "@/hooks/useWebsockets";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { PageHeader } from "../../components/page-header";
 
 export default function AppLayout({
   children,
@@ -42,7 +41,7 @@ export default function AppLayout({
   useEffect(() => {
     if (!isHydrated) return;
     if (!accessToken) {
-      router.push("/auth/login");
+      router.push("/login");
       return;
     }
     if (!user?.defaultOrgname) {

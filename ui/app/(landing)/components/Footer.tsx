@@ -1,4 +1,4 @@
-import { LogoSVG } from "@/components/logo-svg";
+import { ArchesLogo } from "@/components/arches-logo";
 
 export const Footer = () => {
   return (
@@ -7,7 +7,7 @@ export const Footer = () => {
 
       <section className="container grid grid-cols-2 gap-x-12 gap-y-8 py-20 md:grid-cols-4 xl:grid-cols-6">
         <div className="col-span-full -mt-8 xl:col-span-2">
-          <LogoSVG scale={0.8} size="sm" />
+          <ArchesLogo scale={0.8} size="sm" />
         </div>
 
         <div className="flex flex-col gap-2">

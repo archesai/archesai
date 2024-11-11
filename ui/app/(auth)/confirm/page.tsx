@@ -77,7 +77,7 @@ export default function ConfirmPage() {
     const handleAction = async () => {
       if (!type || !token) {
         setError("Invalid request. Missing parameters.");
-        router.push("/auth/login");
+        router.push("/login");
         return;
       }
       if (operationSent) {
@@ -129,7 +129,7 @@ export default function ConfirmPage() {
 
         default:
           setError("Unsupported action type.");
-          router.push("/auth/login");
+          router.push("/login");
           break;
       }
     };

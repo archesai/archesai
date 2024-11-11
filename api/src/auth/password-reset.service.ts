@@ -64,7 +64,7 @@ export class PasswordResetService {
 
     const resetLink = `${this.configService.get(
       "FRONTEND_HOST"
-    )}/auth/confirm?type=password-reset&token=${token}`;
+    )}/confirm?type=password-reset&token=${token}`;
 
     const htmlContent = getPasswordResetHtml(resetLink);
     await this.emailService.sendMail({

@@ -228,11 +228,11 @@ export function DataTable<
           createForm ? (
             <div className="text-right">
               <Button
+                className="capitalize"
                 onClick={() => setFormOpen(true)}
                 size="sm"
-                variant={"secondary"}
               >
-                Create {itemType}
+                Create {itemType.toLowerCase()}
               </Button>
             </div>
           ) : null,

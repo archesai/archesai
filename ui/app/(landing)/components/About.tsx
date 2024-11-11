@@ -1,4 +1,4 @@
-import { LogoSVG } from "../logo-svg";
+import { ArchesLogo } from "../../../components/arches-logo";
 import { Statistics } from "./Statistics";
 
 export const About = () => {
@@ -6,7 +6,7 @@ export const About = () => {
     <section className="container py-24 sm:py-32" id="about">
       <div className="rounded-lg border bg-muted/50 py-12">
         <div className="flex flex-col-reverse items-center gap-8 px-6 md:flex-row md:gap-12">
-          <LogoSVG size="sm" />
+          <ArchesLogo size="sm" />
           <div className="bg-green-0 flex flex-col justify-between">
             <div className="pb-6">
               <h2 className="text-3xl font-bold md:text-4xl">

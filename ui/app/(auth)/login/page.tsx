@@ -141,7 +141,7 @@ export default function LoginPage() {
                   <div className="text-right">
                     <Link
                       className="inline-block text-sm underline"
-                      href="/auth/forgot"
+                      href="/forgot-password"
                     >
                       Forgot your password?
                     </Link>
@@ -185,7 +185,7 @@ export default function LoginPage() {
         {/* Redirect to Register */}
         <div className="text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link className="underline" href="/auth/register">
+          <Link className="underline" href="/register">
             Sign up
           </Link>
         </div>

@@ -191,7 +191,7 @@ export default function RegisterPage() {
         {/* Redirect to Login */}
         <div className="text-center text-sm">
           Already have an account?{" "}
-          <Link className="underline" href="/auth/login">
+          <Link className="underline" href="/login">
             Login
           </Link>
         </div>

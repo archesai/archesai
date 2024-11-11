@@ -3,7 +3,7 @@
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavUser } from "@/components/sidebar/nav-user";
 // import { RecentLabels } from "@/components/sidebar/recent-labels";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { OrganizationSwitcher } from "@/components/sidebar/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -12,13 +12,13 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-import { CreditQuota } from "../credit-quota";
+import { CreditQuota } from "./credit-quota";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="flex h-14 items-center justify-center">
-        <TeamSwitcher />
+        <OrganizationSwitcher />
       </SidebarHeader>
       <hr />
       <SidebarContent className="gap-0">

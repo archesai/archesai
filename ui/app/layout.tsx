@@ -1,6 +1,6 @@
-import { QCProvider } from "@/components/qc-provider";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import { QCProvider } from "@/contexts/qc-provider";
+import { ThemeProvider } from "@/contexts/theme-provider";
 import { GeistSans } from "geist/font/sans";
 import { Metadata } from "next";
 

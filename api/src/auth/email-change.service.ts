@@ -66,7 +66,7 @@ export class EmailChangeService {
     // Create an email change confirmation link containing the token
     const changeEmailLink = `${this.configService.get(
       "FRONTEND_HOST"
-    )}/auth/confirm?type=email-change&token=${token}`;
+    )}/confirm?type=email-change&token=${token}`;
 
     // Generate the HTML content for the email
     const htmlContent = getEmailChangeConfirmationHtml(

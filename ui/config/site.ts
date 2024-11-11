@@ -1,5 +1,5 @@
 import {
-  Bot,
+  // Bot,
   // Award,
   // Bolt,
   Building2,
@@ -9,9 +9,10 @@ import {
   // HelpCircle,
   // HomeIcon,
   KeySquare,
-  ListMinus,
+  // ListMinus,
   // Layers,
   Lock,
+  MessageSquareIcon,
   PackageCheck,
   Server,
   Settings2,
@@ -81,24 +82,18 @@ export const siteConfig = {
       title: "Pipelines",
     },
     {
-      children: [
-        {
-          href: "/labels",
-          Icon: Bot,
-          title: "New Label",
-        },
-        {
-          description: "View and manage chatbot labels.",
-          href: "/labels/form",
-          Icon: ListMinus,
-          title: "History",
-        },
-      ],
       description: "Create and manage labels.",
       href: "/labels",
       Icon: Tags,
       section: "Data",
       title: "Labels",
+    },
+    {
+      description: "Chat with your data and tools.",
+      href: "/chat",
+      Icon: MessageSquareIcon,
+      section: "Chat",
+      title: "Chat",
     },
     {
       children: [

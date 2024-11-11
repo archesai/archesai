@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export function LogoSVG({ scale = 1, size = "lg" as "lg" | "sm" }) {
+export function ArchesLogo({ scale = 1, size = "lg" as "lg" | "sm" }) {
   // Default to black if no fill color is provided.
 
   const content =

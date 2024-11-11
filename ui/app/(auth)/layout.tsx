@@ -1,10 +1,10 @@
 "use client";
-import { LogoSVG } from "@/components/logo-svg";
+import { ArchesLogo } from "@/components/arches-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export default function AuthenticationPage({
+export default function AuthenticationLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -23,7 +23,7 @@ export default function AuthenticationPage({
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
           <div className="absolute inset-0 bg-zinc-900" /> {/* FIXME */}
           <div className="relative z-20 flex items-center text-lg font-medium">
-            <LogoSVG />
+            <ArchesLogo />
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="flex flex-col gap-2">
