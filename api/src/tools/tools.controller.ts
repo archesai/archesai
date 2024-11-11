@@ -57,7 +57,7 @@ export class ToolsController
     return this.toolsService.findOne(orgname, toolId);
   }
 
-  @ApiCrudOperation(Operation.DELETE, "tools", ToolEntity, true)
+  @ApiCrudOperation(Operation.DELETE, "tool", ToolEntity, true)
   @Delete("/:toolId")
   async remove(
     @Param("orgname") orgname: string,
@@ -66,7 +66,7 @@ export class ToolsController
     await this.toolsService.remove(orgname, toolId);
   }
 
-  @ApiCrudOperation(Operation.UPDATE, "tools", ToolEntity, true)
+  @ApiCrudOperation(Operation.UPDATE, "tool", ToolEntity, true)
   @Patch("/:toolId")
   async update(
     @Param("orgname") orgname: string,
