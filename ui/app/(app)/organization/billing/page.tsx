@@ -20,8 +20,6 @@ import {
   useBillingControllerChangeSubscriptionPlan,
   useBillingControllerCreateCheckoutSession,
   useBillingControllerGetPlans,
-  useBillingControllerListPaymentMethods,
-  useBillingControllerRemovePaymentMethod,
   useOrganizationsControllerFindOne,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/useAuth";
@@ -38,10 +36,6 @@ export default function BillingPageContent() {
   );
 
   const { data: plans } = useBillingControllerGetPlans({});
-  const { data: paymentMethods, isLoading: loadingMethods } =
-    useBillingControllerListPaymentMethods({
-      pathParams: { orgname: defaultOrgname },
-    });
 
   const { data: organization } = useOrganizationsControllerFindOne({
     pathParams: {
@@ -49,23 +43,6 @@ export default function BillingPageContent() {
     },
   });
 
-  const { mutateAsync: deletePaymentMethod } =
-    useBillingControllerRemovePaymentMethod({
-      onError: (error) => {
-        toast({
-          description: error?.stack.message,
-          title: "Could not delete payment method",
-          variant: "destructive",
-        });
-      },
-      onSuccess: () => {
-        toast({
-          description: "The payment method has been successfully deleted.",
-          title: "Payment method deleted",
-          variant: "default",
-        });
-      },
-    });
   const {
     isPending: createCheckoutSessionLoading,
     mutateAsync: createCheckoutSesseion,
@@ -237,64 +214,6 @@ export default function BillingPageContent() {
               <p>No plans available.</p>
             )}
           </>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Payment Methods</CardTitle>
-          <CardDescription>
-            Manage your payment methods and subscribe to available plans.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loadingMethods ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              {paymentMethods && paymentMethods.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell>Brand</TableCell>
-                      <TableCell>Last 4</TableCell>
-                      <TableCell>Expires</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paymentMethods.map((pm) => (
-                      <TableRow key={pm.id}>
-                        <TableCell>{pm.card.brand}</TableCell>
-                        <TableCell>{pm.card.last4}</TableCell>
-                        <TableCell>
-                          {pm.card.exp_month}/{pm.card.exp_year}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={() =>
-                              deletePaymentMethod({
-                                pathParams: {
-                                  orgname: defaultOrgname,
-                                  paymentMethodId: pm.id,
-                                },
-                              })
-                            }
-                            size="sm"
-                            variant="destructive"
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p>No payment methods available.</p>
-              )}
-            </>
-          )}
         </CardContent>
       </Card>
     </div>

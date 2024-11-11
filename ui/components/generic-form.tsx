@@ -180,9 +180,9 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
           <Separator />
           <div className="flex rounded-lg bg-gray-50 p-4 dark:bg-black">
             {(onSubmitCreate || onSubmitUpdate) && (
-              <div className="flex w-full items-center gap-2">
+              <div className="flex w-full items-center justify-end gap-2">
                 <Button
-                  className="flex w-full gap-2"
+                  className="flex flex-1 gap-2"
                   disabled={
                     form.formState.isSubmitting || !form.formState.isDirty
                   }
@@ -192,12 +192,12 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   {form.formState.isSubmitting && (
                     <ReloadIcon className="h-5 w-5 animate-spin" />
                   )}
-                  <span>
+                  <span className="capitalize">
                     {isUpdateForm ? "Update" : "Create"} {itemType}
                   </span>
                 </Button>
                 <Button
-                  className="w-full"
+                  className="flex-1"
                   disabled={
                     form.formState.isSubmitting || !form.formState.isDirty
                   }
