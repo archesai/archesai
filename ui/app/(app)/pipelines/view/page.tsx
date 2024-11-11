@@ -70,8 +70,8 @@ export default function ContentPage() {
                 {row.original.pipelineSteps?.map((step) => {
                   return (
                     <Badge
-                      className="text-nowrap text-primary"
-                      variant="secondary"
+                      className="text-nowrap bg-background text-primary"
+                      variant="outline"
                     >
                       {step.tool}
                     </Badge>
