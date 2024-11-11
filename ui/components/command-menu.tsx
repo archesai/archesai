@@ -62,7 +62,11 @@ export function CommandMenu({ ...props }: DialogProps) {
         variant="outline"
         {...props}
       >
-        <span className="inline-flex">Type a command or search...</span>
+        <span className="hidden sm:inline-flex">
+          Type a command or search...
+        </span>
+        <span className="inline-flex sm:hidden">Search...</span>
+
         <kbd className="pointer-events-none flex h-5 select-none items-center gap-1 rounded border bg-muted p-2 font-mono text-[10px] font-medium">
           <span className="text-xs">⌘</span>
           <span>K</span>
