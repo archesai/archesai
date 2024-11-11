@@ -66,10 +66,7 @@ export default function ApiTokensPageContent() {
           cell: ({ row }) => {
             return (
               <span className="font-light">
-                {format(
-                  new Date(row.original.createdAt),
-                  "yyyy-MM-dd HH:mm:ss"
-                )}
+                {format(new Date(row.original.createdAt), "M/d/yy h:mm a")}
               </span>
             );
           },

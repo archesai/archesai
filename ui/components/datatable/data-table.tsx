@@ -2,6 +2,8 @@
 import { DataTablePagination } from "@/components/datatable/data-table-pagination";
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { DeleteItems } from "@/components/datatable/delete-items";
+import { GridView } from "@/components/datatable/grid-view";
+import { TableView } from "@/components/datatable/table-view";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -32,9 +34,6 @@ import {
 } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
 import { useEffect, useState } from "react";
-
-import { GridView } from "./grid-view";
-import { TableView } from "./table-view";
 
 export interface BaseItem {
   id: string;
@@ -171,7 +170,6 @@ export function DataTable<
         ),
         enableHiding: false,
         enableSorting: false,
-
         id: "select",
       },
       ...columns,
@@ -257,6 +255,7 @@ export function DataTable<
 
   return (
     <div className="flex h-full flex-col gap-3">
+      {/* SEARCH TOOLBAR */}
       {!minimal && (
         <DataTableToolbar
           data={data?.results || []}
@@ -264,6 +263,8 @@ export function DataTable<
           table={table}
         />
       )}
+
+      {/* DELETE ITEMS BUTTON */}
       {selectedItems.length > 0 && (
         <DeleteItems
           deleteFunction={async (vars) => {
@@ -287,6 +288,7 @@ export function DataTable<
         />
       )}
 
+      {/* DATA TABLE - EITHER GRID OR TABLE VIEW*/}
       <div className="flex-1 overflow-auto">
         {view === "grid" ? (
           <GridView
@@ -310,6 +312,7 @@ export function DataTable<
         )}
       </div>
 
+      {/* PAGINATION */}
       {!minimal && (
         <div className="self-auto">
           <DataTablePagination data={data as any} />

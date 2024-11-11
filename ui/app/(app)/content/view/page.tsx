@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { Badge } from "@/components/ui/badge";
 import {
   ContentControllerFindAllPathParams,
   ContentControllerRemoveVariables,
@@ -46,6 +47,32 @@ export default function ContentPage() {
           ),
         },
         {
+          accessorKey: "labels",
+          cell: ({ row }) => {
+            return (
+              <div className="flex gap-1">
+                {row.original.labels?.map((label, index) => (
+                  <Badge
+                    className="text-primary"
+                    key={index}
+                    variant={"secondary"}
+                  >
+                    {label.name}
+                  </Badge>
+                ))}
+              </div>
+            );
+          },
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Labels"
+            />
+          ),
+        },
+        {
           accessorKey: "value",
           cell: ({ row }) => {
             return (
@@ -70,10 +97,7 @@ export default function ContentPage() {
           cell: ({ row }) => {
             return (
               <span className="font-light">
-                {format(
-                  new Date(row.original.createdAt),
-                  "yyyy-MM-dd HH:mm:ss"
-                )}
+                {format(new Date(row.original.createdAt), "M/d/yy h:mm a")}
               </span>
             );
           },
