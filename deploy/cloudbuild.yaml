@@ -145,7 +145,7 @@ steps:
       - |
         gcloud components install gke-gcloud-auth-plugin
         gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
-        gcloud deploy releases create "$SHORT_SHA" \
+        gcloud deploy releases create arches-${SHORT_SHA} \
             --project=archesai \
             --region=us-east1 \
             --delivery-pipeline=arches-deployment \
