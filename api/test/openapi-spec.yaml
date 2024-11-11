@@ -46,6 +46,15 @@ paths:
           in: path
           schema:
             type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -60,7 +69,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -105,8 +114,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/PipelineEntity'
@@ -838,6 +852,15 @@ paths:
           in: path
           schema:
             type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -852,7 +875,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -897,8 +920,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/ApiTokenEntity'
@@ -1059,6 +1087,15 @@ paths:
           in: path
           schema:
             type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -1073,7 +1110,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -1118,8 +1155,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/ContentEntity'
@@ -1423,6 +1465,15 @@ paths:
           in: path
           schema:
             type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -1437,7 +1488,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -1482,8 +1533,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/MemberEntity'
@@ -1633,6 +1689,15 @@ paths:
       summary: Get all labels
       description: Get all labels. ADMIN ONLY.
       parameters:
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -1647,7 +1712,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -1685,24 +1750,6 @@ paths:
           description: The start date to search from
           schema:
             type: string
-        - name: aggregateGranularity
-          required: false
-          in: query
-          description: The granularity to use for ranged aggregates
-          schema:
-            enum:
-              - day
-              - month
-              - week
-              - year
-            type: string
-        - name: aggregates
-          required: false
-          in: query
-          description: Whether or not to include aggregates in the response
-          schema:
-            default: false
-            type: boolean
         - name: orgname
           required: true
           in: path
@@ -1715,14 +1762,17 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/LabelEntity'
                         type: array
-                      aggregates:
-                        $ref: '#/components/schemas/LabelAggregates'
                 title: PaginatedResponseOfLabelEntity
         '401':
           description: Unauthorized
@@ -1795,6 +1845,44 @@ paths:
         - Labels
       security:
         - bearer: []
+    patch:
+      operationId: LabelsController_update
+      summary: Update a label
+      description: Update a label. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: labelId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLabelDto'
+      responses:
+        '200':
+          description: Successfully updated the label
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabelEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Labels
+      security:
+        - bearer: []
   /organizations/{orgname}/tools:
     post:
       operationId: ToolsController_create
@@ -1841,6 +1929,15 @@ paths:
           in: path
           schema:
             type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
         - name: endDate
           required: false
           in: query
@@ -1855,7 +1952,7 @@ paths:
             default: []
             type: array
             items:
-              $ref: '#/components/schemas/FilterField'
+              $ref: '#/components/schemas/FieldFieldQuery'
         - name: limit
           required: false
           in: query
@@ -1900,8 +1997,13 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/_PaginatedDto'
                   - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
                       results:
                         items:
                           $ref: '#/components/schemas/ToolEntity'
@@ -2803,12 +2905,29 @@ components:
           type: string
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
-        labelIds:
+        labels:
           description: The labels to associate with the content
+          example:
+            - label-1
+            - label-2
           type: array
           items:
             type: string
       required:
+        - name
+    SubItemEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the item
+          example: example-id
+        name:
+          type: string
+          description: The name of the item
+          example: example-name
+      required:
+        - id
         - name
     ContentEntity:
       type: object
@@ -2822,6 +2941,16 @@ components:
           type: string
           description: The item's unique identifier
           example: 32411590-a8e0-11ed-afa1-0242ac120002
+        children:
+          description: The child content, if any
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
+        consumedBy:
+          description: The transformations that consumed this content, if any
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
         credits:
           type: number
           description: The number of credits used to process this content
@@ -2830,6 +2959,11 @@ components:
           type: string
           description: The content's description
           example: my-file.pdf
+        labels:
+          description: The content's labels
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
         mimeType:
           type: string
           description: The MIME type of the content
@@ -2842,6 +2976,10 @@ components:
           type: string
           description: The organization name
           example: my-organization
+        parent:
+          description: The parent content, if any
+          allOf:
+            - $ref: '#/components/schemas/SubItemEntity'
         parentId:
           type: string
           description: The parent content ID, if this content is a child of another content
@@ -2850,6 +2988,10 @@ components:
           type: string
           description: The preview image of the content
           example: https://preview-image.com/example.png
+        producedBy:
+          description: The transformation that produced this content, if any
+          allOf:
+            - $ref: '#/components/schemas/SubItemEntity'
         producedById:
           type: string
           description: The ID of the transformation that produced this content, if any
@@ -2883,8 +3025,11 @@ components:
           type: string
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
-        labelIds:
+        labels:
           description: The labels to associate with the content
+          example:
+            - label-1
+            - label-2
           type: array
           items:
             type: string
@@ -2989,12 +3134,6 @@ components:
           default: New Chat
           description: The chat label name
           example: What are the morals of the story in Aesop's Fables?
-        id:
-          type: string
-          description: >-
-            Optional. The id to use as the label id. If taken, this endpoint
-            will return a 409.
-          example: custom-label-id
     LabelEntity:
       type: object
       properties:
@@ -3020,6 +3159,14 @@ components:
         - createdAt
         - id
         - orgname
+    UpdateLabelDto:
+      type: object
+      properties:
+        name:
+          type: string
+          default: New Chat
+          description: The chat label name
+          example: What are the morals of the story in Aesop's Fables?
     CreateToolDto:
       type: object
       properties:
@@ -3147,6 +3294,81 @@ components:
           type: string
           description: The tool's base path
           example: extract-text
+    FieldFieldQuery:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field to filter by
+        operator:
+          type: string
+          description: Operator to use for filtering
+          enum:
+            - contains
+            - endsWith
+            - equals
+            - every
+            - none
+            - not
+            - some
+            - startsWith
+        value:
+          type: string
+          description: Value to filter for
+      required:
+        - field
+        - value
+    AggregateFieldQuery:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field to aggregate by
+        granularity:
+          type: string
+          description: The granularity to use for ranged aggregates
+          enum:
+            - day
+            - month
+            - week
+            - year
+        type:
+          type: string
+          description: Type of aggregate to perform
+          enum:
+            - count
+            - sum
+      required:
+        - field
+        - type
+    AggregateFieldResult:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field to aggregate by
+        granularity:
+          type: string
+          description: The granularity to use for ranged aggregates
+          enum:
+            - day
+            - month
+            - week
+            - year
+        type:
+          type: string
+          description: Type of aggregate to perform
+          enum:
+            - count
+            - sum
+        value:
+          type: number
+          description: The value of the aggregate
+          example: 10
+      required:
+        - field
+        - type
+        - value
     Metadata:
       type: object
       properties:
@@ -3166,76 +3388,3 @@ components:
         - limit
         - offset
         - totalResults
-    _PaginatedDto:
-      type: object
-      properties:
-        metadata:
-          description: The metadata for the paginated results
-          allOf:
-            - $ref: '#/components/schemas/Metadata'
-      required:
-        - metadata
-    GranularSum:
-      type: object
-      properties:
-        from:
-          format: date-time
-          type: string
-        sum:
-          type: number
-        to:
-          format: date-time
-          type: string
-      required:
-        - from
-        - sum
-        - to
-    GranularCount:
-      type: object
-      properties:
-        count:
-          type: number
-        from:
-          format: date-time
-          type: string
-        to:
-          format: date-time
-          type: string
-      required:
-        - count
-        - from
-        - to
-    LabelAggregates:
-      type: object
-      properties:
-        credits:
-          description: The number of credits used in chat labels over specific timeframes
-          type: array
-          items:
-            $ref: '#/components/schemas/GranularSum'
-        labelsCreated:
-          description: The number of labels created over specific timeframes
-          type: array
-          items:
-            $ref: '#/components/schemas/GranularCount'
-    FilterField:
-      type: object
-      properties:
-        field:
-          type: string
-          description: Field to filter by
-        operator:
-          type: string
-          description: Operator to use for filtering
-          enum:
-            - contains
-            - endsWith
-            - equals
-            - not
-            - startsWith
-        value:
-          type: string
-          description: Value to filter for
-      required:
-        - field
-        - value

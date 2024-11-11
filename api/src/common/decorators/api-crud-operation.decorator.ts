@@ -21,8 +21,7 @@ export function ApiCrudOperation<TEntity>(
   operation: Operation,
   entityName: string,
   entityType: new (...args: any[]) => TEntity,
-  isAdmin: boolean,
-  aggregates?: new (...args: any[]) => any
+  isAdmin: boolean
 ) {
   let summary = `${
     operation.charAt(0) + operation.slice(1).toLowerCase()
@@ -65,7 +64,7 @@ export function ApiCrudOperation<TEntity>(
       break;
     case "FIND_ALL":
       summary = `Get all ${entityName}s`;
-      specificResponses.push(ApiPaginatedResponse(entityType, aggregates));
+      specificResponses.push(ApiPaginatedResponse(entityType));
       break;
     case "GET":
       specificResponses.push(

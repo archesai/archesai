@@ -799,8 +799,26 @@ export type CreateContentDto = {
   url?: string;
   /**
    * The labels to associate with the content
+   *
+   * @example label-1
+   * @example label-2
    */
-  labelIds?: string[];
+  labels?: string[];
+};
+
+export type SubItemEntity = {
+  /**
+   * The id of the item
+   *
+   * @example example-id
+   */
+  id: string;
+  /**
+   * The name of the item
+   *
+   * @example example-name
+   */
+  name: string;
 };
 
 export type ContentEntity = {
@@ -818,6 +836,14 @@ export type ContentEntity = {
    */
   id: string;
   /**
+   * The child content, if any
+   */
+  children?: SubItemEntity[];
+  /**
+   * The transformations that consumed this content, if any
+   */
+  consumedBy?: SubItemEntity[];
+  /**
    * The number of credits used to process this content
    *
    * @example 0
@@ -829,6 +855,10 @@ export type ContentEntity = {
    * @example my-file.pdf
    */
   description?: string;
+  /**
+   * The content's labels
+   */
+  labels?: SubItemEntity[];
   /**
    * The MIME type of the content
    *
@@ -848,6 +878,10 @@ export type ContentEntity = {
    */
   orgname: string;
   /**
+   * The parent content, if any
+   */
+  parent?: SubItemEntity;
+  /**
    * The parent content ID, if this content is a child of another content
    *
    * @example content-id
@@ -859,6 +893,10 @@ export type ContentEntity = {
    * @example https://preview-image.com/example.png
    */
   previewImage?: string;
+  /**
+   * The transformation that produced this content, if any
+   */
+  producedBy?: SubItemEntity;
   /**
    * The ID of the transformation that produced this content, if any
    *
@@ -900,8 +938,11 @@ export type UpdateContentDto = {
   url?: string;
   /**
    * The labels to associate with the content
+   *
+   * @example label-1
+   * @example label-2
    */
-  labelIds?: string[];
+  labels?: string[];
 };
 
 export type PathDto = {
@@ -1006,12 +1047,6 @@ export type CreateLabelDto = {
    * @example What are the morals of the story in Aesop's Fables?
    */
   name?: string;
-  /**
-   * Optional. The id to use as the label id. If taken, this endpoint will return a 409.
-   *
-   * @example custom-label-id
-   */
-  id?: string;
 };
 
 export type LabelEntity = {
@@ -1041,6 +1076,16 @@ export type LabelEntity = {
    * @example my-organization
    */
   orgname: string;
+};
+
+export type UpdateLabelDto = {
+  /**
+   * The chat label name
+   *
+   * @default New Chat
+   * @example What are the morals of the story in Aesop's Fables?
+   */
+  name?: string;
 };
 
 export type CreateToolDto = {
@@ -1161,6 +1206,65 @@ export type UpdateToolDto = {
   toolBase?: string;
 };
 
+export type FieldFieldQuery = {
+  /**
+   * Field to filter by
+   */
+  field: string;
+  /**
+   * Operator to use for filtering
+   */
+  operator?:
+    | "contains"
+    | "endsWith"
+    | "equals"
+    | "every"
+    | "none"
+    | "not"
+    | "some"
+    | "startsWith";
+  /**
+   * Value to filter for
+   */
+  value: string;
+};
+
+export type AggregateFieldQuery = {
+  /**
+   * Field to aggregate by
+   */
+  field: string;
+  /**
+   * The granularity to use for ranged aggregates
+   */
+  granularity?: "day" | "month" | "week" | "year";
+  /**
+   * Type of aggregate to perform
+   */
+  type: "count" | "sum";
+};
+
+export type AggregateFieldResult = {
+  /**
+   * Field to aggregate by
+   */
+  field: string;
+  /**
+   * The granularity to use for ranged aggregates
+   */
+  granularity?: "day" | "month" | "week" | "year";
+  /**
+   * Type of aggregate to perform
+   */
+  type: "count" | "sum";
+  /**
+   * The value of the aggregate
+   *
+   * @example 10
+   */
+  value: number;
+};
+
 export type Metadata = {
   /**
    * The number of results per page
@@ -1180,61 +1284,4 @@ export type Metadata = {
    * @example 100
    */
   totalResults: number;
-};
-
-export type PaginatedDto = {
-  /**
-   * The metadata for the paginated results
-   */
-  metadata: Metadata;
-};
-
-export type GranularSum = {
-  /**
-   * @format date-time
-   */
-  from: string;
-  sum: number;
-  /**
-   * @format date-time
-   */
-  to: string;
-};
-
-export type GranularCount = {
-  count: number;
-  /**
-   * @format date-time
-   */
-  from: string;
-  /**
-   * @format date-time
-   */
-  to: string;
-};
-
-export type LabelAggregates = {
-  /**
-   * The number of credits used in chat labels over specific timeframes
-   */
-  credits?: GranularSum[];
-  /**
-   * The number of labels created over specific timeframes
-   */
-  labelsCreated?: GranularCount[];
-};
-
-export type FilterField = {
-  /**
-   * Field to filter by
-   */
-  field: string;
-  /**
-   * Operator to use for filtering
-   */
-  operator?: "contains" | "endsWith" | "equals" | "not" | "startsWith";
-  /**
-   * Value to filter for
-   */
-  value: string;
 };

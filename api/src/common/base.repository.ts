@@ -1,4 +1,8 @@
-import { SearchQueryDto } from "./dto/search-query.dto";
+import {
+  FieldFieldQuery,
+  Operator,
+  SearchQueryDto,
+} from "./dto/search-query.dto";
 
 export abstract class BaseRepository<
   PrismaModel,
@@ -45,8 +49,23 @@ export abstract class BaseRepository<
     };
 
     if (queryDto.filters) {
-      queryDto.filters.forEach((filter: any) => {
-        whereConditions[filter.field] = { [filter.operator]: filter.value };
+      queryDto.filters.forEach((filter: FieldFieldQuery) => {
+        if (filter.operator)
+          if (
+            // If this is a relation filter
+            [Operator.EVERY, Operator.NONE, Operator.SOME].includes(
+              filter.operator
+            )
+          ) {
+            whereConditions[filter.field] = {
+              [filter.operator]: {
+                id: { equals: filter.value },
+              },
+            };
+          } else {
+            // This is a filter on a scalar field
+            whereConditions[filter.field] = { [filter.operator]: filter.value };
+          }
       });
     }
 

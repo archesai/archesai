@@ -14,11 +14,12 @@ export class CreateContentDto extends IntersectionType(
 ) {
   @ApiProperty({
     description: "The labels to associate with the content",
+    example: ["label-1", "label-2"],
     required: false,
     type: [String],
   })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
-  labelIds?: string[] = [];
+  labels?: string[] = [];
 }

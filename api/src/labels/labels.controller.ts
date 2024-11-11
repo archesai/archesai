@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
 } from "@nestjs/common";
@@ -13,9 +14,9 @@ import {
   ApiCrudOperation,
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
+import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { CreateLabelDto } from "./dto/create-label.dto";
-import { LabelAggregates } from "./dto/label-aggregates.dto";
-import { LabelQueryDto } from "./dto/label-query.dto";
+import { UpdateLabelDto } from "./dto/update-label.dto";
 import { LabelEntity } from "./entities/label.entity";
 import { LabelsService } from "./labels.service";
 
@@ -34,19 +35,13 @@ export class LabelsController {
     return this.labelsService.create(orgname, createLabelDto);
   }
 
-  @ApiCrudOperation(
-    Operation.FIND_ALL,
-    "label",
-    LabelEntity,
-    true,
-    LabelAggregates
-  )
+  @ApiCrudOperation(Operation.FIND_ALL, "label", LabelEntity, true)
   @Get()
   async findAll(
-    @Query() labelQueryDto: LabelQueryDto,
+    @Query() searchQueryDto: SearchQueryDto,
     @Param("orgname") orgname: string
   ) {
-    return this.labelsService.findAll(orgname, labelQueryDto);
+    return this.labelsService.findAll(orgname, searchQueryDto);
   }
 
   @ApiCrudOperation(Operation.GET, "label", LabelEntity, true)
@@ -65,5 +60,15 @@ export class LabelsController {
     @Param("labelId") labelId: string
   ) {
     return this.labelsService.remove(orgname, labelId);
+  }
+
+  @ApiCrudOperation(Operation.UPDATE, "label", LabelEntity, true)
+  @Patch(":labelId")
+  async update(
+    @Param("orgname") orgname: string,
+    @Param("labelId") labelId: string,
+    @Body() updateLabelDto: UpdateLabelDto
+  ) {
+    return this.labelsService.update(orgname, labelId, updateLabelDto);
   }
 }

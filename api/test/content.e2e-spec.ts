@@ -13,6 +13,7 @@ describe("Content", () => {
   let app: INestApplication;
   let accessToken: string;
   let orgname: string;
+  let contentId: string;
 
   const credentials = {
     email: "content-test@archesai.com",
@@ -37,35 +38,67 @@ describe("Content", () => {
     await app.close();
   });
 
-  it("Should process uploaded content", async () => {
+  it("CREATE - should be able to create content", async () => {
     // Upload the file
     const readUrl = await uploadFile(orgname, accessToken, filePath);
 
-    // Add credits and attempt to upload again
-    await expectContentUpload(orgname, accessToken, readUrl, 201);
-
-    // Poll for document processing completion
-    // await waitForDocumentProcessing(orgname, accessToken, contentId);
-  });
-
-  // Helper function to upload a document and assert status
-  const expectContentUpload = async (
-    orgname,
-    accessToken,
-    readUrl,
-    expectedStatus
-  ) => {
     const res = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/content`)
       .send({ name: "book.pdf", url: readUrl })
       .set("Authorization", `Bearer ${accessToken}`);
     expect(res).toSatisfyApiSpec();
-    expect(res.status).toBe(expectedStatus);
-    return res.body.id;
-  };
+    expect(res.status).toBe(201);
+    contentId = res.body.id;
+  });
 
-  // Helper function to upload a file and return the read URL
-  const uploadFile = async (orgname, accessToken, filePath) => {
+  it("UPDATE - should be able to update content name", async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .send({ name: "new-book.pdf" })
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res).toSatisfyApiSpec();
+    expect(res.body.name).toBe("new-book.pdf");
+    expect(res.status).toBe(200);
+  });
+
+  it("UPDATE - should fail if you try to create with bad labels", async () => {
+    const res = await request(app.getHttpServer())
+      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .send({ labels: ["label1", "label2"] })
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res.status).toBe(404);
+  });
+
+  it("UPDATE - should be able to update content labels", async () => {
+    const label = await request(app.getHttpServer())
+      .post(`/organizations/${orgname}/labels`)
+      .send({ name: "content-test-label" })
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(label.status).toBe(201);
+    expect(label).toSatisfyApiSpec();
+
+    const res = await request(app.getHttpServer())
+      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .send({ labels: [label.body.name] })
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res).toSatisfyApiSpec();
+
+    const getRes = await request(app.getHttpServer())
+      .get(`/organizations/${orgname}/content/${contentId}`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(getRes.status).toBe(200);
+    expect(getRes.body.labels.length).toBe(1);
+    expect(getRes.body.labels[0].id).toBe(label.body.id);
+    expect(getRes).toSatisfyApiSpec();
+  });
+
+  // Helper function to get a write url, upload a file, and get a read url
+  const uploadFile = async (
+    orgname: string,
+    accessToken: string,
+    filePath: string
+  ) => {
     const fileRes = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/storage/write`)
       .send({ path: filePath })
@@ -88,28 +121,4 @@ describe("Content", () => {
     expect(readRes.status).toBe(201);
     return readRes.body.read;
   };
-
-  // Helper function to poll for document processing status
-  // const waitForDocumentProcessing = async (orgname, accessToken, contentId) => {
-  //   let complete = false;
-
-  //   for (let i = 0; i < 20; i++) {
-  //     const res = await request(app.getHttpServer())
-  //       .get(`/organizations/${orgname}/content/${contentId}`)
-  //       .set("Authorization", `Bearer ${accessToken}`);
-  //     expect(res.status).toBe(200);
-
-  //     if (res.body.job.status === "ERROR") {
-  //       throw new Error("Document processing failed");
-  //     }
-  //     if (res.body.job.status === "COMPLETE") {
-  //       complete = true;
-  //       break;
-  //     }
-
-  //     await sleep(3000);
-  //   }
-
-  //   expect(complete).toBe(true);
-  // };
 });

@@ -72,13 +72,17 @@ export type PipelinesControllerFindAllPathParams = {
 
 export type PipelinesControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -111,7 +115,9 @@ export type PipelinesControllerFindAllQueryParams = {
 
 export type PipelinesControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type PipelinesControllerFindAllResponse = Schemas.PaginatedDto & {
+export type PipelinesControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.PipelineEntity[];
 };
 
@@ -1758,13 +1764,17 @@ export type ApiTokensControllerFindAllPathParams = {
 
 export type ApiTokensControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -1797,7 +1807,9 @@ export type ApiTokensControllerFindAllQueryParams = {
 
 export type ApiTokensControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type ApiTokensControllerFindAllResponse = Schemas.PaginatedDto & {
+export type ApiTokensControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.ApiTokenEntity[];
 };
 
@@ -2111,13 +2123,17 @@ export type ContentControllerFindAllPathParams = {
 
 export type ContentControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -2150,7 +2166,9 @@ export type ContentControllerFindAllQueryParams = {
 
 export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type ContentControllerFindAllResponse = Schemas.PaginatedDto & {
+export type ContentControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.ContentEntity[];
 };
 
@@ -2716,13 +2734,17 @@ export type MembersControllerFindAllPathParams = {
 
 export type MembersControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -2755,7 +2777,9 @@ export type MembersControllerFindAllQueryParams = {
 
 export type MembersControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type MembersControllerFindAllResponse = Schemas.PaginatedDto & {
+export type MembersControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.MemberEntity[];
 };
 
@@ -3057,13 +3081,17 @@ export type LabelsControllerFindAllPathParams = {
 
 export type LabelsControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -3092,23 +3120,14 @@ export type LabelsControllerFindAllQueryParams = {
    * The start date to search from
    */
   startDate?: string;
-  /**
-   * The granularity to use for ranged aggregates
-   */
-  aggregateGranularity?: "day" | "month" | "week" | "year";
-  /**
-   * Whether or not to include aggregates in the response
-   *
-   * @default false
-   */
-  aggregates?: boolean;
 };
 
 export type LabelsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type LabelsControllerFindAllResponse = Schemas.PaginatedDto & {
+export type LabelsControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.LabelEntity[];
-  aggregates?: Schemas.LabelAggregates;
 };
 
 export type LabelsControllerFindAllVariables = {
@@ -3294,6 +3313,64 @@ export const useLabelsControllerRemove = (
   });
 };
 
+export type LabelsControllerUpdatePathParams = {
+  orgname: string;
+  labelId: string;
+};
+
+export type LabelsControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+
+export type LabelsControllerUpdateVariables = {
+  body?: Schemas.UpdateLabelDto;
+  pathParams: LabelsControllerUpdatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Update a label. ADMIN ONLY.
+ */
+export const fetchLabelsControllerUpdate = (
+  variables: LabelsControllerUpdateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.LabelEntity,
+    LabelsControllerUpdateError,
+    Schemas.UpdateLabelDto,
+    {},
+    {},
+    LabelsControllerUpdatePathParams
+  >({
+    url: "/organizations/{orgname}/labels/{labelId}",
+    method: "patch",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Update a label. ADMIN ONLY.
+ */
+export const useLabelsControllerUpdate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.LabelEntity,
+      LabelsControllerUpdateError,
+      LabelsControllerUpdateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.LabelEntity,
+    LabelsControllerUpdateError,
+    LabelsControllerUpdateVariables
+  >({
+    mutationFn: (variables: LabelsControllerUpdateVariables) =>
+      fetchLabelsControllerUpdate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type ToolsControllerCreatePathParams = {
   orgname: string;
 };
@@ -3357,13 +3434,17 @@ export type ToolsControllerFindAllPathParams = {
 
 export type ToolsControllerFindAllQueryParams = {
   /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
    * The end date to search to
    */
   endDate?: string;
   /**
    * Filter fields and values
    */
-  filters?: Schemas.FilterField[];
+  filters?: Schemas.FieldFieldQuery[];
   /**
    * The limit of the number of results returned
    *
@@ -3396,7 +3477,9 @@ export type ToolsControllerFindAllQueryParams = {
 
 export type ToolsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type ToolsControllerFindAllResponse = Schemas.PaginatedDto & {
+export type ToolsControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
   results?: Schemas.ToolEntity[];
 };
 

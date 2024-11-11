@@ -7,6 +7,34 @@ import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { ContentModel } from "./entities/content.entity";
 
+const CONTENT_INCLUDE = {
+  children: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  consumedBy: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  labels: true,
+  parent: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  producedBy: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+};
+
 @Injectable()
 export class ContentRepository extends BaseRepository<
   ContentModel,
@@ -17,7 +45,7 @@ export class ContentRepository extends BaseRepository<
   Prisma.ContentUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.content);
+    super(prisma.content, CONTENT_INCLUDE);
   }
 
   async create(
@@ -27,13 +55,21 @@ export class ContentRepository extends BaseRepository<
       mimeType: string;
     }
   ) {
-    const { labelIds, ...otherData } = createContentDto;
+    const { labels, ...otherData } = createContentDto;
     return this.prisma.content.create({
       data: {
         ...otherData,
-        labels: labelIds
-          ? { connect: labelIds.map((id) => ({ id })) }
-          : undefined,
+        labels:
+          labels?.length > 0
+            ? {
+                connect: labels.map((name) => ({
+                  name_orgname: {
+                    name,
+                    orgname,
+                  },
+                })),
+              }
+            : undefined,
         mimeType: additionalData.mimeType,
         organization: {
           connect: {
@@ -41,6 +77,7 @@ export class ContentRepository extends BaseRepository<
           },
         },
       },
+      include: CONTENT_INCLUDE,
     });
   }
 
@@ -79,22 +116,24 @@ export class ContentRepository extends BaseRepository<
     contentId: string,
     updateContentDto: UpdateContentDto
   ) {
-    const { labelIds, ...otherData } = updateContentDto;
+    const { labels, ...otherData } = updateContentDto;
 
-    const data: Prisma.ContentUpdateInput = {
-      ...otherData,
-    };
-
-    if (labelIds !== undefined) {
-      data.labels = {
-        set: labelIds.map((id) => ({ id })),
-      };
-    }
     return this.prisma.content.update({
       data: {
         ...otherData,
-        labels: labelIds ? { set: labelIds.map((id) => ({ id })) } : undefined,
+        labels:
+          labels?.length > 0
+            ? {
+                set: labels.map((name) => ({
+                  name_orgname: {
+                    name,
+                    orgname,
+                  },
+                })),
+              }
+            : undefined,
       },
+      include: CONTENT_INCLUDE,
       where: {
         id: contentId,
         orgname,

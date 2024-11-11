@@ -40,7 +40,7 @@ export const siteConfig = {
       description: "Browse and manage your content here.",
       href: "/content/view",
       Icon: Server,
-      section: "Explore",
+      section: "Data",
       title: "Content",
     },
     {
@@ -83,13 +83,13 @@ export const siteConfig = {
     {
       children: [
         {
-          href: "/chatbots/chat",
+          href: "/labels",
           Icon: Bot,
           title: "New Label",
         },
         {
           description: "View and manage chatbot labels.",
-          href: "/chatbots/labels",
+          href: "/labels/form",
           Icon: ListMinus,
           title: "History",
         },

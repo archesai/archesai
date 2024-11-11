@@ -1,5 +1,3 @@
-import { ContentService } from "@/src/content/content.service";
-import { faker } from "@faker-js/faker";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
@@ -29,26 +27,17 @@ describe("Labels", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
-
-    const contentService = app.get(ContentService);
-    for (let i = 0; i < 100; i++) {
-      await contentService.create(orgname, {
-        name: faker.lorem.words(),
-        text: faker.lorem.sentence(),
-      });
-    }
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  it("should be able to create a label", async () => {
-    // Create a label
+  it("CREATE - should be able to create a label", async () => {
     const labelRes = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/labels`)
       .send({
-        name: "Aesop's Fables",
+        name: "label-name",
       })
       .set("Authorization", `Bearer ${accessToken}`);
     expect(labelRes.status).toBe(201);
@@ -56,20 +45,37 @@ describe("Labels", () => {
     labelId = labelRes.body.id;
   });
 
-  it("should be able to get content with a label", async () => {
-    // Get messages
-    const contentRes = await request(app.getHttpServer())
-      .get(
-        `/organizations/${orgname}/content?filters=${JSON.stringify([{ field: "labelId", operator: "equals", value: labelId }])}`
-      )
+  it("GET - should be able to get a label", async () => {
+    const getRes = await request(app.getHttpServer())
+      .get(`/organizations/${orgname}/labels/${labelId}`)
       .set("Authorization", `Bearer ${accessToken}`);
-    expect(contentRes.status).toBe(200);
-    expect(contentRes).toSatisfyApiSpec();
-    const content = contentRes.body;
-    expect(content.results.length).toBeGreaterThan(0);
+    expect(getRes.status).toBe(200);
+    expect(getRes).toSatisfyApiSpec();
   });
 
-  it("should be able to delete a label", async () => {
+  it("UPDATE - should be able to update a label", async () => {
+    const updateRes = await request(app.getHttpServer())
+      .patch(`/organizations/${orgname}/labels/${labelId}`)
+      .send({
+        name: "new-label-name",
+      })
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(updateRes.status).toBe(200);
+    expect(updateRes).toSatisfyApiSpec();
+    expect(updateRes.body.name).toEqual("new-label-name");
+  });
+
+  it("FIND_ALL - should be able to get all labels", async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/organizations/${orgname}/labels`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res).toSatisfyApiSpec();
+    const labels = res.body;
+    expect(labels.results.length).toBeGreaterThan(0);
+  });
+
+  it("DELETE - should be able to delete a label", async () => {
     // Delete the chatbot
     const deleteRes = await request(app.getHttpServer())
       .delete(`/organizations/${orgname}/labels/${labelId}`)

@@ -3,6 +3,7 @@ import { Logger } from "@nestjs/common";
 
 import { BaseService } from "../common/base.service";
 import { CreateLabelDto } from "./dto/create-label.dto";
+import { UpdateLabelDto } from "./dto/update-label.dto";
 import { LabelEntity, LabelModel } from "./entities/label.entity";
 import { LabelRepository } from "./label.repository";
 
@@ -10,7 +11,7 @@ import { LabelRepository } from "./label.repository";
 export class LabelsService extends BaseService<
   LabelEntity,
   CreateLabelDto,
-  undefined,
+  UpdateLabelDto,
   LabelRepository,
   LabelModel
 > {

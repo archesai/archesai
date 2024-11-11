@@ -4,11 +4,37 @@ import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
 import { BaseEntity } from "../../common/entities/base.entity";
+import {
+  _PrismaSubItemModel,
+  SubItemEntity,
+} from "../../common/entities/base-sub-item.entity";
 
-export type ContentModel = _PrismaContent;
+export type ContentModel = _PrismaContent & {
+  children: _PrismaSubItemModel[];
+  consumedBy: _PrismaSubItemModel[];
+  labels: _PrismaSubItemModel[];
+  parent: _PrismaSubItemModel;
+  producedBy: _PrismaSubItemModel;
+};
 
 @Exclude()
 export class ContentEntity extends BaseEntity implements ContentModel {
+  @ApiProperty({
+    description: "The child content, if any",
+    required: false,
+    type: [SubItemEntity],
+  })
+  @Expose()
+  children: SubItemEntity[];
+
+  @ApiProperty({
+    description: "The transformations that consumed this content, if any",
+    required: false,
+    type: [SubItemEntity],
+  })
+  @Expose()
+  consumedBy: SubItemEntity[];
+
   @ApiProperty({
     description: "The number of credits used to process this content",
     example: 0,
@@ -26,6 +52,14 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   @Expose()
   @IsString()
   description: null | string;
+
+  @ApiProperty({
+    description: "The content's labels",
+    required: false,
+    type: [SubItemEntity],
+  })
+  @Expose()
+  labels: SubItemEntity[];
 
   @ApiProperty({
     description: "The MIME type of the content",
@@ -53,6 +87,14 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   orgname: string;
 
   @ApiProperty({
+    description: "The parent content, if any",
+    required: false,
+    type: SubItemEntity,
+  })
+  @Expose()
+  parent: null | SubItemEntity;
+
+  @ApiProperty({
     description:
       "The parent content ID, if this content is a child of another content",
     example: "content-id",
@@ -72,6 +114,14 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   @Expose()
   @IsString()
   previewImage: null | string;
+
+  @ApiProperty({
+    description: "The transformation that produced this content, if any",
+    required: false,
+    type: SubItemEntity,
+  })
+  @Expose()
+  producedBy: null | SubItemEntity;
 
   @ApiProperty({
     description:

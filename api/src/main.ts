@@ -6,7 +6,6 @@ import session from "express-session";
 import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
 
 import { ApiTokensService } from "./api-tokens/api-tokens.service";
-import { ApiTokenEntity } from "./api-tokens/entities/api-token.entity";
 import { AppModule } from "./app.module";
 import { AppAuthGuard } from "./auth/guards/app-auth.guard";
 import { DeactivatedGuard } from "./auth/guards/deactivated.guard";
@@ -14,11 +13,13 @@ import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
 import { OrganizationRoleGuard } from "./auth/guards/organization-role.guard";
 import { RestrictedAPIKeyGuard } from "./auth/guards/restricted-api-key.guard";
 import { RedisIoAdapter } from "./common/adapters/redis-io.adapter";
-import { _PaginatedDto } from "./common/dto/paginated.dto";
-import { FilterField } from "./common/dto/search-query.dto";
+import { AggregateFieldResult, Metadata } from "./common/dto/paginated.dto";
+import {
+  AggregateFieldQuery,
+  FieldFieldQuery,
+} from "./common/dto/search-query.dto";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { ExcludeNullInterceptor } from "./common/interceptors/exclude-null.interceptor";
-import { LabelAggregates } from "./labels/dto/label-aggregates.dto";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -84,7 +85,12 @@ async function bootstrap() {
   );
 
   const document = SwaggerModule.createDocument(app, config, {
-    extraModels: [_PaginatedDto, LabelAggregates, ApiTokenEntity, FilterField],
+    extraModels: [
+      FieldFieldQuery,
+      AggregateFieldQuery,
+      AggregateFieldResult,
+      Metadata,
+    ],
   });
 
   SwaggerModule.setup("/", app, document, {
