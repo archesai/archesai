@@ -5,7 +5,6 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaClient } from "@prisma/client";
 import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
 import request from "supertest";
 import "tsconfig-paths/register";
@@ -70,28 +69,6 @@ export const createApp = async () => {
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-const prisma = new PrismaClient();
-
-export const resetDatabase = async () => {
-  await prisma.$transaction([
-    prisma.user.deleteMany(),
-    prisma.organization.deleteMany(),
-    prisma.apiToken.deleteMany(),
-    prisma.authProvider.deleteMany(),
-    prisma.member.deleteMany(),
-    prisma.user.deleteMany(),
-    prisma.tool.deleteMany(),
-    prisma.label.deleteMany(),
-    prisma.content.deleteMany(),
-    prisma.aRToken.deleteMany(),
-    prisma.pipeline.deleteMany(),
-    prisma.pipelineStep.deleteMany(),
-    prisma.pipelineRun.deleteMany(),
-    prisma.transformation.deleteMany(),
-    // Add more tables as needed
-  ]);
-};
 
 // Helper function to register a user and return the API token
 export const registerUser = async (
