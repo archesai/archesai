@@ -64,11 +64,11 @@ steps:
 
   - name: node
     id: lint
-    entrypoint: /bin/sh
+    entrypoint: bash
     args:
       - "-c"
       - |
-        cd ./api && npm install && cd ../ui && npm install &$ cd .. && make lint
+        cd ./api && npm install && cd ../ui && npm install && cd .. && make lint
 
   # Step 2: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:debug"
