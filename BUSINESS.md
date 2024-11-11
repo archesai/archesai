@@ -1,5 +1,10 @@
 # Arches AI Design and Use Cases
 
+## TODO
+
+- Add pipeline ui for building stuff with connectors
+- Implement ability to save "forms" that can be run against content and extract data to fill out the form. this form type can then be used as input to other tools
+
 ## Introduction
 
 **Arches AI** is a comprehensive data processing platform designed to empower businesses to efficiently manage, analyze, and transform their diverse data assets. Similar to Palantir Foundry, Arches AI enables organizations to upload various types of content—including files, audio, text, images, and websites—and index them for seamless parsing, querying, and transformation. Leveraging advanced embedding models and a suite of transformation tools, Arches AI provides flexible and powerful data processing capabilities tailored to meet the unique needs of different industries.

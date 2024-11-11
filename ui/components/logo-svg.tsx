@@ -83,7 +83,7 @@ const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }) => {
     <svg
       className="transition-all"
       fill={fill || "currentColor"}
-      height={200 * scale}
+      height={256 * scale}
       version="1.1"
       viewBox="0 0 800 404"
       width={256 * scale}

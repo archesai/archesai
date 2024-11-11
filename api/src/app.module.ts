@@ -43,7 +43,12 @@ import { WebsocketsModule } from "./websockets/websockets.module";
         const loggerConfig = {
           pinoHttp: {
             customProps: (req, res) => ({
+              body: req?.body,
               context: "HTTP",
+              origin: req?.headers?.origin,
+              params: req?.params,
+              path: req?.path?.split("?")[0],
+              query: req?.query,
               statusCode: res?.statusCode,
             }),
             formatters:
@@ -57,7 +62,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
             level:
               configService.get("NODE_ENV") === "test" ? "silent" : "debug",
             redact: {
-              paths: ["req"],
+              paths: ["req", "res"],
             },
             transport: {
               targets: [

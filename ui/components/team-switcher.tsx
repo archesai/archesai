@@ -78,7 +78,9 @@ export function TeamSwitcher() {
                 <span className="truncate font-semibold">
                   {organization?.orgname}
                 </span>
-                <span className="truncate text-xs">{organization?.plan}</span>
+                <span className="truncate text-xs capitalize">
+                  {organization?.plan?.toLocaleLowerCase()} Plan
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
