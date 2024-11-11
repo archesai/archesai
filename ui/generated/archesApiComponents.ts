@@ -3621,7 +3621,7 @@ export type ToolsControllerRemoveVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Delete a tools. ADMIN ONLY.
+ * Delete a tool. ADMIN ONLY.
  */
 export const fetchToolsControllerRemove = (
   variables: ToolsControllerRemoveVariables,
@@ -3642,7 +3642,7 @@ export const fetchToolsControllerRemove = (
   });
 
 /**
- * Delete a tools. ADMIN ONLY.
+ * Delete a tool. ADMIN ONLY.
  */
 export const useToolsControllerRemove = (
   options?: Omit<
@@ -3679,7 +3679,7 @@ export type ToolsControllerUpdateVariables = {
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Update a tools. ADMIN ONLY.
+ * Update a tool. ADMIN ONLY.
  */
 export const fetchToolsControllerUpdate = (
   variables: ToolsControllerUpdateVariables,
@@ -3700,7 +3700,7 @@ export const fetchToolsControllerUpdate = (
   });
 
 /**
- * Update a tools. ADMIN ONLY.
+ * Update a tool. ADMIN ONLY.
  */
 export const useToolsControllerUpdate = (
   options?: Omit<

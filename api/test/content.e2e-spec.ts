@@ -90,6 +90,7 @@ describe("Content", () => {
     expect(getRes.status).toBe(200);
     expect(getRes.body.labels.length).toBe(1);
     expect(getRes.body.labels[0].id).toBe(label.body.id);
+    expect(getRes.body.labels[0].name).toBe(label.body.name);
     expect(getRes).toSatisfyApiSpec();
   });
 

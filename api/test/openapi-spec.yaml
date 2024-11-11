@@ -2054,8 +2054,8 @@ paths:
         - bearer: []
     delete:
       operationId: ToolsController_remove
-      summary: Delete a tools
-      description: Delete a tools. ADMIN ONLY.
+      summary: Delete a tool
+      description: Delete a tool. ADMIN ONLY.
       parameters:
         - name: orgname
           required: true
@@ -2069,7 +2069,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Successfully deleted the tools
+          description: Successfully deleted the tool
         '401':
           description: Unauthorized
         '403':
@@ -2082,8 +2082,8 @@ paths:
         - bearer: []
     patch:
       operationId: ToolsController_update
-      summary: Update a tools
-      description: Update a tools. ADMIN ONLY.
+      summary: Update a tool
+      description: Update a tool. ADMIN ONLY.
       parameters:
         - name: orgname
           required: true
@@ -2103,7 +2103,7 @@ paths:
               $ref: '#/components/schemas/UpdateToolDto'
       responses:
         '200':
-          description: Successfully updated the tools
+          description: Successfully updated the tool
           content:
             application/json:
               schema:
