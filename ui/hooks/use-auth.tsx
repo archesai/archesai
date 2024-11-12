@@ -98,7 +98,6 @@ export const useAuth = () => {
         memberships: user.memberships,
         user,
       }));
-      router.push("/playground");
     } catch (error) {
       toast({
         description: "An error occurred. Please log in again.",
