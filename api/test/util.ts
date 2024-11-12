@@ -23,6 +23,15 @@ import { UserEntity } from "../src/users/entities/user.entity";
 import { UsersService } from "../src/users/users.service";
 import { AppModule } from "./../src/app.module"; // This enables path aliasing based on tsconfig.json
 import { DeactivatedGuard } from "@/src/auth/guards/deactivated.guard";
+import { RedisIoAdapter } from "@/src/common/adapters/redis-io.adapter";
+import { ConfigService } from "@nestjs/config";
+import RedisStore from "connect-redis";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import { readFileSync } from "fs-extra";
+import helmet from "helmet";
+import passport from "passport";
+import { createClient } from "redis";
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,15 +39,23 @@ export const createApp = async () => {
   }).compile();
   const app = moduleFixture.createNestApplication();
 
+  const configService = app.get(ConfigService);
+
+  //  Setup Logger
   app.useLogger(app.get(Logger));
+
+  // Gloabl Filters and Interceptors
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalInterceptors(
     new ExcludeNullInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
     new LoggerErrorInterceptor()
   );
+
+  // Global Pipes
   app.useGlobalPipes(
     new ValidationPipe({
+      forbidNonWhitelisted: true,
       forbidUnknownValues: true,
       transform: true,
       transformOptions: {
@@ -48,6 +65,8 @@ export const createApp = async () => {
       whitelist: true,
     })
   );
+
+  // Global Guards
   app.useGlobalGuards(
     new AppAuthGuard(app.get(Reflector)),
     new DeactivatedGuard(app.get(Reflector)),
@@ -55,12 +74,80 @@ export const createApp = async () => {
     new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
     new OrganizationRoleGuard(app.get(Reflector))
   );
+
+  // CORS Configuration
+  const allowedOrigins = configService
+    .get<string>("ALLOWED_ORIGINS")
+    .split(",");
   app.enableCors({
-    allowedHeaders: "Authorization, Content-Type, Accept",
+    allowedHeaders: ["Authorization", "Content-Type", "Accept"],
     credentials: true,
-    origin: "*",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   });
 
+  // Security Middlewares
+  app.use(helmet());
+
+  // Session Management
+  const sessionSecret = configService.get<string>("SESSION_SECRET");
+  if (!sessionSecret) {
+    throw new Error("SESSION_SECRET is not defined");
+  }
+  const redisClient = createClient({
+    password: configService.get("REDIS_AUTH"),
+    url: `redis://${configService.get(
+      "REDIS_HOST"
+    )}:${configService.get("REDIS_PORT")}`,
+    ...(configService.get("REDIS_CA_CERT_PATH")
+      ? {
+          socket: {
+            ca: readFileSync(configService.get("REDIS_CA_CERT_PATH")),
+            rejectUnauthorized: false,
+            tls: true,
+          },
+        }
+      : {}),
+  });
+  redisClient.on("error", (error) => {
+    app.get(Logger).error("Redis client error: " + error);
+  });
+  redisClient.connect().catch(console.error);
+  const redisStore = new RedisStore({
+    client: redisClient,
+  });
+
+  app.use(cookieParser(sessionSecret));
+  app.use(
+    session({
+      cookie: {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "lax",
+        secure: configService.get<string>("NODE_ENV") === "production",
+      },
+      resave: false,
+      saveUninitialized: false,
+      secret: sessionSecret,
+      store: redisStore,
+    })
+  );
+
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Websocket Adapter
+  const redisIoAdapter = new RedisIoAdapter(app, configService);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
+
+  // Enable Shutdown Hooks
   app.enableShutdownHooks();
 
   return app;

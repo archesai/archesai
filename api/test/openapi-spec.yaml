@@ -384,6 +384,17 @@ paths:
           description: Invalid credentials
       tags:
         - Authentication
+  /auth/logout:
+    post:
+      operationId: AuthController_logout
+      summary: Logout
+      description: Log out of the current session
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - Authentication
   /auth/password-reset/confirm:
     post:
       operationId: AuthController_passwordResetConfirm

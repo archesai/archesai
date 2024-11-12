@@ -2,6 +2,7 @@ import { HttpModule } from "@nestjs/axios";
 import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
+import { PassportModule } from "@nestjs/passport";
 
 import { ApiTokensModule } from "../api-tokens/api-tokens.module";
 import { EmailModule } from "../email/email.module";
@@ -14,6 +15,7 @@ import { AuthService } from "./auth.service";
 import { EmailChangeService } from "./email-change.service";
 import { EmailVerificationService } from "./email-verification.service";
 import { PasswordResetService } from "./password-reset.service";
+import { SessionSerializer } from "./serializers/session.serializer";
 import { ApiKeyStrategy } from "./strategies/api-key.strategy";
 import { FirebaseStrategy } from "./strategies/firebase.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
@@ -38,6 +40,7 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     OrganizationsModule,
     PrismaModule,
     EmailModule,
+    PassportModule.register({ session: false }),
   ],
   providers: [
     // Services
@@ -53,6 +56,8 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     EmailVerificationService,
     EmailChangeService,
     ARTokensService,
+    // Serializers
+    SessionSerializer,
   ],
 })
 export class AuthModule {}

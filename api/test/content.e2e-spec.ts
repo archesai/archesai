@@ -18,7 +18,6 @@ describe("Content", () => {
   const credentials = {
     email: "content-test@archesai.com",
     password: "password",
-    username: "content-test",
   };
 
   const filePath = `book-${new Date().valueOf().toString()}.pdf`;

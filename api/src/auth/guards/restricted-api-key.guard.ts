@@ -27,6 +27,9 @@ export class RestrictedAPIKeyGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
+    if (!request.headers.authorization) {
+      return true;
+    }
     try {
       const bearerToken = request.headers.authorization.split(" ")[1];
 

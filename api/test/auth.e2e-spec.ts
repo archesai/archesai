@@ -20,7 +20,6 @@ describe("Auth Module E2E Tests", () => {
   const userCredentials = {
     email: "auth-e2e-test@archesai.com",
     password: "Password123!",
-    username: "auth-e2e-test",
   };
 
   const newEmail = "new-email@archesai.com";
@@ -242,7 +241,6 @@ describe("Auth Module E2E Tests", () => {
           email: newEmail,
           password: "NewPassword123!",
         });
-
       expect(loginRes.status).toBe(201);
       expect(loginRes.body.accessToken).toBeDefined();
       expect(loginRes).toSatisfyApiSpec();

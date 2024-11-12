@@ -694,6 +694,49 @@ export const useAuthControllerLogin = (
   });
 };
 
+export type AuthControllerLogoutError = Fetcher.ErrorWrapper<undefined>;
+
+export type AuthControllerLogoutVariables = ArchesApiContext["fetcherOptions"];
+
+/**
+ * Log out of the current session
+ */
+export const fetchAuthControllerLogout = (
+  variables: AuthControllerLogoutVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<undefined, AuthControllerLogoutError, undefined, {}, {}, {}>({
+    url: "/auth/logout",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Log out of the current session
+ */
+export const useAuthControllerLogout = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      AuthControllerLogoutError,
+      AuthControllerLogoutVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    AuthControllerLogoutError,
+    AuthControllerLogoutVariables
+  >({
+    mutationFn: (variables: AuthControllerLogoutVariables) =>
+      fetchAuthControllerLogout({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type AuthControllerPasswordResetConfirmError =
   Fetcher.ErrorWrapper<undefined>;
 

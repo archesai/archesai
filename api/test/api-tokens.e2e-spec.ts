@@ -17,7 +17,6 @@ describe("Access Tokens", () => {
   const credentials = {
     email: "api-tokens-test@archesai.com",
     password: "password",
-    username: "api-tokens-test",
   };
 
   beforeAll(async () => {

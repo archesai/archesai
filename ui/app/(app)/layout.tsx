@@ -20,7 +20,6 @@ export default function AppLayout({
   useWebsockets({});
 
   useEffect(() => {
-    if (isHydrated) return;
     setIsHydrated(true);
   }, [isHydrated]);
 

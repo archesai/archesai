@@ -18,7 +18,6 @@ describe("Tools", () => {
   const credentials = {
     email: "tools-test@archesai.com",
     password: "password",
-    username: "tools-test",
   };
 
   beforeAll(async () => {

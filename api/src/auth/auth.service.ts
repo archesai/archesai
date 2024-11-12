@@ -3,10 +3,12 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { AuthProviderType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
+import { Response } from "express";
 
 import { UsersService } from "../users/users.service";
 import { CurrentUserDto } from "./decorators/current-user.decorator";
 import { RegisterDto } from "./dto/register.dto";
+import { TokenDto } from "./dto/token.dto";
 
 @Injectable()
 export class AuthService {
@@ -101,6 +103,27 @@ export class AuthService {
       AuthProviderType.LOCAL,
       user.email
     );
+  }
+
+  async removeCookies(res: Response) {
+    res.clearCookie("archesai.accessToken");
+    res.clearCookie("archesai.refreshToken");
+  }
+
+  async setCookies(res: Response, tokenDto: TokenDto) {
+    res.cookie("archesai.accessToken", tokenDto.accessToken, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000, // 15 minutes for access token
+      sameSite: "strict",
+      secure: this.configService.get("NODE_ENV") === "production",
+    });
+    res.cookie("archesai.refreshToken", tokenDto.refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
+      sameSite: "strict",
+      secure: this.configService.get("NODE_ENV") === "production",
+      signed: true,
+    });
   }
 
   async verifyToken(token: string) {

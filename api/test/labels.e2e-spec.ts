@@ -13,7 +13,6 @@ describe("Labels", () => {
   const credentials = {
     email: "chatbots-test@archesai.com",
     password: "password",
-    username: "chatbots-test",
   };
 
   beforeAll(async () => {

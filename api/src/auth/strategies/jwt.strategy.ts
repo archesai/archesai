@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
+import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { UsersService } from "../../users/users.service";
@@ -16,16 +17,39 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       ignoreExpiration: false,
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          // Check for token in the Authorization header
+          const authToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
+          this.logger.log(`authToken: ${authToken}`);
+          if (authToken) {
+            return authToken;
+          }
+
+          // Check for token in the signed cookie named 'auth_token'
+          const cookieToken = request.cookies?.["archesai.accessToken"];
+          this.logger.log(`cookieToken: ${cookieToken}`);
+          if (cookieToken) {
+            return cookieToken;
+          }
+
+          return null;
+        },
+      ]),
       secretOrKey: configService.get<string>("JWT_API_TOKEN_SECRET"),
     });
   }
 
   async validate(payload: any): Promise<CurrentUserDto> {
+    this.logger.log(
+      `Validating JWT token for user: ${JSON.stringify(payload.sub)}`
+    );
     if (!payload.sub) {
       return null;
     }
     const { sub: id } = payload;
-    return this.usersService.findOne(null, id);
+    const user = await this.usersService.findOne(null, id);
+    this.logger.log(`User: ${JSON.stringify(user)}`);
+    return user;
   }
 }

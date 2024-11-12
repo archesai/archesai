@@ -15,19 +15,16 @@ describe("Members", () => {
   const credentials = {
     email: "admin@archesai.com",
     password: "password",
-    username: "admin",
   };
 
   const invitedUser = {
     email: "invitedUser@archesai.com",
     password: "password2",
-    username: "invitedUser",
   };
 
   const uninvitedUser = {
     email: "uninvitedUser@archesai.com",
     password: "password",
-    username: "uninvitedUser",
   };
 
   beforeAll(async () => {

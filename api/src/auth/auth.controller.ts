@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Res } from "@nestjs/common";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import {
@@ -11,6 +11,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import { Response } from "express";
 
 import { AuthService } from "./auth.service";
 import {
@@ -27,6 +28,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { TokenDto } from "./dto/token.dto";
 import { EmailChangeService } from "./email-change.service";
 import { EmailVerificationService } from "./email-verification.service";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { PasswordResetService } from "./password-reset.service";
 
 @ApiTags("Authentication")
@@ -116,14 +118,35 @@ export class AuthController {
   @ApiCreatedResponse({
     type: TokenDto,
   })
-  @UseGuards(AuthGuard("local"))
+  @UseGuards(LocalAuthGuard)
   @IsPublic()
   @Post("/login")
   async login(
     @Body() loginDto: LoginDto,
-    @CurrentUser() currentUserDto: CurrentUserDto
+    @CurrentUser() currentUserDto: CurrentUserDto,
+    @Res({
+      passthrough: true,
+    })
+    res: Response
   ): Promise<TokenDto> {
-    return this.authService.login(currentUserDto);
+    const tokenDto = await this.authService.login(currentUserDto);
+    await this.authService.setCookies(res, tokenDto);
+    return tokenDto;
+  }
+
+  @ApiOperation({
+    description: "Log out of the current session",
+    summary: "Logout",
+  })
+  @IsPublic()
+  @Post("/logout")
+  async logout(
+    @Res({
+      passthrough: true,
+    })
+    res: Response
+  ): Promise<void> {
+    await this.authService.removeCookies(res);
   }
 
   @ApiOperation({

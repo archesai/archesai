@@ -73,6 +73,7 @@ export async function archesApiFetch<
         headers: requestHeaders,
         method: method.toUpperCase(),
         signal,
+        credentials: "include",
       }
     );
     if (!response.ok) {

@@ -100,6 +100,9 @@ import { WebsocketsModule } from "./websockets/websockets.module";
       envFilePath: ["../.env"],
       ignoreEnvFile: process.env.NODE_ENV == "production",
       validationSchema: Joi.object({
+        // CORS CONFIG
+        ALLOWED_ORIGINS: Joi.string().required(),
+
         // DATABASE CONFIG
         DATABASE_URL: Joi.string().required(),
         EMAIL_PASSWORD: Joi.when("FEATURE_EMAIL", {
@@ -167,6 +170,8 @@ import { WebsocketsModule } from "./websockets/websockets.module";
         REDIS_PORT: Joi.number().required(),
 
         SERVER_HOST: Joi.string().required(),
+
+        SESSION_SECRET: Joi.string().required(),
 
         // STORAGE TYPE
         STORAGE_TYPE: Joi.string()
