@@ -11,12 +11,10 @@ export abstract class BaseService<
     CreateDto,
     UpdateDto,
     Include,
-    Select,
     RawUpdateInput
   >,
   PrismaModel,
   Include = any,
-  Select = any,
   RawUpdateInput = any,
 > {
   constructor(protected readonly repository: Repo) {}

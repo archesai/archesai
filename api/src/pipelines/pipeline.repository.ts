@@ -23,7 +23,6 @@ export class PipelineRepository extends BaseRepository<
   CreatePipelineDto,
   UpdatePipelineDto,
   Prisma.PipelineInclude,
-  Prisma.PipelineSelect,
   Prisma.PipelineUpdateInput
 > {
   constructor(private prisma: PrismaService) {
@@ -54,6 +53,48 @@ export class PipelineRepository extends BaseRepository<
     });
   }
 
+  async createDefaultPipeline(orgname: string) {
+    const pipeline = await this.prisma.pipeline.create({
+      data: {
+        description:
+          "This is a default pipeline for indexing arbitrary documents. It extracts text from the document, creates an image from the text, summarizes the text, creates embeddings from the text, and converts the text to speech.",
+        name: "Default",
+        orgname,
+      },
+      include: PIPELINE_INCLUDE,
+    });
+    const tools = await this.prisma.tool.findMany({
+      where: {
+        orgname,
+      },
+    });
+
+    // Create first step, this has no dependents
+    const firstStep = await this.prisma.pipelineStep.create({
+      data: {
+        pipelineId: pipeline.id,
+        toolId: tools.find((t) => t.name == "Extract Text").id,
+      },
+    });
+    const dependents = tools.filter((t) => t.name != "Extract Text");
+
+    for (const tool of dependents) {
+      await this.prisma.pipelineStep.create({
+        data: {
+          dependsOn: {
+            connect: {
+              id: firstStep.id,
+            },
+          },
+          pipelineId: pipeline.id,
+          toolId: tool.id,
+        },
+      });
+    }
+
+    return this.findOne(orgname, pipeline.id);
+  }
+
   async createPipelineRun(
     orgname: string,
     pipelineId: string,
@@ -66,11 +107,12 @@ export class PipelineRepository extends BaseRepository<
         orgname,
         pipelineId,
         status: RunStatus.QUEUED,
-        transformations: {
+        toolRuns: {
           createMany: {
             data: pipeline.pipelineSteps.map((pipelineStep) => ({
               createdAt: new Date(),
               name: new Date().toISOString(),
+              orgname,
               pipelineStepId: pipelineStep.id,
               status: RunStatus.QUEUED,
             })),
@@ -80,7 +122,7 @@ export class PipelineRepository extends BaseRepository<
     });
 
     for (const pipelineStep of pipeline.pipelineSteps) {
-      await this.prisma.transformation.update({
+      await this.prisma.toolRun.update({
         data: {
           inputs: {
             connect: createPipelineRunDto.runInputContentIds.map(
@@ -96,7 +138,9 @@ export class PipelineRepository extends BaseRepository<
             pipelineStepId: pipelineStep.id,
           },
           pipelineStep: {
-            dependsOnId: null,
+            dependsOn: {
+              none: {},
+            },
           },
         },
       });

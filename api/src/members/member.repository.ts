@@ -13,7 +13,6 @@ export class MemberRepository extends BaseRepository<
   CreateMemberDto,
   UpdateMemberDto,
   Prisma.MemberInclude,
-  Prisma.MemberSelect,
   Prisma.MemberUpdateInput
 > {
   constructor(private prisma: PrismaService) {

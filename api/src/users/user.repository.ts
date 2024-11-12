@@ -18,7 +18,6 @@ export class UserRepository extends BaseRepository<
   CreateUserDto,
   UpdateUserDto,
   Prisma.UserInclude,
-  Prisma.UserSelect,
   Prisma.UserUpdateInput
 > {
   constructor(private prisma: PrismaService) {
@@ -84,6 +83,13 @@ export class UserRepository extends BaseRepository<
     return this.prisma.user.findUniqueOrThrow({
       include: USER_INCLUDE,
       where: { email },
+    });
+  }
+
+  async findOneByUsername(username: string) {
+    return this.prisma.user.findUniqueOrThrow({
+      include: USER_INCLUDE,
+      where: { username },
     });
   }
 }

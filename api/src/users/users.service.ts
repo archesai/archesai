@@ -37,10 +37,14 @@ export class UsersService extends BaseService<
           : true,
       ...createUserDto,
     });
-    await this.organizationsService.createAndInitialize(user, {
-      billingEmail: user.email,
-      orgname: user.username,
-    });
+    await this.organizationsService.create(
+      null,
+      {
+        billingEmail: user.email,
+        orgname: user.username,
+      },
+      user
+    );
     return this.toEntity(await this.userRepository.findOne("", user.id));
   }
 
@@ -50,6 +54,10 @@ export class UsersService extends BaseService<
 
   async findOneByEmail(email: string) {
     return this.toEntity(await this.userRepository.findOneByEmail(email));
+  }
+
+  async findOneByUsername(username: string) {
+    return this.toEntity(await this.userRepository.findOneByUsername(username));
   }
 
   async setEmail(id: string, newEmail: string) {

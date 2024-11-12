@@ -44,10 +44,10 @@ export class ApiTokensController
   async create(
     @Param("orgname") orgname: string,
     @Body() createTokenDto: CreateApiTokenDto,
-    @CurrentUser() currentUserDto?: CurrentUserDto
+    @CurrentUser() currentUserDto: CurrentUserDto
   ) {
     return this.apiTokensService.create(orgname, createTokenDto, {
-      uid: currentUserDto.id,
+      username: currentUserDto.username,
     });
   }
 

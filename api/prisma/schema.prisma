@@ -76,9 +76,9 @@ model Content {
   children Content[] @relation("ContentParentChildren")
 
   // Data lineage fields
-  producedBy   Transformation?  @relation("ContentProducedBy", fields: [producedById], references: [id])
+  producedBy   ToolRun?  @relation("ContentProducedBy", fields: [producedById], references: [id])
   producedById String?
-  consumedBy   Transformation[] @relation("ContentConsumedBy")
+  consumedBy   ToolRun[] @relation("ContentConsumedBy")
 
   labels Label[]
 }
@@ -99,15 +99,14 @@ model PipelineRun {
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
 
-  // Pipeline Association
+  // PipelineRun Specific Fields
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
   pipelineId String
 
-  // Pipeline Step Runs
-  transformations Transformation[]
+  toolRuns ToolRun[]
 }
 
-model Transformation {
+model ToolRun {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -120,15 +119,16 @@ model Transformation {
   progress    Float     @default(0)
   error       String?
 
-  // PipelineRun Relation
+  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
+  orgname      String
+
+  // ToolRun Specific Fields
   pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
   pipelineRunId String
 
-  // PipelineStep Relation
   pipelineStep   PipelineStep @relation(fields: [pipelineStepId], references: [id], onDelete: Cascade)
   pipelineStepId String
 
-  // Data lineage fields
   inputs  Content[] @relation("ContentConsumedBy")
   outputs Content[] @relation("ContentProducedBy")
 
@@ -166,7 +166,7 @@ model Pipeline {
   orgname      String
 
   pipelineSteps PipelineStep[]
-  runs          PipelineRun[]
+  pipelineRuns  PipelineRun[]
 }
 
 model PipelineStep {
@@ -180,11 +180,10 @@ model PipelineStep {
   tool   Tool   @relation(fields: [toolId], references: [id], onDelete: Cascade)
   toolId String
 
-  dependsOn   PipelineStep?  @relation("ToolDependencies", fields: [dependsOnId], references: [id])
-  dependsOnId String?
-  dependents  PipelineStep[] @relation("ToolDependencies")
+  dependsOn  PipelineStep[] @relation("PipelineStepDependencies")
+  dependents PipelineStep[] @relation("PipelineStepDependencies")
 
-  transformations Transformation[]
+  toolRuns ToolRun[]
 }
 
 model Label {
@@ -246,13 +245,14 @@ model Organization {
   credits          Int      @default(0)
   plan             PlanType @default(FREE)
 
-  members   Member[]
-  apiTokens ApiToken[]
-  content   Content[]
-  labels    Label[]
-  tools     Tool[]
-  pipelines Pipeline[]
-  runs      PipelineRun[]
+  members      Member[]
+  apiTokens    ApiToken[]
+  content      Content[]
+  labels       Label[]
+  tools        Tool[]
+  pipelines    Pipeline[]
+  pipelineRuns PipelineRun[]
+  toolRuns     ToolRun[]
 }
 
 model Member {

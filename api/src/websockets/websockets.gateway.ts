@@ -47,9 +47,22 @@ export class WebsocketsGateway
 
   async handleConnection(socket: Socket) {
     try {
-      const { sub: id } = await this.authService.verifyToken(
-        socket.handshake.auth.token
-      );
+      const cookie = socket.handshake.headers.cookie;
+      if (!cookie) {
+        throw new Error("No cookie provided");
+      }
+      const token = decodeURIComponent(cookie)
+        .split(";")
+        .find((c) => c.trim().startsWith("archesai.accessToken="))
+        ?.split("=")[1];
+      if (!token) {
+        throw new Error("No jwt token found in cookie");
+      }
+
+      // Remove the 's:' prefix if it exists. Express adds this to the beginning when its a signed cookie
+      const cleanToken = token.startsWith("s:") ? token.slice(2) : token;
+
+      const { sub: id } = await this.authService.verifyToken(cleanToken);
       const user = await this.usersService.findOne(null, id);
       this.logger.log(`Connected with websockets ${user.defaultOrgname}`);
       socket.join(user.defaultOrgname);

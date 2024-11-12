@@ -10,7 +10,7 @@ import { LLMService } from "../llm/llm.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import { TransformationsService } from "./transformations.service";
+import { ToolRunsService } from "./tool-runs.service";
 import { transformFileToText } from "./transformers/file-to-text.transformer";
 import { transformTextToEmbeddings } from "./transformers/text-to-embeddings.transformer";
 import { transformTextToImage } from "./transformers/text-to-image.transformer";
@@ -18,11 +18,11 @@ import { transformTextToSpeech } from "./transformers/text-to-speech.transformer
 import { transformTextToText } from "./transformers/text-to-text.transformer";
 
 @Processor("run")
-export class TransformationProcessor extends WorkerHost {
-  private readonly logger: Logger = new Logger("Transformation Processor");
+export class ToolRunProcessor extends WorkerHost {
+  private readonly logger: Logger = new Logger("ToolRun Processor");
 
   constructor(
-    private transformationsService: TransformationsService,
+    private toolRunsService: ToolRunsService,
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentService: ContentService,
@@ -38,27 +38,21 @@ export class TransformationProcessor extends WorkerHost {
   @OnWorkerEvent("active")
   async onActive(job: Job) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
-    await this.transformationsService.setStatus(
-      job.id.toString(),
-      "PROCESSING"
-    );
+    await this.toolRunsService.setStatus(job.id.toString(), "PROCESSING");
   }
 
   @OnWorkerEvent("completed")
   async onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id}`);
-    await this.transformationsService.setStatus(job.id.toString(), "COMPLETE");
+    await this.toolRunsService.setStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
   async onError(job: Job, error: any) {
     this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
-      await this.transformationsService.setStatus(job.id.toString(), "ERROR");
-      await this.transformationsService.setRunError(
-        job.id.toString(),
-        error?.message
-      );
+      await this.toolRunsService.setStatus(job.id.toString(), "ERROR");
+      await this.toolRunsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
 
@@ -66,11 +60,8 @@ export class TransformationProcessor extends WorkerHost {
   async onFailed(job: Job, error: any) {
     this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
-      await this.transformationsService.setStatus(job.id.toString(), "ERROR");
-      await this.transformationsService.setRunError(
-        job.id.toString(),
-        error?.message
-      );
+      await this.toolRunsService.setStatus(job.id.toString(), "ERROR");
+      await this.toolRunsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
 
@@ -133,7 +124,7 @@ export class TransformationProcessor extends WorkerHost {
     }
 
     this.logger.log(`Adding run output contents to run ${job.id}`);
-    await this.transformationsService.setOutputContent(
+    await this.toolRunsService.setOutputContent(
       job.id.toString(),
       runOutputContents
     );

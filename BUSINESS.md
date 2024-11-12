@@ -5,6 +5,10 @@
 - Add pipeline ui for building stuff with connectors
 - Implement ability to save "forms" that can be run against content and extract data to fill out the form. this form type can then be used as input to other tools
 - Get labels to work better and add faceting
+- Notifications with websockets
+- [DONE] Fix websocket auth
+- Ensure that refresh tokens work as expected and write tests
+- Implement react flow to create pipelines with steps
 
 ## Introduction
 
@@ -38,6 +42,7 @@
 
 - **Custom Pipelines:** Design and implement data processing pipelines using individual tools.
 - **Automation:** Automate complex data workflows tailored to organizational needs.
+- **Directed Acyclical Graph**: The pipelines are DAGs, so you can represent all possible pipelines.
 
 ### Support and Consulting
 

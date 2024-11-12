@@ -35,6 +35,12 @@ export class PipelinesService extends BaseService<
     super(pipelineRepository);
   }
 
+  async createDefaultPipeline(orgname: string) {
+    return this.toEntity(
+      await this.pipelineRepository.createDefaultPipeline(orgname)
+    );
+  }
+
   async createPipelineRun(
     orgname: string,
     pipelineId: string,

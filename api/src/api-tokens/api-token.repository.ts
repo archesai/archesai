@@ -13,7 +13,6 @@ export class ApiTokenRepository extends BaseRepository<
   CreateApiTokenDto,
   UpdateApiTokenDto,
   Prisma.ApiTokenInclude,
-  Prisma.ApiTokenSelect,
   Prisma.ApiTokenUpdateInput
 > {
   constructor(private prisma: PrismaService) {
@@ -25,15 +24,15 @@ export class ApiTokenRepository extends BaseRepository<
     createApiTokenDto: CreateApiTokenDto,
     additionalData: {
       id: string;
-      snippet: string;
-      uid: string;
+      key: string;
+      username: string;
     }
   ) {
     return this.prisma.apiToken.create({
       data: {
         ...createApiTokenDto,
         id: additionalData.id,
-        key: additionalData.snippet,
+        key: additionalData.key,
         organization: {
           connect: {
             orgname,
@@ -41,7 +40,7 @@ export class ApiTokenRepository extends BaseRepository<
         },
         user: {
           connect: {
-            id: additionalData.uid,
+            username: additionalData.username,
           },
         },
       },

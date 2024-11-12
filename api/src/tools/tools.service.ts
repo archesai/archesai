@@ -19,6 +19,10 @@ export class ToolsService extends BaseService<
     super(toolsRepository);
   }
 
+  async createDefaultTools(orgname: string) {
+    await this.toolsRepository.createDefaultTools(orgname);
+  }
+
   protected toEntity(model: ToolModel): ToolEntity {
     return new ToolEntity(model);
   }

@@ -12,14 +12,14 @@ export const resetDatabase = async () => {
     prisma.authProvider.deleteMany(),
     prisma.member.deleteMany(),
     prisma.user.deleteMany(),
-    prisma.tool.deleteMany(),
     prisma.label.deleteMany(),
     prisma.content.deleteMany(),
     prisma.aRToken.deleteMany(),
     prisma.pipeline.deleteMany(),
     prisma.pipelineStep.deleteMany(),
     prisma.pipelineRun.deleteMany(),
-    prisma.transformation.deleteMany(),
+    prisma.tool.deleteMany(),
+    prisma.toolRun.deleteMany(),
     // Add more tables as needed
   ]);
 };

@@ -37,36 +37,41 @@ export class OrganizationsController {
     @Body() createOrganizationDto: CreateOrganizationDto
   ) {
     return new OrganizationEntity(
-      await this.organizationsService.createAndInitialize(
-        user,
-        createOrganizationDto
+      await this.organizationsService.create(
+        createOrganizationDto.orgname,
+        createOrganizationDto,
+        user
       )
     );
   }
 
   @ApiCrudOperation(Operation.DELETE, "organization", OrganizationEntity, true)
   @Delete(":orgname")
-  async delete(@Param("orgname") organization: string) {
-    return this.organizationsService.removeByName(organization);
+  async delete(@Param("orgname") orgname: string) {
+    const organization = await this.organizationsService.findByOrgname(orgname);
+    return this.organizationsService.remove(orgname, organization.id);
   }
 
   @ApiCrudOperation(Operation.GET, "organization", OrganizationEntity, true)
   @Get(":orgname")
-  async findOne(@Param("orgname") organization: string) {
+  async findOne(@Param("orgname") orgname: string) {
+    const organization = await this.organizationsService.findByOrgname(orgname);
     return new OrganizationEntity(
-      await this.organizationsService.findOneByName(organization)
+      await this.organizationsService.findOne(orgname, organization.id)
     );
   }
 
   @ApiCrudOperation(Operation.UPDATE, "organization", OrganizationEntity, true)
   @Patch(":orgname")
   async update(
-    @Param("orgname") organization: string,
+    @Param("orgname") orgname: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto
   ) {
+    const organization = await this.organizationsService.findByOrgname(orgname);
     return new OrganizationEntity(
-      await this.organizationsService.updateByName(
-        organization,
+      await this.organizationsService.update(
+        orgname,
+        organization.id,
         updateOrganizationDto
       )
     );

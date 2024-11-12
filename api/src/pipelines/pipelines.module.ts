@@ -3,7 +3,6 @@ import { Module } from "@nestjs/common";
 
 import { ContentModule } from "../content/content.module";
 import { PrismaModule } from "../prisma/prisma.module";
-import { WebsocketsModule } from "../websockets/websockets.module";
 import { PipelineRepository } from "./pipeline.repository";
 import { PipelinesController } from "./pipelines.controller";
 import { PipelinesService } from "./pipelines.service";
@@ -13,7 +12,6 @@ import { PipelinesService } from "./pipelines.service";
   exports: [PipelinesService],
   imports: [
     PrismaModule,
-    WebsocketsModule,
     BullModule.registerFlowProducer({
       name: "flow",
     }),

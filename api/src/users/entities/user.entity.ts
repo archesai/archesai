@@ -92,11 +92,6 @@ export class UserEntity extends BaseEntity implements User {
   @ApiHideProperty()
   refreshToken: string;
 
-  // Private Properties
-  @Exclude()
-  @ApiHideProperty()
-  uid!: string;
-
   // Exposed Properties
   @ApiProperty({
     description: "The user's username",

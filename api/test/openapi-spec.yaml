@@ -276,6 +276,384 @@ paths:
         - Pipelines
       security:
         - bearer: []
+  /organizations/{orgname}/content:
+    post:
+      operationId: ContentController_create
+      summary: Create a new content
+      description: Create a new content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContentDto'
+      responses:
+        '201':
+          description: Successfully created a new content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '400':
+          description: Bad request when creating the content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    get:
+      operationId: ContentController_findAll
+      summary: Get all contents
+      description: Get all contents. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldFieldQuery'
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ContentEntity'
+                        type: array
+                title: PaginatedResponseOfContentEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+  /organizations/{orgname}/content/{contentId}:
+    get:
+      operationId: ContentController_findOne
+      summary: Get a content
+      description: Get a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    delete:
+      operationId: ContentController_remove
+      summary: Delete a content
+      description: Delete a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+    patch:
+      operationId: ContentController_update
+      summary: Update a content
+      description: Update a content. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: contentId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContentDto'
+      responses:
+        '200':
+          description: Successfully updated the content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Content
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/delete:
+    delete:
+      operationId: StorageController_delete
+      summary: Delete file or directory
+      description: >-
+        This endpoint will delete a file or directory in the organization's
+        secure storage at the specified path. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Path was successfully deleted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/read:
+    post:
+      operationId: StorageController_getReadUrl
+      summary: Read file
+      description: >-
+        This endpoint will return a url for reading a file in the organization's
+        secure storage. It will be valid for 15 minutes. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathDto'
+      responses:
+        '201':
+          description: Read  url was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUrlDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/write:
+    post:
+      operationId: StorageController_getWriteUrl
+      summary: Write file
+      description: >-
+        This endpoint will return a url for writing to a file location in the
+        organization's secure storage. You must write your file to the url
+        returned by this endpoint. If you use is isDir param, it will create a
+        directory instead of a file and you do not need to write to the url.
+        ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PathDto'
+      responses:
+        '201':
+          description: Write urls was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WriteUrlDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
+  /organizations/{orgname}/storage/items:
+    get:
+      operationId: StorageController_listDirectory
+      summary: Show directory
+      description: >-
+        This endpoint will return a list of files and directories in the
+        organization's secure storage at the specified path. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: path
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Path was successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageItemDto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Storage
+      security:
+        - bearer: []
   /auth/email-change/confirm:
     post:
       operationId: AuthController_emailChangeConfirm
@@ -817,6 +1195,241 @@ paths:
         - Organization - Billing
       security:
         - bearer: []
+  /organizations/{orgname}/tools:
+    post:
+      operationId: ToolsController_create
+      summary: Create a new tool
+      description: Create a new tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateToolDto'
+      responses:
+        '201':
+          description: Successfully created a new tool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '400':
+          description: Bad request when creating the tool
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    get:
+      operationId: ToolsController_findAll
+      summary: Get all tools
+      description: Get all tools. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldFieldQuery'
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ToolEntity'
+                        type: array
+                title: PaginatedResponseOfToolEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+  /organizations/{orgname}/tools/{toolId}:
+    get:
+      operationId: ToolsController_findOne
+      summary: Get a tool
+      description: Get a tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the tool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    delete:
+      operationId: ToolsController_remove
+      summary: Delete a tool
+      description: Delete a tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the tool
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
+    patch:
+      operationId: ToolsController_update
+      summary: Update a tool
+      description: Update a tool. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateToolDto'
+      responses:
+        '200':
+          description: Successfully updated the tool
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tools
+      security:
+        - bearer: []
   /organizations/{orgname}/api-tokens:
     post:
       operationId: ApiTokensController_create
@@ -1050,384 +1663,6 @@ paths:
           description: Not Found
       tags:
         - API Tokens
-      security:
-        - bearer: []
-  /organizations/{orgname}/content:
-    post:
-      operationId: ContentController_create
-      summary: Create a new content
-      description: Create a new content. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateContentDto'
-      responses:
-        '201':
-          description: Successfully created a new content
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '400':
-          description: Bad request when creating the content
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content
-      security:
-        - bearer: []
-    get:
-      operationId: ContentController_findAll
-      summary: Get all contents
-      description: Get all contents. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: aggregates
-          required: false
-          in: query
-          description: Aggregates to collect for the search results
-          schema:
-            default: []
-            type: array
-            items:
-              $ref: '#/components/schemas/AggregateFieldQuery'
-        - name: endDate
-          required: false
-          in: query
-          description: The end date to search to
-          schema:
-            type: string
-        - name: filters
-          required: false
-          in: query
-          description: Filter fields and values
-          schema:
-            default: []
-            type: array
-            items:
-              $ref: '#/components/schemas/FieldFieldQuery'
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            default: 10
-            type: number
-        - name: offset
-          required: false
-          in: query
-          description: The offset of the returned results
-          schema:
-            default: 0
-            type: number
-        - name: sortBy
-          required: false
-          in: query
-          description: The field to sort the results by
-          schema:
-            default: createdAt
-            type: string
-        - name: sortDirection
-          required: false
-          in: query
-          description: The direction to sort the results by
-          schema:
-            default: desc
-            enum:
-              - asc
-              - desc
-            type: string
-        - name: startDate
-          required: false
-          in: query
-          description: The start date to search from
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully returned paginated results
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - properties:
-                      aggregates:
-                        items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
-                        type: array
-                      metadata:
-                        $ref: '#/components/schemas/Metadata'
-                      results:
-                        items:
-                          $ref: '#/components/schemas/ContentEntity'
-                        type: array
-                title: PaginatedResponseOfContentEntity
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content
-      security:
-        - bearer: []
-  /organizations/{orgname}/content/{contentId}:
-    get:
-      operationId: ContentController_findOne
-      summary: Get a content
-      description: Get a content. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: contentId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully retrieved the content
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content
-      security:
-        - bearer: []
-    delete:
-      operationId: ContentController_remove
-      summary: Delete a content
-      description: Delete a content. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: contentId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully deleted the content
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content
-      security:
-        - bearer: []
-    patch:
-      operationId: ContentController_update
-      summary: Update a content
-      description: Update a content. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: contentId
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateContentDto'
-      responses:
-        '200':
-          description: Successfully updated the content
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ContentEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Content
-      security:
-        - bearer: []
-  /organizations/{orgname}/storage/delete:
-    delete:
-      operationId: StorageController_delete
-      summary: Delete file or directory
-      description: >-
-        This endpoint will delete a file or directory in the organization's
-        secure storage at the specified path. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Path was successfully deleted
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Storage
-      security:
-        - bearer: []
-  /organizations/{orgname}/storage/read:
-    post:
-      operationId: StorageController_getReadUrl
-      summary: Read file
-      description: >-
-        This endpoint will return a url for reading a file in the organization's
-        secure storage. It will be valid for 15 minutes. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PathDto'
-      responses:
-        '201':
-          description: Read  url was successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReadUrlDto'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Storage
-      security:
-        - bearer: []
-  /organizations/{orgname}/storage/write:
-    post:
-      operationId: StorageController_getWriteUrl
-      summary: Write file
-      description: >-
-        This endpoint will return a url for writing to a file location in the
-        organization's secure storage. You must write your file to the url
-        returned by this endpoint. If you use is isDir param, it will create a
-        directory instead of a file and you do not need to write to the url.
-        ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PathDto'
-      responses:
-        '201':
-          description: Write urls was successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WriteUrlDto'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Storage
-      security:
-        - bearer: []
-  /organizations/{orgname}/storage/items:
-    get:
-      operationId: StorageController_listDirectory
-      summary: Show directory
-      description: >-
-        This endpoint will return a list of files and directories in the
-        organization's secure storage at the specified path. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: path
-          required: true
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Path was successfully retrieved
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StorageItemDto'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Storage
       security:
         - bearer: []
   /organizations/{orgname}/members:
@@ -1894,241 +2129,6 @@ paths:
         - Labels
       security:
         - bearer: []
-  /organizations/{orgname}/tools:
-    post:
-      operationId: ToolsController_create
-      summary: Create a new tool
-      description: Create a new tool. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateToolDto'
-      responses:
-        '201':
-          description: Successfully created a new tool
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '400':
-          description: Bad request when creating the tool
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Tools
-      security:
-        - bearer: []
-    get:
-      operationId: ToolsController_findAll
-      summary: Get all tools
-      description: Get all tools. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: aggregates
-          required: false
-          in: query
-          description: Aggregates to collect for the search results
-          schema:
-            default: []
-            type: array
-            items:
-              $ref: '#/components/schemas/AggregateFieldQuery'
-        - name: endDate
-          required: false
-          in: query
-          description: The end date to search to
-          schema:
-            type: string
-        - name: filters
-          required: false
-          in: query
-          description: Filter fields and values
-          schema:
-            default: []
-            type: array
-            items:
-              $ref: '#/components/schemas/FieldFieldQuery'
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            default: 10
-            type: number
-        - name: offset
-          required: false
-          in: query
-          description: The offset of the returned results
-          schema:
-            default: 0
-            type: number
-        - name: sortBy
-          required: false
-          in: query
-          description: The field to sort the results by
-          schema:
-            default: createdAt
-            type: string
-        - name: sortDirection
-          required: false
-          in: query
-          description: The direction to sort the results by
-          schema:
-            default: desc
-            enum:
-              - asc
-              - desc
-            type: string
-        - name: startDate
-          required: false
-          in: query
-          description: The start date to search from
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully returned paginated results
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - properties:
-                      aggregates:
-                        items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
-                        type: array
-                      metadata:
-                        $ref: '#/components/schemas/Metadata'
-                      results:
-                        items:
-                          $ref: '#/components/schemas/ToolEntity'
-                        type: array
-                title: PaginatedResponseOfToolEntity
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Tools
-      security:
-        - bearer: []
-  /organizations/{orgname}/tools/{toolId}:
-    get:
-      operationId: ToolsController_findOne
-      summary: Get a tool
-      description: Get a tool. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: toolId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully retrieved the tool
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Tools
-      security:
-        - bearer: []
-    delete:
-      operationId: ToolsController_remove
-      summary: Delete a tool
-      description: Delete a tool. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: toolId
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully deleted the tool
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Tools
-      security:
-        - bearer: []
-    patch:
-      operationId: ToolsController_update
-      summary: Update a tool
-      description: Update a tool. ADMIN ONLY.
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: toolId
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateToolDto'
-      responses:
-        '200':
-          description: Successfully updated the tool
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ToolEntity'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
-        '404':
-          description: Not Found
-      tags:
-        - Tools
-      security:
-        - bearer: []
 info:
   title: Arches AI API
   description: The Arches AI API
@@ -2326,6 +2326,213 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreatePipelineStepDto'
+    CreateContentDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        text:
+          type: string
+          description: The content's text, if TEXT content
+          example: Hello world. I am a text.
+        url:
+          type: string
+          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+          example: https://example.com/example.mp4
+        labels:
+          description: The labels to associate with the content
+          example:
+            - label-1
+            - label-2
+          type: array
+          items:
+            type: string
+      required:
+        - name
+    SubItemEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the item
+          example: example-id
+        name:
+          type: string
+          description: The name of the item
+          example: example-name
+      required:
+        - id
+        - name
+    ContentEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        children:
+          description: The child content, if any
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
+        consumedBy:
+          description: The tool runs that consumed this content, if any
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
+        credits:
+          type: number
+          description: The number of credits used to process this content
+          example: 0
+        description:
+          type: string
+          description: The content's description
+          example: my-file.pdf
+        labels:
+          description: The content's labels
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
+        mimeType:
+          type: string
+          description: The MIME type of the content
+          example: application/pdf
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        parent:
+          description: The parent content, if any
+          allOf:
+            - $ref: '#/components/schemas/SubItemEntity'
+        parentId:
+          type: string
+          description: The parent content ID, if this content is a child of another content
+          example: content-id
+        previewImage:
+          type: string
+          description: The preview image of the content
+          example: https://preview-image.com/example.png
+        producedBy:
+          description: The toolRun that produced this content, if any
+          allOf:
+            - $ref: '#/components/schemas/SubItemEntity'
+        producedById:
+          type: string
+          description: The ID of the toolRun that produced this content, if any
+          example: toolRun-id
+        text:
+          type: string
+          description: The content's text, if TEXT content
+          example: Hello world. I am a text.
+        url:
+          type: string
+          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+          example: https://example.com/example.mp4
+      required:
+        - createdAt
+        - id
+        - credits
+        - name
+        - orgname
+    UpdateContentDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The content's name
+          example: my-file.pdf
+        text:
+          type: string
+          description: The content's text, if TEXT content
+          example: Hello world. I am a text.
+        url:
+          type: string
+          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+          example: https://example.com/example.mp4
+        labels:
+          description: The labels to associate with the content
+          example:
+            - label-1
+            - label-2
+          type: array
+          items:
+            type: string
+    PathDto:
+      type: object
+      properties:
+        isDir:
+          type: boolean
+          default: false
+          description: Whether or not this path points to a directory
+          example: false
+        path:
+          type: string
+          description: The path that the file should upload to
+          example: /location/in/storage
+      required:
+        - path
+    ReadUrlDto:
+      type: object
+      properties:
+        read:
+          type: string
+          description: >-
+            A read-only url that you can use to download the file from secure
+            storage
+          example: www.example.com?token=read-token
+      required:
+        - read
+    WriteUrlDto:
+      type: object
+      properties:
+        write:
+          type: string
+          description: A write-only url that you can use to upload a file to secure storage
+          example: www.example.com?token=write-token
+      required:
+        - write
+    StorageItemDto:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: Whether or not this is a directory
+          example: true
+        id:
+          type: string
+          description: The id of the storage item
+          example: '14'
+        isDir:
+          type: boolean
+          description: Whether or not this is a directory
+          example: true
+        name:
+          type: string
+          description: The path that the file is located in
+          example: /location/in/storage
+        size:
+          type: number
+          description: The size of the item in bytes
+          example: 12341234
+      required:
+        - createdAt
+        - id
+        - isDir
+        - name
+        - size
     ConfirmationTokenDto:
       type: object
       properties:
@@ -2813,371 +3020,6 @@ components:
         - customer
         - id
         - type
-    CreateApiTokenDto:
-      type: object
-      properties:
-        domains:
-          type: string
-          default: '*'
-          description: The domains that can access this API token
-          example: archesai.com,localhost:3000
-        name:
-          type: string
-          description: The name of the API token
-          example: My Token
-        role:
-          type: string
-          description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
-      required:
-        - domains
-        - name
-        - role
-    ApiTokenEntity:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        domains:
-          type: string
-          default: '*'
-          description: The domains that can access this API token
-          example: archesai.com,localhost:3000
-        key:
-          type: string
-          description: The API token key. This will only be shown once
-          example: '********1234567890'
-        name:
-          type: string
-          description: The name of the API token
-          example: My Token
-        orgname:
-          type: string
-          description: The organization name
-          example: my-organization
-        role:
-          type: string
-          description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
-        username:
-          type: string
-          description: The username of the user who owns this API token
-          example: jonathan
-      required:
-        - createdAt
-        - id
-        - domains
-        - key
-        - name
-        - orgname
-        - role
-        - username
-    UpdateApiTokenDto:
-      type: object
-      properties:
-        domains:
-          type: string
-          default: '*'
-          description: The domains that can access this API token
-          example: archesai.com,localhost:3000
-        name:
-          type: string
-          description: The name of the API token
-          example: My Token
-        role:
-          type: string
-          description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
-    CreateContentDto:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The content's name
-          example: my-file.pdf
-        text:
-          type: string
-          description: The content's text, if TEXT content
-          example: Hello world. I am a text.
-        url:
-          type: string
-          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-          example: https://example.com/example.mp4
-        labels:
-          description: The labels to associate with the content
-          example:
-            - label-1
-            - label-2
-          type: array
-          items:
-            type: string
-      required:
-        - name
-    SubItemEntity:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The id of the item
-          example: example-id
-        name:
-          type: string
-          description: The name of the item
-          example: example-name
-      required:
-        - id
-        - name
-    ContentEntity:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        children:
-          description: The child content, if any
-          type: array
-          items:
-            $ref: '#/components/schemas/SubItemEntity'
-        consumedBy:
-          description: The transformations that consumed this content, if any
-          type: array
-          items:
-            $ref: '#/components/schemas/SubItemEntity'
-        credits:
-          type: number
-          description: The number of credits used to process this content
-          example: 0
-        description:
-          type: string
-          description: The content's description
-          example: my-file.pdf
-        labels:
-          description: The content's labels
-          type: array
-          items:
-            $ref: '#/components/schemas/SubItemEntity'
-        mimeType:
-          type: string
-          description: The MIME type of the content
-          example: application/pdf
-        name:
-          type: string
-          description: The content's name
-          example: my-file.pdf
-        orgname:
-          type: string
-          description: The organization name
-          example: my-organization
-        parent:
-          description: The parent content, if any
-          allOf:
-            - $ref: '#/components/schemas/SubItemEntity'
-        parentId:
-          type: string
-          description: The parent content ID, if this content is a child of another content
-          example: content-id
-        previewImage:
-          type: string
-          description: The preview image of the content
-          example: https://preview-image.com/example.png
-        producedBy:
-          description: The transformation that produced this content, if any
-          allOf:
-            - $ref: '#/components/schemas/SubItemEntity'
-        producedById:
-          type: string
-          description: The ID of the transformation that produced this content, if any
-          example: transformation-id
-        text:
-          type: string
-          description: The content's text, if TEXT content
-          example: Hello world. I am a text.
-        url:
-          type: string
-          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-          example: https://example.com/example.mp4
-      required:
-        - createdAt
-        - id
-        - credits
-        - name
-        - orgname
-    UpdateContentDto:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The content's name
-          example: my-file.pdf
-        text:
-          type: string
-          description: The content's text, if TEXT content
-          example: Hello world. I am a text.
-        url:
-          type: string
-          description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-          example: https://example.com/example.mp4
-        labels:
-          description: The labels to associate with the content
-          example:
-            - label-1
-            - label-2
-          type: array
-          items:
-            type: string
-    PathDto:
-      type: object
-      properties:
-        isDir:
-          type: boolean
-          default: false
-          description: Whether or not this path points to a directory
-          example: false
-        path:
-          type: string
-          description: The path that the file should upload to
-          example: /location/in/storage
-      required:
-        - path
-    ReadUrlDto:
-      type: object
-      properties:
-        read:
-          type: string
-          description: >-
-            A read-only url that you can use to download the file from secure
-            storage
-          example: www.example.com?token=read-token
-      required:
-        - read
-    WriteUrlDto:
-      type: object
-      properties:
-        write:
-          type: string
-          description: A write-only url that you can use to upload a file to secure storage
-          example: www.example.com?token=write-token
-      required:
-        - write
-    StorageItemDto:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: Whether or not this is a directory
-          example: true
-        id:
-          type: string
-          description: The id of the storage item
-          example: '14'
-        isDir:
-          type: boolean
-          description: Whether or not this is a directory
-          example: true
-        name:
-          type: string
-          description: The path that the file is located in
-          example: /location/in/storage
-        size:
-          type: number
-          description: The size of the item in bytes
-          example: 12341234
-      required:
-        - createdAt
-        - id
-        - isDir
-        - name
-        - size
-    CreateMemberDto:
-      type: object
-      properties:
-        inviteEmail:
-          type: string
-          description: The invited email of this member
-          example: invited-user@archesai.com
-        role:
-          type: string
-          description: The role of the member
-          enum:
-            - USER
-            - ADMIN
-      required:
-        - inviteEmail
-        - role
-    UpdateMemberDto:
-      type: object
-      properties:
-        inviteEmail:
-          type: string
-          description: The invited email of this member
-          example: invited-user@archesai.com
-        role:
-          type: string
-          description: The role of the member
-          enum:
-            - USER
-            - ADMIN
-    CreateLabelDto:
-      type: object
-      properties:
-        name:
-          type: string
-          default: New Chat
-          description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
-    LabelEntity:
-      type: object
-      properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: The creation date of this item
-          example: '2023-07-11T21:09:20.895Z'
-        id:
-          type: string
-          description: The item's unique identifier
-          example: 32411590-a8e0-11ed-afa1-0242ac120002
-        name:
-          type: string
-          default: New Chat
-          description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
-        orgname:
-          type: string
-          description: The organization name
-          example: my-organization
-      required:
-        - createdAt
-        - id
-        - orgname
-    UpdateLabelDto:
-      type: object
-      properties:
-        name:
-          type: string
-          default: New Chat
-          description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
     CreateToolDto:
       type: object
       properties:
@@ -3305,6 +3147,164 @@ components:
           type: string
           description: The tool's base path
           example: extract-text
+    CreateApiTokenDto:
+      type: object
+      properties:
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+      required:
+        - domains
+        - name
+        - role
+    ApiTokenEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        key:
+          type: string
+          description: The API token key. This will only be shown once
+          example: '********1234567890'
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+        username:
+          type: string
+          description: The username of the user who owns this API token
+          example: jonathan
+      required:
+        - createdAt
+        - id
+        - domains
+        - key
+        - name
+        - orgname
+        - role
+        - username
+    UpdateApiTokenDto:
+      type: object
+      properties:
+        domains:
+          type: string
+          default: '*'
+          description: The domains that can access this API token
+          example: archesai.com,localhost:3000
+        name:
+          type: string
+          description: The name of the API token
+          example: My Token
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+    CreateMemberDto:
+      type: object
+      properties:
+        inviteEmail:
+          type: string
+          description: The invited email of this member
+          example: invited-user@archesai.com
+        role:
+          type: string
+          description: The role of the member
+          enum:
+            - USER
+            - ADMIN
+      required:
+        - inviteEmail
+        - role
+    UpdateMemberDto:
+      type: object
+      properties:
+        inviteEmail:
+          type: string
+          description: The invited email of this member
+          example: invited-user@archesai.com
+        role:
+          type: string
+          description: The role of the member
+          enum:
+            - USER
+            - ADMIN
+    CreateLabelDto:
+      type: object
+      properties:
+        name:
+          type: string
+          default: New Chat
+          description: The chat label name
+          example: What are the morals of the story in Aesop's Fables?
+    LabelEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        name:
+          type: string
+          default: New Chat
+          description: The chat label name
+          example: What are the morals of the story in Aesop's Fables?
+        orgname:
+          type: string
+          description: The organization name
+          example: my-organization
+      required:
+        - createdAt
+        - id
+        - orgname
+    UpdateLabelDto:
+      type: object
+      properties:
+        name:
+          type: string
+          default: New Chat
+          description: The chat label name
+          example: What are the morals of the story in Aesop's Fables?
     FieldFieldQuery:
       type: object
       properties:

@@ -56,7 +56,6 @@ export function useArchesApiContext<
   >
 ): ArchesApiContext {
   const { getNewRefreshToken, logout, defaultOrgname } = useAuth();
-  console.log("RUNNING useArchesApiContext");
   return {
     fetcherOptions: {
       // headers: {

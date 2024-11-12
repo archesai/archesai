@@ -28,7 +28,7 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   children: SubItemEntity[];
 
   @ApiProperty({
-    description: "The transformations that consumed this content, if any",
+    description: "The tool runs that consumed this content, if any",
     required: false,
     type: [SubItemEntity],
   })
@@ -116,7 +116,7 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   previewImage: null | string;
 
   @ApiProperty({
-    description: "The transformation that produced this content, if any",
+    description: "The toolRun that produced this content, if any",
     required: false,
     type: SubItemEntity,
   })
@@ -124,9 +124,8 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   producedBy: null | SubItemEntity;
 
   @ApiProperty({
-    description:
-      "The ID of the transformation that produced this content, if any",
-    example: "transformation-id",
+    description: "The ID of the toolRun that produced this content, if any",
+    example: "toolRun-id",
     required: false,
     type: String,
   })

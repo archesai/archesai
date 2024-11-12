@@ -13,7 +13,6 @@ export const useAuth = () => {
   const [authState, setAuthState] = useAtom(authStateAtom);
   const router = useRouter();
   const { toast } = useToast();
-  console.log("Auth state: ", authState);
 
   const logout = useCallback(async () => {
     const response = await fetch(baseUrl + "/auth/logout", {

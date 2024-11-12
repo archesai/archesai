@@ -31,7 +31,7 @@ export class ApiTokensService extends BaseService<
     orgname: string,
     createTokenDto: CreateApiTokenDto,
     additionalData: {
-      uid: string;
+      username: string;
     }
   ) {
     const id = v4();
@@ -41,7 +41,7 @@ export class ApiTokensService extends BaseService<
         id,
         orgname,
         role: createTokenDto.role,
-        uid: additionalData.uid,
+        username: additionalData.username,
       },
       {
         expiresIn: `${this.configService.get(
@@ -50,14 +50,14 @@ export class ApiTokensService extends BaseService<
         secret: this.configService.get("JWT_API_TOKEN_SECRET"),
       }
     );
-    const snippet = "*********" + token.slice(-5);
+    const key = "*********" + token.slice(-5);
     const apiToken = await this.apiTokenRepository.create(
       orgname,
       createTokenDto,
       {
         id,
-        snippet,
-        uid: additionalData.uid,
+        key,
+        username: additionalData.username,
       }
     );
     this.websocketsService.socket.to(orgname).emit("update", {

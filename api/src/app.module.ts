@@ -6,7 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { MulterModule } from "@nestjs/platform-express";
 import { ScheduleModule } from "@nestjs/schedule";
 import { readFileSync } from "fs";
-import * as Joi from "joi";
+import Joi from "joi";
 import { LoggerModule } from "nestjs-pino";
 
 import { ApiTokensModule } from "./api-tokens/api-tokens.module";
@@ -25,8 +25,8 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { RunpodModule } from "./runpod/runpod.module";
 import { SpeechModule } from "./speech/speech.module";
 import { StorageModule } from "./storage/storage.module";
+import { ToolRunsModule } from "./tool-runs/tool-runs.module";
 import { ToolsModule } from "./tools/tools.module";
-import { TransformationsModule } from "./transformations/transformations.module";
 import { UsersModule } from "./users/users.module";
 import { WebsocketsGateway } from "./websockets/websockets.gateway";
 import { WebsocketsModule } from "./websockets/websockets.module";
@@ -226,7 +226,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     RunpodModule,
     SpeechModule,
     ToolsModule,
-    TransformationsModule,
+    ToolRunsModule,
   ],
   providers: [WebsocketsGateway],
 })

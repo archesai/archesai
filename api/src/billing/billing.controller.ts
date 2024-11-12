@@ -60,7 +60,10 @@ export class BillingController {
     if (this.configService.get("FEATURE_BILLING") == false) {
       throw new ForbiddenException("Billing is disabled");
     }
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
 
     // Cancel the subscription
     await this.billingService.cancelSubscription(organization.stripeCustomerId);
@@ -82,7 +85,10 @@ export class BillingController {
     if (this.configService.get("FEATURE_BILLING") == false) {
       throw new ForbiddenException("Billing is disabled");
     }
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
 
     const plans = await this.billingService.listPlans();
     const plan = plans.find((p) => p.id === planId);
@@ -115,7 +121,10 @@ export class BillingController {
     if (this.configService.get("FEATURE_BILLING") == false) {
       throw new ForbiddenException("Billing is disabled");
     }
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
 
     return new BillingUrlEntity(
       await this.billingService.createBillingPortal(
@@ -142,7 +151,10 @@ export class BillingController {
     if (this.configService.get("FEATURE_BILLING") == false) {
       throw new ForbiddenException("Billing is disabled");
     }
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
     if (["BASIC", "PREMIUM", "STANDARD"].includes(organization.plan)) {
       throw new BadRequestException(
         "Cannot purchase a plan when already on a plan"
@@ -198,7 +210,10 @@ export class BillingController {
   })
   @Get("/organizations/:orgname/billing/payment-methods")
   async listPaymentMethods(@Param("orgname") orgname: string) {
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
     const paymentMethods = await this.billingService.listPaymentMethods(
       organization.stripeCustomerId
     );
@@ -214,7 +229,10 @@ export class BillingController {
     @Param("orgname") orgname: string,
     @Param("paymentMethodId") paymentMethodId: string
   ) {
-    const organization = await this.organizationsService.findOneByName(orgname);
+    const organization = await this.organizationsService.findOne(
+      orgname,
+      orgname
+    );
     const paymentMethods = await this.billingService.listPaymentMethods(
       organization.stripeCustomerId
     );
@@ -298,13 +316,13 @@ export class BillingController {
       if (data.amount_paid > 0) {
         const customerId = data.customer as string;
         const organization =
-          await this.organizationsService.findOneByCustomerId(customerId);
+          await this.organizationsService.findByStripeCustomerId(customerId);
         for (const lineItem of data.lines.data) {
           const price = await this.billingService.getPrice(lineItem.price.id);
           const product = price.product as Stripe.Product;
           const credits = product.metadata["credits"];
           const quantity = lineItem.quantity || 1;
-          await this.organizationsService.addCredits(
+          await this.organizationsService.addOrRemoveCredits(
             organization.orgname,
             Number(credits) * quantity
           );
@@ -325,7 +343,7 @@ export class BillingController {
       const data = event.data.object as Stripe.Subscription;
       const customerId = data.customer as string;
       const organization =
-        await this.organizationsService.findOneByCustomerId(customerId);
+        await this.organizationsService.findByStripeCustomerId(customerId);
 
       const priceId = data.items.data[0].price.id;
       const price = await this.billingService.getPrice(priceId);

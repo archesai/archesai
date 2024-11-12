@@ -9,12 +9,12 @@ import { PrismaModule } from "../prisma/prisma.module";
 import { RunpodModule } from "../runpod/runpod.module";
 import { SpeechModule } from "../speech/speech.module";
 import { StorageModule } from "../storage/storage.module";
-import { TransformationProcessor } from "./transformation.processor";
-import { TransformationRepository } from "./transformation.repository";
-import { TransformationsService } from "./transformations.service";
+import { ToolRunProcessor } from "./tool-run.processor";
+import { ToolRunRepository } from "./tool-run.repository";
+import { ToolRunsService } from "./tool-runs.service";
 
 @Module({
-  exports: [TransformationsService],
+  exports: [ToolRunsService],
   imports: [
     PrismaModule,
     StorageModule.forRoot(),
@@ -28,10 +28,6 @@ import { TransformationsService } from "./transformations.service";
     ConfigModule,
     forwardRef(() => RunpodModule),
   ],
-  providers: [
-    TransformationsService,
-    TransformationRepository,
-    TransformationProcessor,
-  ],
+  providers: [ToolRunsService, ToolRunRepository, ToolRunProcessor],
 })
-export class TransformationsModule {}
+export class ToolRunsModule {}

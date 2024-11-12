@@ -1,19 +1,24 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Member, Organization, PlanType } from "@prisma/client";
+import { Organization as _PrismaOrganization, PlanType } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber } from "class-validator";
+import { IsEmail, IsEnum, IsNumber } from "class-validator";
 
 import { BaseEntity } from "../../common/entities/base.entity";
 
+export type OrganizationModel = _PrismaOrganization;
+
 @Exclude()
-export class OrganizationEntity extends BaseEntity implements Organization {
+export class OrganizationEntity
+  extends BaseEntity
+  implements OrganizationModel
+{
   @Expose()
   @ApiProperty({
     description: "The billing email to use for the organization",
     example: "example@test.com",
   })
   @IsEmail()
-  billingEmail!: string;
+  billingEmail: string;
 
   @Expose()
   @ApiProperty({
@@ -22,19 +27,14 @@ export class OrganizationEntity extends BaseEntity implements Organization {
     example: 500000,
   })
   @IsNumber()
-  credits!: number;
+  credits: number;
 
-  @ApiHideProperty()
-  members: Member[];
-
-  // Exposed Properties
   @Expose()
   @ApiProperty({
     description: "The name of the organization to create",
     example: "organization-name",
   })
-  @IsNotEmpty()
-  orgname!: string;
+  orgname: string;
 
   @Expose()
   @ApiProperty({
@@ -43,12 +43,12 @@ export class OrganizationEntity extends BaseEntity implements Organization {
     example: "FREE",
   })
   @IsEnum(PlanType)
-  plan!: PlanType;
+  plan: PlanType;
 
   @ApiHideProperty()
-  stripeCustomerId!: string;
+  stripeCustomerId: string;
 
-  constructor(organization: Partial<Organization>) {
+  constructor(organization: OrganizationModel) {
     super();
     Object.assign(this, organization);
   }

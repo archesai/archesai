@@ -5,7 +5,7 @@ import { AxiosError } from "axios";
 import { catchError, firstValueFrom } from "rxjs";
 
 import { retry } from "../common/retry";
-import { TransformationsService } from "../transformations/transformations.service";
+import { ToolRunsService } from "../tool-runs/tool-runs.service";
 
 @Injectable()
 export class RunpodService {
@@ -13,7 +13,7 @@ export class RunpodService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly transformationsService: TransformationsService
+    private readonly toolRunsService: ToolRunsService
   ) {}
 
   async runPod(jobId: string, podId: string, input: any) {
@@ -79,11 +79,11 @@ export class RunpodService {
       } else if (rundpodCheckJobResponse.status === "IN_PROGRESS") {
         if (firstAttempt) {
           // mark as processing
-          await this.transformationsService.setStatus(jobId, "PROCESSING");
+          await this.toolRunsService.setStatus(jobId, "PROCESSING");
           firstAttempt = false;
         }
 
-        await this.transformationsService.setProgress(
+        await this.toolRunsService.setProgress(
           jobId,
           Number(rundpodCheckJobResponse.output) || 0.5
         );

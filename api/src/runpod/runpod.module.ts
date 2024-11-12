@@ -1,12 +1,12 @@
 import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
-import { TransformationsModule } from "../transformations/transformations.module";
+import { ToolRunsModule } from "../tool-runs/tool-runs.module";
 import { RunpodService } from "./runpod.service";
 
 @Module({
   exports: [RunpodService],
-  imports: [TransformationsModule, HttpModule],
+  imports: [ToolRunsModule, HttpModule],
   providers: [RunpodService],
 })
 export class RunpodModule {}
