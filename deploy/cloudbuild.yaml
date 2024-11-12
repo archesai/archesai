@@ -168,7 +168,7 @@ steps:
         deployment_status=""
         while [[ "$deployment_status" != "SUCCEEDED" && "$deployment_status" != "FAILED" ]]; do
           deployment_status=$(gcloud deploy rollouts list \
-          --release arches-1f65a4c \
+          --release arches-${SHORT_SHA} \
           --project=archesai \
           --region=us-east1 \
           --delivery-pipeline=arches-deployment \
