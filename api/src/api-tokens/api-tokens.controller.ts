@@ -10,16 +10,14 @@ import {
 import { Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import {
-  CurrentUser,
-  CurrentUserDto,
-} from "../auth/decorators/current-user.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
 import { SearchQueryDto } from "../common/dto/search-query.dto";
+import { UserEntity } from "../users/entities/user.entity";
 import { ApiTokensService } from "./api-tokens.service";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
 import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
@@ -44,7 +42,7 @@ export class ApiTokensController
   async create(
     @Param("orgname") orgname: string,
     @Body() createTokenDto: CreateApiTokenDto,
-    @CurrentUser() currentUserDto: CurrentUserDto
+    @CurrentUser() currentUserDto: UserEntity
   ) {
     return this.apiTokensService.create(orgname, createTokenDto, {
       username: currentUserDto.username,

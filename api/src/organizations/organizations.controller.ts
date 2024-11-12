@@ -9,15 +9,13 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
-import {
-  CurrentUser,
-  CurrentUserDto,
-} from "../auth/decorators/current-user.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Roles } from "../auth/decorators/roles.decorator";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
+import { UserEntity } from "../users/entities/user.entity";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 import { OrganizationEntity } from "./entities/organization.entity";
@@ -33,7 +31,7 @@ export class OrganizationsController {
   @ApiCrudOperation(Operation.CREATE, "organization", OrganizationEntity, true)
   @Post()
   async create(
-    @CurrentUser() user: CurrentUserDto,
+    @CurrentUser() user: UserEntity,
     @Body() createOrganizationDto: CreateOrganizationDto
   ) {
     return new OrganizationEntity(

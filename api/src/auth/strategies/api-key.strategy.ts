@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -6,7 +7,6 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { ApiTokensService } from "../../api-tokens/api-tokens.service";
 import { UsersService } from "../../users/users.service";
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key-auth") {
@@ -24,7 +24,7 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key-auth") {
     });
   }
 
-  async validate(payload: any): Promise<CurrentUserDto> {
+  async validate(payload: any): Promise<UserEntity> {
     this.logger.log(`Validating API Key: ${payload.id}`);
     const { id, orgname, role, username } = payload;
     const user = await this.usersService.findOneByUsername(username);

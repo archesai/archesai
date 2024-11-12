@@ -45,7 +45,7 @@ export class UsersService extends BaseService<
         billingEmail: user.email,
         orgname: user.username,
       },
-      user
+      new UserEntity(user)
     );
     return this.toEntity(await this.userRepository.findOne("", user.id));
   }
@@ -101,11 +101,13 @@ export class UsersService extends BaseService<
     email: string,
     provider: AuthProviderType,
     providerId: string
-  ) {
+  ): Promise<UserEntity> {
     const user = await this.userRepository.findOneByEmail(email);
     // if it does not have this provider, add it
     if (!user.authProviders.some((p) => p.provider === provider)) {
-      return this.userRepository.addAuthProvider(email, provider, providerId);
+      return this.toEntity(
+        await this.userRepository.addAuthProvider(email, provider, providerId)
+      );
     }
     this.emitMutationEvent(user.defaultOrgname);
     return this.toEntity(user);

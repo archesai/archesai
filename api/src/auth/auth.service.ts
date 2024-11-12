@@ -5,8 +5,8 @@ import { AuthProviderType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import { Response } from "express";
 
+import { UserEntity } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
-import { CurrentUserDto } from "./decorators/current-user.decorator";
 import { RegisterDto } from "./dto/register.dto";
 import { TokenDto } from "./dto/token.dto";
 
@@ -43,7 +43,7 @@ export class AuthService {
     );
   }
 
-  async login(user: CurrentUserDto) {
+  async login(user: UserEntity) {
     this.logger.log("Logging in user: " + user.id);
     const accessToken = this.generateAccessToken(user.id);
     const refreshToken = this.generateRefreshToken(user.id);

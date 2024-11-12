@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PlanType, Prisma } from "@prisma/client";
 
-import { CurrentUserDto } from "../auth/decorators/current-user.decorator";
 import { BaseRepository } from "../common/base.repository";
 import { PrismaService } from "../prisma/prisma.service";
+import { UserEntity } from "../users/entities/user.entity";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 import { OrganizationModel } from "./entities/organization.entity";
@@ -26,7 +26,7 @@ export class OrganizationRepository extends BaseRepository<
     additionalData: {
       billingEnabled: boolean;
       stripeCustomerId: string;
-      user: CurrentUserDto;
+      user: UserEntity;
     }
   ) {
     const { billingEnabled, stripeCustomerId, user } = additionalData;

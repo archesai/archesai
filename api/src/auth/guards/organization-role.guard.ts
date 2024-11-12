@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import {
   CanActivate,
   ExecutionContext,
@@ -8,8 +9,6 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
-
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class OrganizationRoleGuard implements CanActivate {
@@ -28,7 +27,7 @@ export class OrganizationRoleGuard implements CanActivate {
     }
 
     const { params, user } = context.switchToHttp().getRequest() as any;
-    const currentUser = user as CurrentUserDto;
+    const currentUser = user as UserEntity;
     const orgname = params.orgname;
 
     if (!orgname) {

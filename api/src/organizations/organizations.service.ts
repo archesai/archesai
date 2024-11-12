@@ -3,11 +3,11 @@ import { ForbiddenException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PlanType } from "@prisma/client";
 
-import { CurrentUserDto } from "../auth/decorators/current-user.decorator";
 import { BillingService } from "../billing/billing.service";
 import { BaseService } from "../common/base.service";
 import { PipelinesService } from "../pipelines/pipelines.service";
 import { ToolsService } from "../tools/tools.service";
+import { UserEntity } from "../users/entities/user.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
@@ -71,7 +71,7 @@ export class OrganizationsService extends BaseService<
   async create(
     orgname: string,
     createOrganizationDto: CreateOrganizationDto,
-    user: CurrentUserDto
+    user: UserEntity
   ) {
     this.logger.log(
       `Creating organization for user ${user.username}: ${JSON.stringify(

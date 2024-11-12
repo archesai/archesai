@@ -11,6 +11,7 @@ import { ARTokensService } from "./ar-tokens.service";
 import { AuthService } from "./auth.service"; // Import TokenService
 import { ConfigService } from "@nestjs/config";
 
+import { UserEntity } from "../users/entities/user.entity";
 import { ConfirmationTokenWithNewPasswordDto } from "./dto/confirmation-token-with-new-password.dto";
 import { EmailRequestDto } from "./dto/email-request.dto";
 
@@ -45,7 +46,7 @@ export class PasswordResetService {
       where: { id: userId },
     });
 
-    return this.authService.login(user);
+    return this.authService.login(new UserEntity(user));
   }
 
   async request(emailRequestDto: EmailRequestDto): Promise<void> {

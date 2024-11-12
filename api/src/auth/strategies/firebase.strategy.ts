@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
@@ -6,7 +7,6 @@ import admin from "firebase-admin";
 import { ExtractJwt, Strategy } from "passport-firebase-jwt";
 
 import { UsersService } from "../../users/users.service";
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 export const firebaseConfig = {
   auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
@@ -65,10 +65,10 @@ export class FirebaseStrategy extends PassportStrategy(
     }
   }
 
-  async validate(token: string): Promise<CurrentUserDto> {
+  async validate(token: string): Promise<UserEntity> {
     this.logger.log(`Validating Firebase Token: ${token}`);
     const decodedToken = await admin.auth().verifyIdToken(token);
-    let user: CurrentUserDto;
+    let user: UserEntity;
     try {
       const user = await this.usersService.findOneByEmail(decodedToken.email);
       return user;

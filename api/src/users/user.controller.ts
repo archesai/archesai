@@ -6,10 +6,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import {
-  CurrentUser,
-  CurrentUserDto,
-} from "../auth/decorators/current-user.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import {
   ApiCrudOperation,
   Operation,
@@ -34,20 +31,20 @@ export class UserController {
   })
   @ApiOperation({ summary: "Deactivate" })
   @Post("/deactivate")
-  async deactivate(@CurrentUser() user: CurrentUserDto) {
+  async deactivate(@CurrentUser() user: UserEntity) {
     return this.usersService.deactivate(user.id);
   }
 
   @ApiCrudOperation(Operation.GET, "user", UserEntity, true)
   @Get()
-  async findOne(@CurrentUser() user: CurrentUserDto) {
-    return new UserEntity(user);
+  async findOne(@CurrentUser() user: UserEntity) {
+    return user;
   }
 
   @ApiCrudOperation(Operation.UPDATE, "user", UserEntity, true)
   @Patch()
   async update(
-    @CurrentUser() user: CurrentUserDto,
+    @CurrentUser() user: UserEntity,
     @Body() updateUserDto: UpdateUserDto
   ) {
     return this.usersService.update(

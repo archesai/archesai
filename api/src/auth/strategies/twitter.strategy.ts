@@ -1,12 +1,12 @@
 // src/auth/twitter.strategy.ts
 
+import { UserEntity } from "@/src/users/entities/user.entity";
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { AuthProviderType } from "@prisma/client";
 import { Profile, Strategy } from "passport-twitter";
 
 import { UsersService } from "../../users/users.service";
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
@@ -31,7 +31,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
       const email = profile.emails?.[0]?.value;
       const username = profile.username;
 
-      let user: CurrentUserDto;
+      let user: UserEntity;
       try {
         user = await this.usersService.findOneByEmail(email);
       } catch (e) {

@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import {
   CanActivate,
   ExecutionContext,
@@ -5,8 +6,6 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class DeactivatedGuard implements CanActivate {
@@ -22,7 +21,7 @@ export class DeactivatedGuard implements CanActivate {
 
     // Check if deactivated
     const { user } = context.switchToHttp().getRequest() as any;
-    const currentUser = user as CurrentUserDto;
+    const currentUser = user as UserEntity;
     if (currentUser?.deactivated) {
       throw new ForbiddenException();
     }

@@ -55,7 +55,7 @@ export function useArchesApiContext<
     "queryFn" | "queryKey"
   >
 ): ArchesApiContext {
-  const { getNewRefreshToken, logout, defaultOrgname } = useAuth();
+  const { getNewRefreshToken, logout, defaultOrgname, status } = useAuth();
   return {
     fetcherOptions: {
       // headers: {
@@ -69,7 +69,7 @@ export function useArchesApiContext<
           ? !!_queryOptions.enabled
           : !!defaultOrgname,
       retry: async (failureCount: number, error: any) => {
-        console.log("RETRYING", failureCount, error);
+        console.log("RETRYING", failureCount, error, status);
         if (error?.stack?.statusCode === 401 && failureCount <= 2) {
           await getNewRefreshToken();
           return true;

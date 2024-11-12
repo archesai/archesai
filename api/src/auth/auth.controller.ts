@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Logger, Post, Req, Res } from "@nestjs/common";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import {
@@ -11,13 +11,11 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { Response } from "express";
+import { Request, Response } from "express";
 
+import { UserEntity } from "../users/entities/user.entity";
 import { AuthService } from "./auth.service";
-import {
-  CurrentUser,
-  CurrentUserDto,
-} from "./decorators/current-user.decorator";
+import { CurrentUser } from "./decorators/current-user.decorator";
 import { IsPublic } from "./decorators/is-public.decorator";
 import { Roles } from "./decorators/roles.decorator";
 import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
@@ -34,6 +32,7 @@ import { PasswordResetService } from "./password-reset.service";
 @ApiTags("Authentication")
 @Controller("auth")
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
   constructor(
     private readonly authService: AuthService,
     private passwordResetService: PasswordResetService,
@@ -68,7 +67,7 @@ export class AuthController {
   })
   @Post("/email-change/request")
   async emailChangeRequest(
-    @CurrentUser() currentUserDto: CurrentUserDto,
+    @CurrentUser() currentUserDto: UserEntity,
     @Body() emailRequestDto: EmailRequestDto
   ) {
     return this.emailChangeService.request(currentUserDto.id, emailRequestDto);
@@ -109,7 +108,7 @@ export class AuthController {
   @ApiResponse({ description: "Forbidden", status: 403 })
   @Roles("ADMIN")
   @Post("/email-verification/request")
-  async emailVerificationRequest(@CurrentUser() user: CurrentUserDto) {
+  async emailVerificationRequest(@CurrentUser() user: UserEntity) {
     return this.emailVerificationService.request(user.id);
   }
 
@@ -123,7 +122,7 @@ export class AuthController {
   @Post("/login")
   async login(
     @Body() loginDto: LoginDto,
-    @CurrentUser() currentUserDto: CurrentUserDto,
+    @CurrentUser() currentUserDto: UserEntity,
     @Res({
       passthrough: true,
     })
@@ -188,9 +187,18 @@ export class AuthController {
   @IsPublic()
   @Post("/refresh-token")
   async refreshToken(
-    @Body("refreshToken") refreshToken: string
+    @Body("refreshToken") refreshToken: string,
+    @Req() req: Request,
+    @Res({
+      passthrough: true,
+    })
+    res: Response
   ): Promise<TokenDto> {
-    const tokens = await this.authService.refreshAccessToken(refreshToken);
+    const cookies = req?.signedCookies?.["archesai.refreshToken"];
+    const tokens = await this.authService.refreshAccessToken(
+      refreshToken || cookies
+    );
+    await this.authService.setCookies(res, tokens);
     return tokens;
   }
 
@@ -219,7 +227,7 @@ export class AuthController {
   @UseGuards(AuthGuard("firebase-auth"))
   @Post("firebase/callback")
   async zfirebaseAuthCallback(
-    @CurrentUser() currentUserDto: CurrentUserDto
+    @CurrentUser() currentUserDto: UserEntity
   ): Promise<TokenDto> {
     return this.authService.login(currentUserDto);
   }
@@ -233,7 +241,7 @@ export class AuthController {
   @UseGuards(AuthGuard("twitter"))
   @Get("twitter/callback")
   async ztwitterAuthCallback(
-    @CurrentUser() currentUserDto: CurrentUserDto
+    @CurrentUser() currentUserDto: UserEntity
   ): Promise<TokenDto> {
     return this.authService.login(currentUserDto);
   }

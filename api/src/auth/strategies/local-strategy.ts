@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
@@ -5,7 +6,6 @@ import * as bcrypt from "bcryptjs";
 import { Strategy } from "passport-local";
 
 import { UsersService } from "../../users/users.service";
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({ usernameField: "email" });
   }
 
-  async validate(email: string, password: string): Promise<CurrentUserDto> {
+  async validate(email: string, password: string): Promise<UserEntity> {
     try {
       const user = await this.usersService.findOneByEmail(email);
       if (

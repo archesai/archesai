@@ -1,3 +1,4 @@
+import { UserEntity } from "@/src/users/entities/user.entity";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
@@ -5,7 +6,6 @@ import { Request } from "express";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
 import { UsersService } from "../../users/users.service";
-import { CurrentUserDto } from "../decorators/current-user.decorator";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<CurrentUserDto> {
+  async validate(payload: any): Promise<UserEntity> {
     this.logger.log(
       `Validating JWT token for user: ${JSON.stringify(payload.sub)}`
     );

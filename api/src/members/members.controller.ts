@@ -15,16 +15,14 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 
-import {
-  CurrentUser,
-  CurrentUserDto,
-} from "../auth/decorators/current-user.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { BaseController } from "../common/base.controller";
 import {
   ApiCrudOperation,
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
 import { SearchQueryDto } from "../common/dto/search-query.dto";
+import { UserEntity } from "../users/entities/user.entity";
 import { CreateMemberDto } from "./dto/create-member.dto";
 import { UpdateMemberDto } from "./dto/update-member.dto";
 import { MemberEntity } from "./entities/member.entity";
@@ -77,9 +75,13 @@ export class MembersController
   @Post("/organizations/:orgname/members/join")
   async join(
     @Param("orgname") orgname: string,
-    @CurrentUser() user: CurrentUserDto
+    @CurrentUser() currentUser: UserEntity
   ) {
-    return this.membersService.join(orgname, user.email, user.username);
+    return this.membersService.join(
+      orgname,
+      currentUser.email,
+      currentUser.username
+    );
   }
 
   @ApiCrudOperation(Operation.DELETE, "member", MemberEntity, true)
