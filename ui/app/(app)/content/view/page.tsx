@@ -9,7 +9,7 @@ import {
   useContentControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import { File } from "lucide-react";
 import Image from "next/image";

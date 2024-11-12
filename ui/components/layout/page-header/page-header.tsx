@@ -1,14 +1,16 @@
+"use client";
+
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { siteConfig } from "@/config/site";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { Menu } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
+import { Button } from "../../ui/button";
 import { CommandMenu } from "./command-menu";
 import { VerifyEmailAlert } from "./email-verify";
 import { ModeToggle } from "./mode-toggle";
-import { Button } from "./ui/button";
 import { UserButton } from "./user-button";
 
 export const PageHeader = () => {

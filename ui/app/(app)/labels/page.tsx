@@ -8,7 +8,7 @@ import {
   useLabelsControllerRemove,
 } from "@/generated/archesApiComponents";
 import { LabelEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { ListMinus } from "lucide-react";
 import { useRouter } from "next/navigation";
 

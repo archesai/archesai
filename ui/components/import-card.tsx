@@ -9,7 +9,7 @@ import {
   useStorageControllerGetReadUrl,
   useStorageControllerGetWriteUrl,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
 import React, { useRef, useState } from "react";

@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const Hero = () => {
-  const router = useRouter();
   return (
     <section className="container z-10 mt-10 grid h-screen max-w-4xl place-items-center gap-10 py-20 md:py-32">
       <div className="z-10 space-y-6 text-center">
@@ -18,11 +17,8 @@ export const Hero = () => {
         </p>
 
         <div className="space-y-4 md:space-x-4 md:space-y-0">
-          <Button
-            className="w-full md:w-1/3"
-            onClick={() => router.push("/playground")}
-          >
-            Get Started
+          <Button className="w-full md:w-1/3">
+            <Link href="/playground">Get Started</Link>
           </Button>
 
           <a

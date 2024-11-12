@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import * as React from "react";
 
-import { DialogDescription, DialogTitle } from "./ui/dialog";
+import { DialogDescription, DialogTitle } from "../../ui/dialog";
 
 export function CommandMenu({ ...props }: DialogProps) {
   const router = useRouter();

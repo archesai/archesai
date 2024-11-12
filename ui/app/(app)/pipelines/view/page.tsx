@@ -9,7 +9,7 @@ import {
   usePipelinesControllerRemove,
 } from "@/generated/archesApiComponents";
 import { PipelineEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import { Workflow } from "lucide-react";
 import Link from "next/link";

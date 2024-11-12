@@ -2,15 +2,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
-import { useAuth } from "./useAuth";
-import { useStreamChat } from "./useStreamChat";
+import { useAuth } from "./use-auth";
+import { useStreamChat } from "./use-stream-chat";
 
 export const useWebsockets = ({
   overrideToken,
 }: {
   overrideToken?: string;
 }) => {
-  const { accessToken } = useAuth();
+  const { defaultOrgname: accessToken } = useAuth();
   const queryClient = useQueryClient();
 
   const { streamContent } = useStreamChat();

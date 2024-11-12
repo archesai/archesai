@@ -1,7 +1,7 @@
 "use client";
 import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function OrganizationSettingsPage() {
   const { defaultOrgname } = useAuth();

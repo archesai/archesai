@@ -9,8 +9,8 @@ import {
   useLabelsControllerCreate,
   usePipelinesControllerCreatePipelineRun,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
-import { useStreamChat } from "@/hooks/useStreamChat";
+import { useAuth } from "@/hooks/use-auth";
+import { useStreamChat } from "@/hooks/use-stream-chat";
 import { cn } from "@/lib/utils";
 import { RefreshCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";

@@ -9,7 +9,7 @@ import {
   useToolsControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ToolEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import { PackageCheck } from "lucide-react";
 import Link from "next/link";

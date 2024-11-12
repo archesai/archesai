@@ -2,7 +2,7 @@
 import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
 import { RegisterDto } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import * as z from "zod";

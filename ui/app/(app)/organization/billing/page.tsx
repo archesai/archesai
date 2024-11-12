@@ -22,7 +22,7 @@ import {
   useBillingControllerGetPlans,
   useOrganizationsControllerFindOne,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

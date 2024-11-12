@@ -19,13 +19,13 @@ import {
   useUserControllerFindOne,
   useUserControllerUpdate,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import * as React from "react";
 
-import { ArchesLogo } from "../arches-logo";
-import { Badge } from "../ui/badge";
-import { useToast } from "../ui/use-toast";
+import { ArchesLogo } from "../../arches-logo";
+import { Badge } from "../../ui/badge";
+import { useToast } from "../../ui/use-toast";
 
 export function OrganizationSwitcher() {
   const { defaultOrgname } = useAuth();

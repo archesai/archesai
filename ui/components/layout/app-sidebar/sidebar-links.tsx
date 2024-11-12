@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,7 +19,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavMain() {
+export function SidebarLinks() {
   const pathname = usePathname();
   const sections = new Set(siteConfig.routes.map((route) => route.section))
     .values()

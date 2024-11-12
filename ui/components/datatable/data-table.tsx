@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
 import { useToggleView } from "@/hooks/useToggleView";

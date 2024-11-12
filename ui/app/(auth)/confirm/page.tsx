@@ -15,7 +15,7 @@ import {
   useAuthControllerEmailVerificationConfirm,
   useAuthControllerPasswordResetConfirm,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -53,7 +53,7 @@ export default function ConfirmPage() {
   const type = searchParams?.get("type") as ActionType;
   const token = searchParams?.get("token") as string;
 
-  const { setAccessToken, setRefreshToken, user } = useAuth();
+  const { user } = useAuth();
 
   const { mutateAsync: verifyEmail } =
     useAuthControllerEmailVerificationConfirm();
@@ -88,14 +88,12 @@ export default function ConfirmPage() {
       switch (type) {
         case "email-change":
           try {
-            const { accessToken, refreshToken } = await changeEmail({
+            await changeEmail({
               body: {
                 token,
               },
             });
             setMessage("Your email has been successfully updated!");
-            setAccessToken(accessToken);
-            setRefreshToken(refreshToken);
             router.push("/playground");
           } catch (err: any) {
             console.error(err);
@@ -107,14 +105,13 @@ export default function ConfirmPage() {
           break;
         case "email-verification":
           try {
-            const { accessToken, refreshToken } = await verifyEmail({
+            await verifyEmail({
               body: {
                 token,
               },
             });
             setMessage("Your email has been successfully verified!");
-            setAccessToken(accessToken);
-            setRefreshToken(refreshToken);
+
             router.push("/playground");
           } catch (err: any) {
             console.error(err);
@@ -139,15 +136,14 @@ export default function ConfirmPage() {
 
   const onSubmit = async (data: PasswordResetFormData) => {
     try {
-      const { accessToken, refreshToken } = await resetPassword({
+      await resetPassword({
         body: {
           newPassword: data.password,
           token,
         },
       });
       setMessage("Your password has been successfully reset!");
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+
       router.push("/playground");
     } catch (err: any) {
       console.error("Password reset error:", err);

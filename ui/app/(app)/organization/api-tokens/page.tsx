@@ -10,7 +10,7 @@ import {
   useApiTokensControllerRemove,
 } from "@/generated/archesApiComponents";
 import { ApiTokenEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import { User } from "lucide-react";
 import { useRouter } from "next/navigation";

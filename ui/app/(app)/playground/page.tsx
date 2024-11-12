@@ -18,7 +18,7 @@ import {
   PipelineRunEntity,
   ToolEntity,
 } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { useState } from "react";

@@ -14,7 +14,7 @@ import {
   useUserControllerDeactivate,
   useUserControllerFindOne,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 export default function ProfileSecuritySettingsPage() {

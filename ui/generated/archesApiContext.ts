@@ -1,6 +1,6 @@
 import type { QueryKey, UseQueryOptions } from "@tanstack/react-query";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 
 import { QueryOperation } from "./archesApiComponents";
 
@@ -55,13 +55,13 @@ export function useArchesApiContext<
     "queryFn" | "queryKey"
   >
 ): ArchesApiContext {
-  const { accessToken, getNewRefreshToken, logout, defaultOrgname } = useAuth();
-
+  const { getNewRefreshToken, logout, defaultOrgname } = useAuth();
+  console.log("RUNNING useArchesApiContext");
   return {
     fetcherOptions: {
-      headers: {
-        authorization: accessToken ? `Bearer ${accessToken}` : undefined,
-      },
+      // headers: {
+      //
+      // },
     },
     queryKeyFn,
     queryOptions: {
@@ -70,6 +70,7 @@ export function useArchesApiContext<
           ? !!_queryOptions.enabled
           : !!defaultOrgname,
       retry: async (failureCount: number, error: any) => {
+        console.log("RETRYING", failureCount, error);
         if (error?.stack?.statusCode === 401 && failureCount <= 2) {
           await getNewRefreshToken();
           return true;
@@ -77,6 +78,7 @@ export function useArchesApiContext<
           (error as any)?.stack?.statusCode === 401 &&
           failureCount > 2
         ) {
+          console.log("LOGGING OUT DUE TO TOO MANY RETRIES");
           await logout();
           return false;
         }

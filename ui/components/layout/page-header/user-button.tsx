@@ -18,12 +18,12 @@ import {
   useUserControllerFindOne,
   useUserControllerUpdate,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 
-import { Badge } from "./ui/badge";
-import { useToast } from "./ui/use-toast";
+import { Badge } from "../../ui/badge";
+import { useToast } from "../../ui/use-toast";
 
 interface UserButtonProps {
   size: "lg" | "sm";

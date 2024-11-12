@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useBillingControllerGetPlans } from "@/generated/archesApiComponents";
+// import { useBillingControllerGetPlans } from "@/generated/archesApiComponents";
 import { PlanEntity } from "@/generated/archesApiSchemas";
 import { Check } from "lucide-react";
 
@@ -43,7 +43,8 @@ const pricingList = [
 ];
 
 export const Pricing = () => {
-  const { data: plans } = useBillingControllerGetPlans({});
+  // const { data: plans } = useBillingControllerGetPlans({});
+  const plans: PlanEntity[] = [];
   return (
     <section className="container py-24 sm:py-32" id="pricing">
       <h2 className="text-center text-3xl font-bold md:text-4xl">
@@ -59,7 +60,7 @@ export const Pricing = () => {
         reiciendis.
       </h3>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {plans?.toReversed().map((plan: PlanEntity, i) => (
+        {plans?.map((plan: PlanEntity, i) => (
           <Card
             className={
               plan?.metadata?.key === "STANDARD"

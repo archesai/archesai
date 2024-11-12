@@ -1,4 +1,5 @@
 "use client";
+
 import { useSidebar } from "@/components/ui/sidebar";
 import { useOrganizationsControllerFindOne } from "@/generated/archesApiComponents";
 
@@ -52,7 +53,7 @@ export const CreditQuota = () => {
 };
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
 import {
   PolarGrid,
@@ -61,7 +62,7 @@ import {
   RadialBarChart,
 } from "recharts";
 
-import { Badge } from "../ui/badge";
+import { Badge } from "../../ui/badge";
 
 export const description = "A radial chart with a custom shape";
 

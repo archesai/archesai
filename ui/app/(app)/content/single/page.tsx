@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { useContentControllerFindOne } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import dynamic from "next/dynamic";
 import Image from "next/image";

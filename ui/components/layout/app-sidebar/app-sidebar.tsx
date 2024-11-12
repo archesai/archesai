@@ -1,9 +1,7 @@
-"use client";
-
-import { NavMain } from "@/components/sidebar/nav-main";
-import { NavUser } from "@/components/sidebar/nav-user";
+import { NavUser } from "@/components/layout/app-sidebar/nav-user";
+import { SidebarLinks } from "@/components/layout/app-sidebar/sidebar-links";
 // import { RecentLabels } from "@/components/sidebar/recent-labels";
-import { OrganizationSwitcher } from "@/components/sidebar/organization-switcher";
+import { OrganizationSwitcher } from "@/components/layout/app-sidebar/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +10,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-import { CreditQuota } from "./credit-quota";
+import { CreditQuota } from "./credit-usage";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -22,7 +20,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <hr />
       <SidebarContent className="gap-0">
-        <NavMain />
+        <SidebarLinks />
         {/* <RecentLabels /> */}
       </SidebarContent>
       <SidebarFooter>

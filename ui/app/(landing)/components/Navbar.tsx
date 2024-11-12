@@ -1,3 +1,4 @@
+"use client";
 import { ArchesLogo } from "@/components/arches-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -11,12 +12,13 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useIsTop } from "@/hooks/use-is-top";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { ModeToggle } from "../../../components/mode-toggle";
+import { ModeToggle } from "../../../components/layout/page-header/mode-toggle";
 
 interface RouteProps {
   href: string;
@@ -44,22 +46,7 @@ const routeList: RouteProps[] = [
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const [isTop, setIsTop] = useState(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsTop(window.scrollY === 0);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const isTop = useIsTop();
 
   return (
     <header

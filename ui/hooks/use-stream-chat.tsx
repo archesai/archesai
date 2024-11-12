@@ -3,10 +3,7 @@ import { queryKeyFn } from "@/generated/archesApiContext";
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { useAuth } from "./useAuth";
-
 export const useStreamChat = () => {
-  const { accessToken } = useAuth();
   const queryClient = useQueryClient();
 
   const streamContent = (
@@ -19,9 +16,6 @@ export const useStreamChat = () => {
         operationId: "contentControllerFindAll",
         path: "/organizations/{orgname}/content",
         variables: {
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
           pathParams: {
             orgname: orgname,
           },

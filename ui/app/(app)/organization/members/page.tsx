@@ -10,7 +10,7 @@ import {
   useMembersControllerRemove,
 } from "@/generated/archesApiComponents";
 import { MemberEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { CheckIcon, User, XIcon } from "lucide-react";
 
 export default function MembersPageContent() {

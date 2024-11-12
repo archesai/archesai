@@ -10,7 +10,7 @@ import {
   CreateApiTokenDto,
   UpdateApiTokenDto,
 } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import * as z from "zod";
 
 const formSchema = z.object({
