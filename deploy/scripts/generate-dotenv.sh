@@ -3,9 +3,9 @@ set -e
 
 SCRIPT_DIR=$(dirname $(realpath "$0"))
 
-prod_env_file="$SCRIPT_DIR/../kubernetes/overlays/saas/production/.env.production"
-stage_env_file="$SCRIPT_DIR/../kubernetes/overlays/saas/stage/.env.stage"
-redis_ca_file="$SCRIPT_DIR/../kubernetes/overlays/saas/base/redis-ca.pem"
+prod_env_file="$SCRIPT_DIR/../kubernetes/overlays/gcp/production/.env.production"
+stage_env_file="$SCRIPT_DIR/../kubernetes/overlays/gcp/stage/.env.stage"
+redis_ca_file="$SCRIPT_DIR/../kubernetes/overlays/gcp/base/redis-ca.pem"
 
 >"$prod_env_file"
 >"$stage_env_file"
