@@ -3,7 +3,6 @@
 import { useSidebar } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { siteConfig } from "@/config/site";
-import { useAuth } from "@/hooks/use-auth";
 import { Menu } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -11,13 +10,13 @@ import { Button } from "../../ui/button";
 import { CommandMenu } from "./command-menu";
 import { VerifyEmailAlert } from "./email-verify";
 import { ModeToggle } from "./mode-toggle";
+import { TitleAndDescription } from "./title-and-description";
 import { UserButton } from "./user-button";
 
 export const PageHeader = () => {
   const { toggleSidebar } = useSidebar();
   const router = useRouter();
   const pathname = usePathname() as string;
-  const { user } = useAuth();
 
   // combine all the routes from siteConfig
   const routes = siteConfig.routes
@@ -29,6 +28,7 @@ export const PageHeader = () => {
   // get the title and description from the current route
   const title = currentRoute?.title;
   const description = currentRoute?.description;
+  const Icon = currentRoute?.Icon;
 
   const currentTabs = siteConfig.routes
     .find((route) => pathname.startsWith(route.href))
@@ -37,7 +37,7 @@ export const PageHeader = () => {
 
   return (
     <>
-      {user && !user.emailVerified && <VerifyEmailAlert />}
+      <VerifyEmailAlert />
 
       <header className="flex w-full items-center justify-between bg-background p-3 py-3">
         <Button
@@ -79,10 +79,11 @@ export const PageHeader = () => {
         </Tabs>
       )}
 
-      <div className="px-4 pt-4">
-        <p className="text-xl font-semibold text-foreground">{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
+      <TitleAndDescription
+        description={description}
+        Icon={Icon}
+        title={title}
+      />
     </>
   );
 };
