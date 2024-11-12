@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 
 import { StorageController } from "./storage.controller";
 import { GoogleCloudStorageService } from "./storage.gcp.service";
@@ -13,7 +13,6 @@ export class StorageModule {
     return {
       controllers: [StorageController],
       exports: [STORAGE_SERVICE],
-      imports: [ConfigModule],
       module: StorageModule,
       providers: [
         {

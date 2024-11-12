@@ -77,6 +77,12 @@ export class PipelinesService extends BaseService<
     return new PipelineRunEntity(run);
   }
 
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "pipelines"],
+    });
+  }
+
   async ensureRunContent(
     orgname: string,
     pipelineId: string,

@@ -4,6 +4,7 @@ import { AuthProviderType } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { OrganizationsService } from "../organizations/organizations.service";
+import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import {
@@ -24,7 +25,8 @@ export class UsersService extends BaseService<
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private websocketsService: WebsocketsService
   ) {
     super(userRepository);
   }
@@ -50,6 +52,12 @@ export class UsersService extends BaseService<
 
   async deactivate(id: string) {
     await this.userRepository.deactivate(id);
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["user"],
+    });
   }
 
   async findOneByEmail(email: string) {
@@ -99,6 +107,7 @@ export class UsersService extends BaseService<
     if (!user.authProviders.some((p) => p.provider === provider)) {
       return this.userRepository.addAuthProvider(email, provider, providerId);
     }
+    this.emitMutationEvent(user.defaultOrgname);
     return this.toEntity(user);
   }
 

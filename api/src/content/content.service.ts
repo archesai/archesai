@@ -69,6 +69,12 @@ export class ContentService extends BaseService<
     }
   }
 
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
+  }
+
   async incrementCredits(orgname: string, id: string, credits: number) {
     return this.toEntity(
       await this.contentRepository.updateRaw(orgname, id, {

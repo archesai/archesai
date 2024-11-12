@@ -1,6 +1,6 @@
 import { HttpModule } from "@nestjs/axios";
 import { forwardRef, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
@@ -27,11 +27,9 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
   exports: [AuthService],
   imports: [
     HttpModule,
-    ConfigModule,
     UsersModule,
     forwardRef(() => ApiTokensModule),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>("JWT_API_TOKEN_SECRET"),

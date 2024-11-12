@@ -24,9 +24,14 @@ export abstract class BaseService<
     createDto: CreateDto,
     additionalData?: object
   ): Promise<Entity> {
-    return this.toEntity(
-      await this.repository.create(orgname, createDto, additionalData)
+    const entity = await this.repository.create(
+      orgname,
+      createDto,
+      additionalData
     );
+
+    this.emitMutationEvent(orgname);
+    return this.toEntity(entity);
   }
 
   async findAll(
@@ -51,7 +56,8 @@ export abstract class BaseService<
   }
 
   async remove(orgname: string, id: string): Promise<void> {
-    return this.repository.remove(orgname, id);
+    await this.repository.remove(orgname, id);
+    this.emitMutationEvent(orgname);
   }
 
   async update(
@@ -60,8 +66,15 @@ export abstract class BaseService<
     updateDto: UpdateDto
   ): Promise<Entity> {
     const updated = await this.repository.update(orgname, id, updateDto);
+    this.emitMutationEvent(orgname);
     return this.toEntity(updated);
   }
+
+  /**
+   * Convert the raw repository result to an Entity.
+   * Override this method in the concrete service if necessary.
+   */
+  protected abstract emitMutationEvent(orgname: string): void;
 
   /**
    * Convert the raw repository result to an Entity.

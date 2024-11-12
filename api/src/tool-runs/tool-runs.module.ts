@@ -1,7 +1,6 @@
 import { HttpModule } from "@nestjs/axios";
 import { BullModule } from "@nestjs/bullmq";
 import { forwardRef, Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
 
 import { ContentModule } from "../content/content.module";
 import { LLMModule } from "../llm/llm.module";
@@ -25,7 +24,6 @@ import { ToolRunsService } from "./tool-runs.service";
     }),
     SpeechModule,
     HttpModule,
-    ConfigModule,
     forwardRef(() => RunpodModule),
   ],
   providers: [ToolRunsService, ToolRunRepository, ToolRunProcessor],

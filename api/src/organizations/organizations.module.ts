@@ -1,5 +1,4 @@
 import { forwardRef, Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
 
 import { BillingModule } from "../billing/billing.module";
 import { PipelinesModule } from "../pipelines/pipelines.module";
@@ -15,7 +14,6 @@ import { OrganizationsService } from "./organizations.service";
   imports: [
     forwardRef(() => BillingModule),
     PrismaModule,
-    ConfigModule,
     ToolsModule,
     PipelinesModule,
   ],

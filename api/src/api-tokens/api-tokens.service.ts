@@ -60,13 +60,17 @@ export class ApiTokensService extends BaseService<
         username: additionalData.username,
       }
     );
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "api-tokens"],
-    });
 
+    this.emitMutationEvent(orgname);
     return this.toEntity({
       ...apiToken,
       key: token,
+    });
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "api-tokens"],
     });
   }
 

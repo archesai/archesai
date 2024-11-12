@@ -3,6 +3,7 @@ import { RunStatus } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
 import { ContentEntity } from "../content/entities/content.entity";
+import { WebsocketsService } from "../websockets/websockets.service";
 import { ToolRunEntity, ToolRunModel } from "./entities/tool-run.entity";
 import { ToolRunRepository } from "./tool-run.repository";
 
@@ -16,8 +17,17 @@ export class ToolRunsService extends BaseService<
 > {
   private logger = new Logger(ToolRunsService.name);
 
-  constructor(private toolRunRepository: ToolRunRepository) {
+  constructor(
+    private toolRunRepository: ToolRunRepository,
+    private websocketsService: WebsocketsService
+  ) {
     super(toolRunRepository);
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "tool-runs"],
+    });
   }
 
   async setOutputContent(toolRunId: string, content: ContentEntity[]) {

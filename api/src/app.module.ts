@@ -99,6 +99,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     ConfigModule.forRoot({
       envFilePath: ["../.env"],
       ignoreEnvFile: process.env.NODE_ENV == "production",
+      isGlobal: true,
       validationSchema: Joi.object({
         // CORS CONFIG
         ALLOWED_ORIGINS: Joi.string().required(),

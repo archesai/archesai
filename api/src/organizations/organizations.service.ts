@@ -8,6 +8,7 @@ import { BillingService } from "../billing/billing.service";
 import { BaseService } from "../common/base.service";
 import { PipelinesService } from "../pipelines/pipelines.service";
 import { ToolsService } from "../tools/tools.service";
+import { WebsocketsService } from "../websockets/websockets.service";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
 import {
@@ -31,7 +32,8 @@ export class OrganizationsService extends BaseService<
     private configService: ConfigService,
     private organizationRepository: OrganizationRepository,
     private toolsService: ToolsService,
-    private pipelinesService: PipelinesService
+    private pipelinesService: PipelinesService,
+    private websocketsService: WebsocketsService
   ) {
     super(organizationRepository);
   }
@@ -39,10 +41,18 @@ export class OrganizationsService extends BaseService<
   async addOrRemoveCredits(orgname: string, numCredits: number) {
     this.logger.log(`Adding ${numCredits} credits to ${orgname}`);
     const organization = await this.findByOrgname(orgname);
-    return this.organizationRepository.updateRaw(orgname, organization.id, {
-      credits:
-        numCredits < 0 ? { decrement: -numCredits } : { increment: numCredits },
-    });
+    const organizationEntity = await this.organizationRepository.updateRaw(
+      orgname,
+      organization.id,
+      {
+        credits:
+          numCredits < 0
+            ? { decrement: -numCredits }
+            : { increment: numCredits },
+      }
+    );
+    this.emitMutationEvent(orgname);
+    return this.toEntity(organizationEntity);
   }
 
   async checkCredits(orgname: string, numCredits: number) {
@@ -99,6 +109,12 @@ export class OrganizationsService extends BaseService<
     return this.toEntity(organization);
   }
 
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname],
+    });
+  }
+
   async findByOrgname(orgname: string) {
     return this.toEntity(
       await this.organizationRepository.findByOrgname(orgname)
@@ -113,11 +129,13 @@ export class OrganizationsService extends BaseService<
 
   async setPlan(orgname: string, plan: PlanType) {
     const organization = await this.findByOrgname(orgname);
-    return this.toEntity(
+    const organizationEntity = this.toEntity(
       await this.organizationRepository.updateRaw(orgname, organization.id, {
         plan,
       })
     );
+    this.emitMutationEvent(orgname);
+    return organizationEntity;
   }
 
   protected toEntity(model: OrganizationModel): OrganizationEntity {

@@ -48,8 +48,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       return null;
     }
     const { sub: id } = payload;
-    const user = await this.usersService.findOne(null, id);
-    this.logger.log(`User: ${JSON.stringify(user)}`);
-    return user;
+    return this.usersService.findOne(null, id);
   }
 }

@@ -50,8 +50,10 @@ export class UserController {
     @CurrentUser() user: CurrentUserDto,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return new UserEntity(
-      await this.usersService.update(null, user.id, updateUserDto)
+    return this.usersService.update(
+      user.defaultOrgname,
+      user.id,
+      updateUserDto
     );
   }
 }
