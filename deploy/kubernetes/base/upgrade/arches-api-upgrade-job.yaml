@@ -7,8 +7,6 @@ spec:
   template:
     spec:
       restartPolicy: Never
-      imagePullSecrets:
-        - name: artifact-registry-key
       containers:
         - name: arches-api-upgrade
           image: us-east4-docker.pkg.dev/archesai/images/arches-api

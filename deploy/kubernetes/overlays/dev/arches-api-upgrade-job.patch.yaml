@@ -10,6 +10,8 @@ spec:
           hostPath:
             path: /host/api
             type: Directory
+      imagePullSecrets:
+        - name: artifact-registry-key
       containers:
         - name: arches-api-upgrade
           image: arches-api:dev

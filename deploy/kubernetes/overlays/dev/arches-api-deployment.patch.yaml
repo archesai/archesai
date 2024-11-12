@@ -5,6 +5,8 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: artifact-registry-key
       volumes:
         - name: api-source
           hostPath:

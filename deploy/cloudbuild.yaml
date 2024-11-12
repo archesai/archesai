@@ -158,6 +158,30 @@ steps:
             --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${SHORT_SHA},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${SHORT_SHA} \
             --skaffold-file=./deploy/skaffold.yaml
 
+  - name: "gcr.io/cloud-builders/gcloud"
+    id: check-deployment-status
+    waitFor: ["create-release"]
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        deployment_status=""
+        while [[ "$deployment_status" != "SUCCEEDED" && "$deployment_status" != "FAILED" ]]; do
+          deployment_status=$(gcloud deploy rollouts list \
+          --release arches-1f65a4c \
+          --project=archesai \
+          --region=us-east1 \
+          --delivery-pipeline=arches-deployment \
+          --format="value(state)")
+          echo "Current deployment status: $deployment_status"
+          sleep 10
+        done
+        if [ "$deployment_status" == "FAILED" ]; then
+          echo "Deployment failed."
+          exit 1
+        fi
+        echo "Deployment succeeded."
+
 availableSecrets:
   secretManager:
     - versionName: projects/archesai/secrets/GH_PAT/versions/1

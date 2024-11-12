@@ -3,7 +3,7 @@ kind: Config
 profiles:
   - name: staging
     deploy:
-      statusCheckDeadlineSeconds: 600
+      statusCheckDeadlineSeconds: 300
       tolerateFailuresUntilDeadline: true
     manifests:
       kustomize:
@@ -11,7 +11,7 @@ profiles:
           - "kubernetes/overlays/gcp/stage"
   - name: production
     deploy:
-      statusCheckDeadlineSeconds: 600
+      statusCheckDeadlineSeconds: 300
       tolerateFailuresUntilDeadline: true
     manifests:
       kustomize:

@@ -23,8 +23,6 @@ spec:
         runAsUser: 1000 # Replace with actual UID
         runAsGroup: 1000 # Replace with actual GID
         fsGroup: 1000
-      imagePullSecrets:
-        - name: artifact-registry-key
       initContainers:
         - name: arches-api-wait-for-migration
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0

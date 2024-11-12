@@ -5,6 +5,8 @@ metadata:
 spec:
   template:
     spec:
+      imagePullSecrets:
+        - name: artifact-registry-key
       initContainers:
         - name: copy-node-modules
           image: arches-ui:dev

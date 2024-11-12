@@ -19,8 +19,6 @@ spec:
         runAsUser: 100 # Replace with actual UID
         runAsGroup: 101 # Replace with actual GID
         fsGroup: 101 # Replace with actual GID
-      imagePullSecrets:
-        - name: artifact-registry-key
       containers:
         - image: us-east4-docker.pkg.dev/archesai/images/arches-ui
           name: arches-ui
