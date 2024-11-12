@@ -8,7 +8,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "kubernetes/overlays/saas/stage"
+          - "kubernetes/overlays/gcp/stage"
   - name: production
     deploy:
       statusCheckDeadlineSeconds: 600
@@ -16,4 +16,4 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "kubernetes/overlays/saas/production"
+          - "kubernetes/overlays/gcp/production"

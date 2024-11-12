@@ -21,9 +21,9 @@ import { usePathname } from "next/navigation";
 
 export function SidebarLinks() {
   const pathname = usePathname();
-  const sections = new Set(siteConfig.routes.map((route) => route.section))
-    .values()
-    .toArray();
+  const sections = Array.from(
+    new Set(siteConfig.routes.map((route) => route.section))
+  );
 
   return (
     <>

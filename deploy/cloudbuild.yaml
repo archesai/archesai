@@ -137,6 +137,12 @@ steps:
           us-east4-docker.pkg.dev/$PROJECT_ID/images/arches-nlp:$SHORT_SHA
 
   - name: "gcr.io/cloud-builders/gcloud"
+    id: generate-dotenv
+    entrypoint: "bash"
+    args:
+      - "./deploy/scripts/generate-dotenv.sh"
+
+  - name: "gcr.io/cloud-builders/gcloud"
     id: create-release
     waitFor: ["tag-arches-api", "tag-arches-nlp", "lint"]
     entrypoint: "bash"
