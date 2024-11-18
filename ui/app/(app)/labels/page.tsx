@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import LabelForm from "@/components/forms/label-form";
 import {
   LabelsControllerFindAllPathParams,
   LabelsControllerRemoveVariables,
@@ -44,6 +45,7 @@ export default function ChatbotsPageContent() {
           ),
         },
       ]}
+      createForm={<LabelForm />}
       dataIcon={<ListMinus />}
       defaultView="table"
       findAllPathParams={{

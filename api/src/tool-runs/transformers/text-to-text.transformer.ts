@@ -4,8 +4,9 @@ import { retry } from "../../common/retry";
 import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
 import { LLMService } from "../../llm/llm.service";
+import { IToolRunProcess } from "../interfaces/tool-run-processor.interface";
 
-export const transformTextToText = async (
+export const transformTextToText: IToolRunProcess = async (
   runId: string,
   runInput: ContentEntity[],
   logger: Logger,

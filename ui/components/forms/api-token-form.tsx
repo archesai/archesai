@@ -13,6 +13,15 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import * as z from "zod";
 
+import { FormControl } from "../ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+
 const formSchema = z.object({
   domains: z.string(),
   name: z.string(),
@@ -65,9 +74,34 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       description: "This is the role that will be used for this API token.",
       label: "Role",
       name: "role",
-      props: {
-        placeholder: "Search llms...",
-      },
+      renderControl: (field) => (
+        <Select
+          defaultValue={field.value}
+          onValueChange={(value) => field.onChange(value)}
+        >
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder={"Choose your role..."} />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {[
+              {
+                id: "ADMIN",
+                name: "Admin",
+              },
+              {
+                id: "USER",
+                name: "User",
+              },
+            ].map((option) => (
+              <SelectItem key={option.id} value={option.id.toString()}>
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
       validationRule: formSchema.shape.role,
     },
   ];
@@ -78,7 +112,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
 
   return (
     <GenericForm<CreateApiTokenDto, UpdateApiTokenDto>
-      description={"Configure your API Tokens's settings"}
+      description={"API Tokens are used to authenticate with the API."}
       fields={formFields}
       isUpdateForm={!!apiTokenId}
       itemType="API Token"
@@ -105,7 +139,9 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
           mutateOptions
         );
       }}
-      title="Configuration"
+      title={
+        !apiTokenId ? "Create API Token" : `Update API Token: ${apiToken?.name}`
+      }
     />
   );
 }

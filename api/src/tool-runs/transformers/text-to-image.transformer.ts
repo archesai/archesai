@@ -5,8 +5,9 @@ import * as ospath from "path";
 import { ContentEntity } from "../../content/entities/content.entity";
 import { RunpodService } from "../../runpod/runpod.service";
 import { StorageService } from "../../storage/storage.service";
+import { IToolRunProcess } from "../interfaces/tool-run-processor.interface";
 
-export const transformTextToImage = async (
+export const transformTextToImage: IToolRunProcess = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,

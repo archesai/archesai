@@ -1,6 +1,7 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import ContentForm from "@/components/forms/content-form";
 import { Badge } from "@/components/ui/badge";
 import {
   ContentControllerFindAllPathParams,
@@ -123,6 +124,7 @@ export default function ContentPage() {
           </div>
         );
       }}
+      createForm={<ContentForm />}
       dataIcon={<File size={24} />}
       defaultView="table"
       findAllPathParams={{

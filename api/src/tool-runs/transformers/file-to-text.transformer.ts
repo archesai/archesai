@@ -7,8 +7,9 @@ import { catchError, firstValueFrom } from "rxjs";
 
 import { ContentService } from "../../content/content.service";
 import { ContentEntity } from "../../content/entities/content.entity";
+import { IToolRunProcess } from "../interfaces/tool-run-processor.interface";
 
-export const transformFileToText = async (
+export const transformFileToText: IToolRunProcess = async (
   runId: string,
   runInputContents: ContentEntity[],
   logger: Logger,

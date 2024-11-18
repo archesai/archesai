@@ -177,6 +177,7 @@ export function DataTable<
 
   const table = useReactTable({
     columns: [
+      // Checkbox column
       {
         cell: ({ row }) => (
           <Checkbox
@@ -190,7 +191,9 @@ export function DataTable<
         enableSorting: false,
         id: "select",
       },
+      // Data columns
       ...memoizedColumns,
+      // Actions column
       {
         cell: ({ row }) => (
           <div className="flex justify-end">

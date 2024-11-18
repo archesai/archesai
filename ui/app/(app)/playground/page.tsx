@@ -1,7 +1,6 @@
 "use client";
 
 import { DataSelector } from "@/components/data-selector";
-import { RunStatusButton } from "@/components/run-status-button";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
@@ -58,42 +57,6 @@ export default function PlaygroundPage() {
     },
     resolver: zodResolver(formSchema),
   });
-  // const { data: runs } = useRunsControllerFindAll(
-  //   {
-  //     pathParams: {
-  //       orgname: defaultOrgname,
-  //     },
-  //     queryParams: {
-  //       filters: JSON.stringify([
-  //         {
-  //           field: "type",
-  //           operator: "equals",
-  //           value: "TOOL_RUN",
-  //         },
-  //         {
-  //           field: "toolId",
-  //           operator: "equals",
-  //           value: selectedTool?.id || "",
-  //         },
-  //       ]) as any,
-  //     },
-  //   },
-  //   {
-  //     enabled: !!selectedTool,
-  //   }
-  // );
-
-  // const { data: runDetailed } = useRunsControllerFindOne(
-  //   {
-  //     pathParams: {
-  //       id: currentRun?.id || "",
-  //       orgname: defaultOrgname,
-  //     },
-  //   },
-  //   {
-  //     enabled: !!currentRun,
-  //   }
-  // );
 
   return (
     <Form {...form}>
@@ -258,21 +221,10 @@ export default function PlaygroundPage() {
             <Button disabled={!selectedTool} size="sm" type="submit">
               Submit
             </Button>
-            <Button variant="secondary">
+            <Button size="sm" variant="secondary">
               <span className="sr-only">Show history</span>
               <CounterClockwiseClockIcon className="h-4 w-4" />
             </Button>
-          </div>
-          {/* Tool Runs */}
-          <Label>Tool Runs</Label>
-          <div>
-            {[].map((run, i) => (
-              <RunStatusButton
-                key={i}
-                onClick={() => setCurrentRun(run)}
-                run={run}
-              />
-            ))}
           </div>
         </div>
       </form>
