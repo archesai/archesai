@@ -31,9 +31,9 @@ export function TableView<TItem extends BaseItem>({
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup: any) => (
             <TableRow className="bg-background/40" key={headerGroup.id}>
-              {headerGroup.headers.map((header: any) => (
+              {headerGroup.headers.map((header: any, i: number) => (
                 <TableHead
-                  className="text-base"
+                  className={"text-base" + (i === 0 ? " w-4" : "")}
                   colSpan={header.colSpan}
                   key={header.id}
                 >
