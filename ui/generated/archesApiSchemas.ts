@@ -92,87 +92,6 @@ export type PipelineEntity = {
   pipelineSteps: PipelineStepEntity[];
 };
 
-export type CreateRunDto = {
-  /**
-   * If using already created content, specify the content IDs to use as input for the run.
-   *
-   * @example content-id-1
-   * @example content-id-2
-   */
-  contentIds?: string[];
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is the text to use as input for the run.
-   */
-  text?: string;
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is a url to use as input for the run.
-   */
-  url?: string;
-};
-
-export type PipelineRunEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The timestamp when the run completed
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  completedAt?: string;
-  /**
-   * The error message, if any, associated with the run
-   *
-   * @example An unexpected error occurred.
-   */
-  error?: string;
-  /**
-   * The name of the run
-   *
-   * @example Data Processing PipelineRun
-   */
-  name: string;
-  /**
-   * The progress of the run as a percentage
-   *
-   * @default 0
-   * @example 50.5
-   */
-  progress: number;
-  /**
-   * The timestamp when the run started
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  startedAt?: string;
-  /**
-   * The status of the run
-   *
-   * @default QUEUED
-   */
-  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
-  /**
-   * The pipeline ID associated with the pipeline run, if applicable
-   */
-  pipelineId?: string;
-};
-
 export type UpdatePipelineDto = {
   /**
    * @example This is a sample pipeline
@@ -186,241 +105,6 @@ export type UpdatePipelineDto = {
    * An array of pipeline tools to be added to the pipeline
    */
   pipelineSteps?: CreatePipelineStepDto[];
-};
-
-export type CreateContentDto = {
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-  /**
-   * The labels to associate with the content
-   *
-   * @example label-1
-   * @example label-2
-   */
-  labels?: string[];
-};
-
-export type SubItemEntity = {
-  /**
-   * The id of the item
-   *
-   * @example example-id
-   */
-  id: string;
-  /**
-   * The name of the item
-   *
-   * @example example-name
-   */
-  name: string;
-};
-
-export type ContentEntity = {
-  /**
-   * The creation date of this item
-   *
-   * @format date-time
-   * @example 2023-07-11T21:09:20.895Z
-   */
-  createdAt: string;
-  /**
-   * The item's unique identifier
-   *
-   * @example 32411590-a8e0-11ed-afa1-0242ac120002
-   */
-  id: string;
-  /**
-   * The child content, if any
-   */
-  children?: SubItemEntity[];
-  /**
-   * The tool runs that consumed this content, if any
-   */
-  consumedBy?: SubItemEntity[];
-  /**
-   * The number of credits used to process this content
-   *
-   * @example 0
-   */
-  credits: number;
-  /**
-   * The content's description
-   *
-   * @example my-file.pdf
-   */
-  description?: string;
-  /**
-   * The content's labels
-   */
-  labels?: SubItemEntity[];
-  /**
-   * The MIME type of the content
-   *
-   * @example application/pdf
-   */
-  mimeType?: string;
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name: string;
-  /**
-   * The organization name
-   *
-   * @example my-organization
-   */
-  orgname: string;
-  /**
-   * The parent content, if any
-   */
-  parent?: SubItemEntity;
-  /**
-   * The parent content ID, if this content is a child of another content
-   *
-   * @example content-id
-   */
-  parentId?: string;
-  /**
-   * The preview image of the content
-   *
-   * @example https://preview-image.com/example.png
-   */
-  previewImage?: string;
-  /**
-   * The toolRun that produced this content, if any
-   */
-  producedBy?: SubItemEntity;
-  /**
-   * The ID of the toolRun that produced this content, if any
-   *
-   * @example toolRun-id
-   */
-  producedById?: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-};
-
-export type UpdateContentDto = {
-  /**
-   * The content's name
-   *
-   * @example my-file.pdf
-   */
-  name?: string;
-  /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string;
-  /**
-   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
-   *
-   * @example https://example.com/example.mp4
-   */
-  url?: string;
-  /**
-   * The labels to associate with the content
-   *
-   * @example label-1
-   * @example label-2
-   */
-  labels?: string[];
-};
-
-export type PathDto = {
-  /**
-   * Whether or not this path points to a directory
-   *
-   * @default false
-   * @example false
-   */
-  isDir?: boolean;
-  /**
-   * The path that the file should upload to
-   *
-   * @example /location/in/storage
-   */
-  path: string;
-};
-
-export type ReadUrlDto = {
-  /**
-   * A read-only url that you can use to download the file from secure storage
-   *
-   * @example www.example.com?token=read-token
-   */
-  read: string;
-};
-
-export type WriteUrlDto = {
-  /**
-   * A write-only url that you can use to upload a file to secure storage
-   *
-   * @example www.example.com?token=write-token
-   */
-  write: string;
-};
-
-export type StorageItemDto = {
-  /**
-   * Whether or not this is a directory
-   *
-   * @format date-time
-   * @example true
-   */
-  createdAt: string;
-  /**
-   * The id of the storage item
-   *
-   * @example 14
-   */
-  id: string;
-  /**
-   * Whether or not this is a directory
-   *
-   * @example true
-   */
-  isDir: boolean;
-  /**
-   * The path that the file is located in
-   *
-   * @example /location/in/storage
-   */
-  name: string;
-  /**
-   * The size of the item in bytes
-   *
-   * @example 12341234
-   */
-  size: number;
 };
 
 export type ConfirmationTokenDto = {
@@ -1206,7 +890,276 @@ export type UpdateLabelDto = {
   name?: string;
 };
 
-export type ToolRunEntity = {
+export type PathDto = {
+  /**
+   * Whether or not this path points to a directory
+   *
+   * @default false
+   * @example false
+   */
+  isDir?: boolean;
+  /**
+   * The path that the file should upload to
+   *
+   * @example /location/in/storage
+   */
+  path: string;
+};
+
+export type ReadUrlDto = {
+  /**
+   * A read-only url that you can use to download the file from secure storage
+   *
+   * @example www.example.com?token=read-token
+   */
+  read: string;
+};
+
+export type WriteUrlDto = {
+  /**
+   * A write-only url that you can use to upload a file to secure storage
+   *
+   * @example www.example.com?token=write-token
+   */
+  write: string;
+};
+
+export type StorageItemDto = {
+  /**
+   * Whether or not this is a directory
+   *
+   * @format date-time
+   * @example true
+   */
+  createdAt: string;
+  /**
+   * The id of the storage item
+   *
+   * @example 14
+   */
+  id: string;
+  /**
+   * Whether or not this is a directory
+   *
+   * @example true
+   */
+  isDir: boolean;
+  /**
+   * The path that the file is located in
+   *
+   * @example /location/in/storage
+   */
+  name: string;
+  /**
+   * The size of the item in bytes
+   *
+   * @example 12341234
+   */
+  size: number;
+};
+
+export type CreateContentDto = {
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+  /**
+   * The labels to associate with the content
+   *
+   * @example label-1
+   * @example label-2
+   */
+  labels?: string[];
+};
+
+export type SubItemEntity = {
+  /**
+   * The id of the item
+   *
+   * @example example-id
+   */
+  id: string;
+  /**
+   * The name of the item
+   *
+   * @example example-name
+   */
+  name: string;
+};
+
+export type ContentEntity = {
+  /**
+   * The creation date of this item
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string;
+  /**
+   * The item's unique identifier
+   *
+   * @example 32411590-a8e0-11ed-afa1-0242ac120002
+   */
+  id: string;
+  /**
+   * The child content, if any
+   */
+  children?: SubItemEntity[];
+  /**
+   * The tool runs that consumed this content, if any
+   */
+  consumedBy?: SubItemEntity[];
+  /**
+   * The number of credits used to process this content
+   *
+   * @example 0
+   */
+  credits: number;
+  /**
+   * The content's description
+   *
+   * @example my-file.pdf
+   */
+  description?: string;
+  /**
+   * The content's labels
+   */
+  labels?: SubItemEntity[];
+  /**
+   * The MIME type of the content
+   *
+   * @example application/pdf
+   */
+  mimeType?: string;
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name: string;
+  /**
+   * The organization name
+   *
+   * @example my-organization
+   */
+  orgname: string;
+  /**
+   * The parent content, if any
+   */
+  parent?: SubItemEntity;
+  /**
+   * The parent content ID, if this content is a child of another content
+   *
+   * @example content-id
+   */
+  parentId?: string;
+  /**
+   * The preview image of the content
+   *
+   * @example https://preview-image.com/example.png
+   */
+  previewImage?: string;
+  /**
+   * The toolRun that produced this content, if any
+   */
+  producedBy?: SubItemEntity;
+  /**
+   * The ID of the toolRun that produced this content, if any
+   *
+   * @example toolRun-id
+   */
+  producedById?: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+};
+
+export type UpdateContentDto = {
+  /**
+   * The content's name
+   *
+   * @example my-file.pdf
+   */
+  name?: string;
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string;
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   *
+   * @example https://example.com/example.mp4
+   */
+  url?: string;
+  /**
+   * The labels to associate with the content
+   *
+   * @example label-1
+   * @example label-2
+   */
+  labels?: string[];
+};
+
+export type CreateRunDto = {
+  /**
+   * The type of run, either an individual tool run or a pipeline run
+   */
+  runType: "PIPELINE_RUN" | "TOOL_RUN";
+  /**
+   * The pipeline ID associated with the run, if applicable
+   */
+  pipelineId?: string;
+  /**
+   * The tool ID associated with the run, if applicable
+   */
+  toolId?: string;
+  /**
+   * If using already created content, specify the content IDs to use as input for the run.
+   *
+   * @example content-id-1
+   * @example content-id-2
+   */
+  contentIds?: string[];
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is the text to use as input for the run.
+   */
+  text?: string;
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   *
+   * @example This is a url to use as input for the run.
+   */
+  url?: string;
+};
+
+export type RunEntity = {
   /**
    * The creation date of this item
    *
@@ -1238,7 +1191,11 @@ export type ToolRunEntity = {
    *
    * @example Data Processing PipelineRun
    */
-  name: string;
+  name?: string;
+  /**
+   * The pipeline ID associated with the run, if applicable
+   */
+  pipelineId?: string;
   /**
    * The progress of the run as a percentage
    *
@@ -1246,6 +1203,10 @@ export type ToolRunEntity = {
    * @example 50.5
    */
   progress: number;
+  /**
+   * The type of run, either an individual tool run or a pipeline run
+   */
+  runType: "PIPELINE_RUN" | "TOOL_RUN";
   /**
    * The timestamp when the run started
    *
@@ -1259,6 +1220,10 @@ export type ToolRunEntity = {
    * @default QUEUED
    */
   status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
+  /**
+   * The tool ID associated with the run, if applicable
+   */
+  toolId?: string;
 };
 
 export type FieldFieldQuery = {

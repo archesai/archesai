@@ -51,6 +51,11 @@ enum PlanType {
   UNLIMITED
 }
 
+enum RunType {
+  PIPELINE_RUN
+  TOOL_RUN
+}
+
 model Content {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -76,19 +81,19 @@ model Content {
   children Content[] @relation("ContentParentChildren")
 
   // Data lineage fields
-  producedBy   ToolRun?  @relation("ContentProducedBy", fields: [producedById], references: [id])
+  producedBy   Run?    @relation("ContentProducedBy", fields: [producedById], references: [id])
   producedById String?
-  consumedBy   ToolRun[] @relation("ContentConsumedBy")
+  consumedBy   Run[]   @relation("ContentConsumedBy")
 
   labels Label[]
 }
 
-model PipelineRun {
+model Run {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name   String
+  name   String    @default("New Run")
   status RunStatus @default(QUEUED)
 
   startedAt   DateTime?
@@ -98,36 +103,24 @@ model PipelineRun {
 
   organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
   orgname      String
+
+  runType RunType
 
   // PipelineRun Specific Fields
-  pipeline   Pipeline @relation(fields: [pipelineId], references: [id])
-  pipelineId String
+  pipeline   Pipeline? @relation(fields: [pipelineId], references: [id])
+  pipelineId String?
 
-  toolRuns ToolRun[]
-}
-
-model ToolRun {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name   String
-  status RunStatus @default(QUEUED)
-
-  startedAt   DateTime?
-  completedAt DateTime?
-  progress    Float     @default(0)
-  error       String?
-
-  organization Organization @relation(fields: [orgname], references: [orgname], onDelete: Cascade)
-  orgname      String
+  toolRuns Run[] @relation("PipelineRunToolRuns")
 
   // ToolRun Specific Fields
-  pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
-  pipelineRunId String
+  tool   Tool?   @relation(fields: [toolId], references: [id])
+  toolId String?
 
-  pipelineStep   PipelineStep @relation(fields: [pipelineStepId], references: [id], onDelete: Cascade)
-  pipelineStepId String
+  pipelineRun   Run?    @relation("PipelineRunToolRuns", fields: [pipelineRunId], references: [id], onDelete: Cascade)
+  pipelineRunId String?
+
+  pipelineStep   PipelineStep? @relation(fields: [pipelineStepId], references: [id], onDelete: Cascade)
+  pipelineStepId String?
 
   inputs  Content[] @relation("ContentConsumedBy")
   outputs Content[] @relation("ContentProducedBy")
@@ -152,6 +145,7 @@ model Tool {
   orgname      String
 
   pipelineSteps PipelineStep[]
+  runs          Run[]
 }
 
 model Pipeline {
@@ -166,7 +160,7 @@ model Pipeline {
   orgname      String
 
   pipelineSteps PipelineStep[]
-  pipelineRuns  PipelineRun[]
+  pipelineRuns  Run[]
 }
 
 model PipelineStep {
@@ -183,7 +177,7 @@ model PipelineStep {
   dependsOn  PipelineStep[] @relation("PipelineStepDependencies")
   dependents PipelineStep[] @relation("PipelineStepDependencies")
 
-  toolRuns ToolRun[]
+  runs Run[]
 }
 
 model Label {
@@ -245,14 +239,13 @@ model Organization {
   credits          Int      @default(0)
   plan             PlanType @default(FREE)
 
-  members      Member[]
-  apiTokens    ApiToken[]
-  content      Content[]
-  labels       Label[]
-  tools        Tool[]
-  pipelines    Pipeline[]
-  pipelineRuns PipelineRun[]
-  toolRuns     ToolRun[]
+  members   Member[]
+  apiTokens ApiToken[]
+  content   Content[]
+  labels    Label[]
+  tools     Tool[]
+  pipelines Pipeline[]
+  runs      Run[]
 }
 
 model Member {

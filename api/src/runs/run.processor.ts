@@ -10,7 +10,7 @@ import { LLMService } from "../llm/llm.service";
 import { RunpodService } from "../runpod/runpod.service";
 import { SpeechService } from "../speech/speech.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
-import { ToolRunsService } from "./tool-runs.service";
+import { RunsService } from "./runs.service";
 import { transformFileToText } from "./transformers/file-to-text.transformer";
 import { transformTextToEmbeddings } from "./transformers/text-to-embeddings.transformer";
 import { transformTextToImage } from "./transformers/text-to-image.transformer";
@@ -18,11 +18,11 @@ import { transformTextToSpeech } from "./transformers/text-to-speech.transformer
 import { transformTextToText } from "./transformers/text-to-text.transformer";
 
 @Processor("run")
-export class ToolRunProcessor extends WorkerHost {
-  private readonly logger: Logger = new Logger("ToolRun Processor");
+export class RunProcessor extends WorkerHost {
+  private readonly logger: Logger = new Logger("Run Processor");
 
   constructor(
-    private toolRunsService: ToolRunsService,
+    private runsService: RunsService,
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentService: ContentService,
@@ -38,21 +38,21 @@ export class ToolRunProcessor extends WorkerHost {
   @OnWorkerEvent("active")
   async onActive(job: Job) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
-    await this.toolRunsService.setStatus(job.id.toString(), "PROCESSING");
+    await this.runsService.setStatus(job.id.toString(), "PROCESSING");
   }
 
   @OnWorkerEvent("completed")
   async onCompleted(job: Job) {
     this.logger.log(`Completed job ${job.id}`);
-    await this.toolRunsService.setStatus(job.id.toString(), "COMPLETE");
+    await this.runsService.setStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
   async onError(job: Job, error: any) {
     this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
-      await this.toolRunsService.setStatus(job.id.toString(), "ERROR");
-      await this.toolRunsService.setRunError(job.id.toString(), error?.message);
+      await this.runsService.setStatus(job.id.toString(), "ERROR");
+      await this.runsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
 
@@ -60,8 +60,8 @@ export class ToolRunProcessor extends WorkerHost {
   async onFailed(job: Job, error: any) {
     this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
-      await this.toolRunsService.setStatus(job.id.toString(), "ERROR");
-      await this.toolRunsService.setRunError(job.id.toString(), error?.message);
+      await this.runsService.setStatus(job.id.toString(), "ERROR");
+      await this.runsService.setRunError(job.id.toString(), error?.message);
     } catch {}
   }
 
@@ -124,7 +124,7 @@ export class ToolRunProcessor extends WorkerHost {
     }
 
     this.logger.log(`Adding run output contents to run ${job.id}`);
-    await this.toolRunsService.setOutputContent(
+    await this.runsService.setOutputContent(
       job.id.toString(),
       runOutputContents
     );

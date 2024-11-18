@@ -1,7 +1,17 @@
-import { ApiProperty } from "@nestjs/swagger";
+import {
+  ApiProperty,
+  IntersectionType,
+  PartialType,
+  PickType,
+} from "@nestjs/swagger";
 import { IsArray, IsOptional, IsString } from "class-validator";
 
-export class CreateRunDto {
+import { RunEntity } from "../entities/run.entity";
+
+export class CreateRunDto extends IntersectionType(
+  PickType(RunEntity, ["runType"] as const),
+  PartialType(PickType(RunEntity, ["pipelineId", "toolId"] as const))
+) {
   @ApiProperty({
     description:
       "If using already created content, specify the content IDs to use as input for the run.",

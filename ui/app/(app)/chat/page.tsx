@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   useContentControllerFindAll,
   useLabelsControllerCreate,
-  usePipelinesControllerCreatePipelineRun,
+  useRunsControllerCreate,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/use-auth";
 import { useStreamChat } from "@/hooks/use-stream-chat";
@@ -66,8 +66,7 @@ export default function ChatbotChatPage() {
   }, [messages]);
 
   const { mutateAsync: createLabel } = useLabelsControllerCreate();
-  const { mutateAsync: createPipelineRun } =
-    usePipelinesControllerCreatePipelineRun();
+  const { mutateAsync: createPipelineRun } = useRunsControllerCreate();
   const handleSend = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
@@ -101,11 +100,11 @@ export default function ChatbotChatPage() {
       });
       await createPipelineRun({
         body: {
+          runType: "TOOL_RUN",
           text: message.trim(),
         },
         pathParams: {
           orgname: defaultOrgname,
-          pipelineId: "pipeline-id",
         },
       });
     } catch (error) {

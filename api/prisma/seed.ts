@@ -1,10 +1,10 @@
-import { UsersService } from "@/src/users/users.service";
 import { faker } from "@faker-js/faker";
 import { NestFactory } from "@nestjs/core";
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 import { AppModule } from "../src/app.module";
+import { UsersService } from "../src/users/users.service";
 
 const prisma = new PrismaClient();
 
@@ -21,9 +21,8 @@ export const resetDatabase = async () => {
     prisma.aRToken.deleteMany(),
     prisma.pipeline.deleteMany(),
     prisma.pipelineStep.deleteMany(),
-    prisma.pipelineRun.deleteMany(),
+    prisma.run.deleteMany(),
     prisma.tool.deleteMany(),
-    prisma.toolRun.deleteMany(),
     // Add more tables as needed
   ]);
 };

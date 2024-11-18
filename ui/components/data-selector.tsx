@@ -10,12 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Label } from "@/components/ui/label";
+import { HoverCard, HoverCardContent } from "@/components/ui/hover-card";
 import {
   Popover,
   PopoverContent,
@@ -32,7 +27,7 @@ interface DataSelectorProps<TItem extends BaseItem> {
   //   iconMap?: { [key: string]: IconType };
   icons?: { Icon: any; name: string }[];
   isMultiSelect?: boolean;
-  label: string;
+  itemType: string;
   selectedData: TItem | TItem[] | undefined;
   setSelectedData: (data: TItem | TItem[] | undefined) => void;
   useFindAll: () => {
@@ -50,7 +45,7 @@ export function DataSelector<TItem extends BaseItem>({
   icons,
   //   iconMap,
   isMultiSelect = false,
-  label,
+  itemType,
   selectedData,
   setSelectedData,
   useFindAll,
@@ -113,27 +108,12 @@ export function DataSelector<TItem extends BaseItem>({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Label with HoverCard */}
-      <HoverCard openDelay={200}>
-        <HoverCardTrigger asChild>
-          <Label>{label}</Label>
-        </HoverCardTrigger>
-        <HoverCardContent
-          align="start"
-          className="w-[260px] text-sm"
-          side="left"
-        >
-          {/* You can customize this description as needed */}
-          Select the appropriate {label.toLowerCase()} for your task.
-        </HoverCardContent>
-      </HoverCard>
-
       {/* Popover for Selection */}
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            aria-label={`Select ${label.toLowerCase()}`}
+            aria-label={`Select ${itemType.toLowerCase()}`}
             className="w-full justify-between"
             role="combobox"
             variant="outline"
@@ -144,7 +124,7 @@ export function DataSelector<TItem extends BaseItem>({
                   (selectedData as TItem[])?.length > 0 ? (
                     (selectedData as TItem[])?.length + " selected"
                   ) : (
-                    "Select " + label.toLowerCase() + "s..."
+                    "Select " + itemType.toLowerCase() + "s..."
                   )
                 ) : (
                   <div className="flex items-center gap-1">
@@ -173,11 +153,11 @@ export function DataSelector<TItem extends BaseItem>({
           <Command>
             <CommandInput
               onChangeCapture={(e: any) => setSearchTerm(e.target.value)}
-              placeholder={`Search ${label.toLowerCase()}...`}
+              placeholder={`Search ${itemType.toLowerCase()}...`}
               value={searchTerm}
             />
             <CommandList className="max-h-[400px] overflow-y-auto">
-              <CommandEmpty>No {label.toLowerCase()} found.</CommandEmpty>
+              <CommandEmpty>No {itemType.toLowerCase()} found.</CommandEmpty>
               {filteredData.map((item) => (
                 <CommandItem
                   className={cn("flex items-center justify-between")}

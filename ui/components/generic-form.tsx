@@ -86,7 +86,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
 
   useEffect(() => {
     form.reset(defaultValues);
-  }, [fields]);
+  }, [fields.map((f) => f.defaultValue).join()]);
 
   return (
     <Card className={showCard ? "" : "border-none shadow-none"}>

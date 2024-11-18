@@ -1,13 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Prisma, RunStatus } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
-import { CreateRunDto } from "../common/dto/create-run.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineWithPipelineStepsModel } from "./entities/pipeline.entity";
-import { PipelineRunEntity } from "./entities/pipeline-run.entity";
 
 const PIPELINE_INCLUDE = {
   pipelineSteps: {
@@ -93,62 +91,6 @@ export class PipelineRepository extends BaseRepository<
     }
 
     return this.findOne(orgname, pipeline.id);
-  }
-
-  async createPipelineRun(
-    orgname: string,
-    pipelineId: string,
-    createPipelineRunDto: CreateRunDto
-  ) {
-    const pipeline = await this.findOne(orgname, pipelineId);
-    const pipelineRun = await this.prisma.pipelineRun.create({
-      data: {
-        name: "Pipeline Run",
-        orgname,
-        pipelineId,
-        status: RunStatus.QUEUED,
-        toolRuns: {
-          createMany: {
-            data: pipeline.pipelineSteps.map((pipelineStep) => ({
-              createdAt: new Date(),
-              name: new Date().toISOString(),
-              orgname,
-              pipelineStepId: pipelineStep.id,
-              status: RunStatus.QUEUED,
-            })),
-          },
-        },
-      },
-    });
-
-    for (const pipelineStep of pipeline.pipelineSteps) {
-      await this.prisma.toolRun.update({
-        data: {
-          inputs: {
-            connect: createPipelineRunDto.contentIds.map((contentId) => ({
-              id: contentId,
-            })),
-          },
-        },
-        where: {
-          pipelineRunId_pipelineStepId: {
-            pipelineRunId: pipelineRun.id,
-            pipelineStepId: pipelineStep.id,
-          },
-          pipelineStep: {
-            dependsOn: {
-              none: {},
-            },
-          },
-        },
-      });
-    }
-
-    return new PipelineRunEntity(
-      await this.prisma.pipelineRun.findUnique({
-        where: { id: pipelineRun.id },
-      })
-    );
   }
 
   async update(

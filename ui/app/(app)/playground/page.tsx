@@ -1,233 +1,87 @@
 "use client";
 
-import { DataSelector } from "@/components/data-selector";
+import RunForm from "@/components/forms/run-form";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { siteConfig } from "@/config/site";
-import {
-  useContentControllerFindAll,
-  usePipelinesControllerCreatePipelineRun,
-  useToolsControllerFindAll,
-} from "@/generated/archesApiComponents";
-import {
-  ContentEntity,
-  PipelineRunEntity,
-  ToolEntity,
-} from "@/generated/archesApiSchemas";
+import { useToolsControllerFindAll } from "@/generated/archesApiComponents";
+import { ToolEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
-
-const formSchema = z
-  .object({
-    runInputContentIds: z.array(z.string()).optional(),
-    text: z.string().optional(),
-    toolId: z.string().nonempty("Tool selection is required"),
-  })
-  .refine(
-    (data) =>
-      (data.runInputContentIds && data.runInputContentIds.length > 0) ||
-      (data?.text?.trim()?.length || -1) > 0,
-    {
-      message: "Either content inputs or text must be provided.",
-      path: ["runInputContentIds", "text"], // You can choose one or both paths for the error
-    }
-  );
-
-type FormValues = z.infer<typeof formSchema>;
 
 export default function PlaygroundPage() {
   const { defaultOrgname } = useAuth();
-  const { mutateAsync: runPipeline } =
-    usePipelinesControllerCreatePipelineRun();
   const [selectedTool, setSelectedTool] = useState<ToolEntity>();
-  const [selectedContent, setSelectedContent] = useState<ContentEntity>();
-  const [, setCurrentRun] = useState<PipelineRunEntity>();
-  const form = useForm<FormValues>({
-    defaultValues: {
-      runInputContentIds: [],
-      text: "",
-      toolId: "",
+  const { data: tools } = useToolsControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
     },
-    resolver: zodResolver(formSchema),
   });
 
+  if (!selectedTool) {
+    return (
+      <div className="flex h-full flex-col items-center justify-start">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {tools?.results?.map((tool, index) => {
+            const Icon = siteConfig.toolBaseIcons[tool.toolBase];
+            return (
+              <Card
+                className="flex flex-col justify-between bg-sidebar text-center transition-shadow hover:shadow-lg"
+                key={index}
+              >
+                <CardHeader className="pt-6">
+                  <Icon className="mx-auto mb-2 h-8 w-8 text-foreground" />
+                  <CardTitle className="text-xl font-semibold">
+                    {tool.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>{tool.description}</CardContent>
+                <CardFooter className="justify-center">
+                  <Button
+                    className="h-8"
+                    onClick={() => setSelectedTool(tool)}
+                    variant={"secondary"}
+                  >
+                    Select Tool
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
   return (
-    <Form {...form}>
-      <form
-        className="grid h-full gap-3 md:grid-cols-3"
-        onSubmit={form.handleSubmit(async (values) => {
-          const run = await runPipeline(
-            {
-              body: {
-                contentIds: values.runInputContentIds,
-                text: values.text,
-                url: "",
-              },
-              pathParams: {
-                orgname: defaultOrgname,
-                pipelineId: values.toolId,
-              },
-            },
-            {
-              onError: (error) => {
-                toast({
-                  description: error?.stack.message,
-                  title: "Error",
-                });
-              },
-              onSuccess: () => {
-                toast({
-                  description: "Tool run successful",
-                  title: "Success",
-                });
-              },
-            }
-          );
-          setCurrentRun(run);
-        })}
+    <div className="relative grid h-full gap-3 md:grid-cols-3">
+      {
+        // Back Button
+      }
+      <Button
+        className="absolute left-0 top-0"
+        onClick={() => setSelectedTool(undefined)}
+        size="sm"
+        variant={"secondary"}
       >
-        {/* OUTPUT */}
-        <div className="col-span-2 flex flex-1 flex-col gap-2">
-          <div className="flex-1">{}</div>
-          <div className="flex-1">{}</div>
-        </div>
+        <ArrowLeft className="h-4 w-4" />
+      </Button>
+      {/* OUTPUT */}
+      <div className="col-span-2 flex flex-1 flex-col gap-2">
+        <div className="flex-1">{}</div>
+        <div className="flex-1">{}</div>
+      </div>
 
-        {/* SIDEBAR */}
-        <div className="col-span-1 flex flex-col gap-4 border-l pl-4">
-          {/* Tool Selector */}
-          <Controller
-            control={form.control}
-            name="toolId"
-            render={({ field, fieldState }) => (
-              <>
-                <DataSelector<ToolEntity>
-                  getItemDetails={(tool) => {
-                    return (
-                      <div className="grid gap-2">
-                        <h4 className="flex items-center gap-1 font-medium leading-none">
-                          {tool?.name}
-                        </h4>
-                        <div className="text-sm text-muted-foreground">
-                          {tool?.description}
-                        </div>
-                      </div>
-                    );
-                  }}
-                  icons={[
-                    {
-                      Icon: siteConfig.toolBaseIcons["extract-text"],
-                      name: "Extract Text",
-                    },
-                    {
-                      Icon: siteConfig.toolBaseIcons["create-embeddings"],
-                      name: "Create Embeddings",
-                    },
-                    {
-                      Icon: siteConfig.toolBaseIcons["summarize"],
-                      name: "Summarize",
-                    },
-                    {
-                      Icon: siteConfig.toolBaseIcons["text-to-image"],
-                      name: "Text to Image",
-                    },
-                    {
-                      Icon: siteConfig.toolBaseIcons["text-to-speech"],
-                      name: "Text to Speech",
-                    },
-                  ]}
-                  isMultiSelect={false}
-                  label="Tool"
-                  selectedData={selectedTool}
-                  setSelectedData={(tool: any) => {
-                    setSelectedTool(tool);
-                    field.onChange(tool.id);
-                  }}
-                  useFindAll={() =>
-                    useToolsControllerFindAll({
-                      pathParams: {
-                        orgname: defaultOrgname,
-                      },
-                    })
-                  }
-                />
-
-                {fieldState.error && (
-                  <span className="text-sm text-red-500">
-                    {(fieldState.error as any)?.toolId?.message}
-                  </span>
-                )}
-              </>
-            )}
-          />
-
-          {/* Content Selector */}
-          <Controller
-            control={form.control}
-            name="runInputContentIds"
-            render={({ field, fieldState }) => (
-              <>
-                <DataSelector<ContentEntity>
-                  isMultiSelect={true}
-                  label="Content"
-                  selectedData={selectedContent}
-                  setSelectedData={(content: any) => {
-                    setSelectedContent(content);
-                    field.onChange(
-                      content === null ? [] : content.map((c: any) => c.id)
-                    );
-                  }}
-                  useFindAll={() =>
-                    useContentControllerFindAll({
-                      pathParams: {
-                        orgname: defaultOrgname,
-                      },
-                    })
-                  }
-                />
-                {fieldState.error && (
-                  <span className="text-sm text-red-500">
-                    {(fieldState.error as any)?.runInputContentIds?.message}
-                  </span>
-                )}
-              </>
-            )}
-          />
-
-          {/* Input Text */}
-          <div className="flex flex-1 flex-col space-y-2">
-            <Label htmlFor="text">Input Text</Label>
-            <Textarea
-              id="text"
-              placeholder="Add text as input..."
-              {...form.register("text")}
-              className={form.formState.errors.text ? "border-red-500" : ""}
-            />
-            {form.formState.errors.text && (
-              <span className="text-sm text-red-500">
-                {form.formState.errors.text.message}
-              </span>
-            )}
-          </div>
-          {/* Submit Button */}
-          <div className="flex items-center justify-end space-x-2">
-            <div>{form.formState.errors.root?.message}</div>
-            <Button disabled={!selectedTool} size="sm" type="submit">
-              Submit
-            </Button>
-            <Button size="sm" variant="secondary">
-              <span className="sr-only">Show history</span>
-              <CounterClockwiseClockIcon className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </form>
-    </Form>
+      {/* SIDEBAR */}
+      <div className="col-span-1 flex flex-col gap-4">
+        <RunForm preSelectedTool={selectedTool} />
+      </div>
+    </div>
   );
 }

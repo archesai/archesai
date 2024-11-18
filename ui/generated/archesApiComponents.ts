@@ -185,68 +185,6 @@ export const usePipelinesControllerFindAll = <
   });
 };
 
-export type PipelinesControllerCreatePipelineRunPathParams = {
-  orgname: string;
-  pipelineId: string;
-};
-
-export type PipelinesControllerCreatePipelineRunError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type PipelinesControllerCreatePipelineRunVariables = {
-  body?: Schemas.CreateRunDto;
-  pathParams: PipelinesControllerCreatePipelineRunPathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Create a new pipeline run. ADMIN ONLY.
- */
-export const fetchPipelinesControllerCreatePipelineRun = (
-  variables: PipelinesControllerCreatePipelineRunVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.PipelineRunEntity,
-    PipelinesControllerCreatePipelineRunError,
-    Schemas.CreateRunDto,
-    {},
-    {},
-    PipelinesControllerCreatePipelineRunPathParams
-  >({
-    url: "/organizations/{orgname}/pipelines/{pipelineId}/runs",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * Create a new pipeline run. ADMIN ONLY.
- */
-export const usePipelinesControllerCreatePipelineRun = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.PipelineRunEntity,
-      PipelinesControllerCreatePipelineRunError,
-      PipelinesControllerCreatePipelineRunVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.PipelineRunEntity,
-    PipelinesControllerCreatePipelineRunError,
-    PipelinesControllerCreatePipelineRunVariables
-  >({
-    mutationFn: (variables: PipelinesControllerCreatePipelineRunVariables) =>
-      fetchPipelinesControllerCreatePipelineRun({
-        ...fetcherOptions,
-        ...variables,
-      }),
-    ...options,
-  });
-};
-
 export type PipelinesControllerFindOnePathParams = {
   orgname: string;
   pipelineId: string;
@@ -427,617 +365,6 @@ export const usePipelinesControllerUpdate = (
     mutationFn: (variables: PipelinesControllerUpdateVariables) =>
       fetchPipelinesControllerUpdate({ ...fetcherOptions, ...variables }),
     ...options,
-  });
-};
-
-export type ContentControllerCreatePathParams = {
-  orgname: string;
-};
-
-export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerCreateVariables = {
-  body: Schemas.CreateContentDto;
-  pathParams: ContentControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Create a new content. ADMIN ONLY.
- */
-export const fetchContentControllerCreate = (
-  variables: ContentControllerCreateVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ContentEntity,
-    ContentControllerCreateError,
-    Schemas.CreateContentDto,
-    {},
-    {},
-    ContentControllerCreatePathParams
-  >({
-    url: "/organizations/{orgname}/content",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * Create a new content. ADMIN ONLY.
- */
-export const useContentControllerCreate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ContentEntity,
-      ContentControllerCreateError,
-      ContentControllerCreateVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ContentEntity,
-    ContentControllerCreateError,
-    ContentControllerCreateVariables
-  >({
-    mutationFn: (variables: ContentControllerCreateVariables) =>
-      fetchContentControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type ContentControllerFindAllPathParams = {
-  orgname: string;
-};
-
-export type ContentControllerFindAllQueryParams = {
-  /**
-   * Aggregates to collect for the search results
-   */
-  aggregates?: Schemas.AggregateFieldQuery[];
-  /**
-   * The end date to search to
-   */
-  endDate?: string;
-  /**
-   * Filter fields and values
-   */
-  filters?: Schemas.FieldFieldQuery[];
-  /**
-   * The limit of the number of results returned
-   *
-   * @default 10
-   */
-  limit?: number;
-  /**
-   * The offset of the returned results
-   *
-   * @default 0
-   */
-  offset?: number;
-  /**
-   * The field to sort the results by
-   *
-   * @default createdAt
-   */
-  sortBy?: string;
-  /**
-   * The direction to sort the results by
-   *
-   * @default desc
-   */
-  sortDirection?: "asc" | "desc";
-  /**
-   * The start date to search from
-   */
-  startDate?: string;
-};
-
-export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerFindAllResponse = {
-  aggregates?: Schemas.AggregateFieldResult[];
-  metadata?: Schemas.Metadata;
-  results?: Schemas.ContentEntity[];
-};
-
-export type ContentControllerFindAllVariables = {
-  pathParams: ContentControllerFindAllPathParams;
-  queryParams?: ContentControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get all contents. ADMIN ONLY.
- */
-export const fetchContentControllerFindAll = (
-  variables: ContentControllerFindAllVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    ContentControllerFindAllResponse,
-    ContentControllerFindAllError,
-    undefined,
-    {},
-    ContentControllerFindAllQueryParams,
-    ContentControllerFindAllPathParams
-  >({
-    url: "/organizations/{orgname}/content",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get all contents. ADMIN ONLY.
- */
-export const useContentControllerFindAll = <
-  TData = ContentControllerFindAllResponse,
->(
-  variables: ContentControllerFindAllVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      ContentControllerFindAllResponse,
-      ContentControllerFindAllError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    ContentControllerFindAllResponse,
-    ContentControllerFindAllError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content",
-      operationId: "contentControllerFindAll",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchContentControllerFindAll(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ContentControllerFindOnePathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type ContentControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerFindOneVariables = {
-  pathParams: ContentControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Get a content. ADMIN ONLY.
- */
-export const fetchContentControllerFindOne = (
-  variables: ContentControllerFindOneVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ContentEntity,
-    ContentControllerFindOneError,
-    undefined,
-    {},
-    {},
-    ContentControllerFindOnePathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * Get a content. ADMIN ONLY.
- */
-export const useContentControllerFindOne = <TData = Schemas.ContentEntity,>(
-  variables: ContentControllerFindOneVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      Schemas.ContentEntity,
-      ContentControllerFindOneError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    Schemas.ContentEntity,
-    ContentControllerFindOneError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{contentId}",
-      operationId: "contentControllerFindOne",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchContentControllerFindOne(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
-  });
-};
-
-export type ContentControllerRemovePathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type ContentControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerRemoveVariables = {
-  pathParams: ContentControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Delete a content. ADMIN ONLY.
- */
-export const fetchContentControllerRemove = (
-  variables: ContentControllerRemoveVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    ContentControllerRemoveError,
-    undefined,
-    {},
-    {},
-    ContentControllerRemovePathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-/**
- * Delete a content. ADMIN ONLY.
- */
-export const useContentControllerRemove = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      ContentControllerRemoveError,
-      ContentControllerRemoveVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    ContentControllerRemoveError,
-    ContentControllerRemoveVariables
-  >({
-    mutationFn: (variables: ContentControllerRemoveVariables) =>
-      fetchContentControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type ContentControllerUpdatePathParams = {
-  orgname: string;
-  contentId: string;
-};
-
-export type ContentControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
-
-export type ContentControllerUpdateVariables = {
-  body?: Schemas.UpdateContentDto;
-  pathParams: ContentControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * Update a content. ADMIN ONLY.
- */
-export const fetchContentControllerUpdate = (
-  variables: ContentControllerUpdateVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ContentEntity,
-    ContentControllerUpdateError,
-    Schemas.UpdateContentDto,
-    {},
-    {},
-    ContentControllerUpdatePathParams
-  >({
-    url: "/organizations/{orgname}/content/{contentId}",
-    method: "patch",
-    ...variables,
-    signal,
-  });
-
-/**
- * Update a content. ADMIN ONLY.
- */
-export const useContentControllerUpdate = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ContentEntity,
-      ContentControllerUpdateError,
-      ContentControllerUpdateVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ContentEntity,
-    ContentControllerUpdateError,
-    ContentControllerUpdateVariables
-  >({
-    mutationFn: (variables: ContentControllerUpdateVariables) =>
-      fetchContentControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type StorageControllerDeletePathParams = {
-  orgname: string;
-};
-
-export type StorageControllerDeleteQueryParams = {
-  path: string;
-};
-
-export type StorageControllerDeleteError = Fetcher.ErrorWrapper<undefined>;
-
-export type StorageControllerDeleteVariables = {
-  pathParams: StorageControllerDeletePathParams;
-  queryParams: StorageControllerDeleteQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
- */
-export const fetchStorageControllerDelete = (
-  variables: StorageControllerDeleteVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    undefined,
-    StorageControllerDeleteError,
-    undefined,
-    {},
-    StorageControllerDeleteQueryParams,
-    StorageControllerDeletePathParams
-  >({
-    url: "/organizations/{orgname}/storage/delete",
-    method: "delete",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
- */
-export const useStorageControllerDelete = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      undefined,
-      StorageControllerDeleteError,
-      StorageControllerDeleteVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    undefined,
-    StorageControllerDeleteError,
-    StorageControllerDeleteVariables
-  >({
-    mutationFn: (variables: StorageControllerDeleteVariables) =>
-      fetchStorageControllerDelete({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type StorageControllerGetReadUrlPathParams = {
-  orgname: string;
-};
-
-export type StorageControllerGetReadUrlError = Fetcher.ErrorWrapper<undefined>;
-
-export type StorageControllerGetReadUrlVariables = {
-  body: Schemas.PathDto;
-  pathParams: StorageControllerGetReadUrlPathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
- */
-export const fetchStorageControllerGetReadUrl = (
-  variables: StorageControllerGetReadUrlVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.ReadUrlDto,
-    StorageControllerGetReadUrlError,
-    Schemas.PathDto,
-    {},
-    {},
-    StorageControllerGetReadUrlPathParams
-  >({
-    url: "/organizations/{orgname}/storage/read",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
- */
-export const useStorageControllerGetReadUrl = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.ReadUrlDto,
-      StorageControllerGetReadUrlError,
-      StorageControllerGetReadUrlVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.ReadUrlDto,
-    StorageControllerGetReadUrlError,
-    StorageControllerGetReadUrlVariables
-  >({
-    mutationFn: (variables: StorageControllerGetReadUrlVariables) =>
-      fetchStorageControllerGetReadUrl({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type StorageControllerGetWriteUrlPathParams = {
-  orgname: string;
-};
-
-export type StorageControllerGetWriteUrlError = Fetcher.ErrorWrapper<undefined>;
-
-export type StorageControllerGetWriteUrlVariables = {
-  body: Schemas.PathDto;
-  pathParams: StorageControllerGetWriteUrlPathParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
- */
-export const fetchStorageControllerGetWriteUrl = (
-  variables: StorageControllerGetWriteUrlVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    Schemas.WriteUrlDto,
-    StorageControllerGetWriteUrlError,
-    Schemas.PathDto,
-    {},
-    {},
-    StorageControllerGetWriteUrlPathParams
-  >({
-    url: "/organizations/{orgname}/storage/write",
-    method: "post",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
- */
-export const useStorageControllerGetWriteUrl = (
-  options?: Omit<
-    reactQuery.UseMutationOptions<
-      Schemas.WriteUrlDto,
-      StorageControllerGetWriteUrlError,
-      StorageControllerGetWriteUrlVariables
-    >,
-    "mutationFn"
-  >,
-) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
-    Schemas.WriteUrlDto,
-    StorageControllerGetWriteUrlError,
-    StorageControllerGetWriteUrlVariables
-  >({
-    mutationFn: (variables: StorageControllerGetWriteUrlVariables) =>
-      fetchStorageControllerGetWriteUrl({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
-
-export type StorageControllerListDirectoryPathParams = {
-  orgname: string;
-};
-
-export type StorageControllerListDirectoryQueryParams = {
-  path: string;
-};
-
-export type StorageControllerListDirectoryError =
-  Fetcher.ErrorWrapper<undefined>;
-
-export type StorageControllerListDirectoryResponse = Schemas.StorageItemDto[];
-
-export type StorageControllerListDirectoryVariables = {
-  pathParams: StorageControllerListDirectoryPathParams;
-  queryParams: StorageControllerListDirectoryQueryParams;
-} & ArchesApiContext["fetcherOptions"];
-
-/**
- * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
- */
-export const fetchStorageControllerListDirectory = (
-  variables: StorageControllerListDirectoryVariables,
-  signal?: AbortSignal,
-) =>
-  archesApiFetch<
-    StorageControllerListDirectoryResponse,
-    StorageControllerListDirectoryError,
-    undefined,
-    {},
-    StorageControllerListDirectoryQueryParams,
-    StorageControllerListDirectoryPathParams
-  >({
-    url: "/organizations/{orgname}/storage/items",
-    method: "get",
-    ...variables,
-    signal,
-  });
-
-/**
- * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
- */
-export const useStorageControllerListDirectory = <
-  TData = StorageControllerListDirectoryResponse,
->(
-  variables: StorageControllerListDirectoryVariables,
-  options?: Omit<
-    reactQuery.UseQueryOptions<
-      StorageControllerListDirectoryResponse,
-      StorageControllerListDirectoryError,
-      TData
-    >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
-) => {
-  const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
-  return reactQuery.useQuery<
-    StorageControllerListDirectoryResponse,
-    StorageControllerListDirectoryError,
-    TData
-  >({
-    queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/storage/items",
-      operationId: "storageControllerListDirectory",
-      variables,
-    }),
-    queryFn: ({ signal }) =>
-      fetchStorageControllerListDirectory(
-        { ...fetcherOptions, ...variables },
-        signal,
-      ),
-    ...options,
-    ...queryOptions,
   });
 };
 
@@ -3835,68 +3162,320 @@ export const useLabelsControllerUpdate = (
   });
 };
 
-export type ToolRunsControllerCreatePathParams = {
+export type StorageControllerDeletePathParams = {
   orgname: string;
 };
 
-export type ToolRunsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type StorageControllerDeleteQueryParams = {
+  path: string;
+};
 
-export type ToolRunsControllerCreateVariables = {
-  body?: Schemas.CreateRunDto;
-  pathParams: ToolRunsControllerCreatePathParams;
+export type StorageControllerDeleteError = Fetcher.ErrorWrapper<undefined>;
+
+export type StorageControllerDeleteVariables = {
+  pathParams: StorageControllerDeletePathParams;
+  queryParams: StorageControllerDeleteQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Create a new tool run. ADMIN ONLY.
+ * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
  */
-export const fetchToolRunsControllerCreate = (
-  variables: ToolRunsControllerCreateVariables,
+export const fetchStorageControllerDelete = (
+  variables: StorageControllerDeleteVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.ToolRunEntity,
-    ToolRunsControllerCreateError,
-    Schemas.CreateRunDto,
+    undefined,
+    StorageControllerDeleteError,
+    undefined,
     {},
-    {},
-    ToolRunsControllerCreatePathParams
+    StorageControllerDeleteQueryParams,
+    StorageControllerDeletePathParams
   >({
-    url: "/organizations/{orgname}/tool-runs",
-    method: "post",
+    url: "/organizations/{orgname}/storage/delete",
+    method: "delete",
     ...variables,
     signal,
   });
 
 /**
- * Create a new tool run. ADMIN ONLY.
+ * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
  */
-export const useToolRunsControllerCreate = (
+export const useStorageControllerDelete = (
   options?: Omit<
     reactQuery.UseMutationOptions<
-      Schemas.ToolRunEntity,
-      ToolRunsControllerCreateError,
-      ToolRunsControllerCreateVariables
+      undefined,
+      StorageControllerDeleteError,
+      StorageControllerDeleteVariables
     >,
     "mutationFn"
   >,
 ) => {
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
-    Schemas.ToolRunEntity,
-    ToolRunsControllerCreateError,
-    ToolRunsControllerCreateVariables
+    undefined,
+    StorageControllerDeleteError,
+    StorageControllerDeleteVariables
   >({
-    mutationFn: (variables: ToolRunsControllerCreateVariables) =>
-      fetchToolRunsControllerCreate({ ...fetcherOptions, ...variables }),
+    mutationFn: (variables: StorageControllerDeleteVariables) =>
+      fetchStorageControllerDelete({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
 
-export type ToolRunsControllerFindAllPathParams = {
+export type StorageControllerGetReadUrlPathParams = {
   orgname: string;
 };
 
-export type ToolRunsControllerFindAllQueryParams = {
+export type StorageControllerGetReadUrlError = Fetcher.ErrorWrapper<undefined>;
+
+export type StorageControllerGetReadUrlVariables = {
+  body: Schemas.PathDto;
+  pathParams: StorageControllerGetReadUrlPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
+ */
+export const fetchStorageControllerGetReadUrl = (
+  variables: StorageControllerGetReadUrlVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ReadUrlDto,
+    StorageControllerGetReadUrlError,
+    Schemas.PathDto,
+    {},
+    {},
+    StorageControllerGetReadUrlPathParams
+  >({
+    url: "/organizations/{orgname}/storage/read",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
+ */
+export const useStorageControllerGetReadUrl = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ReadUrlDto,
+      StorageControllerGetReadUrlError,
+      StorageControllerGetReadUrlVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ReadUrlDto,
+    StorageControllerGetReadUrlError,
+    StorageControllerGetReadUrlVariables
+  >({
+    mutationFn: (variables: StorageControllerGetReadUrlVariables) =>
+      fetchStorageControllerGetReadUrl({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type StorageControllerGetWriteUrlPathParams = {
+  orgname: string;
+};
+
+export type StorageControllerGetWriteUrlError = Fetcher.ErrorWrapper<undefined>;
+
+export type StorageControllerGetWriteUrlVariables = {
+  body: Schemas.PathDto;
+  pathParams: StorageControllerGetWriteUrlPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
+ */
+export const fetchStorageControllerGetWriteUrl = (
+  variables: StorageControllerGetWriteUrlVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.WriteUrlDto,
+    StorageControllerGetWriteUrlError,
+    Schemas.PathDto,
+    {},
+    {},
+    StorageControllerGetWriteUrlPathParams
+  >({
+    url: "/organizations/{orgname}/storage/write",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
+ */
+export const useStorageControllerGetWriteUrl = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.WriteUrlDto,
+      StorageControllerGetWriteUrlError,
+      StorageControllerGetWriteUrlVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.WriteUrlDto,
+    StorageControllerGetWriteUrlError,
+    StorageControllerGetWriteUrlVariables
+  >({
+    mutationFn: (variables: StorageControllerGetWriteUrlVariables) =>
+      fetchStorageControllerGetWriteUrl({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type StorageControllerListDirectoryPathParams = {
+  orgname: string;
+};
+
+export type StorageControllerListDirectoryQueryParams = {
+  path: string;
+};
+
+export type StorageControllerListDirectoryError =
+  Fetcher.ErrorWrapper<undefined>;
+
+export type StorageControllerListDirectoryResponse = Schemas.StorageItemDto[];
+
+export type StorageControllerListDirectoryVariables = {
+  pathParams: StorageControllerListDirectoryPathParams;
+  queryParams: StorageControllerListDirectoryQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
+ */
+export const fetchStorageControllerListDirectory = (
+  variables: StorageControllerListDirectoryVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    StorageControllerListDirectoryResponse,
+    StorageControllerListDirectoryError,
+    undefined,
+    {},
+    StorageControllerListDirectoryQueryParams,
+    StorageControllerListDirectoryPathParams
+  >({
+    url: "/organizations/{orgname}/storage/items",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
+ */
+export const useStorageControllerListDirectory = <
+  TData = StorageControllerListDirectoryResponse,
+>(
+  variables: StorageControllerListDirectoryVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      StorageControllerListDirectoryResponse,
+      StorageControllerListDirectoryError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    StorageControllerListDirectoryResponse,
+    StorageControllerListDirectoryError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/storage/items",
+      operationId: "storageControllerListDirectory",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchStorageControllerListDirectory(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ContentControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export type ContentControllerCreateVariables = {
+  body: Schemas.CreateContentDto;
+  pathParams: ContentControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new content. ADMIN ONLY.
+ */
+export const fetchContentControllerCreate = (
+  variables: ContentControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ContentEntity,
+    ContentControllerCreateError,
+    Schemas.CreateContentDto,
+    {},
+    {},
+    ContentControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/content",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new content. ADMIN ONLY.
+ */
+export const useContentControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ContentEntity,
+      ContentControllerCreateError,
+      ContentControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ContentEntity,
+    ContentControllerCreateError,
+    ContentControllerCreateVariables
+  >({
+    mutationFn: (variables: ContentControllerCreateVariables) =>
+      fetchContentControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ContentControllerFindAllPathParams = {
+  orgname: string;
+};
+
+export type ContentControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
@@ -3939,51 +3518,51 @@ export type ToolRunsControllerFindAllQueryParams = {
   startDate?: string;
 };
 
-export type ToolRunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
 
-export type ToolRunsControllerFindAllResponse = {
+export type ContentControllerFindAllResponse = {
   aggregates?: Schemas.AggregateFieldResult[];
   metadata?: Schemas.Metadata;
-  results?: Schemas.ToolRunEntity[];
+  results?: Schemas.ContentEntity[];
 };
 
-export type ToolRunsControllerFindAllVariables = {
-  pathParams: ToolRunsControllerFindAllPathParams;
-  queryParams?: ToolRunsControllerFindAllQueryParams;
+export type ContentControllerFindAllVariables = {
+  pathParams: ContentControllerFindAllPathParams;
+  queryParams?: ContentControllerFindAllQueryParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get all tool runs. ADMIN ONLY.
+ * Get all contents. ADMIN ONLY.
  */
-export const fetchToolRunsControllerFindAll = (
-  variables: ToolRunsControllerFindAllVariables,
+export const fetchContentControllerFindAll = (
+  variables: ContentControllerFindAllVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    ToolRunsControllerFindAllResponse,
-    ToolRunsControllerFindAllError,
+    ContentControllerFindAllResponse,
+    ContentControllerFindAllError,
     undefined,
     {},
-    ToolRunsControllerFindAllQueryParams,
-    ToolRunsControllerFindAllPathParams
+    ContentControllerFindAllQueryParams,
+    ContentControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/tool-runs",
+    url: "/organizations/{orgname}/content",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get all tool runs. ADMIN ONLY.
+ * Get all contents. ADMIN ONLY.
  */
-export const useToolRunsControllerFindAll = <
-  TData = ToolRunsControllerFindAllResponse,
+export const useContentControllerFindAll = <
+  TData = ContentControllerFindAllResponse,
 >(
-  variables: ToolRunsControllerFindAllVariables,
+  variables: ContentControllerFindAllVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      ToolRunsControllerFindAllResponse,
-      ToolRunsControllerFindAllError,
+      ContentControllerFindAllResponse,
+      ContentControllerFindAllError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
@@ -3992,17 +3571,17 @@ export const useToolRunsControllerFindAll = <
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    ToolRunsControllerFindAllResponse,
-    ToolRunsControllerFindAllError,
+    ContentControllerFindAllResponse,
+    ContentControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/tool-runs",
-      operationId: "toolRunsControllerFindAll",
+      path: "/organizations/{orgname}/content",
+      operationId: "contentControllerFindAll",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchToolRunsControllerFindAll(
+      fetchContentControllerFindAll(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -4011,47 +3590,47 @@ export const useToolRunsControllerFindAll = <
   });
 };
 
-export type ToolRunsControllerFindOnePathParams = {
+export type ContentControllerFindOnePathParams = {
   orgname: string;
-  toolRunId: string;
+  contentId: string;
 };
 
-export type ToolRunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
 
-export type ToolRunsControllerFindOneVariables = {
-  pathParams: ToolRunsControllerFindOnePathParams;
+export type ContentControllerFindOneVariables = {
+  pathParams: ContentControllerFindOnePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Get a tool run. ADMIN ONLY.
+ * Get a content. ADMIN ONLY.
  */
-export const fetchToolRunsControllerFindOne = (
-  variables: ToolRunsControllerFindOneVariables,
+export const fetchContentControllerFindOne = (
+  variables: ContentControllerFindOneVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
-    Schemas.ToolRunEntity,
-    ToolRunsControllerFindOneError,
+    Schemas.ContentEntity,
+    ContentControllerFindOneError,
     undefined,
     {},
     {},
-    ToolRunsControllerFindOnePathParams
+    ContentControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/tool-runs/{toolRunId}",
+    url: "/organizations/{orgname}/content/{contentId}",
     method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Get a tool run. ADMIN ONLY.
+ * Get a content. ADMIN ONLY.
  */
-export const useToolRunsControllerFindOne = <TData = Schemas.ToolRunEntity,>(
-  variables: ToolRunsControllerFindOneVariables,
+export const useContentControllerFindOne = <TData = Schemas.ContentEntity,>(
+  variables: ContentControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
-      Schemas.ToolRunEntity,
-      ToolRunsControllerFindOneError,
+      Schemas.ContentEntity,
+      ContentControllerFindOneError,
       TData
     >,
     "queryKey" | "queryFn" | "initialData"
@@ -4060,17 +3639,17 @@ export const useToolRunsControllerFindOne = <TData = Schemas.ToolRunEntity,>(
   const { fetcherOptions, queryOptions, queryKeyFn } =
     useArchesApiContext(options);
   return reactQuery.useQuery<
-    Schemas.ToolRunEntity,
-    ToolRunsControllerFindOneError,
+    Schemas.ContentEntity,
+    ContentControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/tool-runs/{toolRunId}",
-      operationId: "toolRunsControllerFindOne",
+      path: "/organizations/{orgname}/content/{contentId}",
+      operationId: "contentControllerFindOne",
       variables,
     }),
     queryFn: ({ signal }) =>
-      fetchToolRunsControllerFindOne(
+      fetchContentControllerFindOne(
         { ...fetcherOptions, ...variables },
         signal,
       ),
@@ -4079,47 +3658,47 @@ export const useToolRunsControllerFindOne = <TData = Schemas.ToolRunEntity,>(
   });
 };
 
-export type ToolRunsControllerRemovePathParams = {
+export type ContentControllerRemovePathParams = {
   orgname: string;
-  toolRunId: string;
+  contentId: string;
 };
 
-export type ToolRunsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
 
-export type ToolRunsControllerRemoveVariables = {
-  pathParams: ToolRunsControllerRemovePathParams;
+export type ContentControllerRemoveVariables = {
+  pathParams: ContentControllerRemovePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Delete a tool run. ADMIN ONLY.
+ * Delete a content. ADMIN ONLY.
  */
-export const fetchToolRunsControllerRemove = (
-  variables: ToolRunsControllerRemoveVariables,
+export const fetchContentControllerRemove = (
+  variables: ContentControllerRemoveVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
     undefined,
-    ToolRunsControllerRemoveError,
+    ContentControllerRemoveError,
     undefined,
     {},
     {},
-    ToolRunsControllerRemovePathParams
+    ContentControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/tool-runs/{toolRunId}",
+    url: "/organizations/{orgname}/content/{contentId}",
     method: "delete",
     ...variables,
     signal,
   });
 
 /**
- * Delete a tool run. ADMIN ONLY.
+ * Delete a content. ADMIN ONLY.
  */
-export const useToolRunsControllerRemove = (
+export const useContentControllerRemove = (
   options?: Omit<
     reactQuery.UseMutationOptions<
       undefined,
-      ToolRunsControllerRemoveError,
-      ToolRunsControllerRemoveVariables
+      ContentControllerRemoveError,
+      ContentControllerRemoveVariables
     >,
     "mutationFn"
   >,
@@ -4127,11 +3706,364 @@ export const useToolRunsControllerRemove = (
   const { fetcherOptions } = useArchesApiContext();
   return reactQuery.useMutation<
     undefined,
-    ToolRunsControllerRemoveError,
-    ToolRunsControllerRemoveVariables
+    ContentControllerRemoveError,
+    ContentControllerRemoveVariables
   >({
-    mutationFn: (variables: ToolRunsControllerRemoveVariables) =>
-      fetchToolRunsControllerRemove({ ...fetcherOptions, ...variables }),
+    mutationFn: (variables: ContentControllerRemoveVariables) =>
+      fetchContentControllerRemove({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ContentControllerUpdatePathParams = {
+  orgname: string;
+  contentId: string;
+};
+
+export type ContentControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+
+export type ContentControllerUpdateVariables = {
+  body?: Schemas.UpdateContentDto;
+  pathParams: ContentControllerUpdatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Update a content. ADMIN ONLY.
+ */
+export const fetchContentControllerUpdate = (
+  variables: ContentControllerUpdateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ContentEntity,
+    ContentControllerUpdateError,
+    Schemas.UpdateContentDto,
+    {},
+    {},
+    ContentControllerUpdatePathParams
+  >({
+    url: "/organizations/{orgname}/content/{contentId}",
+    method: "patch",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Update a content. ADMIN ONLY.
+ */
+export const useContentControllerUpdate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ContentEntity,
+      ContentControllerUpdateError,
+      ContentControllerUpdateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ContentEntity,
+    ContentControllerUpdateError,
+    ContentControllerUpdateVariables
+  >({
+    mutationFn: (variables: ContentControllerUpdateVariables) =>
+      fetchContentControllerUpdate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type RunsControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type RunsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export type RunsControllerCreateVariables = {
+  body: Schemas.CreateRunDto;
+  pathParams: RunsControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new run. ADMIN ONLY.
+ */
+export const fetchRunsControllerCreate = (
+  variables: RunsControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.RunEntity,
+    RunsControllerCreateError,
+    Schemas.CreateRunDto,
+    {},
+    {},
+    RunsControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/runs",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new run. ADMIN ONLY.
+ */
+export const useRunsControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.RunEntity,
+      RunsControllerCreateError,
+      RunsControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.RunEntity,
+    RunsControllerCreateError,
+    RunsControllerCreateVariables
+  >({
+    mutationFn: (variables: RunsControllerCreateVariables) =>
+      fetchRunsControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type RunsControllerFindAllPathParams = {
+  orgname: string;
+};
+
+export type RunsControllerFindAllQueryParams = {
+  /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
+   * The end date to search to
+   */
+  endDate?: string;
+  /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FieldFieldQuery[];
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   */
+  limit?: number;
+  /**
+   * The offset of the returned results
+   *
+   * @default 0
+   */
+  offset?: number;
+  /**
+   * The field to sort the results by
+   *
+   * @default createdAt
+   */
+  sortBy?: string;
+  /**
+   * The direction to sort the results by
+   *
+   * @default desc
+   */
+  sortDirection?: "asc" | "desc";
+  /**
+   * The start date to search from
+   */
+  startDate?: string;
+};
+
+export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+
+export type RunsControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
+  results?: Schemas.RunEntity[];
+};
+
+export type RunsControllerFindAllVariables = {
+  pathParams: RunsControllerFindAllPathParams;
+  queryParams?: RunsControllerFindAllQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get all runs. ADMIN ONLY.
+ */
+export const fetchRunsControllerFindAll = (
+  variables: RunsControllerFindAllVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    RunsControllerFindAllResponse,
+    RunsControllerFindAllError,
+    undefined,
+    {},
+    RunsControllerFindAllQueryParams,
+    RunsControllerFindAllPathParams
+  >({
+    url: "/organizations/{orgname}/runs",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get all runs. ADMIN ONLY.
+ */
+export const useRunsControllerFindAll = <
+  TData = RunsControllerFindAllResponse,
+>(
+  variables: RunsControllerFindAllVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      RunsControllerFindAllResponse,
+      RunsControllerFindAllError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    RunsControllerFindAllResponse,
+    RunsControllerFindAllError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/runs",
+      operationId: "runsControllerFindAll",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchRunsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type RunsControllerFindOnePathParams = {
+  orgname: string;
+  runId: string;
+};
+
+export type RunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+
+export type RunsControllerFindOneVariables = {
+  pathParams: RunsControllerFindOnePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get a run. ADMIN ONLY.
+ */
+export const fetchRunsControllerFindOne = (
+  variables: RunsControllerFindOneVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.RunEntity,
+    RunsControllerFindOneError,
+    undefined,
+    {},
+    {},
+    RunsControllerFindOnePathParams
+  >({
+    url: "/organizations/{orgname}/runs/{runId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a run. ADMIN ONLY.
+ */
+export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
+  variables: RunsControllerFindOneVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.RunEntity,
+      RunsControllerFindOneError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.RunEntity,
+    RunsControllerFindOneError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/runs/{runId}",
+      operationId: "runsControllerFindOne",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchRunsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type RunsControllerRemovePathParams = {
+  orgname: string;
+  runId: string;
+};
+
+export type RunsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+
+export type RunsControllerRemoveVariables = {
+  pathParams: RunsControllerRemovePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Delete a run. ADMIN ONLY.
+ */
+export const fetchRunsControllerRemove = (
+  variables: RunsControllerRemoveVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    RunsControllerRemoveError,
+    undefined,
+    {},
+    {},
+    RunsControllerRemovePathParams
+  >({
+    url: "/organizations/{orgname}/runs/{runId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Delete a run. ADMIN ONLY.
+ */
+export const useRunsControllerRemove = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      RunsControllerRemoveError,
+      RunsControllerRemoveVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    RunsControllerRemoveError,
+    RunsControllerRemoveVariables
+  >({
+    mutationFn: (variables: RunsControllerRemoveVariables) =>
+      fetchRunsControllerRemove({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
@@ -4146,21 +4078,6 @@ export type QueryOperation =
       path: "/organizations/{orgname}/pipelines/{pipelineId}";
       operationId: "pipelinesControllerFindOne";
       variables: PipelinesControllerFindOneVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/content";
-      operationId: "contentControllerFindAll";
-      variables: ContentControllerFindAllVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/content/{contentId}";
-      operationId: "contentControllerFindOne";
-      variables: ContentControllerFindOneVariables;
-    }
-  | {
-      path: "/organizations/{orgname}/storage/items";
-      operationId: "storageControllerListDirectory";
-      variables: StorageControllerListDirectoryVariables;
     }
   | {
       path: "/user";
@@ -4223,12 +4140,27 @@ export type QueryOperation =
       variables: LabelsControllerFindOneVariables;
     }
   | {
-      path: "/organizations/{orgname}/tool-runs";
-      operationId: "toolRunsControllerFindAll";
-      variables: ToolRunsControllerFindAllVariables;
+      path: "/organizations/{orgname}/storage/items";
+      operationId: "storageControllerListDirectory";
+      variables: StorageControllerListDirectoryVariables;
     }
   | {
-      path: "/organizations/{orgname}/tool-runs/{toolRunId}";
-      operationId: "toolRunsControllerFindOne";
-      variables: ToolRunsControllerFindOneVariables;
+      path: "/organizations/{orgname}/content";
+      operationId: "contentControllerFindAll";
+      variables: ContentControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/content/{contentId}";
+      operationId: "contentControllerFindOne";
+      variables: ContentControllerFindOneVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/runs";
+      operationId: "runsControllerFindAll";
+      variables: RunsControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/runs/{runId}";
+      operationId: "runsControllerFindOne";
+      variables: RunsControllerFindOneVariables;
     };

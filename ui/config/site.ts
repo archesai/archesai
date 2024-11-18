@@ -169,7 +169,7 @@ export const siteConfig = {
     summarize: BookOpen,
     "text-to-image": Image,
     "text-to-speech": Volume2,
-  },
+  } as Record<string, any>,
   url: "https://archesai.com",
 };
 
