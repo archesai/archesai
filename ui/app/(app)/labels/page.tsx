@@ -57,6 +57,7 @@ export default function ChatbotsPageContent() {
           orgname: defaultOrgname,
         },
       })}
+      getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
       handleSelect={(chatbot) =>
         router.push(`/chatbots/chat?labelId=${chatbot.id}`)
       }

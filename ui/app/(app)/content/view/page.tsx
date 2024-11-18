@@ -136,6 +136,7 @@ export default function ContentPage() {
           orgname: defaultOrgname,
         },
       })}
+      getEditFormFromItem={(content) => <ContentForm contentId={content.id} />}
       handleSelect={(content) =>
         router.push(`/content/single?contentId=${content.id}`)
       }
