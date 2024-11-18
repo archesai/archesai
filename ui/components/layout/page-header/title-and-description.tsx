@@ -1,6 +1,5 @@
 export const TitleAndDescription = ({
   description,
-  Icon,
   title,
 }: {
   description?: string;
@@ -9,8 +8,8 @@ export const TitleAndDescription = ({
 }) => {
   if (!title) return null;
   return (
-    <div className="flex items-center gap-2 px-4 pt-4">
-      {Icon && <Icon className="-ml-1 h-8 w-8 text-primary" />}
+    <div className="flex items-center gap-3 px-4 pt-4">
+      {/* {Icon && <Icon className="h-6 w-6 text-accent-foreground" />} */}
       <div>
         <p className="text-xl font-semibold text-foreground">{title}</p>
         <p className="text-sm text-muted-foreground">{description}</p>

@@ -74,6 +74,12 @@ export const siteConfig = {
           Icon: Workflow,
           title: "View Pipelines",
         },
+        {
+          description: "Create and manage build pipelines.",
+          href: "/pipelines/build",
+          Icon: Workflow,
+          title: "Build Pipelines",
+        },
       ],
       description: "Create and manage pipelines.",
       href: "/pipelines",

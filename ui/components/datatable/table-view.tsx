@@ -26,11 +26,11 @@ export function TableView<TItem extends BaseItem>({
   table,
 }: TableViewProps<TItem>) {
   return (
-    <div className="rounded-md border bg-background shadow-sm">
+    <div className="rounded-md border bg-sidebar shadow-sm">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup: any) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className="bg-background/40" key={headerGroup.id}>
               {headerGroup.headers.map((header: any) => (
                 <TableHead
                   className="text-base"
@@ -50,9 +50,12 @@ export function TableView<TItem extends BaseItem>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row: any) => (
+            table.getRowModel().rows.map((row: any, index: number) => (
               <TableRow
-                className="transition-all hover:bg-muted"
+                className={
+                  "transition-all hover:bg-muted" +
+                  (index % 2 ? " bg-background/40" : " ")
+                }
                 data-state={row.getIsSelected() && "selected"}
                 key={row.id}
               >

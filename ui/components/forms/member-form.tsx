@@ -3,6 +3,7 @@ import { FormFieldConfig, GenericForm } from "@/components/generic-form";
 import { Input } from "@/components/ui/input";
 import {
   useMembersControllerCreate,
+  useMembersControllerFindOne,
   useMembersControllerUpdate,
 } from "@/generated/archesApiComponents";
 import { CreateMemberDto, UpdateMemberDto } from "@/generated/archesApiSchemas";
@@ -19,9 +20,7 @@ import {
 } from "../ui/select";
 
 const formSchema = z.object({
-  description: z.string().min(1),
   email: z.string().email(),
-  name: z.string().min(1).max(255),
   role: z.enum(["ADMIN", "USER"], {
     message: "Invalid role. Must be one of 'ADMIN', 'USER'.",
   }),
@@ -29,24 +28,24 @@ const formSchema = z.object({
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
   const { defaultOrgname } = useAuth();
+  const { data: member, isLoading } = useMembersControllerFindOne(
+    {
+      pathParams: {
+        memberId: memberId as string,
+        orgname: defaultOrgname,
+      },
+    },
+    {
+      enabled: !!defaultOrgname && !!memberId,
+    }
+  );
   const { mutateAsync: updateMember } = useMembersControllerUpdate({});
   const { mutateAsync: createMember } = useMembersControllerCreate({});
 
   const formFields: FormFieldConfig[] = [
     {
       component: Input,
-      defaultValue: "",
-      description: "This is the name that will be used for this member.",
-      label: "Name",
-      name: "name",
-      props: {
-        placeholder: "Member name here...",
-      },
-      validationRule: formSchema.shape.name,
-    },
-    {
-      component: Input,
-      defaultValue: "",
+      defaultValue: member?.inviteEmail,
       description: "This is the email that will be used for this member.",
       label: "E-Mail",
       name: "inviteEmail",
@@ -57,23 +56,19 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
     },
     {
       component: Input,
-      defaultValue: "admin",
+      defaultValue: member?.role,
       description:
         "This is the role that will be used for this member. Note that different roles have different permissions.",
       label: "Role",
       name: "role",
-      props: {
-        placeholder: "Search roles...",
-      },
       renderControl: (field) => (
         <Select
-          defaultValue="ADMIN"
+          defaultValue={field.value}
           onValueChange={(value) => field.onChange(value)}
-          value={String(field.value) || undefined}
         >
           <FormControl>
             <SelectTrigger>
-              <SelectValue placeholder={"Choose your model"} />
+              <SelectValue placeholder={"Choose your role..."} />
             </SelectTrigger>
           </FormControl>
           <SelectContent>
@@ -98,9 +93,15 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
     },
   ];
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <GenericForm<CreateMemberDto, UpdateMemberDto>
-      description={"Configure your member's settings"}
+      description={
+        !memberId ? "Invite a new member" : "Update an existing member"
+      }
       fields={formFields}
       isUpdateForm={!!memberId}
       itemType="member"

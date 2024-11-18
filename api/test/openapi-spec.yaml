@@ -1801,20 +1801,25 @@ paths:
         - Organization - Members
       security:
         - bearer: []
-  /organizations/{orgname}/members/join:
-    post:
-      operationId: MembersController_join
-      summary: Accept invitation to this organization
-      description: Accept invitation to this organization. ADMIN ONLY.
+  /organizations/{orgname}/members/{memberId}:
+    get:
+      operationId: MembersController_findOne
+      summary: Get a member
+      description: Get a member. ADMIN ONLY.
       parameters:
         - name: orgname
           required: true
           in: path
           schema:
             type: string
+        - name: memberId
+          required: true
+          in: path
+          schema:
+            type: string
       responses:
-        '201':
-          description: Member was successfully updated
+        '200':
+          description: Successfully retrieved the member
           content:
             application/json:
               schema:
@@ -1822,14 +1827,13 @@ paths:
         '401':
           description: Unauthorized
         '403':
-          description: Email not verified
+          description: Forbidden
         '404':
           description: Not Found
       tags:
         - Organization - Members
       security:
         - bearer: []
-  /organizations/{orgname}/members/{memberId}:
     delete:
       operationId: MembersController_remove
       summary: Delete a member
@@ -1890,6 +1894,34 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Organization - Members
+      security:
+        - bearer: []
+  /organizations/{orgname}/members/join:
+    post:
+      operationId: MembersController_join
+      summary: Accept invitation to this organization
+      description: Accept invitation to this organization. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Member was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Email not verified
         '404':
           description: Not Found
       tags:

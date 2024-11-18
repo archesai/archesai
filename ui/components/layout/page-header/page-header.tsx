@@ -39,7 +39,7 @@ export const PageHeader = () => {
     <>
       <VerifyEmailAlert />
 
-      <header className="flex w-full items-center justify-between p-3 py-3">
+      <header className="flex w-full items-center justify-between bg-sidebar p-3 py-3">
         <Button
           className="mr-3 flex h-8 w-8"
           onClick={toggleSidebar}
@@ -59,7 +59,7 @@ export const PageHeader = () => {
         <div className="border-b" />
       ) : (
         <Tabs value={activeTab}>
-          <TabsList className="h-8 w-full items-end justify-start rounded-none border-b bg-background">
+          <TabsList className="h-8 w-full items-end justify-start rounded-none border-b bg-sidebar">
             {currentTabs.map((tab) => {
               const isActive = tab.href === activeTab;
               return (

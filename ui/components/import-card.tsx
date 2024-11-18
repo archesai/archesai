@@ -209,7 +209,7 @@ export default function ImportCard() {
             <ul className="flex max-h-52 grow flex-col gap-2 overflow-y-scroll">
               {selectedFiles.map((file, idx) => (
                 <li
-                  className="flex items-center justify-between rounded border bg-background p-2"
+                  className="flex items-center justify-between rounded border bg-muted/50 p-2"
                   key={idx}
                 >
                   <span className="flex w-4/5 items-center gap-2 truncate text-foreground">

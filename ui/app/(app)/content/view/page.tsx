@@ -34,7 +34,7 @@ export default function ContentPage() {
               <div className="flex gap-2">
                 {/* <ContentTypeToIcon contentType={row.original.mimeType} /> */}
                 <Link
-                  className="max-w-[200px] shrink truncate text-base font-medium text-primary md:text-sm"
+                  className="max-w-[200px] shrink truncate md:text-sm"
                   href={`/content/single?contentId=${row.original.id}`}
                 >
                   {row.original.name}

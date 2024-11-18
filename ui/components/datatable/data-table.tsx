@@ -1,4 +1,3 @@
-// components/DataTable.tsx
 "use client";
 
 import { DataTablePagination } from "@/components/datatable/data-table-pagination";
@@ -241,18 +240,6 @@ export function DataTable<
             </DropdownMenu>
           </div>
         ),
-        header: () =>
-          createForm ? (
-            <div className="text-right">
-              <Button
-                className="capitalize"
-                onClick={() => setFormOpen(true)}
-                size="sm"
-              >
-                Create {itemType.toLowerCase()}
-              </Button>
-            </div>
-          ) : null,
         id: "actions",
       },
     ],
@@ -277,8 +264,10 @@ export function DataTable<
       {/* SEARCH TOOLBAR */}
       {!minimal && (
         <DataTableToolbar
+          createForm={createForm}
           data={data?.results || []}
           itemType={itemType}
+          setFormOpen={setFormOpen}
           table={table}
         />
       )}

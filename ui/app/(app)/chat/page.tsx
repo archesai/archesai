@@ -230,7 +230,7 @@ export default function ChatbotChatPage() {
         >
           <div className="flex items-center gap-2">
             <Textarea
-              className="text-md max-h-40 flex-1 resize-none rounded-lg bg-background text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200"
+              className="text-md max-h-40 flex-1 resize-none rounded-lg bg-muted/50 text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200"
               onChange={handleChange}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;

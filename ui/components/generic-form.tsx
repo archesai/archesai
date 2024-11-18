@@ -90,7 +90,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
 
   return (
     <Card className={showCard ? "" : "border-none shadow-none"}>
-      <CardHeader>
+      <CardHeader className="rounded-lg bg-sidebar">
         <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
@@ -138,7 +138,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 }
           )}
         >
-          <CardContent className="flex flex-col gap-4 p-4">
+          <CardContent className="flex flex-col gap-4 bg-muted/30 p-4">
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
               .map((fieldConfig) => (
@@ -178,7 +178,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
               ))}
           </CardContent>
           <Separator />
-          <div className="flex rounded-lg bg-gray-50 p-4 dark:bg-black">
+          <div className="flex rounded-lg bg-sidebar p-4">
             {(onSubmitCreate || onSubmitUpdate) && (
               <div className="flex w-full items-center justify-end gap-2">
                 <Button

@@ -13,14 +13,18 @@ import { Table } from "@tanstack/react-table";
 import { GridIcon, ListIcon } from "lucide-react";
 
 interface DataTableToolbarProps<TData> {
+  createForm?: React.ReactNode;
   data: TData[];
-  itemType?: string;
+  itemType: string;
+  setFormOpen: (open: boolean) => void;
   table: Table<TData>;
 }
 
 export function DataTableToolbar<TData>({
+  createForm,
   data,
   itemType,
+  setFormOpen,
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
@@ -68,6 +72,15 @@ export function DataTableToolbar<TData>({
       <DatePickerWithRange />
       <ViewToggle />
       <DataTableViewOptions table={table} />
+      {createForm ? (
+        <Button
+          className="capitalize"
+          onClick={() => setFormOpen(true)}
+          size="sm"
+        >
+          Create {itemType.toLowerCase()}
+        </Button>
+      ) : null}
     </div>
   );
 }

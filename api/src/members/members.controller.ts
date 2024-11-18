@@ -60,6 +60,15 @@ export class MembersController
     return this.membersService.findAll(orgname, searchQueryDto);
   }
 
+  @ApiCrudOperation(Operation.GET, "member", MemberEntity, true)
+  @Get("/organizations/:orgname/members/:memberId")
+  async findOne(
+    @Param("orgname") orgname: string,
+    @Param("memberId") memberId: string
+  ) {
+    return this.membersService.findOne(orgname, memberId);
+  }
+
   @ApiOperation({
     description: "Accept invitation to this organization. ADMIN ONLY.",
     summary: "Accept invitation to this organization",

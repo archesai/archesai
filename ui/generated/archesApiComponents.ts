@@ -3243,59 +3243,71 @@ export const useMembersControllerFindAll = <
   });
 };
 
-export type MembersControllerJoinPathParams = {
+export type MembersControllerFindOnePathParams = {
   orgname: string;
+  memberId: string;
 };
 
-export type MembersControllerJoinError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
 
-export type MembersControllerJoinVariables = {
-  pathParams: MembersControllerJoinPathParams;
+export type MembersControllerFindOneVariables = {
+  pathParams: MembersControllerFindOnePathParams;
 } & ArchesApiContext["fetcherOptions"];
 
 /**
- * Accept invitation to this organization. ADMIN ONLY.
+ * Get a member. ADMIN ONLY.
  */
-export const fetchMembersControllerJoin = (
-  variables: MembersControllerJoinVariables,
+export const fetchMembersControllerFindOne = (
+  variables: MembersControllerFindOneVariables,
   signal?: AbortSignal,
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
-    MembersControllerJoinError,
+    MembersControllerFindOneError,
     undefined,
     {},
     {},
-    MembersControllerJoinPathParams
+    MembersControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/members/join",
-    method: "post",
+    url: "/organizations/{orgname}/members/{memberId}",
+    method: "get",
     ...variables,
     signal,
   });
 
 /**
- * Accept invitation to this organization. ADMIN ONLY.
+ * Get a member. ADMIN ONLY.
  */
-export const useMembersControllerJoin = (
+export const useMembersControllerFindOne = <TData = Schemas.MemberEntity,>(
+  variables: MembersControllerFindOneVariables,
   options?: Omit<
-    reactQuery.UseMutationOptions<
+    reactQuery.UseQueryOptions<
       Schemas.MemberEntity,
-      MembersControllerJoinError,
-      MembersControllerJoinVariables
+      MembersControllerFindOneError,
+      TData
     >,
-    "mutationFn"
+    "queryKey" | "queryFn" | "initialData"
   >,
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
-  return reactQuery.useMutation<
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
     Schemas.MemberEntity,
-    MembersControllerJoinError,
-    MembersControllerJoinVariables
+    MembersControllerFindOneError,
+    TData
   >({
-    mutationFn: (variables: MembersControllerJoinVariables) =>
-      fetchMembersControllerJoin({ ...fetcherOptions, ...variables }),
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/members/{memberId}",
+      operationId: "membersControllerFindOne",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchMembersControllerFindOne(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
     ...options,
+    ...queryOptions,
   });
 };
 
@@ -3410,6 +3422,62 @@ export const useMembersControllerUpdate = (
   >({
     mutationFn: (variables: MembersControllerUpdateVariables) =>
       fetchMembersControllerUpdate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type MembersControllerJoinPathParams = {
+  orgname: string;
+};
+
+export type MembersControllerJoinError = Fetcher.ErrorWrapper<undefined>;
+
+export type MembersControllerJoinVariables = {
+  pathParams: MembersControllerJoinPathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Accept invitation to this organization. ADMIN ONLY.
+ */
+export const fetchMembersControllerJoin = (
+  variables: MembersControllerJoinVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.MemberEntity,
+    MembersControllerJoinError,
+    undefined,
+    {},
+    {},
+    MembersControllerJoinPathParams
+  >({
+    url: "/organizations/{orgname}/members/join",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Accept invitation to this organization. ADMIN ONLY.
+ */
+export const useMembersControllerJoin = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.MemberEntity,
+      MembersControllerJoinError,
+      MembersControllerJoinVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.MemberEntity,
+    MembersControllerJoinError,
+    MembersControllerJoinVariables
+  >({
+    mutationFn: (variables: MembersControllerJoinVariables) =>
+      fetchMembersControllerJoin({ ...fetcherOptions, ...variables }),
     ...options,
   });
 };
@@ -3837,6 +3905,11 @@ export type QueryOperation =
       path: "/organizations/{orgname}/members";
       operationId: "membersControllerFindAll";
       variables: MembersControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/members/{memberId}";
+      operationId: "membersControllerFindOne";
+      variables: MembersControllerFindOneVariables;
     }
   | {
       path: "/organizations/{orgname}/labels";
