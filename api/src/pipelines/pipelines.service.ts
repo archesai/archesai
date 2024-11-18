@@ -3,11 +3,11 @@ import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { FlowProducer } from "bullmq";
 
 import { BaseService } from "../common/base.service";
+import { CreateRunDto } from "../common/dto/create-run.dto";
 import { ContentService } from "../content/content.service";
 import { ContentEntity } from "../content/entities/content.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
-import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import {
   PipelineEntity,
@@ -44,7 +44,7 @@ export class PipelinesService extends BaseService<
   async createPipelineRun(
     orgname: string,
     pipelineId: string,
-    createPipelineRunDto: CreatePipelineRunDto
+    createPipelineRunDto: CreateRunDto
   ) {
     // Ensure run content
     const runContent = await this.ensureRunContent(
@@ -58,7 +58,7 @@ export class PipelinesService extends BaseService<
       orgname,
       pipelineId,
       {
-        runInputContentIds: runContent.map((content) => content.id),
+        contentIds: runContent.map((content) => content.id),
       }
     );
     this.websocketsService.socket.to(orgname).emit("update", {
@@ -86,13 +86,13 @@ export class PipelinesService extends BaseService<
   async ensureRunContent(
     orgname: string,
     pipelineId: string,
-    createPipelineRunDto: CreatePipelineRunDto
+    createPipelineRunDto: CreateRunDto
   ) {
     const pipeline = await this.pipelineRepository.findOne(orgname, pipelineId);
 
     const runContent: ContentEntity[] = [];
-    if (!!createPipelineRunDto.runInputContentIds?.length) {
-      for (const contentId of createPipelineRunDto.runInputContentIds) {
+    if (!!createPipelineRunDto.contentIds?.length) {
+      for (const contentId of createPipelineRunDto.contentIds) {
         runContent.push(await this.contentService.findOne(orgname, contentId));
       }
     }

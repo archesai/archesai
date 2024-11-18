@@ -16,9 +16,9 @@ import {
   ApiCrudOperation,
   Operation,
 } from "../common/decorators/api-crud-operation.decorator";
+import { CreateRunDto } from "../common/dto/create-run.dto";
 import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
-import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineEntity } from "./entities/pipeline.entity";
 import { PipelineRunEntity } from "./entities/pipeline-run.entity";
@@ -55,7 +55,7 @@ export class PipelinesController
   async createPipelineRun(
     @Param("orgname") orgname: string,
     @Param("pipelineId") pipelineId: string,
-    @Body() createPipelineRunDto: CreatePipelineRunDto
+    @Body() createPipelineRunDto: CreateRunDto
   ) {
     return this.pipelinesService.createPipelineRun(
       orgname,

@@ -10,9 +10,11 @@ import { SpeechModule } from "../speech/speech.module";
 import { StorageModule } from "../storage/storage.module";
 import { ToolRunProcessor } from "./tool-run.processor";
 import { ToolRunRepository } from "./tool-run.repository";
+import { ToolRunsController } from "./tool-runs.controller";
 import { ToolRunsService } from "./tool-runs.service";
 
 @Module({
+  controllers: [ToolRunsController],
   exports: [ToolRunsService],
   imports: [
     PrismaModule,

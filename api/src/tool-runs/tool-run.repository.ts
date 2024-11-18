@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
+import { CreateRunDto } from "../common/dto/create-run.dto";
 import { ContentEntity } from "../content/entities/content.entity";
 import { PrismaService } from "../prisma/prisma.service";
 import { ToolRunModel } from "./entities/tool-run.entity";
@@ -9,7 +10,7 @@ import { ToolRunModel } from "./entities/tool-run.entity";
 @Injectable()
 export class ToolRunRepository extends BaseRepository<
   ToolRunModel,
-  any,
+  CreateRunDto,
   any,
   Prisma.ToolRunInclude,
   Prisma.ToolRunUpdateInput

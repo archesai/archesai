@@ -157,7 +157,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePipelineRunDto'
+              $ref: '#/components/schemas/CreateRunDto'
       responses:
         '201':
           description: Successfully created a new pipeline run
@@ -2161,6 +2161,203 @@ paths:
         - Labels
       security:
         - bearer: []
+  /organizations/{orgname}/tool-runs:
+    post:
+      operationId: ToolRunsController_create
+      summary: Create a new tool run
+      description: Create a new tool run. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRunDto'
+      responses:
+        '201':
+          description: Successfully created a new tool run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolRunEntity'
+        '400':
+          description: Bad request when creating the tool run
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tool Runs
+      security:
+        - bearer: []
+    get:
+      operationId: ToolRunsController_findAll
+      summary: Get all tool runs
+      description: Get all tool runs. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: aggregates
+          required: false
+          in: query
+          description: Aggregates to collect for the search results
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/AggregateFieldQuery'
+        - name: endDate
+          required: false
+          in: query
+          description: The end date to search to
+          schema:
+            type: string
+        - name: filters
+          required: false
+          in: query
+          description: Filter fields and values
+          schema:
+            default: []
+            type: array
+            items:
+              $ref: '#/components/schemas/FieldFieldQuery'
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            type: number
+        - name: offset
+          required: false
+          in: query
+          description: The offset of the returned results
+          schema:
+            default: 0
+            type: number
+        - name: sortBy
+          required: false
+          in: query
+          description: The field to sort the results by
+          schema:
+            default: createdAt
+            type: string
+        - name: sortDirection
+          required: false
+          in: query
+          description: The direction to sort the results by
+          schema:
+            default: desc
+            enum:
+              - asc
+              - desc
+            type: string
+        - name: startDate
+          required: false
+          in: query
+          description: The start date to search from
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned paginated results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - properties:
+                      aggregates:
+                        items:
+                          $ref: '#/components/schemas/AggregateFieldResult'
+                        type: array
+                      metadata:
+                        $ref: '#/components/schemas/Metadata'
+                      results:
+                        items:
+                          $ref: '#/components/schemas/ToolRunEntity'
+                        type: array
+                title: PaginatedResponseOfToolRunEntity
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tool Runs
+      security:
+        - bearer: []
+  /organizations/{orgname}/tool-runs/{toolRunId}:
+    get:
+      operationId: ToolRunsController_findOne
+      summary: Get a tool run
+      description: Get a tool run. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolRunId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the tool run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToolRunEntity'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tool Runs
+      security:
+        - bearer: []
+    delete:
+      operationId: ToolRunsController_remove
+      summary: Delete a tool run
+      description: Delete a tool run. ADMIN ONLY.
+      parameters:
+        - name: orgname
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: toolRunId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted the tool run
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      tags:
+        - Tool Runs
+      security:
+        - bearer: []
 info:
   title: Arches AI API
   description: The Arches AI API
@@ -2266,10 +2463,10 @@ components:
         - name
         - orgname
         - pipelineSteps
-    CreatePipelineRunDto:
+    CreateRunDto:
       type: object
       properties:
-        runInputContentIds:
+        contentIds:
           description: >-
             If using already created content, specify the content IDs to use as
             input for the run.
@@ -3337,6 +3534,56 @@ components:
           default: New Chat
           description: The chat label name
           example: What are the morals of the story in Aesop's Fables?
+    ToolRunEntity:
+      type: object
+      properties:
+        createdAt:
+          format: date-time
+          type: string
+          description: The creation date of this item
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The item's unique identifier
+          example: 32411590-a8e0-11ed-afa1-0242ac120002
+        completedAt:
+          format: date-time
+          type: string
+          description: The timestamp when the run completed
+          example: '2024-11-05T11:42:02.258Z'
+        error:
+          type: string
+          description: The error message, if any, associated with the run
+          example: An unexpected error occurred.
+        name:
+          type: string
+          description: The name of the run
+          example: Data Processing PipelineRun
+        progress:
+          type: number
+          default: 0
+          description: The progress of the run as a percentage
+          example: 50.5
+        startedAt:
+          format: date-time
+          type: string
+          description: The timestamp when the run started
+          example: '2024-11-05T11:42:02.258Z'
+        status:
+          type: string
+          default: QUEUED
+          description: The status of the run
+          enum:
+            - QUEUED
+            - PROCESSING
+            - COMPLETE
+            - ERROR
+      required:
+        - createdAt
+        - id
+        - name
+        - progress
+        - status
     FieldFieldQuery:
       type: object
       properties:

@@ -194,7 +194,7 @@ export type PipelinesControllerCreatePipelineRunError =
   Fetcher.ErrorWrapper<undefined>;
 
 export type PipelinesControllerCreatePipelineRunVariables = {
-  body?: Schemas.CreatePipelineRunDto;
+  body?: Schemas.CreateRunDto;
   pathParams: PipelinesControllerCreatePipelineRunPathParams;
 } & ArchesApiContext["fetcherOptions"];
 
@@ -208,7 +208,7 @@ export const fetchPipelinesControllerCreatePipelineRun = (
   archesApiFetch<
     Schemas.PipelineRunEntity,
     PipelinesControllerCreatePipelineRunError,
-    Schemas.CreatePipelineRunDto,
+    Schemas.CreateRunDto,
     {},
     {},
     PipelinesControllerCreatePipelineRunPathParams
@@ -3835,6 +3835,307 @@ export const useLabelsControllerUpdate = (
   });
 };
 
+export type ToolRunsControllerCreatePathParams = {
+  orgname: string;
+};
+
+export type ToolRunsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+
+export type ToolRunsControllerCreateVariables = {
+  body?: Schemas.CreateRunDto;
+  pathParams: ToolRunsControllerCreatePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Create a new tool run. ADMIN ONLY.
+ */
+export const fetchToolRunsControllerCreate = (
+  variables: ToolRunsControllerCreateVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ToolRunEntity,
+    ToolRunsControllerCreateError,
+    Schemas.CreateRunDto,
+    {},
+    {},
+    ToolRunsControllerCreatePathParams
+  >({
+    url: "/organizations/{orgname}/tool-runs",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Create a new tool run. ADMIN ONLY.
+ */
+export const useToolRunsControllerCreate = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.ToolRunEntity,
+      ToolRunsControllerCreateError,
+      ToolRunsControllerCreateVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    Schemas.ToolRunEntity,
+    ToolRunsControllerCreateError,
+    ToolRunsControllerCreateVariables
+  >({
+    mutationFn: (variables: ToolRunsControllerCreateVariables) =>
+      fetchToolRunsControllerCreate({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ToolRunsControllerFindAllPathParams = {
+  orgname: string;
+};
+
+export type ToolRunsControllerFindAllQueryParams = {
+  /**
+   * Aggregates to collect for the search results
+   */
+  aggregates?: Schemas.AggregateFieldQuery[];
+  /**
+   * The end date to search to
+   */
+  endDate?: string;
+  /**
+   * Filter fields and values
+   */
+  filters?: Schemas.FieldFieldQuery[];
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   */
+  limit?: number;
+  /**
+   * The offset of the returned results
+   *
+   * @default 0
+   */
+  offset?: number;
+  /**
+   * The field to sort the results by
+   *
+   * @default createdAt
+   */
+  sortBy?: string;
+  /**
+   * The direction to sort the results by
+   *
+   * @default desc
+   */
+  sortDirection?: "asc" | "desc";
+  /**
+   * The start date to search from
+   */
+  startDate?: string;
+};
+
+export type ToolRunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+
+export type ToolRunsControllerFindAllResponse = {
+  aggregates?: Schemas.AggregateFieldResult[];
+  metadata?: Schemas.Metadata;
+  results?: Schemas.ToolRunEntity[];
+};
+
+export type ToolRunsControllerFindAllVariables = {
+  pathParams: ToolRunsControllerFindAllPathParams;
+  queryParams?: ToolRunsControllerFindAllQueryParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get all tool runs. ADMIN ONLY.
+ */
+export const fetchToolRunsControllerFindAll = (
+  variables: ToolRunsControllerFindAllVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    ToolRunsControllerFindAllResponse,
+    ToolRunsControllerFindAllError,
+    undefined,
+    {},
+    ToolRunsControllerFindAllQueryParams,
+    ToolRunsControllerFindAllPathParams
+  >({
+    url: "/organizations/{orgname}/tool-runs",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get all tool runs. ADMIN ONLY.
+ */
+export const useToolRunsControllerFindAll = <
+  TData = ToolRunsControllerFindAllResponse,
+>(
+  variables: ToolRunsControllerFindAllVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      ToolRunsControllerFindAllResponse,
+      ToolRunsControllerFindAllError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    ToolRunsControllerFindAllResponse,
+    ToolRunsControllerFindAllError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/tool-runs",
+      operationId: "toolRunsControllerFindAll",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchToolRunsControllerFindAll(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ToolRunsControllerFindOnePathParams = {
+  orgname: string;
+  toolRunId: string;
+};
+
+export type ToolRunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+
+export type ToolRunsControllerFindOneVariables = {
+  pathParams: ToolRunsControllerFindOnePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Get a tool run. ADMIN ONLY.
+ */
+export const fetchToolRunsControllerFindOne = (
+  variables: ToolRunsControllerFindOneVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    Schemas.ToolRunEntity,
+    ToolRunsControllerFindOneError,
+    undefined,
+    {},
+    {},
+    ToolRunsControllerFindOnePathParams
+  >({
+    url: "/organizations/{orgname}/tool-runs/{toolRunId}",
+    method: "get",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Get a tool run. ADMIN ONLY.
+ */
+export const useToolRunsControllerFindOne = <TData = Schemas.ToolRunEntity,>(
+  variables: ToolRunsControllerFindOneVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      Schemas.ToolRunEntity,
+      ToolRunsControllerFindOneError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options);
+  return reactQuery.useQuery<
+    Schemas.ToolRunEntity,
+    ToolRunsControllerFindOneError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/organizations/{orgname}/tool-runs/{toolRunId}",
+      operationId: "toolRunsControllerFindOne",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchToolRunsControllerFindOne(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type ToolRunsControllerRemovePathParams = {
+  orgname: string;
+  toolRunId: string;
+};
+
+export type ToolRunsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+
+export type ToolRunsControllerRemoveVariables = {
+  pathParams: ToolRunsControllerRemovePathParams;
+} & ArchesApiContext["fetcherOptions"];
+
+/**
+ * Delete a tool run. ADMIN ONLY.
+ */
+export const fetchToolRunsControllerRemove = (
+  variables: ToolRunsControllerRemoveVariables,
+  signal?: AbortSignal,
+) =>
+  archesApiFetch<
+    undefined,
+    ToolRunsControllerRemoveError,
+    undefined,
+    {},
+    {},
+    ToolRunsControllerRemovePathParams
+  >({
+    url: "/organizations/{orgname}/tool-runs/{toolRunId}",
+    method: "delete",
+    ...variables,
+    signal,
+  });
+
+/**
+ * Delete a tool run. ADMIN ONLY.
+ */
+export const useToolRunsControllerRemove = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      undefined,
+      ToolRunsControllerRemoveError,
+      ToolRunsControllerRemoveVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = useArchesApiContext();
+  return reactQuery.useMutation<
+    undefined,
+    ToolRunsControllerRemoveError,
+    ToolRunsControllerRemoveVariables
+  >({
+    mutationFn: (variables: ToolRunsControllerRemoveVariables) =>
+      fetchToolRunsControllerRemove({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
 export type QueryOperation =
   | {
       path: "/organizations/{orgname}/pipelines";
@@ -3920,4 +4221,14 @@ export type QueryOperation =
       path: "/organizations/{orgname}/labels/{labelId}";
       operationId: "labelsControllerFindOne";
       variables: LabelsControllerFindOneVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/tool-runs";
+      operationId: "toolRunsControllerFindAll";
+      variables: ToolRunsControllerFindAllVariables;
+    }
+  | {
+      path: "/organizations/{orgname}/tool-runs/{toolRunId}";
+      operationId: "toolRunsControllerFindOne";
+      variables: ToolRunsControllerFindOneVariables;
     };

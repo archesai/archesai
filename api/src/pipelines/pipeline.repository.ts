@@ -2,9 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { Prisma, RunStatus } from "@prisma/client";
 
 import { BaseRepository } from "../common/base.repository";
+import { CreateRunDto } from "../common/dto/create-run.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePipelineDto } from "./dto/create-pipeline.dto";
-import { CreatePipelineRunDto } from "./dto/create-pipeline-run.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineWithPipelineStepsModel } from "./entities/pipeline.entity";
 import { PipelineRunEntity } from "./entities/pipeline-run.entity";
@@ -98,7 +98,7 @@ export class PipelineRepository extends BaseRepository<
   async createPipelineRun(
     orgname: string,
     pipelineId: string,
-    createPipelineRunDto: CreatePipelineRunDto
+    createPipelineRunDto: CreateRunDto
   ) {
     const pipeline = await this.findOne(orgname, pipelineId);
     const pipelineRun = await this.prisma.pipelineRun.create({
@@ -125,11 +125,9 @@ export class PipelineRepository extends BaseRepository<
       await this.prisma.toolRun.update({
         data: {
           inputs: {
-            connect: createPipelineRunDto.runInputContentIds.map(
-              (contentId) => ({
-                id: contentId,
-              })
-            ),
+            connect: createPipelineRunDto.contentIds.map((contentId) => ({
+              id: contentId,
+            })),
           },
         },
         where: {

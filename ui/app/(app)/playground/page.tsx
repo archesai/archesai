@@ -66,7 +66,7 @@ export default function PlaygroundPage() {
           const run = await runPipeline(
             {
               body: {
-                runInputContentIds: values.runInputContentIds,
+                contentIds: values.runInputContentIds,
                 text: values.text,
                 url: "",
               },
@@ -100,7 +100,7 @@ export default function PlaygroundPage() {
         </div>
 
         {/* SIDEBAR */}
-        <div className="col-span-1 flex flex-col gap-4">
+        <div className="col-span-1 flex flex-col gap-4 border-l pl-4">
           {/* Tool Selector */}
           <Controller
             control={form.control}

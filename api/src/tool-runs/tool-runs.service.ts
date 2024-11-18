@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { RunStatus } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
+import { CreateRunDto } from "../common/dto/create-run.dto";
 import { ContentEntity } from "../content/entities/content.entity";
 import { WebsocketsService } from "../websockets/websockets.service";
 import { ToolRunEntity, ToolRunModel } from "./entities/tool-run.entity";
@@ -10,7 +11,7 @@ import { ToolRunRepository } from "./tool-run.repository";
 @Injectable()
 export class ToolRunsService extends BaseService<
   ToolRunEntity,
-  any,
+  CreateRunDto,
   any,
   ToolRunRepository,
   ToolRunModel
