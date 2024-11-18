@@ -1,6 +1,10 @@
+import { UsersService } from "@/src/users/users.service";
 import { faker } from "@faker-js/faker";
-import { AuthProviderType, PrismaClient } from "@prisma/client";
+import { NestFactory } from "@nestjs/core";
+import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
+
+import { AppModule } from "../src/app.module";
 
 const prisma = new PrismaClient();
 
@@ -27,45 +31,30 @@ export const resetDatabase = async () => {
 async function main() {
   await resetDatabase();
 
+  const app = await NestFactory.createApplicationContext(AppModule);
+  const usersService = app.get(UsersService);
+  const hashedPassword = await bcrypt.hash("password", 10);
+  const user = await usersService.create(null, {
+    email: "user@example.com",
+    emailVerified: true,
+    firstName: "Jonathan",
+    lastName: "King",
+    password: hashedPassword,
+    photoUrl:
+      "https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179",
+    username: "user",
+  });
+
   const roles = ["USER", "ADMIN"];
   const labels = ["work", "personal", "school stuff"];
 
-  // Create init user
-  const email = "user@example.com";
-  const hashedPassword = await bcrypt.hash("password", 10);
-  const orgname =
-    email.split("@")[0] + "-" + Math.random().toString(36).substring(2, 6);
-  const user = await prisma.user.create({
+  await prisma.organization.update({
     data: {
-      authProviders: {
-        create: {
-          provider: AuthProviderType.LOCAL,
-          providerId: email,
-        },
-      },
-      defaultOrgname: orgname,
-      email: email,
-      emailVerified: true,
-      firstName: "Jonathan",
-      lastName: "King",
-      memberships: {
-        create: {
-          inviteEmail: email,
-          organization: {
-            create: {
-              billingEmail: email,
-              orgname: orgname,
-              plan: "UNLIMITED",
-              stripeCustomerId: "cus_123",
-            },
-          },
-          role: "ADMIN",
-        },
-      },
-      password: hashedPassword,
-      photoUrl:
-        "https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179",
-      username: orgname,
+      credits: 1000000,
+      plan: "UNLIMITED",
+    },
+    where: {
+      orgname: user.defaultOrgname,
     },
   });
 
@@ -126,6 +115,8 @@ async function main() {
   }
 
   console.log("Successfully seeded database");
+
+  await app.close();
 }
 
 (async () => {
