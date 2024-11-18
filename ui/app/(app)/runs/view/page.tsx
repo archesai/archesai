@@ -1,14 +1,15 @@
 "use client";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { RunStatusButton } from "@/components/run-status-button";
 import { Badge } from "@/components/ui/badge";
 import {
-  ToolsControllerFindAllPathParams,
-  ToolsControllerRemoveVariables,
-  useToolsControllerFindAll,
-  useToolsControllerRemove,
+  RunsControllerFindAllPathParams,
+  RunsControllerRemoveVariables,
+  useRunsControllerFindAll,
+  useRunsControllerRemove,
 } from "@/generated/archesApiComponents";
-import { ToolEntity } from "@/generated/archesApiSchemas";
+import { RunEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
 import { PackageCheck } from "lucide-react";
@@ -21,9 +22,9 @@ export default function ContentPage() {
 
   return (
     <DataTable<
-      ToolEntity,
-      ToolsControllerFindAllPathParams,
-      ToolsControllerRemoveVariables
+      RunEntity,
+      RunsControllerFindAllPathParams,
+      RunsControllerRemoveVariables
     >
       columns={[
         {
@@ -33,7 +34,7 @@ export default function ContentPage() {
               <div className="flex gap-2">
                 <Link
                   className="max-w-[200px] shrink truncate font-medium text-primary"
-                  href={`/tool/single?toolId=${row.original.id}`}
+                  href={`/run/single?runId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -45,23 +46,23 @@ export default function ContentPage() {
           ),
         },
         {
-          accessorKey: "description",
+          accessorKey: "runType",
           cell: ({ row }) => {
-            return <span>{row.original.description || "No Description"}</span>;
+            return <Badge>{row.original.runType}</Badge>;
           },
           enableHiding: false,
           header: ({ column }) => (
             <DataTableColumnHeader
               className="-ml-2 text-sm"
               column={column}
-              title="Description"
+              title="Run Type"
             />
           ),
         },
         {
-          accessorKey: "inputType",
+          accessorKey: "status",
           cell: ({ row }) => {
-            return <Badge>{row.original.inputType}</Badge>;
+            return <RunStatusButton run={row.original} />;
           },
           enableHiding: false,
           header: ({ column }) => (
@@ -73,25 +74,38 @@ export default function ContentPage() {
           ),
         },
         {
-          accessorKey: "outputType",
+          accessorKey: "duration",
           cell: ({ row }) => {
-            return <Badge>{row.original.outputType}</Badge>;
+            return (
+              <span className="font-light">
+                {row.original.startedAt && row.original.completedAt
+                  ? format(
+                      new Date(row.original.completedAt).getTime() -
+                        new Date(row.original.startedAt).getTime(),
+                      "mm:ss"
+                    )
+                  : "N/A"}
+              </span>
+            );
           },
           enableHiding: false,
+          enableSorting: false,
           header: ({ column }) => (
             <DataTableColumnHeader
               className="-ml-2 text-sm"
               column={column}
-              title="Output"
+              title="Duration"
             />
           ),
         },
         {
-          accessorKey: "createdAt",
+          accessorKey: "startedAt",
           cell: ({ row }) => {
             return (
               <span className="font-light">
-                {format(new Date(row.original.createdAt), "M/d/yy h:mm a")}
+                {row.original.startedAt
+                  ? format(new Date(row.original.startedAt), "M/d/yy h:mm a")
+                  : "N/A"}
               </span>
             );
           },
@@ -99,7 +113,26 @@ export default function ContentPage() {
             <DataTableColumnHeader
               className="-ml-2 text-sm"
               column={column}
-              title="Created"
+              title="Started At"
+            />
+          ),
+        },
+        {
+          accessorKey: "completedAt",
+          cell: ({ row }) => {
+            return (
+              <span className="font-light">
+                {row.original.completedAt
+                  ? format(new Date(row.original.completedAt), "M/d/yy h:mm a")
+                  : "N/A"}
+              </span>
+            );
+          },
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Completed At"
             />
           ),
         },
@@ -109,16 +142,16 @@ export default function ContentPage() {
       findAllPathParams={{
         orgname: defaultOrgname,
       }}
-      getDeleteVariablesFromItem={(tool) => ({
+      getDeleteVariablesFromItem={(run) => ({
         pathParams: {
           orgname: defaultOrgname,
-          toolId: tool.id,
+          runId: run.id,
         },
       })}
-      handleSelect={(tool) => router.push(`/tool/single?toolId=${tool.id}`)}
-      itemType="tool"
-      useFindAll={useToolsControllerFindAll}
-      useRemove={useToolsControllerRemove}
+      handleSelect={(run) => router.push(`/run/single?runId=${run.id}`)}
+      itemType="run"
+      useFindAll={useRunsControllerFindAll}
+      useRemove={useRunsControllerRemove}
     />
   );
 }

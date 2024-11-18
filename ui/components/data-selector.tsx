@@ -191,7 +191,7 @@ export function DataSelector<TItem extends BaseItem>({
           </Command>
           {/* HoverCard for Item Details */}
           {hoveredItem && getItemDetails && (
-            <HoverCard>
+            <HoverCard open={true}>
               <HoverCardContent align="end" className="w-[250px] p-4">
                 {getItemDetails(hoveredItem)}
               </HoverCardContent>

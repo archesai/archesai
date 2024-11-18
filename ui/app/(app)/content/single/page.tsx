@@ -1,5 +1,6 @@
 "use client";
 
+import { ContentViewer } from "@/components/content-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,14 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useContentControllerFindOne } from "@/generated/archesApiComponents";
-import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
-import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-
-const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export default function ContentDetailsPage() {
   const searchParams = useSearchParams();
@@ -61,108 +57,16 @@ export default function ContentDetailsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Badge className="text-primary" variant="outline">
-                {content.mimeType}
-              </Badge>
-              <Badge className="text-primary" variant="outline">
-                {format(new Date(content.createdAt), "PPP")}
-              </Badge>
+              <Badge>{content.mimeType}</Badge>
+              <Badge>{format(new Date(content.createdAt), "PPP")}</Badge>
             </div>
           </CardContent>
         </Card>
-
-        {/* <Tabs
-          className="flex h-full flex-col gap-1"
-          defaultValue={content.jobs[0].toolId}
-        >
-          <TabsList>
-            {content.jobs.map((job) => {
-              return <TabsTrigger value={job.toolId}>{job.toolId}</TabsTrigger>;
-            })}
-          </TabsList>
-          <TabsContent className="grow" value="extract-text">
-            <DataTable<
-              { name: string } & TextChunkEntity,
-              TextChunksControllerFindAllPathParams,
-              undefined
-            >
-              columns={[
-                {
-                  accessorKey: "text",
-                  cell: ({ row }) => {
-                    return row.original.text;
-                  },
-                  header: ({ column }) => (
-                    <DataTableColumnHeader column={column} title="Text" />
-                  ),
-                },
-              ]}
-              content={() => (
-                <div className="flex h-full w-full items-center justify-center"></div>
-              )}
-              dataIcon={<File size={24} />}
-              defaultView="table"
-              findAllPathParams={{
-                contentId: contentId as string,
-                orgname: defaultOrgname,
-              }}
-              getDeleteVariablesFromItem={() => {}}
-              handleSelect={() => {}}
-              itemType="vector"
-              useFindAll={useTextChunksControllerFindAll}
-              useRemove={() => ({
-                mutateAsync: async () => {},
-              })}
-            />
-          </TabsContent>
-          <TabsContent value="image-to-text"></TabsContent>
-          <TabsContent value="password">Change your password here.</TabsContent>
-        </Tabs> */}
       </div>
       {/*RIGHT SIDE*/}
-      <Card className="w-1/2 overflow-hidden">{renderContent(content)}</Card>
+      <Card className="w-1/2 overflow-hidden">
+        {<ContentViewer content={content} size="lg" />}
+      </Card>
     </div>
   );
-}
-
-function renderContent(content: ContentEntity) {
-  const { mimeType, url } = content;
-
-  if (mimeType?.startsWith("video/") || mimeType?.startsWith("audio/")) {
-    return (
-      <ReactPlayer
-        config={{
-          file: {
-            attributes: {
-              controlsList: "nodownload",
-            },
-          },
-        }}
-        controls
-        height="100%"
-        url={url}
-        width="100%"
-      />
-    );
-  } else if (mimeType?.startsWith("image/")) {
-    return (
-      <Image
-        alt={content.description || ""}
-        className="h-full w-full object-contain"
-        height={516}
-        src={url || ""}
-        width={516}
-      />
-    );
-  } else if (mimeType === "application/pdf") {
-    return (
-      <iframe className="h-full w-full" src={url} title="PDF Document"></iframe>
-    );
-  } else {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <p>Cannot preview this content type. Please download to view.</p>
-      </div>
-    );
-  }
 }

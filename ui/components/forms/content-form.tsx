@@ -19,7 +19,7 @@ const formSchema = z.object({
 
 export default function ContentForm({ contentId }: { contentId?: string }) {
   const { defaultOrgname } = useAuth();
-  const { data: content, isLoading } = useContentControllerFindOne(
+  const { data: content } = useContentControllerFindOne(
     {
       pathParams: {
         contentId: contentId as string,
@@ -46,10 +46,6 @@ export default function ContentForm({ contentId }: { contentId?: string }) {
       validationRule: formSchema.shape.name,
     },
   ];
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <GenericForm<CreateContentDto, UpdateContentDto>

@@ -1,6 +1,18 @@
 import { BaseEntity } from "@/src/common/entities/base.entity";
+// import { ContentEntity } from "@/src/content/entities/content.entity";
+// import { PipelineEntity } from "@/src/pipelines/entities/pipeline.entity";
+// import { PipelineStepEntity } from "@/src/pipelines/entities/pipeline-step.entity";
+// import { ToolEntity } from "@/src/tools/entities/tool.entity";
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Run as _PrismaRun, RunStatus, RunType } from "@prisma/client";
+import {
+  // Content as _PrismaContent,
+  // Pipeline as _PrismaPipeline,
+  // PipelineStep as _PrismaPipelineStep,
+  Run as _PrismaRun,
+  // Tool as _PrismaTool,
+  RunStatus,
+  RunType,
+} from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import {
   IsDate,
@@ -10,7 +22,20 @@ import {
   IsString,
 } from "class-validator";
 
-export type RunModel = _PrismaRun;
+import {
+  _PrismaSubItemModel,
+  SubItemEntity,
+} from "../../common/entities/base-sub-item.entity";
+
+export type RunModel = _PrismaRun & {
+  inputs: _PrismaSubItemModel[];
+  outputs: _PrismaSubItemModel[];
+  // pipeline: _PrismaPipeline;
+  // pipelineRun: _PrismaRun;
+  // pipelineStep: _PrismaPipelineStep;
+  // tool: _PrismaTool;
+  // toolRuns: _PrismaRun[];
+};
 
 @Exclude()
 export class RunEntity extends BaseEntity implements RunModel {
@@ -37,6 +62,13 @@ export class RunEntity extends BaseEntity implements RunModel {
   error: null | string;
 
   @ApiProperty({
+    description: "The inputs associated with the run",
+    type: [SubItemEntity],
+  })
+  @Expose()
+  inputs: SubItemEntity[];
+
+  @ApiProperty({
     description: "The name of the run",
     example: "Data Processing PipelineRun",
     required: false,
@@ -48,24 +80,46 @@ export class RunEntity extends BaseEntity implements RunModel {
   name: null | string;
 
   @ApiHideProperty()
-  @Exclude()
   orgname: string;
 
   @ApiProperty({
+    description: "The outputs associated with the run",
+    required: false,
+    type: [SubItemEntity],
+  })
+  @Expose()
+  outputs: SubItemEntity[];
+
+  @ApiProperty({
     description: "The pipeline ID associated with the run, if applicable",
+    example: "123e4567-e89b-12d3-a456-426614174000",
     required: false,
     type: String,
   })
   @Expose()
   @IsOptional()
+  @IsString()
   pipelineId: null | string;
 
-  @ApiHideProperty()
-  @Exclude()
-  pipelineRunId: null | string;
+  // @ApiProperty({
+  //   description:
+  //     "The parent pipeline run associated with the run, if applicable",
+  //   required: false,
+  //   type: RunEntity,
+  // })
+  // pipelineRun: RunEntity;
 
   @ApiHideProperty()
-  @Exclude()
+  pipelineRunId: null | string;
+
+  // @ApiProperty({
+  //   description: "The pipeline step associated with the run",
+  //   required: false,
+  //   type: PipelineStepEntity,
+  // })
+  // pipelineStep: PipelineStepEntity;
+
+  @ApiHideProperty()
   pipelineStepId: null | string;
 
   @ApiProperty({
@@ -83,6 +137,8 @@ export class RunEntity extends BaseEntity implements RunModel {
     enum: RunType,
     required: true,
   })
+  @IsEnum(RunType)
+  @Expose()
   runType: RunType;
 
   @ApiProperty({
@@ -105,14 +161,30 @@ export class RunEntity extends BaseEntity implements RunModel {
   @IsEnum(RunStatus)
   status: RunStatus;
 
+  // @ApiProperty({
+  //   description: "The tool associated with the run",
+  //   required: false,
+  //   type: ToolEntity,
+  // })
+  // tool: null | ToolEntity;
+
   @ApiProperty({
     description: "The tool ID associated with the run, if applicable",
+    example: "123e4567-e89b-12d3-a456-426614174000",
     required: false,
     type: String,
   })
   @Expose()
   @IsOptional()
+  @IsString()
   toolId: null | string;
+
+  // @ApiProperty({
+  //   description: "The tool runs associated with the run, if applicable",
+  //   required: false,
+  //   type: [RunEntity],
+  // })
+  // toolRuns: RunEntity[];
 
   constructor(toolRun: RunModel) {
     super();

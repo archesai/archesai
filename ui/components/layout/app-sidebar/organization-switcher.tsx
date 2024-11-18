@@ -108,9 +108,7 @@ export function OrganizationSwitcher() {
               >
                 {membership.orgname}
                 {defaultOrgname === membership.orgname && (
-                  <Badge className="text-primary" variant="outline">
-                    Current
-                  </Badge>
+                  <Badge>Current</Badge>
                 )}
               </DropdownMenuItem>
             ))}

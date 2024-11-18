@@ -3,6 +3,7 @@ import {
   // Award,
   // Bolt,
   Building2,
+  CpuIcon,
   // Compass,
   CreditCard,
   // DollarSign,
@@ -45,47 +46,25 @@ export const siteConfig = {
       title: "Content",
     },
     {
-      children: [
-        {
-          description: "View and manage your tools.",
-          href: "/tools/view",
-          Icon: SquareTerminal,
-          title: "Explore Tools",
-        },
-        {
-          description:
-            "View your tool runs. You can track progress, retry or cancel runs.",
-          href: "/tools/runs",
-          Icon: PackageCheck,
-          title: "Tool Runs",
-        },
-      ],
       description: "Explore and run tools.",
-      href: "/tools",
-      Icon: PackageCheck,
+      href: "/tools/view",
+      Icon: CpuIcon,
       section: "Build",
       title: "Tools",
     },
     {
-      children: [
-        {
-          description: "View and manage your pipelines.",
-          href: "/pipelines/view",
-          Icon: Workflow,
-          title: "View Pipelines",
-        },
-        {
-          description: "Create and manage build pipelines.",
-          href: "/pipelines/build",
-          Icon: Workflow,
-          title: "Build Pipelines",
-        },
-      ],
       description: "Create and manage pipelines.",
-      href: "/pipelines",
+      href: "/pipelines/view",
       Icon: Workflow,
       section: "Build",
       title: "Pipelines",
+    },
+    {
+      description: "View your previous runs.",
+      href: "/runs/view",
+      Icon: PackageCheck,
+      section: "Build",
+      title: "History",
     },
     {
       description: "Create and manage labels.",

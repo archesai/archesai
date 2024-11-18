@@ -28,7 +28,7 @@ const formSchema = z.object({
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
   const { defaultOrgname } = useAuth();
-  const { data: member, isLoading } = useMembersControllerFindOne(
+  const { data: member } = useMembersControllerFindOne(
     {
       pathParams: {
         memberId: memberId as string,
@@ -92,10 +92,6 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       validationRule: formSchema.shape.role,
     },
   ];
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <GenericForm<CreateMemberDto, UpdateMemberDto>

@@ -21,14 +21,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (request: Request) => {
           // Check for token in the Authorization header
           const authToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
-          this.logger.log(`authToken: ${authToken}`);
+          this.logger.debug(`authToken: ${authToken}`);
           if (authToken) {
             return authToken;
           }
 
           // Check for token in the signed cookie named 'auth_token'
           const cookieToken = request.cookies?.["archesai.accessToken"];
-          this.logger.log(`cookieToken: ${cookieToken}`);
+          this.logger.debug(`cookieToken: ${cookieToken}`);
           if (cookieToken) {
             return cookieToken;
           }
@@ -41,7 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any): Promise<UserEntity> {
-    this.logger.log(
+    this.logger.debug(
       `Validating JWT token for user: ${JSON.stringify(payload.sub)}`
     );
     if (!payload.sub) {

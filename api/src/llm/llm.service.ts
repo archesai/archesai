@@ -85,7 +85,7 @@ export class LLMService {
           ? "gpt-3.5-turbo-instruct"
           : "llama3.1",
       presence_penalty: 0,
-      prompt: `Write a very short few word summary describing what this document is based on a part of its content. It could be a book, a legal document, a textbook, a newspaper, a bank statement, or another document like this.\n\nContent:\n${text}\n\n---\n\nSummary:`,
+      prompt: `Write a very short one to two sentance summary describing what this document is based on a part of its content. It could be a book, a legal document, a textbook, a newspaper, a bank statement, or another document like this.\n\nContent:\n${text}\n\n---\n\nSummary:`,
       temperature: 0.3,
       top_p: 1,
     });

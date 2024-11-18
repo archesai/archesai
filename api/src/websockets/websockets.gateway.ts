@@ -64,7 +64,7 @@ export class WebsocketsGateway
 
       const { sub: id } = await this.authService.verifyToken(cleanToken);
       const user = await this.usersService.findOne(null, id);
-      this.logger.log(`Connected with websockets ${user.defaultOrgname}`);
+      this.logger.debug(`Connected with websockets ${user.defaultOrgname}`);
       socket.join(user.defaultOrgname);
     } catch (error) {
       this.logger.error(error);

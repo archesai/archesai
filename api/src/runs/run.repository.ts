@@ -7,6 +7,26 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateRunDto } from "./dto/create-run.dto";
 import { RunModel } from "./entities/run.entity";
 
+const RUN_INCLUDE = {
+  inputs: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  outputs: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  // pipeline: true,
+  // pipelineRun: true,
+  // pipelineStep: true,
+  // tool: true,
+  // toolRuns: true,
+};
+
 @Injectable()
 export class RunRepository extends BaseRepository<
   RunModel,
@@ -16,25 +36,21 @@ export class RunRepository extends BaseRepository<
   Prisma.RunUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.run);
+    super(prisma.run, RUN_INCLUDE);
   }
 
-  async createPipelineRun(
-    orgname: string,
-    pipelineId: string,
-    createPipelineRunDto: CreateRunDto
-  ) {
+  async createPipelineRun(orgname: string, createRunDto: CreateRunDto) {
     const pipeline = await this.prisma.pipeline.findUniqueOrThrow({
       include: {
         pipelineSteps: true,
       },
-      where: { id: pipelineId },
+      where: { id: createRunDto.pipelineId },
     });
     const pipelineRun = await this.prisma.run.create({
       data: {
         name: "Pipeline Run",
         orgname,
-        pipelineId,
+        pipelineId: createRunDto.pipelineId,
         runType: RunType.PIPELINE_RUN,
         status: RunStatus.QUEUED,
         toolRuns: {
@@ -57,7 +73,7 @@ export class RunRepository extends BaseRepository<
       await this.prisma.run.update({
         data: {
           inputs: {
-            connect: createPipelineRunDto.contentIds.map((contentId) => ({
+            connect: createRunDto.contentIds.map((contentId) => ({
               id: contentId,
             })),
           },
@@ -77,21 +93,37 @@ export class RunRepository extends BaseRepository<
     }
 
     return this.prisma.run.findUnique({
+      include: RUN_INCLUDE,
       where: { id: pipelineRun.id },
     });
   }
 
-  async setOutputContent(toolRunId: string, contents: ContentEntity[]) {
-    await this.prisma.run.update({
+  async createToolRun(orgname: string, createRunDto: CreateRunDto) {
+    return this.prisma.run.create({
       data: {
-        inputs: {
+        name: "Tool Run",
+        orgname,
+        runType: RunType.TOOL_RUN,
+        status: RunStatus.QUEUED,
+        toolId: createRunDto.toolId,
+      },
+      include: RUN_INCLUDE,
+    });
+  }
+
+  async setInputsOrOutputs(
+    runId: string,
+    type: "inputs" | "outputs",
+    contents: ContentEntity[]
+  ) {
+    return this.prisma.run.update({
+      data: {
+        [type]: {
           connect: contents.map((content) => ({ id: content.id })),
         },
       },
-      where: { id: toolRunId },
-    });
-    return this.prisma.run.findUnique({
-      where: { id: toolRunId },
+      include: RUN_INCLUDE,
+      where: { id: runId },
     });
   }
 }

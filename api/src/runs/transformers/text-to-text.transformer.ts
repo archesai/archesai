@@ -31,6 +31,8 @@ export const transformTextToText: IToolRunProcess = async (
     "Summary saved. Completed in " + (Date.now() - start) / 1000 + "s"
   );
 
+  logger.log(summary);
+
   const summaryContent = await contentService.create(runInput[0].orgname, {
     name: "Summary Tool - " + runInput.map((x) => x.name).join(", "),
     text: summary,

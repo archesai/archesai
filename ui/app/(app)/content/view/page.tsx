@@ -1,4 +1,5 @@
 "use client";
+import { ContentViewer } from "@/components/content-viewer";
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
 import ContentForm from "@/components/forms/content-form";
@@ -48,33 +49,24 @@ export default function ContentPage() {
           ),
         },
         {
-          accessorKey: "labels",
+          accessorKey: "mimeType",
           cell: ({ row }) => {
-            return (
-              <div className="flex gap-1">
-                {row.original.labels?.map((label, index) => (
-                  <Badge className="text-primary" key={index} variant="outline">
-                    {label.name}
-                  </Badge>
-                ))}
-              </div>
-            );
+            return <Badge>{row.original?.mimeType}</Badge>;
           },
-          enableSorting: false,
           header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Labels"
-            />
+            <DataTableColumnHeader column={column} title="Type" />
           ),
         },
         {
           accessorKey: "value",
           cell: ({ row }) => {
             return (
-              <div className="max-w-lg truncate text-wrap text-base md:text-sm">
-                {row.original.text || row.original.url}
+              <div className="max-w-md truncate text-wrap text-base md:text-sm">
+                {row.original.text ? (
+                  row.original.text
+                ) : (
+                  <ContentViewer content={row.original} size="sm" />
+                )}
               </div>
             );
           },
@@ -88,7 +80,78 @@ export default function ContentPage() {
             />
           ),
         },
-
+        {
+          accessorKey: "parent",
+          cell: ({ row }) => {
+            return row.original.parent?.name ? (
+              <Link
+                className="max-w-lg truncate text-wrap text-base md:text-sm"
+                href={`/content/single?contentId=${row.original.parent?.id}`}
+              >
+                {row.original.parent?.name}
+              </Link>
+            ) : (
+              <div className="text-muted-foreground">None</div>
+            );
+          },
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Parent"
+            />
+          ),
+        },
+        {
+          accessorKey: "producedBy",
+          cell: ({ row }) => {
+            return row.original.producedBy ? (
+              <Link
+                className="max-w-lg truncate text-wrap text-base md:text-sm"
+                href={`/runs/single?runId=${row.original.producedBy?.id}`}
+              >
+                {row.original.producedBy?.name}
+              </Link>
+            ) : (
+              <div className="text-muted-foreground">None</div>
+            );
+          },
+          enableHiding: false,
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Produced By"
+            />
+          ),
+        },
+        {
+          accessorKey: "labels",
+          cell: ({ row }) => {
+            return (
+              <div className="flex gap-1">
+                {row.original.labels?.length ? (
+                  row.original.labels?.map((label, index) => (
+                    <Badge key={index}>{label.name}</Badge>
+                  ))
+                ) : (
+                  <div className="text-muted-foreground">None</div>
+                )}
+              </div>
+            );
+          },
+          enableSorting: false,
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className="-ml-2 text-sm"
+              column={column}
+              title="Labels"
+            />
+          ),
+        },
         {
           accessorKey: "createdAt",
           cell: ({ row }) => {
@@ -100,15 +163,6 @@ export default function ContentPage() {
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Created" />
-          ),
-        },
-        {
-          accessorKey: "tools",
-          cell: ({}) => {
-            return <></>;
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Tools" />
           ),
         },
       ]}

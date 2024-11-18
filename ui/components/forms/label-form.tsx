@@ -16,7 +16,7 @@ const formSchema = z.object({
 
 export default function LabelForm({ labelId }: { labelId?: string }) {
   const { defaultOrgname } = useAuth();
-  const { data: label, isLoading } = useLabelsControllerFindOne(
+  const { data: label } = useLabelsControllerFindOne(
     {
       pathParams: {
         labelId: labelId as string,
@@ -43,10 +43,6 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
       validationRule: formSchema.shape.name,
     },
   ];
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <GenericForm<CreateLabelDto, UpdateLabelDto>

@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
@@ -89,7 +90,12 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   }, [fields.map((f) => f.defaultValue).join()]);
 
   return (
-    <Card className={showCard ? "" : "border-none shadow-none"}>
+    <Card
+      className={cn(
+        "flex flex-1 flex-col",
+        showCard ? "" : "border-none shadow-none"
+      )}
+    >
       <CardHeader className="rounded-t-lg bg-sidebar">
         <CardTitle className="text-lg">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -97,6 +103,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
       <Separator />
       <Form {...form}>
         <form
+          className="flex flex-1 flex-col"
           noValidate
           onSubmit={form.handleSubmit(
             isUpdateForm
@@ -114,7 +121,6 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                         description: `Your ${itemType} has been updated`,
                         title: `Update successful`,
                       });
-                      form.reset();
                     },
                   });
                 }
@@ -132,13 +138,12 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                         description: `Your ${itemType} has been created`,
                         title: `Creation successful`,
                       });
-                      form.reset();
                     },
                   });
                 }
           )}
         >
-          <CardContent className="flex flex-col gap-4 bg-muted/30 p-4">
+          <CardContent className="flex flex-1 flex-col gap-4 bg-muted/30 p-4">
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
               .map((fieldConfig) => (

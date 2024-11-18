@@ -29,11 +29,7 @@ export default function ApiTokensPageContent() {
         {
           accessorKey: "role",
           cell: ({ row }) => {
-            return (
-              <Badge className="text-primary" variant="outline">
-                {row.original.role}
-              </Badge>
-            );
+            return <Badge>{row.original.role}</Badge>;
           },
           header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Role" />

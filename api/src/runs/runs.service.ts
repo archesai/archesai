@@ -1,7 +1,7 @@
-import { InjectFlowProducer } from "@nestjs/bullmq";
+import { InjectFlowProducer, InjectQueue } from "@nestjs/bullmq";
 import { BadRequestException, Injectable, Logger } from "@nestjs/common";
-import { RunStatus, RunType } from "@prisma/client";
-import { FlowProducer } from "bullmq";
+import { RunStatus } from "@prisma/client";
+import { FlowProducer, Queue } from "bullmq";
 
 import { BaseService } from "../common/base.service";
 import { ContentService } from "../content/content.service";
@@ -29,81 +29,95 @@ export class RunsService extends BaseService<
     private pipelinesService: PipelinesService,
     private toolsService: ToolsService,
     @InjectFlowProducer("flow") private readonly flowProducer: FlowProducer,
+    @InjectQueue("run") private readonly runQueue: Queue,
     private contentService: ContentService
   ) {
     super(runRepository);
   }
 
-  async createPipelineRun(
-    orgname: string,
-    pipelineId: string,
-    createPipelineRunDto: CreateRunDto
-  ) {
-    // Ensure run content
-    const runContent = await this.ensureRunContent(
-      orgname,
-      pipelineId,
-      createPipelineRunDto
-    );
+  async create(orgname: string, createRunDto: CreateRunDto) {
+    if (createRunDto.runType === "PIPELINE_RUN" && !createRunDto.pipelineId) {
+      throw new BadRequestException(
+        "Pipeline ID is required for pipeline runs"
+      );
+    } else if (createRunDto.runType === "TOOL_RUN" && !createRunDto.toolId) {
+      throw new BadRequestException("Tool ID is required for tool runs");
+    }
 
-    // Create the run in the database
-    const run = await this.runRepository.createPipelineRun(
-      orgname,
-      pipelineId,
-      {
+    const runContent = await this.ensureRunContent(orgname, createRunDto);
+    if (createRunDto.runType === "PIPELINE_RUN") {
+      // Create pipeline run
+      const run = await this.runRepository.createPipelineRun(orgname, {
         contentIds: runContent.map((content) => content.id),
-        pipelineId,
-        runType: RunType.PIPELINE_RUN,
-      }
-    );
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "pipelines"],
-    });
-
-    // Add the run to the queue
-    await this.flowProducer.add({
-      data: {
-        // content: content,
-        toolId: "extract-text",
-      },
-      name: "extract-text",
-      queueName: "tool",
-    });
-    return this.toEntity(run);
+        ...createRunDto,
+      });
+      // Set inputs
+      await this.setInputsOrOutputs(run.id, "inputs", runContent);
+      // Add to flow queue
+      await this.flowProducer.add({
+        data: {
+          toolId: "extract-text",
+        },
+        name: "extract-text",
+        queueName: "tool",
+      });
+      // Return run
+      this.emitMutationEvent(orgname);
+      return this.toEntity(run);
+    } else if (createRunDto.runType === "TOOL_RUN") {
+      // Create tool run
+      const run = await this.runRepository.createToolRun(orgname, {
+        contentIds: runContent.map((content) => content.id),
+        ...createRunDto,
+      });
+      // Set inputs
+      await this.setInputsOrOutputs(run.id, "inputs", runContent);
+      // Add to tool queue
+      const tool = await this.toolsService.findOne(
+        orgname,
+        createRunDto.toolId
+      );
+      await this.runQueue.add(
+        tool.toolBase,
+        {
+          inputs: runContent,
+        },
+        {
+          jobId: run.id,
+        }
+      );
+      // Return run
+      this.emitMutationEvent(orgname);
+      return this.toEntity(run);
+    }
   }
 
   protected emitMutationEvent(orgname: string): void {
     this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "tool-runs"],
+      queryKey: ["organizations", orgname, "runs"],
     });
   }
 
-  async ensureRunContent(
-    orgname: string,
-    pipelineId: string,
-    createPipelineRunDto: CreateRunDto
-  ) {
-    const pipeline = await this.pipelinesService.findOne(orgname, pipelineId);
-
+  async ensureRunContent(orgname: string, createRunDto: CreateRunDto) {
     const runContent: ContentEntity[] = [];
-    if (!!createPipelineRunDto.contentIds?.length) {
-      for (const contentId of createPipelineRunDto.contentIds) {
+    if (!!createRunDto.contentIds?.length) {
+      for (const contentId of createRunDto.contentIds) {
         runContent.push(await this.contentService.findOne(orgname, contentId));
       }
     }
-    if (createPipelineRunDto.text) {
+    if (createRunDto.text) {
       runContent.push(
         await this.contentService.create(orgname, {
-          name: "Pipeline Input Text - " + pipeline.id,
-          text: createPipelineRunDto.text,
+          name: "Input Text",
+          text: createRunDto.text,
         })
       );
     }
-    if (createPipelineRunDto.url) {
+    if (createRunDto.url) {
       runContent.push(
         await this.contentService.create(orgname, {
-          name: "Tool Input URL - " + pipeline.id,
-          url: createPipelineRunDto.url,
+          name: "Input URL",
+          url: createRunDto.url,
         })
       );
     }
@@ -114,26 +128,34 @@ export class RunsService extends BaseService<
     return runContent;
   }
 
-  async setOutputContent(toolRunId: string, content: ContentEntity[]) {
-    return this.toEntity(
-      await this.runRepository.setOutputContent(toolRunId, content)
+  async setInputsOrOutputs(
+    runId: string,
+    type: "inputs" | "outputs",
+    content: ContentEntity[]
+  ) {
+    const run = await this.runRepository.setInputsOrOutputs(
+      runId,
+      type,
+      content
     );
+    this.emitMutationEvent(run.orgname);
+    return this.toEntity(run);
   }
 
   async setProgress(id: string, progress: number) {
-    return this.toEntity(
-      await this.runRepository.updateRaw(null, id, {
-        progress,
-      })
-    );
+    const run = await this.runRepository.updateRaw(null, id, {
+      progress,
+    });
+    this.emitMutationEvent(run.orgname);
+    return this.toEntity(run);
   }
 
   async setRunError(id: string, error: string) {
-    return this.toEntity(
-      await this.runRepository.updateRaw(null, id, {
-        error,
-      })
-    );
+    const run = await this.runRepository.updateRaw(null, id, {
+      error,
+    });
+    this.emitMutationEvent(run.orgname);
+    return this.toEntity(run);
   }
 
   async setStatus(id: string, status: RunStatus) {
@@ -160,6 +182,7 @@ export class RunsService extends BaseService<
     const run = await this.runRepository.updateRaw(null, id, {
       status,
     });
+    this.emitMutationEvent(run.orgname);
     return this.toEntity(run);
   }
 

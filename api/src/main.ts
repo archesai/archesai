@@ -34,6 +34,34 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
+  // Swagger Setup
+  if (configService.get<string>("NODE_ENV") !== "production") {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle("Arches AI API")
+      .setDescription("The Arches AI API")
+      .setVersion("v1")
+      .addBearerAuth()
+      .addServer(configService.get<string>("SERVER_HOST"))
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swaggerConfig, {
+      extraModels: [
+        FieldFieldQuery,
+        AggregateFieldQuery,
+        AggregateFieldResult,
+        Metadata,
+      ],
+    });
+
+    SwaggerModule.setup("/", app, document, {
+      customCss: ".swagger-ui .topbar { display: none }",
+      swaggerOptions: {
+        persistAuthorization: true,
+        tagsSorter: "alpha",
+      },
+    });
+  }
+
   //  Setup Logger
   app.useLogger(app.get(Logger));
 
@@ -134,34 +162,6 @@ async function bootstrap() {
   // Initialize Passport
   app.use(passport.initialize());
   app.use(passport.session());
-
-  // Swagger Setup
-  if (configService.get<string>("NODE_ENV") !== "production") {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle("Arches AI API")
-      .setDescription("The Arches AI API")
-      .setVersion("v1")
-      .addBearerAuth()
-      .addServer(configService.get<string>("SERVER_HOST"))
-      .build();
-
-    const document = SwaggerModule.createDocument(app, swaggerConfig, {
-      extraModels: [
-        FieldFieldQuery,
-        AggregateFieldQuery,
-        AggregateFieldResult,
-        Metadata,
-      ],
-    });
-
-    SwaggerModule.setup("/", app, document, {
-      customCss: ".swagger-ui .topbar { display: none }",
-      swaggerOptions: {
-        persistAuthorization: true,
-        tagsSorter: "alpha",
-      },
-    });
-  }
 
   // Websocket Adapter
   const redisIoAdapter = new RedisIoAdapter(app, configService);

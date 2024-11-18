@@ -66,13 +66,13 @@ export class RunProcessor extends WorkerHost {
   }
 
   async process(job: Job) {
-    const runInputContents = job.data.runInputContents as ContentEntity[];
-    let runOutputContents: ContentEntity[] = [];
+    const inputs = job.data.inputs as ContentEntity[];
+    let outputs: ContentEntity[] = [];
     switch (job.name) {
       case "extract-text":
-        runOutputContents = await transformFileToText(
+        outputs = await transformFileToText(
           job.id,
-          runInputContents,
+          inputs,
           this.logger,
           this.contentService,
           this.storageService,
@@ -81,9 +81,9 @@ export class RunProcessor extends WorkerHost {
         );
         break;
       case "text-to-image":
-        runOutputContents = await transformTextToImage(
+        outputs = await transformTextToImage(
           job.id,
-          runInputContents,
+          inputs,
           this.logger,
           this.contentService,
           this.runpodService,
@@ -91,9 +91,9 @@ export class RunProcessor extends WorkerHost {
         );
         break;
       case "text-to-speech":
-        runOutputContents = await transformTextToSpeech(
+        outputs = await transformTextToSpeech(
           job.id,
-          runInputContents,
+          inputs,
           this.logger,
           this.contentService,
           this.storageService,
@@ -101,19 +101,18 @@ export class RunProcessor extends WorkerHost {
         );
         break;
       case "summarize":
-        runOutputContents = await transformTextToText(
+        outputs = await transformTextToText(
           job.id,
-          runInputContents,
+          inputs,
           this.logger,
           this.contentService,
-
           this.llmService
         );
         break;
       case "create-embeddings":
-        runOutputContents = await transformTextToEmbeddings();
+        outputs = await transformTextToEmbeddings();
         // job.id,
-        // runInputContents,
+        // inputs,
         // this.logger,
         // this.contentService,
         // this.openAiEmbeddingsService
@@ -124,9 +123,10 @@ export class RunProcessor extends WorkerHost {
     }
 
     this.logger.log(`Adding run output contents to run ${job.id}`);
-    await this.runsService.setOutputContent(
+    await this.runsService.setInputsOrOutputs(
       job.id.toString(),
-      runOutputContents
+      "outputs",
+      outputs
     );
   }
 }

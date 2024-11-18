@@ -3,6 +3,7 @@ import { QCProvider } from "@/contexts/qc-provider";
 import { ThemeProvider } from "@/contexts/theme-provider";
 import { GeistSans } from "geist/font/sans";
 import { Metadata } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import "../styles/globals.css";
 
@@ -52,7 +53,9 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <QCProvider>{children}</QCProvider>
+          <NuqsAdapter>
+            <QCProvider>{children}</QCProvider>
+          </NuqsAdapter>
           <Toaster />
         </ThemeProvider>
       </body>

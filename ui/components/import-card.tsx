@@ -9,6 +9,7 @@ import {
   useStorageControllerGetReadUrl,
   useStorageControllerGetWriteUrl,
 } from "@/generated/archesApiComponents";
+import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
@@ -16,7 +17,11 @@ import React, { useRef, useState } from "react";
 
 import { Badge } from "./ui/badge";
 
-export default function ImportCard() {
+export default function ImportCard({
+  cb,
+}: {
+  cb?: (content: ContentEntity[]) => void;
+}) {
   const { defaultOrgname } = useAuth();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
@@ -27,7 +32,7 @@ export default function ImportCard() {
 
   const { mutateAsync: getWriteUrl } = useStorageControllerGetWriteUrl();
   const { mutateAsync: getReadUrl } = useStorageControllerGetReadUrl();
-  const { mutateAsync: indexDocument } = useContentControllerCreate();
+  const { mutateAsync: createContent } = useContentControllerCreate();
 
   const handleFiles = (files: FileList | null) => {
     if (files) {
@@ -65,7 +70,7 @@ export default function ImportCard() {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const uploadFile = (file: File, writeUrl: string) => {
+  const uploadFile = (file: File, writeUrl: string): Promise<ContentEntity> => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
@@ -93,7 +98,7 @@ export default function ImportCard() {
               },
             });
 
-            await indexDocument({
+            const content = await createContent({
               body: {
                 name: file.name,
                 url: readUrlResponse.read,
@@ -103,7 +108,7 @@ export default function ImportCard() {
               },
             });
 
-            resolve(null);
+            resolve(content);
           } catch (error) {
             console.error(`Error processing file ${file.name}:`, error);
             reject(error);
@@ -133,23 +138,27 @@ export default function ImportCard() {
     setUploadProgress(0);
 
     try {
-      for (const file of selectedFiles) {
-        // Get a unique write URL for each file
-        const writeUrlResponse = await getWriteUrl({
-          body: {
-            path: `uploads/${file.name}`,
-          },
-          pathParams: {
-            orgname: defaultOrgname,
-          },
-        });
+      const urls = await Promise.all(
+        selectedFiles.map(async (file) => {
+          // Get a unique write URL for each file
+          const writeUrlResponse = await getWriteUrl({
+            body: {
+              path: `uploads/${file.name}`,
+            },
+            pathParams: {
+              orgname: defaultOrgname,
+            },
+          });
 
-        const writeUrl = writeUrlResponse.write;
-        console.log("Write URL for", file.name, ":", writeUrl);
+          const writeUrl = writeUrlResponse.write;
+          console.log("Write URL for", file.name, ":", writeUrl);
 
-        // Upload the file using the write URL
-        await uploadFile(file, writeUrl);
-      }
+          // Upload the file using the write URL
+          const readUrl = await uploadFile(file, writeUrl);
+
+          return readUrl;
+        })
+      );
 
       setUploading(false);
       setSelectedFiles([]);
@@ -158,6 +167,9 @@ export default function ImportCard() {
         description: "Files uploaded successfully.",
         title: "Upload Complete",
       });
+      if (cb) {
+        cb(urls);
+      }
     } catch (error) {
       console.error("An error occurred during file upload:", error);
       toast({
@@ -214,9 +226,7 @@ export default function ImportCard() {
                 >
                   <span className="flex w-4/5 items-center gap-2 truncate text-foreground">
                     <span>{file.name}</span>
-                    <Badge className="text-primary" variant="outline">
-                      {file.type}
-                    </Badge>
+                    <Badge>{file.type}</Badge>
                   </span>
                   <Badge className="text-nowrap text-primary" variant="outline">
                     {`${(file.size / 1024).toFixed(2)} KB`}

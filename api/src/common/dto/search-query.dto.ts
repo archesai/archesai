@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsArray,
   IsDateString,
@@ -9,6 +9,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  ValidateIf,
 } from "class-validator";
 
 export enum Granularity {
@@ -28,6 +29,7 @@ export enum Operator {
   ENDS_WITH = "endsWith",
   EQUALS = "equals",
   EVERY = "every",
+  IN = "in",
   NONE = "none",
   NOT = "not",
   SOME = "some",
@@ -46,9 +48,16 @@ export class FieldFieldQuery {
   })
   operator?: Operator = Operator.CONTAINS;
 
-  @ApiProperty({ description: "Value to filter for", type: String })
+  @ApiProperty({
+    description: "Value to filter for",
+    oneOf: [{ type: "string" }, { items: { type: "string" }, type: "array" }],
+  })
+  @ValidateIf((o) => typeof o.value === "string")
   @IsString()
-  value: string;
+  @ValidateIf((o) => Array.isArray(o.value))
+  @IsArray()
+  @Type(() => String) // Ensures the array elements are treated as strings
+  value: string | string[];
 }
 
 export class AggregateFieldQuery {

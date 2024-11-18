@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   const { defaultOrgname } = useAuth();
-  const { data: apiToken, isLoading } = useApiTokensControllerFindOne(
+  const { data: apiToken } = useApiTokensControllerFindOne(
     {
       pathParams: {
         id: apiTokenId as string,
@@ -105,10 +105,6 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       validationRule: formSchema.shape.role,
     },
   ];
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <GenericForm<CreateApiTokenDto, UpdateApiTokenDto>

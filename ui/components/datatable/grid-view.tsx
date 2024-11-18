@@ -56,7 +56,7 @@ export function GridView<TItem extends BaseItem>({
           >
             {/* Top Content */}
             <div
-              className="group relative grow cursor-pointer overflow-hidden rounded-t-sm transition-all"
+              className="group relative grow cursor-pointer overflow-auto rounded-t-sm transition-all"
               onClick={() => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}

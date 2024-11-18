@@ -1132,10 +1132,14 @@ export type CreateRunDto = {
   runType: "PIPELINE_RUN" | "TOOL_RUN";
   /**
    * The pipeline ID associated with the run, if applicable
+   *
+   * @example 123e4567-e89b-12d3-a456-426614174000
    */
   pipelineId?: string;
   /**
    * The tool ID associated with the run, if applicable
+   *
+   * @example 123e4567-e89b-12d3-a456-426614174000
    */
   toolId?: string;
   /**
@@ -1187,13 +1191,23 @@ export type RunEntity = {
    */
   error?: string;
   /**
+   * The inputs associated with the run
+   */
+  inputs: SubItemEntity[];
+  /**
    * The name of the run
    *
    * @example Data Processing PipelineRun
    */
   name?: string;
   /**
+   * The outputs associated with the run
+   */
+  outputs?: SubItemEntity[];
+  /**
    * The pipeline ID associated with the run, if applicable
+   *
+   * @example 123e4567-e89b-12d3-a456-426614174000
    */
   pipelineId?: string;
   /**
@@ -1222,6 +1236,8 @@ export type RunEntity = {
   status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
   /**
    * The tool ID associated with the run, if applicable
+   *
+   * @example 123e4567-e89b-12d3-a456-426614174000
    */
   toolId?: string;
 };
@@ -1239,6 +1255,7 @@ export type FieldFieldQuery = {
     | "endsWith"
     | "equals"
     | "every"
+    | "in"
     | "none"
     | "not"
     | "some"
@@ -1246,7 +1263,7 @@ export type FieldFieldQuery = {
   /**
    * Value to filter for
    */
-  value: string;
+  value: string | string[];
 };
 
 export type AggregateFieldQuery = {

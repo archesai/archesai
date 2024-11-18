@@ -3427,9 +3427,11 @@ components:
         pipelineId:
           type: string
           description: The pipeline ID associated with the run, if applicable
+          example: 123e4567-e89b-12d3-a456-426614174000
         toolId:
           type: string
           description: The tool ID associated with the run, if applicable
+          example: 123e4567-e89b-12d3-a456-426614174000
         contentIds:
           description: >-
             If using already created content, specify the content IDs to use as
@@ -3475,13 +3477,24 @@ components:
           type: string
           description: The error message, if any, associated with the run
           example: An unexpected error occurred.
+        inputs:
+          description: The inputs associated with the run
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
         name:
           type: string
           description: The name of the run
           example: Data Processing PipelineRun
+        outputs:
+          description: The outputs associated with the run
+          type: array
+          items:
+            $ref: '#/components/schemas/SubItemEntity'
         pipelineId:
           type: string
           description: The pipeline ID associated with the run, if applicable
+          example: 123e4567-e89b-12d3-a456-426614174000
         progress:
           type: number
           default: 0
@@ -3510,9 +3523,11 @@ components:
         toolId:
           type: string
           description: The tool ID associated with the run, if applicable
+          example: 123e4567-e89b-12d3-a456-426614174000
       required:
         - createdAt
         - id
+        - inputs
         - progress
         - runType
         - status
@@ -3530,13 +3545,18 @@ components:
             - endsWith
             - equals
             - every
+            - in
             - none
             - not
             - some
             - startsWith
         value:
-          type: string
           description: Value to filter for
+          oneOf:
+            - type: string
+            - items:
+                type: string
+              type: array
       required:
         - field
         - value

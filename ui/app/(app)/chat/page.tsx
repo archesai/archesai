@@ -66,7 +66,7 @@ export default function ChatbotChatPage() {
   }, [messages]);
 
   const { mutateAsync: createLabel } = useLabelsControllerCreate();
-  const { mutateAsync: createPipelineRun } = useRunsControllerCreate();
+  const { mutateAsync: createRun } = useRunsControllerCreate();
   const handleSend = async () => {
     if (!message.trim()) return; // Prevent sending empty messages
 
@@ -98,7 +98,7 @@ export default function ChatbotChatPage() {
         orgname: defaultOrgname,
         text: message.trim(),
       });
-      await createPipelineRun({
+      await createRun({
         body: {
           runType: "TOOL_RUN",
           text: message.trim(),

@@ -127,7 +127,7 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
-    this.logger.log("Verifying jwt token: " + token);
+    this.logger.debug("Verifying jwt token: " + token);
     return this.jwtService.verify(token);
   }
 }
