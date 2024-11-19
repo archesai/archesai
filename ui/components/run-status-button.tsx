@@ -6,7 +6,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { siteConfig } from "@/config/site";
-import { RunEntity } from "@/generated/archesApiSchemas";
+import { useToolsControllerFindAll } from "@/generated/archesApiComponents";
+import { FieldFieldQuery, RunEntity } from "@/generated/archesApiSchemas";
+import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 import { Ban, CheckCircle2, Loader2Icon } from "lucide-react";
 import { useState } from "react";
@@ -14,14 +17,29 @@ import { useState } from "react";
 export const RunStatusButton = ({
   onClick,
   run,
-  size = "lg",
 }: {
   onClick?: () => void;
   run: RunEntity;
   size?: "lg" | "sm";
 }) => {
+  const { defaultOrgname } = useAuth();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const { data: tools } = useToolsControllerFindAll({
+    pathParams: {
+      orgname: defaultOrgname,
+    },
+    queryParams: {
+      filters: JSON.stringify([
+        {
+          field: "id",
+          operator: "in",
+          value: [run.toolId],
+        },
+      ] as FieldFieldQuery[]) as any,
+    },
+  });
 
+  console.log(tools);
   const renderIcon = () => {
     switch (run.status) {
       case "QUEUED":
@@ -42,32 +60,34 @@ export const RunStatusButton = ({
     }
   };
 
-  const Icon = siteConfig.toolBaseIcons["text-to-image"];
+  const toolBase = tools?.results?.find(
+    (tool) => tool.id === run.toolId
+  )?.toolBase;
 
-  if (size == "sm") {
-    return renderIcon();
+  let Icon = null;
+  if (toolBase) {
+    Icon =
+      siteConfig.toolBaseIcons[
+        toolBase as keyof typeof siteConfig.toolBaseIcons
+      ];
   }
 
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
-          className="flex w-full items-center justify-between"
+          className={cn("flex items-center justify-between", "")}
           onClick={onClick}
           size="sm"
-          variant="secondary"
+          variant="outline"
         >
           <div className="flex flex-1 items-center justify-start gap-1 overflow-hidden truncate">
-            <Icon className="h-4 w-4 shrink-0" />
-            {run.name}
+            {Icon && <Icon className="text-blue-700" />}
           </div>
           <div className="ml-2 flex-shrink-0">{renderIcon()}</div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="overflow-auto p-4 text-sm">
-        <div>
-          <strong className="font-semibold">Tool:</strong> {run.pipelineId}
-        </div>
         <div>
           <strong className="font-semibold">Status:</strong> {run.status}
         </div>

@@ -113,7 +113,7 @@ export class AuthService {
   async setCookies(res: Response, tokenDto: TokenDto) {
     res.cookie("archesai.accessToken", tokenDto.accessToken, {
       httpOnly: true,
-      maxAge: 10 * 1000, // 15 minutes for access token
+      maxAge: 15 * 60 * 1000, // 15 minutes for access token
       sameSite: "strict",
       secure: this.configService.get("NODE_ENV") === "production",
     });

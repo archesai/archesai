@@ -1,28 +1,17 @@
-import {
-  ClassSerializerInterceptor,
-  INestApplication,
-  ValidationPipe,
-} from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+/* eslint-disable jest/valid-title */
+/* eslint-disable jest/no-export */
+import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
+import { Logger } from "nestjs-pino";
 import request from "supertest";
 import "tsconfig-paths/register";
 
-import { ApiTokensService } from "../src/api-tokens/api-tokens.service";
 import { RegisterDto } from "../src/auth/dto/register.dto";
 import { TokenDto } from "../src/auth/dto/token.dto";
-import { AppAuthGuard } from "../src/auth/guards/app-auth.guard";
-import { EmailVerifiedGuard } from "../src/auth/guards/email-verified.guard";
-import { OrganizationRoleGuard } from "../src/auth/guards/organization-role.guard";
-import { RestrictedAPIKeyGuard } from "../src/auth/guards/restricted-api-key.guard";
-import { AllExceptionsFilter } from "../src/common/filters/all-exceptions.filter";
-import { ExcludeNullInterceptor } from "../src/common/interceptors/exclude-null.interceptor";
 import { OrganizationEntity } from "../src/organizations/entities/organization.entity";
 import { UserEntity } from "../src/users/entities/user.entity";
 import { UsersService } from "../src/users/users.service";
 import { AppModule } from "./../src/app.module"; // This enables path aliasing based on tsconfig.json
-import { DeactivatedGuard } from "@/src/auth/guards/deactivated.guard";
 import { RedisIoAdapter } from "@/src/common/adapters/redis-io.adapter";
 import { ConfigService } from "@nestjs/config";
 import RedisStore from "connect-redis";
@@ -43,37 +32,6 @@ export const createApp = async () => {
 
   //  Setup Logger
   app.useLogger(app.get(Logger));
-
-  // Gloabl Filters and Interceptors
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalInterceptors(
-    new ExcludeNullInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)),
-    new LoggerErrorInterceptor()
-  );
-
-  // Global Pipes
-  app.useGlobalPipes(
-    new ValidationPipe({
-      forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-        exposeDefaultValues: true,
-      },
-      whitelist: true,
-    })
-  );
-
-  // Global Guards
-  app.useGlobalGuards(
-    new AppAuthGuard(app.get(Reflector)),
-    new DeactivatedGuard(app.get(Reflector)),
-    new EmailVerifiedGuard(app.get(Reflector)),
-    new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
-    new OrganizationRoleGuard(app.get(Reflector))
-  );
 
   // CORS Configuration
   const allowedOrigins = configService
@@ -217,3 +175,150 @@ export const deactivateUser = async (
     .set("Authorization", `Bearer ${accessToken}`);
   expect(res.status).toBe(201);
 };
+
+export function testBaseControllerEndpoints(
+  getApp: () => INestApplication,
+  baseRoute: string,
+  accessToken: string,
+  testData: {
+    createCases: Array<{
+      dto: any;
+      expectedResponse: any;
+      expectedStatus: number;
+      name: string;
+    }>;
+    findAllCases: Array<{
+      expectedResponse: any;
+      expectedStatus: number;
+      name: string;
+    }>;
+    findOneCases: Array<{
+      expectedResponse: any;
+      expectedStatus: number;
+      id: string;
+      name: string;
+    }>;
+    removeCases: Array<{
+      expectedResponse: any;
+      expectedStatus: number;
+      id: string;
+      name: string;
+    }>;
+    updateCases: Array<{
+      dto: any;
+      expectedResponse: any;
+      expectedStatus: number;
+      id: string;
+      name: string;
+    }>;
+  }
+) {
+  describe("Base Controller Endpoints", () => {
+    describe("POST " + baseRoute, () => {
+      testData.createCases.forEach((testCase) => {
+        it(testCase.name, async () => {
+          const app = getApp(); // Get the app instance when the test runs
+          await request(app.getHttpServer())
+            .post(baseRoute)
+            .set(
+              "Authorization",
+              `${accessToken ? `Bearer ${accessToken}` : ""}`
+            )
+            .send(testCase.dto)
+            .expect(testCase.expectedStatus)
+            .expect((res) => {
+              expect(res.body).toEqual(testCase.expectedResponse);
+            })
+            .expect((res) => {
+              expect(res).toSatisfyApiSpec();
+            });
+        });
+      });
+    });
+
+    describe("GET " + baseRoute, () => {
+      testData.findAllCases.forEach((testCase) => {
+        it(testCase.name, async () => {
+          const app = getApp(); // Get the app instance when the test runs
+          await request(app.getHttpServer())
+            .get(baseRoute)
+            .set(
+              "Authorization",
+              `${accessToken ? `Bearer ${accessToken}` : ""}`
+            )
+            .expect(testCase.expectedStatus)
+            .expect((res) => {
+              expect(res.body).toEqual(testCase.expectedResponse);
+            })
+            .expect((res) => {
+              expect(res).toSatisfyApiSpec();
+            });
+        });
+      });
+    });
+
+    describe("GET " + baseRoute + "/:id", () => {
+      testData.findOneCases.forEach((testCase) => {
+        it(testCase.name, async () => {
+          const app = getApp(); // Get the app instance when the test runs
+          await request(app.getHttpServer())
+            .get(`${baseRoute}/${testCase.id}`)
+            .set(
+              "Authorization",
+              `${accessToken ? `Bearer ${accessToken}` : ""}`
+            )
+            .expect(testCase.expectedStatus)
+            .expect((res) => {
+              expect(res.body).toEqual(testCase.expectedResponse);
+            })
+            .expect((res) => {
+              expect(res).toSatisfyApiSpec();
+            });
+        });
+      });
+    });
+
+    describe("PUT " + baseRoute + "/:id", () => {
+      testData.updateCases.forEach((testCase) => {
+        it(testCase.name, async () => {
+          const app = getApp(); // Get the app instance when the test runs
+          await request(app.getHttpServer())
+            .put(`${baseRoute}/${testCase.id}`)
+            .set(
+              "Authorization",
+              `${accessToken ? `Bearer ${accessToken}` : ""}`
+            )
+            .send(testCase.dto)
+            .expect(testCase.expectedStatus)
+            .expect((res) => {
+              expect(res.body).toEqual(testCase.expectedResponse);
+            })
+            .expect((res) => {
+              expect(res).toSatisfyApiSpec();
+            });
+        });
+      });
+    });
+
+    describe("DELETE " + baseRoute + "/:id", () => {
+      testData.removeCases.forEach((testCase) => {
+        it(testCase.name, async () => {
+          const app = getApp(); // Get the app instance when the test runs
+          await request(app.getHttpServer())
+            .delete(`${baseRoute}/${testCase.id}`)
+            .set(
+              "Authorization",
+              `${accessToken ? `Bearer ${accessToken}` : ""}`
+            )
+            .expect(testCase.expectedStatus)
+            .expect((res) => {
+              expect(res.body).toEqual(testCase.expectedResponse);
+            })
+            .expect((res) => {
+              expect(res).toSatisfyApiSpec();
+            });
+        });
+      });
+    });
+  });
+}

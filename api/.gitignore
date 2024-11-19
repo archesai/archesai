@@ -41,3 +41,4 @@ lerna-debug.log*
 .env.stage
 
 metadata.ts
+coverage-e2e/

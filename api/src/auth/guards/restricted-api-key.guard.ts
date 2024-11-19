@@ -8,15 +8,11 @@ import {
 import { Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
-import { ApiTokensService } from "../../api-tokens/api-tokens.service";
 @Injectable()
 export class RestrictedAPIKeyGuard implements CanActivate {
   private readonly logger: Logger = new Logger("Restricted API Key Guard");
 
-  constructor(
-    private reflector: Reflector,
-    private apiTokensService: ApiTokensService
-  ) {}
+  constructor(private reflector: Reflector) {}
   async canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>("public", [
       context.getHandler(),

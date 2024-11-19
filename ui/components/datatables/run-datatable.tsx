@@ -2,7 +2,6 @@
 import { DataTable } from "@/components/datatables/datatable/data-table";
 import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
 import { RunStatusButton } from "@/components/run-status-button";
-import { Badge } from "@/components/ui/badge";
 import {
   RunsControllerFindAllPathParams,
   RunsControllerRemoveVariables,
@@ -12,9 +11,11 @@ import {
 import { RunEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
 import { format } from "date-fns";
-import { PackageCheck } from "lucide-react";
+import { PackageCheck, Workflow } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { Button } from "../ui/button";
 
 export default function RunDataTable() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function RunDataTable() {
             return (
               <div className="flex gap-2">
                 <Link
-                  className="max-w-[200px] shrink truncate font-medium text-primary"
+                  className="max-w-[200px] shrink truncate font-medium"
                   href={`/run/single?runId=${row.original.id}`}
                 >
                   {row.original.name}
@@ -48,7 +49,19 @@ export default function RunDataTable() {
         {
           accessorKey: "runType",
           cell: ({ row }) => {
-            return <Badge>{row.original.runType}</Badge>;
+            return (
+              <Button
+                className="text-primary hover:text-primary/90"
+                size="sm"
+                variant={"outline"}
+              >
+                {row.original.runType === "PIPELINE_RUN" ? (
+                  <Workflow className="h-5 w-5" />
+                ) : (
+                  <PackageCheck className="h-5 w-5" />
+                )}
+              </Button>
+            );
           },
           enableHiding: false,
           header: ({ column }) => (

@@ -17,6 +17,8 @@ import { transformTextToImage } from "./transformers/text-to-image.transformer";
 import { transformTextToSpeech } from "./transformers/text-to-speech.transformer";
 import { transformTextToText } from "./transformers/text-to-text.transformer";
 
+type RunJob = Job<ContentEntity[], ContentEntity[], string>;
+
 @Processor("run")
 export class RunProcessor extends WorkerHost {
   private readonly logger: Logger = new Logger("Run Processor");
@@ -36,19 +38,19 @@ export class RunProcessor extends WorkerHost {
   }
 
   @OnWorkerEvent("active")
-  async onActive(job: Job) {
+  async onActive(job: RunJob) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`);
     await this.runsService.setStatus(job.id.toString(), "PROCESSING");
   }
 
   @OnWorkerEvent("completed")
-  async onCompleted(job: Job) {
+  async onCompleted(job: RunJob) {
     this.logger.log(`Completed job ${job.id}`);
     await this.runsService.setStatus(job.id.toString(), "COMPLETE");
   }
 
   @OnWorkerEvent("error")
-  async onError(job: Job, error: any) {
+  async onError(job: RunJob, error: any) {
     this.logger.error(`Error running job ${job.id}: ${error?.message}`);
     try {
       await this.runsService.setStatus(job.id.toString(), "ERROR");
@@ -57,7 +59,7 @@ export class RunProcessor extends WorkerHost {
   }
 
   @OnWorkerEvent("failed")
-  async onFailed(job: Job, error: any) {
+  async onFailed(job: RunJob, error: any) {
     this.logger.error(`Failed job ${job.id} : ${error?.message}`);
     try {
       await this.runsService.setStatus(job.id.toString(), "ERROR");
@@ -65,8 +67,8 @@ export class RunProcessor extends WorkerHost {
     } catch {}
   }
 
-  async process(job: Job) {
-    const inputs = job.data.inputs as ContentEntity[];
+  async process(job: RunJob) {
+    const inputs = job.data as ContentEntity[];
     let outputs: ContentEntity[] = [];
     switch (job.name) {
       case "extract-text":

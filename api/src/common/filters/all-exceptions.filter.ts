@@ -5,15 +5,16 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
-import { BaseExceptionFilter } from "@nestjs/core";
+import { ExceptionFilter } from "@nestjs/common";
+import { Response } from "express";
 
 @Catch()
-export class AllExceptionsFilter extends BaseExceptionFilter {
+export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger: Logger = new Logger("All Exceptions Filter");
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
+    const response = ctx.getResponse<Response>();
 
     let statusCode =
       exception instanceof HttpException

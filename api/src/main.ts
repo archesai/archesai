@@ -1,31 +1,22 @@
-import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { NestFactory, Reflector } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import RedisStore from "connect-redis";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import { readFileSync } from "fs-extra";
 import helmet from "helmet";
-import { Logger, LoggerErrorInterceptor } from "nestjs-pino";
+import { Logger } from "nestjs-pino";
 import passport from "passport";
 import { createClient } from "redis";
 
-import { ApiTokensService } from "./api-tokens/api-tokens.service";
 import { AppModule } from "./app.module";
-import { AppAuthGuard } from "./auth/guards/app-auth.guard";
-import { DeactivatedGuard } from "./auth/guards/deactivated.guard";
-import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
-import { OrganizationRoleGuard } from "./auth/guards/organization-role.guard";
-import { RestrictedAPIKeyGuard } from "./auth/guards/restricted-api-key.guard";
 import { RedisIoAdapter } from "./common/adapters/redis-io.adapter";
 import { AggregateFieldResult, Metadata } from "./common/dto/paginated.dto";
 import {
   AggregateFieldQuery,
   FieldFieldQuery,
 } from "./common/dto/search-query.dto";
-import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
-import { ExcludeNullInterceptor } from "./common/interceptors/exclude-null.interceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -64,37 +55,6 @@ async function bootstrap() {
 
   //  Setup Logger
   app.useLogger(app.get(Logger));
-
-  // Gloabl Filters and Interceptors
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalInterceptors(
-    new ExcludeNullInterceptor(),
-    new ClassSerializerInterceptor(app.get(Reflector)),
-    new LoggerErrorInterceptor()
-  );
-
-  // Global Pipes
-  app.useGlobalPipes(
-    new ValidationPipe({
-      forbidNonWhitelisted: true,
-      forbidUnknownValues: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-        exposeDefaultValues: true,
-      },
-      whitelist: true,
-    })
-  );
-
-  // Global Guards
-  app.useGlobalGuards(
-    new AppAuthGuard(app.get(Reflector)),
-    new DeactivatedGuard(app.get(Reflector)),
-    new EmailVerifiedGuard(app.get(Reflector)),
-    new RestrictedAPIKeyGuard(app.get(Reflector), app.get(ApiTokensService)),
-    new OrganizationRoleGuard(app.get(Reflector))
-  );
 
   // CORS Configuration
   const allowedOrigins = configService

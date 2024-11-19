@@ -13,11 +13,11 @@
     "start:prod": "node dist/main",
     "format": "npx eslint --fix --ext .ts .",
     "lint": "npx eslint --ext .ts . && npx tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test": "jest --color",
+    "test:watch": "jest --watch --color",
+    "test:cov": "jest --coverage --color",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "TS_JEST=true jest --config ./test/jest.config.ts $FILE_NAME",
+    "test:e2e": "TS_JEST=true jest --config ./test/jest.config.ts --coverage --color $FILE_NAME",
     "migrations:dev": "npx prisma migrate dev",
     "migrations:prod": "npx prisma migrate deploy",
     "db:seed": "npx ts-node -r tsconfig-paths/register prisma/seed.ts",
@@ -144,9 +144,12 @@
       "<rootDir>/..",
       "<rooDir>"
     ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/../$1"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.(t|j)s?$": "@swc/jest"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
