@@ -77,7 +77,17 @@ export const useAuth = () => {
   const getUserFromToken = useCallback(async () => {
     console.log("Getting user from token");
     try {
-      const response = await fetch(baseUrl + "/user", {
+      let response = await fetch(baseUrl + "/user", {
+        credentials: "include", // Include cookies
+        method: "GET",
+        mode: "cors",
+      });
+
+      if (response.status === 401) {
+        await getNewRefreshToken(authState, setAuthState);
+      }
+
+      response = await fetch(baseUrl + "/user", {
         credentials: "include", // Include cookies
         method: "GET",
         mode: "cors",

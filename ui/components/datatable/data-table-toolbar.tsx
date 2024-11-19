@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
         onCheckedChange={() => toggleSelectAll()}
       />
       <Input
-        className="h-8 flex-1 bg-card"
+        className="h-8 flex-1"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={`Search ${itemType}s...`}
         value={query}

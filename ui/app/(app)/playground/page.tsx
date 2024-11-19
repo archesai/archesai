@@ -4,13 +4,7 @@ import { GridView } from "@/components/datatable/grid-view";
 import RunForm from "@/components/forms/run-form";
 import { RunStatusButton } from "@/components/run-status-button";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/site";
@@ -92,25 +86,20 @@ export default function PlaygroundPage() {
           const Icon = siteConfig.toolBaseIcons[tool.toolBase];
           return (
             <Card
-              className="flex flex-col justify-between bg-sidebar text-center transition-shadow hover:shadow-lg"
+              className="flex flex-col justify-between gap-2 bg-sidebar p-4 text-center transition-shadow hover:shadow-lg"
               key={index}
             >
-              <CardHeader className="pt-6">
-                <Icon className="mx-auto mb-2 h-8 w-8 text-primary/80" />
-                <CardTitle className="text-xl font-semibold">
-                  {tool.name}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>{tool.description}</CardContent>
-              <CardFooter className="justify-center">
-                <Button
-                  className="h-8"
-                  onClick={() => setSelectedTool(tool)}
-                  variant={"outline"}
-                >
-                  Select Tool
-                </Button>
-              </CardFooter>
+              <Icon className="mx-auto h-8 w-8 text-primary/80" />
+              <div className="text-lg font-semibold">{tool.name}</div>
+              <div className="text-sm font-normal"> {tool.description}</div>
+
+              <Button
+                className="mt-1 h-8"
+                onClick={() => setSelectedTool(tool)}
+                variant={"outline"}
+              >
+                Select Tool
+              </Button>
             </Card>
           );
         })}

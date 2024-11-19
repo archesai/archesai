@@ -123,9 +123,7 @@ export const Navbar = () => {
             <ModeToggle h={"h-10"} />
 
             <Link href="/login">
-              <Button className="bg-card" variant={"outline"}>
-                Log in
-              </Button>
+              <Button variant={"outline"}>Log in</Button>
             </Link>
 
             <Link href="/register">
