@@ -111,7 +111,7 @@ export default function RunForm() {
       description:
         "Select the content you would like to run the tool on. You can select multiple content items.",
       label: "Input",
-      name: tab,
+      name: tab === "file" ? "contentIds" : tab,
       renderControl: (field) => (
         <Tabs value={tab}>
           <TabsList className="grid w-full grid-cols-4 px-1">

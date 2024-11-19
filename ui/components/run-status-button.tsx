@@ -13,9 +13,11 @@ import { useState } from "react";
 export const RunStatusButton = ({
   onClick,
   run,
+  size = "lg",
 }: {
   onClick?: () => void;
   run: RunEntity;
+  size?: "lg" | "sm";
 }) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -40,6 +42,10 @@ export const RunStatusButton = ({
   };
 
   const Icon = siteConfig.toolBaseIcons["text-to-image"];
+
+  if (size == "sm") {
+    return renderIcon();
+  }
 
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>

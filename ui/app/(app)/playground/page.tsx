@@ -87,97 +87,101 @@ export default function PlaygroundPage() {
 
   if (!selectedTool) {
     return (
-      <div className="flex h-full flex-col items-center justify-start">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {tools?.results?.map((tool, index) => {
-            const Icon = siteConfig.toolBaseIcons[tool.toolBase];
-            return (
-              <Card
-                className="flex flex-col justify-between bg-sidebar text-center transition-shadow hover:shadow-lg"
-                key={index}
-              >
-                <CardHeader className="pt-6">
-                  <Icon className="mx-auto mb-2 h-8 w-8 text-foreground" />
-                  <CardTitle className="text-xl font-semibold">
-                    {tool.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>{tool.description}</CardContent>
-                <CardFooter className="justify-center">
-                  <Button className="h-8" onClick={() => setSelectedTool(tool)}>
-                    Select Tool
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
+      <div className="grid grid-cols-1 gap-6 p-0 md:grid-cols-3">
+        {tools?.results?.map((tool, index) => {
+          const Icon = siteConfig.toolBaseIcons[tool.toolBase];
+          return (
+            <Card
+              className="flex flex-col justify-between bg-sidebar text-center transition-shadow hover:shadow-lg"
+              key={index}
+            >
+              <CardHeader className="pt-6">
+                <Icon className="mx-auto mb-2 h-8 w-8 text-primary/80" />
+                <CardTitle className="text-xl font-semibold">
+                  {tool.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>{tool.description}</CardContent>
+              <CardFooter className="justify-center">
+                <Button
+                  className="h-8"
+                  onClick={() => setSelectedTool(tool)}
+                  variant={"outline"}
+                >
+                  Select Tool
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     );
   }
   return (
     <div className="relative grid h-full gap-3 md:grid-cols-3">
-      {
-        // Back Button
-      }
-      {/* <Button
-        className="absolute left-0 top-0"
-        onClick={() => {
-          clearParams();
-        }}
-        size="sm"
-        variant={"secondary"}
-      >
-        <ArrowLeft className="h-4 w-4" />
-      </Button> */}
-      {/* OUTPUT */}
-
       <div className="col-span-2 flex flex-1 flex-col gap-4">
-        <Label>Input Content</Label>
-        <GridView<ContentEntity>
-          content={(item) => (
-            <div className="p-1">
-              <div className="font-mono">{item.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {item.text || item.url}
-              </div>
+        {inputs?.results?.length ? (
+          <>
+            <Label>Input Content</Label>
+            <GridView<ContentEntity>
+              content={(item) => (
+                <div className="p-1">
+                  <div className="font-mono">{item.name}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {item.text || item.url}
+                  </div>
+                </div>
+              )}
+              data={inputs?.results || []}
+              DataIcon={<div>Content</div>}
+              deleteItem={async () => {}}
+              getDeleteVariablesFromItem={() => {}}
+              handleSelect={(content) => {
+                router.push(`/content/single?contentId=${content.id}`);
+              }}
+              itemType={"content"}
+              selectedItems={[]}
+              setFinalForm={() => {}}
+              setFormOpen={() => {}}
+              toggleSelection={() => {}}
+            />
+          </>
+        ) : null}
+
+        {outputs?.results?.length ? (
+          <>
+            <Separator />
+            <Label>Output Content</Label>
+            <GridView<ContentEntity>
+              content={(item) => (
+                <div className="p-1">
+                  <div className="font-mono">{item.name}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {item.text || item.url}
+                  </div>
+                </div>
+              )}
+              data={outputs?.results || []}
+              DataIcon={<div>Content</div>}
+              deleteItem={async () => {}}
+              getDeleteVariablesFromItem={() => {}}
+              handleSelect={() => {}}
+              itemType={"content"}
+              selectedItems={[]}
+              setFinalForm={() => {}}
+              setFormOpen={() => {}}
+              toggleSelection={() => {}}
+            />
+          </>
+        ) : null}
+
+        {!selectedContent && (
+          <>
+            <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
+              <p>Use the form to start using tools.</p>
             </div>
-          )}
-          data={inputs?.results || []}
-          DataIcon={<div>Content</div>}
-          deleteItem={async () => {}}
-          getDeleteVariablesFromItem={() => {}}
-          handleSelect={(content) => {
-            router.push(`/content/single?contentId=${content.id}`);
-          }}
-          itemType={"content"}
-          selectedItems={[]}
-          setFinalForm={() => {}}
-          setFormOpen={() => {}}
-          toggleSelection={() => {}}
-        />
-        <Separator />
-        <Label>Output Content</Label>
-        <GridView<ContentEntity>
-          content={(item) => (
-            <div className="p-1">
-              <div className="font-mono">{item.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {item.text || item.url}
-              </div>
-            </div>
-          )}
-          data={outputs?.results || []}
-          DataIcon={<div>Content</div>}
-          deleteItem={async () => {}}
-          getDeleteVariablesFromItem={() => {}}
-          handleSelect={() => {}}
-          itemType={"content"}
-          selectedItems={[]}
-          setFinalForm={() => {}}
-          setFormOpen={() => {}}
-          toggleSelection={() => {}}
-        />
+          </>
+        )}
       </div>
 
       {/* SIDEBAR */}

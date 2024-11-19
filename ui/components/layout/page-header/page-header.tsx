@@ -44,7 +44,7 @@ export const PageHeader = () => {
           className="mr-3 flex h-8 w-8"
           onClick={toggleSidebar}
           size="icon"
-          variant="secondary"
+          variant="outline"
         >
           <Menu className="h-5 w-5" />
         </Button>

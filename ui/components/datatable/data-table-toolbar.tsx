@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
         onCheckedChange={() => toggleSelectAll()}
       />
       <Input
-        className="h-8 flex-1"
+        className="h-8 flex-1 bg-card"
         onChange={(event) => setQuery(event.target.value)}
         placeholder={`Search ${itemType}s...`}
         value={query}
@@ -62,7 +62,7 @@ export function DataTableToolbar<TData>({
         <Button
           className="flex h-8 gap-2 p-2"
           onClick={() => table.resetColumnFilters()}
-          variant="ghost"
+          variant="outline"
         >
           <span>Reset</span>
           <Cross2Icon className="h-5 w-5" />
@@ -97,7 +97,7 @@ export function ViewToggle() {
         }`}
         onClick={() => setView("table")}
         size="icon"
-        variant={"secondary"}
+        variant={"outline"}
       >
         <ListIcon className="h-5 w-5" />
       </Button>

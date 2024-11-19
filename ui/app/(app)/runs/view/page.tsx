@@ -62,7 +62,11 @@ export default function ContentPage() {
         {
           accessorKey: "status",
           cell: ({ row }) => {
-            return <RunStatusButton run={row.original} />;
+            return (
+              <div className="pl-3">
+                <RunStatusButton run={row.original} size="sm" />
+              </div>
+            );
           },
           enableHiding: false,
           header: ({ column }) => (

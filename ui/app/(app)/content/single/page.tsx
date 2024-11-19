@@ -45,7 +45,7 @@ export default function ContentDetailsPage() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div>{content.name}</div>
-              <Button asChild size="sm" variant="secondary">
+              <Button asChild size="sm" variant="outline">
                 <a href={content.url} rel="noopener noreferrer" target="_blank">
                   Download Content
                 </a>

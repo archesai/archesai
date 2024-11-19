@@ -89,6 +89,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
     form.reset(defaultValues);
   }, [fields.map((f) => f.defaultValue).join()]);
 
+  console.log(form.getValues());
   return (
     <Card
       className={cn(

@@ -21,7 +21,7 @@ export function DatePickerWithRange({}: React.HTMLAttributes<HTMLDivElement>) {
       <PopoverTrigger asChild>
         <Button
           className={cn(
-            "hidden h-8 justify-start gap-2 text-left font-normal md:flex",
+            "hidden h-8 justify-start gap-2 bg-card text-left font-normal md:flex",
             !range && "text-muted-foreground"
           )}
           id="range"

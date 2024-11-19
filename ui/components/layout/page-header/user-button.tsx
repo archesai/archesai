@@ -62,7 +62,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
               ? "w-full p-2 font-semibold leading-6"
               : "h-8 w-8 rounded-full p-0"
           }`}
-          variant="secondary"
+          variant="outline"
         >
           {size === "lg" ? (
             <>

@@ -69,7 +69,7 @@ export function OrganizationSwitcher() {
                 // add eslint ignore for the next lint
               }
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg border text-primary">
                 <div className="-mt-0.5">
                   <ArchesLogo scale={0.1} size="sm" />
                 </div>
@@ -92,7 +92,7 @@ export function OrganizationSwitcher() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Teams
+              Organizations
             </DropdownMenuLabel>
             {memberships?.map((membership) => (
               <DropdownMenuItem
@@ -117,7 +117,9 @@ export function OrganizationSwitcher() {
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Plus className="size-4" />
               </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
+              <div className="font-medium text-muted-foreground">
+                New Organization
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
