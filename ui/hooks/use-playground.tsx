@@ -10,15 +10,27 @@ import { useCallback } from "react";
 export const usePlayground = () => {
   const [selectedTool, setSelectedTool] = useQueryState(
     "selectedTool",
-    parseAsJson<ToolEntity>((tool) => tool as ToolEntity)
+    parseAsJson<any | ToolEntity>((tool) => tool as ToolEntity)
+      .withOptions({
+        clearOnDefault: true,
+      })
+      .withDefault(undefined)
   );
   const [selectedContent, setSelectedContent] = useQueryState(
     "selectedContent",
     parseAsArrayOf(parseAsJson<ContentEntity>((tool) => tool as ContentEntity))
+      .withOptions({
+        clearOnDefault: true,
+      })
+      .withDefault([])
   );
   const [selectedRunId, setSelectedRunId] = useQueryState(
     "selectedRunId",
     parseAsString
+      .withOptions({
+        clearOnDefault: true,
+      })
+      .withDefault("")
   );
 
   const clearParams = useCallback(() => {

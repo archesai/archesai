@@ -1,10 +1,11 @@
 "use client";
-import { FormFieldConfig, GenericForm } from "@/components/generic-form";
+import {
+  FormFieldConfig,
+  GenericForm,
+} from "@/components/forms/generic-form/generic-form";
 import { Input } from "@/components/ui/input";
 import { RegisterDto } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import * as z from "zod";
 
 // Define schema using Zod for form validation
@@ -27,14 +28,7 @@ const formSchema = z.object({
 //   });
 
 export default function RegisterForm() {
-  const { registerWithEmailAndPassword, user } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      router.push("/playground");
-    }
-  }, [user, router]);
+  const { registerWithEmailAndPassword } = useAuth();
 
   const formFields: FormFieldConfig[] = [
     {

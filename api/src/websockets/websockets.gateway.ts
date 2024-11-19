@@ -8,7 +8,7 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
-import { AuthService } from "../auth/auth.service";
+import { AuthService } from "../auth/services/auth.service";
 import { UsersService } from "../users/users.service";
 import { WebsocketsService } from "./websockets.service";
 

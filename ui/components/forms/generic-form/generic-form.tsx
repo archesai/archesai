@@ -21,9 +21,9 @@ import { useEffect } from "react";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { useToast } from "./ui/use-toast";
+import { Button } from "../../ui/button";
+import { Separator } from "../../ui/separator";
+import { useToast } from "../../ui/use-toast";
 
 export interface FormFieldConfig {
   component: React.ComponentType<any>;
@@ -89,7 +89,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
     form.reset(defaultValues);
   }, [fields.map((f) => f.defaultValue).join()]);
 
-  console.log(form.getValues());
+  console.log(form.getValues()); // FIXME
   return (
     <Card
       className={cn(

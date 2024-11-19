@@ -75,7 +75,6 @@ export class RunProcessor extends WorkerHost {
           inputs,
           this.logger,
           this.contentService,
-          this.storageService,
           this.httpService,
           this.configService
         );

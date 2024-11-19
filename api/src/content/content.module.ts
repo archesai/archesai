@@ -1,3 +1,4 @@
+import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 
 import { PrismaModule } from "../prisma/prisma.module";
@@ -9,7 +10,7 @@ import { ContentService } from "./content.service";
 @Module({
   controllers: [ContentController],
   exports: [ContentService],
-  imports: [PrismaModule, StorageModule.forRoot()],
+  imports: [PrismaModule, StorageModule.forRoot(), HttpModule],
   providers: [ContentService, ContentRepository],
 })
 export class ContentModule {}

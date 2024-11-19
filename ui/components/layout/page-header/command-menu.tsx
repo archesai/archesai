@@ -56,7 +56,7 @@ export function CommandMenu({ ...props }: DialogProps) {
     <div className="w-full">
       <Button
         className={cn(
-          "h-8 w-full justify-between gap-2 rounded-lg text-base font-normal md:text-sm"
+          "h-8 w-full justify-between gap-2 rounded-lg text-base font-normal text-muted-foreground md:text-sm"
         )}
         onClick={() => setOpen(true)}
         variant="outline"

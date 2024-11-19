@@ -1,69 +1,9 @@
-"use client";
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
-import LabelForm from "@/components/forms/label-form";
-import {
-  LabelsControllerFindAllPathParams,
-  LabelsControllerRemoveVariables,
-  useLabelsControllerFindAll,
-  useLabelsControllerRemove,
-} from "@/generated/archesApiComponents";
-import { LabelEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/use-auth";
-import { ListMinus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import LabelDataTable from "@/components/datatables/label-datatable";
+import { getMetadata } from "@/config/site";
+import { Metadata } from "next";
 
-export default function ChatbotsPageContent() {
-  const { defaultOrgname } = useAuth();
-  const router = useRouter();
+export const metadata: Metadata = getMetadata("/labels");
 
-  return (
-    <DataTable<
-      LabelEntity,
-      LabelsControllerFindAllPathParams,
-      LabelsControllerRemoveVariables
-    >
-      columns={[
-        {
-          accessorKey: "name",
-          cell: ({ row }) => {
-            return (
-              <div className="flex gap-2">
-                <span
-                  className="max-w-[500px] truncate font-medium"
-                  onClick={() =>
-                    router.push(`/chatbots/chat?labelId=${row.original.id}`)
-                  }
-                >
-                  {row.original.name}
-                </span>
-              </div>
-            );
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Name" />
-          ),
-        },
-      ]}
-      createForm={<LabelForm />}
-      dataIcon={<ListMinus />}
-      defaultView="table"
-      findAllPathParams={{
-        orgname: defaultOrgname,
-      }}
-      getDeleteVariablesFromItem={(label) => ({
-        pathParams: {
-          labelId: label.id,
-          orgname: defaultOrgname,
-        },
-      })}
-      getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
-      handleSelect={(chatbot) =>
-        router.push(`/chatbots/chat?labelId=${chatbot.id}`)
-      }
-      itemType="label"
-      useFindAll={useLabelsControllerFindAll}
-      useRemove={useLabelsControllerRemove}
-    />
-  );
+export default function LabelsPage() {
+  return <LabelDataTable />;
 }

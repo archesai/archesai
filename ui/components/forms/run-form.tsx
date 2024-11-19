@@ -1,5 +1,8 @@
 "use client";
-import { FormFieldConfig, GenericForm } from "@/components/generic-form";
+import {
+  FormFieldConfig,
+  GenericForm,
+} from "@/components/forms/generic-form/generic-form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { siteConfig } from "@/config/site";
@@ -175,7 +178,7 @@ export default function RunForm() {
   return (
     <GenericForm<CreateRunDto, any>
       description={
-        "Run a tool on a piece of content. This will create a new run of the tool on the selected content."
+        "Run a tool on a piece of content. You can select multiple content items."
       }
       fields={formFields}
       isUpdateForm={false}

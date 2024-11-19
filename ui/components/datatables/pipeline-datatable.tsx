@@ -1,6 +1,6 @@
 "use client";
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { DataTable } from "@/components/datatables/datatable/data-table";
+import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import {
   PipelinesControllerFindAllPathParams,
@@ -15,7 +15,7 @@ import { Workflow } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function ContentPage() {
+export default function PipelineDataTable() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
 

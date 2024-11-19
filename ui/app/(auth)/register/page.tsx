@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -41,15 +40,8 @@ const schema = z
 type RegisterFormData = z.infer<typeof schema>;
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const { registerWithEmailAndPassword, user } = useAuth();
+  const { registerWithEmailAndPassword } = useAuth();
   const [error, setError] = useState<null | string>(null);
-
-  useEffect(() => {
-    if (user) {
-      router.push("/playground");
-    }
-  }, [user, router]);
 
   const form = useForm<RegisterFormData>({
     defaultValues: {

@@ -17,7 +17,7 @@ export function ContentViewer({
   content: ContentEntity;
   size: "lg" | "sm";
 }) {
-  const { mimeType, url } = content;
+  const { mimeType, text, url } = content;
 
   let hoverContent = null;
 
@@ -50,6 +50,12 @@ export function ContentViewer({
   } else if (mimeType === "application/pdf") {
     hoverContent = (
       <iframe className="h-full w-full" src={url} title="PDF Document"></iframe>
+    );
+  } else if (mimeType?.startsWith("text/")) {
+    hoverContent = (
+      <div className="flex h-full items-center justify-center p-4 text-center">
+        <p>{text}</p>
+      </div>
     );
   } else {
     hoverContent = (

@@ -14,7 +14,6 @@ import {
 import { Request, Response } from "express";
 
 import { UserEntity } from "../users/entities/user.entity";
-import { AuthService } from "./auth.service";
 import { CurrentUser } from "./decorators/current-user.decorator";
 import { IsPublic } from "./decorators/is-public.decorator";
 import { Roles } from "./decorators/roles.decorator";
@@ -24,10 +23,11 @@ import { EmailRequestDto } from "./dto/email-request.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { TokenDto } from "./dto/token.dto";
-import { EmailChangeService } from "./email-change.service";
-import { EmailVerificationService } from "./email-verification.service";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
-import { PasswordResetService } from "./password-reset.service";
+import { AuthService } from "./services/auth.service";
+import { EmailChangeService } from "./services/email-change.service";
+import { EmailVerificationService } from "./services/email-verification.service";
+import { PasswordResetService } from "./services/password-reset.service";
 
 @ApiTags("Authentication")
 @Controller("auth")

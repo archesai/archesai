@@ -1,6 +1,8 @@
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { useAuthControllerEmailVerificationRequest } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/use-auth";
+import {
+  useAuthControllerEmailVerificationRequest,
+  useUserControllerFindOne,
+} from "@/generated/archesApiComponents";
 import { RocketIcon } from "@radix-ui/react-icons";
 
 import { useToast } from "../../ui/use-toast";
@@ -9,7 +11,8 @@ export function VerifyEmailAlert() {
   const { mutateAsync: requestEmailVerification } =
     useAuthControllerEmailVerificationRequest();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { data: user } = useUserControllerFindOne({});
+
   if (!user || user?.emailVerified) return null;
   return (
     <Alert className="rounded-none border-none bg-primary">

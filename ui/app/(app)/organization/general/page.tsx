@@ -1,31 +1,9 @@
-"use client";
-import { FormFieldConfig, GenericForm } from "@/components/generic-form";
-import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/use-auth";
+import OrganizationForm from "@/components/forms/organization-form";
+import { getMetadata } from "@/config/site";
+import { Metadata } from "next";
 
-export default function OrganizationSettingsPage() {
-  const { defaultOrgname } = useAuth();
-  const formFields: FormFieldConfig[] = [
-    {
-      component: Input,
-      defaultValue: defaultOrgname,
-      description: "The name of the organization. This cannot be changed.",
-      label: "Name",
-      name: "name",
-      props: {
-        disabled: true,
-      },
-    },
-  ];
+export const metadata: Metadata = getMetadata("/organization/general");
 
-  return (
-    <GenericForm
-      description={"View your organization's details"}
-      fields={formFields}
-      isUpdateForm={true}
-      itemType="organization"
-      showCard={true}
-      title="Organization"
-    />
-  );
+export default function OrganizationPage() {
+  return <OrganizationForm />;
 }

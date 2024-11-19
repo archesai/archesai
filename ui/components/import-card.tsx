@@ -192,7 +192,7 @@ export default function ImportCard({
         {/* Drop Area */}
         <Card
           className={cn(
-            "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed bg-transparent p-8 transition-colors duration-300",
+            "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-8 transition-colors duration-300",
             dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
             selectedFiles.length > 0 ? "w-1/2" : ""
           )}

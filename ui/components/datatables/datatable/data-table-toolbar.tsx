@@ -1,7 +1,7 @@
 "use client";
 
-import { DataTableViewOptions } from "@/components/datatable/data-table-view-options";
-import { DatePickerWithRange } from "@/components/datatable/date-range-picker";
+import { DataTableViewOptions } from "@/components/datatables/datatable/data-table-view-options";
+import { DatePickerWithRange } from "@/components/datatables/datatable/date-range-picker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ interface DataTableToolbarProps<TData> {
   createForm?: React.ReactNode;
   data: TData[];
   itemType: string;
+  readonly?: boolean;
   setFormOpen: (open: boolean) => void;
   table: Table<TData>;
 }
@@ -24,6 +25,7 @@ export function DataTableToolbar<TData>({
   createForm,
   data,
   itemType,
+  readonly,
   setFormOpen,
   table,
 }: DataTableToolbarProps<TData>) {
@@ -35,11 +37,13 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Checkbox
-        aria-label="Select all"
-        checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
-        onCheckedChange={() => toggleSelectAll()}
-      />
+      {!readonly && (
+        <Checkbox
+          aria-label="Select all"
+          checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
+          onCheckedChange={() => toggleSelectAll()}
+        />
+      )}
       <Input
         className="h-8 flex-1"
         onChange={(event) => setQuery(event.target.value)}
@@ -72,7 +76,7 @@ export function DataTableToolbar<TData>({
       <DatePickerWithRange />
       <ViewToggle />
       <DataTableViewOptions table={table} />
-      {createForm ? (
+      {createForm && !readonly ? (
         <Button
           className="capitalize"
           onClick={() => setFormOpen(true)}

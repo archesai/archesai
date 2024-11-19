@@ -1,5 +1,5 @@
 "use client";
-
+// FIXME - remove use client
 import { ContentViewer } from "@/components/content-viewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export default function ContentDetailsPage() {
 
   const { defaultOrgname } = useAuth();
 
-  const { data: content, isLoading } = useContentControllerFindOne(
+  const { data: content } = useContentControllerFindOne(
     {
       pathParams: {
         contentId: contentId as string,
@@ -33,10 +33,6 @@ export default function ContentDetailsPage() {
     }
   );
 
-  if (isLoading || !content) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="flex h-full w-full gap-3">
       {/*LEFT SIDE*/}
@@ -44,28 +40,34 @@ export default function ContentDetailsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <div>{content.name}</div>
+              <div>{content?.name}</div>
               <Button asChild size="sm" variant="outline">
-                <a href={content.url} rel="noopener noreferrer" target="_blank">
+                <a
+                  href={content?.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
                   Download Content
                 </a>
               </Button>
             </CardTitle>
             <CardDescription>
-              {content.description || "No Description"}
+              {content?.description || "No Description"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Badge>{content.mimeType}</Badge>
-              <Badge>{format(new Date(content.createdAt), "PPP")}</Badge>
+              <Badge>{content?.mimeType}</Badge>
+              {content?.createdAt && (
+                <Badge>{format(new Date(content.createdAt), "PPP")}</Badge>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
       {/*RIGHT SIDE*/}
       <Card className="w-1/2 overflow-hidden">
-        {<ContentViewer content={content} size="lg" />}
+        {content && <ContentViewer content={content} size="lg" />}
       </Card>
     </div>
   );

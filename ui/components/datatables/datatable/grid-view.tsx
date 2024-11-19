@@ -1,6 +1,6 @@
 "use client";
 
-import { DeleteItems } from "@/components/datatable/delete-items";
+import { DeleteItems } from "@/components/datatables/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FilePenLine } from "lucide-react";
@@ -14,11 +14,12 @@ interface GridViewProps<TItem extends BaseItem> {
   data: TItem[];
   DataIcon: JSX.Element;
   deleteItem: (vars: any) => Promise<void>;
-  getDeleteVariablesFromItem: (item: TItem) => any;
+  getDeleteVariablesFromItem?: (item: TItem) => any;
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
   hoverContent?: (item: TItem) => JSX.Element;
   itemType: string;
+  readonly?: boolean;
   selectedItems: string[];
   setFinalForm: (form: React.ReactNode | undefined) => void;
   setFormOpen: (open: boolean) => void;
@@ -35,6 +36,7 @@ export function GridView<TItem extends BaseItem>({
   handleSelect,
   hoverContent,
   itemType,
+  readonly,
   selectedItems,
   setFinalForm,
   setFormOpen,
@@ -74,18 +76,20 @@ export function GridView<TItem extends BaseItem>({
             {/* Footer */}
             <div className="mt-auto flex items-center justify-between p-2">
               <div className="flex min-w-0 items-center gap-2">
-                <Checkbox
-                  aria-label={`Select ${item.name}`}
-                  checked={isItemSelected}
-                  className="rounded text-blue-600 focus:ring-blue-500"
-                  onCheckedChange={() => toggleSelection(item.id)}
-                />
+                {!readonly && (
+                  <Checkbox
+                    aria-label={`Select ${item.name}`}
+                    checked={isItemSelected}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                    onCheckedChange={() => toggleSelection(item.id)}
+                  />
+                )}
                 <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight">
                   {item.name}
                 </span>
               </div>
               <div className="flex flex-shrink-0 items-center gap-2">
-                {getEditFormFromItem && (
+                {!readonly && getEditFormFromItem && (
                   <FilePenLine
                     className="h-5 w-5 cursor-pointer text-primary"
                     onClick={() => {
@@ -94,19 +98,23 @@ export function GridView<TItem extends BaseItem>({
                     }}
                   />
                 )}
-                <DeleteItems
-                  deleteFunction={async (vars) => {
-                    await deleteItem(vars);
-                  }}
-                  deleteVariables={[getDeleteVariablesFromItem(item)]}
-                  items={[
-                    {
-                      id: item.id,
-                      name: item.name || item.id,
-                    },
-                  ]}
-                  itemType={itemType}
-                />
+                {!readonly && getDeleteVariablesFromItem ? (
+                  <>
+                    <DeleteItems
+                      deleteFunction={async (vars) => {
+                        await deleteItem(vars);
+                      }}
+                      deleteVariables={[getDeleteVariablesFromItem(item)]}
+                      items={[
+                        {
+                          id: item.id,
+                          name: item.name || item.id,
+                        },
+                      ]}
+                      itemType={itemType}
+                    />
+                  </>
+                ) : null}
               </div>
             </div>
             {hoverContent && hover === i && hoverContent(item)}

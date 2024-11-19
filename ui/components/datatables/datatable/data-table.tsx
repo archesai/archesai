@@ -1,10 +1,10 @@
 "use client";
 
-import { DataTablePagination } from "@/components/datatable/data-table-pagination";
-import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
-import { DeleteItems } from "@/components/datatable/delete-items";
-import { GridView } from "@/components/datatable/grid-view";
-import { TableView } from "@/components/datatable/table-view";
+import { DataTablePagination } from "@/components/datatables/datatable/data-table-pagination";
+import { DataTableToolbar } from "@/components/datatables/datatable/data-table-toolbar";
+import { DeleteItems } from "@/components/datatables/datatable/delete-items";
+import { GridView } from "@/components/datatables/datatable/grid-view";
+import { TableView } from "@/components/datatables/datatable/table-view";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FieldFieldQuery } from "@/generated/archesApiSchemas";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useFilterItems } from "@/hooks/useFilterItems";
 import { useSelectItems } from "@/hooks/useSelectItems";
@@ -50,17 +51,19 @@ interface DataTableProps<
   columns: ColumnDef<TItem, TDeleteVariables>[];
   content?: (item: TItem) => JSX.Element;
   createForm?: React.ReactNode;
+  customFilters?: FieldFieldQuery[];
   dataIcon: JSX.Element;
   defaultView?: "grid" | "table";
   filterField?: string;
   findAllPathParams: TFindAllPathParams;
   findAllQueryParams?: object;
-  getDeleteVariablesFromItem: (item: TItem) => TDeleteVariables;
+  getDeleteVariablesFromItem?: (item: TItem) => TDeleteVariables;
   getEditFormFromItem?: (item: TItem) => React.ReactNode;
   handleSelect: (item: TItem) => void;
   hoverContent?: (item: TItem) => JSX.Element;
   itemType: string;
   minimal?: boolean;
+  readonly?: boolean;
   useFindAll: (s: any) => {
     data:
       | {
@@ -88,6 +91,7 @@ export function DataTable<
   columns,
   content,
   createForm,
+  customFilters,
   dataIcon: DataIcon,
   defaultView,
   filterField = "name",
@@ -99,6 +103,7 @@ export function DataTable<
   hoverContent,
   itemType,
   minimal,
+  readonly = false,
   useFindAll,
   useRemove,
 }: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
@@ -157,6 +162,7 @@ export function DataTable<
           operator: "contains",
           value: debouncedQuery, // Use debouncedQuery here
         },
+        ...(customFilters || []),
       ]),
       limit,
       offset: page * limit,
@@ -178,73 +184,87 @@ export function DataTable<
   const table = useReactTable({
     columns: [
       // Checkbox column
-      {
-        cell: ({ row }) => (
-          <Checkbox
-            aria-label="Select row"
-            checked={selectedItems.includes(row.original.id)}
-            className=""
-            onCheckedChange={() => toggleSelection(row.original.id)}
-          />
-        ),
-        enableHiding: false,
-        enableSorting: false,
-        id: "select",
-      },
+      ...(!readonly
+        ? [
+            {
+              cell: ({ row }) => (
+                <Checkbox
+                  aria-label="Select row"
+                  checked={selectedItems.includes(row.original.id)}
+                  className=""
+                  onCheckedChange={() => toggleSelection(row.original.id)}
+                />
+              ),
+              enableHiding: false,
+              enableSorting: false,
+              id: "select",
+            } as ColumnDef<TItem, TDeleteVariables>,
+          ]
+        : []),
       // Data columns
       ...memoizedColumns,
       // Actions column
-      {
-        cell: ({ row }) => (
-          <div className="flex justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                  variant="ghost"
-                >
-                  <DotsHorizontalIcon className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
-                {getEditFormFromItem ? (
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setFinalForm(getEditFormFromItem?.(row.original));
-                        setFormOpen(true);
-                      }}
-                    >
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                ) : null}
-                <DropdownMenuItem
-                  onSelect={(e) => e.preventDefault()} // Prevent closing on select
-                >
-                  <DeleteItems
-                    deleteFunction={async (vars) => {
-                      await deleteItem(vars);
-                      setSelectedItems([]);
-                    }}
-                    deleteVariables={[getDeleteVariablesFromItem(row.original)]}
-                    items={[
-                      {
-                        id: row.original.id,
-                        name: row.original.name || row.original.id,
-                      },
-                    ]}
-                    itemType={itemType}
-                    variant="md"
-                  />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ),
-        id: "actions",
-      },
+      ...(!readonly
+        ? [
+            {
+              cell: ({ row }) => (
+                <div className="flex justify-end">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                        variant="ghost"
+                      >
+                        <DotsHorizontalIcon className="h-5 w-5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                      {getEditFormFromItem ? (
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setFinalForm(getEditFormFromItem?.(row.original));
+                              setFormOpen(true);
+                            }}
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      ) : null}
+                      {getDeleteVariablesFromItem ? (
+                        <>
+                          <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()} // Prevent closing on select
+                          >
+                            <DeleteItems
+                              deleteFunction={async (vars) => {
+                                await deleteItem(vars);
+                                setSelectedItems([]);
+                              }}
+                              deleteVariables={[
+                                getDeleteVariablesFromItem(row.original),
+                              ]}
+                              items={[
+                                {
+                                  id: row.original.id,
+                                  name: row.original.name || row.original.id,
+                                },
+                              ]}
+                              itemType={itemType}
+                              variant="md"
+                            />
+                          </DropdownMenuItem>
+                        </>
+                      ) : null}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ),
+              id: "actions",
+            } as ColumnDef<TItem, TDeleteVariables>,
+          ]
+        : []),
     ],
     data: data?.results || [],
     enableRowSelection: true,
@@ -270,34 +290,36 @@ export function DataTable<
           createForm={createForm}
           data={data?.results || []}
           itemType={itemType}
+          readonly={readonly}
           setFormOpen={setFormOpen}
           table={table}
         />
       )}
 
       {/* DELETE ITEMS BUTTON */}
-      {selectedItems.length > 0 && (
-        <DeleteItems
-          deleteFunction={async (vars) => {
-            await deleteItem(vars);
-            setSelectedItems([]);
-          }}
-          deleteVariables={selectedItems.map((id) =>
-            getDeleteVariablesFromItem(
-              data?.results.find((i) => i.id === id) as TItem
-            )
-          )}
-          items={selectedItems.map((id) => {
-            const item = data?.results.find((i) => i.id === id);
-            return {
-              id: item?.id || "",
-              name: item?.name || "",
-            };
-          })}
-          itemType={itemType}
-          variant="lg"
-        />
-      )}
+      {selectedItems.length > 0 &&
+        (getDeleteVariablesFromItem ? (
+          <DeleteItems
+            deleteFunction={async (vars) => {
+              await deleteItem(vars);
+              setSelectedItems([]);
+            }}
+            deleteVariables={selectedItems.map((id) =>
+              getDeleteVariablesFromItem(
+                data?.results.find((i) => i.id === id) as TItem
+              )
+            )}
+            items={selectedItems.map((id) => {
+              const item = data?.results.find((i) => i.id === id);
+              return {
+                id: item?.id || "",
+                name: item?.name || "",
+              };
+            })}
+            itemType={itemType}
+            variant="lg"
+          />
+        ) : null)}
 
       {/* DATA TABLE - EITHER GRID OR TABLE VIEW*/}
       <div className="flex-1 overflow-auto">
@@ -313,6 +335,7 @@ export function DataTable<
             handleSelect={handleSelect}
             hoverContent={hoverContent}
             itemType={itemType}
+            readonly={readonly}
             selectedItems={selectedItems}
             setFinalForm={setFinalForm}
             setFormOpen={setFormOpen}

@@ -15,7 +15,6 @@ import {
   useAuthControllerEmailVerificationConfirm,
   useAuthControllerPasswordResetConfirm,
 } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -52,8 +51,6 @@ export default function ConfirmPage() {
   const searchParams = useSearchParams();
   const type = searchParams?.get("type") as ActionType;
   const token = searchParams?.get("token") as string;
-
-  const { user } = useAuth();
 
   const { mutateAsync: verifyEmail } =
     useAuthControllerEmailVerificationConfirm();
@@ -256,12 +253,9 @@ export default function ConfirmPage() {
         ) : (
           // Handle Email Verification & Email Change
           <div className="text-center">
-            {/* Navigate to Home if Email is Verified */}
-            {user?.emailVerified && (
-              <Button asChild>
-                <Link href="/playground">Go to Home</Link>
-              </Button>
-            )}
+            <Button asChild>
+              <Link href="/playground">Go to Home</Link>
+            </Button>
           </div>
         )}
       </div>

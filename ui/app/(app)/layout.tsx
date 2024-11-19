@@ -9,7 +9,8 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Authenticated>
+    <>
+      <Authenticated />
       <SidebarProvider>
         {/* This is the sidebar that is displayed on the left side of the screen. */}
         <AppSidebar />
@@ -21,6 +22,6 @@ export default function AppLayout({
           </main>
         </SidebarInset>
       </SidebarProvider>
-    </Authenticated>
+    </>
   );
 }

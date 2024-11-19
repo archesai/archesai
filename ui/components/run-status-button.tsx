@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -51,7 +52,7 @@ export const RunStatusButton = ({
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
         <Button
-          className="my-1 flex w-full items-center justify-between"
+          className="flex w-full items-center justify-between"
           onClick={onClick}
           size="sm"
           variant="secondary"

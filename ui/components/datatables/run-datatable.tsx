@@ -1,6 +1,6 @@
 "use client";
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { DataTable } from "@/components/datatables/datatable/data-table";
+import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
 import { RunStatusButton } from "@/components/run-status-button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,7 +16,7 @@ import { PackageCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function ContentPage() {
+export default function RunDataTable() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
 

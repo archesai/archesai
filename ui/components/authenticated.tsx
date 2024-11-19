@@ -2,19 +2,27 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { useWebsockets } from "@/hooks/useWebsockets";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export function Authenticated({ children }: { children: React.ReactNode }) {
-  const { defaultOrgname, getUserFromToken } = useAuth();
+export function Authenticated() {
+  const { authenticate, getNewRefreshToken, status } = useAuth();
+  const hasAuthenticated = useRef(false); // Track if authenticate() has been called
 
   useWebsockets({});
 
   useEffect(() => {
-    if (!defaultOrgname) {
-      getUserFromToken();
-      return;
+    if (status === "Refreshing") {
+      getNewRefreshToken();
     }
-  }, [defaultOrgname, getUserFromToken]);
 
-  return <>{children}</>;
+    if (status === "Unauthenticated" && !hasAuthenticated.current) {
+      (async () => {
+        hasAuthenticated.current = true; // Set the flag to prevent future calls
+        await authenticate();
+        hasAuthenticated.current = false; // Reset the flag
+      })();
+    }
+  }, [status]);
+
+  return null;
 }

@@ -15,6 +15,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,7 +48,15 @@ export function SidebarLinks() {
                             className={`${pathname === rootRoute.href ? "bg-muted" : ""}`}
                             tooltip={rootRoute.title}
                           >
-                            {rootRoute.Icon && <rootRoute.Icon />}
+                            {rootRoute.Icon && (
+                              <rootRoute.Icon
+                                className={cn(
+                                  pathname == rootRoute.href
+                                    ? "text-primary"
+                                    : ""
+                                )}
+                              />
+                            )}
 
                             <span>{rootRoute.title}</span>
                           </SidebarMenuButton>
@@ -66,7 +75,15 @@ export function SidebarLinks() {
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton tooltip={rootRoute.title}>
-                            {rootRoute.Icon && <rootRoute.Icon />}
+                            {rootRoute.Icon && (
+                              <rootRoute.Icon
+                                className={cn(
+                                  pathname == rootRoute.href
+                                    ? "text-primary"
+                                    : ""
+                                )}
+                              />
+                            )}
                             <span>{rootRoute.title}</span>
                             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>

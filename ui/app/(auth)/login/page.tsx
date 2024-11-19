@@ -13,8 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -27,15 +26,8 @@ const schema = z.object({
 type LoginFormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { signInWithEmailAndPassword, signInWithGoogle, user } = useAuth();
+  const { signInWithEmailAndPassword, signInWithGoogle } = useAuth();
   const [formError, setFormError] = useState<null | string>(null);
-
-  useEffect(() => {
-    if (user) {
-      router.push("/playground");
-    }
-  }, [user, router]);
 
   const form = useForm<LoginFormData>({
     defaultValues: {

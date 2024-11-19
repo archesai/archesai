@@ -47,21 +47,21 @@ export const siteConfig = {
     },
     {
       description: "Explore and run tools.",
-      href: "/tools/view",
+      href: "/tools",
       Icon: CpuIcon,
       section: "Build",
       title: "Tools",
     },
     {
       description: "Create and manage pipelines.",
-      href: "/pipelines/view",
+      href: "/pipelines",
       Icon: Workflow,
       section: "Build",
       title: "Pipelines",
     },
     {
       description: "View your previous runs.",
-      href: "/runs/view",
+      href: "/runs",
       Icon: PackageCheck,
       section: "Build",
       title: "History",
@@ -150,6 +150,22 @@ export const siteConfig = {
     "text-to-speech": Volume2,
   } as Record<string, any>,
   url: "https://archesai.com",
+};
+
+export const getMetadata = (href: string) => {
+  // do this without using flatMap
+  const childRoutes = siteConfig.routes
+    .map((route) => route.children)
+    .filter((children) => children);
+
+  const allRoutes = siteConfig.routes.concat(
+    childRoutes.reduce((acc, val) => acc.concat(val), [] as any)
+  );
+  return {
+    description: allRoutes.find((route) => route.href === href)?.description,
+    title:
+      allRoutes.find((route) => route.href === href)?.title + " | Arches AI",
+  };
 };
 
 export type SiteConfig = typeof siteConfig;

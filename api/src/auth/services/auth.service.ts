@@ -5,10 +5,10 @@ import { AuthProviderType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import { Response } from "express";
 
-import { UserEntity } from "../users/entities/user.entity";
-import { UsersService } from "../users/users.service";
-import { RegisterDto } from "./dto/register.dto";
-import { TokenDto } from "./dto/token.dto";
+import { UserEntity } from "../../users/entities/user.entity";
+import { UsersService } from "../../users/users.service";
+import { RegisterDto } from "../dto/register.dto";
+import { TokenDto } from "../dto/token.dto";
 
 @Injectable()
 export class AuthService {
@@ -67,7 +67,7 @@ export class AuthService {
     const user = await this.usersService.findOne(null, payload.sub);
 
     if (!user || user.refreshToken !== refreshToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Refresh token is invalid");
     }
 
     // Generate new tokens
@@ -75,7 +75,7 @@ export class AuthService {
     const newRefreshToken = this.generateRefreshToken(user.id);
 
     // Update refresh token in the database
-    await this.usersService.setRefreshToken(user.id, refreshToken);
+    await this.usersService.setRefreshToken(user.id, newRefreshToken);
 
     return {
       accessToken: newAccessToken,
@@ -113,7 +113,7 @@ export class AuthService {
   async setCookies(res: Response, tokenDto: TokenDto) {
     res.cookie("archesai.accessToken", tokenDto.accessToken, {
       httpOnly: true,
-      maxAge: 15 * 60 * 1000, // 15 minutes for access token
+      maxAge: 10 * 1000, // 15 minutes for access token
       sameSite: "strict",
       secure: this.configService.get("NODE_ENV") === "production",
     });

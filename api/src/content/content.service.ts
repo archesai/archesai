@@ -1,10 +1,14 @@
+import { HttpService } from "@nestjs/axios";
 import {
   BadRequestException,
   Inject,
   Injectable,
   Logger,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { AxiosError } from "axios";
 import * as mime from "mime-types";
+import { catchError, firstValueFrom } from "rxjs";
 
 import { BaseService } from "../common/base.service";
 import { STORAGE_SERVICE, StorageService } from "../storage/storage.service";
@@ -27,7 +31,9 @@ export class ContentService extends BaseService<
     @Inject(STORAGE_SERVICE)
     private storageService: StorageService,
     private contentRepository: ContentRepository,
-    private websocketsService: WebsocketsService
+    private websocketsService: WebsocketsService,
+    private configService: ConfigService,
+    private httpService: HttpService
   ) {
     super(contentRepository);
   }
@@ -39,15 +45,16 @@ export class ContentService extends BaseService<
     } else {
       mimeType = "text/plain";
     }
-    const content = await this.contentRepository.create(
-      orgname,
-      createContentDto,
-      { mimeType }
+
+    // Create Content
+    let content = this.toEntity(
+      await this.contentRepository.create(orgname, createContentDto, {
+        mimeType,
+      })
     );
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
-    return this.toEntity(content);
+    content = await this.getAndUploadPreview(orgname, content);
+    this.emitMutationEvent(orgname);
+    return content;
   }
 
   async detectMimeTypeFromUrl(url: string) {
@@ -73,6 +80,39 @@ export class ContentService extends BaseService<
     this.websocketsService.socket.to(orgname).emit("update", {
       queryKey: ["organizations", orgname, "content"],
     });
+  }
+
+  async getAndUploadPreview(orgname: string, content: ContentEntity) {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .post(this.configService.get("LOADER_ENDPOINT") + "/getPreview", {
+          text: content.text,
+          url: content.url,
+        })
+        .pipe(
+          catchError((err: AxiosError) => {
+            this.logger.error("Error hitting loader endpoint: " + err.message);
+            throw new BadRequestException();
+          })
+        )
+    );
+    const { preview } = data;
+    const previewFilename = `${content.name}-preview.png`;
+    const decodedImage = Buffer.from(preview, "base64");
+    const multerFile = {
+      buffer: decodedImage,
+      mimetype: "image/png",
+      originalname: previewFilename,
+      size: decodedImage.length,
+    } as Express.Multer.File;
+    const url = await this.storageService.upload(
+      orgname,
+      `contents/${content.name}-preview.png`,
+      multerFile
+    );
+    const updatedContent = await this.setPreviewImage(orgname, content.id, url);
+    this.logger.log(`Upl image preview for ${content.name} at ${url}`);
+    return updatedContent;
   }
 
   async incrementCredits(orgname: string, id: string, credits: number) {

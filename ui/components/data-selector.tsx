@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon, PlusIcon } from "@radix-ui/react-icons";
 import React, { useCallback, useState } from "react";
 
-import { BaseItem } from "./datatable/data-table";
+import { BaseItem } from "./datatables/datatable/data-table";
 
 interface DataSelectorProps<TItem extends BaseItem> {
   getItemDetails?: (item: TItem) => React.ReactNode;

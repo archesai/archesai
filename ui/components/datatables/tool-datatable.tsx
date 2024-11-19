@@ -1,6 +1,6 @@
 "use client";
-import { DataTable } from "@/components/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header";
+import { DataTable } from "@/components/datatables/datatable/data-table";
+import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
 import { Badge } from "@/components/ui/badge";
 import {
   ToolsControllerFindAllPathParams,
@@ -15,7 +15,7 @@ import { PackageCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function ContentPage() {
+export default function ToolDataTable() {
   const router = useRouter();
   const { defaultOrgname } = useAuth();
 
@@ -33,7 +33,7 @@ export default function ContentPage() {
               <div className="flex gap-2">
                 <Link
                   className="max-w-[200px] shrink truncate font-medium text-primary"
-                  href={`/tool/single?toolId=${row.original.id}`}
+                  href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
                 >
                   {row.original.name}
                 </Link>

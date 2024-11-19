@@ -8,13 +8,13 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 
-import { EmailService } from "../email/email.service";
-import { getEmailChangeConfirmationHtml } from "../email/templates";
-import { UsersService } from "../users/users.service";
+import { EmailService } from "../../email/email.service";
+import { getEmailChangeConfirmationHtml } from "../../email/templates";
+import { UsersService } from "../../users/users.service";
 import { ARTokensService } from "./ar-tokens.service"; // Import TokenService
+import { ConfirmationTokenDto } from "../dto/confirmation-token.dto";
+import { EmailRequestDto } from "../dto/email-request.dto";
 import { AuthService } from "./auth.service";
-import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
-import { EmailRequestDto } from "./dto/email-request.dto";
 
 @Injectable()
 export class EmailChangeService {

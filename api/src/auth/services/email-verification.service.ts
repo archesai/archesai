@@ -2,12 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 
-import { EmailService } from "../email/email.service";
-import { getEmailVerificationHtml } from "../email/templates";
-import { UsersService } from "../users/users.service";
+import { EmailService } from "../../email/email.service";
+import { getEmailVerificationHtml } from "../../email/templates";
+import { UsersService } from "../../users/users.service";
+import { ConfirmationTokenDto } from "../dto/confirmation-token.dto";
 import { ARTokensService } from "./ar-tokens.service";
 import { AuthService } from "./auth.service";
-import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
 
 @Injectable()
 export class EmailVerificationService {

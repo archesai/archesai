@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 import { auth } from "../lib/firebase";
-import { AuthState, authStateAtom } from "../state/authState";
+import { authStatusAtom, defaultOrgnameAtom } from "../state/authState";
 
 export const useAuth = () => {
-  const [authState, setAuthState] = useAtom(authStateAtom);
+  const [defaultOrgname, setDefaultOrgname] = useAtom(defaultOrgnameAtom);
+  const [status, setStatus] = useAtom(authStatusAtom);
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -22,27 +24,19 @@ export const useAuth = () => {
     });
     if (response.status !== 201) {
       console.error("Failed to logout");
+      return;
     }
-    setAuthState({
-      defaultOrgname: "",
-      memberships: [],
-      status: "Unauthenticated",
-      user: null,
-    });
     router.push("/");
-  }, [setAuthState, router]);
+    setStatus("Unauthenticated");
+  }, [setStatus]);
 
-  const getNewRefreshToken = async (
-    authState: AuthState,
-    setAuthState: any
-  ) => {
-    console.log("Getting new refresh token");
-    if (authState.status === "Refreshing") {
+  const getNewRefreshToken = async () => {
+    if (status === "Refreshing") {
       console.log("Already refreshing token, skipping");
       return;
     }
-
-    setAuthState((prev: AuthState) => ({ ...prev, status: "Refreshing" }));
+    console.log("Getting new refresh token");
+    setStatus("Refreshing");
 
     try {
       const response = await fetch(baseUrl + "/auth/refresh-token", {
@@ -56,26 +50,19 @@ export const useAuth = () => {
         throw new Error("Failed to refresh token");
       }
 
-      setAuthState((prev: AuthState) => ({
-        ...prev,
-        status: "Authenticated",
-      }));
+      setStatus("Authenticated");
       console.log("Got new refresh token");
       return data.accessToken;
     } catch (error) {
-      console.error("Error refreshing token:", error);
-      setAuthState((prev: AuthState) => ({
-        ...prev,
-        status: "Unauthenticated",
-      }));
-      console.log("Logging out due to error refreshing token");
+      console.log("Error refreshing token, logging out:", error);
       await logout();
       return null;
     }
   };
 
-  const getUserFromToken = useCallback(async () => {
-    console.log("Getting user from token");
+  const authenticate = useCallback(async () => {
+    console.log("Attempting to authenticate");
+    setStatus("Loading");
     try {
       let response = await fetch(baseUrl + "/user", {
         credentials: "include", // Include cookies
@@ -84,7 +71,7 @@ export const useAuth = () => {
       });
 
       if (response.status === 401) {
-        await getNewRefreshToken(authState, setAuthState);
+        await getNewRefreshToken();
       }
 
       response = await fetch(baseUrl + "/user", {
@@ -101,13 +88,8 @@ export const useAuth = () => {
       }
 
       const user = (await response.json()) as UserEntity;
-      setAuthState((prevState) => ({
-        ...prevState,
-        defaultOrgname: user.defaultOrgname,
-        isLoading: false,
-        memberships: user.memberships,
-        user,
-      }));
+      setDefaultOrgname(user.defaultOrgname);
+      setStatus("Authenticated");
     } catch (error) {
       toast({
         description: "An error occurred. Please log in again.",
@@ -116,7 +98,7 @@ export const useAuth = () => {
       console.error("Error in getUserFromToken: ", error);
       await logout();
     }
-  }, [logout, router, setAuthState]);
+  }, [logout, router, setStatus, setDefaultOrgname]);
 
   const signInWithEmailAndPassword = useCallback(
     async (email: string, password: string) => {
@@ -197,12 +179,14 @@ export const useAuth = () => {
   );
 
   return {
-    ...authState,
-    getNewRefreshToken: () => getNewRefreshToken(authState, setAuthState),
-    getUserFromToken,
+    authenticate,
+    defaultOrgname,
+    getNewRefreshToken,
     logout,
     registerWithEmailAndPassword,
+    setStatus,
     signInWithEmailAndPassword,
     signInWithGoogle,
+    status,
   };
 };
