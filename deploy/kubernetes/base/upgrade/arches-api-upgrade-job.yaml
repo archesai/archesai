@@ -3,7 +3,6 @@ kind: Job
 metadata:
   name: arches-api-upgrade
 spec:
-  backoffLimit: 1
   template:
     spec:
       restartPolicy: Never
@@ -13,7 +12,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              npx prisma migrate deploy --schema /usr/src/app/migrations/schema.prisma
+              npx prisma migrate deploy --schema /app/prisma/schema.prisma
           env:
             - name: DATABASE_URL
               valueFrom:

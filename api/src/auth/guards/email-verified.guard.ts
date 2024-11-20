@@ -5,33 +5,21 @@ import {
   ForbiddenException,
   Injectable,
 } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { Observable } from "rxjs";
 
 @Injectable()
 export class EmailVerifiedGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor() {}
+  canActivate(context: ExecutionContext) {
+    const { user } = context.switchToHttp().getRequest() as any;
 
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Observable<boolean> | Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>("public", [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
-      return true;
-    }
-
-    const { params, user } = context.switchToHttp().getRequest() as any;
+    // Check for user
     const currentUser = user as UserEntity;
-    const orgname = params.orgname;
-
-    if (!orgname) {
+    if (!currentUser) {
       return true;
     }
 
-    if (!currentUser.emailVerified) {
+    // Check if user is email verified
+    if (currentUser.emailVerified === false) {
       throw new ForbiddenException(
         "You must verify your e-mail before using this feature."
       );

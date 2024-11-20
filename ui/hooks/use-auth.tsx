@@ -1,6 +1,6 @@
-import { useToast } from "@/components/ui/use-toast";
 import { baseUrl } from "@/generated/archesApiFetcher";
 import { TokenDto, UserEntity } from "@/generated/archesApiSchemas";
+import { useToast } from "@/hooks/use-toast";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useAtom } from "jotai";
 import { useRouter } from "next/navigation";

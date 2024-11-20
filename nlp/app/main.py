@@ -142,15 +142,9 @@ async def indexDocument(indexDocumentEvent: IndexDocumentEvent):
             flush=True,
         )
 
-        # Check if it's a file and remove it
-        if os.path.isfile(file_to_process):
-            os.remove(file_to_process)
+        # Cleanup files
+        cleanup_files(file_to_process)
 
-        # Check if it's a directory and remove it
-        elif os.path.isdir(file_to_process):
-            shutil.rmtree(file_to_process)
-
-        print(response)
         return response
 
     except Exception as e:
@@ -175,6 +169,9 @@ async def getPreview(getPreviewRequest: GetPreviewEvent):
         else:
             preview = ""
 
+        # Cleanup files
+        cleanup_files(file_to_process)
+
         return {"preview": preview}
     except Exception as e:
         print("GOT ERROR", e)
@@ -186,3 +183,13 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     encoding = tiktoken.encoding_for_model(encoding_name)
     num_tokens = len(encoding.encode(string, disallowed_special=()))
     return num_tokens
+
+
+def cleanup_files(file_to_process: str):
+    # Check if it's a file and remove it
+    if os.path.isfile(file_to_process):
+        os.remove(file_to_process)
+
+    # Check if it's a directory and remove it
+    elif os.path.isdir(file_to_process):
+        shutil.rmtree(file_to_process)

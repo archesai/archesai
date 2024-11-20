@@ -9,7 +9,7 @@ export default function AuthenticationLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <div className="relative grid h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2">
+      <div className="relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2">
         <Link
           className={cn(
             buttonVariants({ variant: "ghost" }),

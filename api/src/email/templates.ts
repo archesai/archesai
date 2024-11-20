@@ -1,5 +1,24 @@
 // src/email-templates/email-templates.ts
 
+export function getEmailChangeConfirmationHtml(
+  changeEmailLink: string,
+  currentEmail: string
+): string {
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <h2>Hello!</h2>
+      <p>You requested to change your email address from ${currentEmail}. Please confirm the change by clicking the link below:</p>
+      <a href="${changeEmailLink}" style="display: inline-block; padding: 10px 20px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px;">
+        Confirm Email Change
+      </a>
+      <p>If you did not request this change, please ignore this email.</p>
+      <p>Best regards,<br/>Arches AI</p>
+    </div>
+  `;
+}
+
+// src/email-templates/email-templates.ts
+
 export function getEmailVerificationHtml(verificationLink: string): string {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -25,25 +44,6 @@ export function getPasswordResetHtml(resetLink: string): string {
         Reset Password
       </a>
       <p>If you did not request this, please ignore this email.</p>
-      <p>Best regards,<br/>Arches AI</p>
-    </div>
-  `;
-}
-
-// src/email-templates/email-templates.ts
-
-export function getEmailChangeConfirmationHtml(
-  changeEmailLink: string,
-  currentEmail: string
-): string {
-  return `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-      <h2>Hello!</h2>
-      <p>You requested to change your email address from ${currentEmail}. Please confirm the change by clicking the link below:</p>
-      <a href="${changeEmailLink}" style="display: inline-block; padding: 10px 20px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px;">
-        Confirm Email Change
-      </a>
-      <p>If you did not request this change, please ignore this email.</p>
       <p>Best regards,<br/>Arches AI</p>
     </div>
   `;

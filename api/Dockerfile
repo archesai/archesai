@@ -1,75 +1,46 @@
 ###################
 # BASE STAGE
 ###################
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Set working directory
-WORKDIR /usr/src/app
-
-# Install necessary packages once
-RUN apk add ffmpeg
-
-# Use the default 'node' user provided by the base image
+WORKDIR /app
 
 ###################
 # DEPENDENCIES STAGE
 ###################
-FROM base AS dependencies
+FROM base AS dev-dependencies
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --only development
 
-# Copy package.json and package-lock.json
-COPY --chown=node:node package*.json ./
-
-# Install all dependencies (including dev)
-RUN npm ci
-
-###################
-# BUILD STAGE
-###################
-FROM dependencies AS build
-
-# Copy source code
-COPY --chown=node:node . .
-
-# Generate Prisma client and build the application in one layer
-RUN npx prisma generate && npm run build
+FROM base AS prod-dependencies
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --only production
 
 ###################
 # DEVELOPMENT STAGE
 ###################
-FROM dependencies AS development
-
-# Switch to non-root user
+FROM dev-dependencies AS development
+COPY --chown=node:node . .
+RUN npx prisma generate
 USER node
+CMD ["/bin/sh", "-c", "npm run migrations:prod && npm run start:dev"]
 
-# Start the development server with hot-reloading (e.g., using nodemon)
-CMD ["npm", "run", "start:dev"]
+###################
+# BUILD STAGE
+###################
+FROM dev-dependencies AS build
+COPY --chown=node:node . .
+RUN npx prisma generate && npm run build
 
 ###################
 # PRODUCTION STAGE
 ###################
 FROM base AS production
 
-# Set NODE_ENV to production
-ENV NODE_ENV=production
+COPY --from=prod-dependencies /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/prisma ./prisma
 
-# Copy package.json and package-lock.json
-COPY --chown=node:node package*.json ./
-
-# Copy node_modules from dependencies stage
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-
-# Prune dev dependencies
-RUN npm prune --production
-
-# Copy built application and Prisma migrations from build stage
-COPY --from=build --chown=node:node /usr/src/app/dist ./dist
-COPY --from=build --chown=node:node /usr/src/app/prisma ./prisma
-
-# Use the default 'node' user
 USER node
-
-# Expose production port
-EXPOSE 3000
-
-# Start the server
 CMD ["node", "dist/main.js"]

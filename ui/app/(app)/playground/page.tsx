@@ -73,7 +73,7 @@ export default function PlaygroundPage() {
         ) : null}
         {/* <Separator /> */}
 
-        {!!run?.outputs?.length ? (
+        {run?.outputs?.length ? (
           <div className="h-1/2 overflow-auto">
             <ContentDataTable
               customFilters={[

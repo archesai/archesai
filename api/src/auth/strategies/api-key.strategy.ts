@@ -28,6 +28,10 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key-auth") {
     this.logger.log(`Validating API Key: ${payload.id}`);
     const { id, orgname, role, username } = payload;
     const user = await this.usersService.findOneByUsername(username);
+    this.logger.log(
+      `Found user valid for API Key: ${user.username}, checking memberships`
+    );
+
     user.memberships = user.memberships.filter((m) => m.orgname == orgname);
     if (!user.memberships.length) {
       return null;
@@ -38,6 +42,20 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key-auth") {
       return null;
     }
     user.memberships[0].role = role;
+
+    // Make sure if there was a domain in their header that this request is authorized for it
+    // if (domains && domains != "*") {
+    //   const url = new URL(request.headers.origin);
+    //   const origin = url.hostname
+    //     .replace("www.", "")
+    //     .replace("http://", "")
+    //     .replace("https://", "")
+    //     .split(":")[0];
+    //   if (!domains.split(",").includes(origin)) {
+    //     throw new UnauthorizedException("Unauthorized domain");
+    //   }
+    // }
+
     return user;
   }
 }

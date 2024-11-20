@@ -1,22 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from "@nestjs/common";
-import { Query } from "@nestjs/common";
+import { Body, Controller, Param, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { BaseController } from "../common/base.controller";
-import {
-  ApiCrudOperation,
-  Operation,
-} from "../common/decorators/api-crud-operation.decorator";
-import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { UserEntity } from "../users/entities/user.entity";
 import { ApiTokensService } from "./api-tokens.service";
 import { CreateApiTokenDto } from "./dto/create-api-token.dto";
@@ -24,21 +10,23 @@ import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
 import { ApiTokenEntity } from "./entities/api-token.entity";
 
 @ApiBearerAuth()
-@ApiTags("API Tokens")
-@Controller()
-export class ApiTokensController
-  implements
-    BaseController<
-      ApiTokenEntity,
-      CreateApiTokenDto,
-      SearchQueryDto,
-      UpdateApiTokenDto
-    >
-{
-  constructor(private readonly apiTokensService: ApiTokensService) {}
+@ApiTags(`API Tokens`)
+@Controller("/organizations/:orgname/api-tokens")
+export class ApiTokensController extends BaseController<
+  ApiTokenEntity,
+  CreateApiTokenDto,
+  UpdateApiTokenDto,
+  ApiTokensService
+> {
+  constructor(private readonly apiTokensService: ApiTokensService) {
+    super(apiTokensService);
+  }
 
-  @ApiCrudOperation(Operation.CREATE, "API token", ApiTokenEntity, true)
-  @Post("/organizations/:orgname/api-tokens")
+  /**
+   * Create a new API token
+   * @remarks This endpoint requires the user to be authenticated
+   */
+  @Post()
   async create(
     @Param("orgname") orgname: string,
     @Body() createTokenDto: CreateApiTokenDto,
@@ -47,36 +35,5 @@ export class ApiTokensController
     return this.apiTokensService.create(orgname, createTokenDto, {
       username: currentUserDto.username,
     });
-  }
-
-  @ApiCrudOperation(Operation.FIND_ALL, "API token", ApiTokenEntity, true)
-  @Get("/organizations/:orgname/api-tokens")
-  async findAll(
-    @Param("orgname") orgname: string,
-    @Query() searchQueryDto: SearchQueryDto
-  ) {
-    return this.apiTokensService.findAll(orgname, searchQueryDto);
-  }
-
-  @ApiCrudOperation(Operation.GET, "API token", ApiTokenEntity, true)
-  @Get("/organizations/:orgname/api-tokens/:id")
-  async findOne(@Param("orgname") orgname: string, @Param("id") id: string) {
-    return this.apiTokensService.findOne(orgname, id);
-  }
-
-  @ApiCrudOperation(Operation.DELETE, "API token", ApiTokenEntity, true)
-  @Delete("/organizations/:orgname/api-tokens/:id")
-  async remove(@Param("orgname") orgname: string, @Param("id") id: string) {
-    await this.apiTokensService.remove(orgname, id);
-  }
-
-  @ApiCrudOperation(Operation.UPDATE, "API token", ApiTokenEntity, true)
-  @Patch("/organizations/:orgname/api-tokens/:id")
-  async update(
-    @Param("orgname") orgname: string,
-    @Param("id") id: string,
-    @Body() updateApiTokenDto: UpdateApiTokenDto
-  ) {
-    return this.apiTokensService.update(orgname, id, updateApiTokenDto);
   }
 }

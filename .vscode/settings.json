@@ -1,23 +1,24 @@
 {
-  "eslint.workingDirectories": ["./ui", "./api"],
+  "eslint.workingDirectories": [
+    "./ui",
+    "./api"
+  ],
   "files.exclude": {
     // "**/node_modules": true,
     // "**/dist": true,
-    // "**/.next": true
+    // "**/.next": true,
+    // "**/env": true,
+    // "**/tmp": true
   },
-  "makefile.configureOnOpen": false
-  // "editor.formatOnSave": true,
-  // "editor.defaultFormatter": "esbenp.prettier-vscode",
-  // "[javascript]": {
-  //   "editor.defaultFormatter": "esbenp.prettier-vscode"
-  // },
-  // "[typescript]": {
-  //   "editor.defaultFormatter": "esbenp.prettier-vscode"
-  // },
-  // "[javascriptreact]": {
-  //   "editor.defaultFormatter": "esbenp.prettier-vscode"
-  // },
-  // "[typescriptreact]": {
-  //   "editor.defaultFormatter": "esbenp.prettier-vscode"
-  // }
+  "makefile.configureOnOpen": false,
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta5.json": [
+      "file:///home/jonathan/Projects/archesai/deploy/skaffold.yaml",
+      "file:///home/jonathan/Projects/archesai/skaffold.yaml"
+    ],
+    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/k3d-config.yaml"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

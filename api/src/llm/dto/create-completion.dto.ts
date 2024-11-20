@@ -11,23 +11,23 @@ import {
 
 export class CreateCompletionDto {
   @ApiPropertyOptional()
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   best_of?: number;
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   echo?: boolean = false;
 
   @ApiPropertyOptional({ default: 0.0 })
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   frequency_penalty?: number;
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   ignore_eos?: boolean;
 
   @ApiPropertyOptional()
@@ -35,13 +35,13 @@ export class CreateCompletionDto {
   logit_bias?: Record<string, number>;
 
   @ApiPropertyOptional()
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   logprobs?: number;
 
   @ApiPropertyOptional({ default: 16 })
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   max_tokens?: number = 16;
 
   @ApiProperty()
@@ -53,8 +53,8 @@ export class CreateCompletionDto {
   n: number = 1;
 
   @ApiPropertyOptional({ default: 0.0 })
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   presence_penalty?: number;
 
   @ApiProperty({
@@ -68,26 +68,26 @@ export class CreateCompletionDto {
   prompt: number[] | number[][] | string | string[];
 
   @ApiPropertyOptional({ default: true })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   skip_special_tokens?: boolean;
 
   @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
   @IsArray()
+  @IsOptional()
   @IsString({ each: true })
   stop?: string[];
 
   @ApiPropertyOptional({ type: [Number] })
-  @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  @IsOptional()
   @Type(() => Number)
+  @ValidateNested({ each: true })
   stop_token_ids?: number[];
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   stream?: boolean = false;
 
   @ApiPropertyOptional()
@@ -108,8 +108,8 @@ export class CreateCompletionDto {
   top_p?: number = 1;
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   use_beam_search?: boolean;
 
   @ApiPropertyOptional()

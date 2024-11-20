@@ -1,7 +1,7 @@
 import { NavUser } from "@/components/layout/app-sidebar/nav-user";
-import { SidebarLinks } from "@/components/layout/app-sidebar/sidebar-links";
 // import { RecentLabels } from "@/components/sidebar/recent-labels";
 import { OrganizationSwitcher } from "@/components/layout/app-sidebar/organization-switcher";
+import { SidebarLinks } from "@/components/layout/app-sidebar/sidebar-links";
 import {
   Sidebar,
   SidebarContent,

@@ -3,12 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import { RoleType } from "@prisma/client";
 import request from "supertest";
 
-import {
-  createApp,
-  getUser,
-  registerUser,
-  setEmailVerifiedByEmail,
-} from "./util";
+import { createApp, getUser, registerUser, setEmailVerified } from "./util";
 
 describe("Access Tokens", () => {
   let app: INestApplication;
@@ -23,8 +18,9 @@ describe("Access Tokens", () => {
     app = await createApp();
     await app.init();
     accessToken = (await registerUser(app, credentials)).accessToken;
-    orgname = (await getUser(app, accessToken)).defaultOrgname;
-    await setEmailVerifiedByEmail(app, credentials.email);
+    const user = await getUser(app, accessToken);
+    orgname = user.defaultOrgname;
+    await setEmailVerified(app, user.id);
   });
 
   afterAll(async () => {

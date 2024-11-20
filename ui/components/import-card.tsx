@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
 import {
   useContentControllerCreate,
   useStorageControllerGetReadUrl,
@@ -11,6 +10,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { ContentEntity } from "@/generated/archesApiSchemas";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CloudUpload, Loader2, Trash, Upload } from "lucide-react";
 import React, { useRef, useState } from "react";

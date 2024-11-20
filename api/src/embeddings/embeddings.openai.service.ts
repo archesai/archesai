@@ -6,8 +6,8 @@ import { EmbeddingsService } from "./embeddings.service";
 
 @Injectable()
 export class OpenAiEmbeddingsService implements EmbeddingsService {
-  private logger = new Logger(OpenAiEmbeddingsService.name);
   public openai: OpenAI;
+  private logger = new Logger(OpenAiEmbeddingsService.name);
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({

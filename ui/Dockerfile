@@ -1,41 +1,48 @@
-# ---- Base Stage ----
-FROM node:18-alpine AS base
+###################
+# BASE STAGE
+###################
+FROM node:20-alpine AS base
 WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# ---- Dependencies Stage ----
-FROM base AS dependencies
-# Install production dependencies
-COPY package.json package-lock.json ./
-RUN npm ci --only=production
+###################
+# DEPENDENCIES STAGE
+###################
+FROM base AS dev-dependencies
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --only development
 
-# ---- Development Dependencies Stage ----
-FROM dependencies AS dev-dependencies
-# Install development dependencies on top of production dependencies
-RUN npm ci --only=development
+FROM base AS prod-dependencies
+COPY --chown=node:node package.json package-lock.json ./
+RUN npm ci --only production
 
-# ---- Build Stage ----
+###################
+# BUILD STAGE
+###################
 FROM dev-dependencies AS build
-# Copy the entire project
-COPY . .
-# Build the application
+COPY --chown=node:node . .
 RUN npm run build
 
-# ---- Development Stage ----
+###################
+# DEVELOPMENT STAGE
+###################
 FROM dev-dependencies AS development
-# Copy source code (excluding build artifacts if using .dockerignore)
-COPY . .
-
-# Use non-root user
+COPY --chown=node:node . .
 USER node
-# Start the development server
 CMD ["npm", "run", "dev"]
 
-# ---- Production Stage ----
-FROM dependencies AS release
-# Copy built application from build stage
-COPY --from=build /app/dist ./dist
+###################
+# PRODUCTION STAGE
+###################
+FROM base AS production
 
-# Use non-root user
+ENV NODE_ENV=production
+
+RUN mkdir .next
+RUN chown node:node .next
+
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/.next ./.next
+
 USER node
-# Start the production server
 CMD ["npm", "start"]

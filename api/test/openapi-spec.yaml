@@ -2331,7 +2331,7 @@ info:
   contact: {}
 tags: []
 servers:
-  - url: http://bob:3001
+  - url: http://tower:3001
 components:
   securitySchemes:
     bearer:
@@ -2358,10 +2358,16 @@ components:
           type: string
           description: The ID of the item
           example: item-id
+        name:
+          type: string
+          description: >-
+            The name of the step in the pipeline. It must be unique within the
+            pipeline.
       required:
         - dependsOn
         - toolId
         - id
+        - name
     CreatePipelineDto:
       type: object
       properties:
@@ -2465,6 +2471,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SubItemEntity'
+        name:
+          type: string
+          description: >-
+            The name of the step in the pipeline. It must be unique within the
+            pipeline.
         pipelineId:
           type: string
           description: The ID of the pipelin that this step belongs to
@@ -2489,6 +2500,7 @@ components:
       required:
         - dependents
         - dependsOn
+        - name
         - pipelineId
         - tool
         - toolId

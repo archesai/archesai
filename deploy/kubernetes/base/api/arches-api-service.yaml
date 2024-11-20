@@ -11,5 +11,5 @@ spec:
       targetPort: 3001
   selector:
     component: arches-api
-  type: LoadBalancer
-  sessionAffinity: ClientIP
+  # type: LoadBalancer
+  # sessionAffinity: ClientIP

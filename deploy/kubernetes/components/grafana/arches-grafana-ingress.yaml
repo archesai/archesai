@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: arches-grafana-ingress
+spec:
+  rules:
+    - host: arches-grafana.test
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: arches-grafana
+                port:
+                  number: 443

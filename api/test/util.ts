@@ -1,10 +1,17 @@
-/* eslint-disable jest/valid-title */
-/* eslint-disable jest/no-export */
+import { RedisIoAdapter } from "@/src/common/adapters/redis-io.adapter";
 import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Logger } from "nestjs-pino";
-import request from "supertest";
 import "tsconfig-paths/register";
+import { RedisStore } from "connect-redis";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import { readFileSync } from "fs-extra";
+import helmet from "helmet";
+import { Logger } from "nestjs-pino";
+import passport from "passport";
+import { createClient } from "redis";
+import request from "supertest";
 
 import { RegisterDto } from "../src/auth/dto/register.dto";
 import { TokenDto } from "../src/auth/dto/token.dto";
@@ -12,15 +19,6 @@ import { OrganizationEntity } from "../src/organizations/entities/organization.e
 import { UserEntity } from "../src/users/entities/user.entity";
 import { UsersService } from "../src/users/users.service";
 import { AppModule } from "./../src/app.module"; // This enables path aliasing based on tsconfig.json
-import { RedisIoAdapter } from "@/src/common/adapters/redis-io.adapter";
-import { ConfigService } from "@nestjs/config";
-import RedisStore from "connect-redis";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import { readFileSync } from "fs-extra";
-import helmet from "helmet";
-import passport from "passport";
-import { createClient } from "redis";
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -129,12 +127,9 @@ export const registerUser = async (
   return res.body;
 };
 
-export const setEmailVerifiedByEmail = async (
-  app: INestApplication,
-  email: string
-) => {
+export const setEmailVerified = async (app: INestApplication, id: string) => {
   const userService = app.get<UsersService>(UsersService);
-  await userService.setEmailVerifiedByEmail(email);
+  await userService.setEmailVerified(id);
 };
 
 // Helper function to get user data

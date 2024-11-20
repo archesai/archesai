@@ -13,11 +13,13 @@ const PIPELINE_INCLUDE: Prisma.PipelineInclude = {
       dependents: {
         select: {
           id: true,
+          name: true,
         },
       },
       dependsOn: {
         select: {
           id: true,
+          name: true,
         },
       },
       tool: true,
@@ -56,6 +58,7 @@ export class PipelineRepository extends BaseRepository<
             })),
           },
           id: pipelineStep.id,
+          name: pipelineStep.name,
           pipelineId: pipeline.id,
           toolId: pipelineStep.toolId,
         },
@@ -84,6 +87,7 @@ export class PipelineRepository extends BaseRepository<
     // Create first step, this has no dependents
     const firstStep = await this.prisma.pipelineStep.create({
       data: {
+        name: "extract-text",
         pipelineId: pipeline.id,
         toolId: tools.find((t) => t.name == "Extract Text").id,
       },
@@ -98,6 +102,7 @@ export class PipelineRepository extends BaseRepository<
               id: firstStep.id,
             },
           },
+          name: tool.toolBase,
           pipelineId: pipeline.id,
           toolId: tool.id,
         },
@@ -149,6 +154,7 @@ export class PipelineRepository extends BaseRepository<
             })),
           },
           id: pipelineStep.id,
+          name: pipelineStep.name,
           pipelineId: id,
           toolId: pipelineStep.toolId,
         },

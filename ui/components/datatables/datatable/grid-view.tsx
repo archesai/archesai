@@ -4,7 +4,7 @@ import { DeleteItems } from "@/components/datatables/datatable/delete-items";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FilePenLine } from "lucide-react";
-import { useState } from "react";
+import { type JSX, useState } from "react";
 
 import { BaseItem } from "./data-table";
 

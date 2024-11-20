@@ -109,12 +109,6 @@ export class OrganizationsService extends BaseService<
     return this.toEntity(organization);
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname],
-    });
-  }
-
   async findByOrgname(orgname: string) {
     return this.toEntity(
       await this.organizationRepository.findByOrgname(orgname)
@@ -136,6 +130,12 @@ export class OrganizationsService extends BaseService<
     );
     this.emitMutationEvent(orgname);
     return organizationEntity;
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname],
+    });
   }
 
   protected toEntity(model: OrganizationModel): OrganizationEntity {

@@ -21,11 +21,6 @@ export class LocalStorageService implements StorageService {
     this.baseDir = path.join(process.cwd(), "localstorage");
   }
 
-  // Helper method to get the full path on the local filesystem
-  private getFullPath(orgname: string, filePath: string): string {
-    return path.join(this.baseDir, "storage", orgname, filePath);
-  }
-
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
     const fullPath = this.getFullPath(orgname, filePath);
     try {
@@ -220,5 +215,10 @@ export class LocalStorageService implements StorageService {
       await fs.promises.unlink(tempFilePath);
       throw err;
     }
+  }
+
+  // Helper method to get the full path on the local filesystem
+  private getFullPath(orgname: string, filePath: string): string {
+    return path.join(this.baseDir, "storage", orgname, filePath);
   }
 }

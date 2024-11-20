@@ -1,17 +1,16 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
 import { EmailService } from "../../email/email.service";
 import { getPasswordResetHtml } from "../../email/templates";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ARTokensService } from "./ar-tokens.service";
-import { AuthService } from "./auth.service"; // Import TokenService
-import { ConfigService } from "@nestjs/config";
-
 import { UserEntity } from "../../users/entities/user.entity";
 import { ConfirmationTokenWithNewPasswordDto } from "../dto/confirmation-token-with-new-password.dto";
 import { EmailRequestDto } from "../dto/email-request.dto";
+import { ARTokensService } from "./ar-tokens.service";
+import { AuthService } from "./auth.service"; // Import TokenService
 
 @Injectable()
 export class PasswordResetService {

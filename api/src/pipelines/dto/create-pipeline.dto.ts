@@ -1,19 +1,8 @@
 import { IntersectionType, PickType } from "@nestjs/swagger";
 import { IsArray, ValidateNested } from "class-validator";
 
-import { PipelineEntity } from "../entities/pipeline.entity";
 import { PipelineStepEntity } from "../entities/pipeline-step.entity";
-
-export class CreatePipelineStepDto extends IntersectionType(
-  PickType(PipelineStepEntity, ["toolId", "id"] as const)
-) {
-  /**
-   * An array of steps that this step depends on
-   * @example ['step-id', 'step-id-2']
-   */
-  @IsArray()
-  dependsOn: string[];
-}
+import { PipelineEntity } from "../entities/pipeline.entity";
 
 export class CreatePipelineDto extends PickType(PipelineEntity, [
   "name",
@@ -25,4 +14,15 @@ export class CreatePipelineDto extends PickType(PipelineEntity, [
   @IsArray()
   @ValidateNested({ each: true })
   pipelineSteps: CreatePipelineStepDto[];
+}
+
+export class CreatePipelineStepDto extends IntersectionType(
+  PickType(PipelineStepEntity, ["toolId", "id", "name"] as const)
+) {
+  /**
+   * An array of steps that this step depends on
+   * @example ['step-id', 'step-id-2']
+   */
+  @IsArray()
+  dependsOn: string[];
 }

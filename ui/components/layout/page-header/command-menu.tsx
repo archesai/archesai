@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { type DialogProps } from "@radix-ui/react-dialog";
 import { LaptopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { DialogDescription, DialogTitle } from "../../ui/dialog";

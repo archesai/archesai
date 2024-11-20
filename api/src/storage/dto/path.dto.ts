@@ -8,8 +8,8 @@ export class PathDto {
     example: false,
     required: false,
   })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   isDir?: boolean = false;
 
   @ApiProperty({

@@ -11,29 +11,23 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 
 @Injectable()
-export class OrganizationRoleGuard implements CanActivate {
-  private readonly logger = new Logger(OrganizationRoleGuard.name);
+export class MembershipGuard implements CanActivate {
+  private readonly logger = new Logger(MembershipGuard.name);
   constructor(private reflector: Reflector) {}
 
   canActivate(
     context: ExecutionContext
   ): boolean | Observable<boolean> | Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>("public", [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
-      return true;
-    }
-
     const { params, user } = context.switchToHttp().getRequest() as any;
     const currentUser = user as UserEntity;
     const orgname = params.orgname;
 
-    if (!orgname) {
+    // Check for user and orgname, if they are not present this route is public and we skip. Alternatively, if orgname is not present, we skip.
+    if (!orgname || !currentUser) {
       return true;
     }
 
+    // Check if user is a member of the organization
     const membership = currentUser.memberships.find(
       (val) => val.orgname == orgname
     );
@@ -44,6 +38,7 @@ export class OrganizationRoleGuard implements CanActivate {
       throw new NotFoundException();
     }
 
+    // Check the roles that have access to this route
     const roles = this.reflector.getAllAndOverride<string[]>("roles", [
       context.getHandler(),
       context.getClass(),
@@ -52,6 +47,7 @@ export class OrganizationRoleGuard implements CanActivate {
       return true;
     }
 
+    // Check if user has the required role
     if (!roles.includes(membership.role)) {
       this.logger.error(
         `User ${currentUser.username} does not have the required role in organization ${orgname}`

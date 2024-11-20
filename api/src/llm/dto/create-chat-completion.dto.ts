@@ -10,45 +10,30 @@ import {
   ValidateNested,
 } from "class-validator";
 
-export class MessageDto {
-  @ApiProperty()
-  @IsString()
-  content: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @ApiProperty()
-  @IsString()
-  role: "assistant" | "function" | "system" | "user";
-}
-
 export class CreateChatCompletionDto {
   @ApiPropertyOptional()
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   best_of?: number;
 
   @ApiPropertyOptional({ default: 0.0 })
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   frequency_penalty?: number;
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   ignore_eos?: boolean;
 
   @ApiPropertyOptional()
-  @IsOptional()
   @IsObject()
+  @IsOptional()
   logit_bias?: Record<string, number>;
 
   @ApiPropertyOptional()
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   max_tokens?: number;
 
   @ApiProperty({
@@ -67,31 +52,31 @@ export class CreateChatCompletionDto {
   name?: string;
 
   @ApiPropertyOptional({ default: 0.0 })
-  @IsOptional()
   @IsNumber()
+  @IsOptional()
   presence_penalty?: number;
 
   @ApiPropertyOptional({ default: true })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   skip_special_tokens?: boolean;
 
   @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
   @IsArray()
+  @IsOptional()
   @IsString({ each: true })
   stop?: string[];
 
   @ApiPropertyOptional({ type: [Number] })
-  @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  @IsOptional()
   @Type(() => Number)
+  @ValidateNested({ each: true })
   stop_token_ids?: number[];
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   stream?: boolean;
 
   @ApiProperty({ default: 0.7 })
@@ -107,12 +92,27 @@ export class CreateChatCompletionDto {
   top_p?: number = 1;
 
   @ApiPropertyOptional({ default: false })
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   use_beam_search?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
   user?: string;
+}
+
+export class MessageDto {
+  @ApiProperty()
+  @IsString()
+  content: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiProperty()
+  @IsString()
+  role: "assistant" | "function" | "system" | "user";
 }

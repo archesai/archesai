@@ -14,13 +14,7 @@ import {
 } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import {
-  ApiBearerAuth,
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
 import { PlanType } from "@prisma/client";
 import { Stripe } from "stripe";
 
@@ -33,10 +27,10 @@ import { BillingUrlEntity } from "./entities/billing-url.entity";
 import { PaymentMethodEntity } from "./entities/payment-method.entity";
 import { PlanEntity } from "./entities/plan.entity";
 
-@Roles("ADMIN")
 @ApiBearerAuth()
 @ApiTags("Organization - Billing")
 @Controller()
+@Roles("ADMIN")
 export class BillingController {
   private readonly logger: Logger = new Logger("Billing Controller");
 
@@ -47,15 +41,12 @@ export class BillingController {
     private websocketsService: WebsocketsService
   ) {}
 
+  /**
+   * Cancel subscription plan
+   * @remarks This endpoint will cancel the subscription plan for an organization
+   * @throws {403} ForbiddenException
+   */
   @Post("/organizations/:orgname/billing/subscription/cancel")
-  @ApiOperation({
-    description: "Cancel the subscription plan for an organization",
-    summary: "Cancel subscription plan",
-  })
-  @ApiResponse({
-    description: "Successfully canceled subscription plan",
-    status: 201,
-  })
   async cancelSubscriptionPlan(@Param("orgname") orgname: string) {
     if (this.configService.get("FEATURE_BILLING") == false) {
       throw new ForbiddenException("Billing is disabled");
@@ -69,14 +60,12 @@ export class BillingController {
     await this.billingService.cancelSubscription(organization.stripeCustomerId);
   }
 
-  @ApiOperation({
-    description: "Switch subscription plan for an organization",
-    summary: "Switch subscription plan",
-  })
-  @ApiResponse({
-    description: "Successfully switched subscription plan",
-    status: 201,
-  })
+  /**
+   * Change subscription plan
+   * @remarks This endpoint will change the subscription plan for an organization
+   * @throws {403} ForbiddenException
+   * @throws {400} BadRequestException
+   */
   @Post("/organizations/:orgname/billing/subscription")
   async changeSubscriptionPlan(
     @Param("orgname") orgname: string,
@@ -104,16 +93,11 @@ export class BillingController {
     );
   }
 
-  @ApiOperation({
-    description:
-      "This endpoint will create a billing portal for an organization to edit their subscription and billing information. Only available on archesai.com. ADMIN ONLY.",
-    summary: "Create a billing portal for an organization",
-  })
-  @ApiResponse({
-    description: "Successfully created URL",
-    status: 201,
-    type: BillingUrlEntity,
-  })
+  /**
+   * Create billing portal
+   * @remarks This endpoint will create a billing portal for an organization to edit their subscription and billing information
+   * @throws {403} ForbiddenException
+   */
   @Post("/organizations/:orgname/billing/portal")
   async createBillingPortal(
     @Param("orgname") orgname: string
@@ -133,16 +117,12 @@ export class BillingController {
     );
   }
 
-  @ApiOperation({
-    description:
-      "This endpoint will create a checkout session for an organization to purchase a subscription or one-time product. Only available on archesai.com. ADMIN ONLY.",
-    summary: "Create a checkout session for an organization",
-  })
-  @ApiResponse({
-    description: "Successfully created checkout session URL",
-    status: 201,
-    type: BillingUrlEntity,
-  })
+  /**
+   * Create checkout session
+   * @remarks This endpoint will create a checkout session for an organization to purchase a subscription or one-time product
+   * @throws {403} ForbiddenException
+   * @throws {400} BadRequestException
+   */
   @Post("/organizations/:orgname/billing/checkout")
   async createCheckoutSession(
     @Param("orgname") orgname: string,
@@ -182,32 +162,21 @@ export class BillingController {
     );
   }
 
-  @ApiTags("Plans")
-  @ApiOperation({
-    description: "Get a list of available billing plans",
-    summary: "List billing plans",
-  })
-  @ApiResponse({
-    description: "List of plans",
-    status: 200,
-    type: [PlanEntity],
-  })
-  @IsPublic()
+  /**
+   * Get plans
+   * @remarks This endpoint will return a list of available billing plans
+   */
   @Get("/plans")
+  @IsPublic()
   async getPlans(): Promise<PlanEntity[]> {
     const plans = await this.billingService.listPlans();
     return plans.map((plan) => new PlanEntity(plan));
   }
 
-  @ApiOperation({
-    description: "List payment methods for an organization",
-    summary: "List payment methods",
-  })
-  @ApiResponse({
-    description: "List of payment methods",
-    status: 200,
-    type: [PaymentMethodEntity],
-  })
+  /**
+   * List payment methods
+   * @remarks This endpoint will return a list of payment methods for an organization
+   */
   @Get("/organizations/:orgname/billing/payment-methods")
   async listPaymentMethods(@Param("orgname") orgname: string) {
     const organization = await this.organizationsService.findOne(
@@ -217,13 +186,14 @@ export class BillingController {
     const paymentMethods = await this.billingService.listPaymentMethods(
       organization.stripeCustomerId
     );
-    return paymentMethods.data;
+    return paymentMethods.data.map((pm) => new PaymentMethodEntity(pm));
   }
 
-  @ApiOperation({
-    description: "Remove a payment method from an organization",
-    summary: "Remove payment method",
-  })
+  /**
+   * Remove payment method
+   * @remarks This endpoint will remove a payment method from an organization
+   * @throws {404} NotFoundException
+   */
   @Delete("/organizations/:orgname/billing/payment-methods/:paymentMethodId")
   async removePaymentMethod(
     @Param("orgname") orgname: string,

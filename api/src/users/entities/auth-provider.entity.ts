@@ -13,13 +13,13 @@ export class AuthProviderEntity
   extends BaseEntity
   implements AuthProviderModel
 {
-  @ApiProperty({
-    description: "The auth provider's provider",
-    enum: AuthProviderType,
-  })
+  /**
+   * The auth provider's provider
+   * @example LOCAL
+   */
   @Expose()
-  @IsString()
   @IsEnum(AuthProviderType)
+  @IsString()
   provider: AuthProviderType;
 
   @ApiProperty({

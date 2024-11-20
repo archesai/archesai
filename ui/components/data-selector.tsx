@@ -32,10 +32,10 @@ interface DataSelectorProps<TItem extends BaseItem> {
   setSelectedData: (data: TItem | TItem[] | undefined) => void;
   useFindAll: () => {
     data:
+      | undefined
       | {
           results: TItem[];
-        }
-      | undefined;
+        };
     isLoading: boolean;
   };
 }

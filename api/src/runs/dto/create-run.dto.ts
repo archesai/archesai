@@ -30,8 +30,8 @@ export class CreateRunDto extends IntersectionType(
     required: false,
     type: String,
   })
-  @IsString()
   @IsOptional()
+  @IsString()
   text?: string;
 
   @ApiProperty({
@@ -41,7 +41,7 @@ export class CreateRunDto extends IntersectionType(
     required: false,
     type: String,
   })
-  @IsString()
   @IsOptional()
+  @IsString()
   url?: string;
 }

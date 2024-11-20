@@ -3,12 +3,7 @@ import { PipelineEntity } from "@/src/pipelines/entities/pipeline.entity";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
-import {
-  createApp,
-  getUser,
-  registerUser,
-  setEmailVerifiedByEmail,
-} from "./util";
+import { createApp, getUser, registerUser, setEmailVerified } from "./util";
 
 describe("Pipelines", () => {
   let app: INestApplication;
@@ -28,7 +23,7 @@ describe("Pipelines", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
-    await setEmailVerifiedByEmail(app, user.email);
+    await setEmailVerified(app, user.id);
   });
 
   afterAll(async () => {
@@ -66,6 +61,7 @@ describe("Pipelines", () => {
     expect(res.body).toMatchObject({
       ...pipeline,
       name: "Updated Pipeline",
+      updatedAt: expect.any(String),
     }); // or adjust to match the expected response
   });
 

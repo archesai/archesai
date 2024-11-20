@@ -20,7 +20,8 @@ describe("Organizations", () => {
     accessToken = (await registerUser(app, credentials)).accessToken;
 
     const usersService = app.get<UsersService>(UsersService);
-    await usersService.setEmailVerifiedByEmail(credentials.email);
+    const user = await getUser(app, accessToken);
+    await usersService.setEmailVerified(user.id);
   });
 
   afterAll(async () => {

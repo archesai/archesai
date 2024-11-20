@@ -28,7 +28,7 @@ function Calendar({
         day_disabled: "text-muted-foreground opacity-50",
         day_hidden: "invisible",
         day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+          "day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
         day_range_end: "day-range-end",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
@@ -52,7 +52,9 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       showOutsideDays={showOutsideDays}

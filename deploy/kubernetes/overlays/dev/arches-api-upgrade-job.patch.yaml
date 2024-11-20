@@ -5,19 +5,14 @@ metadata:
 spec:
   template:
     spec:
-      volumes:
-        - name: api-source
-          hostPath:
-            path: /host/api
-            type: Directory
-      imagePullSecrets:
-        - name: artifact-registry-key
+      restartPolicy: OnFailure
       containers:
         - name: arches-api-upgrade
           image: arches-api:dev
+          imagePullPolicy: IfNotPresent
           args:
             - |
-              npm install && npx prisma migrate deploy --schema /usr/src/app/prisma/schema.prisma
-          volumeMounts:
-            - name: api-source
-              mountPath: /usr/src/app
+              npm install && npx prisma migrate deploy --schema /app/prisma/schema.prisma
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0

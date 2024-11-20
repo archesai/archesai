@@ -1,8 +1,5 @@
 {
-  "exclude": ["node_modules", "dist", "src/metadata.ts"],
-  // "include": ["**/*.spec.ts", "**/*.d.ts"],
   "compilerOptions": {
-    // "types": ["node", "jest", "multer"],
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -14,7 +11,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -25,5 +24,16 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "resolveJsonModule": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/metadata.ts"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+  ],
 }

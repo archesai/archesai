@@ -5,25 +5,24 @@ import {
   ForbiddenException,
   Injectable,
 } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
 
 @Injectable()
 export class DeactivatedGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor() {}
   canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>("public", [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-    if (isPublic) {
+    const { user } = context.switchToHttp().getRequest() as any;
+
+    // Check for user
+    const currentUser = user as UserEntity;
+    if (!currentUser) {
       return true;
     }
 
-    // Check if deactivated
-    const { user } = context.switchToHttp().getRequest() as any;
-    const currentUser = user as UserEntity;
-    if (currentUser?.deactivated) {
-      throw new ForbiddenException();
+    // Check if user is deactivated
+    if (currentUser.deactivated === true) {
+      throw new ForbiddenException(
+        "Your account has been deactivated. Please contact support."
+      );
     }
 
     return true;

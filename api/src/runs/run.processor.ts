@@ -55,7 +55,9 @@ export class RunProcessor extends WorkerHost {
     try {
       await this.runsService.setStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
-    } catch {}
+    } catch {
+      this.logger.error(`Failed to update run status for job ${job?.id}`);
+    }
   }
 
   @OnWorkerEvent("failed")
@@ -64,13 +66,23 @@ export class RunProcessor extends WorkerHost {
     try {
       await this.runsService.setStatus(job.id.toString(), "ERROR");
       await this.runsService.setRunError(job.id.toString(), error?.message);
-    } catch {}
+    } catch {
+      this.logger.error(`Failed to update run status for job ${job?.id}`);
+    }
   }
 
   async process(job: RunJob) {
     const inputs = job.data as ContentEntity[];
     let outputs: ContentEntity[] = [];
     switch (job.name) {
+      case "create-embeddings":
+        outputs = await transformTextToEmbeddings();
+        // job.id,
+        // inputs,
+        // this.logger,
+        // this.contentService,
+        // this.openAiEmbeddingsService
+        break;
       case "extract-text":
         outputs = await transformFileToText(
           job.id,
@@ -79,6 +91,15 @@ export class RunProcessor extends WorkerHost {
           this.contentService,
           this.httpService,
           this.configService
+        );
+        break;
+      case "summarize":
+        outputs = await transformTextToText(
+          job.id,
+          inputs,
+          this.logger,
+          this.contentService,
+          this.llmService
         );
         break;
       case "text-to-image":
@@ -100,23 +121,6 @@ export class RunProcessor extends WorkerHost {
           this.storageService,
           this.speechService
         );
-        break;
-      case "summarize":
-        outputs = await transformTextToText(
-          job.id,
-          inputs,
-          this.logger,
-          this.contentService,
-          this.llmService
-        );
-        break;
-      case "create-embeddings":
-        outputs = await transformTextToEmbeddings();
-        // job.id,
-        // inputs,
-        // this.logger,
-        // this.contentService,
-        // this.openAiEmbeddingsService
         break;
       default:
         this.logger.error(`Unknown toolId ${job.name}`);

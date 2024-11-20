@@ -38,7 +38,7 @@ describe("Members", () => {
 
     orgname = (await getUser(app, accessToken)).defaultOrgname;
 
-    await usersService.setEmailVerifiedByEmail(credentials.email);
+    await usersService.setEmailVerified(credentials.email);
     await organizationsService.setPlan(orgname, "UNLIMITED");
   });
 
@@ -65,10 +65,10 @@ describe("Members", () => {
     await joinOrganization(invitedUserToken, 403); // Not verified
     await joinOrganization(uninvitedUserToken, 403); // Not verified
 
-    await usersService.setEmailVerifiedByEmail(uninvitedUser.email);
+    await usersService.setEmailVerified(uninvitedUser.email);
     await joinOrganization(uninvitedUserToken, 404); // Uninvited
 
-    await usersService.setEmailVerifiedByEmail(invitedUser.email);
+    await usersService.setEmailVerified(invitedUser.email);
     await joinOrganization(invitedUserToken, 201); // Verified and invited
 
     // Verify invited user added as member

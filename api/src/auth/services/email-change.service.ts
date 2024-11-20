@@ -4,6 +4,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ARTokenType } from "@prisma/client";
@@ -11,13 +12,15 @@ import { ARTokenType } from "@prisma/client";
 import { EmailService } from "../../email/email.service";
 import { getEmailChangeConfirmationHtml } from "../../email/templates";
 import { UsersService } from "../../users/users.service";
-import { ARTokensService } from "./ar-tokens.service"; // Import TokenService
 import { ConfirmationTokenDto } from "../dto/confirmation-token.dto";
 import { EmailRequestDto } from "../dto/email-request.dto";
+import { ARTokensService } from "./ar-tokens.service"; // Import TokenService
 import { AuthService } from "./auth.service";
 
 @Injectable()
 export class EmailChangeService {
+  logger = new Logger(EmailChangeService.name);
+
   constructor(
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
@@ -50,7 +53,9 @@ export class EmailChangeService {
     try {
       await this.usersService.findOneByEmail(emailRequestDto.email);
       newEmailInUse = true;
-    } catch (e) {}
+    } catch (e) {
+      this.logger.error(e);
+    }
     if (newEmailInUse) {
       throw new ConflictException("New email is already in use.");
     }

@@ -27,10 +27,6 @@ export class GoogleCloudStorageService implements StorageService {
     this.bucketName = "archesai";
   }
 
-  private getFilePath(orgname: string, filePath: string): string {
-    return path.posix.join("storage", orgname, filePath);
-  }
-
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
     const [exists] = await this.storage
       .bucket(this.bucketName)
@@ -247,5 +243,9 @@ export class GoogleCloudStorageService implements StorageService {
     });
 
     return this.getSignedUrl(orgname, filePath, "read");
+  }
+
+  private getFilePath(orgname: string, filePath: string): string {
+    return path.posix.join("storage", orgname, filePath);
   }
 }

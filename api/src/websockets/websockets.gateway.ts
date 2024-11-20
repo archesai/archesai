@@ -25,12 +25,12 @@ import { WebsocketsService } from "./websockets.service";
   transports: ["websocket"],
 })
 export class WebsocketsGateway
-  implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
-  private readonly logger: Logger = new Logger("WebsocketsGateway");
-
   @WebSocketServer()
   server: Server;
+
+  private readonly logger: Logger = new Logger("WebsocketsGateway");
 
   constructor(
     private readonly authService: AuthService,

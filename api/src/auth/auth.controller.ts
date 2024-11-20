@@ -1,24 +1,15 @@
 import { Body, Controller, Get, Logger, Post, Req, Res } from "@nestjs/common";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiExcludeEndpoint,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 
 import { UserEntity } from "../users/entities/user.entity";
 import { CurrentUser } from "./decorators/current-user.decorator";
 import { IsPublic } from "./decorators/is-public.decorator";
 import { Roles } from "./decorators/roles.decorator";
-import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
 import { ConfirmationTokenWithNewPasswordDto } from "./dto/confirmation-token-with-new-password.dto";
+import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
 import { EmailRequestDto } from "./dto/email-request.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -40,16 +31,11 @@ export class AuthController {
     private emailChangeService: EmailChangeService
   ) {}
 
-  @ApiOperation({
-    description: "This endpoint will confirm your e-mail change with a token",
-    summary: "Confirm e-mail change",
-  })
-  @ApiResponse({
-    description: "E-mail change confirmed",
-    status: 201,
-    type: TokenDto,
-  })
-  @ApiBadRequestResponse()
+  /**
+   * Confirm e-mail change with a token
+   * @remarks This endpoint will confirm your e-mail change with a token
+   * @throws {400} BadRequestException
+   */
   @IsPublic()
   @Post("/email-change/confirm")
   async emailChangeConfirm(
@@ -60,11 +46,11 @@ export class AuthController {
     );
   }
 
+  /**
+   * Request e-mail change with a token
+   * @remarks This endpoint will request your e-mail change with a token
+   */
   @ApiBearerAuth()
-  @ApiOperation({
-    description: "This endpoint will request your e-mail change with a token",
-    summary: "Confirm e-mail change",
-  })
   @Post("/email-change/request")
   async emailChangeRequest(
     @CurrentUser() currentUserDto: UserEntity,
@@ -73,16 +59,12 @@ export class AuthController {
     return this.emailChangeService.request(currentUserDto.id, emailRequestDto);
   }
 
-  @ApiOperation({
-    description: "This endpoint will confirm your e-mail with a token",
-    summary: "Confirm e-mail verification",
-  })
-  @ApiBadRequestResponse()
-  @ApiUnauthorizedResponse()
-  @ApiCreatedResponse({
-    description: "E-mail verification confirmed",
-    type: TokenDto,
-  })
+  /**
+   * Confirm e-mail verification with a token
+   * @remarks This endpoint will confirm your e-mail with a token
+   * @throws {400} BadRequestException
+   * @throws {401} UnauthorizedException
+   */
   @IsPublic()
   @Post("/email-verification/confirm")
   async emailVerificationConfirm(
@@ -93,33 +75,29 @@ export class AuthController {
     );
   }
 
+  /**
+   * Request e-mail verification
+   * @remarks This endpoint will send an e-mail verification link to you. ADMIN ONLY.
+   * @throws {400} BadRequestException
+   * @throws {401} UnauthorizedException
+   * @throws {403} ForbiddenException
+   */
   @ApiBearerAuth()
-  @ApiOperation({
-    description:
-      "This endpoint will send an e-mail verification link to you. ADMIN ONLY.",
-    summary: "Resend e-mail verification",
-  })
-  @ApiResponse({ description: "Already Verified", status: 400 })
-  @ApiResponse({ description: "Unauthorized", status: 401 })
-  @ApiResponse({
-    description: "E-mail verification link sent",
-    status: 201,
-  })
-  @ApiResponse({ description: "Forbidden", status: 403 })
-  @Roles("ADMIN")
   @Post("/email-verification/request")
+  @Roles("ADMIN")
   async emailVerificationRequest(@CurrentUser() user: UserEntity) {
     return this.emailVerificationService.request(user.id);
   }
 
-  @ApiOperation({ summary: "Login" })
-  @ApiUnauthorizedResponse({ description: "Invalid credentials" })
-  @ApiCreatedResponse({
-    type: TokenDto,
-  })
-  @UseGuards(LocalAuthGuard)
+  /**
+   * Login with e-mail and password
+   * @remarks This endpoint will log you in with your e-mail and password
+   * @throws {401} UnauthorizedException
+   * @throws {400} BadRequestException
+   */
   @IsPublic()
   @Post("/login")
+  @UseGuards(LocalAuthGuard)
   async login(
     @Body() loginDto: LoginDto,
     @CurrentUser() currentUserDto: UserEntity,
@@ -133,10 +111,11 @@ export class AuthController {
     return tokenDto;
   }
 
-  @ApiOperation({
-    description: "Log out of the current session",
-    summary: "Logout",
-  })
+  /**
+   * Logout of the current session
+   * @remarks This endpoint will log you out of the current session
+   * @throws {401} UnauthorizedException
+   */
   @IsPublic()
   @Post("/logout")
   async logout(
@@ -148,15 +127,12 @@ export class AuthController {
     await this.authService.removeCookies(res);
   }
 
-  @ApiOperation({
-    description: "This endpoint will confirm your password change with a token",
-    summary: "Confirm password change",
-  })
-  @ApiResponse({
-    description: "Password change confirmed",
-    status: 201,
-    type: TokenDto,
-  })
+  /**
+   * Confirm password change with a token
+   * @remarks This endpoint will confirm your password change with a token
+   * @throws {400} BadRequestException
+   * @throws {401} UnauthorizedException
+   */
   @IsPublic()
   @Post("/password-reset/confirm")
   async passwordResetConfirm(
@@ -167,23 +143,21 @@ export class AuthController {
     );
   }
 
-  @ApiOperation({
-    description: "This endpoint will request a password reset link",
-    summary: "Request password reset",
-  })
+  /**
+   * Request password reset
+   * @remarks This endpoint will request a password reset link
+   */
   @IsPublic()
   @Post("/password-reset/request")
   async passwordResetRequest(@Body() emailRequestDto: EmailRequestDto) {
     await this.passwordResetService.request(emailRequestDto);
   }
 
-  @ApiOperation({ summary: "Refresh Access Token" })
-  @ApiResponse({
-    description: "The new access token has been generated.",
-    status: 201,
-    type: TokenDto,
-  })
-  @ApiUnauthorizedResponse({ description: "Invalid refresh token" })
+  /**
+   * Refresh access token
+   * @remarks This endpoint will refresh your access token
+   * @throws {401} UnauthorizedException
+   */
   @IsPublic()
   @Post("/refresh-token")
   async refreshToken(
@@ -202,20 +176,11 @@ export class AuthController {
     return tokens;
   }
 
-  @ApiOperation({
-    description:
-      "This endpoint will register a new account and return a JWT token which should be provided in your auth headers",
-    summary: "Register",
-  })
-  @ApiResponse({
-    description: "User already exists with provided email",
-    status: 409,
-  })
-  @ApiResponse({
-    description: "User was created successfully",
-    status: 201,
-    type: TokenDto,
-  })
+  /**
+   * Register a new user
+   * @remarks This endpoint will register a new account and return a JWT token which should be provided in your auth headers
+   * @throws {409} ConflictException
+   */
   @IsPublic()
   @Post("/register")
   async register(@Body() registerDto: RegisterDto): Promise<TokenDto> {
@@ -224,8 +189,8 @@ export class AuthController {
   }
 
   @ApiExcludeEndpoint()
-  @UseGuards(AuthGuard("firebase-auth"))
   @Post("firebase/callback")
+  @UseGuards(AuthGuard("firebase-auth"))
   async zfirebaseAuthCallback(
     @CurrentUser() currentUserDto: UserEntity
   ): Promise<TokenDto> {
@@ -233,13 +198,13 @@ export class AuthController {
   }
 
   @ApiExcludeEndpoint()
-  @UseGuards(AuthGuard("twitter"))
   @Get("twitter")
+  @UseGuards(AuthGuard("twitter"))
   async ztwitterAuth() {}
 
   @ApiExcludeEndpoint()
-  @UseGuards(AuthGuard("twitter"))
   @Get("twitter/callback")
+  @UseGuards(AuthGuard("twitter"))
   async ztwitterAuthCallback(
     @CurrentUser() currentUserDto: UserEntity
   ): Promise<TokenDto> {

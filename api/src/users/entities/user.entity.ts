@@ -7,31 +7,31 @@ import { BaseEntity } from "../../common/entities/base.entity";
 import { MemberEntity } from "../../members/entities/member.entity";
 import { AuthProviderEntity } from "./auth-provider.entity";
 
-export type UserWithMembershipsAndAuthProvidersModel = {
+export type UserWithMembershipsAndAuthProvidersModel = User & {
   authProviders: AuthProvider[];
   memberships: Member[];
-} & User;
+};
 
 export class UserEntity extends BaseEntity implements User {
-  @Expose()
   @ApiProperty({
     description: "The memberships of the currently signed in user",
     type: [AuthProviderEntity],
   })
+  @Expose()
   authProviders: AuthProviderEntity[];
 
-  @Expose()
   @ApiProperty({
     description: "Whether or not the user is deactivated",
     example: false,
   })
+  @Expose()
   deactivated!: boolean;
 
-  @Expose()
   @ApiProperty({
     description: "The user's default organization name",
     example: "my-organization",
   })
+  @Expose()
   defaultOrgname: string;
 
   @ApiProperty({
@@ -45,8 +45,8 @@ export class UserEntity extends BaseEntity implements User {
     description: "The user's e-mail",
     example: "example@archesai.com",
   })
-  @IsEmail()
   @Expose()
+  @IsEmail()
   email!: string;
 
   @ApiProperty({
@@ -69,27 +69,27 @@ export class UserEntity extends BaseEntity implements User {
   @Expose()
   lastName: string;
 
-  @Expose()
   @ApiProperty({
     description: "The memberships of the currently signed in user",
     type: [MemberEntity],
   })
+  @Expose()
   memberships: MemberEntity[];
 
-  @Exclude()
   @ApiHideProperty()
+  @Exclude()
   password: string;
 
   @ApiProperty({
     description: "The user's photo url",
     example: "/avatar.png",
   })
-  @IsString()
   @Expose()
+  @IsString()
   photoUrl!: string;
 
-  @Exclude()
   @ApiHideProperty()
+  @Exclude()
   refreshToken: string;
 
   // Exposed Properties
@@ -98,8 +98,8 @@ export class UserEntity extends BaseEntity implements User {
     example: "jonathan",
     minLength: 5,
   })
-  @MinLength(5)
   @Expose()
+  @MinLength(5)
   username!: string;
 
   constructor(user: UserWithMembershipsAndAuthProvidersModel) {

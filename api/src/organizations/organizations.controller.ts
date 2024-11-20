@@ -1,20 +1,8 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Param, Patch, Post } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { Roles } from "../auth/decorators/roles.decorator";
-import {
-  ApiCrudOperation,
-  Operation,
-} from "../common/decorators/api-crud-operation.decorator";
+import { BaseController } from "../common/base.controller";
 import { UserEntity } from "../users/entities/user.entity";
 import { CreateOrganizationDto } from "./dto/create-organization.dto";
 import { UpdateOrganizationDto } from "./dto/update-organization.dto";
@@ -22,17 +10,28 @@ import { OrganizationEntity } from "./entities/organization.entity";
 import { OrganizationsService } from "./organizations.service";
 
 @ApiBearerAuth()
-@ApiTags("Organization")
-@Roles("ADMIN")
-@Controller("organizations")
-export class OrganizationsController {
-  constructor(private readonly organizationsService: OrganizationsService) {}
+@Controller("/organizations")
+export class OrganizationsController extends BaseController<
+  OrganizationEntity,
+  CreateOrganizationDto,
+  UpdateOrganizationDto,
+  OrganizationsService
+> {
+  constructor(private readonly organizationsService: OrganizationsService) {
+    super(organizationsService);
+  }
 
-  @ApiCrudOperation(Operation.CREATE, "organization", OrganizationEntity, true)
+  /**
+   * Create a new organization
+   * @throws {400} BadRequestException
+   * @throws {401} UnauthorizedException
+   * @throws {404} NotFoundException
+   */
   @Post()
   async create(
-    @CurrentUser() user: UserEntity,
-    @Body() createOrganizationDto: CreateOrganizationDto
+    @Param("orgname") orgname: string,
+    @Body() createOrganizationDto: CreateOrganizationDto,
+    @CurrentUser() user: UserEntity
   ) {
     return new OrganizationEntity(
       await this.organizationsService.create(
@@ -43,26 +42,16 @@ export class OrganizationsController {
     );
   }
 
-  @ApiCrudOperation(Operation.DELETE, "organization", OrganizationEntity, true)
-  @Delete(":orgname")
-  async delete(@Param("orgname") orgname: string) {
-    const organization = await this.organizationsService.findByOrgname(orgname);
-    return this.organizationsService.remove(orgname, organization.id);
-  }
-
-  @ApiCrudOperation(Operation.GET, "organization", OrganizationEntity, true)
-  @Get(":orgname")
-  async findOne(@Param("orgname") orgname: string) {
-    const organization = await this.organizationsService.findByOrgname(orgname);
-    return new OrganizationEntity(
-      await this.organizationsService.findOne(orgname, organization.id)
-    );
-  }
-
-  @ApiCrudOperation(Operation.UPDATE, "organization", OrganizationEntity, true)
+  /**
+   * Update an organization
+   * @throws {400} BadRequestException
+   * @throws {401} UnauthorizedException
+   * @throws {404} NotFoundException
+   */
   @Patch(":orgname")
   async update(
     @Param("orgname") orgname: string,
+    @Param("id") id: string,
     @Body() updateOrganizationDto: UpdateOrganizationDto
   ) {
     const organization = await this.organizationsService.findByOrgname(orgname);

@@ -5,17 +5,10 @@ metadata:
 spec:
   template:
     spec:
-      imagePullSecrets:
-        - name: artifact-registry-key
-      volumes:
-        - name: api-source
-          hostPath:
-            path: /host/api
-            type: Directory
       containers:
         - name: arches-api
           image: arches-api:dev
-          command: ["/bin/sh", "-c", "npm install && npm run start:dev"]
-          volumeMounts:
-            - name: api-source
-              mountPath: /usr/src/app
+          imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0

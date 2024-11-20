@@ -63,12 +63,12 @@ export default function PipelineDataTable() {
           ),
         },
         {
-          accessorKey: "transformations",
+          accessorKey: "Inputs",
           cell: ({ row }) => {
             return (
               <div className="flex gap-1">
                 {row.original.pipelineSteps?.map((step) => {
-                  return <Badge>{step.tool}</Badge>;
+                  return <Badge>{step.tool?.name}</Badge>;
                 })}
               </div>
             );

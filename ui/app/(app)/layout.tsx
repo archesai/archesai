@@ -16,7 +16,7 @@ export default function AppLayout({
         <AppSidebar />
         {/* This is the main content area. */}
         <SidebarInset>
-          <main className="flex max-h-screen flex-1 flex-col">
+          <main className="flex h-svh flex-1 flex-col">
             <PageHeader />
             <div className="flex-1 overflow-auto p-4">{children}</div>
           </main>

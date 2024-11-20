@@ -1,7 +1,7 @@
 // test/auth.e2e-spec.ts
 
-import { ConfirmationTokenDto } from "@/src/auth/dto/confirmation-token.dto";
 import { ConfirmationTokenWithNewPasswordDto } from "@/src/auth/dto/confirmation-token-with-new-password.dto";
+import { ConfirmationTokenDto } from "@/src/auth/dto/confirmation-token.dto";
 import { EmailRequestDto } from "@/src/auth/dto/email-request.dto";
 import { EmailService } from "@/src/email/email.service";
 import { PrismaService } from "@/src/prisma/prisma.service";

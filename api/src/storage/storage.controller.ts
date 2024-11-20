@@ -16,8 +16,8 @@ import { STORAGE_SERVICE, StorageService } from "./storage.service";
 
 @ApiBearerAuth()
 @ApiTags("Storage")
-@Roles("ADMIN")
 @Controller("/organizations/:orgname/storage")
+@Roles("ADMIN")
 export class StorageController {
   constructor(
     @Inject(STORAGE_SERVICE) private readonly storageService: StorageService

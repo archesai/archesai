@@ -3,11 +3,11 @@ import { Content as _PrismaContent } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import { IsNumber, IsString } from "class-validator";
 
-import { BaseEntity } from "../../common/entities/base.entity";
 import {
   _PrismaSubItemModel,
   SubItemEntity,
 } from "../../common/entities/base-sub-item.entity";
+import { BaseEntity } from "../../common/entities/base.entity";
 
 export type ContentModel = _PrismaContent & {
   children: _PrismaSubItemModel[];

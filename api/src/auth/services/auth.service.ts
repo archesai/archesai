@@ -20,29 +20,6 @@ export class AuthService {
     protected configService: ConfigService
   ) {}
 
-  // Generate Access Token
-  private generateAccessToken(userId: string) {
-    this.logger.log("Generating access token for user: " + userId);
-    return this.jwtService.sign(
-      { sub: userId },
-      {
-        expiresIn: "15m", // Set access token expiration to 15 minutes
-      }
-    );
-  }
-
-  // Generate Refresh Token
-  private generateRefreshToken(userId: string) {
-    this.logger.log("Generating refresh token for user: " + userId);
-    return this.jwtService.sign(
-      { sub: userId },
-      {
-        expiresIn: "7d", // Set refresh token expiration to 7 days
-        // secret: this.configService.get("JWT_REFRESH_SECRET"), // Use a different secret for refresh tokens
-      }
-    );
-  }
-
   async login(user: UserEntity) {
     this.logger.log("Logging in user: " + user.id);
     const accessToken = this.generateAccessToken(user.id);
@@ -95,7 +72,6 @@ export class AuthService {
       emailVerified: this.configService.get("FEATURE_EMAIL") === false,
       password: hashedPassword,
       photoUrl: "",
-      // username: registerDto.username,
       username: orgname,
     });
     return this.usersService.syncAuthProvider(
@@ -114,14 +90,14 @@ export class AuthService {
     res.cookie("archesai.accessToken", tokenDto.accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000, // 15 minutes for access token
-      sameSite: "strict",
-      secure: this.configService.get("NODE_ENV") === "production",
+      sameSite: "none",
+      secure: true,
     });
     res.cookie("archesai.refreshToken", tokenDto.refreshToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
-      sameSite: "strict",
-      secure: this.configService.get("NODE_ENV") === "production",
+      sameSite: "none",
+      secure: true,
       signed: true,
     });
   }
@@ -129,5 +105,28 @@ export class AuthService {
   async verifyToken(token: string) {
     this.logger.debug("Verifying jwt token: " + token);
     return this.jwtService.verify(token);
+  }
+
+  // Generate Access Token
+  private generateAccessToken(userId: string) {
+    this.logger.log("Generating access token for user: " + userId);
+    return this.jwtService.sign(
+      { sub: userId },
+      {
+        expiresIn: "15m", // Set access token expiration to 15 minutes
+      }
+    );
+  }
+
+  // Generate Refresh Token
+  private generateRefreshToken(userId: string) {
+    this.logger.log("Generating refresh token for user: " + userId);
+    return this.jwtService.sign(
+      { sub: userId },
+      {
+        expiresIn: "7d", // Set refresh token expiration to 7 days
+        // secret: this.configService.get("JWT_REFRESH_SECRET"), // Use a different secret for refresh tokens
+      }
+    );
   }
 }

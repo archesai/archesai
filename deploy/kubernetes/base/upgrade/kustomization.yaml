@@ -3,5 +3,3 @@ kind: Kustomization
 
 resources:
   - "./arches-api-upgrade-job.yaml"
-
-nameSuffix: -v0.0.0

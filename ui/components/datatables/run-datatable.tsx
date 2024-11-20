@@ -23,7 +23,9 @@ export default function RunDataTable() {
 
   return (
     <DataTable<
-      RunEntity,
+      RunEntity & {
+        name: string;
+      },
       RunsControllerFindAllPathParams,
       RunsControllerRemoveVariables
     >

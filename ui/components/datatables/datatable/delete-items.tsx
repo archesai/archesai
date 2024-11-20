@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { Trash } from "lucide-react";
 import { useState } from "react";
@@ -13,7 +14,6 @@ import { useState } from "react";
 import { Button } from "../../ui/button";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Separator } from "../../ui/separator";
-import { useToast } from "../../ui/use-toast";
 
 export interface DeleteProps<TDeleteVariables> {
   deleteFunction: (params: TDeleteVariables) => Promise<void>;

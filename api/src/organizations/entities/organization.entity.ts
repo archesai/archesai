@@ -12,36 +12,36 @@ export class OrganizationEntity
   extends BaseEntity
   implements OrganizationModel
 {
-  @Expose()
   @ApiProperty({
     description: "The billing email to use for the organization",
     example: "example@test.com",
   })
+  @Expose()
   @IsEmail()
   billingEmail: string;
 
-  @Expose()
   @ApiProperty({
     description:
       "The number of credits you have remaining for this organization",
     example: 500000,
   })
+  @Expose()
   @IsNumber()
   credits: number;
 
-  @Expose()
   @ApiProperty({
     description: "The name of the organization to create",
     example: "organization-name",
   })
+  @Expose()
   orgname: string;
 
-  @Expose()
   @ApiProperty({
     description: "The plan that the organization is subscribed to",
     enum: PlanType,
     example: "FREE",
   })
+  @Expose()
   @IsEnum(PlanType)
   plan: PlanType;
 

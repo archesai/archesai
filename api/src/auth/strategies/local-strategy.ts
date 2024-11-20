@@ -26,6 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         return user;
       }
     } catch (e) {
+      this.logger.log(`Could not validate email and password: ${email}: ${e}`);
       throw new UnauthorizedException("Invalid credentials");
     }
   }

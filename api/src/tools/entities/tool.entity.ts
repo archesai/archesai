@@ -9,10 +9,10 @@ export type ToolModel = _PrismaTool;
 
 @Exclude()
 export class ToolEntity extends BaseEntity implements ToolModel {
-  @ApiProperty({
-    description: "The tool description",
-    example: "This tool converts a file to text, regardless of the file type.",
-  })
+  /**
+   * The tool description
+   * @example This tool converts a file to text, regardless of the file type.
+   */
   @Expose()
   @IsString()
   description: string;

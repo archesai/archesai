@@ -42,8 +42,6 @@ export const RunStatusButton = ({
   console.log(tools);
   const renderIcon = () => {
     switch (run.status) {
-      case "QUEUED":
-        return <CounterClockwiseClockIcon className="text-primary" />;
       case "COMPLETE":
         return <CheckCircle2 className="text-green-600" />;
       case "ERROR":
@@ -55,6 +53,8 @@ export const RunStatusButton = ({
             <span>{(run.progress * 100).toFixed(0)}%</span>
           </div>
         );
+      case "QUEUED":
+        return <CounterClockwiseClockIcon className="text-primary" />;
       default:
         return null;
     }

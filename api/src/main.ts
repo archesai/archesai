@@ -1,7 +1,7 @@
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import RedisStore from "connect-redis";
+import { RedisStore } from "connect-redis";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import { readFileSync } from "fs-extra";
@@ -17,7 +17,7 @@ import {
   AggregateFieldQuery,
   FieldFieldQuery,
 } from "./common/dto/search-query.dto";
-import metadata from "./metadata";
+// import metadata from "./metadata";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -35,7 +35,7 @@ async function bootstrap() {
       .addBearerAuth()
       .addServer(configService.get<string>("SERVER_HOST"))
       .build();
-    await SwaggerModule.loadPluginMetadata(metadata); // <-- here
+    // await SwaggerModule.loadPluginMetadata(metadata); // <-- here
     const document = SwaggerModule.createDocument(app, swaggerConfig, {
       extraModels: [
         FieldFieldQuery,
@@ -65,7 +65,11 @@ async function bootstrap() {
     allowedHeaders: ["Authorization", "Content-Type", "Accept"],
     credentials: true,
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins[0] === "*"
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

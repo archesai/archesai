@@ -2,12 +2,7 @@ import { INestApplication } from "@nestjs/common";
 import * as fs from "fs";
 import request from "supertest";
 
-import {
-  createApp,
-  getUser,
-  registerUser,
-  setEmailVerifiedByEmail,
-} from "./util";
+import { createApp, getUser, registerUser, setEmailVerified } from "./util";
 
 describe("Content", () => {
   let app: INestApplication;
@@ -30,7 +25,7 @@ describe("Content", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
-    await setEmailVerifiedByEmail(app, credentials.email);
+    await setEmailVerified(app, user.id);
   });
 
   afterAll(async () => {

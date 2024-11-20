@@ -1,83 +1,23 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Controller, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+import { EmailVerifiedGuard } from "../auth/guards/email-verified.guard";
 import { BaseController } from "../common/base.controller";
-import {
-  ApiCrudOperation,
-  Operation,
-} from "../common/decorators/api-crud-operation.decorator";
-import { SearchQueryDto } from "../common/dto/search-query.dto";
 import { ContentService } from "./content.service";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { ContentEntity } from "./entities/content.entity";
 
 @ApiBearerAuth()
-@ApiTags("Content")
-@Controller("organizations/:orgname/content")
-export class ContentController
-  implements
-    BaseController<
-      ContentEntity,
-      CreateContentDto,
-      SearchQueryDto,
-      UpdateContentDto
-    >
-{
-  constructor(private readonly contentService: ContentService) {}
-
-  @ApiCrudOperation(Operation.CREATE, "content", ContentEntity, true)
-  @Post()
-  async create(
-    @Param("orgname") orgname: string,
-    @Body() createContentDto: CreateContentDto
-  ) {
-    return this.contentService.create(orgname, createContentDto);
-  }
-
-  @ApiCrudOperation(Operation.FIND_ALL, "content", ContentEntity, true)
-  @Get("/")
-  async findAll(
-    @Param("orgname") orgname: string,
-    @Query() searchQueryDto: SearchQueryDto
-  ) {
-    return this.contentService.findAll(orgname, searchQueryDto);
-  }
-
-  @ApiCrudOperation(Operation.GET, "content", ContentEntity, true)
-  @Get("/:contentId")
-  async findOne(
-    @Param("orgname") orgname: string,
-    @Param("contentId") contentId: string
-  ) {
-    return this.contentService.findOne(orgname, contentId);
-  }
-
-  @ApiCrudOperation(Operation.DELETE, "content", ContentEntity, true)
-  @Delete("/:contentId")
-  async remove(
-    @Param("orgname") orgname: string,
-    @Param("contentId") contentId: string
-  ) {
-    await this.contentService.remove(orgname, contentId);
-  }
-
-  @ApiCrudOperation(Operation.UPDATE, "content", ContentEntity, true)
-  @Patch("/:contentId")
-  async update(
-    @Param("orgname") orgname: string,
-    @Param("contentId") contentId: string,
-    @Body() updateContentDto: UpdateContentDto
-  ) {
-    return this.contentService.update(orgname, contentId, updateContentDto);
+@Controller("/organizations/:orgname/content")
+@UseGuards(EmailVerifiedGuard)
+export class ContentController extends BaseController<
+  ContentEntity,
+  CreateContentDto,
+  UpdateContentDto,
+  ContentService
+> {
+  constructor(private readonly contentService: ContentService) {
+    super(contentService);
   }
 }

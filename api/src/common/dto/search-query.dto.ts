@@ -19,11 +19,6 @@ export enum Granularity {
   YEAR = "year",
 }
 
-export enum SortDirection {
-  ASCENDING = "asc",
-  DESCENDING = "desc",
-}
-
 export enum Operator {
   CONTAINS = "contains",
   ENDS_WITH = "endsWith",
@@ -34,6 +29,32 @@ export enum Operator {
   NOT = "not",
   SOME = "some",
   STARTS_WITH = "startsWith",
+}
+
+export enum SortDirection {
+  ASCENDING = "asc",
+  DESCENDING = "desc",
+}
+
+export class AggregateFieldQuery {
+  @ApiProperty({ description: "Field to aggregate by", type: String })
+  @IsString()
+  field: string;
+
+  /**
+   *The granularity to use for ranged aggregates
+   * @example day
+   */
+  @IsEnum(Granularity, { always: false })
+  @IsOptional()
+  granularity?: Granularity;
+
+  /**
+   *The type of aggregate to perform
+   * @example count
+   */
+  @IsString()
+  type: "count" | "sum";
 }
 
 export class FieldFieldQuery {
@@ -52,35 +73,12 @@ export class FieldFieldQuery {
     description: "Value to filter for",
     oneOf: [{ type: "string" }, { items: { type: "string" }, type: "array" }],
   })
-  @ValidateIf((o) => typeof o.value === "string")
-  @IsString()
-  @ValidateIf((o) => Array.isArray(o.value))
   @IsArray()
+  @IsString()
   @Type(() => String) // Ensures the array elements are treated as strings
+  @ValidateIf((o) => typeof o.value === "string")
+  @ValidateIf((o) => Array.isArray(o.value))
   value: string | string[];
-}
-
-export class AggregateFieldQuery {
-  @ApiProperty({ description: "Field to aggregate by", type: String })
-  @IsString()
-  field: string;
-
-  @ApiProperty({
-    default: undefined,
-    description: "The granularity to use for ranged aggregates",
-    enum: Granularity,
-    required: false,
-  })
-  @IsOptional()
-  @IsEnum(Granularity, { always: false })
-  granularity?: Granularity;
-
-  @ApiProperty({
-    description: "Type of aggregate to perform",
-    enum: ["count", "sum"],
-  })
-  @IsString()
-  type: "count" | "sum";
 }
 
 export class SearchQueryDto {
@@ -94,15 +92,15 @@ export class SearchQueryDto {
     required: false,
     type: "array",
   })
-  @IsOptional()
   @IsArray()
+  @IsOptional()
   @Transform(({ value }) => transformValues(value))
   aggregates?: AggregateFieldQuery[] = [];
 
-  @ApiProperty({
-    description: "The end date to search to",
-    required: false,
-  })
+  /**
+   *The end date to search to
+   * @example 2022-01-01
+   */
   @IsDateString()
   @IsOptional()
   endDate?: string;
@@ -117,8 +115,8 @@ export class SearchQueryDto {
     required: false,
     type: "array",
   })
-  @IsOptional()
   @IsArray()
+  @IsOptional()
   @Transform(({ value }) => transformValues(value))
   filters?: FieldFieldQuery[] = [];
 
@@ -127,46 +125,42 @@ export class SearchQueryDto {
     description: "The limit of the number of results returned",
     required: false,
   })
+  @IsNumber()
   @IsOptional()
   @IsPositive()
-  @IsNumber()
   limit?: number = 10;
 
-  @ApiProperty({
-    default: 0,
-    description: "The offset of the returned results",
-    required: false,
-  })
-  @IsOptional()
+  /**
+   *The offset of the returned results
+   * @example 10
+   */
   @IsNumber()
+  @IsOptional()
   offset?: number = 0;
 
-  @ApiProperty({
-    default: "createdAt",
-    description: "The field to sort the results by",
-    required: false,
-  })
-  @IsString()
+  /**
+   *The field to sort the results by
+   * @example createdAt
+   */
   @IsOptional()
+  @IsString()
   sortBy?: string = "createdAt";
 
-  @ApiProperty({
-    default: SortDirection.DESCENDING,
-    description: "The direction to sort the results by",
-    enum: SortDirection,
-    required: false,
-  })
+  /**
+   *The direction to sort the results by
+   * @example desc
+   */
   @IsEnum(SortDirection)
   @IsOptional()
   sortDirection?: SortDirection = SortDirection.DESCENDING;
 
-  @ApiProperty({
-    description: "The start date to search from",
-    required: false,
-  })
+  /**
+   *The start date to search from
+   * @example 2021-01-01
+   */
   @IsDateString()
   @IsOptional()
-  startDate?: string;
+  startDate?: Date;
 }
 
 const transformValues = (value: string | string[]) => {
@@ -178,6 +172,7 @@ const transformValues = (value: string | string[]) => {
         return filters;
       }
       return parsed;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new BadRequestException(
         "Invalid filters format. It should be a JSON array."

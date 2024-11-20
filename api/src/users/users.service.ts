@@ -1,5 +1,4 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { AuthProviderType } from "@prisma/client";
 
 import { BaseService } from "../common/base.service";
@@ -25,20 +24,13 @@ export class UsersService extends BaseService<
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
-    private configService: ConfigService,
     private websocketsService: WebsocketsService
   ) {
     super(userRepository);
   }
 
   async create(orgname: string, createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create("", {
-      emailVerified:
-        this.configService.get("FEATURE_EMAIL") === true
-          ? createUserDto.emailVerified
-          : true,
-      ...createUserDto,
-    });
+    const user = await this.userRepository.create("", createUserDto);
     await this.organizationsService.create(
       null,
       {
@@ -52,12 +44,6 @@ export class UsersService extends BaseService<
 
   async deactivate(id: string) {
     await this.userRepository.deactivate(id);
-  }
-
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["user"],
-    });
   }
 
   async findOneByEmail(email: string) {
@@ -84,11 +70,6 @@ export class UsersService extends BaseService<
     );
   }
 
-  async setEmailVerifiedByEmail(email: string) {
-    const user = await this.findOneByEmail(email);
-    return this.toEntity(await this.setEmailVerified(user.id));
-  }
-
   async setRefreshToken(id: string, refreshToken: string) {
     return this.toEntity(
       await this.userRepository.updateRaw(null, id, {
@@ -111,6 +92,12 @@ export class UsersService extends BaseService<
     }
     this.emitMutationEvent(user.defaultOrgname);
     return this.toEntity(user);
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["user"],
+    });
   }
 
   protected toEntity(

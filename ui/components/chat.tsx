@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import {
   useContentControllerFindAll,
   useLabelsControllerCreate,
@@ -11,6 +10,7 @@ import {
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/use-auth";
 import { useStreamChat } from "@/hooks/use-stream-chat";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { RefreshCcw } from "lucide-react";
 import { useSearchParams } from "next/navigation";

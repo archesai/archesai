@@ -1,0 +1,73 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+profiles:
+  - name: staging
+    deploy:
+      statusCheckDeadlineSeconds: 300
+      tolerateFailuresUntilDeadline: true
+    manifests:
+      kustomize:
+        paths:
+          - "deploy/kubernetes/overlays/gcp/stage"
+  - name: production
+    deploy:
+      statusCheckDeadlineSeconds: 300
+      tolerateFailuresUntilDeadline: true
+    manifests:
+      kustomize:
+        paths:
+          - "deploy/kubernetes/overlays/gcp/production"
+  - name: dev
+    build:
+      local:
+        push: false
+        useBuildkit: true
+      artifacts:
+        - image: arches-api
+          context: ./api
+          docker:
+            target: development
+            dockerfile: Dockerfile
+          sync:
+            manual:
+              - src: "**/*"
+                dest: .
+        - image: arches-ui
+          context: ./ui
+          docker:
+            target: development
+            dockerfile: Dockerfile
+          sync:
+            manual:
+              - src: "**/*"
+                dest: .
+        - image: arches-nlp
+          context: ./nlp
+          docker:
+            target: development
+            dockerfile: Dockerfile
+          sync:
+            manual:
+              - src: "**/*"
+                dest: .
+      tagPolicy:
+        inputDigest: {}
+    deploy:
+      statusCheckDeadlineSeconds: 300
+      tolerateFailuresUntilDeadline: true
+    manifests:
+      kustomize:
+        paths:
+          - "deploy/kubernetes/overlays/dev"
+    customActions:
+      - name: seed
+        executionMode:
+          kubernetesCluster:
+            jobManifestPath: deploy/kubernetes/overlays/dev/arches-api-seed-job.yaml
+        containers:
+          - image: arches-api
+            name: arches-api-seed
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                npm run db:seed

@@ -3,9 +3,8 @@ import {
   useAuthControllerEmailVerificationRequest,
   useUserControllerFindOne,
 } from "@/generated/archesApiComponents";
+import { useToast } from "@/hooks/use-toast";
 import { RocketIcon } from "@radix-ui/react-icons";
-
-import { useToast } from "../../ui/use-toast";
 
 export function VerifyEmailAlert() {
   const { mutateAsync: requestEmailVerification } =

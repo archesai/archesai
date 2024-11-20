@@ -20,12 +20,12 @@ import {
   useUserControllerUpdate,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import * as React from "react";
 
 import { ArchesLogo } from "../../arches-logo";
 import { Badge } from "../../ui/badge";
-import { useToast } from "../../ui/use-toast";
 
 export function OrganizationSwitcher() {
   const { defaultOrgname } = useAuth();
@@ -68,7 +68,7 @@ export function OrganizationSwitcher() {
               {
                 // add eslint ignore for the next lint
               }
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              { }
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg border text-primary">
                 <div className="-mt-0.5">
                   <ArchesLogo scale={0.1} size="sm" />

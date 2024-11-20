@@ -10,9 +10,7 @@ resources:
   - "../../../base"
   - "./arches-frontend-config.yaml"
   - "./arches-api-managedcertificate.yaml"
-  - "./arches-api-ingress.yaml"
   - "./arches-ui-managedcertificate.yaml"
-  - "./arches-ui-ingress.yaml"
 
 patches:
   - path: "./arches-api-deployment.patch.yaml"
@@ -27,3 +25,11 @@ patches:
     target:
       kind: ServiceAccount
       name: arches-api-service-account
+  - path: "./arches-api-ingress.patch.yaml"
+    target:
+      kind: Ingress
+      name: arches-api-ingress
+  - path: "./arches-ui-ingress.patch.yaml"
+    target:
+      kind: Ingress
+      name: arches-ui-ingress

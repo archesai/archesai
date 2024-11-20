@@ -10,16 +10,16 @@ import {
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import Image from "next/image";
 
+interface SociaNetworkslProps {
+  name: string;
+  url: string;
+}
+
 interface TeamProps {
   imageUrl: string;
   name: string;
   position: string;
   socialNetworks: SociaNetworkslProps[];
-}
-
-interface SociaNetworkslProps {
-  name: string;
-  url: string;
 }
 
 const teamList: TeamProps[] = [

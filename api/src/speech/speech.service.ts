@@ -13,14 +13,6 @@ export class SpeechService {
     });
   }
 
-  private async streamToBuffer(stream: internal.Readable): Promise<Buffer> {
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-    return Buffer.concat(chunks);
-  }
-
   async generateSpeech(text: string): Promise<Buffer> {
     const res = await this.client.textToSpeech.convert("pMsXgVXv3BLzUgSXRplE", {
       optimize_streaming_latency: ElevenLabs.OptimizeStreamingLatency.Zero,
@@ -37,5 +29,13 @@ export class SpeechService {
     const audioBuffer = await this.streamToBuffer(res);
 
     return audioBuffer;
+  }
+
+  private async streamToBuffer(stream: internal.Readable): Promise<Buffer> {
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
   }
 }

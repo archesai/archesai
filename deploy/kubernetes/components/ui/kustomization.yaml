@@ -3,3 +3,4 @@ kind: Component
 resources:
   - "./arches-ui-deployment.yaml"
   - "./arches-ui-service.yaml"
+  - "./arches-ui-ingress.yaml"

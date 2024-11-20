@@ -223,20 +223,18 @@ const generateFieldSchema = (
   let fieldSchema = "";
 
   switch (field.fieldType) {
-    case "string":
-      fieldSchema = "z.string()";
-      break;
-    case "number":
-      fieldSchema = "z.number()";
+    case "array":
+      fieldSchema = `z.array(${
+        field.constraints?.elementType
+          ? `z.${field.constraints.elementType}()`
+          : "z.any()"
+      })`;
       break;
     case "boolean":
       fieldSchema = "z.boolean()";
       break;
-    case "array":
-      const elementType = field.constraints?.elementType
-        ? `z.${field.constraints.elementType}()`
-        : "z.any()";
-      fieldSchema = `z.array(${elementType})`;
+    case "number":
+      fieldSchema = "z.number()";
       break;
     case "object":
       fieldSchema = "z.object({\n";
@@ -244,6 +242,9 @@ const generateFieldSchema = (
         fieldSchema += generateFieldSchema(subField, indentLevel + 1);
       });
       fieldSchema += indent + "})";
+      break;
+    case "string":
+      fieldSchema = "z.string()";
       break;
     default:
       fieldSchema = "z.any()";
@@ -272,22 +273,22 @@ const generateFieldExample = (field: FieldDefinition): any => {
   if (field.isOptional) return undefined;
 
   switch (field.fieldType) {
-    case "string":
-      return "example text";
-    case "number":
-      return 123;
+    case "array":
+      return [
+        generateFieldExample({
+          fieldName: "",
+          fieldType: field.constraints?.elementType || "string",
+          isOptional: false,
+        }),
+      ];
     case "boolean":
       return true;
-    case "array":
-      const elementExample = generateFieldExample({
-        fieldName: "",
-        fieldType: field.constraints?.elementType || "string",
-        isOptional: false,
-      });
-      return [elementExample];
+    case "number":
+      return 123;
     case "object":
-      const subFields = field.subFields || [];
-      return generateExampleJSON(subFields);
+      return generateExampleJSON(field.subFields || []);
+    case "string":
+      return "example text";
     default:
       return null;
   }

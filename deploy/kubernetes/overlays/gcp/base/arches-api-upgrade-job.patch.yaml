@@ -33,7 +33,7 @@ spec:
               echo "Cloud SQL Proxy is live. Proceeding with database migration..."
               set -e
               echo "Doing database migration..."
-              npx prisma migrate deploy --schema /usr/src/app/migrations/schema.prisma;
+              npx prisma migrate deploy --schema /app/prisma/schema.prisma;
               echo "Database migration done.";
               wget --post-data='' http://localhost:9091/quitquitquit;
               echo "Sent quitquitquit signal."

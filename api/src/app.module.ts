@@ -1,9 +1,8 @@
 import { HttpModule } from "@nestjs/axios";
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
-import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { MulterModule } from "@nestjs/platform-express";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -16,12 +15,9 @@ import { AudioModule } from "./audio/audio.module";
 import { AuthModule } from "./auth/auth.module";
 import { AppAuthGuard } from "./auth/guards/app-auth.guard";
 import { DeactivatedGuard } from "./auth/guards/deactivated.guard";
-import { EmailVerifiedGuard } from "./auth/guards/email-verified.guard";
-import { OrganizationRoleGuard } from "./auth/guards/organization-role.guard";
-import { RestrictedAPIKeyGuard } from "./auth/guards/restricted-api-key.guard";
+import { MembershipGuard } from "./auth/guards/organization-role.guard";
 import { BillingModule } from "./billing/billing.module";
-import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
-import { ExcludeNullInterceptor } from "./common/interceptors/exclude-null.interceptor";
+import { CommonModule } from "./common/common.module";
 import { ContentModule } from "./content/content.module";
 import { EmailModule } from "./email/email.module";
 import { EmbeddingsModule } from "./embeddings/embeddings.module";
@@ -43,6 +39,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
 @Module({
   controllers: [],
   imports: [
+    CommonModule,
     PipelinesModule,
     LoggerModule.forRootAsync({
       imports: [ConfigModule],
@@ -76,9 +73,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
               targets: [
                 {
                   options: {
-                    host:
-                      configService.get<string>("LOKI_HOST") ||
-                      "http://arches-loki:3100", // Loki service URL in Kubernetes
+                    host: configService.get<string>("LOKI_HOST"),
                     json: true,
                     labels: {
                       app: "archesai",
@@ -136,6 +131,7 @@ import { WebsocketsModule } from "./websockets/websockets.module";
 
         // STRIPE CONFIG
         FEATURE_BILLING: Joi.boolean().required(),
+
         // EMAIL CONFIG
         FEATURE_EMAIL: Joi.boolean().required(),
 
@@ -241,25 +237,6 @@ import { WebsocketsModule } from "./websockets/websockets.module";
   providers: [
     WebsocketsGateway,
     {
-      provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
-    },
-    {
-      provide: APP_PIPE,
-      useFactory: () => {
-        return new ValidationPipe({
-          forbidNonWhitelisted: true,
-          forbidUnknownValues: true,
-          transform: true,
-          transformOptions: {
-            enableImplicitConversion: true,
-            exposeDefaultValues: true,
-          },
-          whitelist: true,
-        });
-      },
-    },
-    {
       provide: APP_GUARD,
       useClass: AppAuthGuard,
     },
@@ -269,24 +246,9 @@ import { WebsocketsModule } from "./websockets/websockets.module";
     },
     {
       provide: APP_GUARD,
-      useClass: EmailVerifiedGuard,
+      useClass: MembershipGuard,
     },
-    {
-      provide: APP_GUARD,
-      useClass: RestrictedAPIKeyGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: OrganizationRoleGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ExcludeNullInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
+
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggerErrorInterceptor,
@@ -294,8 +256,3 @@ import { WebsocketsModule } from "./websockets/websockets.module";
   ],
 })
 export class AppModule {}
-
-// {
-//   target: "pino/file",
-//   options: { destination: "/app-logs/app.log" },
-// },

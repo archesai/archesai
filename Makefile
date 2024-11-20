@@ -1,46 +1,33 @@
-PROFILE ?= stage
-CONTAINER ?= arches-api
 TEST_FILE ?= ""
-
-build:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
-
-
-
-build-minikube:
-	eval $$(minikube docker-env) && make build
+SUBDIR ?= .
 
 run:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up -d
+	skaffold dev --profile dev
 
 seed:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-seed
+	skaffold build --file-output=build.json --profile dev && skaffold exec seed --build-artifacts=build.json --profile dev && rm build.json
 
 migrations:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml run --rm arches-api-seed /bin/sh -c 'npm run migrations:dev'
+	cd api && DATABASE_URL="postgresql://admin:admin@localhost:5431/nestjs?schema=public" npm run db:reset && cd ..
 
-# This will curl bob:3001/-json to schema.json
 generate:
-	cd ui && npm run gen && cd .. && cd api/test && curl -X GET "http://bob:3001/-yaml"  > openapi-spec.yaml
-
-models:
-	docker exec -it arches-ollama bash -c "echo llama3.1 mxbai-embed-large | xargs -n1 ollama pull"
+	cd ui && npm run gen && cd .. && cd api/test && curl -X GET "http://arches-api.test/-yaml"  > openapi-spec.yaml
 
 lint:
 	cd api && npm run lint && cd ../ui && npm run lint
 
 format:
 	cd api && npm run format && cd ../ui && npm run format
+
+line-count:
+	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
+
 	
-test: generate
+test:
+	cd api && npm run test:cov && cd ..
+
+test-e2e: generate
 	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
 
-stop:
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml down
-		
-reset:
-	-make stop
-	make build && make run
-	
-logs:
-	docker logs -f --tail=100 $(CONTAINER) 2>&1 | ccze -m ansi
+minikube:
+	./deploy/scripts/minikube.sh

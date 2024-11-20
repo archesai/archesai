@@ -10,8 +10,8 @@ import { PipelineStepEntity } from "./pipeline-step.entity";
 
 export type PipelineWithPipelineStepsModel = _PrismaPipeline & {
   pipelineSteps: (_PrismaPipelineStep & {
-    dependents: { id: string }[];
-    dependsOn: { id: string }[];
+    dependents: { id: string; name: string }[];
+    dependsOn: { id: string; name: string }[];
     tool: _PrismaTool;
   })[];
 };

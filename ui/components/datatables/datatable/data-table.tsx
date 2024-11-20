@@ -36,7 +36,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { endOfDay } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
+import { type JSX, useEffect, useMemo, useState } from "react";
 
 export interface BaseItem {
   id: string;
@@ -66,6 +66,7 @@ interface DataTableProps<
   readonly?: boolean;
   useFindAll: (s: any) => {
     data:
+      | undefined
       | {
           metadata: {
             limit: number;
@@ -73,8 +74,7 @@ interface DataTableProps<
             totalResults: number;
           };
           results: TItem[];
-        }
-      | undefined;
+        };
     isLoading: boolean;
     isPlaceholderData: boolean;
   };

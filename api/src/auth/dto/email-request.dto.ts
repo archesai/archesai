@@ -6,7 +6,7 @@ export class EmailRequestDto {
     description: "The e-mail to send the confirmation token to",
     example: "user@archesai.com",
   })
-  @IsString()
   @IsEmail()
+  @IsString()
   email: string;
 }

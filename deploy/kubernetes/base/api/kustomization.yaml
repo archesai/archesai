@@ -8,7 +8,7 @@ secretGenerator:
       - EMBEDDING_TYPE=openai
       - FEATURE_BILLING=false
       - FEATURE_EMAIL=false
-      - FRONTEND_HOST=http://arches-ui:3000
+      - FRONTEND_HOST=https://arches-ui.test
       - JWT_API_TOKEN_EXPIRATION_TIME=31536000
       - JWT_API_TOKEN_SECRET=asdfasdf
       - LLM_TYPE=openai
@@ -23,9 +23,15 @@ secretGenerator:
       - REDIS_AUTH=PASSWORD
       - REDIS_HOST=arches-redis
       - REDIS_PORT=6379
-      - SERVER_HOST=http://arches-api:3001
+      - SERVER_HOST=https://arches-api.test
       - STORAGE_TYPE=minio
       - TS_JEST=false
+      - ALLOWED_ORIGINS=*
+      - SESSION_SECRET=secret
+      - LOKI_HOST=http://arches-loki:3100
+
+generatorOptions:
+  disableNameSuffixHash: true
 
 resources:
   - ./arches-api-deployment.yaml
@@ -33,3 +39,4 @@ resources:
   - ./arches-api-hpa.yaml
   - ./arches-api-rbac.yaml
   - ./arches-api-service-account.yaml
+  - ./arches-api-ingress.yaml

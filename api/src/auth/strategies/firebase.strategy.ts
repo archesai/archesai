@@ -73,6 +73,7 @@ export class FirebaseStrategy extends PassportStrategy(
       const user = await this.usersService.findOneByEmail(decodedToken.email);
       return user;
     } catch (e) {
+      this.logger.log(`User not found: ${decodedToken.email}: ${e}`);
       const username =
         user.email.split("@")[0] +
         "-" +
@@ -91,7 +92,7 @@ export class FirebaseStrategy extends PassportStrategy(
         AuthProviderType.FIREBASE,
         decodedToken.uid
       );
-      return user;
     }
+    return user;
   }
 }

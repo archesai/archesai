@@ -1,5 +1,5 @@
-import { BaseEntity } from "@/src/common/entities/base.entity";
 import { SubItemEntity } from "@/src/common/entities/base-sub-item.entity";
+import { BaseEntity } from "@/src/common/entities/base.entity";
 import { ToolEntity } from "@/src/tools/entities/tool.entity";
 import {
   PipelineStep as _PrismaPipelineStep,
@@ -27,6 +27,12 @@ export class PipelineStepEntity
    */
   @Expose()
   dependsOn: SubItemEntity[];
+
+  /**
+   * The name of the step in the pipeline. It must be unique within the pipeline.
+   */
+  @Expose()
+  name: string;
 
   /**
    * The ID of the pipelin that this step belongs to

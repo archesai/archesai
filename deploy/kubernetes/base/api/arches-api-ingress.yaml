@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: arches-api-ingress
+spec:
+  rules:
+    - host: arches-api.test
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: arches-api
+                port:
+                  number: 443

@@ -3,12 +3,7 @@ import { ToolEntity } from "@/src/tools/entities/tool.entity";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 
-import {
-  createApp,
-  getUser,
-  registerUser,
-  setEmailVerifiedByEmail,
-} from "./util";
+import { createApp, getUser, registerUser, setEmailVerified } from "./util";
 
 describe("Tools", () => {
   let app: INestApplication;
@@ -28,7 +23,7 @@ describe("Tools", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
-    await setEmailVerifiedByEmail(app, user.email);
+    await setEmailVerified(app, user.id);
   });
 
   afterAll(async () => {

@@ -11,4 +11,3 @@ spec:
       targetPort: 3000
   selector:
     component: arches-ui
-  type: LoadBalancer

@@ -27,8 +27,8 @@ spec:
           resources: {}
           env:
             - name: NEXT_PUBLIC_WEBSOCKET_URL
-              value: "wss://arches-api:3001"
+              value: "wss://arches-api.test"
             - name: NEXT_PUBLIC_API_URL
-              value: "http://arches-api:3001"
+              value: "https://arches-api.test"
       hostname: ui-tcp
       restartPolicy: Always

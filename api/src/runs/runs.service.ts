@@ -92,15 +92,9 @@ export class RunsService extends BaseService<
     }
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "runs"],
-    });
-  }
-
   async ensureRunContent(orgname: string, createRunDto: CreateRunDto) {
     const runContent: ContentEntity[] = [];
-    if (!!createRunDto.contentIds?.length) {
+    if (createRunDto.contentIds?.length) {
       for (const contentId of createRunDto.contentIds) {
         runContent.push(await this.contentService.findOne(orgname, contentId));
       }
@@ -184,6 +178,12 @@ export class RunsService extends BaseService<
     });
     this.emitMutationEvent(run.orgname);
     return this.toEntity(run);
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "runs"],
+    });
   }
 
   protected toEntity(model: RunModel): RunEntity {

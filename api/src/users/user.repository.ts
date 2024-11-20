@@ -70,7 +70,7 @@ export class UserRepository extends BaseRepository<
   }
 
   async deactivate(id: string) {
-    return this.prisma.user.update({
+    await this.prisma.user.update({
       data: {
         deactivated: true,
       },

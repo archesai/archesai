@@ -7,7 +7,7 @@ import {
   createApp,
   getUser,
   registerUser,
-  setEmailVerifiedByEmail,
+  setEmailVerified,
 } from "../test/util";
 
 describe("Runs", () => {
@@ -28,7 +28,7 @@ describe("Runs", () => {
 
     const user = await getUser(app, accessToken);
     orgname = user.defaultOrgname;
-    await setEmailVerifiedByEmail(app, user.email);
+    await setEmailVerified(app, user.id);
   });
 
   afterAll(async () => {

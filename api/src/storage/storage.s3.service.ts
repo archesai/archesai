@@ -1,5 +1,3 @@
-// minio-storage.provider.ts
-
 import {
   CreateBucketCommand,
   DeleteObjectCommand,
@@ -43,22 +41,6 @@ export class S3StorageProvider implements StorageService {
 
     // Ensure the bucket exists
     this.createBucketIfNotExists();
-  }
-
-  private async createBucketIfNotExists() {
-    try {
-      await this.s3Client.send(
-        new CreateBucketCommand({ Bucket: this.bucketName })
-      );
-    } catch (error) {
-      if (error.name !== "BucketAlreadyOwnedByYou") {
-        throw error;
-      }
-    }
-  }
-
-  private getKey(orgname: string, filePath: string): string {
-    return path.posix.join("storage", orgname, filePath);
   }
 
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
@@ -316,5 +298,21 @@ export class S3StorageProvider implements StorageService {
     } as Express.Multer.File);
 
     return readUrl;
+  }
+
+  private async createBucketIfNotExists() {
+    try {
+      await this.s3Client.send(
+        new CreateBucketCommand({ Bucket: this.bucketName })
+      );
+    } catch (error) {
+      if (error.name !== "BucketAlreadyOwnedByYou") {
+        throw error;
+      }
+    }
+  }
+
+  private getKey(orgname: string, filePath: string): string {
+    return path.posix.join("storage", orgname, filePath);
   }
 }

@@ -72,14 +72,9 @@ export class ContentService extends BaseService<
       const mimeType = mime.lookup(fileName);
       return mimeType || null;
     } catch (error) {
+      this.logger.error("Failed to detect MIME type: " + error.message);
       throw new BadRequestException("Failed to detect MIME type");
     }
-  }
-
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "content"],
-    });
   }
 
   async getAndUploadPreview(orgname: string, content: ContentEntity) {
@@ -163,6 +158,12 @@ export class ContentService extends BaseService<
         name: title,
       })
     );
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "content"],
+    });
   }
 
   protected toEntity(model: ContentModel): ContentEntity {

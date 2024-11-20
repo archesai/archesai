@@ -8,9 +8,9 @@ import { CreateChatCompletionDto } from "./dto/create-chat-completion.dto";
 
 @Injectable()
 export class LLMService {
-  private readonly logger: Logger = new Logger("LLMService");
-
   public openai: OpenAI;
+
+  private readonly logger: Logger = new Logger("LLMService");
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({

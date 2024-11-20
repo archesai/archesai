@@ -15,7 +15,7 @@ import {
 } from "@prisma/client";
 import { Exclude, Expose } from "class-transformer";
 import {
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -39,15 +39,13 @@ export type RunModel = _PrismaRun & {
 
 @Exclude()
 export class RunEntity extends BaseEntity implements RunModel {
-  @ApiProperty({
-    description: "The timestamp when the run completed",
-    example: "2024-11-05T11:42:02.258Z",
-    required: false,
-    type: Date,
-  })
+  /**
+   *The timestamp when the run completed
+   * @example 2024-11-05T11:42:02.258Z
+   */
   @Expose()
+  @IsDateString()
   @IsOptional()
-  @IsDate()
   completedAt: Date | null;
 
   @ApiProperty({
@@ -75,8 +73,8 @@ export class RunEntity extends BaseEntity implements RunModel {
     type: String,
   })
   @Expose()
-  @IsString()
   @IsOptional()
+  @IsString()
   name: null | string;
 
   @ApiHideProperty()
@@ -131,42 +129,31 @@ export class RunEntity extends BaseEntity implements RunModel {
   @IsNumber()
   progress: number;
 
-  @ApiProperty({
-    description:
-      "The type of run, either an individual tool run or a pipeline run",
-    enum: RunType,
-    required: true,
-  })
-  @IsEnum(RunType)
+  /**
+   *The type of run, either an individual tool run or a pipeline run
+   * @example TOOL_RUN
+   */
   @Expose()
+  @IsEnum(RunType)
   runType: RunType;
 
-  @ApiProperty({
-    description: "The timestamp when the run started",
-    example: "2024-11-05T11:42:02.258Z",
-    required: false,
-    type: Date,
-  })
+  /**
+   *The timestamp when the run started
+   * @example '2024-11-05T11:42:02.258Z'
+   *
+   */
   @Expose()
+  @IsDateString()
   @IsOptional()
-  @IsDate()
   startedAt: Date | null;
 
-  @ApiProperty({
-    default: RunStatus.QUEUED,
-    description: "The status of the run",
-    enum: RunStatus,
-  })
+  /**
+   * The status of the run
+   * @example QUEUED
+   */
   @Expose()
   @IsEnum(RunStatus)
   status: RunStatus;
-
-  // @ApiProperty({
-  //   description: "The tool associated with the run",
-  //   required: false,
-  //   type: ToolEntity,
-  // })
-  // tool: null | ToolEntity;
 
   @ApiProperty({
     description: "The tool ID associated with the run, if applicable",

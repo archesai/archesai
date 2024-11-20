@@ -4,6 +4,34 @@ import {
   SearchQueryDto,
 } from "./dto/search-query.dto";
 
+type PrismaDelegate<PrismaModel, Include> = {
+  count: (args: { where: any }) => Promise<number>;
+  create: (args: {
+    data: any;
+    include?: Include;
+  }) => Promise<any & PrismaModel>;
+  delete: (args: {
+    include?: Include;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+  findMany: (args: {
+    include?: Include;
+    orderBy: any;
+    skip: number;
+    take: number;
+    where: any;
+  }) => Promise<(any & PrismaModel)[]>;
+  findUniqueOrThrow: (args: {
+    include?: Include;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+  update: (args: {
+    data: any;
+    include?: Include;
+    where: any;
+  }) => Promise<any & PrismaModel>;
+};
+
 export abstract class BaseRepository<
   PrismaModel,
   CreateDto,
@@ -116,31 +144,3 @@ export abstract class BaseRepository<
     });
   }
 }
-
-type PrismaDelegate<PrismaModel, Include> = {
-  count: (args: { where: any }) => Promise<number>;
-  create: (args: {
-    data: any;
-    include?: Include;
-  }) => Promise<any & PrismaModel>;
-  delete: (args: {
-    include?: Include;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-  findMany: (args: {
-    include?: Include;
-    orderBy: any;
-    skip: number;
-    take: number;
-    where: any;
-  }) => Promise<(any & PrismaModel)[]>;
-  findUniqueOrThrow: (args: {
-    include?: Include;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-  update: (args: {
-    data: any;
-    include?: Include;
-    where: any;
-  }) => Promise<any & PrismaModel>;
-};

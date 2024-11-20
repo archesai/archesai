@@ -14,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -23,7 +24,6 @@ import { z } from "zod";
 
 import { Button } from "../../ui/button";
 import { Separator } from "../../ui/separator";
-import { useToast } from "../../ui/use-toast";
 
 export interface FormFieldConfig {
   component: React.ComponentType<any>;

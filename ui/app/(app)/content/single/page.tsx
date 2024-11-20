@@ -43,7 +43,7 @@ export default function ContentDetailsPage() {
               <div>{content?.name}</div>
               <Button asChild size="sm" variant="outline">
                 <a
-                  href={content?.url}
+                  href={content?.url || ""}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

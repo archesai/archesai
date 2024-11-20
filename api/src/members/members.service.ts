@@ -23,12 +23,6 @@ export class MembersService extends BaseService<
     super(memberRepository);
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit("update", {
-      queryKey: ["organizations", orgname, "members"],
-    });
-  }
-
   async join(orgname: string, inviteEmail: string, username: string) {
     this.logger.log(
       `Accepting member ${inviteEmail} to organization ${orgname}`
@@ -36,6 +30,12 @@ export class MembersService extends BaseService<
     return this.toEntity(
       await this.memberRepository.join(orgname, inviteEmail, username)
     );
+  }
+
+  protected emitMutationEvent(orgname: string): void {
+    this.websocketsService.socket.to(orgname).emit("update", {
+      queryKey: ["organizations", orgname, "members"],
+    });
   }
 
   protected toEntity(model: MemberModel): MemberEntity {

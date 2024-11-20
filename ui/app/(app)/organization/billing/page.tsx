@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
 import {
   useBillingControllerCancelSubscriptionPlan,
   useBillingControllerChangeSubscriptionPlan,
@@ -24,6 +23,7 @@ import {
   useOrganizationsControllerFindOne,
 } from "@/generated/archesApiComponents";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

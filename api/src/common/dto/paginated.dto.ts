@@ -2,6 +2,14 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { AggregateFieldQuery } from "./search-query.dto";
 
+export class AggregateFieldResult extends AggregateFieldQuery {
+  @ApiProperty({
+    description: "The value of the aggregate",
+    example: 10,
+  })
+  value: number;
+}
+
 export class Metadata {
   @ApiProperty({ description: "The number of results per page", example: 10 })
   limit: number;
@@ -11,14 +19,6 @@ export class Metadata {
 
   @ApiProperty({ description: "The total number of results", example: 100 })
   totalResults: number;
-}
-
-export class AggregateFieldResult extends AggregateFieldQuery {
-  @ApiProperty({
-    description: "The value of the aggregate",
-    example: 10,
-  })
-  value: number;
 }
 
 export class PaginatedDto<TData> {

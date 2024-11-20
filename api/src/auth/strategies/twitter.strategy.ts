@@ -1,15 +1,14 @@
-// src/auth/twitter.strategy.ts
-
 import { UserEntity } from "@/src/users/entities/user.entity";
-import { Injectable } from "@nestjs/common";
+import { UsersService } from "@/src/users/users.service";
+import { Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { AuthProviderType } from "@prisma/client";
 import { Profile, Strategy } from "passport-twitter";
 
-import { UsersService } from "../../users/users.service";
-
 @Injectable()
 export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
+  private logger = new Logger(TwitterStrategy.name);
+
   constructor(private readonly usersService: UsersService) {
     super({
       callbackURL:
@@ -35,6 +34,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
       try {
         user = await this.usersService.findOneByEmail(email);
       } catch (e) {
+        this.logger.log(`User not found: ${email}: ${e}`);
         user = await this.usersService.create(null, {
           email: email,
           emailVerified: true,
@@ -48,8 +48,8 @@ export class TwitterStrategy extends PassportStrategy(Strategy, "twitter") {
           AuthProviderType.TWITTER,
           twitterId
         );
-        return cb(null, user);
       }
+      return cb(null, user);
     } catch (err) {
       return cb(err, false);
     }

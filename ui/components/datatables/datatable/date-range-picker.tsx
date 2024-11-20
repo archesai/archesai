@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 
-export function DatePickerWithRange({}: React.HTMLAttributes<HTMLDivElement>) {
+export function DatePickerWithRange() {
   const { range, setRange } = useFilterItems();
 
   return (

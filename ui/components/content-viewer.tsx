@@ -33,7 +33,7 @@ export function ContentViewer({
         }}
         controls
         height="100%"
-        url={url}
+        url={url || ""}
         width="100%"
       />
     );
@@ -49,7 +49,11 @@ export function ContentViewer({
     );
   } else if (mimeType === "application/pdf") {
     hoverContent = (
-      <iframe className="h-full w-full" src={url} title="PDF Document"></iframe>
+      <iframe
+        className="h-full w-full"
+        src={url || ""}
+        title="PDF Document"
+      ></iframe>
     );
   } else if (mimeType?.startsWith("text/")) {
     hoverContent = (
