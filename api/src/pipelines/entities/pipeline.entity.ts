@@ -1,5 +1,4 @@
 import { BaseEntity } from "@/src/common/entities/base.entity";
-import { ApiProperty } from "@nestjs/swagger";
 import {
   Pipeline as _PrismaPipeline,
   PipelineStep as _PrismaPipelineStep,
@@ -10,29 +9,40 @@ import { IsString } from "class-validator";
 import { PipelineStepEntity } from "./pipeline-step.entity";
 
 export type PipelineWithPipelineStepsModel = _PrismaPipeline & {
-  pipelineSteps: (_PrismaPipelineStep & { tool: _PrismaTool })[];
+  pipelineSteps: (_PrismaPipelineStep & {
+    dependents: { id: string }[];
+    dependsOn: { id: string }[];
+    tool: _PrismaTool;
+  })[];
 };
 
 export class PipelineEntity
   extends BaseEntity
   implements PipelineWithPipelineStepsModel
 {
-  @ApiProperty({
-    example: "This is a sample pipeline",
-    required: false,
-    type: String,
-  })
+  /**
+   * The description of the pipeline
+   * @example 'This pipeline does something'
+   */
   @IsString()
   description: null | string;
 
-  @ApiProperty({ example: "My Pipeline" })
+  /**
+   * The name of the pipeline
+   * @example 'my-pipeline'
+   */
   @IsString()
   name: string;
 
-  @ApiProperty({ example: "my-organization" })
+  /**
+   * The name of the organization that this pipeline belongs to
+   * @example 'my-org'
+   */
   orgname: string;
 
-  @ApiProperty({ type: [PipelineStepEntity] })
+  /**
+   * The steps in the pipeline
+   */
   pipelineSteps: PipelineStepEntity[];
 
   constructor(pipeline: PipelineWithPipelineStepsModel) {

@@ -1,11 +1,11 @@
 import { BaseEntity } from "@/src/common/entities/base.entity";
+import { SubItemEntity } from "@/src/common/entities/base-sub-item.entity";
 import { ToolEntity } from "@/src/tools/entities/tool.entity";
-import { ApiProperty } from "@nestjs/swagger";
 import {
   PipelineStep as _PrismaPipelineStep,
   Tool as _PrismaTool,
 } from "@prisma/client";
-import { Exclude, Expose, Transform } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 
 type PipelineStepModel = _PrismaPipelineStep & {
   tool: _PrismaTool;
@@ -16,34 +16,35 @@ export class PipelineStepEntity
   extends BaseEntity
   implements PipelineStepModel
 {
-  @ApiProperty({
-    description: "The ID of the pie",
-    required: false,
-    type: String,
-  })
+  /**
+   * The order of the step in the pipeline
+   */
   @Expose()
-  dependsOnId: null | string;
+  dependents: SubItemEntity[];
 
-  @ApiProperty({
-    description: "The ID of the pipelin that this step belongs to",
-    type: String,
-  })
+  /**
+   * These are the steps that this step depends on.
+   */
+  @Expose()
+  dependsOn: SubItemEntity[];
+
+  /**
+   * The ID of the pipelin that this step belongs to
+   * @example 'pipeline-id'
+   */
   @Expose()
   pipelineId: string;
 
-  @ApiProperty({
-    description: "The name of the tool",
-    example: "My Tool",
-    type: String,
-  })
+  /**
+   * The name of the tool that this step uses.
+   */
   @Expose()
-  @Transform(({ value }) => value.name)
   tool: ToolEntity;
 
-  @ApiProperty({
-    description: "The ID of the tool that this step uses",
-    type: String,
-  })
+  /**
+   * This is the ID of the tool that this step uses.
+   * @example 'tool-id'
+   */
   @Expose()
   toolId: string;
 

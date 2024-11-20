@@ -32,7 +32,7 @@ export default function ToolDataTable() {
             return (
               <div className="flex gap-2">
                 <Link
-                  className="max-w-[200px] shrink truncate font-medium text-primary"
+                  className="underline-dotted max-w-[200px] shrink truncate font-medium underline"
                   href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
                 >
                   {row.original.name}

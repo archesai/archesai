@@ -53,6 +53,22 @@ export const siteConfig = {
       title: "Tools",
     },
     {
+      children: [
+        {
+          description: "View and manage your pipelines.",
+          href: "/pipelines",
+          Icon: Workflow,
+          showInTabs: true,
+          title: "Pipelines",
+        },
+        {
+          description: "Create a new pipeline.",
+          href: "/pipelines/create",
+          Icon: Workflow,
+          showInTabs: false,
+          title: "Create",
+        },
+      ],
       description: "Create and manage pipelines.",
       href: "/pipelines",
       Icon: Workflow,

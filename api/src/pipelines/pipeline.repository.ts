@@ -7,9 +7,19 @@ import { CreatePipelineDto } from "./dto/create-pipeline.dto";
 import { UpdatePipelineDto } from "./dto/update-pipeline.dto";
 import { PipelineWithPipelineStepsModel } from "./entities/pipeline.entity";
 
-const PIPELINE_INCLUDE = {
+const PIPELINE_INCLUDE: Prisma.PipelineInclude = {
   pipelineSteps: {
     include: {
+      dependents: {
+        select: {
+          id: true,
+        },
+      },
+      dependsOn: {
+        select: {
+          id: true,
+        },
+      },
       tool: true,
     },
   },
@@ -28,27 +38,31 @@ export class PipelineRepository extends BaseRepository<
   }
 
   async create(orgname: string, createPipelineDto: CreatePipelineDto) {
-    return this.prisma.pipeline.create({
+    const pipeline = await this.prisma.pipeline.create({
       data: {
+        description: createPipelineDto.description,
         name: createPipelineDto.name,
-        organization: {
-          connect: {
-            orgname,
-          },
-        },
-        pipelineSteps: {
-          createMany: {
-            data: createPipelineDto.pipelineSteps.map((tool) => {
-              return {
-                dependsOnId: tool.dependsOnId,
-                toolId: tool.toolId,
-              };
-            }),
-          },
-        },
+        orgname,
       },
       include: PIPELINE_INCLUDE,
     });
+
+    for (const pipelineStep of createPipelineDto.pipelineSteps) {
+      await this.prisma.pipelineStep.create({
+        data: {
+          dependsOn: {
+            connect: pipelineStep.dependsOn?.map((id) => ({
+              id,
+            })),
+          },
+          id: pipelineStep.id,
+          pipelineId: pipeline.id,
+          toolId: pipelineStep.toolId,
+        },
+      });
+    }
+
+    return this.findOne(orgname, pipeline.id);
   }
 
   async createDefaultPipeline(orgname: string) {
@@ -108,33 +122,39 @@ export class PipelineRepository extends BaseRepository<
       (tool) => tool.id
     );
 
-    return this.prisma.pipeline.update({
+    await this.prisma.pipeline.update({
       data: {
         name: updatePipelineDto.name,
-        ...(updatePipelineDto.pipelineSteps
-          ? {
-              pipelineSteps: {
-                createMany: {
-                  data: updatePipelineDto.pipelineSteps.map((tool) => {
-                    return {
-                      dependsOnId: tool.dependsOnId,
-                      toolId: tool.toolId,
-                    };
-                  }),
-                },
-                deleteMany: {
-                  id: {
-                    in: pipelineStepsToDelete,
-                  },
-                },
-              },
-            }
-          : {}),
       },
       include: PIPELINE_INCLUDE,
       where: {
         id,
       },
     });
+
+    await this.prisma.pipelineStep.deleteMany({
+      where: {
+        id: {
+          in: pipelineStepsToDelete,
+        },
+      },
+    });
+
+    for (const pipelineStep of updatePipelineDto.pipelineSteps) {
+      await this.prisma.pipelineStep.create({
+        data: {
+          dependsOn: {
+            connect: pipelineStep.dependsOn?.map((id) => ({
+              id,
+            })),
+          },
+          id: pipelineStep.id,
+          pipelineId: id,
+          toolId: pipelineStep.toolId,
+        },
+      });
+    }
+
+    return this.findOne(orgname, id);
   }
 }

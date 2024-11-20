@@ -11,7 +11,7 @@ export type _PrismaSubItemModel = {
 export class SubItemEntity implements _PrismaSubItemModel {
   @ApiProperty({
     description: "The id of the item",
-    example: "example-id",
+    example: "item-id",
   })
   @Expose()
   @IsString()
@@ -19,7 +19,7 @@ export class SubItemEntity implements _PrismaSubItemModel {
 
   @ApiProperty({
     description: "The name of the item",
-    example: "example-name",
+    example: "item-name",
   })
   @Expose()
   @IsString()

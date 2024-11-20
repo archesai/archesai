@@ -81,6 +81,7 @@ export function DataTableToolbar<TData>({
           className="capitalize"
           onClick={() => setFormOpen(true)}
           size="sm"
+          variant={"outline"}
         >
           Create {itemType.toLowerCase()}
         </Button>

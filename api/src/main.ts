@@ -17,6 +17,7 @@ import {
   AggregateFieldQuery,
   FieldFieldQuery,
 } from "./common/dto/search-query.dto";
+import metadata from "./metadata";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -34,7 +35,7 @@ async function bootstrap() {
       .addBearerAuth()
       .addServer(configService.get<string>("SERVER_HOST"))
       .build();
-
+    await SwaggerModule.loadPluginMetadata(metadata); // <-- here
     const document = SwaggerModule.createDocument(app, swaggerConfig, {
       extraModels: [
         FieldFieldQuery,

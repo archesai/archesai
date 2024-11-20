@@ -86,6 +86,7 @@ export type PipelinesControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -1759,6 +1760,7 @@ export type ToolsControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -2112,6 +2114,7 @@ export type ApiTokensControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -2471,6 +2474,7 @@ export type MembersControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -2886,6 +2890,7 @@ export type LabelsControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -3491,6 +3496,7 @@ export type ContentControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
@@ -3850,6 +3856,7 @@ export type RunsControllerFindAllQueryParams = {
   /**
    * The limit of the number of results returned
    *
+   * @minimum 1
    * @default 10
    */
   limit?: number;
