@@ -1,55 +1,51 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Organization as _PrismaOrganization, PlanType } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsEnum, IsNumber } from "class-validator";
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
+import { Organization as _PrismaOrganization, PlanType } from '@prisma/client'
+import { Exclude, Expose } from 'class-transformer'
+import { IsEmail, IsEnum, IsNumber } from 'class-validator'
 
-import { BaseEntity } from "../../common/entities/base.entity";
+import { BaseEntity } from '../../common/entities/base.entity'
 
-export type OrganizationModel = _PrismaOrganization;
+export type OrganizationModel = _PrismaOrganization
 
 @Exclude()
-export class OrganizationEntity
-  extends BaseEntity
-  implements OrganizationModel
-{
+export class OrganizationEntity extends BaseEntity implements OrganizationModel {
   @ApiProperty({
-    description: "The billing email to use for the organization",
-    example: "example@test.com",
+    description: 'The billing email to use for the organization',
+    example: 'example@test.com'
   })
   @Expose()
   @IsEmail()
-  billingEmail: string;
+  billingEmail: string
 
   @ApiProperty({
-    description:
-      "The number of credits you have remaining for this organization",
-    example: 500000,
+    description: 'The number of credits you have remaining for this organization',
+    example: 500000
   })
   @Expose()
   @IsNumber()
-  credits: number;
+  credits: number
 
   @ApiProperty({
-    description: "The name of the organization to create",
-    example: "organization-name",
+    description: 'The name of the organization to create',
+    example: 'organization-name'
   })
   @Expose()
-  orgname: string;
+  orgname: string
 
   @ApiProperty({
-    description: "The plan that the organization is subscribed to",
+    description: 'The plan that the organization is subscribed to',
     enum: PlanType,
-    example: "FREE",
+    example: 'FREE'
   })
   @Expose()
   @IsEnum(PlanType)
-  plan: PlanType;
+  plan: PlanType
 
   @ApiHideProperty()
-  stripeCustomerId: string;
+  stripeCustomerId: string
 
   constructor(organization: OrganizationModel) {
-    super();
-    Object.assign(this, organization);
+    super()
+    Object.assign(this, organization)
   }
 }

@@ -1,39 +1,39 @@
-import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 
-import { BaseRepository } from "../common/base.repository";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateContentDto } from "./dto/create-content.dto";
-import { UpdateContentDto } from "./dto/update-content.dto";
-import { ContentModel } from "./entities/content.entity";
+import { BaseRepository } from '../common/base.repository'
+import { PrismaService } from '../prisma/prisma.service'
+import { CreateContentDto } from './dto/create-content.dto'
+import { UpdateContentDto } from './dto/update-content.dto'
+import { ContentModel } from './entities/content.entity'
 
 const CONTENT_INCLUDE = {
   children: {
     select: {
       id: true,
-      name: true,
-    },
+      name: true
+    }
   },
   consumedBy: {
     select: {
       id: true,
-      name: true,
-    },
+      name: true
+    }
   },
   labels: true,
   parent: {
     select: {
       id: true,
-      name: true,
-    },
+      name: true
+    }
   },
   producedBy: {
     select: {
       id: true,
-      name: true,
-    },
-  },
-};
+      name: true
+    }
+  }
+}
 
 @Injectable()
 export class ContentRepository extends BaseRepository<
@@ -44,17 +44,17 @@ export class ContentRepository extends BaseRepository<
   Prisma.ContentUpdateInput
 > {
   constructor(private prisma: PrismaService) {
-    super(prisma.content, CONTENT_INCLUDE);
+    super(prisma.content, CONTENT_INCLUDE)
   }
 
   async create(
     orgname: string,
     createContentDto: CreateContentDto,
     additionalData: {
-      mimeType: string;
+      mimeType: string
     }
   ) {
-    const { labels, ...otherData } = createContentDto;
+    const { labels, ...otherData } = createContentDto
     return this.prisma.content.create({
       data: {
         ...otherData,
@@ -64,20 +64,20 @@ export class ContentRepository extends BaseRepository<
                 connect: labels.map((name) => ({
                   name_orgname: {
                     name,
-                    orgname,
-                  },
-                })),
+                    orgname
+                  }
+                }))
               }
             : undefined,
         mimeType: additionalData.mimeType,
         organization: {
           connect: {
-            orgname,
-          },
-        },
+            orgname
+          }
+        }
       },
-      include: CONTENT_INCLUDE,
-    });
+      include: CONTENT_INCLUDE
+    })
   }
 
   // Query vectors similar to a given embedding
@@ -87,9 +87,7 @@ export class ContentRepository extends BaseRepository<
     topK: number,
     contentIds?: string[]
   ): Promise<{ id: string; score: number }[]> {
-    const results = await this.prisma.$queryRaw<
-      { id: string; score: number }[]
-    >(Prisma.sql`
+    const results = await this.prisma.$queryRaw<{ id: string; score: number }[]>(Prisma.sql`
       SELECT
         id,
         1 - (embedding <#> ${embedding}::vector) AS score
@@ -97,25 +95,17 @@ export class ContentRepository extends BaseRepository<
         "TextChunk"
       WHERE
         orgname = ${orgname}
-        ${
-          contentIds?.length
-            ? Prisma.sql`AND "contentId" IN (${Prisma.join(contentIds)})`
-            : Prisma.empty
-        }
+        ${contentIds?.length ? Prisma.sql`AND "contentId" IN (${Prisma.join(contentIds)})` : Prisma.empty}
       ORDER BY
         embedding <#> ${embedding}::vector ASC
       LIMIT ${topK};
-    `);
+    `)
 
-    return results;
+    return results
   }
 
-  async update(
-    orgname: string,
-    contentId: string,
-    updateContentDto: UpdateContentDto
-  ) {
-    const { labels, ...otherData } = updateContentDto;
+  async update(orgname: string, contentId: string, updateContentDto: UpdateContentDto) {
+    const { labels, ...otherData } = updateContentDto
 
     return this.prisma.content.update({
       data: {
@@ -126,17 +116,17 @@ export class ContentRepository extends BaseRepository<
                 set: labels.map((name) => ({
                   name_orgname: {
                     name,
-                    orgname,
-                  },
-                })),
+                    orgname
+                  }
+                }))
               }
-            : undefined,
+            : undefined
       },
       include: CONTENT_INCLUDE,
       where: {
         id: contentId,
-        orgname,
-      },
-    });
+        orgname
+      }
+    })
   }
 }

@@ -1,118 +1,110 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import {
-  IsArray,
-  IsBoolean,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
+import { Type } from 'class-transformer'
+import { IsArray, IsBoolean, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export class CreateChatCompletionDto {
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  best_of?: number;
+  best_of?: number
 
   @ApiPropertyOptional({ default: 0.0 })
   @IsNumber()
   @IsOptional()
-  frequency_penalty?: number;
+  frequency_penalty?: number
 
   @ApiPropertyOptional({ default: false })
   @IsBoolean()
   @IsOptional()
-  ignore_eos?: boolean;
+  ignore_eos?: boolean
 
   @ApiPropertyOptional()
   @IsObject()
   @IsOptional()
-  logit_bias?: Record<string, number>;
+  logit_bias?: Record<string, number>
 
   @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
-  max_tokens?: number;
+  max_tokens?: number
 
   @ApiProperty({
-    oneOf: [{ items: { type: "object" }, type: "array" }],
+    oneOf: [{ items: { type: 'object' }, type: 'array' }]
   })
-  messages: MessageDto[];
+  messages: MessageDto[]
 
   @ApiProperty()
   @IsString()
-  model?: string;
+  model?: string
 
   @ApiProperty({ default: 1 })
   @IsNumber()
-  n?: number = 1;
+  n?: number = 1
 
-  name?: string;
+  name?: string
 
   @ApiPropertyOptional({ default: 0.0 })
   @IsNumber()
   @IsOptional()
-  presence_penalty?: number;
+  presence_penalty?: number
 
   @ApiPropertyOptional({ default: true })
   @IsBoolean()
   @IsOptional()
-  skip_special_tokens?: boolean;
+  skip_special_tokens?: boolean
 
   @ApiPropertyOptional({ type: [String] })
   @IsArray()
   @IsOptional()
   @IsString({ each: true })
-  stop?: string[];
+  stop?: string[]
 
   @ApiPropertyOptional({ type: [Number] })
   @IsArray()
   @IsOptional()
   @Type(() => Number)
   @ValidateNested({ each: true })
-  stop_token_ids?: number[];
+  stop_token_ids?: number[]
 
   @ApiPropertyOptional({ default: false })
   @IsBoolean()
   @IsOptional()
-  stream?: boolean;
+  stream?: boolean
 
   @ApiProperty({ default: 0.7 })
   @IsNumber()
-  temperature?: number = 0.7;
+  temperature?: number = 0.7
 
   @ApiProperty({ default: -1 })
   @IsNumber()
-  top_k?: number = -1;
+  top_k?: number = -1
 
   @ApiProperty({ default: 1.0 })
   @IsNumber()
-  top_p?: number = 1;
+  top_p?: number = 1
 
   @ApiPropertyOptional({ default: false })
   @IsBoolean()
   @IsOptional()
-  use_beam_search?: boolean;
+  use_beam_search?: boolean
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  user?: string;
+  user?: string
 }
 
 export class MessageDto {
   @ApiProperty()
   @IsString()
-  content: string;
+  content: string
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  name?: string;
+  name?: string
 
   @ApiProperty()
   @IsString()
-  role: "assistant" | "function" | "system" | "user";
+  role: 'assistant' | 'function' | 'system' | 'user'
 }

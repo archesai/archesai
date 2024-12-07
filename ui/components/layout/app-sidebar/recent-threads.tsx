@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -14,30 +14,24 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import { useLabelsControllerFindAll } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/use-auth";
-import {
-  Folder,
-  Forward,
-  ListMinus,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
-import Link from "next/link";
+  useSidebar
+} from '@/components/ui/sidebar'
+import { useLabelsControllerFindAll } from '@/generated/archesApiComponents'
+import { useAuth } from '@/hooks/use-auth'
+import { Folder, Forward, ListMinus, MoreHorizontal, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 
 export function RecentLabels() {
-  const { isMobile } = useSidebar();
-  const { defaultOrgname } = useAuth();
+  const { isMobile } = useSidebar()
+  const { defaultOrgname } = useAuth()
   const { data: labels } = useLabelsControllerFindAll({
     pathParams: {
-      orgname: defaultOrgname,
-    },
-  });
+      orgname: defaultOrgname
+    }
+  })
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
       <SidebarGroupLabel>Recent Labels</SidebarGroupLabel>
       <SidebarMenu>
         {labels?.results?.map((label) => (
@@ -52,25 +46,25 @@ export function RecentLabels() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
                   <MoreHorizontal />
-                  <span className="sr-only">More</span>
+                  <span className='sr-only'>More</span>
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                align={isMobile ? "end" : "start"}
-                className="w-48 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
+                align={isMobile ? 'end' : 'start'}
+                className='w-48 rounded-lg'
+                side={isMobile ? 'bottom' : 'right'}
               >
                 <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
+                  <Folder className='text-muted-foreground' />
                   <span>View Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
+                  <Forward className='text-muted-foreground' />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
+                  <Trash2 className='text-muted-foreground' />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -78,12 +72,12 @@ export function RecentLabels() {
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <Link href="/chatbots/labels">More</Link>
+          <SidebarMenuButton className='text-sidebar-foreground/70'>
+            <MoreHorizontal className='text-sidebar-foreground/70' />
+            <Link href='/chatbots/labels'>More</Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

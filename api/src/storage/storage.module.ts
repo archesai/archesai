@@ -1,11 +1,11 @@
-import { DynamicModule, Module } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { DynamicModule, Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
-import { StorageController } from "./storage.controller";
-import { GoogleCloudStorageService } from "./storage.gcp.service";
-import { LocalStorageService } from "./storage.local.service";
-import { S3StorageProvider } from "./storage.s3.service";
-import { STORAGE_SERVICE, StorageService } from "./storage.service";
+import { StorageController } from './storage.controller'
+import { GoogleCloudStorageService } from './storage.gcp.service'
+import { LocalStorageService } from './storage.local.service'
+import { S3StorageProvider } from './storage.s3.service'
+import { STORAGE_SERVICE, StorageService } from './storage.service'
 
 @Module({})
 export class StorageModule {
@@ -19,20 +19,20 @@ export class StorageModule {
           inject: [ConfigService],
           provide: STORAGE_SERVICE,
           useFactory: (configService: ConfigService): StorageService => {
-            const storageType = configService.get<string>("STORAGE_TYPE");
+            const storageType = configService.get<string>('STORAGE_TYPE')
             switch (storageType) {
-              case "google-cloud":
-                return new GoogleCloudStorageService();
-              case "local":
-                return new LocalStorageService();
-              case "minio":
-                return new S3StorageProvider();
+              case 'google-cloud':
+                return new GoogleCloudStorageService()
+              case 'local':
+                return new LocalStorageService()
+              case 'minio':
+                return new S3StorageProvider()
               default:
-                return new GoogleCloudStorageService();
+                return new GoogleCloudStorageService()
             }
-          },
-        },
-      ],
-    };
+          }
+        }
+      ]
+    }
   }
 }

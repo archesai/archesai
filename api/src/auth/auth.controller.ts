@@ -1,29 +1,29 @@
-import { Body, Controller, Get, Logger, Post, Req, Res } from "@nestjs/common";
-import { UseGuards } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
-import { Request, Response } from "express";
+import { Body, Controller, Get, Logger, Post, Req, Res } from '@nestjs/common'
+import { UseGuards } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
+import { Request, Response } from 'express'
 
-import { UserEntity } from "../users/entities/user.entity";
-import { CurrentUser } from "./decorators/current-user.decorator";
-import { IsPublic } from "./decorators/is-public.decorator";
-import { Roles } from "./decorators/roles.decorator";
-import { ConfirmationTokenWithNewPasswordDto } from "./dto/confirmation-token-with-new-password.dto";
-import { ConfirmationTokenDto } from "./dto/confirmation-token.dto";
-import { EmailRequestDto } from "./dto/email-request.dto";
-import { LoginDto } from "./dto/login.dto";
-import { RegisterDto } from "./dto/register.dto";
-import { TokenDto } from "./dto/token.dto";
-import { LocalAuthGuard } from "./guards/local-auth.guard";
-import { AuthService } from "./services/auth.service";
-import { EmailChangeService } from "./services/email-change.service";
-import { EmailVerificationService } from "./services/email-verification.service";
-import { PasswordResetService } from "./services/password-reset.service";
+import { UserEntity } from '../users/entities/user.entity'
+import { CurrentUser } from './decorators/current-user.decorator'
+import { IsPublic } from './decorators/is-public.decorator'
+import { Roles } from './decorators/roles.decorator'
+import { ConfirmationTokenWithNewPasswordDto } from './dto/confirmation-token-with-new-password.dto'
+import { ConfirmationTokenDto } from './dto/confirmation-token.dto'
+import { EmailRequestDto } from './dto/email-request.dto'
+import { LoginDto } from './dto/login.dto'
+import { RegisterDto } from './dto/register.dto'
+import { TokenDto } from './dto/token.dto'
+import { LocalAuthGuard } from './guards/local-auth.guard'
+import { AuthService } from './services/auth.service'
+import { EmailChangeService } from './services/email-change.service'
+import { EmailVerificationService } from './services/email-verification.service'
+import { PasswordResetService } from './services/password-reset.service'
 
-@ApiTags("Authentication")
-@Controller("auth")
+@ApiTags('Authentication')
+@Controller('auth')
 export class AuthController {
-  private readonly logger = new Logger(AuthController.name);
+  private readonly logger = new Logger(AuthController.name)
   constructor(
     private readonly authService: AuthService,
     private passwordResetService: PasswordResetService,
@@ -37,13 +37,9 @@ export class AuthController {
    * @throws {400} BadRequestException
    */
   @IsPublic()
-  @Post("/email-change/confirm")
-  async emailChangeConfirm(
-    @Body() confirmEmailChangeDto: ConfirmationTokenDto
-  ) {
-    return new TokenDto(
-      await this.emailChangeService.confirm(confirmEmailChangeDto)
-    );
+  @Post('/email-change/confirm')
+  async emailChangeConfirm(@Body() confirmEmailChangeDto: ConfirmationTokenDto) {
+    return new TokenDto(await this.emailChangeService.confirm(confirmEmailChangeDto))
   }
 
   /**
@@ -51,12 +47,9 @@ export class AuthController {
    * @remarks This endpoint will request your e-mail change with a token
    */
   @ApiBearerAuth()
-  @Post("/email-change/request")
-  async emailChangeRequest(
-    @CurrentUser() currentUserDto: UserEntity,
-    @Body() emailRequestDto: EmailRequestDto
-  ) {
-    return this.emailChangeService.request(currentUserDto.id, emailRequestDto);
+  @Post('/email-change/request')
+  async emailChangeRequest(@CurrentUser() currentUserDto: UserEntity, @Body() emailRequestDto: EmailRequestDto) {
+    return this.emailChangeService.request(currentUserDto.id, emailRequestDto)
   }
 
   /**
@@ -66,13 +59,9 @@ export class AuthController {
    * @throws {401} UnauthorizedException
    */
   @IsPublic()
-  @Post("/email-verification/confirm")
-  async emailVerificationConfirm(
-    @Body() confirmEmailVerificationDto: ConfirmationTokenDto
-  ) {
-    return new TokenDto(
-      await this.emailVerificationService.confirm(confirmEmailVerificationDto)
-    );
+  @Post('/email-verification/confirm')
+  async emailVerificationConfirm(@Body() confirmEmailVerificationDto: ConfirmationTokenDto) {
+    return new TokenDto(await this.emailVerificationService.confirm(confirmEmailVerificationDto))
   }
 
   /**
@@ -83,10 +72,10 @@ export class AuthController {
    * @throws {403} ForbiddenException
    */
   @ApiBearerAuth()
-  @Post("/email-verification/request")
-  @Roles("ADMIN")
+  @Post('/email-verification/request')
+  @Roles('ADMIN')
   async emailVerificationRequest(@CurrentUser() user: UserEntity) {
-    return this.emailVerificationService.request(user.id);
+    return this.emailVerificationService.request(user.id)
   }
 
   /**
@@ -96,19 +85,19 @@ export class AuthController {
    * @throws {400} BadRequestException
    */
   @IsPublic()
-  @Post("/login")
+  @Post('/login')
   @UseGuards(LocalAuthGuard)
   async login(
     @Body() loginDto: LoginDto,
     @CurrentUser() currentUserDto: UserEntity,
     @Res({
-      passthrough: true,
+      passthrough: true
     })
     res: Response
   ): Promise<TokenDto> {
-    const tokenDto = await this.authService.login(currentUserDto);
-    await this.authService.setCookies(res, tokenDto);
-    return tokenDto;
+    const tokenDto = await this.authService.login(currentUserDto)
+    await this.authService.setCookies(res, tokenDto)
+    return tokenDto
   }
 
   /**
@@ -117,14 +106,14 @@ export class AuthController {
    * @throws {401} UnauthorizedException
    */
   @IsPublic()
-  @Post("/logout")
+  @Post('/logout')
   async logout(
     @Res({
-      passthrough: true,
+      passthrough: true
     })
     res: Response
   ): Promise<void> {
-    await this.authService.removeCookies(res);
+    await this.authService.removeCookies(res)
   }
 
   /**
@@ -134,13 +123,9 @@ export class AuthController {
    * @throws {401} UnauthorizedException
    */
   @IsPublic()
-  @Post("/password-reset/confirm")
-  async passwordResetConfirm(
-    @Body() confirmPasswordReset: ConfirmationTokenWithNewPasswordDto
-  ): Promise<TokenDto> {
-    return new TokenDto(
-      await this.passwordResetService.confirm(confirmPasswordReset)
-    );
+  @Post('/password-reset/confirm')
+  async passwordResetConfirm(@Body() confirmPasswordReset: ConfirmationTokenWithNewPasswordDto): Promise<TokenDto> {
+    return new TokenDto(await this.passwordResetService.confirm(confirmPasswordReset))
   }
 
   /**
@@ -148,9 +133,9 @@ export class AuthController {
    * @remarks This endpoint will request a password reset link
    */
   @IsPublic()
-  @Post("/password-reset/request")
+  @Post('/password-reset/request')
   async passwordResetRequest(@Body() emailRequestDto: EmailRequestDto) {
-    await this.passwordResetService.request(emailRequestDto);
+    await this.passwordResetService.request(emailRequestDto)
   }
 
   /**
@@ -159,21 +144,19 @@ export class AuthController {
    * @throws {401} UnauthorizedException
    */
   @IsPublic()
-  @Post("/refresh-token")
+  @Post('/refresh-token')
   async refreshToken(
-    @Body("refreshToken") refreshToken: string,
+    @Body('refreshToken') refreshToken: string,
     @Req() req: Request,
     @Res({
-      passthrough: true,
+      passthrough: true
     })
     res: Response
   ): Promise<TokenDto> {
-    const cookies = req?.signedCookies?.["archesai.refreshToken"];
-    const tokens = await this.authService.refreshAccessToken(
-      refreshToken || cookies
-    );
-    await this.authService.setCookies(res, tokens);
-    return tokens;
+    const cookies = req?.signedCookies?.['archesai.refreshToken']
+    const tokens = await this.authService.refreshAccessToken(refreshToken || cookies)
+    await this.authService.setCookies(res, tokens)
+    return tokens
   }
 
   /**
@@ -182,32 +165,28 @@ export class AuthController {
    * @throws {409} ConflictException
    */
   @IsPublic()
-  @Post("/register")
+  @Post('/register')
   async register(@Body() registerDto: RegisterDto): Promise<TokenDto> {
-    const user = await this.authService.register(registerDto);
-    return this.authService.login(user);
+    const user = await this.authService.register(registerDto)
+    return this.authService.login(user)
   }
 
   @ApiExcludeEndpoint()
-  @Post("firebase/callback")
-  @UseGuards(AuthGuard("firebase-auth"))
-  async zfirebaseAuthCallback(
-    @CurrentUser() currentUserDto: UserEntity
-  ): Promise<TokenDto> {
-    return this.authService.login(currentUserDto);
+  @Post('firebase/callback')
+  @UseGuards(AuthGuard('firebase-auth'))
+  async zfirebaseAuthCallback(@CurrentUser() currentUserDto: UserEntity): Promise<TokenDto> {
+    return this.authService.login(currentUserDto)
   }
 
   @ApiExcludeEndpoint()
-  @Get("twitter")
-  @UseGuards(AuthGuard("twitter"))
+  @Get('twitter')
+  @UseGuards(AuthGuard('twitter'))
   async ztwitterAuth() {}
 
   @ApiExcludeEndpoint()
-  @Get("twitter/callback")
-  @UseGuards(AuthGuard("twitter"))
-  async ztwitterAuthCallback(
-    @CurrentUser() currentUserDto: UserEntity
-  ): Promise<TokenDto> {
-    return this.authService.login(currentUserDto);
+  @Get('twitter/callback')
+  @UseGuards(AuthGuard('twitter'))
+  async ztwitterAuthCallback(@CurrentUser() currentUserDto: UserEntity): Promise<TokenDto> {
+    return this.authService.login(currentUserDto)
   }
 }

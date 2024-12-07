@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import { DataTableViewOptions } from "@/components/datatables/datatable/data-table-view-options";
-import { DatePickerWithRange } from "@/components/datatables/datatable/date-range-picker";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
-import { useToggleView } from "@/hooks/useToggleView";
-import { Cross2Icon } from "@radix-ui/react-icons";
-import { Table } from "@tanstack/react-table";
-import { GridIcon, ListIcon } from "lucide-react";
+import { DataTableViewOptions } from '@/components/datatables/datatable/data-table-view-options'
+import { DatePickerWithRange } from '@/components/datatables/datatable/date-range-picker'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { useFilterItems } from '@/hooks/useFilterItems'
+import { useSelectItems } from '@/hooks/useSelectItems'
+import { useToggleView } from '@/hooks/useToggleView'
+import { Cross2Icon } from '@radix-ui/react-icons'
+import { Table } from '@tanstack/react-table'
+import { GridIcon, ListIcon } from 'lucide-react'
 
 interface DataTableToolbarProps<TData> {
-  createForm?: React.ReactNode;
-  data: TData[];
-  itemType: string;
-  readonly?: boolean;
-  setFormOpen: (open: boolean) => void;
-  table: Table<TData>;
+  createForm?: React.ReactNode
+  data: TData[]
+  itemType: string
+  readonly?: boolean
+  setFormOpen: (open: boolean) => void
+  table: Table<TData>
 }
 
 export function DataTableToolbar<TData>({
@@ -27,25 +27,24 @@ export function DataTableToolbar<TData>({
   itemType,
   readonly,
   setFormOpen,
-  table,
+  table
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const isFiltered = table.getState().columnFilters.length > 0
 
-  const { query, setQuery } = useFilterItems();
-  const { selectedAllItems, selectedSomeItems, toggleSelectAll } =
-    useSelectItems({ items: data || [] });
+  const { query, setQuery } = useFilterItems()
+  const { selectedAllItems, selectedSomeItems, toggleSelectAll } = useSelectItems({ items: data || [] })
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className='flex flex-wrap items-center gap-2'>
       {!readonly && (
         <Checkbox
-          aria-label="Select all"
-          checked={selectedAllItems || (selectedSomeItems && "indeterminate")}
+          aria-label='Select all'
+          checked={selectedAllItems || (selectedSomeItems && 'indeterminate')}
           onCheckedChange={() => toggleSelectAll()}
         />
       )}
       <Input
-        className="h-8 flex-1"
+        className='h-8 flex-1'
         onChange={(event) => setQuery(event.target.value)}
         placeholder={`Search ${itemType}s...`}
         value={query}
@@ -63,13 +62,9 @@ export function DataTableToolbar<TData>({
         />
       )} */}
       {isFiltered && (
-        <Button
-          className="flex h-8 gap-2 p-2"
-          onClick={() => table.resetColumnFilters()}
-          variant="outline"
-        >
+        <Button className='flex h-8 gap-2 p-2' onClick={() => table.resetColumnFilters()} variant='outline'>
           <span>Reset</span>
-          <Cross2Icon className="h-5 w-5" />
+          <Cross2Icon className='h-5 w-5' />
         </Button>
       )}
 
@@ -77,47 +72,38 @@ export function DataTableToolbar<TData>({
       <ViewToggle />
       <DataTableViewOptions table={table} />
       {createForm && !readonly ? (
-        <Button
-          className="capitalize"
-          onClick={() => setFormOpen(true)}
-          size="sm"
-          variant={"outline"}
-        >
+        <Button className='capitalize' onClick={() => setFormOpen(true)} size='sm' variant={'outline'}>
           Create {itemType.toLowerCase()}
         </Button>
       ) : null}
     </div>
-  );
+  )
 }
 
 export function ViewToggle() {
-  const { setView, view } = useToggleView();
+  const { setView, view } = useToggleView()
   return (
-    <div className="hidden h-8 gap-2 md:flex">
+    <div className='hidden h-8 gap-2 md:flex'>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === "table"
-            ? "bg-secondary text-primary"
-            : "bg-transparent text-muted-foreground"
+          view === 'table' ? 'bg-secondary text-primary' : 'bg-transparent text-muted-foreground'
         }`}
-        onClick={() => setView("table")}
-        size="icon"
-        variant={"outline"}
+        onClick={() => setView('table')}
+        size='icon'
+        variant={'outline'}
       >
-        <ListIcon className="h-5 w-5" />
+        <ListIcon className='h-5 w-5' />
       </Button>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === "grid"
-            ? "bg-secondary text-primary"
-            : "bg-transparent text-muted-foreground"
+          view === 'grid' ? 'bg-secondary text-primary' : 'bg-transparent text-muted-foreground'
         }`}
-        onClick={() => setView("grid")}
-        size="icon"
-        variant={"secondary"}
+        onClick={() => setView('grid')}
+        size='icon'
+        variant={'secondary'}
       >
-        <GridIcon className="h-5 w-5" />
+        <GridIcon className='h-5 w-5' />
       </Button>
     </div>
-  );
+  )
 }

@@ -1,89 +1,78 @@
-"use client";
+'use client'
 
-import { useSidebar } from "@/components/ui/sidebar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { siteConfig } from "@/config/site";
-import { Menu } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useSidebar } from '@/components/ui/sidebar'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { siteConfig } from '@/config/site'
+import { Menu } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 
-import { Button } from "../../ui/button";
-import { CommandMenu } from "./command-menu";
-import { VerifyEmailAlert } from "./email-verify";
-import { ModeToggle } from "./mode-toggle";
-import { TitleAndDescription } from "./title-and-description";
-import { UserButton } from "./user-button";
+import { Button } from '../../ui/button'
+import { CommandMenu } from './command-menu'
+import { VerifyEmailAlert } from './email-verify'
+import { ModeToggle } from './mode-toggle'
+import { TitleAndDescription } from './title-and-description'
+import { UserButton } from './user-button'
 
 export const PageHeader = () => {
-  const { toggleSidebar } = useSidebar();
-  const router = useRouter();
-  const pathname = usePathname() as string;
+  const { toggleSidebar } = useSidebar()
+  const router = useRouter()
+  const pathname = usePathname() as string
 
   // combine all the routes from siteConfig
-  const routes = siteConfig.routes
-    .map((route) => [route, ...(route.children || [])])
-    .flat();
+  const routes = siteConfig.routes.map((route) => [route, ...(route.children || [])]).flat()
 
   // find the current route
-  const currentRoute = routes.find((route) => pathname === route.href);
+  const currentRoute = routes.find((route) => pathname === route.href)
   // get the title and description from the current route
-  const title = currentRoute?.title;
-  const description = currentRoute?.description;
-  const Icon = currentRoute?.Icon;
+  const title = currentRoute?.title
+  const description = currentRoute?.description
+  const Icon = currentRoute?.Icon
 
   const currentTabs = siteConfig.routes
     .find((route) => pathname.startsWith(route.href))
-    ?.children?.filter((tab: any) => tab?.showInTabs);
-  const activeTab = currentTabs?.find((tab) => pathname === tab.href)?.href;
+    ?.children?.filter((tab: any) => tab?.showInTabs)
+  const activeTab = currentTabs?.find((tab) => pathname === tab.href)?.href
 
   return (
     <>
       <VerifyEmailAlert />
 
-      <header className="flex w-full items-center justify-between bg-sidebar p-3 py-3">
-        <Button
-          className="mr-3 flex h-8 w-8"
-          onClick={toggleSidebar}
-          size="icon"
-          variant="outline"
-        >
-          <Menu className="h-5 w-5" />
+      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
+        <Button className='mr-3 flex h-8 w-8' onClick={toggleSidebar} size='icon' variant='outline'>
+          <Menu className='h-5 w-5' />
         </Button>
-        <div className="flex flex-1 items-center justify-end gap-3">
+        <div className='flex flex-1 items-center justify-end gap-3'>
           <CommandMenu />
           <ModeToggle />
-          <UserButton size="sm" />
+          <UserButton size='sm' />
         </div>
       </header>
 
       {!currentTabs || currentTabs.length === 0 ? (
-        <div className="border-b" />
+        <div className='border-b' />
       ) : (
         <Tabs value={activeTab}>
-          <TabsList className="h-8 w-full items-end justify-start rounded-none border-b bg-sidebar">
+          <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>
             {currentTabs.map((tab) => {
-              const isActive = tab.href === activeTab;
+              const isActive = tab.href === activeTab
               return (
                 <TabsTrigger
-                  className={`relative h-8 font-normal shadow-none transition-all hover:bg-muted [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? "text-foreground [&::after]:w-full" : "text-muted-foreground [&::after]:w-0"}`}
+                  className={`relative h-8 font-normal shadow-none transition-all hover:bg-muted [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? 'text-foreground [&::after]:w-full' : 'text-muted-foreground [&::after]:w-0'}`}
                   key={tab.href}
                   onClick={() => {
-                    router.push(tab.href);
+                    router.push(tab.href)
                   }}
                   value={tab.href}
                 >
                   {tab.title}
                 </TabsTrigger>
-              );
+              )
             })}
           </TabsList>
         </Tabs>
       )}
 
-      <TitleAndDescription
-        description={description}
-        Icon={Icon}
-        title={title}
-      />
+      <TitleAndDescription description={description} Icon={Icon} title={title} />
     </>
-  );
-};
+  )
+}

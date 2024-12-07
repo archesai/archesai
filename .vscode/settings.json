@@ -10,15 +10,5 @@
     // "**/env": true,
     // "**/tmp": true
   },
-  "makefile.configureOnOpen": false,
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta5.json": [
-      "file:///home/jonathan/Projects/archesai/deploy/skaffold.yaml",
-      "file:///home/jonathan/Projects/archesai/skaffold.yaml"
-    ],
-    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/k3d-config.yaml"
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  }
+  "editor.maxTokenizationLineLength": 200000
 }

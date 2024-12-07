@@ -1,124 +1,92 @@
-"use client";
-import { DataTable } from "@/components/datatables/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
-import { Badge } from "@/components/ui/badge";
+'use client'
+import { DataTable } from '@/components/datatables/datatable/data-table'
+import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
+import { Badge } from '@/components/ui/badge'
 import {
   ToolsControllerFindAllPathParams,
   ToolsControllerRemoveVariables,
   useToolsControllerFindAll,
-  useToolsControllerRemove,
-} from "@/generated/archesApiComponents";
-import { ToolEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/use-auth";
-import { format } from "date-fns";
-import { PackageCheck } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+  useToolsControllerRemove
+} from '@/generated/archesApiComponents'
+import { ToolEntity } from '@/generated/archesApiSchemas'
+import { useAuth } from '@/hooks/use-auth'
+import { format } from 'date-fns'
+import { PackageCheck } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function ToolDataTable() {
-  const router = useRouter();
-  const { defaultOrgname } = useAuth();
+  const router = useRouter()
+  const { defaultOrgname } = useAuth()
 
   return (
-    <DataTable<
-      ToolEntity,
-      ToolsControllerFindAllPathParams,
-      ToolsControllerRemoveVariables
-    >
+    <DataTable<ToolEntity, ToolsControllerFindAllPathParams, ToolsControllerRemoveVariables>
       columns={[
         {
-          accessorKey: "name",
+          accessorKey: 'name',
           cell: ({ row }) => {
             return (
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Link
-                  className="underline-dotted max-w-[200px] shrink truncate font-medium underline"
+                  className='underline-dotted max-w-[200px] shrink truncate font-medium underline'
                   href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
                 >
                   {row.original.name}
                 </Link>
               </div>
-            );
+            )
           },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Name" />
-          ),
+          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
         },
         {
-          accessorKey: "description",
+          accessorKey: 'description',
           cell: ({ row }) => {
-            return <span>{row.original.description || "No Description"}</span>;
+            return <span>{row.original.description || 'No Description'}</span>
           },
           enableHiding: false,
           header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Description"
-            />
-          ),
+            <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Description' />
+          )
         },
         {
-          accessorKey: "inputType",
+          accessorKey: 'inputType',
           cell: ({ row }) => {
-            return <Badge>{row.original.inputType}</Badge>;
+            return <Badge>{row.original.inputType}</Badge>
           },
           enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Input"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Input' />
         },
         {
-          accessorKey: "outputType",
+          accessorKey: 'outputType',
           cell: ({ row }) => {
-            return <Badge>{row.original.outputType}</Badge>;
+            return <Badge>{row.original.outputType}</Badge>
           },
           enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Output"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Output' />
         },
         {
-          accessorKey: "createdAt",
+          accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className="font-light">
-                {format(new Date(row.original.createdAt), "M/d/yy h:mm a")}
-              </span>
-            );
+            return <span className='font-light'>{format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}</span>
           },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Created"
-            />
-          ),
-        },
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Created' />
+        }
       ]}
       dataIcon={<PackageCheck />}
-      defaultView="table"
+      defaultView='table'
       findAllPathParams={{
-        orgname: defaultOrgname,
+        orgname: defaultOrgname
       }}
       getDeleteVariablesFromItem={(tool) => ({
         pathParams: {
           orgname: defaultOrgname,
-          toolId: tool.id,
-        },
+          toolId: tool.id
+        }
       })}
       handleSelect={(tool) => router.push(`/tool/single?toolId=${tool.id}`)}
-      itemType="tool"
+      itemType='tool'
       useFindAll={useToolsControllerFindAll}
       useRemove={useToolsControllerRemove}
     />
-  );
+  )
 }

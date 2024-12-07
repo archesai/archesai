@@ -1,45 +1,36 @@
-import { BadRequestException } from "@nestjs/common";
-import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
-import {
-  IsArray,
-  IsDateString,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsString,
-  ValidateIf,
-} from "class-validator";
+import { BadRequestException } from '@nestjs/common'
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger'
+import { Transform, Type } from 'class-transformer'
+import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator'
 
 export enum Granularity {
-  DAY = "day",
-  MONTH = "month",
-  WEEK = "week",
-  YEAR = "year",
+  DAY = 'day',
+  MONTH = 'month',
+  WEEK = 'week',
+  YEAR = 'year'
 }
 
 export enum Operator {
-  CONTAINS = "contains",
-  ENDS_WITH = "endsWith",
-  EQUALS = "equals",
-  EVERY = "every",
-  IN = "in",
-  NONE = "none",
-  NOT = "not",
-  SOME = "some",
-  STARTS_WITH = "startsWith",
+  CONTAINS = 'contains',
+  ENDS_WITH = 'endsWith',
+  EQUALS = 'equals',
+  EVERY = 'every',
+  IN = 'in',
+  NONE = 'none',
+  NOT = 'not',
+  SOME = 'some',
+  STARTS_WITH = 'startsWith'
 }
 
 export enum SortDirection {
-  ASCENDING = "asc",
-  DESCENDING = "desc",
+  ASCENDING = 'asc',
+  DESCENDING = 'desc'
 }
 
 export class AggregateFieldQuery {
-  @ApiProperty({ description: "Field to aggregate by", type: String })
+  @ApiProperty({ description: 'Field to aggregate by', type: String })
   @IsString()
-  field: string;
+  field: string
 
   /**
    *The granularity to use for ranged aggregates
@@ -47,55 +38,55 @@ export class AggregateFieldQuery {
    */
   @IsEnum(Granularity, { always: false })
   @IsOptional()
-  granularity?: Granularity;
+  granularity?: Granularity
 
   /**
    *The type of aggregate to perform
    * @example count
    */
   @IsString()
-  type: "count" | "sum";
+  type: 'count' | 'sum'
 }
 
 export class FieldFieldQuery {
-  @ApiProperty({ description: "Field to filter by", type: String })
+  @ApiProperty({ description: 'Field to filter by', type: String })
   @IsString()
-  field: string;
+  field: string
 
   @ApiProperty({
-    description: "Operator to use for filtering",
+    description: 'Operator to use for filtering',
     enum: Operator,
-    required: false,
+    required: false
   })
-  operator?: Operator = Operator.CONTAINS;
+  operator?: Operator = Operator.CONTAINS
 
   @ApiProperty({
-    description: "Value to filter for",
-    oneOf: [{ type: "string" }, { items: { type: "string" }, type: "array" }],
+    description: 'Value to filter for',
+    oneOf: [{ type: 'string' }, { items: { type: 'string' }, type: 'array' }]
   })
   @IsArray()
   @IsString()
   @Type(() => String) // Ensures the array elements are treated as strings
-  @ValidateIf((o) => typeof o.value === "string")
+  @ValidateIf((o) => typeof o.value === 'string')
   @ValidateIf((o) => Array.isArray(o.value))
-  value: string | string[];
+  value: string | string[]
 }
 
 export class SearchQueryDto {
   @ApiProperty({
     default: [],
-    description: "Aggregates to collect for the search results",
+    description: 'Aggregates to collect for the search results',
     isArray: true,
     items: {
-      $ref: getSchemaPath(AggregateFieldQuery),
+      $ref: getSchemaPath(AggregateFieldQuery)
     },
     required: false,
-    type: "array",
+    type: 'array'
   })
   @IsArray()
   @IsOptional()
   @Transform(({ value }) => transformValues(value))
-  aggregates?: AggregateFieldQuery[] = [];
+  aggregates?: AggregateFieldQuery[] = []
 
   /**
    *The end date to search to
@@ -103,32 +94,32 @@ export class SearchQueryDto {
    */
   @IsDateString()
   @IsOptional()
-  endDate?: string;
+  endDate?: string
 
   @ApiProperty({
     default: [],
-    description: "Filter fields and values",
+    description: 'Filter fields and values',
     isArray: true,
     items: {
-      $ref: getSchemaPath(FieldFieldQuery),
+      $ref: getSchemaPath(FieldFieldQuery)
     },
     required: false,
-    type: "array",
+    type: 'array'
   })
   @IsArray()
   @IsOptional()
   @Transform(({ value }) => transformValues(value))
-  filters?: FieldFieldQuery[] = [];
+  filters?: FieldFieldQuery[] = []
 
   @ApiProperty({
     default: 10,
-    description: "The limit of the number of results returned",
-    required: false,
+    description: 'The limit of the number of results returned',
+    required: false
   })
   @IsNumber()
   @IsOptional()
   @IsPositive()
-  limit?: number = 10;
+  limit?: number = 10
 
   /**
    *The offset of the returned results
@@ -136,7 +127,7 @@ export class SearchQueryDto {
    */
   @IsNumber()
   @IsOptional()
-  offset?: number = 0;
+  offset?: number = 0
 
   /**
    *The field to sort the results by
@@ -144,7 +135,7 @@ export class SearchQueryDto {
    */
   @IsOptional()
   @IsString()
-  sortBy?: string = "createdAt";
+  sortBy?: string = 'createdAt'
 
   /**
    *The direction to sort the results by
@@ -152,7 +143,7 @@ export class SearchQueryDto {
    */
   @IsEnum(SortDirection)
   @IsOptional()
-  sortDirection?: SortDirection = SortDirection.DESCENDING;
+  sortDirection?: SortDirection = SortDirection.DESCENDING
 
   /**
    *The start date to search from
@@ -160,26 +151,24 @@ export class SearchQueryDto {
    */
   @IsDateString()
   @IsOptional()
-  startDate?: Date;
+  startDate?: Date
 }
 
 const transformValues = (value: string | string[]) => {
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     try {
-      const parsed = JSON.parse(value);
+      const parsed = JSON.parse(value)
       if (!Array.isArray(parsed)) {
-        const filters = [parsed];
-        return filters;
+        const filters = [parsed]
+        return filters
       }
-      return parsed;
+      return parsed
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new BadRequestException(
-        "Invalid filters format. It should be a JSON array."
-      );
+      throw new BadRequestException('Invalid filters format. It should be a JSON array.')
     }
   } else {
-    const filters = value.map((filter: string) => JSON.parse(filter));
-    return filters;
+    const filters = value.map((filter: string) => JSON.parse(filter))
+    return filters
   }
-};
+}

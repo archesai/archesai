@@ -1,52 +1,52 @@
-import { INestApplication } from "@nestjs/common";
-import request from "supertest";
+import { INestApplication } from '@nestjs/common'
+import request from 'supertest'
 
-import { UsersService } from "../src/users/users.service";
-import { createApp, deactivateUser, getUser, registerUser } from "./util";
+import { UsersService } from '../src/users/users.service'
+import { createApp, deactivateUser, getUser, registerUser } from './util'
 
-describe("Organizations", () => {
-  let app: INestApplication;
-  let accessToken: string;
+describe('Organizations', () => {
+  let app: INestApplication
+  let accessToken: string
 
   const credentials = {
-    email: "organizations-test@archesai.com",
-    password: "password",
-  };
+    email: 'organizations-test@archesai.com',
+    password: 'password'
+  }
 
   beforeAll(async () => {
-    app = await createApp();
-    await app.init();
+    app = await createApp()
+    await app.init()
 
-    accessToken = (await registerUser(app, credentials)).accessToken;
+    accessToken = (await registerUser(app, credentials)).accessToken
 
-    const usersService = app.get<UsersService>(UsersService);
-    const user = await getUser(app, accessToken);
-    await usersService.setEmailVerified(user.id);
-  });
+    const usersService = app.get<UsersService>(UsersService)
+    const user = await getUser(app, accessToken)
+    await usersService.setEmailVerified(user.id)
+  })
 
   afterAll(async () => {
-    await app.close();
-  });
+    await app.close()
+  })
 
-  it("should add a user to an organization when they create it", async () => {
+  it('should add a user to an organization when they create it', async () => {
     // Get user
-    const user = await getUser(app, accessToken);
+    const user = await getUser(app, accessToken)
 
     // Get members of default organization
     const res = await request(app.getHttpServer())
-      .get("/organizations/" + user.defaultOrgname + "/members")
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
-    expect(res.body.metadata.totalResults).toBe(1);
+      .get('/organizations/' + user.defaultOrgname + '/members')
+      .set('Authorization', 'Bearer ' + accessToken)
+    expect(res.status).toBe(200)
+    expect(res.body.metadata.totalResults).toBe(1)
 
     // Delete the organization
     await request(app.getHttpServer())
-      .delete("/organizations/" + user.defaultOrgname)
+      .delete('/organizations/' + user.defaultOrgname)
       .send()
-      .set("Authorization", "Bearer " + accessToken);
-    expect(res.status).toBe(200);
+      .set('Authorization', 'Bearer ' + accessToken)
+    expect(res.status).toBe(200)
 
     // Deactivate the user
-    await deactivateUser(app, accessToken);
-  });
-});
+    await deactivateUser(app, accessToken)
+  })
+})

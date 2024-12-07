@@ -1,12 +1,12 @@
-import { faker } from "@faker-js/faker";
-import { NestFactory } from "@nestjs/core";
-import { PrismaClient } from "@prisma/client";
-import * as bcrypt from "bcryptjs";
+import { faker } from '@faker-js/faker'
+import { NestFactory } from '@nestjs/core'
+import { PrismaClient } from '@prisma/client'
+import * as bcrypt from 'bcryptjs'
 
-import { AppModule } from "../src/app.module";
-import { UsersService } from "../src/users/users.service";
+import { AppModule } from '../src/app.module'
+import { UsersService } from '../src/users/users.service'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 export const resetDatabase = async () => {
   await prisma.$transaction([
@@ -22,54 +22,53 @@ export const resetDatabase = async () => {
     prisma.pipeline.deleteMany(),
     prisma.pipelineStep.deleteMany(),
     prisma.run.deleteMany(),
-    prisma.tool.deleteMany(),
+    prisma.tool.deleteMany()
     // Add more tables as needed
-  ]);
-};
+  ])
+}
 
 async function main() {
-  await resetDatabase();
+  await resetDatabase()
 
-  const app = await NestFactory.createApplicationContext(AppModule);
-  const usersService = app.get(UsersService);
-  const hashedPassword = await bcrypt.hash("password", 10);
+  const app = await NestFactory.createApplicationContext(AppModule)
+  const usersService = app.get(UsersService)
+  const hashedPassword = await bcrypt.hash('password', 10)
   const user = await usersService.create(null, {
-    email: "user@example.com",
+    email: 'user@example.com',
     emailVerified: true,
-    firstName: "Jonathan",
-    lastName: "King",
+    firstName: 'Jonathan',
+    lastName: 'King',
     password: hashedPassword,
-    photoUrl:
-      "https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179",
-    username: "user",
-  });
+    photoUrl: 'https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179',
+    username: 'user'
+  })
 
-  const roles = ["USER", "ADMIN"];
-  const labels = ["work", "personal", "school stuff"];
+  const roles = ['USER', 'ADMIN']
+  const labels = ['work', 'personal', 'school stuff']
 
   await prisma.organization.update({
     data: {
       credits: 1000000,
-      plan: "UNLIMITED",
+      plan: 'UNLIMITED'
     },
     where: {
-      orgname: user.defaultOrgname,
-    },
-  });
+      orgname: user.defaultOrgname
+    }
+  })
 
   // Create labels
   for (let i = 0; i < 3; i++) {
     await prisma.label.create({
       data: {
         name: labels[i],
-        orgname: user.defaultOrgname,
-      },
-    });
+        orgname: user.defaultOrgname
+      }
+    })
   }
 
   // Create a bunch of content
   for (let i = 0; i < 100; i++) {
-    const fakeDate = faker.date.past({ years: 1 });
+    const fakeDate = faker.date.past({ years: 1 })
     await prisma.content.create({
       data: {
         createdAt: fakeDate,
@@ -79,45 +78,45 @@ async function main() {
           connect: {
             name_orgname: {
               name: faker.helpers.arrayElement(labels),
-              orgname: user.defaultOrgname,
-            },
-          },
+              orgname: user.defaultOrgname
+            }
+          }
         },
-        mimeType: "application/pdf",
+        mimeType: 'application/pdf',
         name: faker.commerce.productName(),
         orgname: user.defaultOrgname,
-        previewImage: "https://picsum.photos/200/300",
-        url: "https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf",
-      },
-    });
+        previewImage: 'https://picsum.photos/200/300',
+        url: 'https://s26.q4cdn.com/900411403/files/doc_downloads/test.pdf'
+      }
+    })
   }
 
   // Create some API tokens
   for (let i = 0; i < 10; i++) {
     await prisma.apiToken.create({
       data: {
-        key: "*******-2131",
+        key: '*******-2131',
         name: faker.commerce.productName(),
         organization: {
           connect: {
-            orgname: user.defaultOrgname,
-          },
+            orgname: user.defaultOrgname
+          }
         },
         role: faker.helpers.arrayElement(roles) as any,
         user: {
           connect: {
-            id: user.id,
-          },
-        },
-      },
-    });
+            id: user.id
+          }
+        }
+      }
+    })
   }
 
-  console.log("Successfully seeded database");
+  console.log('Successfully seeded database')
 
-  await app.close();
+  await app.close()
 }
 
-(async () => {
-  await main();
-})();
+;(async () => {
+  await main()
+})()

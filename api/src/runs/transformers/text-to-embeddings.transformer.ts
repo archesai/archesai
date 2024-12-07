@@ -2,7 +2,7 @@
 // import { Logger } from "@nestjs/common";
 
 // import { retry } from "../../common/retry";
-import { ContentEntity } from "../../content/entities/content.entity";
+import { ContentEntity } from '../../content/entities/content.entity'
 // import { OpenAiEmbeddingsService } from "../../embeddings/embeddings.openai.service";
 
 // const chunkArray = <T>(array: T[], chunkSize: number): T[][] =>
@@ -56,5 +56,5 @@ export const transformTextToEmbeddings = async () // runId: string,
   //     (Date.now() - start) / 1000
   //   }s`
   // );
-  return;
-};
+  return
+}

@@ -1,43 +1,38 @@
-import { ContentEntity, ToolEntity } from "@/generated/archesApiSchemas";
-import {
-  parseAsArrayOf,
-  parseAsJson,
-  parseAsString,
-  useQueryState,
-} from "nuqs";
-import { useCallback } from "react";
+import { ContentEntity, ToolEntity } from '@/generated/archesApiSchemas'
+import { parseAsArrayOf, parseAsJson, parseAsString, useQueryState } from 'nuqs'
+import { useCallback } from 'react'
 
 export const usePlayground = () => {
   const [selectedTool, setSelectedTool] = useQueryState(
-    "selectedTool",
+    'selectedTool',
     parseAsJson<any | ToolEntity>((tool) => tool as ToolEntity)
       .withOptions({
-        clearOnDefault: true,
+        clearOnDefault: true
       })
       .withDefault(undefined)
-  );
+  )
   const [selectedContent, setSelectedContent] = useQueryState(
-    "selectedContent",
+    'selectedContent',
     parseAsArrayOf(parseAsJson<ContentEntity>((tool) => tool as ContentEntity))
       .withOptions({
-        clearOnDefault: true,
+        clearOnDefault: true
       })
       .withDefault([])
-  );
+  )
   const [selectedRunId, setSelectedRunId] = useQueryState(
-    "selectedRunId",
+    'selectedRunId',
     parseAsString
       .withOptions({
-        clearOnDefault: true,
+        clearOnDefault: true
       })
-      .withDefault("")
-  );
+      .withDefault('')
+  )
 
   const clearParams = useCallback(() => {
-    setSelectedContent(null);
-    setSelectedRunId(null);
-    setSelectedTool(null);
-  }, []);
+    setSelectedContent(null)
+    setSelectedRunId(null)
+    setSelectedTool(null)
+  }, [])
 
   return {
     clearParams,
@@ -46,6 +41,6 @@ export const usePlayground = () => {
     selectedTool,
     setSelectedContent,
     setSelectedRunId,
-    setSelectedTool,
-  };
-};
+    setSelectedTool
+  }
+}

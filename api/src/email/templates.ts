@@ -1,9 +1,6 @@
 // src/email-templates/email-templates.ts
 
-export function getEmailChangeConfirmationHtml(
-  changeEmailLink: string,
-  currentEmail: string
-): string {
+export function getEmailChangeConfirmationHtml(changeEmailLink: string, currentEmail: string): string {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
       <h2>Hello!</h2>
@@ -14,7 +11,7 @@ export function getEmailChangeConfirmationHtml(
       <p>If you did not request this change, please ignore this email.</p>
       <p>Best regards,<br/>Arches AI</p>
     </div>
-  `;
+  `
 }
 
 // src/email-templates/email-templates.ts
@@ -30,7 +27,7 @@ export function getEmailVerificationHtml(verificationLink: string): string {
       <p>If you did not create an account, you can safely ignore this email.</p>
       <p>Best regards,<br/>Arches AI</p>
     </div>
-  `;
+  `
 }
 
 // src/email-templates/email-templates.ts
@@ -46,5 +43,5 @@ export function getPasswordResetHtml(resetLink: string): string {
       <p>If you did not request this, please ignore this email.</p>
       <p>Best regards,<br/>Arches AI</p>
     </div>
-  `;
+  `
 }

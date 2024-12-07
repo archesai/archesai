@@ -1,26 +1,26 @@
-import { HttpModule } from "@nestjs/axios";
-import { forwardRef, Module } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
+import { HttpModule } from '@nestjs/axios'
+import { forwardRef, Module } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
+import { PassportModule } from '@nestjs/passport'
 
-import { ApiTokensModule } from "../api-tokens/api-tokens.module";
-import { EmailModule } from "../email/email.module";
-import { OrganizationsModule } from "../organizations/organizations.module";
-import { PrismaModule } from "../prisma/prisma.module";
-import { UsersModule } from "../users/users.module";
-import { AuthController } from "./auth.controller";
-import { SessionSerializer } from "./serializers/session.serializer";
-import { ARTokensService } from "./services/ar-tokens.service";
-import { AuthService } from "./services/auth.service";
-import { EmailChangeService } from "./services/email-change.service";
-import { EmailVerificationService } from "./services/email-verification.service";
-import { PasswordResetService } from "./services/password-reset.service";
-import { ApiKeyStrategy } from "./strategies/api-key.strategy";
-import { FirebaseStrategy } from "./strategies/firebase.strategy";
-import { JwtStrategy } from "./strategies/jwt.strategy";
-import { LocalStrategy } from "./strategies/local-strategy";
-import { TwitterStrategy } from "./strategies/twitter.strategy";
+import { ApiTokensModule } from '../api-tokens/api-tokens.module'
+import { EmailModule } from '../email/email.module'
+import { OrganizationsModule } from '../organizations/organizations.module'
+import { PrismaModule } from '../prisma/prisma.module'
+import { UsersModule } from '../users/users.module'
+import { AuthController } from './auth.controller'
+import { SessionSerializer } from './serializers/session.serializer'
+import { ARTokensService } from './services/ar-tokens.service'
+import { AuthService } from './services/auth.service'
+import { EmailChangeService } from './services/email-change.service'
+import { EmailVerificationService } from './services/email-verification.service'
+import { PasswordResetService } from './services/password-reset.service'
+import { ApiKeyStrategy } from './strategies/api-key.strategy'
+import { FirebaseStrategy } from './strategies/firebase.strategy'
+import { JwtStrategy } from './strategies/jwt.strategy'
+import { LocalStrategy } from './strategies/local-strategy'
+import { TwitterStrategy } from './strategies/twitter.strategy'
 
 @Module({
   controllers: [AuthController],
@@ -32,13 +32,13 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>("JWT_API_TOKEN_SECRET"),
-      }),
+        secret: configService.get<string>('JWT_API_TOKEN_SECRET')
+      })
     }),
     OrganizationsModule,
     PrismaModule,
     EmailModule,
-    PassportModule.register({ session: false }),
+    PassportModule.register({ session: false })
   ],
   providers: [
     // Services
@@ -55,7 +55,7 @@ import { TwitterStrategy } from "./strategies/twitter.strategy";
     EmailChangeService,
     ARTokensService,
     // Serializers
-    SessionSerializer,
-  ],
+    SessionSerializer
+  ]
 })
 export class AuthModule {}

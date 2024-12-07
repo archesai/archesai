@@ -1,11 +1,11 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Tool as _PrismaTool, ToolIOType } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsEnum, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger'
+import { Tool as _PrismaTool, ToolIOType } from '@prisma/client'
+import { Exclude, Expose } from 'class-transformer'
+import { IsEnum, IsString } from 'class-validator'
 
-import { BaseEntity } from "../../common/entities/base.entity";
+import { BaseEntity } from '../../common/entities/base.entity'
 
-export type ToolModel = _PrismaTool;
+export type ToolModel = _PrismaTool
 
 @Exclude()
 export class ToolEntity extends BaseEntity implements ToolModel {
@@ -15,52 +15,52 @@ export class ToolEntity extends BaseEntity implements ToolModel {
    */
   @Expose()
   @IsString()
-  description: string;
+  description: string
 
   @ApiProperty({
-    description: "The tools input type",
+    description: 'The tools input type',
     enum: ToolIOType,
-    example: "FILE",
+    example: 'FILE'
   })
   @Expose()
   @IsEnum(ToolIOType)
-  inputType: ToolIOType;
+  inputType: ToolIOType
 
   @ApiProperty({
     description: "The tool's name",
-    example: "extract-text",
+    example: 'extract-text'
   })
   @Expose()
   @IsString()
-  name: string;
+  name: string
 
   @ApiProperty({
-    description: "The organization name",
-    example: "my-organization",
+    description: 'The organization name',
+    example: 'my-organization'
   })
   @Expose()
   @IsString()
-  orgname: string;
+  orgname: string
 
   @ApiProperty({
-    description: "The tools output type",
+    description: 'The tools output type',
     enum: ToolIOType,
-    example: "TEXT",
+    example: 'TEXT'
   })
   @Expose()
   @IsEnum(ToolIOType)
-  outputType: ToolIOType;
+  outputType: ToolIOType
 
   @ApiProperty({
     description: "The tool's base path",
-    example: "extract-text",
+    example: 'extract-text'
   })
   @Expose()
   @IsString()
-  toolBase: string;
+  toolBase: string
 
   constructor(tool: ToolModel) {
-    super();
-    Object.assign(this, tool);
+    super()
+    Object.assign(this, tool)
   }
 }

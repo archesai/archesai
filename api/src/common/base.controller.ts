@@ -1,14 +1,14 @@
-import { Body, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 
-import { BaseService } from "./base.service";
-import { PaginatedDto } from "./dto/paginated.dto";
-import { SearchQueryDto } from "./dto/search-query.dto";
+import { BaseService } from './base.service'
+import { PaginatedDto } from './dto/paginated.dto'
+import { SearchQueryDto } from './dto/search-query.dto'
 
 export class BaseController<
   Entity,
   CreateDto,
   UpdateDto,
-  Service extends BaseService<Entity, CreateDto, UpdateDto, any, any>,
+  Service extends BaseService<Entity, CreateDto, UpdateDto, any, any>
 > {
   constructor(readonly service: Service) {}
 
@@ -20,11 +20,11 @@ export class BaseController<
    */
   @Post()
   async create(
-    @Param("orgname") orgname: string,
+    @Param('orgname') orgname: string,
     @Body() createDto: CreateDto,
     ...additionalData: any[]
   ): Promise<Entity> {
-    return this.service.create(orgname, createDto, additionalData);
+    return this.service.create(orgname, createDto, additionalData)
   }
 
   /**
@@ -34,10 +34,10 @@ export class BaseController<
    */
   @Get()
   async findAll(
-    @Param("orgname") orgname: string,
+    @Param('orgname') orgname: string,
     @Query() searchQueryDto: SearchQueryDto
   ): Promise<PaginatedDto<Entity>> {
-    return this.service.findAll(orgname, searchQueryDto);
+    return this.service.findAll(orgname, searchQueryDto)
   }
 
   /**
@@ -45,12 +45,9 @@ export class BaseController<
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
-  @Get(":id")
-  async findOne(
-    @Param("orgname") orgname: string,
-    @Param("id") id: string
-  ): Promise<Entity> {
-    return this.service.findOne(orgname, id);
+  @Get(':id')
+  async findOne(@Param('orgname') orgname: string, @Param('id') id: string): Promise<Entity> {
+    return this.service.findOne(orgname, id)
   }
 
   /**
@@ -58,12 +55,9 @@ export class BaseController<
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
-  @Delete(":id")
-  async remove(
-    @Param("orgname") orgname: string,
-    @Param("id") id: string
-  ): Promise<void> {
-    return this.service.remove(orgname, id);
+  @Delete(':id')
+  async remove(@Param('orgname') orgname: string, @Param('id') id: string): Promise<void> {
+    return this.service.remove(orgname, id)
   }
 
   /**
@@ -71,12 +65,12 @@ export class BaseController<
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
-  @Patch(":id")
+  @Patch(':id')
   async update(
-    @Param("orgname") orgname: string,
-    @Param("id") id: string,
+    @Param('orgname') orgname: string,
+    @Param('id') id: string,
     @Body() updateDto: UpdateDto
   ): Promise<Entity> {
-    return this.service.update(orgname, id, updateDto);
+    return this.service.update(orgname, id, updateDto)
   }
 }

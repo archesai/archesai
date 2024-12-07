@@ -1,42 +1,42 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger'
+import { IsBoolean, IsNumber, IsString } from 'class-validator'
 
 export class StorageItemDto {
   @ApiProperty({
-    description: "Whether or not this is a directory",
-    example: true,
+    description: 'Whether or not this is a directory',
+    example: true
   })
-  createdAt: Date;
+  createdAt: Date
 
   @ApiProperty({
-    description: "The id of the storage item",
-    example: "14",
+    description: 'The id of the storage item',
+    example: '14'
   })
   @IsString()
-  id: string;
+  id: string
 
   @ApiProperty({
-    description: "Whether or not this is a directory",
-    example: true,
+    description: 'Whether or not this is a directory',
+    example: true
   })
   @IsBoolean()
-  isDir: boolean;
+  isDir: boolean
 
   @ApiProperty({
-    description: "The path that the file is located in",
-    example: "/location/in/storage",
+    description: 'The path that the file is located in',
+    example: '/location/in/storage'
   })
   @IsString()
-  name: string;
+  name: string
 
   @ApiProperty({
-    description: "The size of the item in bytes",
-    example: 12341234,
+    description: 'The size of the item in bytes',
+    example: 12341234
   })
   @IsNumber()
-  size: number;
+  size: number
 
   constructor(storageItemDto: StorageItemDto) {
-    Object.assign(this, storageItemDto);
+    Object.assign(this, storageItemDto)
   }
 }

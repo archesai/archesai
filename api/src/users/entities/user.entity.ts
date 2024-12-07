@@ -1,118 +1,112 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { AuthProvider, Member, User } from "@prisma/client";
-import { Exclude, Expose } from "class-transformer";
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
+import { AuthProvider, Member, User } from '@prisma/client'
+import { Exclude, Expose } from 'class-transformer'
+import { IsEmail, IsString, MinLength } from 'class-validator'
 
-import { BaseEntity } from "../../common/entities/base.entity";
-import { MemberEntity } from "../../members/entities/member.entity";
-import { AuthProviderEntity } from "./auth-provider.entity";
+import { BaseEntity } from '../../common/entities/base.entity'
+import { MemberEntity } from '../../members/entities/member.entity'
+import { AuthProviderEntity } from './auth-provider.entity'
 
 export type UserWithMembershipsAndAuthProvidersModel = User & {
-  authProviders: AuthProvider[];
-  memberships: Member[];
-};
+  authProviders: AuthProvider[]
+  memberships: Member[]
+}
 
 export class UserEntity extends BaseEntity implements User {
   @ApiProperty({
-    description: "The memberships of the currently signed in user",
-    type: [AuthProviderEntity],
+    description: 'The memberships of the currently signed in user',
+    type: [AuthProviderEntity]
   })
   @Expose()
-  authProviders: AuthProviderEntity[];
+  authProviders: AuthProviderEntity[]
 
   @ApiProperty({
-    description: "Whether or not the user is deactivated",
-    example: false,
+    description: 'Whether or not the user is deactivated',
+    example: false
   })
   @Expose()
-  deactivated!: boolean;
+  deactivated!: boolean
 
   @ApiProperty({
     description: "The user's default organization name",
-    example: "my-organization",
+    example: 'my-organization'
   })
   @Expose()
-  defaultOrgname: string;
+  defaultOrgname: string
 
   @ApiProperty({
     description: "The user's display name",
-    example: "John Smith",
+    example: 'John Smith'
   })
   @Expose()
-  displayName: string;
+  displayName: string
 
   @ApiProperty({
     description: "The user's e-mail",
-    example: "example@archesai.com",
+    example: 'example@archesai.com'
   })
   @Expose()
   @IsEmail()
-  email!: string;
+  email!: string
 
   @ApiProperty({
-    description: "Whether or not the user's e-mail has been verified",
+    description: "Whether or not the user's e-mail has been verified"
   })
   @Expose()
-  emailVerified!: boolean;
+  emailVerified!: boolean
 
   @ApiProperty({
     description: "The user's first name",
-    example: "John",
+    example: 'John'
   })
   @Expose()
-  firstName: string;
+  firstName: string
 
   @ApiProperty({
     description: "The user's last name",
-    example: "Smith",
+    example: 'Smith'
   })
   @Expose()
-  lastName: string;
+  lastName: string
 
   @ApiProperty({
-    description: "The memberships of the currently signed in user",
-    type: [MemberEntity],
+    description: 'The memberships of the currently signed in user',
+    type: [MemberEntity]
   })
   @Expose()
-  memberships: MemberEntity[];
+  memberships: MemberEntity[]
 
   @ApiHideProperty()
   @Exclude()
-  password: string;
+  password: string
 
   @ApiProperty({
     description: "The user's photo url",
-    example: "/avatar.png",
+    example: '/avatar.png'
   })
   @Expose()
   @IsString()
-  photoUrl!: string;
+  photoUrl!: string
 
   @ApiHideProperty()
   @Exclude()
-  refreshToken: string;
+  refreshToken: string
 
   // Exposed Properties
   @ApiProperty({
     description: "The user's username",
-    example: "jonathan",
-    minLength: 5,
+    example: 'jonathan',
+    minLength: 5
   })
   @Expose()
   @MinLength(5)
-  username!: string;
+  username!: string
 
   constructor(user: UserWithMembershipsAndAuthProvidersModel) {
-    super();
-    Object.assign(this, user);
-    this.memberships = (this.memberships || []).map(
-      (membership) => new MemberEntity(membership)
-    );
-    this.authProviders = (this.authProviders || []).map(
-      (authProvider) => new AuthProviderEntity(authProvider)
-    );
-    this.displayName = this.firstName
-      ? this.firstName + " " + this.lastName
-      : this.username;
+    super()
+    Object.assign(this, user)
+    this.memberships = (this.memberships || []).map((membership) => new MemberEntity(membership))
+    this.authProviders = (this.authProviders || []).map((authProvider) => new AuthProviderEntity(authProvider))
+    this.displayName = this.firstName ? this.firstName + ' ' + this.lastName : this.username
   }
 }

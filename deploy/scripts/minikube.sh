@@ -38,8 +38,10 @@ MINIKUBE_IP=$(minikube ip)
 
 # Update dnsmasq configuration
 sudo bash -c "cat > /etc/dnsmasq.d/minikube.conf <<EOF
-server=8.8.8.8
+server=192.168.1.178
+server=192.168.1.1
 server=/test/$MINIKUBE_IP
+listen-address=127.0.0.1
 no-resolv
 no-poll
 EOF"

@@ -1,176 +1,137 @@
-"use client";
-import { DataTable } from "@/components/datatables/datatable/data-table";
-import { DataTableColumnHeader } from "@/components/datatables/datatable/data-table-column-header";
-import { RunStatusButton } from "@/components/run-status-button";
+'use client'
+import { DataTable } from '@/components/datatables/datatable/data-table'
+import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
+import { RunStatusButton } from '@/components/run-status-button'
 import {
   RunsControllerFindAllPathParams,
   RunsControllerRemoveVariables,
   useRunsControllerFindAll,
-  useRunsControllerRemove,
-} from "@/generated/archesApiComponents";
-import { RunEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/use-auth";
-import { format } from "date-fns";
-import { PackageCheck, Workflow } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+  useRunsControllerRemove
+} from '@/generated/archesApiComponents'
+import { RunEntity } from '@/generated/archesApiSchemas'
+import { useAuth } from '@/hooks/use-auth'
+import { format } from 'date-fns'
+import { PackageCheck, Workflow } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-import { Button } from "../ui/button";
+import { Button } from '../ui/button'
 
 export default function RunDataTable() {
-  const router = useRouter();
-  const { defaultOrgname } = useAuth();
+  const router = useRouter()
+  const { defaultOrgname } = useAuth()
 
   return (
     <DataTable<
       RunEntity & {
-        name: string;
+        name: string
       },
       RunsControllerFindAllPathParams,
       RunsControllerRemoveVariables
     >
       columns={[
         {
-          accessorKey: "name",
+          accessorKey: 'name',
           cell: ({ row }) => {
             return (
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <Link
-                  className="max-w-[200px] shrink truncate font-medium"
+                  className='max-w-[200px] shrink truncate font-medium'
                   href={`/run/single?runId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
               </div>
-            );
+            )
           },
-          header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Name" />
-          ),
+          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
         },
         {
-          accessorKey: "runType",
+          accessorKey: 'runType',
           cell: ({ row }) => {
             return (
-              <Button
-                className="text-primary hover:text-primary/90"
-                size="sm"
-                variant={"outline"}
-              >
-                {row.original.runType === "PIPELINE_RUN" ? (
-                  <Workflow className="h-5 w-5" />
+              <Button className='text-primary hover:text-primary/90' size='sm' variant={'outline'}>
+                {row.original.runType === 'PIPELINE_RUN' ? (
+                  <Workflow className='h-5 w-5' />
                 ) : (
-                  <PackageCheck className="h-5 w-5" />
+                  <PackageCheck className='h-5 w-5' />
                 )}
               </Button>
-            );
+            )
           },
           enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Run Type"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Run Type' />
         },
         {
-          accessorKey: "status",
+          accessorKey: 'status',
           cell: ({ row }) => {
             return (
-              <div className="pl-3">
-                <RunStatusButton run={row.original} size="sm" />
+              <div className='pl-3'>
+                <RunStatusButton run={row.original} size='sm' />
               </div>
-            );
+            )
           },
           enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Input"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Input' />
         },
         {
-          accessorKey: "duration",
+          accessorKey: 'duration',
           cell: ({ row }) => {
             return (
-              <span className="font-light">
+              <span className='font-light'>
                 {row.original.startedAt && row.original.completedAt
                   ? format(
-                      new Date(row.original.completedAt).getTime() -
-                        new Date(row.original.startedAt).getTime(),
-                      "mm:ss"
+                      new Date(row.original.completedAt).getTime() - new Date(row.original.startedAt).getTime(),
+                      'mm:ss'
                     )
-                  : "N/A"}
+                  : 'N/A'}
               </span>
-            );
+            )
           },
           enableHiding: false,
           enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Duration"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Duration' />
         },
         {
-          accessorKey: "startedAt",
+          accessorKey: 'startedAt',
           cell: ({ row }) => {
             return (
-              <span className="font-light">
-                {row.original.startedAt
-                  ? format(new Date(row.original.startedAt), "M/d/yy h:mm a")
-                  : "N/A"}
+              <span className='font-light'>
+                {row.original.startedAt ? format(new Date(row.original.startedAt), 'M/d/yy h:mm a') : 'N/A'}
               </span>
-            );
+            )
           },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Started At"
-            />
-          ),
+          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Started At' />
         },
         {
-          accessorKey: "completedAt",
+          accessorKey: 'completedAt',
           cell: ({ row }) => {
             return (
-              <span className="font-light">
-                {row.original.completedAt
-                  ? format(new Date(row.original.completedAt), "M/d/yy h:mm a")
-                  : "N/A"}
+              <span className='font-light'>
+                {row.original.completedAt ? format(new Date(row.original.completedAt), 'M/d/yy h:mm a') : 'N/A'}
               </span>
-            );
+            )
           },
           header: ({ column }) => (
-            <DataTableColumnHeader
-              className="-ml-2 text-sm"
-              column={column}
-              title="Completed At"
-            />
-          ),
-        },
+            <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Completed At' />
+          )
+        }
       ]}
       dataIcon={<PackageCheck />}
-      defaultView="table"
+      defaultView='table'
       findAllPathParams={{
-        orgname: defaultOrgname,
+        orgname: defaultOrgname
       }}
       getDeleteVariablesFromItem={(run) => ({
         pathParams: {
           orgname: defaultOrgname,
-          runId: run.id,
-        },
+          runId: run.id
+        }
       })}
       handleSelect={(run) => router.push(`/run/single?runId=${run.id}`)}
-      itemType="run"
+      itemType='run'
       useFindAll={useRunsControllerFindAll}
       useRemove={useRunsControllerRemove}
     />
-  );
+  )
 }

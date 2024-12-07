@@ -1,25 +1,20 @@
 // src/email-change/email-change.service.ts
 
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  Logger,
-} from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { ARTokenType } from "@prisma/client";
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { ARTokenType } from '@prisma/client'
 
-import { EmailService } from "../../email/email.service";
-import { getEmailChangeConfirmationHtml } from "../../email/templates";
-import { UsersService } from "../../users/users.service";
-import { ConfirmationTokenDto } from "../dto/confirmation-token.dto";
-import { EmailRequestDto } from "../dto/email-request.dto";
-import { ARTokensService } from "./ar-tokens.service"; // Import TokenService
-import { AuthService } from "./auth.service";
+import { EmailService } from '../../email/email.service'
+import { getEmailChangeConfirmationHtml } from '../../email/templates'
+import { UsersService } from '../../users/users.service'
+import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
+import { EmailRequestDto } from '../dto/email-request.dto'
+import { ARTokensService } from './ar-tokens.service' // Import TokenService
+import { AuthService } from './auth.service'
 
 @Injectable()
 export class EmailChangeService {
-  logger = new Logger(EmailChangeService.name);
+  logger = new Logger(EmailChangeService.name)
 
   constructor(
     private readonly emailService: EmailService,
@@ -33,31 +28,28 @@ export class EmailChangeService {
     const { additionalData, userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_CHANGE,
       confirmationTokenDto.token
-    );
+    )
 
-    const newEmail = additionalData?.newEmail;
+    const newEmail = additionalData?.newEmail
     if (!newEmail) {
-      throw new BadRequestException("New email is missing.");
+      throw new BadRequestException('New email is missing.')
     }
 
-    const user = await this.usersService.setEmail(userId, newEmail);
-    return this.authService.login(user);
+    const user = await this.usersService.setEmail(userId, newEmail)
+    return this.authService.login(user)
   }
 
-  async request(
-    userId: string,
-    emailRequestDto: EmailRequestDto
-  ): Promise<void> {
-    const user = await this.usersService.findOne(null, userId);
-    let newEmailInUse = false;
+  async request(userId: string, emailRequestDto: EmailRequestDto): Promise<void> {
+    const user = await this.usersService.findOne(null, userId)
+    let newEmailInUse = false
     try {
-      await this.usersService.findOneByEmail(emailRequestDto.email);
-      newEmailInUse = true;
+      await this.usersService.findOneByEmail(emailRequestDto.email)
+      newEmailInUse = true
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error(e)
     }
     if (newEmailInUse) {
-      throw new ConflictException("New email is already in use.");
+      throw new ConflictException('New email is already in use.')
     }
 
     // Generate an email change token (expires in 24 hours) with additional data
@@ -66,24 +58,19 @@ export class EmailChangeService {
       user.id,
       24, // 24 hours expiry
       { newEmail: emailRequestDto.email }
-    );
+    )
 
     // Create an email change confirmation link containing the token
-    const changeEmailLink = `${this.configService.get(
-      "FRONTEND_HOST"
-    )}/confirm?type=email-change&token=${token}`;
+    const changeEmailLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-change&token=${token}`
 
     // Generate the HTML content for the email
-    const htmlContent = getEmailChangeConfirmationHtml(
-      changeEmailLink,
-      user.email
-    );
+    const htmlContent = getEmailChangeConfirmationHtml(changeEmailLink, user.email)
 
     // Send confirmation email to the new email address
     await this.emailService.sendMail({
       html: htmlContent,
-      subject: "Confirm Your Email Change",
-      to: emailRequestDto.email,
-    });
+      subject: 'Confirm Your Email Change',
+      to: emailRequestDto.email
+    })
   }
 }

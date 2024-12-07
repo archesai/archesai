@@ -14,15 +14,16 @@ generate:
 	cd ui && npm run gen && cd .. && cd api/test && curl -X GET "http://arches-api.test/-yaml"  > openapi-spec.yaml
 
 lint:
-	cd api && npm run lint && cd ../ui && npm run lint
+	cd ui && npm run lint:eslint && npm run lint:tsc
+	cd api && npm run lint:eslint && npm run lint:tsc 
 
 format:
-	cd api && npm run format && cd ../ui && npm run format
+	cd ui && npm run format:eslint
+	cd api && npm run format:eslint
 
 line-count:
 	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
 
-	
 test:
 	cd api && npm run test:cov && cd ..
 

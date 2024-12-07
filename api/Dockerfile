@@ -11,11 +11,11 @@ WORKDIR /app
 ###################
 FROM base AS dev-dependencies
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --only development
+RUN npm ci
 
 FROM base AS prod-dependencies
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --only production
+RUN npm ci --only=prod
 
 ###################
 # DEVELOPMENT STAGE

@@ -21,167 +21,159 @@ import {
   Tags,
   User,
   Users,
-  Workflow,
-} from "lucide-react";
-import { BookOpen, Cpu, FileText, Image, Volume2 } from "lucide-react";
+  Workflow
+} from 'lucide-react'
+import { BookOpen, Cpu, FileText, Image, Volume2 } from 'lucide-react'
 
 export const siteConfig = {
-  description:
-    "Arches AI is a platform that provides tools to transform data into various forms of content.",
-  name: "Arches AI",
-  ogImage: "https://ui.shadcn.com/og.jpg",
+  description: 'Arches AI is a platform that provides tools to transform data into various forms of content.',
+  name: 'Arches AI',
+  ogImage: 'https://ui.shadcn.com/og.jpg',
   routes: [
     {
-      description: "Try out your tools here.",
-      href: "/playground",
+      description: 'Try out your tools here.',
+      href: '/playground',
       Icon: SquareTerminal,
-      section: "Build",
-      title: "Playground",
+      section: 'Build',
+      title: 'Playground'
     },
     {
-      description: "Browse and manage your content here.",
-      href: "/content/view",
+      description: 'Browse and manage your content here.',
+      href: '/content/view',
       Icon: Server,
-      section: "Data",
-      title: "Content",
+      section: 'Data',
+      title: 'Content'
     },
     {
-      description: "Explore and run tools.",
-      href: "/tools",
+      description: 'Explore and run tools.',
+      href: '/tools',
       Icon: CpuIcon,
-      section: "Build",
-      title: "Tools",
+      section: 'Build',
+      title: 'Tools'
     },
     {
       children: [
         {
-          description: "View and manage your pipelines.",
-          href: "/pipelines",
+          description: 'View and manage your pipelines.',
+          href: '/pipelines',
           Icon: Workflow,
           showInTabs: true,
-          title: "Pipelines",
+          title: 'Pipelines'
         },
         {
-          description: "Create a new pipeline.",
-          href: "/pipelines/create",
+          description: 'Create a new pipeline.',
+          href: '/pipelines/create',
           Icon: Workflow,
           showInTabs: false,
-          title: "Create",
-        },
+          title: 'Create'
+        }
       ],
-      description: "Create and manage pipelines.",
-      href: "/pipelines",
+      description: 'Create and manage pipelines.',
+      href: '/pipelines',
       Icon: Workflow,
-      section: "Build",
-      title: "Pipelines",
+      section: 'Build',
+      title: 'Pipelines'
     },
     {
-      description: "View your previous runs.",
-      href: "/runs",
+      description: 'View your previous runs.',
+      href: '/runs',
       Icon: PackageCheck,
-      section: "Build",
-      title: "History",
+      section: 'Build',
+      title: 'History'
     },
     {
-      description: "Create and manage labels.",
-      href: "/labels",
+      description: 'Create and manage labels.',
+      href: '/labels',
       Icon: Tags,
-      section: "Data",
-      title: "Labels",
+      section: 'Data',
+      title: 'Labels'
     },
     {
-      description: "Chat with your data and tools.",
-      href: "/chat",
+      description: 'Chat with your data and tools.',
+      href: '/chat',
       Icon: MessageSquareIcon,
-      section: "Chat",
-      title: "Chat",
+      section: 'Chat',
+      title: 'Chat'
     },
     {
       children: [
         {
-          description: "Update your profile information.",
-          href: "/profile/general",
+          description: 'Update your profile information.',
+          href: '/profile/general',
           Icon: User,
           showInTabs: true,
-          title: "Profile",
+          title: 'Profile'
         },
         {
-          description: "Update your security settings.",
-          href: "/profile/security",
+          description: 'Update your security settings.',
+          href: '/profile/security',
           Icon: KeySquare,
           showInTabs: true,
-          title: "Security",
-        },
+          title: 'Security'
+        }
       ],
-      description: "View your profile information.",
-      href: "/profile",
+      description: 'View your profile information.',
+      href: '/profile',
       Icon: User,
-      section: "Settings",
-      title: "Account",
+      section: 'Settings',
+      title: 'Account'
     },
     {
       children: [
         {
-          description:
-            "View and update your organization's general information.",
-          href: "/organization/general",
+          description: "View and update your organization's general information.",
+          href: '/organization/general',
           Icon: Building2,
           showInTabs: true,
-          title: "General",
+          title: 'General'
         },
         {
-          description:
-            "View and update your organization's billing information. Upgrade your plan.",
-          href: "/organization/billing",
+          description: "View and update your organization's billing information. Upgrade your plan.",
+          href: '/organization/billing',
           Icon: CreditCard,
           showInTabs: true,
-          title: "Billing",
+          title: 'Billing'
         },
         {
           description: "View and manage your organization's members.",
-          href: "/organization/members",
+          href: '/organization/members',
           Icon: Users,
           showInTabs: true,
-          title: "Members",
+          title: 'Members'
         },
         {
           description: "View and manage your organization's API tokens.",
-          href: "/organization/api-tokens",
+          href: '/organization/api-tokens',
           Icon: Lock,
           showInTabs: true,
-          title: "API Tokens",
-        },
+          title: 'API Tokens'
+        }
       ],
-      href: "/organization",
+      href: '/organization',
       Icon: Settings2,
-      section: "Settings",
-      title: "Settings",
-    },
+      section: 'Settings',
+      title: 'Settings'
+    }
   ],
   toolBaseIcons: {
-    "create-embeddings": Cpu,
-    "extract-text": FileText,
+    'create-embeddings': Cpu,
+    'extract-text': FileText,
     summarize: BookOpen,
-    "text-to-image": Image,
-    "text-to-speech": Volume2,
+    'text-to-image': Image,
+    'text-to-speech': Volume2
   } as Record<string, any>,
-  url: "https://archesai.com",
-};
+  url: 'https://archesai.com'
+}
 
 export const getMetadata = (href: string) => {
   // do this without using flatMap
-  const childRoutes = siteConfig.routes
-    .map((route) => route.children)
-    .filter((children) => children);
+  const childRoutes = siteConfig.routes.map((route) => route.children).filter((children) => children)
 
-  const allRoutes = siteConfig.routes.concat(
-    childRoutes.reduce((acc, val) => acc.concat(val), [] as any)
-  );
+  const allRoutes = siteConfig.routes.concat(childRoutes.reduce((acc, val) => acc.concat(val), [] as any))
   return {
     description: allRoutes.find((route) => route.href === href)?.description,
-    title:
-      allRoutes.find((route) => route.href === href)?.title + " | Arches AI",
-  };
-};
+    title: allRoutes.find((route) => route.href === href)?.title + ' | Arches AI'
+  }
+}
 
-export type SiteConfig = typeof siteConfig;
+export type SiteConfig = typeof siteConfig

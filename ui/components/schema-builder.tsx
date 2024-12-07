@@ -1,60 +1,54 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, Trash } from "lucide-react";
-import React, { useState } from "react";
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Plus, Trash } from 'lucide-react'
+import React, { useState } from 'react'
 
-import { Label } from "./ui/label";
+import { Label } from './ui/label'
 
 interface FieldDefinition {
-  constraints?: any;
-  fieldName: string;
-  fieldType: string;
-  isOptional: boolean;
-  subFields?: FieldDefinition[];
+  constraints?: any
+  fieldName: string
+  fieldType: string
+  isOptional: boolean
+  subFields?: FieldDefinition[]
 }
 
 const fieldTypes = [
-  { label: "Text", value: "string" },
-  { label: "Number", value: "number" },
-  { label: "True/False", value: "boolean" },
-  { label: "List", value: "array" },
-  { label: "Sub-Item", value: "object" },
-];
+  { label: 'Text', value: 'string' },
+  { label: 'Number', value: 'number' },
+  { label: 'True/False', value: 'boolean' },
+  { label: 'List', value: 'array' },
+  { label: 'Sub-Item', value: 'object' }
+]
 
 const SchemaBuilder: React.FC = () => {
-  const [fields, setFields] = useState<FieldDefinition[]>([]);
+  const [fields, setFields] = useState<FieldDefinition[]>([])
 
   const handleSubmit = () => {
-    const schemaString = generateZodSchema(fields);
+    const schemaString = generateZodSchema(fields)
     // Send schemaString to backend
-    console.log("Generated Zod Schema:", schemaString);
+    console.log('Generated Zod Schema:', schemaString)
     // For example, use fetch or axios to send schemaString to your backend
-  };
+  }
 
   return (
-    <div className="flex flex-wrap">
-      <div className="w-full">
+    <div className='flex flex-wrap'>
+      <div className='w-full'>
         <FieldList fields={fields} setFields={setFields} />
-        <div className="flex w-full justify-end">
-          <Button className="mt-4" onClick={handleSubmit}>
+        <div className='flex w-full justify-end'>
+          <Button className='mt-4' onClick={handleSubmit}>
             Submit Schema
           </Button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 interface FieldListProps {
-  fields: FieldDefinition[];
-  setFields: React.Dispatch<React.SetStateAction<FieldDefinition[]>>;
+  fields: FieldDefinition[]
+  setFields: React.Dispatch<React.SetStateAction<FieldDefinition[]>>
 }
 
 const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
@@ -63,76 +57,58 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
       ...fields,
       {
         constraints: {},
-        fieldName: "",
-        fieldType: "string",
+        fieldName: '',
+        fieldType: 'string',
         isOptional: false,
-        subFields: [],
-      },
-    ]);
-  };
+        subFields: []
+      }
+    ])
+  }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className='flex flex-col gap-4'>
       {fields.map((field, index) => (
-        <FieldEditor
-          field={field}
-          fields={fields}
-          index={index}
-          key={index}
-          setFields={setFields}
-        />
+        <FieldEditor field={field} fields={fields} index={index} key={index} setFields={setFields} />
       ))}
-      <Button onClick={addField} variant="outline">
-        <Plus className="mr-2 h-4 w-4" />
+      <Button onClick={addField} variant='outline'>
+        <Plus className='mr-2 h-4 w-4' />
         Add Field
       </Button>
     </div>
-  );
-};
-
-interface FieldEditorProps {
-  field: FieldDefinition;
-  fields: FieldDefinition[];
-  index: number;
-  setFields: React.Dispatch<React.SetStateAction<FieldDefinition[]>>;
+  )
 }
 
-const FieldEditor: React.FC<FieldEditorProps> = ({
-  field,
-  fields,
-  index,
-  setFields,
-}) => {
+interface FieldEditorProps {
+  field: FieldDefinition
+  fields: FieldDefinition[]
+  index: number
+  setFields: React.Dispatch<React.SetStateAction<FieldDefinition[]>>
+}
+
+const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFields }) => {
   const handleFieldChange = (newField: FieldDefinition) => {
-    const newFields = [...fields];
-    newFields[index] = newField;
-    setFields(newFields);
-  };
+    const newFields = [...fields]
+    newFields[index] = newField
+    setFields(newFields)
+  }
 
   const removeField = () => {
-    const newFields = [...fields];
-    newFields.splice(index, 1);
-    setFields(newFields);
-  };
+    const newFields = [...fields]
+    newFields.splice(index, 1)
+    setFields(newFields)
+  }
 
   return (
     <div>
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         <Input
-          onChange={(e) =>
-            handleFieldChange({ ...field, fieldName: e.target.value })
-          }
-          placeholder="Field Name"
+          onChange={(e) => handleFieldChange({ ...field, fieldName: e.target.value })}
+          placeholder='Field Name'
           value={field.fieldName}
         />
-        <Select
-          onValueChange={(value) =>
-            handleFieldChange({ ...field, fieldType: value })
-          }
-          value={field.fieldType}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select type" />
+        <Select onValueChange={(value) => handleFieldChange({ ...field, fieldType: value })} value={field.fieldType}>
+          <SelectTrigger className='w-[180px]'>
+            <SelectValue placeholder='Select type' />
           </SelectTrigger>
           <SelectContent>
             {fieldTypes.map((type) => (
@@ -156,42 +132,40 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
         </div>
         */}
 
-        <Button className="h-8" onClick={removeField} variant="ghost">
-          <Trash className="h-4 w-4 text-destructive" />
+        <Button className='h-8' onClick={removeField} variant='ghost'>
+          <Trash className='h-4 w-4 text-destructive' />
         </Button>
       </div>
 
       {/* Additional constraints based on type */}
-      {field.fieldType === "object" && (
-        <div className="ml-4 mt-4">
+      {field.fieldType === 'object' && (
+        <div className='ml-4 mt-4'>
           <Label>Sub Item Fields</Label>
           <FieldList
             fields={field.subFields || []}
-            setFields={(subFields) =>
-              handleFieldChange({ ...field, subFields: subFields as any })
-            }
+            setFields={(subFields) => handleFieldChange({ ...field, subFields: subFields as any })}
           />
         </div>
       )}
 
-      {field.fieldType === "array" && (
-        <div className="ml-4 mt-4">
+      {field.fieldType === 'array' && (
+        <div className='ml-4 mt-4'>
           <Label>List Item Type</Label>
           <Select
             onValueChange={(value) =>
               handleFieldChange({
                 ...field,
-                constraints: { ...field.constraints, elementType: value },
+                constraints: { ...field.constraints, elementType: value }
               })
             }
-            value={field.constraints?.elementType || "string"}
+            value={field.constraints?.elementType || 'string'}
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select element type" />
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue placeholder='Select element type' />
             </SelectTrigger>
             <SelectContent>
               {fieldTypes
-                .filter((type) => type.value !== "array") // Avoid nesting arrays
+                .filter((type) => type.value !== 'array') // Avoid nesting arrays
                 .map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
@@ -202,96 +176,89 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const generateZodSchema = (fields: FieldDefinition[]): string => {
-  let schemaString = "z.object({\n";
+  let schemaString = 'z.object({\n'
   fields.forEach((field) => {
-    schemaString += generateFieldSchema(field, 1);
-  });
-  schemaString += "})";
-  return schemaString;
-};
+    schemaString += generateFieldSchema(field, 1)
+  })
+  schemaString += '})'
+  return schemaString
+}
 
-const generateFieldSchema = (
-  field: FieldDefinition,
-  indentLevel: number
-): string => {
-  const indent = "  ".repeat(indentLevel);
-  let fieldString = `${indent}${field.fieldName}: `;
-  let fieldSchema = "";
+const generateFieldSchema = (field: FieldDefinition, indentLevel: number): string => {
+  const indent = '  '.repeat(indentLevel)
+  let fieldString = `${indent}${field.fieldName}: `
+  let fieldSchema = ''
 
   switch (field.fieldType) {
-    case "array":
-      fieldSchema = `z.array(${
-        field.constraints?.elementType
-          ? `z.${field.constraints.elementType}()`
-          : "z.any()"
-      })`;
-      break;
-    case "boolean":
-      fieldSchema = "z.boolean()";
-      break;
-    case "number":
-      fieldSchema = "z.number()";
-      break;
-    case "object":
-      fieldSchema = "z.object({\n";
+    case 'array':
+      fieldSchema = `z.array(${field.constraints?.elementType ? `z.${field.constraints.elementType}()` : 'z.any()'})`
+      break
+    case 'boolean':
+      fieldSchema = 'z.boolean()'
+      break
+    case 'number':
+      fieldSchema = 'z.number()'
+      break
+    case 'object':
+      fieldSchema = 'z.object({\n'
       field.subFields?.forEach((subField) => {
-        fieldSchema += generateFieldSchema(subField, indentLevel + 1);
-      });
-      fieldSchema += indent + "})";
-      break;
-    case "string":
-      fieldSchema = "z.string()";
-      break;
+        fieldSchema += generateFieldSchema(subField, indentLevel + 1)
+      })
+      fieldSchema += indent + '})'
+      break
+    case 'string':
+      fieldSchema = 'z.string()'
+      break
     default:
-      fieldSchema = "z.any()";
+      fieldSchema = 'z.any()'
   }
 
   if (field.isOptional) {
-    fieldSchema += ".optional()";
+    fieldSchema += '.optional()'
   }
 
-  fieldString += fieldSchema + ",\n";
-  return fieldString;
-};
+  fieldString += fieldSchema + ',\n'
+  return fieldString
+}
 
 // Function to generate example JSON
 const generateExampleJSON = (fields: FieldDefinition[]): any => {
-  const obj: any = {};
+  const obj: any = {}
   fields.forEach((field) => {
     if (field.fieldName) {
-      obj[field.fieldName] = generateFieldExample(field);
+      obj[field.fieldName] = generateFieldExample(field)
     }
-  });
-  return obj;
-};
+  })
+  return obj
+}
 
 const generateFieldExample = (field: FieldDefinition): any => {
-  if (field.isOptional) return undefined;
+  if (field.isOptional) return undefined
 
   switch (field.fieldType) {
-    case "array":
+    case 'array':
       return [
         generateFieldExample({
-          fieldName: "",
-          fieldType: field.constraints?.elementType || "string",
-          isOptional: false,
-        }),
-      ];
-    case "boolean":
-      return true;
-    case "number":
-      return 123;
-    case "object":
-      return generateExampleJSON(field.subFields || []);
-    case "string":
-      return "example text";
+          fieldName: '',
+          fieldType: field.constraints?.elementType || 'string',
+          isOptional: false
+        })
+      ]
+    case 'boolean':
+      return true
+    case 'number':
+      return 123
+    case 'object':
+      return generateExampleJSON(field.subFields || [])
+    case 'string':
+      return 'example text'
     default:
-      return null;
+      return null
   }
-};
+}
 
-export default SchemaBuilder;
+export default SchemaBuilder

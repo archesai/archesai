@@ -39,5 +39,4 @@ lerna-debug.log*
 .env.minimal
 .env.stage
 
-metadata.ts
 coverage-e2e/

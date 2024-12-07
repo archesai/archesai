@@ -1,17 +1,17 @@
-import { Body, Controller, Param, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Param, Post } from '@nestjs/common'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { BaseController } from "../common/base.controller";
-import { UserEntity } from "../users/entities/user.entity";
-import { ApiTokensService } from "./api-tokens.service";
-import { CreateApiTokenDto } from "./dto/create-api-token.dto";
-import { UpdateApiTokenDto } from "./dto/update-api-token.dto";
-import { ApiTokenEntity } from "./entities/api-token.entity";
+import { CurrentUser } from '../auth/decorators/current-user.decorator'
+import { BaseController } from '../common/base.controller'
+import { UserEntity } from '../users/entities/user.entity'
+import { ApiTokensService } from './api-tokens.service'
+import { CreateApiTokenDto } from './dto/create-api-token.dto'
+import { UpdateApiTokenDto } from './dto/update-api-token.dto'
+import { ApiTokenEntity } from './entities/api-token.entity'
 
 @ApiBearerAuth()
 @ApiTags(`API Tokens`)
-@Controller("/organizations/:orgname/api-tokens")
+@Controller('/organizations/:orgname/api-tokens')
 export class ApiTokensController extends BaseController<
   ApiTokenEntity,
   CreateApiTokenDto,
@@ -19,7 +19,7 @@ export class ApiTokensController extends BaseController<
   ApiTokensService
 > {
   constructor(private readonly apiTokensService: ApiTokensService) {
-    super(apiTokensService);
+    super(apiTokensService)
   }
 
   /**
@@ -28,12 +28,12 @@ export class ApiTokensController extends BaseController<
    */
   @Post()
   async create(
-    @Param("orgname") orgname: string,
+    @Param('orgname') orgname: string,
     @Body() createTokenDto: CreateApiTokenDto,
     @CurrentUser() currentUserDto: UserEntity
   ) {
     return this.apiTokensService.create(orgname, createTokenDto, {
-      username: currentUserDto.username,
-    });
+      username: currentUserDto.username
+    })
   }
 }

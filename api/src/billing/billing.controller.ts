@@ -10,29 +10,29 @@ import {
   Post,
   Query,
   RawBodyRequest,
-  Req,
-} from "@nestjs/common";
-import { Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from "@nestjs/swagger";
-import { PlanType } from "@prisma/client";
-import { Stripe } from "stripe";
+  Req
+} from '@nestjs/common'
+import { Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
+import { PlanType } from '@prisma/client'
+import { Stripe } from 'stripe'
 
-import { IsPublic } from "../auth/decorators/is-public.decorator";
-import { Roles } from "../auth/decorators/roles.decorator";
-import { OrganizationsService } from "../organizations/organizations.service";
-import { WebsocketsService } from "../websockets/websockets.service";
-import { BillingService } from "./billing.service";
-import { BillingUrlEntity } from "./entities/billing-url.entity";
-import { PaymentMethodEntity } from "./entities/payment-method.entity";
-import { PlanEntity } from "./entities/plan.entity";
+import { IsPublic } from '../auth/decorators/is-public.decorator'
+import { Roles } from '../auth/decorators/roles.decorator'
+import { OrganizationsService } from '../organizations/organizations.service'
+import { WebsocketsService } from '../websockets/websockets.service'
+import { BillingService } from './billing.service'
+import { BillingUrlEntity } from './entities/billing-url.entity'
+import { PaymentMethodEntity } from './entities/payment-method.entity'
+import { PlanEntity } from './entities/plan.entity'
 
 @ApiBearerAuth()
-@ApiTags("Organization - Billing")
+@ApiTags('Organization - Billing')
 @Controller()
-@Roles("ADMIN")
+@Roles('ADMIN')
 export class BillingController {
-  private readonly logger: Logger = new Logger("Billing Controller");
+  private readonly logger: Logger = new Logger('Billing Controller')
 
   constructor(
     private billingService: BillingService,
@@ -46,18 +46,15 @@ export class BillingController {
    * @remarks This endpoint will cancel the subscription plan for an organization
    * @throws {403} ForbiddenException
    */
-  @Post("/organizations/:orgname/billing/subscription/cancel")
-  async cancelSubscriptionPlan(@Param("orgname") orgname: string) {
-    if (this.configService.get("FEATURE_BILLING") == false) {
-      throw new ForbiddenException("Billing is disabled");
+  @Post('/organizations/:orgname/billing/subscription/cancel')
+  async cancelSubscriptionPlan(@Param('orgname') orgname: string) {
+    if (this.configService.get('FEATURE_BILLING') == false) {
+      throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
+    const organization = await this.organizationsService.findOne(orgname, orgname)
 
     // Cancel the subscription
-    await this.billingService.cancelSubscription(organization.stripeCustomerId);
+    await this.billingService.cancelSubscription(organization.stripeCustomerId)
   }
 
   /**
@@ -66,31 +63,22 @@ export class BillingController {
    * @throws {403} ForbiddenException
    * @throws {400} BadRequestException
    */
-  @Post("/organizations/:orgname/billing/subscription")
-  async changeSubscriptionPlan(
-    @Param("orgname") orgname: string,
-    @Query("planId") planId: string
-  ) {
-    if (this.configService.get("FEATURE_BILLING") == false) {
-      throw new ForbiddenException("Billing is disabled");
+  @Post('/organizations/:orgname/billing/subscription')
+  async changeSubscriptionPlan(@Param('orgname') orgname: string, @Query('planId') planId: string) {
+    if (this.configService.get('FEATURE_BILLING') == false) {
+      throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
+    const organization = await this.organizationsService.findOne(orgname, orgname)
 
-    const plans = await this.billingService.listPlans();
-    const plan = plans.find((p) => p.id === planId);
+    const plans = await this.billingService.listPlans()
+    const plan = plans.find((p) => p.id === planId)
 
     if (!plan) {
-      throw new BadRequestException("Invalid plan");
+      throw new BadRequestException('Invalid plan')
     }
 
     // Update the subscription to the new plan
-    await this.billingService.updateSubscription(
-      organization.stripeCustomerId,
-      plan.priceId
-    );
+    await this.billingService.updateSubscription(organization.stripeCustomerId, plan.priceId)
   }
 
   /**
@@ -98,23 +86,14 @@ export class BillingController {
    * @remarks This endpoint will create a billing portal for an organization to edit their subscription and billing information
    * @throws {403} ForbiddenException
    */
-  @Post("/organizations/:orgname/billing/portal")
-  async createBillingPortal(
-    @Param("orgname") orgname: string
-  ): Promise<BillingUrlEntity> {
-    if (this.configService.get("FEATURE_BILLING") == false) {
-      throw new ForbiddenException("Billing is disabled");
+  @Post('/organizations/:orgname/billing/portal')
+  async createBillingPortal(@Param('orgname') orgname: string): Promise<BillingUrlEntity> {
+    if (this.configService.get('FEATURE_BILLING') == false) {
+      throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
+    const organization = await this.organizationsService.findOne(orgname, orgname)
 
-    return new BillingUrlEntity(
-      await this.billingService.createBillingPortal(
-        organization.stripeCustomerId
-      )
-    );
+    return new BillingUrlEntity(await this.billingService.createBillingPortal(organization.stripeCustomerId))
   }
 
   /**
@@ -123,70 +102,60 @@ export class BillingController {
    * @throws {403} ForbiddenException
    * @throws {400} BadRequestException
    */
-  @Post("/organizations/:orgname/billing/checkout")
+  @Post('/organizations/:orgname/billing/checkout')
   async createCheckoutSession(
-    @Param("orgname") orgname: string,
-    @Query("planId") planId: string
+    @Param('orgname') orgname: string,
+    @Query('planId') planId: string
   ): Promise<BillingUrlEntity> {
-    if (this.configService.get("FEATURE_BILLING") == false) {
-      throw new ForbiddenException("Billing is disabled");
+    if (this.configService.get('FEATURE_BILLING') == false) {
+      throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
-    if (["BASIC", "PREMIUM", "STANDARD"].includes(organization.plan)) {
-      throw new BadRequestException(
-        "Cannot purchase a plan when already on a plan"
-      );
+    const organization = await this.organizationsService.findOne(orgname, orgname)
+    if (['BASIC', 'PREMIUM', 'STANDARD'].includes(organization.plan)) {
+      throw new BadRequestException('Cannot purchase a plan when already on a plan')
     }
 
-    const plans = await this.billingService.listPlans();
-    const plan = plans.find((p) => p.id === planId);
+    const plans = await this.billingService.listPlans()
+    const plan = plans.find((p) => p.id === planId)
 
     if (!plan) {
-      throw new BadRequestException("Invalid plan");
+      throw new BadRequestException('Invalid plan')
     }
 
-    const priceId = plan.priceId;
+    const priceId = plan.priceId
 
     return new BillingUrlEntity(
       await this.billingService.createCheckoutSession(
         organization.stripeCustomerId,
         {
           price: priceId,
-          quantity: 1,
+          quantity: 1
         },
         !plan?.recurring?.interval
       )
-    );
+    )
   }
 
   /**
    * Get plans
    * @remarks This endpoint will return a list of available billing plans
    */
-  @Get("/plans")
+  @Get('/plans')
   @IsPublic()
   async getPlans(): Promise<PlanEntity[]> {
-    const plans = await this.billingService.listPlans();
-    return plans.map((plan) => new PlanEntity(plan));
+    const plans = await this.billingService.listPlans()
+    return plans.map((plan) => new PlanEntity(plan))
   }
 
   /**
    * List payment methods
    * @remarks This endpoint will return a list of payment methods for an organization
    */
-  @Get("/organizations/:orgname/billing/payment-methods")
-  async listPaymentMethods(@Param("orgname") orgname: string) {
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
-    const paymentMethods = await this.billingService.listPaymentMethods(
-      organization.stripeCustomerId
-    );
-    return paymentMethods.data.map((pm) => new PaymentMethodEntity(pm));
+  @Get('/organizations/:orgname/billing/payment-methods')
+  async listPaymentMethods(@Param('orgname') orgname: string) {
+    const organization = await this.organizationsService.findOne(orgname, orgname)
+    const paymentMethods = await this.billingService.listPaymentMethods(organization.stripeCustomerId)
+    return paymentMethods.data.map((pm) => new PaymentMethodEntity(pm))
   }
 
   /**
@@ -194,140 +163,112 @@ export class BillingController {
    * @remarks This endpoint will remove a payment method from an organization
    * @throws {404} NotFoundException
    */
-  @Delete("/organizations/:orgname/billing/payment-methods/:paymentMethodId")
-  async removePaymentMethod(
-    @Param("orgname") orgname: string,
-    @Param("paymentMethodId") paymentMethodId: string
-  ) {
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    );
-    const paymentMethods = await this.billingService.listPaymentMethods(
-      organization.stripeCustomerId
-    );
-    const paymentMethod = paymentMethods.data.find(
-      (pm) => pm.id === paymentMethodId
-    );
+  @Delete('/organizations/:orgname/billing/payment-methods/:paymentMethodId')
+  async removePaymentMethod(@Param('orgname') orgname: string, @Param('paymentMethodId') paymentMethodId: string) {
+    const organization = await this.organizationsService.findOne(orgname, orgname)
+    const paymentMethods = await this.billingService.listPaymentMethods(organization.stripeCustomerId)
+    const paymentMethod = paymentMethods.data.find((pm) => pm.id === paymentMethodId)
     if (!paymentMethod) {
-      throw new NotFoundException("Payment method not found");
+      throw new NotFoundException('Payment method not found')
     }
 
     // Check if there is more than one payment method
     if (paymentMethods.data.length <= 1) {
-      throw new BadRequestException(
-        "Cannot remove the last payment method. At least one payment method is required."
-      );
+      throw new BadRequestException('Cannot remove the last payment method. At least one payment method is required.')
     }
 
     // Retrieve the customer to check default payment method
-    const customer = await this.billingService.getCustomer(
-      organization.stripeCustomerId
-    );
+    const customer = await this.billingService.getCustomer(organization.stripeCustomerId)
 
     // Type guard to ensure customer is not deleted
     if (customer.deleted) {
-      throw new NotFoundException("Customer has been deleted.");
+      throw new NotFoundException('Customer has been deleted.')
     }
 
-    const c = customer as Stripe.Customer;
-    let defaultPaymentMethodId;
+    const c = customer as Stripe.Customer
+    let defaultPaymentMethodId
     if (c.invoice_settings && c.invoice_settings.default_payment_method) {
-      if (typeof c.invoice_settings.default_payment_method === "string") {
-        defaultPaymentMethodId = c.invoice_settings.default_payment_method;
+      if (typeof c.invoice_settings.default_payment_method === 'string') {
+        defaultPaymentMethodId = c.invoice_settings.default_payment_method
       } else {
-        defaultPaymentMethodId = c.invoice_settings.default_payment_method.id;
+        defaultPaymentMethodId = c.invoice_settings.default_payment_method.id
       }
     }
 
     // If the payment method being removed is the default, set another as default
     if (defaultPaymentMethodId === paymentMethodId) {
       // Set another payment method as default
-      const otherPaymentMethod = paymentMethods.data.find(
-        (pm) => pm.id !== paymentMethodId
-      );
+      const otherPaymentMethod = paymentMethods.data.find((pm) => pm.id !== paymentMethodId)
       if (otherPaymentMethod) {
         await this.billingService.updateCustomerDefaultPaymentMethod(
           organization.stripeCustomerId,
           otherPaymentMethod.id
-        );
+        )
       } else {
-        throw new BadRequestException(
-          "Cannot remove the last payment method. At least one payment method is required."
-        );
+        throw new BadRequestException('Cannot remove the last payment method. At least one payment method is required.')
       }
 
-      this.websocketsService.socket.to(orgname).emit("update", {
-        queryKey: ["organizations", orgname, "billing"],
-      });
+      this.websocketsService.socket.to(orgname).emit('update', {
+        queryKey: ['organizations', orgname, 'billing']
+      })
     }
 
-    await this.billingService.detachPaymentMethod(paymentMethodId);
+    await this.billingService.detachPaymentMethod(paymentMethodId)
   }
 
   @ApiExcludeEndpoint()
   @IsPublic()
-  @Post("/webhooks/stripe")
+  @Post('/webhooks/stripe')
   async stripe_handleIncomingEvents(
-    @Headers("stripe-signature") signature: string,
+    @Headers('stripe-signature') signature: string,
     @Req() req: RawBodyRequest<Request>
   ) {
     if (!signature) {
-      throw new BadRequestException("Missing stripe-signature header");
+      throw new BadRequestException('Missing stripe-signature header')
     }
 
-    const event = await this.billingService.constructEventFromPayload(
-      signature,
-      req.rawBody
-    );
+    const event = await this.billingService.constructEventFromPayload(signature, req.rawBody)
 
-    if (event.type == "invoice.paid") {
-      const data = event.data.object as Stripe.Invoice;
+    if (event.type == 'invoice.paid') {
+      const data = event.data.object as Stripe.Invoice
       if (data.amount_paid > 0) {
-        const customerId = data.customer as string;
-        const organization =
-          await this.organizationsService.findByStripeCustomerId(customerId);
+        const customerId = data.customer as string
+        const organization = await this.organizationsService.findByStripeCustomerId(customerId)
         for (const lineItem of data.lines.data) {
-          const price = await this.billingService.getPrice(lineItem.price.id);
-          const product = price.product as Stripe.Product;
-          const credits = product.metadata["credits"];
-          const quantity = lineItem.quantity || 1;
-          await this.organizationsService.addOrRemoveCredits(
-            organization.orgname,
-            Number(credits) * quantity
-          );
-          this.websocketsService.socket
-            .to(organization.orgname)
-            .emit("update", {
-              queryKey: ["organizations", organization.orgname],
-            });
+          const price = await this.billingService.getPrice(lineItem.price.id)
+          const product = price.product as Stripe.Product
+          const credits = product.metadata['credits']
+          const quantity = lineItem.quantity || 1
+          await this.organizationsService.addOrRemoveCredits(organization.orgname, Number(credits) * quantity)
+          this.websocketsService.socket.to(organization.orgname).emit('update', {
+            queryKey: ['organizations', organization.orgname]
+          })
         }
       }
     }
 
     if (
-      event.type == "customer.subscription.created" ||
-      event.type == "customer.subscription.updated" ||
-      event.type == "customer.subscription.deleted"
+      event.type == 'customer.subscription.created' ||
+      event.type == 'customer.subscription.updated' ||
+      event.type == 'customer.subscription.deleted'
     ) {
-      const data = event.data.object as Stripe.Subscription;
-      const customerId = data.customer as string;
-      const organization =
-        await this.organizationsService.findByStripeCustomerId(customerId);
+      const data = event.data.object as Stripe.Subscription
+      const customerId = data.customer as string
+      const organization = await this.organizationsService.findByStripeCustomerId(customerId)
 
-      const priceId = data.items.data[0].price.id;
-      const price = await this.billingService.getPrice(priceId);
-      const product = price.product as Stripe.Product;
-      const planType = product.metadata["key"] as PlanType;
+      const priceId = data.items.data[0].price.id
+      const price = await this.billingService.getPrice(priceId)
+      const product = price.product as Stripe.Product
+      const planType = product.metadata['key'] as PlanType
 
-      if (data.status == "active") {
-        await this.organizationsService.setPlan(organization.orgname, planType);
+      if (data.status == 'active') {
+        await this.organizationsService.setPlan(organization.orgname, planType)
       } else {
-        await this.organizationsService.setPlan(organization.orgname, "FREE");
+        await this.organizationsService.setPlan(organization.orgname, 'FREE')
       }
-      this.websocketsService.socket.to(organization.orgname).emit("update", {
-        queryKey: ["organizations", organization.orgname],
-      });
+      this.websocketsService.socket.to(organization.orgname).emit('update', {
+        queryKey: ['organizations', organization.orgname]
+      })
     }
   }
 }

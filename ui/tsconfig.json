@@ -1,22 +1,28 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": false,
+    "esModuleInterop": true,
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "noUncheckedIndexedAccess": true,
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    // NEXT ROUND
+    "allowJs": true,
+    "baseUrl": ".",
+    "noEmit": true,
+    "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "noUncheckedIndexedAccess": true,
-    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -27,12 +33,14 @@
         "./*"
       ]
     },
-    "target": "ES2017"
   },
   "include": [
-    "**/*.js",
-    "**/*.jsx",
+    "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
   ]
 }

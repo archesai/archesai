@@ -1,100 +1,87 @@
-"use client";
+'use client'
 
-import { DataTablePagination } from "@/components/datatables/datatable/data-table-pagination";
-import { DataTableToolbar } from "@/components/datatables/datatable/data-table-toolbar";
-import { DeleteItems } from "@/components/datatables/datatable/delete-items";
-import { GridView } from "@/components/datatables/datatable/grid-view";
-import { TableView } from "@/components/datatables/datatable/table-view";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DataTablePagination } from '@/components/datatables/datatable/data-table-pagination'
+import { DataTableToolbar } from '@/components/datatables/datatable/data-table-toolbar'
+import { DeleteItems } from '@/components/datatables/datatable/delete-items'
+import { GridView } from '@/components/datatables/datatable/grid-view'
+import { TableView } from '@/components/datatables/datatable/table-view'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FieldFieldQuery } from "@/generated/archesApiSchemas";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useFilterItems } from "@/hooks/useFilterItems";
-import { useSelectItems } from "@/hooks/useSelectItems";
-import { useToggleView } from "@/hooks/useToggleView";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { FieldFieldQuery } from '@/generated/archesApiSchemas'
+import { useDebounce } from '@/hooks/use-debounce'
+import { useFilterItems } from '@/hooks/useFilterItems'
+import { useSelectItems } from '@/hooks/useSelectItems'
+import { useToggleView } from '@/hooks/useToggleView'
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import {
   ColumnDef,
   ColumnFiltersState,
   getCoreRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
-import { endOfDay } from "date-fns";
-import { type JSX, useEffect, useMemo, useState } from "react";
+  VisibilityState
+} from '@tanstack/react-table'
+import { endOfDay } from 'date-fns'
+import { type JSX, useEffect, useMemo, useState } from 'react'
 
 export interface BaseItem {
-  id: string;
-  name?: string;
+  id: string
+  name?: string
 }
 
-interface DataTableProps<
-  TItem extends BaseItem,
-  TFindAllPathParams,
-  TDeleteVariables,
-> {
-  columns: ColumnDef<TItem, TDeleteVariables>[];
-  content?: (item: TItem) => JSX.Element;
-  createForm?: React.ReactNode;
-  customFilters?: FieldFieldQuery[];
-  dataIcon: JSX.Element;
-  defaultView?: "grid" | "table";
-  filterField?: string;
-  findAllPathParams: TFindAllPathParams;
-  findAllQueryParams?: object;
-  getDeleteVariablesFromItem?: (item: TItem) => TDeleteVariables;
-  getEditFormFromItem?: (item: TItem) => React.ReactNode;
-  handleSelect: (item: TItem) => void;
-  hoverContent?: (item: TItem) => JSX.Element;
-  itemType: string;
-  minimal?: boolean;
-  readonly?: boolean;
+interface DataTableProps<TItem extends BaseItem, TFindAllPathParams, TDeleteVariables> {
+  columns: ColumnDef<TItem, TDeleteVariables>[]
+  content?: (item: TItem) => JSX.Element
+  createForm?: React.ReactNode
+  customFilters?: FieldFieldQuery[]
+  dataIcon: JSX.Element
+  defaultView?: 'grid' | 'table'
+  filterField?: string
+  findAllPathParams: TFindAllPathParams
+  findAllQueryParams?: object
+  getDeleteVariablesFromItem?: (item: TItem) => TDeleteVariables
+  getEditFormFromItem?: (item: TItem) => React.ReactNode
+  handleSelect: (item: TItem) => void
+  hoverContent?: (item: TItem) => JSX.Element
+  itemType: string
+  minimal?: boolean
+  readonly?: boolean
   useFindAll: (s: any) => {
     data:
       | undefined
       | {
           metadata: {
-            limit: number;
-            offset: number;
-            totalResults: number;
-          };
-          results: TItem[];
-        };
-    isLoading: boolean;
-    isPlaceholderData: boolean;
-  };
+            limit: number
+            offset: number
+            totalResults: number
+          }
+          results: TItem[]
+        }
+    isLoading: boolean
+    isPlaceholderData: boolean
+  }
   useRemove: () => {
-    mutateAsync: (vars: TDeleteVariables) => Promise<void>;
-  };
+    mutateAsync: (vars: TDeleteVariables) => Promise<void>
+  }
 }
 
-export function DataTable<
-  TItem extends BaseItem,
-  TFindAllPathParams,
-  TDeleteVariables,
->({
+export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVariables>({
   columns,
   content,
   createForm,
   customFilters,
   dataIcon: DataIcon,
   defaultView,
-  filterField = "name",
+  filterField = 'name',
   findAllPathParams,
   findAllQueryParams,
   getDeleteVariablesFromItem,
@@ -105,81 +92,66 @@ export function DataTable<
   minimal,
   readonly = false,
   useFindAll,
-  useRemove,
+  useRemove
 }: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
-  const {
-    limit,
-    page,
-    query,
-    range,
-    setSortBy,
-    setSortDirection,
-    sortBy,
-    sortDirection,
-  } = useFilterItems();
+  const { limit, page, query, range, setSortBy, setSortDirection, sortBy, sortDirection } = useFilterItems()
 
   // Use the useDebounce hook to debounce the query
-  const debouncedQuery = useDebounce(query, 500); // 500ms delay
+  const debouncedQuery = useDebounce(query, 500) // 500ms delay
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([
     {
       desc: true,
-      id: "createdAt",
-    },
-  ]);
-  const [formOpen, setFormOpen] = useState(false);
-  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
-    createForm
-  );
+      id: 'createdAt'
+    }
+  ])
+  const [formOpen, setFormOpen] = useState(false)
+  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(createForm)
 
   useEffect(() => {
-    setSortDirection(sorting[0]?.desc ? "desc" : "asc");
-    setSortBy(sorting[0]?.id);
-  }, [sorting, setSortDirection, setSortBy]);
+    setSortDirection(sorting[0]?.desc ? 'desc' : 'asc')
+    setSortBy(sorting[0]?.id)
+  }, [sorting, setSortDirection, setSortBy])
 
-  const { setView, view } = useToggleView();
+  const { setView, view } = useToggleView()
 
   useEffect(() => {
     if (defaultView) {
-      setView(defaultView);
+      setView(defaultView)
     }
-  }, [defaultView, setView]);
+  }, [defaultView, setView])
 
   const { data } = useFindAll({
     pathParams: findAllPathParams,
     queryParams: {
-      ...(range?.to
-        ? { endDate: range?.to && endOfDay(range.to).toISOString() }
-        : {}),
-      ...(range?.from
-        ? { startDate: range?.from && range.from.toISOString() }
-        : {}),
+      ...(range?.to ? { endDate: range?.to && endOfDay(range.to).toISOString() } : {}),
+      ...(range?.from ? { startDate: range?.from && range.from.toISOString() } : {}),
       filters: JSON.stringify([
         {
           field: filterField,
-          operator: "contains",
-          value: debouncedQuery, // Use debouncedQuery here
+          operator: 'contains',
+          value: debouncedQuery // Use debouncedQuery here
         },
-        ...(customFilters || []),
+        ...(customFilters || [])
       ]),
       limit,
       offset: page * limit,
-      sortBy: sortBy as "createdAt",
+      sortBy: sortBy as 'createdAt',
       sortDirection: sortDirection,
-      ...findAllQueryParams,
-    },
-  });
+      ...findAllQueryParams
+    }
+  })
 
-  const memoizedColumns = useMemo(() => columns, [columns]);
-  const memoizedData = useMemo(() => data?.results || [], [data]);
+  const memoizedColumns = useMemo(() => columns, [columns])
+  const memoizedData = useMemo(() => data?.results || [], [data])
 
-  const { mutateAsync: deleteItem } = useRemove();
+  const { mutateAsync: deleteItem } = useRemove()
 
   const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
-    items: data?.results || [],
-  });
+    items: data?.results || []
+  })
 
   const table = useReactTable({
     columns: [
@@ -189,16 +161,16 @@ export function DataTable<
             {
               cell: ({ row }) => (
                 <Checkbox
-                  aria-label="Select row"
+                  aria-label='Select row'
                   checked={selectedItems.includes(row.original.id)}
-                  className=""
+                  className=''
                   onCheckedChange={() => toggleSelection(row.original.id)}
                 />
               ),
               enableHiding: false,
               enableSorting: false,
-              id: "select",
-            } as ColumnDef<TItem, TDeleteVariables>,
+              id: 'select'
+            } as ColumnDef<TItem, TDeleteVariables>
           ]
         : []),
       // Data columns
@@ -208,23 +180,20 @@ export function DataTable<
         ? [
             {
               cell: ({ row }) => (
-                <div className="flex justify-end">
+                <div className='flex justify-end'>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                        variant="ghost"
-                      >
-                        <DotsHorizontalIcon className="h-5 w-5" />
+                      <Button className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' variant='ghost'>
+                        <DotsHorizontalIcon className='h-5 w-5' />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[160px]">
+                    <DropdownMenuContent align='end' className='w-[160px]'>
                       {getEditFormFromItem ? (
                         <>
                           <DropdownMenuItem
                             onClick={() => {
-                              setFinalForm(getEditFormFromItem?.(row.original));
-                              setFormOpen(true);
+                              setFinalForm(getEditFormFromItem?.(row.original))
+                              setFormOpen(true)
                             }}
                           >
                             Edit
@@ -239,20 +208,18 @@ export function DataTable<
                           >
                             <DeleteItems
                               deleteFunction={async (vars) => {
-                                await deleteItem(vars);
-                                setSelectedItems([]);
+                                await deleteItem(vars)
+                                setSelectedItems([])
                               }}
-                              deleteVariables={[
-                                getDeleteVariablesFromItem(row.original),
-                              ]}
+                              deleteVariables={[getDeleteVariablesFromItem(row.original)]}
                               items={[
                                 {
                                   id: row.original.id,
-                                  name: row.original.name || row.original.id,
-                                },
+                                  name: row.original.name || row.original.id
+                                }
                               ]}
                               itemType={itemType}
-                              variant="md"
+                              variant='md'
                             />
                           </DropdownMenuItem>
                         </>
@@ -261,10 +228,10 @@ export function DataTable<
                   </DropdownMenu>
                 </div>
               ),
-              id: "actions",
-            } as ColumnDef<TItem, TDeleteVariables>,
+              id: 'actions'
+            } as ColumnDef<TItem, TDeleteVariables>
           ]
-        : []),
+        : [])
     ],
     data: data?.results || [],
     enableRowSelection: true,
@@ -278,12 +245,12 @@ export function DataTable<
     state: {
       columnFilters,
       columnVisibility,
-      sorting,
-    },
-  });
+      sorting
+    }
+  })
 
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className='flex h-full flex-col gap-3'>
       {/* SEARCH TOOLBAR */}
       {!minimal && (
         <DataTableToolbar
@@ -301,29 +268,27 @@ export function DataTable<
         (getDeleteVariablesFromItem ? (
           <DeleteItems
             deleteFunction={async (vars) => {
-              await deleteItem(vars);
-              setSelectedItems([]);
+              await deleteItem(vars)
+              setSelectedItems([])
             }}
             deleteVariables={selectedItems.map((id) =>
-              getDeleteVariablesFromItem(
-                data?.results.find((i) => i.id === id) as TItem
-              )
+              getDeleteVariablesFromItem(data?.results.find((i) => i.id === id) as TItem)
             )}
             items={selectedItems.map((id) => {
-              const item = data?.results.find((i) => i.id === id);
+              const item = data?.results.find((i) => i.id === id)
               return {
-                id: item?.id || "",
-                name: item?.name || "",
-              };
+                id: item?.id || '',
+                name: item?.name || ''
+              }
             })}
             itemType={itemType}
-            variant="lg"
+            variant='lg'
           />
         ) : null)}
 
       {/* DATA TABLE - EITHER GRID OR TABLE VIEW*/}
-      <div className="flex-1 overflow-auto">
-        {view === "grid" ? (
+      <div className='flex-1 overflow-auto'>
+        {view === 'grid' ? (
           <GridView
             content={content}
             createForm={createForm}
@@ -348,7 +313,7 @@ export function DataTable<
 
       {/* PAGINATION */}
       {!minimal && (
-        <div className="self-auto">
+        <div className='self-auto'>
           <DataTablePagination data={data as any} />
         </div>
       )}
@@ -356,9 +321,9 @@ export function DataTable<
       {/* THIS IS THE FORM DIALOG */}
       <Dialog
         onOpenChange={(o) => {
-          setFormOpen(o);
+          setFormOpen(o)
           if (!o) {
-            setFinalForm(createForm);
+            setFinalForm(createForm)
           }
         }}
         open={formOpen}
@@ -366,17 +331,13 @@ export function DataTable<
         <VisuallyHidden.Root>
           <DialogDescription />
           <DialogTitle>
-            {finalForm ? "Edit" : "Create"} {itemType}
+            {finalForm ? 'Edit' : 'Create'} {itemType}
           </DialogTitle>
         </VisuallyHidden.Root>
-        <DialogContent
-          aria-description="Create/Edit"
-          className="p-0"
-          title="Create/Edit"
-        >
+        <DialogContent aria-description='Create/Edit' className='p-0' title='Create/Edit'>
           {finalForm}
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

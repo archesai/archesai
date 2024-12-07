@@ -1,31 +1,31 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Exclude, Expose } from "class-transformer";
-import { IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger'
+import { Exclude, Expose } from 'class-transformer'
+import { IsString } from 'class-validator'
 
 export type _PrismaSubItemModel = {
-  id: string;
-  name: string;
-};
+  id: string
+  name: string
+}
 
 @Exclude()
 export class SubItemEntity implements _PrismaSubItemModel {
   @ApiProperty({
-    description: "The id of the item",
-    example: "item-id",
+    description: 'The id of the item',
+    example: 'item-id'
   })
   @Expose()
   @IsString()
-  id: string;
+  id: string
 
   @ApiProperty({
-    description: "The name of the item",
-    example: "item-name",
+    description: 'The name of the item',
+    example: 'item-name'
   })
   @Expose()
   @IsString()
-  name: string;
+  name: string
 
   constructor(subItem: _PrismaSubItemModel) {
-    Object.assign(this, subItem);
+    Object.assign(this, subItem)
   }
 }

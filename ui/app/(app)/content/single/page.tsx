@@ -1,74 +1,67 @@
-"use client";
-// FIXME - remove use client
-import { ContentViewer } from "@/components/content-viewer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useContentControllerFindOne } from "@/generated/archesApiComponents";
-import { useAuth } from "@/hooks/use-auth";
-import { format } from "date-fns";
-import { useSearchParams } from "next/navigation";
+import { Button } from '@/components/ui/button'
+import { archesClient } from '@/lib/api/index'
+import { QueryErrorResetBoundary } from '@tanstack/react-query'
+import { ErrorBoundary } from 'react-error-boundary'
 
-export default function ContentDetailsPage() {
-  const searchParams = useSearchParams();
-  const contentId = searchParams?.get("contentId");
+type ContentProps = {
+  contentId: string | undefined
+  defaultOrgname: string | undefined
+}
 
-  const { defaultOrgname } = useAuth();
+const ContentSkeleton = () => (
+  <div>
+    <h1 style={{ backgroundColor: '#eee', height: '1.5em', width: '50%' }} />
+    <p style={{ backgroundColor: '#eee', height: '1em', width: '80%' }} />
+  </div>
+)
 
-  const { data: content } = useContentControllerFindOne(
+const ContentComponent: React.FC<ContentProps> = ({ contentId, defaultOrgname }) => {
+  const { data: content } = archesClient.useSuspenseQuery(
+    'get',
+    '/organizations/{orgname}/content/{id}',
     {
-      pathParams: {
-        contentId: contentId as string,
-        orgname: defaultOrgname,
-      },
+      params: {
+        path: {
+          id: contentId ?? '',
+          orgname: defaultOrgname ?? ''
+        }
+      }
     },
     {
-      enabled: !!defaultOrgname && !!contentId,
+      // placeholderData: {
+      //   description: '', // Mock description placeholder
+      //   title: <ContentSkeleton /> // Mock title placeholder
+      // }
     }
-  );
+  )
 
   return (
-    <div className="flex h-full w-full gap-3">
-      {/*LEFT SIDE*/}
-      <div className="flex w-1/2 flex-initial flex-col gap-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div>{content?.name}</div>
-              <Button asChild size="sm" variant="outline">
-                <a
-                  href={content?.url || ""}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Download Content
-                </a>
-              </Button>
-            </CardTitle>
-            <CardDescription>
-              {content?.description || "No Description"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <Badge>{content?.mimeType}</Badge>
-              {content?.createdAt && (
-                <Badge>{format(new Date(content.createdAt), "PPP")}</Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      {/*RIGHT SIDE*/}
-      <Card className="w-1/2 overflow-hidden">
-        {content && <ContentViewer content={content} size="lg" />}
-      </Card>
+    <div>
+      <h1>{content?.title ?? 'No Title'}</h1>
+      <p>{content?.description ?? 'No Description'}</p>
     </div>
-  );
+  )
+}
+
+export const App = () => {
+  const contentId = '123'
+  const defaultOrgname = 'my-organization'
+
+  return (
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <ErrorBoundary
+          fallbackRender={({ resetErrorBoundary }) => (
+            <div>
+              There was an error!
+              <Button onClick={() => resetErrorBoundary()}>Try again</Button>
+            </div>
+          )}
+          onReset={reset}
+        >
+          <ContentComponent contentId={contentId} defaultOrgname={defaultOrgname} />
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
+  )
 }

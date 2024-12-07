@@ -1,5 +1,5 @@
-import { UserEntity } from "@/src/users/entities/user.entity";
-import { faker } from "@faker-js/faker";
+import { UserEntity } from '@/src/users/entities/user.entity'
+import { faker } from '@faker-js/faker'
 
 export function createRandomUser(overrides?: Partial<UserEntity>): UserEntity {
   return new UserEntity({
@@ -18,6 +18,6 @@ export function createRandomUser(overrides?: Partial<UserEntity>): UserEntity {
     refreshToken: faker.internet.password(),
     updatedAt: faker.date.recent(),
     username: faker.internet.username(),
-    ...overrides,
-  });
+    ...overrides
+  })
 }

@@ -1,12 +1,12 @@
-import { Authenticated } from "@/components/authenticated";
-import { AppSidebar } from "@/components/layout/app-sidebar/app-sidebar";
-import { PageHeader } from "@/components/layout/page-header/page-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Authenticated } from '@/components/authenticated'
+import { AppSidebar } from '@/components/layout/app-sidebar/app-sidebar'
+import { PageHeader } from '@/components/layout/page-header/page-header'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 export default function AppLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <>
@@ -16,12 +16,12 @@ export default function AppLayout({
         <AppSidebar />
         {/* This is the main content area. */}
         <SidebarInset>
-          <main className="flex h-svh flex-1 flex-col">
+          <main className='flex h-svh flex-1 flex-col'>
             <PageHeader />
-            <div className="flex-1 overflow-auto p-4">{children}</div>
+            <div className='flex-1 overflow-auto p-4'>{children}</div>
           </main>
         </SidebarInset>
       </SidebarProvider>
     </>
-  );
+  )
 }

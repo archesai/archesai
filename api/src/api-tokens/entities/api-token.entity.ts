@@ -1,9 +1,9 @@
-import { ApiToken as _PrismaApiToken, RoleType } from "@prisma/client";
-import { IsEnum, IsString } from "class-validator";
+import { ApiToken as _PrismaApiToken, RoleType } from '@prisma/client'
+import { IsEnum, IsString } from 'class-validator'
 
-import { BaseEntity } from "../../common/entities/base.entity";
+import { BaseEntity } from '../../common/entities/base.entity'
 
-export type ApiTokenModel = _PrismaApiToken;
+export type ApiTokenModel = _PrismaApiToken
 
 export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
   /**
@@ -11,42 +11,42 @@ export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
    * @example archesai.com,localhost:3000
    */
   @IsString()
-  domains: string = "*";
+  domains: string = '*'
 
   /**
    * The API token key. This will only be shown once
    * @example ********1234567890
    */
-  key: string;
+  key: string
 
   /**
    *  The name of the API token
    * @example My Token
    */
   @IsString()
-  name: string;
+  name: string
 
   /**
    * The organization name
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
 
   /**
    * The role of the API token
    * @example ADMIN
    */
   @IsEnum(RoleType)
-  role: RoleType;
+  role: RoleType
 
   /**
    * The username of the user who owns this API token
    * @example jonathan
    */
-  username: string;
+  username: string
 
   constructor(apiToken: ApiTokenModel) {
-    super();
-    Object.assign(this, apiToken);
+    super()
+    Object.assign(this, apiToken)
   }
 }

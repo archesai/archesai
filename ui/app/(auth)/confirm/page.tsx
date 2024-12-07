@@ -1,209 +1,177 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   useAuthControllerEmailChangeConfirm,
   useAuthControllerEmailVerificationConfirm,
-  useAuthControllerPasswordResetConfirm,
-} from "@/generated/archesApiComponents";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+  useAuthControllerPasswordResetConfirm
+} from '@/generated/archesApiComponents'
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
 // Define allowed action types
-type ActionType = "email-change" | "email-verification" | "password-reset";
+type ActionType = 'email-change' | 'email-verification' | 'password-reset'
 
 // Define schemas for different actions
 const passwordResetSchema = z
   .object({
-    confirmPassword: z
-      .string()
-      .min(8, { message: "Please confirm your password" }),
+    confirmPassword: z.string().min(8, { message: 'Please confirm your password' }),
     password: z
       .string()
-      .min(8, { message: "Password must be at least 8 characters" })
+      .min(8, { message: 'Password must be at least 8 characters' })
       .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-        message:
-          "Password must contain at least one letter, one number, and one special character",
-      }),
+        message: 'Password must contain at least one letter, one number, and one special character'
+      })
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+    message: 'Passwords do not match',
+    path: ['confirmPassword']
+  })
 
-type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
+type PasswordResetFormData = z.infer<typeof passwordResetSchema>
 
 export default function ConfirmPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const type = searchParams?.get("type") as ActionType;
-  const token = searchParams?.get("token") as string;
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const type = searchParams?.get('type') as ActionType
+  const token = searchParams?.get('token') as string
 
-  const { mutateAsync: verifyEmail } =
-    useAuthControllerEmailVerificationConfirm();
-  const { mutateAsync: resetPassword } =
-    useAuthControllerPasswordResetConfirm();
-  const { mutateAsync: changeEmail } = useAuthControllerEmailChangeConfirm();
+  const { mutateAsync: verifyEmail } = useAuthControllerEmailVerificationConfirm()
+  const { mutateAsync: resetPassword } = useAuthControllerPasswordResetConfirm()
+  const { mutateAsync: changeEmail } = useAuthControllerEmailChangeConfirm()
 
-  const [message, setMessage] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [operationSent, setOperationSent] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('')
+  const [error, setError] = useState<string>('')
+  const [operationSent, setOperationSent] = useState<boolean>(false)
 
   const form = useForm<PasswordResetFormData>({
     defaultValues: {
-      confirmPassword: "",
-      password: "",
+      confirmPassword: '',
+      password: ''
     },
-    resolver: zodResolver(passwordResetSchema),
-  });
+    resolver: zodResolver(passwordResetSchema)
+  })
 
   useEffect(() => {
     const handleAction = async () => {
       if (!type || !token) {
-        setError("Invalid request. Missing parameters.");
-        router.push("/login");
-        return;
+        setError('Invalid request. Missing parameters.')
+        router.push('/login')
+        return
       }
       if (operationSent) {
-        return;
+        return
       }
-      setOperationSent(true);
+      setOperationSent(true)
 
       switch (type) {
-        case "email-change":
+        case 'email-change':
           try {
             await changeEmail({
               body: {
-                token,
-              },
-            });
-            setMessage("Your email has been successfully updated!");
-            router.push("/playground");
+                token
+              }
+            })
+            setMessage('Your email has been successfully updated!')
+            router.push('/playground')
           } catch (err: any) {
-            console.error(err);
-            setError(
-              err?.response?.data?.message ||
-                "Email change failed. Please try again."
-            );
+            console.error(err)
+            setError(err?.response?.data?.message || 'Email change failed. Please try again.')
           }
-          break;
-        case "email-verification":
+          break
+        case 'email-verification':
           try {
             await verifyEmail({
               body: {
-                token,
-              },
-            });
-            setMessage("Your email has been successfully verified!");
+                token
+              }
+            })
+            setMessage('Your email has been successfully verified!')
 
-            router.push("/playground");
+            router.push('/playground')
           } catch (err: any) {
-            console.error(err);
+            console.error(err)
             // setError(
             //   err?.response?.data?.message || "Email verification failed."
             // );
           }
-          break;
-        case "password-reset":
+          break
+        case 'password-reset':
           // Do nothing
-          break;
+          break
 
         default:
-          setError("Unsupported action type.");
-          router.push("/login");
-          break;
+          setError('Unsupported action type.')
+          router.push('/login')
+          break
       }
-    };
+    }
 
-    handleAction();
-  }, [type, token]);
+    handleAction()
+  }, [type, token])
 
   const onSubmit = async (data: PasswordResetFormData) => {
     try {
       await resetPassword({
         body: {
           newPassword: data.password,
-          token,
-        },
-      });
-      setMessage("Your password has been successfully reset!");
+          token
+        }
+      })
+      setMessage('Your password has been successfully reset!')
 
-      router.push("/playground");
+      router.push('/playground')
     } catch (err: any) {
-      console.error("Password reset error:", err);
-      setError(
-        err?.response?.data?.message ||
-          "Password reset failed. Please try again."
-      );
+      console.error('Password reset error:', err)
+      setError(err?.response?.data?.message || 'Password reset failed. Please try again.')
     }
-  };
+  }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {type.split("-").join(" ")}
-        </h1>
-        <p className="text-sm text-muted-foreground">
+    <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 text-center'>
+        <h1 className='text-2xl font-semibold tracking-tight'>{type.split('-').join(' ')}</h1>
+        <p className='text-sm text-muted-foreground'>
           {message ||
-            (error
-              ? ""
-              : type === "password-reset"
-                ? "Please follow the instructions below."
-                : "Verifying...")}
+            (error ? '' : type === 'password-reset' ? 'Please follow the instructions below.' : 'Verifying...')}
         </p>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className='flex flex-col gap-2'>
         {/* Display Error Message */}
         {error && (
-          <p className="text-red-500" role="alert">
+          <p className='text-red-500' role='alert'>
             {error}
           </p>
         )}
 
         {/* Handle Password Reset Form */}
-        {type === "password-reset" ? (
+        {type === 'password-reset' ? (
           <Form {...form}>
-            <form
-              className="flex flex-col gap-2"
-              noValidate
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
+            <form className='flex flex-col gap-2' noValidate onSubmit={form.handleSubmit(onSubmit)}>
               {/* New Password Field */}
               <FormField
                 control={form.control}
-                name="password"
+                name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="password">New Password</FormLabel>
+                    <FormLabel htmlFor='password'>New Password</FormLabel>
                     <FormControl>
                       <Input
-                        autoComplete="new-password"
-                        id="password"
-                        placeholder="Enter your new password"
-                        type="password"
+                        autoComplete='new-password'
+                        id='password'
+                        placeholder='Enter your new password'
+                        type='password'
                         {...field}
-                        aria-invalid={
-                          form.formState.errors.password ? "true" : "false"
-                        }
+                        aria-invalid={form.formState.errors.password ? 'true' : 'false'}
                       />
                     </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.password?.message}
-                    </FormMessage>
+                    <FormMessage>{form.formState.errors.password?.message}</FormMessage>
                   </FormItem>
                 )}
               />
@@ -211,54 +179,40 @@ export default function ConfirmPage() {
               {/* Confirm New Password Field */}
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name='confirmPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="confirmPassword">
-                      Confirm New Password
-                    </FormLabel>
+                    <FormLabel htmlFor='confirmPassword'>Confirm New Password</FormLabel>
                     <FormControl>
                       <Input
-                        autoComplete="new-password"
-                        id="confirmPassword"
-                        placeholder="Confirm your new password"
-                        type="password"
+                        autoComplete='new-password'
+                        id='confirmPassword'
+                        placeholder='Confirm your new password'
+                        type='password'
                         {...field}
-                        aria-invalid={
-                          form.formState.errors.confirmPassword
-                            ? "true"
-                            : "false"
-                        }
+                        aria-invalid={form.formState.errors.confirmPassword ? 'true' : 'false'}
                       />
                     </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.confirmPassword?.message}
-                    </FormMessage>
+                    <FormMessage>{form.formState.errors.confirmPassword?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Submit Button */}
-              <Button
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-                type="submit"
-              >
-                {form.formState.isSubmitting
-                  ? "Resetting Password..."
-                  : "Reset Password"}
+              <Button className='w-full' disabled={form.formState.isSubmitting} type='submit'>
+                {form.formState.isSubmitting ? 'Resetting Password...' : 'Reset Password'}
               </Button>
             </form>
           </Form>
         ) : (
           // Handle Email Verification & Email Change
-          <div className="text-center">
+          <div className='text-center'>
             <Button asChild>
-              <Link href="/playground">Go to Home</Link>
+              <Link href='/playground'>Go to Home</Link>
             </Button>
           </div>
         )}
       </div>
     </div>
-  );
+  )
 }

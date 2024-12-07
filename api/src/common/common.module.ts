@@ -1,18 +1,14 @@
-import {
-  ClassSerializerInterceptor,
-  Module,
-  ValidationPipe,
-} from "@nestjs/common";
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
+import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/common'
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 
-import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
-import { ExcludeNullInterceptor } from "./interceptors/exclude-null.interceptor";
+import { AllExceptionsFilter } from './filters/all-exceptions.filter'
+import { ExcludeNullInterceptor } from './interceptors/exclude-null.interceptor'
 
 @Module({
   providers: [
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
+      useClass: AllExceptionsFilter
     },
     {
       provide: APP_PIPE,
@@ -23,20 +19,20 @@ import { ExcludeNullInterceptor } from "./interceptors/exclude-null.interceptor"
           transform: true,
           transformOptions: {
             enableImplicitConversion: true,
-            exposeDefaultValues: true,
+            exposeDefaultValues: true
           },
-          whitelist: true,
-        });
-      },
+          whitelist: true
+        })
+      }
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: ExcludeNullInterceptor,
+      useClass: ExcludeNullInterceptor
     },
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor,
-    },
-  ],
+      useClass: ClassSerializerInterceptor
+    }
+  ]
 })
 export class CommonModule {}

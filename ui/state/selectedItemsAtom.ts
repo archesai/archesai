@@ -1,3 +1,3 @@
-import { atom } from "jotai";
+import { atom } from 'jotai'
 
-export const selectedItemsAtom = atom<string[]>([]);
+export const selectedItemsAtom = atom<string[]>([])

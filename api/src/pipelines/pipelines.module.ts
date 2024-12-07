@@ -1,14 +1,14 @@
-import { Module } from "@nestjs/common";
+import { Module } from '@nestjs/common'
 
-import { PrismaModule } from "../prisma/prisma.module";
-import { PipelineRepository } from "./pipeline.repository";
-import { PipelinesController } from "./pipelines.controller";
-import { PipelinesService } from "./pipelines.service";
+import { PrismaModule } from '../prisma/prisma.module'
+import { PipelineRepository } from './pipeline.repository'
+import { PipelinesController } from './pipelines.controller'
+import { PipelinesService } from './pipelines.service'
 
 @Module({
   controllers: [PipelinesController],
   exports: [PipelinesService],
   imports: [PrismaModule],
-  providers: [PipelinesService, PipelineRepository],
+  providers: [PipelinesService, PipelineRepository]
 })
 export class PipelinesModule {}

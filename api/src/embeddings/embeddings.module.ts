@@ -1,11 +1,11 @@
-import { HttpModule } from "@nestjs/axios";
-import { Module } from "@nestjs/common";
+import { HttpModule } from '@nestjs/axios'
+import { Module } from '@nestjs/common'
 
-import { OpenAiEmbeddingsService } from "./embeddings.openai.service";
+import { OpenAiEmbeddingsService } from './embeddings.openai.service'
 
 @Module({
   exports: [OpenAiEmbeddingsService],
   imports: [HttpModule],
-  providers: [OpenAiEmbeddingsService],
+  providers: [OpenAiEmbeddingsService]
 })
 export class EmbeddingsModule {}

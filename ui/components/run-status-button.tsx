@@ -1,124 +1,101 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { siteConfig } from "@/config/site";
-import { useToolsControllerFindAll } from "@/generated/archesApiComponents";
-import { FieldFieldQuery, RunEntity } from "@/generated/archesApiSchemas";
-import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
-import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
-import { Ban, CheckCircle2, Loader2Icon } from "lucide-react";
-import { useState } from "react";
+'use client'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { siteConfig } from '@/config/site'
+import { useToolsControllerFindAll } from '@/generated/archesApiComponents'
+import { FieldFieldQuery, RunEntity } from '@/generated/archesApiSchemas'
+import { useAuth } from '@/hooks/use-auth'
+import { cn } from '@/lib/utils'
+import { CounterClockwiseClockIcon } from '@radix-ui/react-icons'
+import { Ban, CheckCircle2, Loader2Icon } from 'lucide-react'
+import { useState } from 'react'
 
-export const RunStatusButton = ({
-  onClick,
-  run,
-}: {
-  onClick?: () => void;
-  run: RunEntity;
-  size?: "lg" | "sm";
-}) => {
-  const { defaultOrgname } = useAuth();
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+export const RunStatusButton = ({ onClick, run }: { onClick?: () => void; run: RunEntity; size?: 'lg' | 'sm' }) => {
+  const { defaultOrgname } = useAuth()
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const { data: tools } = useToolsControllerFindAll({
     pathParams: {
-      orgname: defaultOrgname,
+      orgname: defaultOrgname
     },
     queryParams: {
       filters: JSON.stringify([
         {
-          field: "id",
-          operator: "in",
-          value: [run.toolId],
-        },
-      ] as FieldFieldQuery[]) as any,
-    },
-  });
+          field: 'id',
+          operator: 'in',
+          value: [run.toolId]
+        }
+      ] as FieldFieldQuery[]) as any
+    }
+  })
 
-  console.log(tools);
+  console.log(tools)
   const renderIcon = () => {
     switch (run.status) {
-      case "COMPLETE":
-        return <CheckCircle2 className="text-green-600" />;
-      case "ERROR":
-        return <Ban className="text-red-600" />;
-      case "PROCESSING":
+      case 'COMPLETE':
+        return <CheckCircle2 className='text-green-600' />
+      case 'ERROR':
+        return <Ban className='text-red-600' />
+      case 'PROCESSING':
         return (
-          <div className="flex items-center gap-2">
-            <Loader2Icon className="animate-spin text-primary" />
+          <div className='flex items-center gap-2'>
+            <Loader2Icon className='animate-spin text-primary' />
             <span>{(run.progress * 100).toFixed(0)}%</span>
           </div>
-        );
-      case "QUEUED":
-        return <CounterClockwiseClockIcon className="text-primary" />;
+        )
+      case 'QUEUED':
+        return <CounterClockwiseClockIcon className='text-primary' />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
-  const toolBase = tools?.results?.find(
-    (tool) => tool.id === run.toolId
-  )?.toolBase;
+  const toolBase = tools?.results?.find((tool) => tool.id === run.toolId)?.toolBase
 
-  let Icon = null;
+  let Icon = null
   if (toolBase) {
-    Icon =
-      siteConfig.toolBaseIcons[
-        toolBase as keyof typeof siteConfig.toolBaseIcons
-      ];
+    Icon = siteConfig.toolBaseIcons[toolBase as keyof typeof siteConfig.toolBaseIcons]
   }
 
   return (
     <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
       <PopoverTrigger asChild>
-        <Button
-          className={cn("flex items-center justify-between", "")}
-          onClick={onClick}
-          size="sm"
-          variant="outline"
-        >
-          <div className="flex flex-1 items-center justify-start gap-1 overflow-hidden truncate">
-            {Icon && <Icon className="text-blue-700" />}
+        <Button className={cn('flex items-center justify-between', '')} onClick={onClick} size='sm' variant='outline'>
+          <div className='flex flex-1 items-center justify-start gap-1 overflow-hidden truncate'>
+            {Icon && <Icon className='text-blue-700' />}
           </div>
-          <div className="ml-2 flex-shrink-0">{renderIcon()}</div>
+          <div className='ml-2 flex-shrink-0'>{renderIcon()}</div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="overflow-auto p-4 text-sm">
+      <PopoverContent className='overflow-auto p-4 text-sm'>
         <div>
-          <strong className="font-semibold">Status:</strong> {run.status}
+          <strong className='font-semibold'>Status:</strong> {run.status}
         </div>
         <div>
-          <strong className="font-semibold">Started:</strong>{" "}
+          <strong className='font-semibold'>Started:</strong>{' '}
           {run.startedAt && new Date(run.startedAt).toLocaleString()}
         </div>
         <div>
-          <strong className="font-semibold">Completed:</strong>{" "}
-          {run.completedAt ? new Date(run.completedAt).toLocaleString() : "N/A"}
+          <strong className='font-semibold'>Completed:</strong>{' '}
+          {run.completedAt ? new Date(run.completedAt).toLocaleString() : 'N/A'}
         </div>
         {run.completedAt && (
           <div>
-            <strong className="font-semibold">Duration:</strong>{" "}
+            <strong className='font-semibold'>Duration:</strong>{' '}
             {run.startedAt &&
               run.completedAt &&
-              new Date(run.completedAt).getTime() -
-                new Date(run.startedAt).getTime()}
+              new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime()}
           </div>
         )}
 
         <div>
-          <strong className="font-semibold">Progress:</strong>{" "}
-          {Math.round(run.progress * 100)}%
+          <strong className='font-semibold'>Progress:</strong> {Math.round(run.progress * 100)}%
         </div>
         {run.error && (
           <div>
-            <strong className="font-semibold">Error:</strong> {run.error}
+            <strong className='font-semibold'>Error:</strong> {run.error}
           </div>
         )}
       </PopoverContent>
     </Popover>
-  );
-};
+  )
+}

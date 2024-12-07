@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { ARTokenType } from "@prisma/client";
+import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { ARTokenType } from '@prisma/client'
 
-import { EmailService } from "../../email/email.service";
-import { getEmailVerificationHtml } from "../../email/templates";
-import { UsersService } from "../../users/users.service";
-import { ConfirmationTokenDto } from "../dto/confirmation-token.dto";
-import { ARTokensService } from "./ar-tokens.service";
-import { AuthService } from "./auth.service";
+import { EmailService } from '../../email/email.service'
+import { getEmailVerificationHtml } from '../../email/templates'
+import { UsersService } from '../../users/users.service'
+import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
+import { ARTokensService } from './ar-tokens.service'
+import { AuthService } from './auth.service'
 
 @Injectable()
 export class EmailVerificationService {
@@ -23,30 +23,24 @@ export class EmailVerificationService {
     const { userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_VERIFICATION,
       confirmationTokenDto.token
-    );
+    )
 
-    const user = await this.usersService.setEmailVerified(userId);
-    return this.authService.login(user);
+    const user = await this.usersService.setEmailVerified(userId)
+    return this.authService.login(user)
   }
 
   async request(userId: string): Promise<void> {
-    const user = await this.usersService.findOne(null, userId);
+    const user = await this.usersService.findOne(null, userId)
 
-    const token = await this.arTokensService.createToken(
-      ARTokenType.EMAIL_VERIFICATION,
-      user.id,
-      24
-    );
+    const token = await this.arTokensService.createToken(ARTokenType.EMAIL_VERIFICATION, user.id, 24)
 
-    const verificationLink = `${this.configService.get(
-      "FRONTEND_HOST"
-    )}/confirm?type=email-verification&token=${token}`;
+    const verificationLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-verification&token=${token}`
 
-    const htmlContent = getEmailVerificationHtml(verificationLink);
+    const htmlContent = getEmailVerificationHtml(verificationLink)
     await this.emailService.sendMail({
       html: htmlContent,
-      subject: "Verify Your Email Address",
-      to: user.email,
-    });
+      subject: 'Verify Your Email Address',
+      to: user.email
+    })
   }
 }

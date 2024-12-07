@@ -1,5 +1,5 @@
-import { PartialType } from "@nestjs/swagger";
+import { PartialType } from '@nestjs/swagger'
 
-import { CreateToolDto } from "./create-tool.dto";
+import { CreateToolDto } from './create-tool.dto'
 
 export class UpdateToolDto extends PartialType(CreateToolDto) {}

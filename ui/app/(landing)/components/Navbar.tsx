@@ -1,102 +1,88 @@
-"use client";
-import { ArchesLogo } from "@/components/arches-logo";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { useIsTop } from "@/hooks/use-is-top";
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { Menu } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+'use client'
+import { ArchesLogo } from '@/components/arches-logo'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu'
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet'
+import { useIsTop } from '@/hooks/use-is-top'
+import { GitHubLogoIcon } from '@radix-ui/react-icons'
+import { Menu } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
 
-import { ModeToggle } from "../../../components/layout/page-header/mode-toggle";
+import { ModeToggle } from '../../../components/layout/page-header/mode-toggle'
 
 interface RouteProps {
-  href: string;
-  label: string;
+  href: string
+  label: string
 }
 
 const routeList: RouteProps[] = [
   {
-    href: "#features",
-    label: "Features",
+    href: '#features',
+    label: 'Features'
   },
   {
-    href: "#testimonials",
-    label: "Testimonials",
+    href: '#testimonials',
+    label: 'Testimonials'
   },
   {
-    href: "#pricing",
-    label: "Pricing",
+    href: '#pricing',
+    label: 'Pricing'
   },
   {
-    href: "#faq",
-    label: "FAQ",
-  },
-];
+    href: '#faq',
+    label: 'FAQ'
+  }
+]
 
 export const Navbar = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const isTop = useIsTop();
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const isTop = useIsTop()
 
   return (
     <header
       className={`sticky top-0 z-40 w-full ${
-        isTop
-          ? "bg-transparent"
-          : "border-b bg-white shadow-sm transition-all dark:bg-background"
+        isTop ? 'bg-transparent' : 'border-b bg-white shadow-sm transition-all dark:bg-background'
       }`}
     >
       <NavigationMenu>
-        <NavigationMenuList className="flex h-[56px] w-screen justify-between px-4">
-          <div className="flex items-center justify-center gap-3">
-            <NavigationMenuItem className="flex font-bold">
+        <NavigationMenuList className='flex h-[56px] w-screen justify-between px-4'>
+          <div className='flex items-center justify-center gap-3'>
+            <NavigationMenuItem className='flex font-bold'>
               <ArchesLogo />
             </NavigationMenuItem>
             {/* mobile */}
-            <span className="flex md:hidden">
+            <span className='flex md:hidden'>
               <Sheet onOpenChange={setIsOpen} open={isOpen}>
-                <SheetTrigger className="px-2">
-                  <Menu
-                    className="flex h-5 w-5 md:hidden"
-                    onClick={() => setIsOpen(true)}
-                  ></Menu>
+                <SheetTrigger className='px-2'>
+                  <Menu className='flex h-5 w-5 md:hidden' onClick={() => setIsOpen(true)}></Menu>
                 </SheetTrigger>
 
-                <SheetContent side={"left"}>
+                <SheetContent side={'left'}>
                   <SheetHeader>
                     <ArchesLogo />
                   </SheetHeader>
-                  <nav className="mt-4 flex flex-col items-center justify-center gap-2">
+                  <nav className='mt-4 flex flex-col items-center justify-center gap-2'>
                     {routeList.map(({ href, label }: RouteProps) => (
                       <a
-                        className={buttonVariants({ variant: "ghost" })}
+                        className={buttonVariants({ variant: 'ghost' })}
                         href={href}
                         key={label}
                         onClick={() => setIsOpen(false)}
-                        rel="noreferrer noopener"
+                        rel='noreferrer noopener'
                       >
                         {label}
                       </a>
                     ))}
                     <a
                       className={`w-[110px] border ${buttonVariants({
-                        variant: "secondary",
+                        variant: 'secondary'
                       })}`}
-                      href="https://github.com/leoMirandaa/shadcn-landing-page.git"
-                      rel="noreferrer noopener"
-                      target="_blank"
+                      href='https://github.com/leoMirandaa/shadcn-landing-page.git'
+                      rel='noreferrer noopener'
+                      target='_blank'
                     >
-                      <GitHubLogoIcon className="mr-2 h-5 w-5" />
+                      <GitHubLogoIcon className='mr-2 h-5 w-5' />
                       Github
                     </a>
                   </nav>
@@ -104,34 +90,34 @@ export const Navbar = () => {
               </Sheet>
             </span>
             {/* desktop */}
-            <nav className="hidden gap-2 md:flex">
+            <nav className='hidden gap-2 md:flex'>
               {routeList.map((route: RouteProps, i) => (
                 <a
                   className={`text-[17px] ${buttonVariants({
-                    variant: "ghost",
+                    variant: 'ghost'
                   })}`}
                   href={route.href}
                   key={i}
-                  rel="noreferrer noopener"
+                  rel='noreferrer noopener'
                 >
                   {route.label}
                 </a>
               ))}
             </nav>
           </div>
-          <div className="hidden items-center gap-2 md:flex">
-            <ModeToggle h={"h-10"} />
+          <div className='hidden items-center gap-2 md:flex'>
+            <ModeToggle h={'h-10'} />
 
-            <Link href="/login">
-              <Button variant={"outline"}>Log in</Button>
+            <Link href='/login'>
+              <Button variant={'outline'}>Log in</Button>
             </Link>
 
-            <Link href="/register">
+            <Link href='/register'>
               <Button>Sign up for free </Button>
             </Link>
           </div>
         </NavigationMenuList>
       </NavigationMenu>
     </header>
-  );
-};
+  )
+}
