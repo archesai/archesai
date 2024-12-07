@@ -79,8 +79,8 @@ export default function ToolDataTable() {
       }}
       getDeleteVariablesFromItem={(tool) => ({
         pathParams: {
-          orgname: defaultOrgname,
-          toolId: tool.id
+          id: tool.id,
+          orgname: defaultOrgname
         }
       })}
       handleSelect={(tool) => router.push(`/tool/single?toolId=${tool.id}`)}

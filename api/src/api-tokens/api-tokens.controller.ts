@@ -17,7 +17,7 @@ export class ApiTokensController extends BaseController<
   CreateApiTokenDto,
   UpdateApiTokenDto,
   ApiTokensService
-> {
+>(ApiTokenEntity, CreateApiTokenDto, UpdateApiTokenDto) {
   constructor(private readonly apiTokensService: ApiTokensService) {
     super(apiTokensService)
   }

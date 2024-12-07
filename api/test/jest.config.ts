@@ -17,7 +17,14 @@ export default async (): Promise<Config> => {
     testRegex: '.e2e-spec.ts$',
     testTimeout: 120000,
     transform: {
-      '^.+\\.(t|j)s?$': '@swc/jest'
+      '^.+\\.(t|j)s$': [
+        'ts-jest',
+        {
+          astTransformers: {
+            before: ['../swagger-plugin-jest.js']
+          }
+        }
+      ]
     }
   }
 }

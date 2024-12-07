@@ -1,4 +1,4 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
+import { ApiHideProperty } from '@nestjs/swagger'
 import { AuthProvider, Member, User } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
 import { IsEmail, IsString, MinLength } from 'class-validator'
@@ -13,66 +13,64 @@ export type UserWithMembershipsAndAuthProvidersModel = User & {
 }
 
 export class UserEntity extends BaseEntity implements User {
-  @ApiProperty({
-    description: 'The memberships of the currently signed in user',
-    type: [AuthProviderEntity]
-  })
+  /**
+   * The memberships of the currently signed-in user
+   */
   @Expose()
   authProviders: AuthProviderEntity[]
 
-  @ApiProperty({
-    description: 'Whether or not the user is deactivated',
-    example: false
-  })
+  /**
+   * Whether or not the user is deactivated
+   * @example false
+   */
   @Expose()
   deactivated!: boolean
 
-  @ApiProperty({
-    description: "The user's default organization name",
-    example: 'my-organization'
-  })
+  /**
+   * The user's default organization name
+   * @example 'my-organization'
+   */
   @Expose()
   defaultOrgname: string
 
-  @ApiProperty({
-    description: "The user's display name",
-    example: 'John Smith'
-  })
+  /**
+   * The user's display name
+   * @example 'John Smith'
+   */
   @Expose()
   displayName: string
 
-  @ApiProperty({
-    description: "The user's e-mail",
-    example: 'example@archesai.com'
-  })
+  /**
+   * The user's e-mail
+   * @example 'example@archesai.com'
+   */
   @Expose()
   @IsEmail()
   email!: string
 
-  @ApiProperty({
-    description: "Whether or not the user's e-mail has been verified"
-  })
+  /**
+   * Whether or not the user's e-mail has been verified
+   */
   @Expose()
   emailVerified!: boolean
 
-  @ApiProperty({
-    description: "The user's first name",
-    example: 'John'
-  })
+  /**
+   * The user's first name
+   * @example 'John'
+   */
   @Expose()
   firstName: string
 
-  @ApiProperty({
-    description: "The user's last name",
-    example: 'Smith'
-  })
+  /**
+   * The user's last name
+   * @example 'Smith'
+   */
   @Expose()
   lastName: string
 
-  @ApiProperty({
-    description: 'The memberships of the currently signed in user',
-    type: [MemberEntity]
-  })
+  /**
+   * The memberships of the currently signed-in user
+   */
   @Expose()
   memberships: MemberEntity[]
 
@@ -80,24 +78,21 @@ export class UserEntity extends BaseEntity implements User {
   @Exclude()
   password: string
 
-  @ApiProperty({
-    description: "The user's photo url",
-    example: '/avatar.png'
-  })
+  /**
+   * The user's photo URL
+   * @example '/avatar.png'
+   */
   @Expose()
   @IsString()
   photoUrl!: string
-
   @ApiHideProperty()
   @Exclude()
   refreshToken: string
 
-  // Exposed Properties
-  @ApiProperty({
-    description: "The user's username",
-    example: 'jonathan',
-    minLength: 5
-  })
+  /**
+   * The user's username
+   * @example 'jonathan'
+   */
   @Expose()
   @MinLength(5)
   username!: string

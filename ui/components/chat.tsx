@@ -87,18 +87,18 @@ export default function Chat() {
       }
     }
 
-    try {
-      setMessage('')
-      streamContent(defaultOrgname, currentLabelId, {
-        createdAt: new Date().toISOString(),
-        credits: 0,
-        description: 'Pending',
-        id: 'pending',
-        name: 'Pending',
-        orgname: defaultOrgname,
-        text: message.trim()
-      })
-      await createRun({
+    setMessage('')
+    streamContent(defaultOrgname, currentLabelId, {
+      createdAt: new Date().toISOString(),
+      credits: 0,
+      description: 'Pending',
+      id: 'pending',
+      name: 'Pending',
+      orgname: defaultOrgname,
+      text: message.trim()
+    })
+    await createRun(
+      {
         body: {
           runType: 'TOOL_RUN',
           text: message.trim()
@@ -106,13 +106,16 @@ export default function Chat() {
         pathParams: {
           orgname: defaultOrgname
         }
-      })
-    } catch (error) {
-      toast({
-        description: (error as any).stack.message,
-        title: 'Failed to send message'
-      })
-    }
+      },
+      {
+        onError: (error) => {
+          toast({
+            description: error?.message,
+            title: 'Failed to send message'
+          })
+        }
+      }
+    )
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {

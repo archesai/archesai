@@ -7,10 +7,11 @@ import { IsEnum, IsString } from 'class-validator'
 export type AuthProviderModel = _PrismaAuthProvider
 
 export class AuthProviderEntity extends BaseEntity implements AuthProviderModel {
-  /**
-   * The auth provider's provider
-   * @example LOCAL
-   */
+  @ApiProperty({
+    description: "The auth provider's provider",
+    enum: AuthProviderType,
+    example: AuthProviderType.LOCAL
+  })
   @Expose()
   @IsEnum(AuthProviderType)
   @IsString()

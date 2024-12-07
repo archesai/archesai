@@ -112,7 +112,7 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
 
   useEffect(() => {
     setSortDirection(sorting[0]?.desc ? 'desc' : 'asc')
-    setSortBy(sorting[0]?.id)
+    setSortBy(sorting[0]?.id || 'createdAt')
   }, [sorting, setSortDirection, setSortBy])
 
   const { setView, view } = useToggleView()

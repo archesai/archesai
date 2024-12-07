@@ -92,7 +92,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   onSubmitUpdate?.(data as any, {
                     onError: (error: any) => {
                       toast({
-                        description: (error as any)?.stack.message,
+                        description: error?.message,
                         title: `Update failed`,
                         variant: 'destructive'
                       })
@@ -109,7 +109,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                   onSubmitCreate?.(data as any, {
                     onError: (error: any) => {
                       toast({
-                        description: (error as any)?.stack.message,
+                        description: error?.message,
                         title: `Create failed`,
                         variant: 'destructive'
                       })

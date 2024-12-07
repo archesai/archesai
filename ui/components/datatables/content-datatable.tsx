@@ -144,7 +144,7 @@ export default function ContentDataTable({
       }}
       getDeleteVariablesFromItem={(content) => ({
         pathParams: {
-          contentId: content.id,
+          id: content.id,
           orgname: defaultOrgname
         }
       })}

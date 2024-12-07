@@ -111,25 +111,25 @@ export class RunEntity extends BaseEntity implements RunModel {
   @ApiHideProperty()
   pipelineStepId: null | string
 
-  @ApiProperty({
-    default: 0,
-    description: 'The progress of the run as a percentage',
-    example: 50.5
-  })
+  /**
+   * The progress of the run as a percentage
+   * @example 50.5
+   */
   @Expose()
   @IsNumber()
-  progress: number
+  progress: number = 0
 
-  /**
-   *The type of run, either an individual tool run or a pipeline run
-   * @example TOOL_RUN
-   */
+  @ApiProperty({
+    description: 'The type of run, either an individual tool run or a pipeline run',
+    enum: RunType,
+    example: RunType.TOOL_RUN
+  })
   @Expose()
   @IsEnum(RunType)
   runType: RunType
 
   /**
-   *The timestamp when the run started
+   * The timestamp when the run started
    * @example '2024-11-05T11:42:02.258Z'
    *
    */
@@ -138,10 +138,11 @@ export class RunEntity extends BaseEntity implements RunModel {
   @IsOptional()
   startedAt: Date | null
 
-  /**
-   * The status of the run
-   * @example QUEUED
-   */
+  @ApiProperty({
+    description: 'The status of the run',
+    enum: RunStatus,
+    example: RunStatus.QUEUED
+  })
   @Expose()
   @IsEnum(RunStatus)
   status: RunStatus

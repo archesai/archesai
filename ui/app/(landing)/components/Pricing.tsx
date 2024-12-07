@@ -61,7 +61,7 @@ export const Pricing = () => {
 
             <CardFooter className='flex'>
               <div className='space-y-4'>
-                {pricingList[i].benefitList.map((benefit: string) => (
+                {pricingList[i]?.benefitList?.map((benefit: string) => (
                   <span className='flex' key={benefit}>
                     <Check className='text-green-500' /> <h3 className='ml-2'>{benefit}</h3>
                   </span>

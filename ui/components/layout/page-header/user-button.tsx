@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { useUserControllerFindOne, useUserControllerUpdate } from '@/generated/archesApiComponents'
+import { useUsersControllerFindOne, useUsersControllerUpdate } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
@@ -30,12 +30,12 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
   const { defaultOrgname, logout } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
-  const { data: user } = useUserControllerFindOne({})
+  const { data: user } = useUsersControllerFindOne({})
 
-  const { mutateAsync: updateDefaultOrg } = useUserControllerUpdate({
+  const { mutateAsync: updateDefaultOrg } = useUsersControllerUpdate({
     onError: (error) => {
       toast({
-        description: error?.stack.message,
+        description: error?.message,
         title: 'Error updating default organization',
         variant: 'destructive'
       })

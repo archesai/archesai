@@ -14,7 +14,7 @@
         }
       }
     ],
-    "builder": "swc",
+    "builder": "tsc",
     "typeCheck": true
   }
 }

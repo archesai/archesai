@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { ApiToken as _PrismaApiToken, RoleType } from '@prisma/client'
 import { IsEnum, IsString } from 'class-validator'
 
@@ -32,10 +33,11 @@ export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
    */
   orgname: string
 
-  /**
-   * The role of the API token
-   * @example ADMIN
-   */
+  @ApiProperty({
+    description: 'The role of the API token',
+    enum: RoleType,
+    example: RoleType.ADMIN
+  })
   @IsEnum(RoleType)
   role: RoleType
 

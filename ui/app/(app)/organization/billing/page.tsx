@@ -34,7 +34,7 @@ export default function BillingPageContent() {
     useBillingControllerCreateCheckoutSession({
       onError: (error) => {
         toast({
-          description: error?.stack.message,
+          description: error?.message,
           title: 'Could not create checkout session',
           variant: 'destructive'
         })
@@ -140,27 +140,32 @@ export default function BillingPageContent() {
                             disabled={clickedButtonIndex === plans.indexOf(plan) && switchSubscriptionLoading}
                             onClick={async () => {
                               setClickedButtonIndex(plans.indexOf(plan))
-                              try {
-                                await switchSubscriptionPlan({
+                              await switchSubscriptionPlan(
+                                {
                                   pathParams: {
                                     orgname: defaultOrgname
                                   },
                                   queryParams: {
                                     planId: plan.id
                                   }
-                                })
-                                toast({
-                                  description: 'Plan switched successfully.',
-                                  title: 'Success',
-                                  variant: 'default'
-                                })
-                              } catch (err) {
-                                toast({
-                                  description: (err as any).stack.message,
-                                  title: 'Error',
-                                  variant: 'destructive'
-                                })
-                              }
+                                },
+                                {
+                                  onError: (error) => {
+                                    toast({
+                                      description: error?.message,
+                                      title: 'Could not switch plan',
+                                      variant: 'destructive'
+                                    })
+                                  },
+                                  onSuccess: () => {
+                                    toast({
+                                      description: 'Plan switched successfully.',
+                                      title: 'Success',
+                                      variant: 'default'
+                                    })
+                                  }
+                                }
+                              )
                             }}
                             size='sm'
                           >

@@ -11,7 +11,7 @@ migrations:
 	cd api && DATABASE_URL="postgresql://admin:admin@localhost:5431/nestjs?schema=public" npm run db:reset && cd ..
 
 generate:
-	cd ui && npm run gen && cd .. && cd api/test && curl -X GET "http://arches-api.test/-yaml"  > openapi-spec.yaml
+	curl -X GET "http://arches-api.test/swagger/yaml"  > openapi-spec.yaml && cd ui && npm run gen
 
 lint:
 	cd ui && npm run lint:eslint && npm run lint:tsc

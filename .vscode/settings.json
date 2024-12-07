@@ -10,5 +10,7 @@
     // "**/env": true,
     // "**/tmp": true
   },
-  "editor.maxTokenizationLineLength": 200000
+  "editor.maxTokenizationLineLength": 200000,
+  "jest.rootPath": "./api",
+  "jest.jestCommandLine": "npm run test --"
 }

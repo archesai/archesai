@@ -14,7 +14,6 @@ import { AppModule } from './app.module'
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter'
 import { AggregateFieldResult, Metadata } from './common/dto/paginated.dto'
 import { AggregateFieldQuery, FieldFieldQuery } from './common/dto/search-query.dto'
-// import metadata from './metadata'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -32,11 +31,10 @@ async function bootstrap() {
       .addBearerAuth()
       .addServer(configService.get<string>('SERVER_HOST'))
       .build()
-    // await SwaggerModule.loadPluginMetadata(metadata) // <-- here
     const documentFactory = () =>
       SwaggerModule.createDocument(app, swaggerConfig, {
-        extraModels: [FieldFieldQuery, AggregateFieldQuery, AggregateFieldResult, Metadata],
-        operationIdFactory: (controllerKey: string, methodKey: string) => methodKey
+        extraModels: [FieldFieldQuery, AggregateFieldQuery, AggregateFieldResult, Metadata]
+        // operationIdFactory: (controllerKey: string, methodKey: string) => methodKey
       })
 
     SwaggerModule.setup('swagger', app, documentFactory, {
@@ -45,7 +43,8 @@ async function bootstrap() {
       swaggerOptions: {
         persistAuthorization: true,
         tagsSorter: 'alpha'
-      }
+      },
+      yamlDocumentUrl: 'swagger/yaml'
     })
   }
 

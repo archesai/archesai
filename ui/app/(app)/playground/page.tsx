@@ -26,8 +26,8 @@ export default function PlaygroundPage() {
   const { data: run } = useRunsControllerFindOne(
     {
       pathParams: {
-        orgname: defaultOrgname,
-        runId: selectedRunId || ''
+        id: selectedRunId,
+        orgname: defaultOrgname
       }
     },
     {

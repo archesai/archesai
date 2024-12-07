@@ -70,6 +70,14 @@ steps:
       - |
         cd ./api && npm install && cd ../ui && npm install && cd .. && make lint
 
+  - name: node
+    id: unit-tests
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        make test
+
   # Step 2: Conditionally build arches-api
   - name: "gcr.io/kaniko-project/executor:debug"
     id: build-arches-api

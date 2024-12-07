@@ -22,7 +22,8 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) =>
                 items: { $ref: getSchemaPath(model) },
                 type: 'array'
               }
-            }
+            },
+            required: ['aggregates', 'metadata', 'results'] // Make these properties required
           }
         ],
         title: `PaginatedResponseOf${model.name}`

@@ -35,7 +35,7 @@ export class OrganizationEntity extends BaseEntity implements OrganizationModel 
   @ApiProperty({
     description: 'The plan that the organization is subscribed to',
     enum: PlanType,
-    example: 'FREE'
+    example: PlanType.FREE
   })
   @Expose()
   @IsEnum(PlanType)

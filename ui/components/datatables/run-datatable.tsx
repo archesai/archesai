@@ -124,8 +124,8 @@ export default function RunDataTable() {
       }}
       getDeleteVariablesFromItem={(run) => ({
         pathParams: {
-          orgname: defaultOrgname,
-          runId: run.id
+          id: run.id,
+          orgname: defaultOrgname
         }
       })}
       handleSelect={(run) => router.push(`/run/single?runId=${run.id}`)}

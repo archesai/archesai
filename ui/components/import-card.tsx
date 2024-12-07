@@ -164,7 +164,7 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
     } catch (error) {
       console.error('An error occurred during file upload:', error)
       toast({
-        description: (error as any).stack.message,
+        description: (error as any).message || 'An error occurred while uploading files.',
         title: 'Upload Failed',
         variant: 'destructive'
       })

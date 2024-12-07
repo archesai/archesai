@@ -15,7 +15,7 @@ export class PipelinesController extends BaseController<
   CreatePipelineDto,
   UpdatePipelineDto,
   PipelinesService
-> {
+>(PipelineEntity, CreatePipelineDto, UpdatePipelineDto) {
   private logger = new Logger(PipelinesController.name)
 
   constructor(private readonly pipelinesService: PipelinesService) {

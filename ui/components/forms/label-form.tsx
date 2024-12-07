@@ -19,7 +19,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
   const { data: label } = useLabelsControllerFindOne(
     {
       pathParams: {
-        labelId: labelId as string,
+        id: labelId as string,
         orgname: defaultOrgname
       }
     },
@@ -66,7 +66,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
           {
             body: data as any,
             pathParams: {
-              labelId: labelId as string,
+              id: labelId as string,
               orgname: defaultOrgname
             }
           },

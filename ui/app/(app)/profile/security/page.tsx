@@ -5,19 +5,19 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Separator } from '@/components/ui/separator'
 import {
   useAuthControllerPasswordResetRequest,
-  useUserControllerDeactivate,
-  useUserControllerFindOne
+  useUsersControllerDeactivate,
+  useUsersControllerFindOne
 } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { useToast } from '@/hooks/use-toast'
 import { ReloadIcon } from '@radix-ui/react-icons'
 
 export default function ProfileSecuritySettingsPage() {
-  const { data: user } = useUserControllerFindOne({})
+  const { data: user } = useUsersControllerFindOne({})
   const { toast } = useToast()
   const { logout } = useAuth()
 
-  const { isPending: deactivatePending, mutateAsync: deactivateAccount } = useUserControllerDeactivate()
+  const { isPending: deactivatePending, mutateAsync: deactivateAccount } = useUsersControllerDeactivate()
   const { isPending: requestPasswordResetPending, mutateAsync: requestPasswordReset } =
     useAuthControllerPasswordResetRequest()
 
@@ -45,7 +45,7 @@ export default function ProfileSecuritySettingsPage() {
                 {
                   onError: (err) => {
                     toast({
-                      description: err?.stack.message || 'An error occurred while trying to reset your password.',
+                      description: err?.message || 'An error occurred while trying to reset your password.',
                       title: 'Error'
                     })
                   },
@@ -82,7 +82,7 @@ export default function ProfileSecuritySettingsPage() {
                 {
                   onError: (err) => {
                     toast({
-                      description: err?.stack.message || 'An error occurred while trying to deactivate your account.',
+                      description: err?.message || 'An error occurred while trying to deactivate your account.',
                       title: 'Error'
                     })
                   },

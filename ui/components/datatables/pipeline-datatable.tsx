@@ -76,8 +76,8 @@ export default function PipelineDataTable() {
       }}
       getDeleteVariablesFromItem={(pipeline) => ({
         pathParams: {
-          orgname: defaultOrgname,
-          pipelineId: pipeline.id
+          id: pipeline.id,
+          orgname: defaultOrgname
         }
       })}
       handleSelect={(pipeline) => router.push(`/pipelines/single?pipelineId=${pipeline.id}`)}

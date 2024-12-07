@@ -24,6 +24,7 @@ export const useStreamChat = () => {
       (oldData: ContentControllerFindAllResponse) => {
         if (!oldData) {
           oldData = {
+            aggregates: [],
             metadata: { limit: 100, offset: 0, totalResults: 0 },
             results: []
           }

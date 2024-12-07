@@ -2,14 +2,14 @@
 
 import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
-import { useUserControllerFindOne, useUserControllerUpdate } from '@/generated/archesApiComponents'
+import { useUsersControllerFindOne, useUsersControllerUpdate } from '@/generated/archesApiComponents'
 import { UpdateUserDto } from '@/generated/archesApiSchemas'
 import React from 'react'
 import { z } from 'zod'
 
 export default function UserForm() {
-  const { data: user } = useUserControllerFindOne({})
-  const { mutateAsync: updateUser } = useUserControllerUpdate()
+  const { data: user } = useUsersControllerFindOne({})
+  const { mutateAsync: updateUser } = useUsersControllerUpdate()
 
   const formFields: FormFieldConfig[] = [
     {

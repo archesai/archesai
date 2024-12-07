@@ -28,7 +28,7 @@ export default function ContentForm({ contentId }: { contentId?: string }) {
   const { data: content } = useContentControllerFindOne(
     {
       pathParams: {
-        contentId: contentId as string,
+        id: contentId as string,
         orgname: defaultOrgname
       }
     },
@@ -110,7 +110,7 @@ export default function ContentForm({ contentId }: { contentId?: string }) {
           {
             body: data as any,
             pathParams: {
-              contentId: contentId as string,
+              id: contentId as string,
               orgname: defaultOrgname
             }
           },

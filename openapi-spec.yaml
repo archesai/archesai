@@ -119,6 +119,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/PipelineEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfPipelineEntity
       security:
         - bearer: []
@@ -479,12 +483,7 @@ paths:
   /organizations:
     post:
       operationId: OrganizationsController_create
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
+      parameters: []
       requestBody:
         required: true
         content:
@@ -509,114 +508,55 @@ paths:
       summary: Create a new organization
       tags:
         - Organizations
-    get:
-      operationId: OrganizationsController_findAll
+  /organizations/{orgname}:
+    delete:
+      operationId: OrganizationsController_delete
       parameters:
         - name: orgname
           required: true
           in: path
           schema:
             type: string
-        - name: aggregates
-          required: false
-          in: query
-          description: Aggregates to collect for the search results
+      responses:
+        '200':
+          description: ''
+        '401':
+          description: UnauthorizedException
+        '404':
+          description: NotFoundException
+      security:
+        - bearer: []
+      summary: Delete an organization
+      tags:
+        - Organizations
+    get:
+      operationId: OrganizationsController_findOne
+      parameters:
+        - name: orgname
+          required: true
+          in: path
           schema:
-            default: []
-            type: array
-            items: {}
-        - name: filters
-          required: false
-          in: query
-          description: Filter fields and values
-          schema:
-            default: []
-            type: array
-            items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
-        - name: endDate
-          required: false
-          in: query
-          description: The end date to search to
-          schema:
-            example: '2022-01-01'
-            type: string
-        - name: offset
-          required: false
-          in: query
-          description: The offset of the returned results
-          schema:
-            default: 0
-            example: 10
-            type: number
-        - name: sortBy
-          required: false
-          in: query
-          description: The field to sort the results by
-          schema:
-            default: createdAt
-            example: createdAt
-            type: string
-        - name: sortDirection
-          required: false
-          in: query
-          description: The direction to sort the results by
-          schema:
-            default: desc
-            example: desc
-            enum:
-              - asc
-              - desc
-            type: string
-        - name: startDate
-          required: false
-          in: query
-          description: The start date to search from
-          schema:
-            format: date-time
-            example: '2021-01-01'
             type: string
       responses:
         '200':
-          description: Successfully returned paginated results
+          description: ''
           content:
             application/json:
               schema:
-                allOf:
-                  - properties:
-                      aggregates:
-                        items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
-                        type: array
-                      metadata:
-                        $ref: '#/components/schemas/Metadata'
-                      results:
-                        items:
-                          $ref: '#/components/schemas/OrganizationEntity'
-                        type: array
-                title: PaginatedResponseOfOrganizationEntity
+                $ref: '#/components/schemas/OrganizationEntity'
+        '401':
+          description: UnauthorizedException
+        '404':
+          description: NotFoundException
       security:
         - bearer: []
-      summary: Get all organizations
+      summary: Get an organization
       tags:
         - Organizations
-  /organizations/{orgname}:
     patch:
       operationId: OrganizationsController_update
       parameters:
         - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: id
           required: true
           in: path
           schema:
@@ -643,53 +583,6 @@ paths:
       security:
         - bearer: []
       summary: Update an organization
-      tags:
-        - Organizations
-  /organizations/{id}:
-    get:
-      operationId: OrganizationsController_findOne
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: organization found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-      security:
-        - bearer: []
-      summary: Get a single organization
-      tags:
-        - Organizations
-    delete:
-      operationId: OrganizationsController_remove
-      parameters:
-        - name: orgname
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: organization deleted successfully.
-      security:
-        - bearer: []
-      summary: Delete a organization
       tags:
         - Organizations
   /organizations/{orgname}/billing/subscription/cancel:
@@ -985,6 +878,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/ToolEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfToolEntity
       security:
         - bearer: []
@@ -1189,6 +1086,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/ApiTokenEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfApiTokenEntity
       security:
         - bearer: []
@@ -1420,6 +1321,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/MemberEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfMemberEntity
       security:
         - bearer: []
@@ -1623,6 +1528,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/LabelEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfLabelEntity
       security:
         - bearer: []
@@ -1969,6 +1878,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/ContentEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfContentEntity
       security:
         - bearer: []
@@ -2172,6 +2085,10 @@ paths:
                         items:
                           $ref: '#/components/schemas/RunEntity'
                         type: array
+                    required:
+                      - aggregates
+                      - metadata
+                      - results
                 title: PaginatedResponseOfRunEntity
       security:
         - bearer: []
@@ -2346,7 +2263,7 @@ components:
             - IMAGE
             - VIDEO
             - AUDIO
-          example: FILE
+          example: TEXT
         name:
           type: string
           description: The tool's name
@@ -2577,16 +2494,20 @@ components:
     AuthProviderEntity:
       type: object
       properties:
+        provider:
+          type: string
+          description: The auth provider's provider
+          enum:
+            - LOCAL
+            - FIREBASE
+            - TWITTER
+          example: LOCAL
         providerId:
           type: string
           description: The auth provider's provider ID
         userId:
           type: string
           description: The auth provider's user ID
-        provider:
-          type: object
-          description: The auth provider's provider
-          example: LOCAL
         createdAt:
           format: date-time
           type: string
@@ -2597,9 +2518,9 @@ components:
           description: The ID of the item
           example: item-id
       required:
+        - provider
         - providerId
         - userId
-        - provider
         - createdAt
         - id
     MemberEntity:
@@ -2623,6 +2544,7 @@ components:
           enum:
             - USER
             - ADMIN
+          example: ADMIN
         username:
           type: string
           nullable: true
@@ -2996,7 +2918,7 @@ components:
             - IMAGE
             - VIDEO
             - AUDIO
-          example: FILE
+          example: TEXT
         name:
           type: string
           description: The tool's name
@@ -3034,7 +2956,7 @@ components:
             - IMAGE
             - VIDEO
             - AUDIO
-          example: FILE
+          example: TEXT
         name:
           type: string
           description: The tool's name
@@ -3059,8 +2981,11 @@ components:
       type: object
       properties:
         role:
-          type: object
+          type: string
           description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
           example: ADMIN
         domains:
           type: string
@@ -3077,6 +3002,13 @@ components:
     ApiTokenEntity:
       type: object
       properties:
+        role:
+          type: string
+          description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
+          example: ADMIN
         domains:
           type: string
           description: The domains that can access this API token
@@ -3093,10 +3025,6 @@ components:
           type: string
           description: The organization name
           example: my-organization
-        role:
-          type: object
-          description: The role of the API token
-          example: ADMIN
         username:
           type: string
           description: The username of the user who owns this API token
@@ -3111,11 +3039,11 @@ components:
           description: The ID of the item
           example: item-id
       required:
+        - role
         - domains
         - key
         - name
         - orgname
-        - role
         - username
         - createdAt
         - id
@@ -3123,8 +3051,11 @@ components:
       type: object
       properties:
         role:
-          type: object
+          type: string
           description: The role of the API token
+          enum:
+            - USER
+            - ADMIN
           example: ADMIN
         domains:
           type: string
@@ -3147,6 +3078,7 @@ components:
           enum:
             - USER
             - ADMIN
+          example: ADMIN
       required:
         - inviteEmail
         - role
@@ -3163,6 +3095,7 @@ components:
           enum:
             - USER
             - ADMIN
+          example: ADMIN
     CreateLabelDto:
       type: object
       properties:
@@ -3415,6 +3348,13 @@ components:
     CreateRunDto:
       type: object
       properties:
+        runType:
+          type: string
+          description: The type of run, either an individual tool run or a pipeline run
+          enum:
+            - PIPELINE_RUN
+            - TOOL_RUN
+          example: TOOL_RUN
         pipelineId:
           type: string
           nullable: true
@@ -3447,10 +3387,6 @@ components:
             If using direct text input, specify the text to use as input for the
             run. It will automatically be added as content.
           example: This is a url to use as input for the run.
-        runType:
-          type: object
-          description: The type of run, either an individual tool run or a pipeline run
-          example: TOOL_RUN
       required:
         - runType
     RunEntity:
@@ -3481,11 +3417,22 @@ components:
           nullable: true
           description: The pipeline ID associated with the run, if applicable
           example: 123e4567-e89b-12d3-a456-426614174000
-        progress:
-          type: number
-          default: 0
-          description: The progress of the run as a percentage
-          example: 50.5
+        runType:
+          type: string
+          description: The type of run, either an individual tool run or a pipeline run
+          enum:
+            - PIPELINE_RUN
+            - TOOL_RUN
+          example: TOOL_RUN
+        status:
+          type: string
+          description: The status of the run
+          enum:
+            - QUEUED
+            - PROCESSING
+            - COMPLETE
+            - ERROR
+          example: QUEUED
         toolId:
           type: string
           nullable: true
@@ -3497,20 +3444,17 @@ components:
           nullable: true
           description: The timestamp when the run completed
           example: '2024-11-05T11:42:02.258Z'
-        runType:
-          type: object
-          description: The type of run, either an individual tool run or a pipeline run
-          example: TOOL_RUN
+        progress:
+          type: number
+          description: The progress of the run as a percentage
+          example: 50.5
+          default: 0
         startedAt:
           format: date-time
           type: string
           nullable: true
           description: The timestamp when the run started
           example: '2024-11-05T11:42:02.258Z'
-        status:
-          type: object
-          description: The status of the run
-          example: QUEUED
         createdAt:
           format: date-time
           type: string
@@ -3522,11 +3466,11 @@ components:
           example: item-id
       required:
         - inputs
-        - progress
-        - completedAt
         - runType
-        - startedAt
         - status
+        - completedAt
+        - progress
+        - startedAt
         - createdAt
         - id
     FieldFieldQuery:
@@ -3587,10 +3531,6 @@ components:
         field:
           type: string
           description: Field to aggregate by
-        value:
-          type: number
-          description: The value of the aggregate
-          example: 10
         granularity:
           description: The granularity to use for ranged aggregates
           example: day
@@ -3604,10 +3544,14 @@ components:
           type: object
           description: The type of aggregate to perform
           example: count
+        value:
+          type: number
+          description: The value of the aggregate
+          example: 10
       required:
         - field
-        - value
         - type
+        - value
     Metadata:
       type: object
       properties:

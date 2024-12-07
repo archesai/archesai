@@ -63,7 +63,7 @@ export default function MemberDataTable() {
       }}
       getDeleteVariablesFromItem={(member) => ({
         pathParams: {
-          memberId: member.id,
+          id: member.id,
           orgname: defaultOrgname
         }
       })}

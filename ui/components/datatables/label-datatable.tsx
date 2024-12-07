@@ -45,7 +45,7 @@ export default function LabelDataTable() {
       }}
       getDeleteVariablesFromItem={(label) => ({
         pathParams: {
-          labelId: label.id,
+          id: label.id,
           orgname: defaultOrgname
         }
       })}

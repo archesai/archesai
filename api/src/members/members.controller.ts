@@ -12,7 +12,11 @@ import { MembersService } from './members.service'
 @ApiBearerAuth()
 @ApiTags(`Members`)
 @Controller('/organizations/:orgname/members')
-export class MembersController extends BaseController<MemberEntity, CreateMemberDto, UpdateMemberDto, MembersService> {
+export class MembersController extends BaseController<MemberEntity, CreateMemberDto, UpdateMemberDto, MembersService>(
+  MemberEntity,
+  CreateMemberDto,
+  UpdateMemberDto
+) {
   constructor(private readonly membersService: MembersService) {
     super(membersService)
   }

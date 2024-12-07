@@ -11,8 +11,8 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import {
   useOrganizationsControllerFindOne,
-  useUserControllerFindOne,
-  useUserControllerUpdate
+  useUsersControllerFindOne,
+  useUsersControllerUpdate
 } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { useToast } from '@/hooks/use-toast'
@@ -24,7 +24,7 @@ import { Badge } from '../../ui/badge'
 
 export function OrganizationSwitcher() {
   const { defaultOrgname } = useAuth()
-  const { data: user } = useUserControllerFindOne({})
+  const { data: user } = useUsersControllerFindOne({})
   const { data: organization } = useOrganizationsControllerFindOne({
     pathParams: {
       orgname: defaultOrgname
@@ -33,10 +33,10 @@ export function OrganizationSwitcher() {
   const { toast } = useToast()
 
   const { isMobile } = useSidebar()
-  const { mutateAsync: updateDefaultOrg } = useUserControllerUpdate({
+  const { mutateAsync: updateDefaultOrg } = useUsersControllerUpdate({
     onError: (error) => {
       toast({
-        description: error?.stack.message,
+        description: error?.message,
         title: 'Error updating default organization',
         variant: 'destructive'
       })

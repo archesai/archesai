@@ -16,7 +16,7 @@ export class ContentController extends BaseController<
   CreateContentDto,
   UpdateContentDto,
   ContentService
-> {
+>(ContentEntity, CreateContentDto, UpdateContentDto) {
   constructor(private readonly contentService: ContentService) {
     super(contentService)
   }

@@ -140,7 +140,16 @@
     },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s?$": "@swc/jest"
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "astTransformers": {
+            "before": [
+              "swagger-plugin-jest.js"
+            ]
+          }
+        }
+      ]
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s",

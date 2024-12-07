@@ -25,7 +25,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
   const { data: member } = useMembersControllerFindOne(
     {
       pathParams: {
-        memberId: memberId as string,
+        id: memberId as string,
         orgname: defaultOrgname
       }
     },
@@ -106,7 +106,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
           {
             body: data as any,
             pathParams: {
-              memberId: memberId as string,
+              id: memberId as string,
               orgname: defaultOrgname
             }
           },

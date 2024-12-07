@@ -20,7 +20,7 @@ export class ToolEntity extends BaseEntity implements ToolModel {
   @ApiProperty({
     description: 'The tools input type',
     enum: ToolIOType,
-    example: 'FILE'
+    example: ToolIOType.TEXT
   })
   @Expose()
   @IsEnum(ToolIOType)
@@ -45,7 +45,7 @@ export class ToolEntity extends BaseEntity implements ToolModel {
   @ApiProperty({
     description: 'The tools output type',
     enum: ToolIOType,
-    example: 'TEXT'
+    example: ToolIOType.TEXT
   })
   @Expose()
   @IsEnum(ToolIOType)

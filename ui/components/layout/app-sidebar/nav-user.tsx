@@ -11,12 +11,12 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
-import { useUserControllerFindOne } from '@/generated/archesApiComponents'
+import { useUsersControllerFindOne } from '@/generated/archesApiComponents'
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react'
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { data: user } = useUserControllerFindOne({})
+  const { data: user } = useUsersControllerFindOne({})
 
   return (
     <SidebarMenu>

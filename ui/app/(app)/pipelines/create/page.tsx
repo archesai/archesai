@@ -34,7 +34,7 @@ export default function App() {
 
   console.log(pipelines)
   useEffect(() => {
-    if (pipelines && pipelines?.results && pipelines.results.length > 0) {
+    if (pipelines && pipelines.results[0]) {
       const pipelineSteps = pipelines.results[0].pipelineSteps
       const nodes = pipelineSteps.map((step, index) => ({
         data: step,
