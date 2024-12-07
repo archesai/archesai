@@ -80,12 +80,20 @@ describe('ApiTokensService', () => {
         if (key === 'JWT_API_TOKEN_SECRET') return 'secret'
       })
       ;(jwtService.sign as jest.Mock).mockReturnValue('token')
-      ;(apiTokenRepository.create as jest.Mock).mockResolvedValue(mockedApiToken)
+      ;(apiTokenRepository.create as jest.Mock).mockResolvedValue(
+        mockedApiToken
+      )
 
-      const result = await service.create(orgname, createTokenDto, additionalData)
+      const result = await service.create(
+        orgname,
+        createTokenDto,
+        additionalData
+      )
 
       expect(uuidv4).toHaveBeenCalled()
-      expect(configService.get).toHaveBeenCalledWith('JWT_API_TOKEN_EXPIRATION_TIME')
+      expect(configService.get).toHaveBeenCalledWith(
+        'JWT_API_TOKEN_EXPIRATION_TIME'
+      )
       expect(configService.get).toHaveBeenCalledWith('JWT_API_TOKEN_SECRET')
       expect(jwtService.sign).toHaveBeenCalledWith(
         {
@@ -100,16 +108,22 @@ describe('ApiTokensService', () => {
           secret: 'secret'
         }
       )
-      expect(apiTokenRepository.create).toHaveBeenCalledWith(orgname, createTokenDto, {
-        id: mockedApiToken.id,
-        key: '*********token',
-        username: additionalData.username
-      })
+      expect(apiTokenRepository.create).toHaveBeenCalledWith(
+        orgname,
+        createTokenDto,
+        {
+          id: mockedApiToken.id,
+          key: '*********token',
+          username: additionalData.username
+        }
+      )
       expect(websocketsService.socket.to).toHaveBeenCalledWith(orgname)
       expect(websocketsService.socket.emit).toHaveBeenCalledWith('update', {
         queryKey: ['organizations', orgname, 'api-tokens']
       })
-      expect(result).toEqual(createRandomApiToken({ ...mockedApiToken, key: 'token' }))
+      expect(result).toEqual(
+        createRandomApiToken({ ...mockedApiToken, key: 'token' })
+      )
     })
   })
 })

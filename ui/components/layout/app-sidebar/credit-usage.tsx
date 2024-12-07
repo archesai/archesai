@@ -2,6 +2,9 @@
 
 import { useSidebar } from '@/components/ui/sidebar'
 import { useOrganizationsControllerFindOne } from '@/generated/archesApiComponents'
+import { useAuth } from '@/hooks/use-auth'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
 
 export const CreditQuota = () => {
   const { open } = useSidebar()
@@ -13,7 +16,7 @@ export const CreditQuota = () => {
   })
 
   if (!open) {
-    return <CreditCircularChart remaining={organization?.credits || 0} total={60000} />
+    return <></>
   }
   return (
     <div className='inter flex w-full flex-col gap-2 rounded-lg bg-muted p-2 text-xs'>
@@ -36,47 +39,8 @@ export const CreditQuota = () => {
             <div className='tabular-nums'>{organization?.credits}</div>
           </div>
         </div>
-        <CreditCircularChart remaining={organization?.credits || 0} total={60000} />
+        <></>
       </div>
     </div>
-  )
-}
-
-import { ChartConfig, ChartContainer } from '@/components/ui/chart'
-import { useAuth } from '@/hooks/use-auth'
-import Link from 'next/link'
-import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts'
-
-import { Badge } from '../../ui/badge'
-
-export const description = 'A radial chart with a custom shape'
-
-const chartData = [{ browser: 'safari', fill: 'var(--color-safari)', visitors: 1260 }]
-
-const chartConfig = {
-  safari: {
-    color: 'hsl(var(--chart-2))',
-    label: 'Safari'
-  },
-  visitors: {
-    label: 'Visitors'
-  }
-} satisfies ChartConfig
-
-export function CreditCircularChart({ remaining, total }: { remaining: number; total: number }) {
-  return (
-    <ChartContainer className='mx-auto aspect-square h-[25px]' config={chartConfig}>
-      <RadialBarChart
-        data={chartData}
-        endAngle={(remaining / total) * 360}
-        height={200}
-        innerRadius={10}
-        outerRadius={20}
-      >
-        <PolarGrid gridType='circle' polarRadius={[86, 74]} radialLines={false} stroke='none' />
-        <RadialBar background dataKey='visitors' />
-        <PolarRadiusAxis axisLine={false} tick={false} tickLine={false}></PolarRadiusAxis>
-      </RadialBarChart>
-    </ChartContainer>
   )
 }

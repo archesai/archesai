@@ -32,7 +32,11 @@ export class EmailVerificationService {
   async request(userId: string): Promise<void> {
     const user = await this.usersService.findOne(null, userId)
 
-    const token = await this.arTokensService.createToken(ARTokenType.EMAIL_VERIFICATION, user.id, 24)
+    const token = await this.arTokensService.createToken(
+      ARTokenType.EMAIL_VERIFICATION,
+      user.id,
+      24
+    )
 
     const verificationLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-verification&token=${token}`
 

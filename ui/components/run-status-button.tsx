@@ -1,6 +1,10 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { siteConfig } from '@/config/site'
 import { useToolsControllerFindAll } from '@/generated/archesApiComponents'
 import { FieldFieldQuery, RunEntity } from '@/generated/archesApiSchemas'
@@ -10,7 +14,14 @@ import { CounterClockwiseClockIcon } from '@radix-ui/react-icons'
 import { Ban, CheckCircle2, Loader2Icon } from 'lucide-react'
 import { useState } from 'react'
 
-export const RunStatusButton = ({ onClick, run }: { onClick?: () => void; run: RunEntity; size?: 'lg' | 'sm' }) => {
+export const RunStatusButton = ({
+  onClick,
+  run
+}: {
+  onClick?: () => void
+  run: RunEntity
+  size?: 'lg' | 'sm'
+}) => {
   const { defaultOrgname } = useAuth()
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const { data: tools } = useToolsControllerFindAll({
@@ -49,17 +60,30 @@ export const RunStatusButton = ({ onClick, run }: { onClick?: () => void; run: R
     }
   }
 
-  const toolBase = tools?.results?.find((tool) => tool.id === run.toolId)?.toolBase
+  const toolBase = tools?.results?.find(
+    (tool) => tool.id === run.toolId
+  )?.toolBase
 
   let Icon = null
   if (toolBase) {
-    Icon = siteConfig.toolBaseIcons[toolBase as keyof typeof siteConfig.toolBaseIcons]
+    Icon =
+      siteConfig.toolBaseIcons[
+        toolBase as keyof typeof siteConfig.toolBaseIcons
+      ]
   }
 
   return (
-    <Popover onOpenChange={setIsPopoverOpen} open={isPopoverOpen}>
+    <Popover
+      onOpenChange={setIsPopoverOpen}
+      open={isPopoverOpen}
+    >
       <PopoverTrigger asChild>
-        <Button className={cn('flex items-center justify-between', '')} onClick={onClick} size='sm' variant='outline'>
+        <Button
+          className={cn('flex items-center justify-between', '')}
+          onClick={onClick}
+          size='sm'
+          variant='outline'
+        >
           <div className='flex flex-1 items-center justify-start gap-1 overflow-hidden truncate'>
             {Icon && <Icon className='text-blue-700' />}
           </div>
@@ -83,12 +107,14 @@ export const RunStatusButton = ({ onClick, run }: { onClick?: () => void; run: R
             <strong className='font-semibold'>Duration:</strong>{' '}
             {run.startedAt &&
               run.completedAt &&
-              new Date(run.completedAt).getTime() - new Date(run.startedAt).getTime()}
+              new Date(run.completedAt).getTime() -
+                new Date(run.startedAt).getTime()}
           </div>
         )}
 
         <div>
-          <strong className='font-semibold'>Progress:</strong> {Math.round(run.progress * 100)}%
+          <strong className='font-semibold'>Progress:</strong>{' '}
+          {Math.round(run.progress * 100)}%
         </div>
         {run.error && (
           <div>

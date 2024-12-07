@@ -8,7 +8,10 @@ import { BaseEntity } from '../../common/entities/base.entity'
 export type OrganizationModel = _PrismaOrganization
 
 @Exclude()
-export class OrganizationEntity extends BaseEntity implements OrganizationModel {
+export class OrganizationEntity
+  extends BaseEntity
+  implements OrganizationModel
+{
   @ApiProperty({
     description: 'The billing email to use for the organization',
     example: 'example@test.com'
@@ -18,7 +21,8 @@ export class OrganizationEntity extends BaseEntity implements OrganizationModel 
   billingEmail: string
 
   @ApiProperty({
-    description: 'The number of credits you have remaining for this organization',
+    description:
+      'The number of credits you have remaining for this organization',
     example: 500000
   })
   @Expose()

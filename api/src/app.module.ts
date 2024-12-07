@@ -64,7 +64,8 @@ import { WebsocketsModule } from './websockets/websockets.module'
                     }
                   }
                 : undefined,
-            level: configService.get('NODE_ENV') === 'test' ? 'silent' : 'debug',
+            level:
+              configService.get('NODE_ENV') === 'test' ? 'silent' : 'debug',
             redact: {
               paths: ['req', 'res']
             },
@@ -179,7 +180,9 @@ import { WebsocketsModule } from './websockets/websockets.module'
         SESSION_SECRET: Joi.string().required(),
 
         // STORAGE TYPE
-        STORAGE_TYPE: Joi.string().valid('google-cloud', 'local', 'minio').required(),
+        STORAGE_TYPE: Joi.string()
+          .valid('google-cloud', 'local', 'minio')
+          .required(),
 
         STRIPE_PRIVATE_API_KEY: Joi.when('FEATURE_BILLING', {
           is: true,

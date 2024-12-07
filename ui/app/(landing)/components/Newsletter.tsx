@@ -15,15 +15,23 @@ export const Newsletter = () => {
       <div className='container py-24 sm:py-32'>
         <h3 className='text-center text-4xl font-bold md:text-5xl'>
           Join Our Daily{' '}
-          <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>Newsletter</span>
+          <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+            Newsletter
+          </span>
         </h3>
-        <p className='mb-8 mt-4 text-center text-xl text-muted-foreground'>Lorem ipsum dolor sit amet consectetur.</p>
+        <p className='mb-8 mt-4 text-center text-xl text-muted-foreground'>
+          Lorem ipsum dolor sit amet consectetur.
+        </p>
 
         <form
           className='mx-auto flex w-full flex-col gap-4 md:w-6/12 md:flex-row md:gap-2 lg:w-4/12'
           onSubmit={handleSubmit}
         >
-          <Input aria-label='email' className='bg-muted/50 dark:bg-muted/80' placeholder='leomirandadev@gmail.com' />
+          <Input
+            aria-label='email'
+            className='bg-muted/50 dark:bg-muted/80'
+            placeholder='leomirandadev@gmail.com'
+          />
           <Button>Subscribe</Button>
         </form>
       </div>

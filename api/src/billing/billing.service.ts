@@ -19,7 +19,9 @@ export class BillingService {
     })
 
     if (subscriptions.data.length === 0) {
-      throw new BadRequestException('No active subscriptions found for this customer.')
+      throw new BadRequestException(
+        'No active subscriptions found for this customer.'
+      )
     }
 
     // Assuming there is only one subscription per customer
@@ -37,7 +39,11 @@ export class BillingService {
   async constructEventFromPayload(signature: string, payload: Buffer) {
     const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET')
 
-    return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret)
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret
+    )
   }
 
   async createBillingPortal(customerId: string) {
@@ -47,7 +53,11 @@ export class BillingService {
     })
   }
 
-  async createCheckoutSession(customerId: string, lineItem: { price: string; quantity: number }, isOneTime: boolean) {
+  async createCheckoutSession(
+    customerId: string,
+    lineItem: { price: string; quantity: number },
+    isOneTime: boolean
+  ) {
     const session = await this.stripe.checkout.sessions.create({
       allow_promotion_codes: isOneTime ? undefined : true,
       cancel_url: `${this.configService.get('FRONTEND_HOST')}/organization/billing`,
@@ -60,7 +70,9 @@ export class BillingService {
       line_items: [
         {
           ...lineItem,
-          adjustable_quantity: isOneTime ? { enabled: true, minimum: 1 } : undefined
+          adjustable_quantity: isOneTime
+            ? { enabled: true, minimum: 1 }
+            : undefined
         }
       ],
       mode: isOneTime ? 'payment' : 'subscription',
@@ -145,7 +157,10 @@ export class BillingService {
     return plans
   }
 
-  async updateCustomerDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+  async updateCustomerDefaultPaymentMethod(
+    customerId: string,
+    paymentMethodId: string
+  ) {
     await this.stripe.customers.update(customerId, {
       invoice_settings: {
         default_payment_method: paymentMethodId
@@ -162,7 +177,9 @@ export class BillingService {
     })
 
     if (subscriptions.data.length === 0) {
-      throw new BadRequestException('No active subscriptions found for this customer.')
+      throw new BadRequestException(
+        'No active subscriptions found for this customer.'
+      )
     }
 
     // Assuming there is only one subscription per customer

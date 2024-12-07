@@ -24,7 +24,11 @@ export const transformTextToImage: IToolRunProcess = async (
 
   const orgname = runInputContents[0].orgname
 
-  const { image_url } = await runpodService.runPod(runId, 'y55cw5fvbum8q6', input)
+  const { image_url } = await runpodService.runPod(
+    runId,
+    'y55cw5fvbum8q6',
+    input
+  )
 
   const base64String = image_url.replace(/^data:image\/\w+;base64,/, '')
 
@@ -41,7 +45,8 @@ export const transformTextToImage: IToolRunProcess = async (
   logger.log(`Text to image completed and uploaded for run ${runId}`)
 
   const content = await contentService.create(runInputContents[0].orgname, {
-    name: 'Text to Speech Tool -' + runInputContents.map((x) => x.name).join(', '),
+    name:
+      'Text to Speech Tool -' + runInputContents.map((x) => x.name).join(', '),
     url
   })
 

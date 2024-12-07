@@ -10,11 +10,20 @@ import { retry } from '../common/retry'
 export class KeyframesService {
   private readonly logger = new Logger(KeyframesService.name)
 
-  async getKeyframes(url: string, framerate: number, fn: string, isTranslation: boolean) {
+  async getKeyframes(
+    url: string,
+    framerate: number,
+    fn: string,
+    isTranslation: boolean
+  ) {
     this.installPolyfill()
     const context = new AudioContext()
 
-    const arrayBuffer = await retry(this.logger, () => fetch(url).then((response) => response.arrayBuffer()), 5)
+    const arrayBuffer = await retry(
+      this.logger,
+      () => fetch(url).then((response) => response.arrayBuffer()),
+      5
+    )
 
     const audioBuffer = await context.decodeAudioData(arrayBuffer)
     // Average between channels. Take abs so we don't have phase issues (and we eventually want absolute value anyway, for volume).
@@ -25,7 +34,9 @@ export class KeyframesService {
     for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
       channels.push(audioBuffer.getChannelData(i))
     }
-    const rawData = channels.reduce(addAbsArrayElements).map((x) => x / audioBuffer.numberOfChannels)
+    const rawData = channels
+      .reduce(addAbsArrayElements)
+      .map((x) => x / audioBuffer.numberOfChannels)
     // const rawData = audioBuffer.getChannelData(0); // We only need to work with one channel of data
     const samples = audioBuffer.duration * framerate //rawData.length; // Number of samples we want to have in our final data set
     const blockSize = Math.floor(rawData.length / samples) // Number of samples in each subdivision
@@ -41,7 +52,11 @@ export class KeyframesService {
     // let expr = parser.parse(fn.value);
     filteredData = filteredData
       .map((x) => x / max)
-      .map((x, ind) => math.evaluate(fn.replace('x', x.toString()).replace('y', ind.toString())))
+      .map((x, ind) =>
+        math.evaluate(
+          fn.replace('x', x.toString()).replace('y', ind.toString())
+        )
+      )
     const string = this.getString(filteredData, isTranslation)
 
     return string
@@ -63,17 +78,24 @@ export class KeyframesService {
   }
 
   installPolyfill() {
-    function decodeAudioData_polyfill(audioData, successCallback, errorCallback) {
+    function decodeAudioData_polyfill(
+      audioData,
+      successCallback,
+      errorCallback
+    ) {
       if (arguments.length > 1) {
         // Callback
         this.decodeAudioData(audioData, successCallback, errorCallback)
       } else {
         // Promise
-        return new Promise((success, reject) => this.decodeAudioData_original(audioData, success, reject))
+        return new Promise((success, reject) =>
+          this.decodeAudioData_original(audioData, success, reject)
+        )
       }
     }
     if (!AudioContext.prototype.decodeAudioData_original) {
-      AudioContext.prototype.decodeAudioData_original = AudioContext.prototype.decodeAudioData
+      AudioContext.prototype.decodeAudioData_original =
+        AudioContext.prototype.decodeAudioData
       AudioContext.prototype.decodeAudioData = decodeAudioData_polyfill
     }
   }

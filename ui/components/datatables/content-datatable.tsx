@@ -29,7 +29,11 @@ export default function ContentDataTable({
   const { defaultOrgname } = useAuth()
 
   return (
-    <DataTable<ContentEntity, ContentControllerFindAllPathParams, ContentControllerRemoveVariables>
+    <DataTable<
+      ContentEntity,
+      ContentControllerFindAllPathParams,
+      ContentControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: 'name',
@@ -46,27 +50,48 @@ export default function ContentDataTable({
               </div>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Name'
+            />
+          )
         },
         {
           accessorKey: 'mimeType',
           cell: ({ row }) => {
             return <Badge>{row.original?.mimeType}</Badge>
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Type'
+            />
+          )
         },
         {
           accessorKey: 'value',
           cell: ({ row }) => {
             return (
               <div className='truncate text-wrap text-base md:text-sm'>
-                {row.original.text || <ContentViewer content={row.original} size='sm' />}
+                {row.original.text || (
+                  <ContentViewer
+                    content={row.original}
+                    size='sm'
+                  />
+                )}
               </div>
             )
           },
           enableHiding: false,
           enableSorting: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Data' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Data'
+            />
+          )
         },
         {
           accessorKey: 'parent',
@@ -83,7 +108,13 @@ export default function ContentDataTable({
             )
           },
           enableSorting: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Parent' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Parent'
+            />
+          )
         },
         {
           accessorKey: 'producedBy',
@@ -101,7 +132,11 @@ export default function ContentDataTable({
           },
           enableSorting: false,
           header: ({ column }) => (
-            <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Produced By' />
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Produced By'
+            />
           )
         },
         {
@@ -110,7 +145,9 @@ export default function ContentDataTable({
             return (
               <div className='flex gap-1'>
                 {row.original.labels?.length ? (
-                  row.original.labels?.map((label, index) => <Badge key={index}>{label.name}</Badge>)
+                  row.original.labels?.map((label, index) => (
+                    <Badge key={index}>{label.name}</Badge>
+                  ))
                 ) : (
                   <div className='text-muted-foreground'>None</div>
                 )}
@@ -118,20 +155,40 @@ export default function ContentDataTable({
             )
           },
           enableSorting: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Labels' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Labels'
+            />
+          )
         },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return <span className='font-light'>{format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}</span>
+            return (
+              <span className='font-light'>
+                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
+              </span>
+            )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Created' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Created'
+            />
+          )
         }
       ]}
       content={(item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>
-            <Image alt='source image' height={256} src={item.previewImage || ''} width={256} />
+            <Image
+              alt='source image'
+              height={256}
+              src={item.previewImage || ''}
+              width={256}
+            />
           </div>
         )
       }}
@@ -149,7 +206,9 @@ export default function ContentDataTable({
         }
       })}
       getEditFormFromItem={(content) => <ContentForm contentId={content.id} />}
-      handleSelect={(content) => router.push(`/content/single?contentId=${content.id}`)}
+      handleSelect={(content) =>
+        router.push(`/content/single?contentId=${content.id}`)
+      }
       itemType='content'
       readonly={readonly}
       useFindAll={useContentControllerFindAll}

@@ -38,8 +38,12 @@ export class AuthController {
    */
   @IsPublic()
   @Post('/email-change/confirm')
-  async emailChangeConfirm(@Body() confirmEmailChangeDto: ConfirmationTokenDto) {
-    return new TokenDto(await this.emailChangeService.confirm(confirmEmailChangeDto))
+  async emailChangeConfirm(
+    @Body() confirmEmailChangeDto: ConfirmationTokenDto
+  ) {
+    return new TokenDto(
+      await this.emailChangeService.confirm(confirmEmailChangeDto)
+    )
   }
 
   /**
@@ -48,7 +52,10 @@ export class AuthController {
    */
   @ApiBearerAuth()
   @Post('/email-change/request')
-  async emailChangeRequest(@CurrentUser() currentUserDto: UserEntity, @Body() emailRequestDto: EmailRequestDto) {
+  async emailChangeRequest(
+    @CurrentUser() currentUserDto: UserEntity,
+    @Body() emailRequestDto: EmailRequestDto
+  ) {
     return this.emailChangeService.request(currentUserDto.id, emailRequestDto)
   }
 
@@ -60,8 +67,12 @@ export class AuthController {
    */
   @IsPublic()
   @Post('/email-verification/confirm')
-  async emailVerificationConfirm(@Body() confirmEmailVerificationDto: ConfirmationTokenDto) {
-    return new TokenDto(await this.emailVerificationService.confirm(confirmEmailVerificationDto))
+  async emailVerificationConfirm(
+    @Body() confirmEmailVerificationDto: ConfirmationTokenDto
+  ) {
+    return new TokenDto(
+      await this.emailVerificationService.confirm(confirmEmailVerificationDto)
+    )
   }
 
   /**
@@ -124,8 +135,12 @@ export class AuthController {
    */
   @IsPublic()
   @Post('/password-reset/confirm')
-  async passwordResetConfirm(@Body() confirmPasswordReset: ConfirmationTokenWithNewPasswordDto): Promise<TokenDto> {
-    return new TokenDto(await this.passwordResetService.confirm(confirmPasswordReset))
+  async passwordResetConfirm(
+    @Body() confirmPasswordReset: ConfirmationTokenWithNewPasswordDto
+  ): Promise<TokenDto> {
+    return new TokenDto(
+      await this.passwordResetService.confirm(confirmPasswordReset)
+    )
   }
 
   /**
@@ -154,7 +169,9 @@ export class AuthController {
     res: Response
   ): Promise<TokenDto> {
     const cookies = req?.signedCookies?.['archesai.refreshToken']
-    const tokens = await this.authService.refreshAccessToken(refreshToken || cookies)
+    const tokens = await this.authService.refreshAccessToken(
+      refreshToken || cookies
+    )
     await this.authService.setCookies(res, tokens)
     return tokens
   }
@@ -174,7 +191,9 @@ export class AuthController {
   @ApiExcludeEndpoint()
   @Post('firebase/callback')
   @UseGuards(AuthGuard('firebase-auth'))
-  async zfirebaseAuthCallback(@CurrentUser() currentUserDto: UserEntity): Promise<TokenDto> {
+  async zfirebaseAuthCallback(
+    @CurrentUser() currentUserDto: UserEntity
+  ): Promise<TokenDto> {
     return this.authService.login(currentUserDto)
   }
 
@@ -186,7 +205,9 @@ export class AuthController {
   @ApiExcludeEndpoint()
   @Get('twitter/callback')
   @UseGuards(AuthGuard('twitter'))
-  async ztwitterAuthCallback(@CurrentUser() currentUserDto: UserEntity): Promise<TokenDto> {
+  async ztwitterAuthCallback(
+    @CurrentUser() currentUserDto: UserEntity
+  ): Promise<TokenDto> {
     return this.authService.login(currentUserDto)
   }
 }

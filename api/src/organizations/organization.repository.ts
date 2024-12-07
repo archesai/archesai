@@ -36,7 +36,11 @@ export class OrganizationRepository extends BaseRepository<
         credits:
           // If this is their first org and their e-mail is verified, give them free credits
           // Otherwise, if billing is disabled, give them free credits
-          billingEnabled ? (user.memberships?.length == 0 && user.emailVerified ? 0 : 0) : 100000000, // if this is their first org and their e-mail is verified, give them free credits
+          billingEnabled
+            ? user.memberships?.length == 0 && user.emailVerified
+              ? 0
+              : 0
+            : 100000000, // if this is their first org and their e-mail is verified, give them free credits
         // Add them as an admin to this organization
         members: {
           create: {

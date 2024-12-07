@@ -1,5 +1,10 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable
+} from '@nestjs/common'
 
 @Injectable()
 export class DeactivatedGuard implements CanActivate {
@@ -15,7 +20,9 @@ export class DeactivatedGuard implements CanActivate {
 
     // Check if user is deactivated
     if (currentUser.deactivated === true) {
-      throw new ForbiddenException('Your account has been deactivated. Please contact support.')
+      throw new ForbiddenException(
+        'Your account has been deactivated. Please contact support.'
+      )
     }
 
     return true

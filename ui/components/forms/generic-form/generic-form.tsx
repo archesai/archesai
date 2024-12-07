@@ -1,5 +1,19 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,7 +33,9 @@ export interface FormFieldConfig {
   label: string
   name: string
   props?: any
-  renderControl?: (field: ControllerRenderProps<Record<string, any>>) => React.ReactNode
+  renderControl?: (
+    field: ControllerRenderProps<Record<string, any>>
+  ) => React.ReactNode
   validationRule?: z.ZodType<any, any>
 }
 
@@ -76,7 +92,12 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
   console.log(form.formState.errors)
   console.log(form.getValues()) // FIXME
   return (
-    <Card className={cn('flex flex-1 flex-col', showCard ? '' : 'border-none shadow-none')}>
+    <Card
+      className={cn(
+        'flex flex-1 flex-col',
+        showCard ? '' : 'border-none shadow-none'
+      )}
+    >
       <CardHeader className='rounded-t-lg bg-sidebar'>
         <CardTitle className='text-lg'>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -139,13 +160,25 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                         {fieldConfig.renderControl ? (
                           fieldConfig.renderControl(field)
                         ) : (
-                          <fieldConfig.component {...field} {...fieldConfig.props} value={field.value || ''} />
+                          <fieldConfig.component
+                            {...field}
+                            {...fieldConfig.props}
+                            value={field.value || ''}
+                          />
                         )}
                       </FormControl>
-                      {!form.formState.errors[fieldConfig.name]?.message?.toString() && (
-                        <FormDescription>{fieldConfig.description}</FormDescription>
+                      {!form.formState.errors[
+                        fieldConfig.name
+                      ]?.message?.toString() && (
+                        <FormDescription>
+                          {fieldConfig.description}
+                        </FormDescription>
                       )}
-                      <FormMessage>{form.formState.errors[fieldConfig.name]?.message?.toString()}</FormMessage>
+                      <FormMessage>
+                        {form.formState.errors[
+                          fieldConfig.name
+                        ]?.message?.toString()}
+                      </FormMessage>
                     </FormItem>
                   )}
                 />
@@ -157,18 +190,24 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
               <div className='flex w-full items-center justify-end gap-2'>
                 <Button
                   className='flex flex-1 gap-2'
-                  disabled={form.formState.isSubmitting || !form.formState.isDirty}
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
                   size='sm'
                   type='submit'
                 >
-                  {form.formState.isSubmitting && <ReloadIcon className='h-5 w-5 animate-spin' />}
+                  {form.formState.isSubmitting && (
+                    <ReloadIcon className='h-5 w-5 animate-spin' />
+                  )}
                   <span className='capitalize'>
                     {isUpdateForm ? 'Update' : 'Create'} {itemType}
                   </span>
                 </Button>
                 <Button
                   className='flex-1'
-                  disabled={form.formState.isSubmitting || !form.formState.isDirty}
+                  disabled={
+                    form.formState.isSubmitting || !form.formState.isDirty
+                  }
                   onClick={() => {
                     form.reset()
                   }}

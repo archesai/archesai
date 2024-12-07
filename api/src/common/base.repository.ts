@@ -1,9 +1,16 @@
-import { FieldFieldQuery, Operator, SearchQueryDto } from './dto/search-query.dto'
+import {
+  FieldFieldQuery,
+  Operator,
+  SearchQueryDto
+} from './dto/search-query.dto'
 
 type PrismaDelegate<PrismaModel, Include> = {
   count: (args: { where: any }) => Promise<number>
   create: (args: { data: any; include?: Include }) => Promise<any & PrismaModel>
-  delete: (args: { include?: Include; where: any }) => Promise<any & PrismaModel>
+  delete: (args: {
+    include?: Include
+    where: any
+  }) => Promise<any & PrismaModel>
   findMany: (args: {
     include?: Include
     orderBy: any
@@ -11,17 +18,34 @@ type PrismaDelegate<PrismaModel, Include> = {
     take: number
     where: any
   }) => Promise<(any & PrismaModel)[]>
-  findUniqueOrThrow: (args: { include?: Include; where: any }) => Promise<any & PrismaModel>
-  update: (args: { data: any; include?: Include; where: any }) => Promise<any & PrismaModel>
+  findUniqueOrThrow: (args: {
+    include?: Include
+    where: any
+  }) => Promise<any & PrismaModel>
+  update: (args: {
+    data: any
+    include?: Include
+    where: any
+  }) => Promise<any & PrismaModel>
 }
 
-export abstract class BaseRepository<PrismaModel, CreateDto, UpdateDto, Include, RawUpdateInput> {
+export abstract class BaseRepository<
+  PrismaModel,
+  CreateDto,
+  UpdateDto,
+  Include,
+  RawUpdateInput
+> {
   constructor(
     protected readonly delegate: PrismaDelegate<PrismaModel, Include>,
     private readonly defaultInclude?: Include
   ) {}
 
-  async create(orgname: string, createDto: CreateDto, additionalData?: object): Promise<PrismaModel> {
+  async create(
+    orgname: string,
+    createDto: CreateDto,
+    additionalData?: object
+  ): Promise<PrismaModel> {
     return this.delegate.create({
       data: {
         organization: { connect: { orgname } },
@@ -32,7 +56,10 @@ export abstract class BaseRepository<PrismaModel, CreateDto, UpdateDto, Include,
     })
   }
 
-  async findAll(orgname: string, queryDto: SearchQueryDto): Promise<{ count: number; results: PrismaModel[] }> {
+  async findAll(
+    orgname: string,
+    queryDto: SearchQueryDto
+  ): Promise<{ count: number; results: PrismaModel[] }> {
     const whereConditions: any = {
       createdAt: {
         gte: queryDto.startDate,
@@ -46,7 +73,9 @@ export abstract class BaseRepository<PrismaModel, CreateDto, UpdateDto, Include,
         if (filter.operator)
           if (
             // If this is a relation filter
-            [Operator.EVERY, Operator.NONE, Operator.SOME].includes(filter.operator)
+            [Operator.EVERY, Operator.NONE, Operator.SOME].includes(
+              filter.operator
+            )
           ) {
             whereConditions[filter.field] = {
               [filter.operator]: {
@@ -88,7 +117,11 @@ export abstract class BaseRepository<PrismaModel, CreateDto, UpdateDto, Include,
     })
   }
 
-  async update(orgname: string, id: string, updateDto: UpdateDto): Promise<PrismaModel> {
+  async update(
+    orgname: string,
+    id: string,
+    updateDto: UpdateDto
+  ): Promise<PrismaModel> {
     return this.delegate.update({
       data: updateDto,
       include: this.defaultInclude,
@@ -96,7 +129,11 @@ export abstract class BaseRepository<PrismaModel, CreateDto, UpdateDto, Include,
     })
   }
 
-  async updateRaw(orgname: string, id: string, data: RawUpdateInput): Promise<PrismaModel> {
+  async updateRaw(
+    orgname: string,
+    id: string,
+    data: RawUpdateInput
+  ): Promise<PrismaModel> {
     return this.delegate.update({
       data,
       include: this.defaultInclude,

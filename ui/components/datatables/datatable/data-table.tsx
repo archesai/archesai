@@ -7,7 +7,12 @@ import { GridView } from '@/components/datatables/datatable/grid-view'
 import { TableView } from '@/components/datatables/datatable/table-view'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +43,11 @@ export interface BaseItem {
   name?: string
 }
 
-interface DataTableProps<TItem extends BaseItem, TFindAllPathParams, TDeleteVariables> {
+interface DataTableProps<
+  TItem extends BaseItem,
+  TFindAllPathParams,
+  TDeleteVariables
+> {
   columns: ColumnDef<TItem, TDeleteVariables>[]
   content?: (item: TItem) => JSX.Element
   createForm?: React.ReactNode
@@ -74,7 +83,11 @@ interface DataTableProps<TItem extends BaseItem, TFindAllPathParams, TDeleteVari
   }
 }
 
-export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVariables>({
+export function DataTable<
+  TItem extends BaseItem,
+  TFindAllPathParams,
+  TDeleteVariables
+>({
   columns,
   content,
   createForm,
@@ -94,7 +107,16 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
   useFindAll,
   useRemove
 }: DataTableProps<TItem, TFindAllPathParams, TDeleteVariables>) {
-  const { limit, page, query, range, setSortBy, setSortDirection, sortBy, sortDirection } = useFilterItems()
+  const {
+    limit,
+    page,
+    query,
+    range,
+    setSortBy,
+    setSortDirection,
+    sortBy,
+    sortDirection
+  } = useFilterItems()
 
   // Use the useDebounce hook to debounce the query
   const debouncedQuery = useDebounce(query, 500) // 500ms delay
@@ -108,7 +130,9 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
     }
   ])
   const [formOpen, setFormOpen] = useState(false)
-  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(createForm)
+  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
+    createForm
+  )
 
   useEffect(() => {
     setSortDirection(sorting[0]?.desc ? 'desc' : 'asc')
@@ -126,8 +150,12 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
   const { data } = useFindAll({
     pathParams: findAllPathParams,
     queryParams: {
-      ...(range?.to ? { endDate: range?.to && endOfDay(range.to).toISOString() } : {}),
-      ...(range?.from ? { startDate: range?.from && range.from.toISOString() } : {}),
+      ...(range?.to
+        ? { endDate: range?.to && endOfDay(range.to).toISOString() }
+        : {}),
+      ...(range?.from
+        ? { startDate: range?.from && range.from.toISOString() }
+        : {}),
       filters: JSON.stringify([
         {
           field: filterField,
@@ -183,11 +211,17 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
                 <div className='flex justify-end'>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button className='flex h-8 w-8 p-0 data-[state=open]:bg-muted' variant='ghost'>
+                      <Button
+                        className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
+                        variant='ghost'
+                      >
                         <DotsHorizontalIcon className='h-5 w-5' />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align='end' className='w-[160px]'>
+                    <DropdownMenuContent
+                      align='end'
+                      className='w-[160px]'
+                    >
                       {getEditFormFromItem ? (
                         <>
                           <DropdownMenuItem
@@ -211,7 +245,9 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
                                 await deleteItem(vars)
                                 setSelectedItems([])
                               }}
-                              deleteVariables={[getDeleteVariablesFromItem(row.original)]}
+                              deleteVariables={[
+                                getDeleteVariablesFromItem(row.original)
+                              ]}
                               items={[
                                 {
                                   id: row.original.id,
@@ -272,7 +308,9 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
               setSelectedItems([])
             }}
             deleteVariables={selectedItems.map((id) =>
-              getDeleteVariablesFromItem(data?.results.find((i) => i.id === id) as TItem)
+              getDeleteVariablesFromItem(
+                data?.results.find((i) => i.id === id) as TItem
+              )
             )}
             items={selectedItems.map((id) => {
               const item = data?.results.find((i) => i.id === id)
@@ -307,7 +345,11 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
             toggleSelection={toggleSelection}
           />
         ) : (
-          <TableView columns={columns} itemType={itemType} table={table} />
+          <TableView
+            columns={columns}
+            itemType={itemType}
+            table={table}
+          />
         )}
       </div>
 
@@ -334,7 +376,11 @@ export function DataTable<TItem extends BaseItem, TFindAllPathParams, TDeleteVar
             {finalForm ? 'Edit' : 'Create'} {itemType}
           </DialogTitle>
         </VisuallyHidden.Root>
-        <DialogContent aria-description='Create/Edit' className='p-0' title='Create/Edit'>
+        <DialogContent
+          aria-description='Create/Edit'
+          className='p-0'
+          title='Create/Edit'
+        >
           {finalForm}
         </DialogContent>
       </Dialog>

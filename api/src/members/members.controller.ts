@@ -12,11 +12,12 @@ import { MembersService } from './members.service'
 @ApiBearerAuth()
 @ApiTags(`Members`)
 @Controller('/organizations/:orgname/members')
-export class MembersController extends BaseController<MemberEntity, CreateMemberDto, UpdateMemberDto, MembersService>(
+export class MembersController extends BaseController<
   MemberEntity,
   CreateMemberDto,
-  UpdateMemberDto
-) {
+  UpdateMemberDto,
+  MembersService
+>(MemberEntity, CreateMemberDto, UpdateMemberDto) {
   constructor(private readonly membersService: MembersService) {
     super(membersService)
   }
@@ -29,7 +30,14 @@ export class MembersController extends BaseController<MemberEntity, CreateMember
    * @throws {404} Not Found
    */
   @Post('join')
-  async join(@Param('orgname') orgname: string, @CurrentUser() currentUser: UserEntity) {
-    return this.membersService.join(orgname, currentUser.email, currentUser.username)
+  async join(
+    @Param('orgname') orgname: string,
+    @CurrentUser() currentUser: UserEntity
+  ) {
+    return this.membersService.join(
+      orgname,
+      currentUser.email,
+      currentUser.username
+    )
   }
 }

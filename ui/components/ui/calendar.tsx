@@ -8,20 +8,27 @@ import { DayPicker } from 'react-day-picker'
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: CalendarProps) {
   return (
     <DayPicker
       className={cn('p-3', className)}
       classNames={{
         button_next: cn(
           buttonVariants({
-            className: 'absolute right-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+            className:
+              'absolute right-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
             variant: 'outline'
           })
         ),
         button_previous: cn(
           buttonVariants({
-            className: 'absolute left-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+            className:
+              'absolute left-0 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
             variant: 'outline'
           })
         ),
@@ -55,7 +62,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       }}
       components={{
         Chevron: ({ orientation }) => {
-          const Icon = orientation === 'left' ? ChevronLeftIcon : ChevronRightIcon
+          const Icon =
+            orientation === 'left' ? ChevronLeftIcon : ChevronRightIcon
           return <Icon className='h-4 w-4' />
         }
       }}

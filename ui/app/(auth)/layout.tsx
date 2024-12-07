@@ -4,12 +4,17 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-export default function AuthenticationLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function AuthenticationLayout({
+  children
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
       <div className='relative grid h-svh flex-col items-center justify-center lg:max-w-none lg:grid-cols-2'>
         <Link
-          className={cn(buttonVariants({ variant: 'ghost' }), 'absolute right-4 top-4 md:right-8 md:top-8')}
+          className={cn(
+            buttonVariants({ variant: 'ghost' }),
+            'absolute right-4 top-4 md:right-8 md:top-8'
+          )}
           href='/'
         >
           Back
@@ -23,8 +28,9 @@ export default function AuthenticationLayout({ children }: Readonly<{ children: 
           <div className='relative z-20 mt-auto'>
             <blockquote className='flex flex-col gap-2'>
               <p className='text-lg'>
-                &ldquo;This library has saved me countless hours of work and helped me deliver stunning designs to my
-                clients faster than ever before.&rdquo;
+                &ldquo;This library has saved me countless hours of work and
+                helped me deliver stunning designs to my clients faster than
+                ever before.&rdquo;
               </p>
               <footer className='text-sm'>Sofia Davis</footer>
             </blockquote>
@@ -36,11 +42,17 @@ export default function AuthenticationLayout({ children }: Readonly<{ children: 
           {children}
           <p className='text-center text-sm text-muted-foreground'>
             By clicking continue, you agree to our{' '}
-            <Link className='underline underline-offset-4 hover:text-primary' href='/terms'>
+            <Link
+              className='underline underline-offset-4 hover:text-primary'
+              href='/terms'
+            >
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link className='underline underline-offset-4 hover:text-primary' href='/privacy'>
+            <Link
+              className='underline underline-offset-4 hover:text-primary'
+              href='/privacy'
+            >
               Privacy Policy
             </Link>
             .

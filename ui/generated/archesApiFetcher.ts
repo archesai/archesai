@@ -3,7 +3,12 @@ import { ArchesApiContext } from './archesApiContext'
 
 export const baseUrl = process.env.NEXT_PUBLIC_API_URL
 
-export type ArchesApiFetcherOptions<TBody, THeaders, TQueryParams, TPathParams> = ArchesApiContext['fetcherOptions'] & {
+export type ArchesApiFetcherOptions<
+  TBody,
+  THeaders,
+  TQueryParams,
+  TPathParams
+> = ArchesApiContext['fetcherOptions'] & {
   body?: TBody
   headers?: THeaders
   method: string
@@ -13,7 +18,9 @@ export type ArchesApiFetcherOptions<TBody, THeaders, TQueryParams, TPathParams> 
   url: string
 }
 
-export type ErrorWrapper<TError> = TError | { message: string; statusCode: 'unknown' }
+export type ErrorWrapper<TError> =
+  | TError
+  | { message: string; statusCode: 'unknown' }
 
 export async function archesApiFetch<
   TData,
@@ -30,7 +37,12 @@ export async function archesApiFetch<
   queryParams,
   signal,
   url
-}: ArchesApiFetcherOptions<TBody, THeaders, TQueryParams, TPathParams>): Promise<TData> {
+}: ArchesApiFetcherOptions<
+  TBody,
+  THeaders,
+  TQueryParams,
+  TPathParams
+>): Promise<TData> {
   try {
     const requestHeaders: HeadersInit = {
       'Content-Type': 'application/json',
@@ -43,24 +55,38 @@ export async function archesApiFetch<
      * the correct boundary.
      * https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects#sending_files_using_a_formdata_object
      */
-    if (requestHeaders['Content-Type']?.toLowerCase().includes('multipart/form-data')) {
+    if (
+      requestHeaders['Content-Type']
+        ?.toLowerCase()
+        .includes('multipart/form-data')
+    ) {
       delete requestHeaders['Content-Type']
     }
 
-    const response = await window.fetch(`${baseUrl}${resolveUrl(url, queryParams, pathParams)}`, {
-      body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined,
-      headers: requestHeaders,
-      method: method.toUpperCase(),
-      signal,
-      credentials: 'include'
-    })
+    const response = await window.fetch(
+      `${baseUrl}${resolveUrl(url, queryParams, pathParams)}`,
+      {
+        body: body
+          ? body instanceof FormData
+            ? body
+            : JSON.stringify(body)
+          : undefined,
+        headers: requestHeaders,
+        method: method.toUpperCase(),
+        signal,
+        credentials: 'include'
+      }
+    )
     if (!response.ok) {
       let error: ErrorWrapper<TError>
       try {
         error = await response.json()
       } catch (e) {
         error = {
-          message: e instanceof Error ? `Unexpected error (${e.message})` : 'Unexpected error',
+          message:
+            e instanceof Error
+              ? `Unexpected error (${e.message})`
+              : 'Unexpected error',
           statusCode: 'unknown' as const
         }
       }
@@ -84,8 +110,14 @@ export async function archesApiFetch<
   }
 }
 
-const resolveUrl = (url: string, queryParams: Record<string, string> = {}, pathParams: Record<string, string> = {}) => {
+const resolveUrl = (
+  url: string,
+  queryParams: Record<string, string> = {},
+  pathParams: Record<string, string> = {}
+) => {
   let query = new URLSearchParams(queryParams).toString()
   if (query) query = `?${query}`
-  return url.replace(/\{\w*\}/g, (key) => pathParams[key.slice(1, -1)] || '') + query
+  return (
+    url.replace(/\{\w*\}/g, (key) => pathParams[key.slice(1, -1)] || '') + query
+  )
 }

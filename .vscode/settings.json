@@ -3,14 +3,6 @@
     "./ui",
     "./api"
   ],
-  "files.exclude": {
-    // "**/node_modules": true,
-    // "**/dist": true,
-    // "**/.next": true,
-    // "**/env": true,
-    // "**/tmp": true
-  },
-  "editor.maxTokenizationLineLength": 200000,
   "jest.rootPath": "./api",
   "jest.jestCommandLine": "npm run test --"
 }

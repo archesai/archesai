@@ -24,7 +24,11 @@ export class UserRepository extends BaseRepository<
     super(prisma.user, USER_INCLUDE)
   }
 
-  async addAuthProvider(email: string, provider: AuthProviderType, providerId: string) {
+  async addAuthProvider(
+    email: string,
+    provider: AuthProviderType,
+    providerId: string
+  ) {
     return await this.prisma.user.update({
       data: {
         authProviders: {

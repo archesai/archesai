@@ -89,7 +89,11 @@ describe('Content', () => {
   })
 
   // Helper function to get a write url, upload a file, and get a read url
-  const uploadFile = async (orgname: string, accessToken: string, filePath: string) => {
+  const uploadFile = async (
+    orgname: string,
+    accessToken: string,
+    filePath: string
+  ) => {
     const fileRes = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/storage/write`)
       .send({ path: filePath })

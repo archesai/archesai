@@ -1,6 +1,11 @@
 import { Body, Controller, Delete, Get, Inject, Query } from '@nestjs/common'
 import { Param, Post } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger'
 
 import { Roles } from '../auth/decorators/roles.decorator'
 import { PathDto } from './dto/path.dto'
@@ -14,7 +19,9 @@ import { STORAGE_SERVICE, StorageService } from './storage.service'
 @Controller('/organizations/:orgname/storage')
 @Roles('ADMIN')
 export class StorageController {
-  constructor(@Inject(STORAGE_SERVICE) private readonly storageService: StorageService) {}
+  constructor(
+    @Inject(STORAGE_SERVICE) private readonly storageService: StorageService
+  ) {}
 
   @ApiOperation({
     description:
@@ -47,8 +54,15 @@ export class StorageController {
   })
   @ApiResponse({ description: 'Forbidden', status: 403 })
   @Post('read')
-  async getReadUrl(@Param('orgname') orgname: string, @Body() pathDto: PathDto) {
-    const read = await this.storageService.getSignedUrl(orgname, pathDto.path, 'read')
+  async getReadUrl(
+    @Param('orgname') orgname: string,
+    @Body() pathDto: PathDto
+  ) {
+    const read = await this.storageService.getSignedUrl(
+      orgname,
+      pathDto.path,
+      'read'
+    )
 
     return { read } as ReadUrlDto
   }
@@ -67,12 +81,19 @@ export class StorageController {
   })
   @ApiResponse({ description: 'Forbidden', status: 403 })
   @Post('write')
-  async getWriteUrl(@Param('orgname') orgname: string, @Body() pathDto: PathDto) {
+  async getWriteUrl(
+    @Param('orgname') orgname: string,
+    @Body() pathDto: PathDto
+  ) {
     if (pathDto.isDir) {
       await this.storageService.createDirectory(orgname, pathDto.path)
       return { write: '' } as WriteUrlDto
     }
-    const write = await this.storageService.getSignedUrl(orgname, pathDto.path, 'write')
+    const write = await this.storageService.getSignedUrl(
+      orgname,
+      pathDto.path,
+      'write'
+    )
     return { write } as WriteUrlDto
   }
 
@@ -90,7 +111,10 @@ export class StorageController {
   })
   @ApiResponse({ description: 'Forbidden', status: 403 })
   @Get('items')
-  async listDirectory(@Param('orgname') orgname: string, @Query('path') path: string) {
+  async listDirectory(
+    @Param('orgname') orgname: string,
+    @Query('path') path: string
+  ) {
     const files = await this.storageService.listDirectory(orgname, path)
     return files
   }

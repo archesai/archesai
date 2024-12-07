@@ -8,7 +8,11 @@ import {
   S3Client
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import axios from 'axios'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -49,7 +53,10 @@ export class S3StorageProvider implements StorageService {
       )
       return true
     } catch (error) {
-      if (error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
+      if (
+        error.name === 'NotFound' ||
+        error.$metadata?.httpStatusCode === 404
+      ) {
         return false
       }
       throw error
@@ -59,7 +66,9 @@ export class S3StorageProvider implements StorageService {
   async createDirectory(orgname: string, dirPath: string): Promise<void> {
     const exists = await this.checkFileExists(orgname, dirPath)
     if (exists) {
-      throw new ConflictException('Cannot create directory. File or path already exists at this location')
+      throw new ConflictException(
+        'Cannot create directory. File or path already exists at this location'
+      )
     }
     const key = this.getKey(orgname, dirPath).replace(/\/?$/, '/') + '/'
     await this.s3Client.send(
@@ -84,7 +93,11 @@ export class S3StorageProvider implements StorageService {
     )
   }
 
-  async download(orgname: string, filePath: string, destination?: string): Promise<{ buffer: Buffer }> {
+  async download(
+    orgname: string,
+    filePath: string,
+    destination?: string
+  ): Promise<{ buffer: Buffer }> {
     const exists = await this.checkFileExists(orgname, filePath)
     if (!exists) {
       throw new NotFoundException(`File at ${filePath} does not exist`)
@@ -110,7 +123,10 @@ export class S3StorageProvider implements StorageService {
     return { buffer }
   }
 
-  async getMetaData(orgname: string, filePath: string): Promise<{ metadata: any }> {
+  async getMetaData(
+    orgname: string,
+    filePath: string
+  ): Promise<{ metadata: any }> {
     const exists = await this.checkFileExists(orgname, filePath)
     if (!exists) {
       throw new NotFoundException(`File at ${filePath} does not exist`)
@@ -124,7 +140,11 @@ export class S3StorageProvider implements StorageService {
     return { metadata: result.Metadata }
   }
 
-  async getSignedUrl(orgname: string, filePath: string, action: 'read' | 'write'): Promise<string> {
+  async getSignedUrl(
+    orgname: string,
+    filePath: string,
+    action: 'read' | 'write'
+  ): Promise<string> {
     if (action === 'write') {
       let conflict = true
       let i = 0
@@ -170,7 +190,10 @@ export class S3StorageProvider implements StorageService {
     return signedUrl
   }
 
-  async listDirectory(orgname: string, dirPath: string): Promise<StorageItemDto[]> {
+  async listDirectory(
+    orgname: string,
+    dirPath: string
+  ): Promise<StorageItemDto[]> {
     const prefix = this.getKey(orgname, dirPath).replace(/\/?$/, '/') + '/'
     const result = await this.s3Client.send(
       new ListObjectsV2Command({
@@ -216,7 +239,11 @@ export class S3StorageProvider implements StorageService {
     return items
   }
 
-  async upload(orgname: string, filePath: string, file: Express.Multer.File): Promise<string> {
+  async upload(
+    orgname: string,
+    filePath: string,
+    file: Express.Multer.File
+  ): Promise<string> {
     let conflict = true
     let i = 0
     const originalFilePath = filePath
@@ -249,7 +276,11 @@ export class S3StorageProvider implements StorageService {
     return readUrl
   }
 
-  async uploadFromUrl(orgname: string, filePath: string, url: string): Promise<string> {
+  async uploadFromUrl(
+    orgname: string,
+    filePath: string,
+    url: string
+  ): Promise<string> {
     const response = await axios.get(url, { responseType: 'arraybuffer' })
     const fileBuffer = Buffer.from(response.data)
 
@@ -271,7 +302,9 @@ export class S3StorageProvider implements StorageService {
 
   private async createBucketIfNotExists() {
     try {
-      await this.s3Client.send(new CreateBucketCommand({ Bucket: this.bucketName }))
+      await this.s3Client.send(
+        new CreateBucketCommand({ Bucket: this.bucketName })
+      )
     } catch (error) {
       if (error.name !== 'BucketAlreadyOwnedByYou') {
         throw error

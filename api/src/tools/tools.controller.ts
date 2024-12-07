@@ -10,11 +10,12 @@ import { ToolsService } from './tools.service'
 @ApiBearerAuth()
 @ApiTags('Tools')
 @Controller('/organizations/:orgname/tools')
-export class ToolsController extends BaseController<ToolEntity, CreateToolDto, UpdateToolDto, ToolsService>(
+export class ToolsController extends BaseController<
   ToolEntity,
   CreateToolDto,
-  UpdateToolDto
-) {
+  UpdateToolDto,
+  ToolsService
+>(ToolEntity, CreateToolDto, UpdateToolDto) {
   constructor(private readonly toolsService: ToolsService) {
     super(toolsService)
   }

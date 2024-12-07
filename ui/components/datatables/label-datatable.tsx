@@ -18,7 +18,11 @@ export default function LabelDataTable() {
   const router = useRouter()
 
   return (
-    <DataTable<LabelEntity, LabelsControllerFindAllPathParams, LabelsControllerRemoveVariables>
+    <DataTable<
+      LabelEntity,
+      LabelsControllerFindAllPathParams,
+      LabelsControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: 'name',
@@ -27,14 +31,21 @@ export default function LabelDataTable() {
               <div className='flex gap-2'>
                 <span
                   className='max-w-[500px] truncate font-medium'
-                  onClick={() => router.push(`/chatbots/chat?labelId=${row.original.id}`)}
+                  onClick={() =>
+                    router.push(`/chatbots/chat?labelId=${row.original.id}`)
+                  }
                 >
                   {row.original.name}
                 </span>
               </div>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Name'
+            />
+          )
         }
       ]}
       createForm={<LabelForm />}
@@ -50,7 +61,9 @@ export default function LabelDataTable() {
         }
       })}
       getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
-      handleSelect={(chatbot) => router.push(`/chatbots/chat?labelId=${chatbot.id}`)}
+      handleSelect={(chatbot) =>
+        router.push(`/chatbots/chat?labelId=${chatbot.id}`)
+      }
       itemType='label'
       useFindAll={useLabelsControllerFindAll}
       useRemove={useLabelsControllerRemove}

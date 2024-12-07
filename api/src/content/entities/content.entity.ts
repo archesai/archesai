@@ -3,7 +3,10 @@ import { Content as _PrismaContent } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
 import { IsNumber, IsString } from 'class-validator'
 
-import { _PrismaSubItemModel, SubItemEntity } from '../../common/entities/base-sub-item.entity'
+import {
+  _PrismaSubItemModel,
+  SubItemEntity
+} from '../../common/entities/base-sub-item.entity'
 import { BaseEntity } from '../../common/entities/base.entity'
 
 export type ContentModel = _PrismaContent & {
@@ -92,7 +95,8 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   parent: null | SubItemEntity
 
   @ApiProperty({
-    description: 'The parent content ID, if this content is a child of another content',
+    description:
+      'The parent content ID, if this content is a child of another content',
     example: 'content-id',
     required: false,
     type: String
@@ -140,7 +144,8 @@ export class ContentEntity extends BaseEntity implements ContentModel {
   text: null | string
 
   @ApiProperty({
-    description: 'The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content',
+    description:
+      'The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content',
     example: 'https://example.com/example.mp4',
     required: false,
     type: String

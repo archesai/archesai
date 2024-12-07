@@ -110,8 +110,13 @@ export function sleep(ms: number) {
 }
 
 // Helper function to register a user and return the API token
-export const registerUser = async (app: INestApplication, registerDto: RegisterDto): Promise<TokenDto> => {
-  const res = await request(app.getHttpServer()).post('/auth/register').send(registerDto)
+export const registerUser = async (
+  app: INestApplication,
+  registerDto: RegisterDto
+): Promise<TokenDto> => {
+  const res = await request(app.getHttpServer())
+    .post('/auth/register')
+    .send(registerDto)
   expect(res.status).toBe(201)
   expect(res.type).toBe('application/json')
   expect(res).toSatisfyApiSpec()
@@ -124,8 +129,13 @@ export const setEmailVerified = async (app: INestApplication, id: string) => {
 }
 
 // Helper function to get user data
-export const getUser = async (app: INestApplication, accessToken: string): Promise<UserEntity> => {
-  const res = await request(app.getHttpServer()).get('/user').set('Authorization', `Bearer ${accessToken}`)
+export const getUser = async (
+  app: INestApplication,
+  accessToken: string
+): Promise<UserEntity> => {
+  const res = await request(app.getHttpServer())
+    .get('/user')
+    .set('Authorization', `Bearer ${accessToken}`)
   expect(res.status).toBe(200)
   expect(res.body.defaultOrgname).toBeTruthy()
   expect(res).toSatisfyApiSpec()
@@ -147,8 +157,13 @@ export const getOrganization = async (
 }
 
 // Helper function to deactivate a user
-export const deactivateUser = async (app: INestApplication, accessToken: string) => {
-  const res = await request(app.getHttpServer()).post('/user/deactivate').set('Authorization', `Bearer ${accessToken}`)
+export const deactivateUser = async (
+  app: INestApplication,
+  accessToken: string
+) => {
+  const res = await request(app.getHttpServer())
+    .post('/user/deactivate')
+    .set('Authorization', `Bearer ${accessToken}`)
   expect(res.status).toBe(201)
 }
 
@@ -196,7 +211,10 @@ export function testBaseControllerEndpoints(
           const app = getApp() // Get the app instance when the test runs
           await request(app.getHttpServer())
             .post(baseRoute)
-            .set('Authorization', `${accessToken ? `Bearer ${accessToken}` : ''}`)
+            .set(
+              'Authorization',
+              `${accessToken ? `Bearer ${accessToken}` : ''}`
+            )
             .send(testCase.dto)
             .expect(testCase.expectedStatus)
             .expect((res) => {
@@ -215,7 +233,10 @@ export function testBaseControllerEndpoints(
           const app = getApp() // Get the app instance when the test runs
           await request(app.getHttpServer())
             .get(baseRoute)
-            .set('Authorization', `${accessToken ? `Bearer ${accessToken}` : ''}`)
+            .set(
+              'Authorization',
+              `${accessToken ? `Bearer ${accessToken}` : ''}`
+            )
             .expect(testCase.expectedStatus)
             .expect((res) => {
               expect(res.body).toEqual(testCase.expectedResponse)
@@ -233,7 +254,10 @@ export function testBaseControllerEndpoints(
           const app = getApp() // Get the app instance when the test runs
           await request(app.getHttpServer())
             .get(`${baseRoute}/${testCase.id}`)
-            .set('Authorization', `${accessToken ? `Bearer ${accessToken}` : ''}`)
+            .set(
+              'Authorization',
+              `${accessToken ? `Bearer ${accessToken}` : ''}`
+            )
             .expect(testCase.expectedStatus)
             .expect((res) => {
               expect(res.body).toEqual(testCase.expectedResponse)
@@ -251,7 +275,10 @@ export function testBaseControllerEndpoints(
           const app = getApp() // Get the app instance when the test runs
           await request(app.getHttpServer())
             .put(`${baseRoute}/${testCase.id}`)
-            .set('Authorization', `${accessToken ? `Bearer ${accessToken}` : ''}`)
+            .set(
+              'Authorization',
+              `${accessToken ? `Bearer ${accessToken}` : ''}`
+            )
             .send(testCase.dto)
             .expect(testCase.expectedStatus)
             .expect((res) => {
@@ -270,7 +297,10 @@ export function testBaseControllerEndpoints(
           const app = getApp() // Get the app instance when the test runs
           await request(app.getHttpServer())
             .delete(`${baseRoute}/${testCase.id}`)
-            .set('Authorization', `${accessToken ? `Bearer ${accessToken}` : ''}`)
+            .set(
+              'Authorization',
+              `${accessToken ? `Bearer ${accessToken}` : ''}`
+            )
             .expect(testCase.expectedStatus)
             .expect((res) => {
               expect(res.body).toEqual(testCase.expectedResponse)

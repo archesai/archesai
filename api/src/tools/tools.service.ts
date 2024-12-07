@@ -8,7 +8,13 @@ import { ToolEntity, ToolModel } from './entities/tool.entity'
 import { ToolRepository } from './tool.repository'
 
 @Injectable()
-export class ToolsService extends BaseService<ToolEntity, CreateToolDto, UpdateToolDto, ToolRepository, ToolModel> {
+export class ToolsService extends BaseService<
+  ToolEntity,
+  CreateToolDto,
+  UpdateToolDto,
+  ToolRepository,
+  ToolModel
+> {
   private logger = new Logger(ToolsService.name)
   constructor(
     private toolsRepository: ToolRepository,

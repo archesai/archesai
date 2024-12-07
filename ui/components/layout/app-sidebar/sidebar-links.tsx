@@ -1,5 +1,9 @@
 'use client'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -18,7 +22,9 @@ import { usePathname } from 'next/navigation'
 
 export function SidebarLinks() {
   const pathname = usePathname()
-  const sections = Array.from(new Set(siteConfig.routes.map((route) => route.section)))
+  const sections = Array.from(
+    new Set(siteConfig.routes.map((route) => route.section))
+  )
 
   return (
     <>
@@ -30,7 +36,9 @@ export function SidebarLinks() {
               {siteConfig.routes
                 .filter((rootRoute) => rootRoute.section === section)
                 .map((rootRoute, i) => {
-                  const isActive = rootRoute?.children?.some((route) => pathname.startsWith(route.href))
+                  const isActive = rootRoute?.children?.some((route) =>
+                    pathname.startsWith(route.href)
+                  )
 
                   if (!rootRoute?.children?.length) {
                     return (
@@ -41,7 +49,13 @@ export function SidebarLinks() {
                             tooltip={rootRoute.title}
                           >
                             {rootRoute.Icon && (
-                              <rootRoute.Icon className={cn(pathname == rootRoute.href ? 'text-primary' : '')} />
+                              <rootRoute.Icon
+                                className={cn(
+                                  pathname == rootRoute.href
+                                    ? 'text-primary'
+                                    : ''
+                                )}
+                              />
                             )}
 
                             <span>{rootRoute.title}</span>
@@ -52,12 +66,23 @@ export function SidebarLinks() {
                   }
 
                   return (
-                    <Collapsible asChild className='group/collapsible' defaultOpen={isActive} key={rootRoute.title}>
+                    <Collapsible
+                      asChild
+                      className='group/collapsible'
+                      defaultOpen={isActive}
+                      key={rootRoute.title}
+                    >
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton tooltip={rootRoute.title}>
                             {rootRoute.Icon && (
-                              <rootRoute.Icon className={cn(pathname == rootRoute.href ? 'text-primary' : '')} />
+                              <rootRoute.Icon
+                                className={cn(
+                                  pathname == rootRoute.href
+                                    ? 'text-primary'
+                                    : ''
+                                )}
+                              />
                             )}
                             <span>{rootRoute.title}</span>
                             <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />

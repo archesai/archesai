@@ -6,21 +6,38 @@ export abstract class BaseService<
   Entity,
   CreateDto,
   UpdateDto,
-  Repo extends BaseRepository<PrismaModel, CreateDto, UpdateDto, Include, RawUpdateInput>,
+  Repo extends BaseRepository<
+    PrismaModel,
+    CreateDto,
+    UpdateDto,
+    Include,
+    RawUpdateInput
+  >,
   PrismaModel,
   Include = any,
   RawUpdateInput = any
 > {
   constructor(protected readonly repository: Repo) {}
 
-  async create(orgname: string, createDto: CreateDto, additionalData?: object): Promise<Entity> {
-    const entity = await this.repository.create(orgname, createDto, additionalData)
+  async create(
+    orgname: string,
+    createDto: CreateDto,
+    additionalData?: object
+  ): Promise<Entity> {
+    const entity = await this.repository.create(
+      orgname,
+      createDto,
+      additionalData
+    )
 
     this.emitMutationEvent(orgname)
     return this.toEntity(entity)
   }
 
-  async findAll(orgname: string, queryDto: SearchQueryDto): Promise<PaginatedDto<Entity>> {
+  async findAll(
+    orgname: string,
+    queryDto: SearchQueryDto
+  ): Promise<PaginatedDto<Entity>> {
     const { count, results } = await this.repository.findAll(orgname, queryDto)
     const entities = results.map((result) => this.toEntity(result))
     return new PaginatedDto<Entity>({
@@ -43,7 +60,11 @@ export abstract class BaseService<
     this.emitMutationEvent(orgname)
   }
 
-  async update(orgname: string, id: string, updateDto: UpdateDto): Promise<Entity> {
+  async update(
+    orgname: string,
+    id: string,
+    updateDto: UpdateDto
+  ): Promise<Entity> {
     const updated = await this.repository.update(orgname, id, updateDto)
     this.emitMutationEvent(orgname)
     return this.toEntity(updated)

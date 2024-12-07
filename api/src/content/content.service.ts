@@ -95,7 +95,11 @@ export class ContentService extends BaseService<
       originalname: previewFilename,
       size: decodedImage.length
     } as Express.Multer.File
-    const url = await this.storageService.upload(orgname, `contents/${content.name}-preview.png`, multerFile)
+    const url = await this.storageService.upload(
+      orgname,
+      `contents/${content.name}-preview.png`,
+      multerFile
+    )
     const updatedContent = await this.setPreviewImage(orgname, content.id, url)
     this.logger.log(`Upl image preview for ${content.name} at ${url}`)
     return updatedContent
@@ -114,7 +118,11 @@ export class ContentService extends BaseService<
     if (content.url?.startsWith(url)) {
       const path = content.url.replace(url, '').split('?')[0]
       try {
-        const read = await this.storageService.getSignedUrl(content.orgname, decodeURIComponent(path), 'read')
+        const read = await this.storageService.getSignedUrl(
+          content.orgname,
+          decodeURIComponent(path),
+          'read'
+        )
         content.url = read
       } catch (e) {
         this.logger.warn(e)
@@ -124,12 +132,19 @@ export class ContentService extends BaseService<
     return this.toEntity(content)
   }
 
-  async query(orgname: string, embedding: number[], topK: number, contentIds?: string[]) {
+  async query(
+    orgname: string,
+    embedding: number[],
+    topK: number,
+    contentIds?: string[]
+  ) {
     return this.contentRepository.query(orgname, embedding, topK, contentIds)
   }
 
   async setPreviewImage(orgname: string, id: string, previewImage: string) {
-    return this.toEntity(await this.contentRepository.updateRaw(orgname, id, { previewImage }))
+    return this.toEntity(
+      await this.contentRepository.updateRaw(orgname, id, { previewImage })
+    )
   }
 
   async setTitle(orgname: string, id: string, title: string) {

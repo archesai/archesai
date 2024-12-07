@@ -1,5 +1,9 @@
 import { BaseEntity } from '@/src/common/entities/base.entity'
-import { Pipeline as _PrismaPipeline, PipelineStep as _PrismaPipelineStep, Tool as _PrismaTool } from '@prisma/client'
+import {
+  Pipeline as _PrismaPipeline,
+  PipelineStep as _PrismaPipelineStep,
+  Tool as _PrismaTool
+} from '@prisma/client'
 import { IsString } from 'class-validator'
 
 import { PipelineStepEntity } from './pipeline-step.entity'
@@ -12,7 +16,10 @@ export type PipelineWithPipelineStepsModel = _PrismaPipeline & {
   })[]
 }
 
-export class PipelineEntity extends BaseEntity implements PipelineWithPipelineStepsModel {
+export class PipelineEntity
+  extends BaseEntity
+  implements PipelineWithPipelineStepsModel
+{
   /**
    * The description of the pipeline
    * @example 'This pipeline does something'
@@ -41,6 +48,8 @@ export class PipelineEntity extends BaseEntity implements PipelineWithPipelineSt
   constructor(pipeline: PipelineWithPipelineStepsModel) {
     super()
     Object.assign(this, pipeline)
-    this.pipelineSteps = pipeline.pipelineSteps.map((pipelineStep) => new PipelineStepEntity(pipelineStep))
+    this.pipelineSteps = pipeline.pipelineSteps.map(
+      (pipelineStep) => new PipelineStepEntity(pipelineStep)
+    )
   }
 }

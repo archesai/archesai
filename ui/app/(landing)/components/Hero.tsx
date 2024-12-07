@@ -7,11 +7,13 @@ export const Hero = () => {
   return (
     <section className='container z-10 mt-10 grid h-svh max-w-4xl place-items-center gap-10 py-20 md:py-32'>
       <div className='z-10 space-y-6 text-center'>
-        <main className='text-5xl font-bold md:text-5xl'>Elevate Your Business with AI-Driven Solutions</main>
+        <main className='text-5xl font-bold md:text-5xl'>
+          Elevate Your Business with AI-Driven Solutions
+        </main>
 
         <p className='mx-auto text-xl text-muted-foreground md:w-10/12'>
-          Create intelligent chatbots, generate vibrant AI visuals, and integrate seamlessly using our API or no-code
-          widgets.
+          Create intelligent chatbots, generate vibrant AI visuals, and
+          integrate seamlessly using our API or no-code widgets.
         </p>
 
         <div className='space-y-4 md:space-x-4 md:space-y-0'>

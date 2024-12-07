@@ -1,6 +1,11 @@
 import type { JSX } from 'react'
 
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import Image from 'next/image'
 
 import { ChartIcon, MagnifierIcon, WalletIcon } from './Icons'
@@ -45,17 +50,22 @@ export const Services = () => {
           </h2>
 
           <p className='mb-8 mt-4 text-xl text-muted-foreground'>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis dolor.
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
+            dolor.
           </p>
 
           <div className='flex flex-col gap-8'>
             {serviceList.map(({ description, icon, title }: ServiceProps) => (
               <Card key={title}>
                 <CardHeader className='flex items-start justify-start gap-4 space-y-1 md:flex-row'>
-                  <div className='mt-1 rounded-2xl bg-primary/20 p-1'>{icon}</div>
+                  <div className='mt-1 rounded-2xl bg-primary/20 p-1'>
+                    {icon}
+                  </div>
                   <div>
                     <CardTitle>{title}</CardTitle>
-                    <CardDescription className='text-md mt-2'>{description}</CardDescription>
+                    <CardDescription className='text-md mt-2'>
+                      {description}
+                    </CardDescription>
                   </div>
                 </CardHeader>
               </Card>

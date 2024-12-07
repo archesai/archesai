@@ -3,10 +3,20 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card'
 import Link from 'next/link'
 
-export function ContentViewer({ content, size }: { content: ContentEntity; size: 'lg' | 'sm' }) {
+export function ContentViewer({
+  content,
+  size
+}: {
+  content: ContentEntity
+  size: 'lg' | 'sm'
+}) {
   const { mimeType, text, url } = content
 
   let hoverContent = null
@@ -38,7 +48,13 @@ export function ContentViewer({ content, size }: { content: ContentEntity; size:
       />
     )
   } else if (mimeType === 'application/pdf') {
-    hoverContent = <iframe className='h-full w-full' src={url || ''} title='PDF Document'></iframe>
+    hoverContent = (
+      <iframe
+        className='h-full w-full'
+        src={url || ''}
+        title='PDF Document'
+      ></iframe>
+    )
   } else if (mimeType?.startsWith('text/')) {
     hoverContent = (
       <div className='flex h-full items-center justify-center p-4 text-center'>
@@ -59,7 +75,10 @@ export function ContentViewer({ content, size }: { content: ContentEntity; size:
     return (
       <HoverCard openDelay={0}>
         <HoverCardTrigger asChild>
-          <Link className='underline underline-offset-4' href={`/content/single?contentId=${content.id}`}>
+          <Link
+            className='underline underline-offset-4'
+            href={`/content/single?contentId=${content.id}`}
+          >
             View Content
           </Link>
         </HoverCardTrigger>

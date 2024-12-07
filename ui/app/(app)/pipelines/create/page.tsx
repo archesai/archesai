@@ -62,7 +62,8 @@ export default function App() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
   const onConnect = useCallback(
-    (params: Connection | Edge) => setEdges((edges) => addEdge<Edge>(params, edges)),
+    (params: Connection | Edge) =>
+      setEdges((edges) => addEdge<Edge>(params, edges)),
     [setEdges]
   )
 
@@ -81,13 +82,22 @@ export default function App() {
       onNodesChange={onNodesChange}
     >
       <Panel position='top-right'>
-        <Button className='z-50' onClick={() => console.log(nodes, edges)}>
+        <Button
+          className='z-50'
+          onClick={() => console.log(nodes, edges)}
+        >
           Log
         </Button>
       </Panel>
       <Controls />
-      <MiniMap pannable zoomable />
-      <Background gap={12} size={1} />
+      <MiniMap
+        pannable
+        zoomable
+      />
+      <Background
+        gap={12}
+        size={1}
+      />
     </ReactFlow>
   )
 }

@@ -62,7 +62,9 @@ export function CommandMenu({ ...props }: DialogProps) {
         variant='outline'
         {...props}
       >
-        <span className='hidden sm:inline-flex'>Type a command or search...</span>
+        <span className='hidden sm:inline-flex'>
+          Type a command or search...
+        </span>
         <span className='inline-flex sm:hidden'>Search...</span>
 
         <kbd className='pointer-events-none flex h-5 select-none items-center gap-1 rounded border bg-muted p-2 font-mono text-[10px] font-medium'>
@@ -70,7 +72,10 @@ export function CommandMenu({ ...props }: DialogProps) {
           <span>K</span>
         </kbd>
       </Button>
-      <CommandDialog onOpenChange={setOpen} open={open}>
+      <CommandDialog
+        onOpenChange={setOpen}
+        open={open}
+      >
         <VisuallyHidden.Root>
           <DialogTitle />
         </VisuallyHidden.Root>
@@ -79,7 +84,10 @@ export function CommandMenu({ ...props }: DialogProps) {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           {siteConfig.routes.map((rootRoute) => (
-            <CommandGroup heading={rootRoute.title} key={rootRoute.title}>
+            <CommandGroup
+              heading={rootRoute.title}
+              key={rootRoute.title}
+            >
               {rootRoute.children?.map((route) => (
                 <CommandItem
                   className='flex gap-2'
@@ -101,7 +109,11 @@ export function CommandMenu({ ...props }: DialogProps) {
           <CommandSeparator />
           <CommandGroup heading='Theme'>
             {['light', 'dark', 'system'].map((theme) => (
-              <CommandItem className='flex gap-2' key={theme} onSelect={() => runCommand(() => setTheme(theme))}>
+              <CommandItem
+                className='flex gap-2'
+                key={theme}
+                onSelect={() => runCommand(() => setTheme(theme))}
+              >
                 {theme === 'light' && <SunIcon className='h-5 w-5' />}
                 {theme === 'dark' && <MoonIcon className='h-5 w-5' />}
                 {theme === 'system' && <LaptopIcon className='h-5 w-5' />}

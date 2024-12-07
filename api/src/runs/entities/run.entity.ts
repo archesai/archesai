@@ -14,9 +14,18 @@ import {
   RunType
 } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import {
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString
+} from 'class-validator'
 
-import { _PrismaSubItemModel, SubItemEntity } from '../../common/entities/base-sub-item.entity'
+import {
+  _PrismaSubItemModel,
+  SubItemEntity
+} from '../../common/entities/base-sub-item.entity'
 
 export type RunModel = _PrismaRun & {
   inputs: _PrismaSubItemModel[]
@@ -120,7 +129,8 @@ export class RunEntity extends BaseEntity implements RunModel {
   progress: number = 0
 
   @ApiProperty({
-    description: 'The type of run, either an individual tool run or a pipeline run',
+    description:
+      'The type of run, either an individual tool run or a pipeline run',
     enum: RunType,
     example: RunType.TOOL_RUN
   })

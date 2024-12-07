@@ -2,7 +2,11 @@
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { useFilterItems } from '@/hooks/useFilterItems'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -27,7 +31,8 @@ export function DatePickerWithRange() {
           {range?.from ? (
             range.to ? (
               <>
-                {format(range.from, 'LLL dd, y')} - {format(range.to, 'LLL dd, y')}
+                {format(range.from, 'LLL dd, y')} -{' '}
+                {format(range.to, 'LLL dd, y')}
               </>
             ) : (
               format(range.from, 'LLL dd, y')
@@ -37,7 +42,10 @@ export function DatePickerWithRange() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align='start' className='w-auto p-0'>
+      <PopoverContent
+        align='start'
+        className='w-auto p-0'
+      >
         <Calendar
           defaultMonth={range?.from}
           initialFocus

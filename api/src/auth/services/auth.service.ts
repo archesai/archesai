@@ -63,7 +63,10 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     this.logger.log('Registering user: ' + registerDto.email)
     const hashedPassword = await bcrypt.hash(registerDto.password, 10)
-    const orgname = registerDto.email.split('@')[0] + '-' + Math.random().toString(36).substring(2, 6)
+    const orgname =
+      registerDto.email.split('@')[0] +
+      '-' +
+      Math.random().toString(36).substring(2, 6)
     const user = await this.usersService.create(null, {
       email: registerDto.email,
       emailVerified: this.configService.get('FEATURE_EMAIL') === false,
@@ -71,7 +74,11 @@ export class AuthService {
       photoUrl: '',
       username: orgname
     })
-    return this.usersService.syncAuthProvider(user.email, AuthProviderType.LOCAL, user.email)
+    return this.usersService.syncAuthProvider(
+      user.email,
+      AuthProviderType.LOCAL,
+      user.email
+    )
   }
 
   async removeCookies(res: Response) {

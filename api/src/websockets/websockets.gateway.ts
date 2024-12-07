@@ -16,11 +16,17 @@ import { WebsocketsService } from './websockets.service'
   connectTimeout: 10000,
   cors: {
     credentials: true,
-    origin: ['https://platform.archesai.com', 'http://localhost:3000', 'http://arches-api:3001']
+    origin: [
+      'https://platform.archesai.com',
+      'http://localhost:3000',
+      'http://arches-api:3001'
+    ]
   },
   transports: ['websocket']
 })
-export class WebsocketsGateway implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit {
+export class WebsocketsGateway
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+{
   @WebSocketServer()
   server: Server
 
@@ -68,6 +74,8 @@ export class WebsocketsGateway implements OnGatewayConnection, OnGatewayDisconne
 
   // Implement the handleDisconnect method
   async handleDisconnect(socket: Socket) {
-    this.logger.log(`Disconnected ${socket.id} ${Array.from(socket.rooms).toString()}`)
+    this.logger.log(
+      `Disconnected ${socket.id} ${Array.from(socket.rooms).toString()}`
+    )
   }
 }

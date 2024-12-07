@@ -32,7 +32,11 @@ export class MemberEntity extends BaseEntity implements MemberModel {
   @Expose()
   orgname: string
 
-  @ApiProperty({ description: 'The role of the member', enum: RoleType, example: RoleType.ADMIN })
+  @ApiProperty({
+    description: 'The role of the member',
+    enum: RoleType,
+    example: RoleType.ADMIN
+  })
   @Expose()
   @IsEnum(RoleType)
   role: RoleType

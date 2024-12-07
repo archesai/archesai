@@ -9,10 +9,18 @@ function RunFormNode({ data }: { data: PipelineStepEntity }) {
     <div>
       {/* Include your RunForm component */}
       {/* <RunForm /> */}
-      <Card className='flex items-center justify-center px-2 py-1'>{data.tool.name}</Card>
+      <Card className='flex items-center justify-center px-2 py-1'>
+        {data.tool.name}
+      </Card>
       {/* Add handles for connecting nodes */}
-      <Handle position={Position.Left} type='target' />
-      <Handle position={Position.Right} type='source' />
+      <Handle
+        position={Position.Left}
+        type='target'
+      />
+      <Handle
+        position={Position.Right}
+        type='source'
+      />
     </div>
   )
 }

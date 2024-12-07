@@ -132,7 +132,9 @@ describe('ApiTokensController', () => {
     const mockedApiToken = createRandomApiToken()
     mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
 
-    const response = await request(app.getHttpServer()).get(`/organizations/${orgname}/api-tokens/1`)
+    const response = await request(app.getHttpServer()).get(
+      `/organizations/${orgname}/api-tokens/1`
+    )
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({

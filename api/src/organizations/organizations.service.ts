@@ -11,7 +11,10 @@ import { UserEntity } from '../users/entities/user.entity'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { CreateOrganizationDto } from './dto/create-organization.dto'
 import { UpdateOrganizationDto } from './dto/update-organization.dto'
-import { OrganizationEntity, OrganizationModel } from './entities/organization.entity'
+import {
+  OrganizationEntity,
+  OrganizationModel
+} from './entities/organization.entity'
 import { OrganizationRepository } from './organization.repository'
 
 @Injectable()
@@ -38,9 +41,16 @@ export class OrganizationsService extends BaseService<
   async addOrRemoveCredits(orgname: string, numCredits: number) {
     this.logger.log(`Adding ${numCredits} credits to ${orgname}`)
     const organization = await this.findByOrgname(orgname)
-    const organizationEntity = await this.organizationRepository.updateRaw(orgname, organization.id, {
-      credits: numCredits < 0 ? { decrement: -numCredits } : { increment: numCredits }
-    })
+    const organizationEntity = await this.organizationRepository.updateRaw(
+      orgname,
+      organization.id,
+      {
+        credits:
+          numCredits < 0
+            ? { decrement: -numCredits }
+            : { increment: numCredits }
+      }
+    )
     this.emitMutationEvent(orgname)
     return this.toEntity(organizationEntity)
   }
@@ -51,12 +61,18 @@ export class OrganizationsService extends BaseService<
     if (organization.plan != 'PREMIUM' && organization.credits <= numCredits) {
       throw new ForbiddenException(
         'Sorry, you do not have enough credits. Please purchase more credits to continue' +
-          (organization.credits < numCredits ? ` (estimated cost: ${numCredits})` : '')
+          (organization.credits < numCredits
+            ? ` (estimated cost: ${numCredits})`
+            : '')
       )
     }
   }
 
-  async create(orgname: string, createOrganizationDto: CreateOrganizationDto, user: UserEntity) {
+  async create(
+    orgname: string,
+    createOrganizationDto: CreateOrganizationDto,
+    user: UserEntity
+  ) {
     this.logger.log(
       `Creating organization for user ${user.username}: ${JSON.stringify(createOrganizationDto, null, 2)}`
     )
@@ -73,11 +89,15 @@ export class OrganizationsService extends BaseService<
     }
 
     // Create organization and tools
-    const organization = await this.organizationRepository.create(null, createOrganizationDto, {
-      billingEnabled,
-      stripeCustomerId,
-      user
-    })
+    const organization = await this.organizationRepository.create(
+      null,
+      createOrganizationDto,
+      {
+        billingEnabled,
+        stripeCustomerId,
+        user
+      }
+    )
 
     await this.toolsService.createDefaultTools(organization.orgname)
     await this.pipelinesService.createDefaultPipeline(organization.orgname)
@@ -86,11 +106,15 @@ export class OrganizationsService extends BaseService<
   }
 
   async findByOrgname(orgname: string) {
-    return this.toEntity(await this.organizationRepository.findByOrgname(orgname))
+    return this.toEntity(
+      await this.organizationRepository.findByOrgname(orgname)
+    )
   }
 
   async findByStripeCustomerId(stripeCustomerId: string) {
-    return this.toEntity(await this.organizationRepository.findByStripeCustomerId(stripeCustomerId))
+    return this.toEntity(
+      await this.organizationRepository.findByStripeCustomerId(stripeCustomerId)
+    )
   }
 
   async setPlan(orgname: string, plan: PlanType) {

@@ -62,7 +62,9 @@ describe('AudioService', () => {
 
     ;(axios.get as jest.Mock).mockResolvedValue(mockResponse)
     ;(fs.writeFileSync as jest.Mock).mockImplementation(() => {})
-    ;(fs.readFileSync as jest.Mock).mockReturnValue(Buffer.from('trimmed audio data'))
+    ;(fs.readFileSync as jest.Mock).mockReturnValue(
+      Buffer.from('trimmed audio data')
+    )
     ;(fs.statSync as jest.Mock).mockReturnValue({ size: 12345 })
     ;(fs.unlinkSync as jest.Mock).mockImplementation(() => {})
     ;(ffmpeg as any).mockReturnValue({
@@ -82,16 +84,31 @@ describe('AudioService', () => {
     })
     ;(storageService.upload as jest.Mock).mockResolvedValue(mockUploadUrl)
 
-    const result = await service.trimAudio(orgname, audioUrl, startTime, duration)
+    const result = await service.trimAudio(
+      orgname,
+      audioUrl,
+      startTime,
+      duration
+    )
 
     expect(result).toBe(mockUploadUrl)
     expect(axios.get).toHaveBeenCalledWith(audioUrl, {
       responseType: 'arraybuffer'
     })
-    expect(fs.writeFileSync).toHaveBeenCalledWith(inputTmpPath, mockResponse.data)
-    expect(ffmpeg.ffprobe).toHaveBeenCalledWith(inputTmpPath, expect.any(Function))
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      inputTmpPath,
+      mockResponse.data
+    )
+    expect(ffmpeg.ffprobe).toHaveBeenCalledWith(
+      inputTmpPath,
+      expect.any(Function)
+    )
     expect(ffmpeg).toHaveBeenCalledWith(inputTmpPath)
-    expect(storageService.upload).toHaveBeenCalledWith(orgname, expect.any(String), expect.any(Object))
+    expect(storageService.upload).toHaveBeenCalledWith(
+      orgname,
+      expect.any(String),
+      expect.any(Object)
+    )
     expect(fs.unlinkSync).toHaveBeenCalledWith(inputTmpPath)
     expect(fs.unlinkSync).toHaveBeenCalledWith(outputTmpPath)
   })
@@ -111,14 +128,25 @@ describe('AudioService', () => {
     })
     ;(fs.unlinkSync as jest.Mock).mockImplementation(() => {})
 
-    const result = await service.trimAudio(orgname, audioUrl, startTime, duration)
+    const result = await service.trimAudio(
+      orgname,
+      audioUrl,
+      startTime,
+      duration
+    )
 
     expect(result).toBe(audioUrl)
     expect(axios.get).toHaveBeenCalledWith(audioUrl, {
       responseType: 'arraybuffer'
     })
-    expect(fs.writeFileSync).toHaveBeenCalledWith(inputTmpPath, mockResponse.data)
-    expect(ffmpeg.ffprobe).toHaveBeenCalledWith(inputTmpPath, expect.any(Function))
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      inputTmpPath,
+      mockResponse.data
+    )
+    expect(ffmpeg.ffprobe).toHaveBeenCalledWith(
+      inputTmpPath,
+      expect.any(Function)
+    )
     expect(fs.unlinkSync).toHaveBeenCalledWith(inputTmpPath)
   })
 })

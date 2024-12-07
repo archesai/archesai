@@ -20,9 +20,13 @@ if (typeof window !== 'undefined' && !window['_init' as any]) {
   if (location && process.env.NEXT_PUBLIC_USE_FIREBASE == 'true') {
     analytics = getAnalytics()
     if (process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH_EMULATOR == 'true') {
-      connectAuthEmulator(auth, process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST as string, {
-        disableWarnings: true
-      })
+      connectAuthEmulator(
+        auth,
+        process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST as string,
+        {
+          disableWarnings: true
+        }
+      )
     }
     window['_init' as any] = true as any
   }

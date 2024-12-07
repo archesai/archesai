@@ -1,16 +1,15 @@
 import eslint from '@eslint/js'
 import jest from 'eslint-plugin-jest'
-import perfectionist from 'eslint-plugin-perfectionist'
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
+import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default [
   {
     ignores: ['dist/', 'node_modules/']
   },
   {
-    files: ['src/**/*.{js,ts,jsx,tsx}', 'test/**/*.{js,ts,jsx,tsx}']
+    files: ['src/**/*.{js,ts}', 'test/**/*.{js,ts}']
   },
   {
     files: ['**/*.js'],
@@ -35,32 +34,8 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      'prettier/prettier': [
-        'error',
-        {
-          jsxSingleQuote: true,
-          printWidth: 120,
-          semi: false,
-          singleQuote: true,
-          tabWidth: 2,
-          trailingComma: 'none'
-        }
-      ]
+      '@typescript-eslint/no-explicit-any': 'off'
     }
   },
-  perfectionist.configs['recommended-natural'],
-  {
-    rules: {
-      'perfectionist/sort-imports': [
-        'error',
-        {
-          internalPattern: ['^@/.+'],
-          tsconfigRootDir: '.'
-        }
-      ],
-      ...eslintPluginPrettier.rules
-    },
-    ...eslintPluginPrettier
-  }
+  eslintConfigPrettier
 ]

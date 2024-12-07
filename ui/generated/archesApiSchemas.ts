@@ -10,43 +10,43 @@ export type CreatePipelineStepDto = {
    * @example step-id
    * @example step-id-2
    */
-  dependsOn: string[];
+  dependsOn: string[]
   /**
    * This is the ID of the tool that this step uses.
    *
    * @example tool-id
    */
-  toolId: string;
+  toolId: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
+  id: string
   /**
    * The name of the step in the pipeline. It must be unique within the pipeline.
    */
-  name: string;
-};
+  name: string
+}
 
 export type CreatePipelineDto = {
   /**
    * An array of pipeline tools to be added to the pipeline
    */
-  pipelineSteps: CreatePipelineStepDto[];
+  pipelineSteps: CreatePipelineStepDto[]
   /**
    * The name of the pipeline
    *
    * @example my-pipeline
    */
-  name: string;
+  name: string
   /**
    * The description of the pipeline
    *
    * @example This pipeline does something
    */
-  description: string | null;
-};
+  description: string | null
+}
 
 export type SubItemEntity = {
   /**
@@ -54,14 +54,14 @@ export type SubItemEntity = {
    *
    * @example item-id
    */
-  id: string;
+  id: string
   /**
    * The name of the item
    *
    * @example item-name
    */
-  name: string;
-};
+  name: string
+}
 
 export type ToolEntity = {
   /**
@@ -69,93 +69,93 @@ export type ToolEntity = {
    *
    * @example TEXT
    */
-  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  inputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's name
    *
    * @example extract-text
    */
-  name: string;
+  name: string
   /**
    * The organization name
    *
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
   /**
    * The tools output type
    *
    * @example TEXT
    */
-  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  outputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's base path
    *
    * @example extract-text
    */
-  toolBase: string;
+  toolBase: string
   /**
    * The tool description
    */
-  description: string;
+  description: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type PipelineStepEntity = {
   /**
    * The order of the step in the pipeline
    */
-  dependents: SubItemEntity[];
+  dependents: SubItemEntity[]
   /**
    * These are the steps that this step depends on.
    */
-  dependsOn: SubItemEntity[];
+  dependsOn: SubItemEntity[]
   /**
    * The name of the step in the pipeline. It must be unique within the pipeline.
    */
-  name: string;
+  name: string
   /**
    * The ID of the pipelin that this step belongs to
    *
    * @example pipeline-id
    */
-  pipelineId: string;
+  pipelineId: string
   /**
    * The name of the tool that this step uses.
    */
-  tool: ToolEntity;
+  tool: ToolEntity
   /**
    * This is the ID of the tool that this step uses.
    *
    * @example tool-id
    */
-  toolId: string;
+  toolId: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type PipelineEntity = {
   /**
@@ -163,37 +163,37 @@ export type PipelineEntity = {
    *
    * @example This pipeline does something
    */
-  description: string | null;
+  description: string | null
   /**
    * The name of the pipeline
    *
    * @example my-pipeline
    */
-  name: string;
+  name: string
   /**
    * The name of the organization that this pipeline belongs to
    *
    * @example my-org
    */
-  orgname: string;
+  orgname: string
   /**
    * The steps in the pipeline
    */
-  pipelineSteps: PipelineStepEntity[];
+  pipelineSteps: PipelineStepEntity[]
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdatePipelineDto = {
   /**
@@ -201,18 +201,18 @@ export type UpdatePipelineDto = {
    *
    * @example my-pipeline
    */
-  name?: string;
+  name?: string
   /**
    * The description of the pipeline
    *
    * @example This pipeline does something
    */
-  description?: string | null;
+  description?: string | null
   /**
    * An array of pipeline tools to be added to the pipeline
    */
-  pipelineSteps?: CreatePipelineStepDto[];
-};
+  pipelineSteps?: CreatePipelineStepDto[]
+}
 
 export type ConfirmationTokenDto = {
   /**
@@ -220,8 +220,8 @@ export type ConfirmationTokenDto = {
    *
    * @example supersecre
    */
-  token: string;
-};
+  token: string
+}
 
 export type TokenDto = {
   /**
@@ -229,14 +229,14 @@ export type TokenDto = {
    *
    * @example supersecretauthorizationtoken
    */
-  accessToken: string;
+  accessToken: string
   /**
    * The refresh token that can be used to get a new access token
    *
    * @example supersecretauthorizationtoken
    */
-  refreshToken: string;
-};
+  refreshToken: string
+}
 
 export type EmailRequestDto = {
   /**
@@ -245,8 +245,8 @@ export type EmailRequestDto = {
    * @format email
    * @example user@archesai.com
    */
-  email: string;
-};
+  email: string
+}
 
 export type LoginDto = {
   /**
@@ -255,15 +255,15 @@ export type LoginDto = {
    * @format email
    * @example example@archesai.com
    */
-  email: string;
+  email: string
   /**
    * The password to create and/or login to an account
    *
    * @minLength 7
    * @example password
    */
-  password: string;
-};
+  password: string
+}
 
 export type ConfirmationTokenWithNewPasswordDto = {
   /**
@@ -271,14 +271,14 @@ export type ConfirmationTokenWithNewPasswordDto = {
    *
    * @example supersecre
    */
-  token: string;
+  token: string
   /**
    * The new password
    *
    * @example newPassword
    */
-  newPassword: string;
-};
+  newPassword: string
+}
 
 export type RegisterDto = {
   /**
@@ -287,15 +287,15 @@ export type RegisterDto = {
    * @format email
    * @example example@archesai.com
    */
-  email: string;
+  email: string
   /**
    * The password to create and/or login to an account
    *
    * @minLength 7
    * @example password
    */
-  password: string;
-};
+  password: string
+}
 
 export type AuthProviderEntity = {
   /**
@@ -303,29 +303,29 @@ export type AuthProviderEntity = {
    *
    * @example LOCAL
    */
-  provider: "LOCAL" | "FIREBASE" | "TWITTER";
+  provider: 'LOCAL' | 'FIREBASE' | 'TWITTER'
   /**
    * The auth provider's provider ID
    */
-  providerId: string;
+  providerId: string
   /**
    * The auth provider's user ID
    */
-  userId: string;
+  userId: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type MemberEntity = {
   /**
@@ -333,123 +333,123 @@ export type MemberEntity = {
    *
    * @example false
    */
-  inviteAccepted: boolean;
+  inviteAccepted: boolean
   /**
    * The invited email of this member
    *
    * @example invited-user@archesai.com
    */
-  inviteEmail: string;
+  inviteEmail: string
   /**
    * The organization name
    *
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
   /**
    * The role of the member
    *
    * @example ADMIN
    */
-  role: "USER" | "ADMIN";
+  role: 'USER' | 'ADMIN'
   /**
    * The username of this member
    *
    * @example jonathan
    */
-  username?: string | null;
+  username?: string | null
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UserEntity = {
   /**
    * The memberships of the currently signed in user
    */
-  authProviders: AuthProviderEntity[];
+  authProviders: AuthProviderEntity[]
   /**
    * Whether or not the user is deactivated
    *
    * @example false
    */
-  deactivated: boolean;
+  deactivated: boolean
   /**
    * The user's default organization name
    *
    * @example my-organization
    */
-  defaultOrgname: string;
+  defaultOrgname: string
   /**
    * The user's display name
    *
    * @example John Smith
    */
-  displayName: string;
+  displayName: string
   /**
    * The user's e-mail
    *
    * @format email
    * @example example@archesai.com
    */
-  email: string;
+  email: string
   /**
    * Whether or not the user's e-mail has been verified
    */
-  emailVerified: boolean;
+  emailVerified: boolean
   /**
    * The user's first name
    *
    * @example John
    */
-  firstName: string;
+  firstName: string
   /**
    * The user's last name
    *
    * @example Smith
    */
-  lastName: string;
+  lastName: string
   /**
    * The memberships of the currently signed in user
    */
-  memberships: MemberEntity[];
+  memberships: MemberEntity[]
   /**
    * The user's photo url
    *
    * @example /avatar.png
    */
-  photoUrl: string;
+  photoUrl: string
   /**
    * The user's username
    *
    * @minLength 5
    * @example jonathan
    */
-  username: string;
+  username: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdateUserDto = {
   /**
@@ -457,20 +457,20 @@ export type UpdateUserDto = {
    *
    * @example my-organization
    */
-  defaultOrgname?: string;
+  defaultOrgname?: string
   /**
    * The user's first name
    *
    * @example John
    */
-  firstName?: string;
+  firstName?: string
   /**
    * The user's last name
    *
    * @example Smith
    */
-  lastName?: string;
-};
+  lastName?: string
+}
 
 export type CreateOrganizationDto = {
   /**
@@ -479,14 +479,14 @@ export type CreateOrganizationDto = {
    * @format email
    * @example example@test.com
    */
-  billingEmail: string;
+  billingEmail: string
   /**
    * The name of the organization to create
    *
    * @example organization-name
    */
-  orgname: string;
-};
+  orgname: string
+}
 
 export type OrganizationEntity = {
   /**
@@ -495,39 +495,39 @@ export type OrganizationEntity = {
    * @format email
    * @example example@test.com
    */
-  billingEmail: string;
+  billingEmail: string
   /**
    * The number of credits you have remaining for this organization
    *
    * @example 500000
    */
-  credits: number;
+  credits: number
   /**
    * The name of the organization to create
    *
    * @example organization-name
    */
-  orgname: string;
+  orgname: string
   /**
    * The plan that the organization is subscribed to
    *
    * @example FREE
    */
-  plan: "FREE" | "BASIC" | "STANDARD" | "PREMIUM" | "UNLIMITED";
+  plan: 'FREE' | 'BASIC' | 'STANDARD' | 'PREMIUM' | 'UNLIMITED'
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdateOrganizationDto = {
   /**
@@ -536,8 +536,8 @@ export type UpdateOrganizationDto = {
    * @format email
    * @example example@test.com
    */
-  billingEmail: string;
-};
+  billingEmail: string
+}
 
 export type BillingUrlEntity = {
   /**
@@ -545,8 +545,8 @@ export type BillingUrlEntity = {
    *
    * @example www.stripe.com/checkout/filchat-io
    */
-  url: string;
-};
+  url: string
+}
 
 export type PlanEntity = {
   /**
@@ -554,39 +554,39 @@ export type PlanEntity = {
    *
    * @example usd
    */
-  currency: string;
+  currency: string
   /**
    * @example A plan for a small business
    */
-  description?: string | null;
+  description?: string | null
   /**
    * The ID of the plan
    *
    * @example prod_1234567890
    */
-  id: string;
-  metadata?: Record<string, any>;
+  id: string
+  metadata?: Record<string, any>
   /**
    * The name of the plan
    *
    * @example Small Business Plan
    */
-  name: string;
+  name: string
   /**
    * The ID of the price associated with the plan
    *
    * @example price_1234567890
    */
-  priceId: string;
-  priceMetadata?: Record<string, any>;
-  recurring?: Record<string, any> | null;
+  priceId: string
+  priceMetadata?: Record<string, any>
+  recurring?: Record<string, any> | null
   /**
    * The amount in cents to be charged on the interval specified
    *
    * @example 1000
    */
-  unitAmount: number;
-};
+  unitAmount: number
+}
 
 export type Address = {
   /**
@@ -594,63 +594,63 @@ export type Address = {
    *
    * @example San Francisco
    */
-  city: string | null;
+  city: string | null
   /**
    * Two-letter country code (ISO 3166-1 alpha-2).
    *
    * @example US
    */
-  country: string | null;
+  country: string | null
   /**
    * Address line 1 (e.g., street, PO Box, or company name).
    *
    * @example 123 Main Street
    */
-  line1: string | null;
+  line1: string | null
   /**
    * Address line 2 (e.g., apartment, suite, unit, or building).
    *
    * @example Apt 4B
    */
-  line2: string | null;
+  line2: string | null
   /**
    * ZIP or postal code.
    *
    * @example 94111
    */
-  postal_code: string | null;
+  postal_code: string | null
   /**
    * State/County/Province/Region.
    *
    * @example CA
    */
-  state: string | null;
-};
+  state: string | null
+}
 
 export type BillingDetails = {
   /**
    * Billing address associated with the payment method.
    */
-  address: Address;
+  address: Address
   /**
    * Email address associated with the payment method.
    *
    * @example customer@example.com
    */
-  email: string | null;
+  email: string | null
   /**
    * Full name associated with the payment method.
    *
    * @example Jane Doe
    */
-  name: string | null;
+  name: string | null
   /**
    * Phone number associated with the payment method.
    *
    * @example +1234567890
    */
-  phone: string | null;
-};
+  phone: string | null
+}
 
 export type CardDetails = {
   /**
@@ -658,71 +658,71 @@ export type CardDetails = {
    *
    * @example visa
    */
-  brand: string;
+  brand: string
   /**
    * Two-letter ISO code representing the country of the card.
    *
    * @example US
    */
-  country: string;
+  country: string
   /**
    * Two-digit number representing the card’s expiration month.
    *
    * @example 12
    */
-  exp_month: number;
+  exp_month: number
   /**
    * Four-digit number representing the card’s expiration year.
    *
    * @example 2024
    */
-  exp_year: number;
+  exp_year: number
   /**
    * Unencrypted PAN tokens (optional, sensitive).
    */
-  fingerprint: string | null;
+  fingerprint: string | null
   /**
    * Card funding type (credit, debit, prepaid, unknown).
    *
    * @example credit
    */
-  funding: string;
+  funding: string
   /**
    * The last four digits of the card.
    *
    * @example 4242
    */
-  last4: string;
-};
+  last4: string
+}
 
 export type PaymentMethodEntity = {
   /**
    * Billing details associated with the payment method.
    */
-  billing_details: BillingDetails;
+  billing_details: BillingDetails
   /**
    * If the PaymentMethod is a card, this contains the card details.
    */
-  card: CardDetails;
+  card: CardDetails
   /**
    * ID of the customer this payment method is saved to.
    *
    * @example cus_J0a1b2c3d4e5f6g7h8i9
    */
-  customer: string | null;
+  customer: string | null
   /**
    * Unique identifier for the payment method
    *
    * @example pm_1J2Y3A4B5C6D7E8F9G0H
    */
-  id: string;
+  id: string
   /**
    * The type of the PaymentMethod. An example value is "card".
    *
    * @example card
    */
-  type: string;
-};
+  type: string
+}
 
 export type CreateToolDto = {
   /**
@@ -730,30 +730,30 @@ export type CreateToolDto = {
    *
    * @example TEXT
    */
-  inputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  inputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's name
    *
    * @example extract-text
    */
-  name: string;
+  name: string
   /**
    * The tools output type
    *
    * @example TEXT
    */
-  outputType: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  outputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's base path
    *
    * @example extract-text
    */
-  toolBase: string;
+  toolBase: string
   /**
    * The tool description
    */
-  description: string;
-};
+  description: string
+}
 
 export type UpdateToolDto = {
   /**
@@ -761,30 +761,30 @@ export type UpdateToolDto = {
    *
    * @example TEXT
    */
-  inputType?: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  inputType?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's name
    *
    * @example extract-text
    */
-  name?: string;
+  name?: string
   /**
    * The tools output type
    *
    * @example TEXT
    */
-  outputType?: "TEXT" | "IMAGE" | "VIDEO" | "AUDIO";
+  outputType?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
   /**
    * The tool's base path
    *
    * @example extract-text
    */
-  toolBase?: string;
+  toolBase?: string
   /**
    * The tool description
    */
-  description?: string;
-};
+  description?: string
+}
 
 export type CreateApiTokenDto = {
   /**
@@ -792,19 +792,19 @@ export type CreateApiTokenDto = {
    *
    * @example ADMIN
    */
-  role: "USER" | "ADMIN";
+  role: 'USER' | 'ADMIN'
   /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
    * @default *
    */
-  domains: string;
+  domains: string
   /**
    * The name of the API token
    */
-  name: string;
-};
+  name: string
+}
 
 export type ApiTokenEntity = {
   /**
@@ -812,50 +812,50 @@ export type ApiTokenEntity = {
    *
    * @example ADMIN
    */
-  role: "USER" | "ADMIN";
+  role: 'USER' | 'ADMIN'
   /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
    * @default *
    */
-  domains: string;
+  domains: string
   /**
    * The API token key. This will only be shown once
    *
    * @example ********1234567890
    */
-  key: string;
+  key: string
   /**
    * The name of the API token
    */
-  name: string;
+  name: string
   /**
    * The organization name
    *
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
   /**
    * The username of the user who owns this API token
    *
    * @example jonathan
    */
-  username: string;
+  username: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdateApiTokenDto = {
   /**
@@ -863,19 +863,19 @@ export type UpdateApiTokenDto = {
    *
    * @example ADMIN
    */
-  role?: "USER" | "ADMIN";
+  role?: 'USER' | 'ADMIN'
   /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
    * @default *
    */
-  domains?: string;
+  domains?: string
   /**
    * The name of the API token
    */
-  name?: string;
-};
+  name?: string
+}
 
 export type CreateMemberDto = {
   /**
@@ -883,14 +883,14 @@ export type CreateMemberDto = {
    *
    * @example invited-user@archesai.com
    */
-  inviteEmail: string;
+  inviteEmail: string
   /**
    * The role of the member
    *
    * @example ADMIN
    */
-  role: "USER" | "ADMIN";
-};
+  role: 'USER' | 'ADMIN'
+}
 
 export type UpdateMemberDto = {
   /**
@@ -898,14 +898,14 @@ export type UpdateMemberDto = {
    *
    * @example invited-user@archesai.com
    */
-  inviteEmail?: string;
+  inviteEmail?: string
   /**
    * The role of the member
    *
    * @example ADMIN
    */
-  role?: "USER" | "ADMIN";
-};
+  role?: 'USER' | 'ADMIN'
+}
 
 export type CreateLabelDto = {
   /**
@@ -914,8 +914,8 @@ export type CreateLabelDto = {
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
    */
-  name?: string;
-};
+  name?: string
+}
 
 export type LabelEntity = {
   /**
@@ -924,27 +924,27 @@ export type LabelEntity = {
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
    */
-  name?: string;
+  name?: string
   /**
    * The organization name
    *
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdateLabelDto = {
   /**
@@ -953,8 +953,8 @@ export type UpdateLabelDto = {
    * @default New Chat
    * @example What are the morals of the story in Aesop's Fables?
    */
-  name?: string;
-};
+  name?: string
+}
 
 export type PathDto = {
   /**
@@ -963,14 +963,14 @@ export type PathDto = {
    * @default false
    * @example false
    */
-  isDir?: boolean;
+  isDir?: boolean
   /**
    * The path that the file should upload to
    *
    * @example /location/in/storage
    */
-  path: string;
-};
+  path: string
+}
 
 export type ReadUrlDto = {
   /**
@@ -978,8 +978,8 @@ export type ReadUrlDto = {
    *
    * @example www.example.com?token=read-token
    */
-  read: string;
-};
+  read: string
+}
 
 export type WriteUrlDto = {
   /**
@@ -987,8 +987,8 @@ export type WriteUrlDto = {
    *
    * @example www.example.com?token=write-token
    */
-  write: string;
-};
+  write: string
+}
 
 export type StorageItemDto = {
   /**
@@ -997,32 +997,32 @@ export type StorageItemDto = {
    * @format date-time
    * @example true
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The id of the storage item
    *
    * @example 14
    */
-  id: string;
+  id: string
   /**
    * Whether or not this is a directory
    *
    * @example true
    */
-  isDir: boolean;
+  isDir: boolean
   /**
    * The path that the file is located in
    *
    * @example /location/in/storage
    */
-  name: string;
+  name: string
   /**
    * The size of the item in bytes
    *
    * @example 12341234
    */
-  size: number;
-};
+  size: number
+}
 
 export type CreateContentDto = {
   /**
@@ -1030,123 +1030,123 @@ export type CreateContentDto = {
    *
    * @example my-file.pdf
    */
-  name: string;
+  name: string
   /**
    * The content's text, if TEXT content
    *
    * @example Hello world. I am a text.
    */
-  text?: string | null;
+  text?: string | null
   /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
-  url?: string | null;
+  url?: string | null
   /**
    * The labels to associate with the content
    *
    * @example label-1
    * @example label-2
    */
-  labels?: string[];
-};
+  labels?: string[]
+}
 
 export type ContentEntity = {
   /**
    * The child content, if any
    */
-  children?: SubItemEntity[];
+  children?: SubItemEntity[]
   /**
    * The tool runs that consumed this content, if any
    */
-  consumedBy?: SubItemEntity[];
+  consumedBy?: SubItemEntity[]
   /**
    * The number of credits used to process this content
    *
    * @example 0
    */
-  credits: number;
+  credits: number
   /**
    * The content's description
    *
    * @example my-file.pdf
    */
-  description?: string | null;
+  description?: string | null
   /**
    * The content's labels
    */
-  labels?: SubItemEntity[];
+  labels?: SubItemEntity[]
   /**
    * The MIME type of the content
    *
    * @example application/pdf
    */
-  mimeType?: string | null;
+  mimeType?: string | null
   /**
    * The content's name
    *
    * @example my-file.pdf
    */
-  name: string;
+  name: string
   /**
    * The organization name
    *
    * @example my-organization
    */
-  orgname: string;
+  orgname: string
   /**
    * The parent content, if any
    */
-  parent?: SubItemEntity;
+  parent?: SubItemEntity
   /**
    * The parent content ID, if this content is a child of another content
    *
    * @example content-id
    */
-  parentId?: string | null;
+  parentId?: string | null
   /**
    * The preview image of the content
    *
    * @example https://preview-image.com/example.png
    */
-  previewImage?: string | null;
+  previewImage?: string | null
   /**
    * The toolRun that produced this content, if any
    */
-  producedBy?: SubItemEntity;
+  producedBy?: SubItemEntity
   /**
    * The ID of the toolRun that produced this content, if any
    *
    * @example toolRun-id
    */
-  producedById?: string | null;
+  producedById?: string | null
   /**
    * The content's text, if TEXT content
    *
    * @example Hello world. I am a text.
    */
-  text?: string | null;
+  text?: string | null
   /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
-  url?: string | null;
+  url?: string | null
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type UpdateContentDto = {
   /**
@@ -1154,27 +1154,27 @@ export type UpdateContentDto = {
    *
    * @example my-file.pdf
    */
-  name?: string;
+  name?: string
   /**
    * The content's text, if TEXT content
    *
    * @example Hello world. I am a text.
    */
-  text?: string | null;
+  text?: string | null
   /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
-  url?: string | null;
+  url?: string | null
   /**
    * The labels to associate with the content
    *
    * @example label-1
    * @example label-2
    */
-  labels?: string[];
-};
+  labels?: string[]
+}
 
 export type CreateRunDto = {
   /**
@@ -1182,39 +1182,39 @@ export type CreateRunDto = {
    *
    * @example TOOL_RUN
    */
-  runType: "PIPELINE_RUN" | "TOOL_RUN";
+  runType: 'PIPELINE_RUN' | 'TOOL_RUN'
   /**
    * The pipeline ID associated with the run, if applicable
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  pipelineId?: string | null;
+  pipelineId?: string | null
   /**
    * The tool ID associated with the run, if applicable
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  toolId?: string | null;
+  toolId?: string | null
   /**
    * If using already created content, specify the content IDs to use as input for the run.
    *
    * @example content-id-1
    * @example content-id-2
    */
-  contentIds?: string[];
+  contentIds?: string[]
   /**
    * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
    *
    * @example This is the text to use as input for the run.
    */
-  text?: string;
+  text?: string
   /**
    * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
    *
    * @example This is a url to use as input for the run.
    */
-  url?: string;
-};
+  url?: string
+}
 
 export type RunEntity = {
   /**
@@ -1222,150 +1222,150 @@ export type RunEntity = {
    *
    * @example An unexpected error occurred.
    */
-  error?: string | null;
+  error?: string | null
   /**
    * The inputs associated with the run
    */
-  inputs: SubItemEntity[];
+  inputs: SubItemEntity[]
   /**
    * The name of the run
    *
    * @example Data Processing PipelineRun
    */
-  name?: string | null;
+  name?: string | null
   /**
    * The outputs associated with the run
    */
-  outputs?: SubItemEntity[];
+  outputs?: SubItemEntity[]
   /**
    * The pipeline ID associated with the run, if applicable
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  pipelineId?: string | null;
+  pipelineId?: string | null
   /**
    * The type of run, either an individual tool run or a pipeline run
    *
    * @example TOOL_RUN
    */
-  runType: "PIPELINE_RUN" | "TOOL_RUN";
+  runType: 'PIPELINE_RUN' | 'TOOL_RUN'
   /**
    * The status of the run
    *
    * @example QUEUED
    */
-  status: "QUEUED" | "PROCESSING" | "COMPLETE" | "ERROR";
+  status: 'QUEUED' | 'PROCESSING' | 'COMPLETE' | 'ERROR'
   /**
    * The tool ID associated with the run, if applicable
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  toolId?: string | null;
+  toolId?: string | null
   /**
    * The timestamp when the run completed
    *
    * @format date-time
    * @example 2024-11-05T11:42:02.258Z
    */
-  completedAt: string | null;
+  completedAt: string | null
   /**
    * The progress of the run as a percentage
    *
    * @example 50.5
    * @default 0
    */
-  progress: number;
+  progress: number
   /**
    * The timestamp when the run started
    *
    * @format date-time
    * @example 2024-11-05T11:42:02.258Z
    */
-  startedAt: string | null;
+  startedAt: string | null
   /**
    * The date that this item was created
    *
    * @format date-time
    * @example 2023-07-11T21:09:20.895Z
    */
-  createdAt: string;
+  createdAt: string
   /**
    * The ID of the item
    *
    * @example item-id
    */
-  id: string;
-};
+  id: string
+}
 
 export type FieldFieldQuery = {
   /**
    * Field to filter by
    */
-  field: string;
+  field: string
   /**
    * Operator to use for filtering
    *
    * @default contains
    */
   operator?:
-    | "contains"
-    | "endsWith"
-    | "equals"
-    | "every"
-    | "in"
-    | "none"
-    | "not"
-    | "some"
-    | "startsWith";
+    | 'contains'
+    | 'endsWith'
+    | 'equals'
+    | 'every'
+    | 'in'
+    | 'none'
+    | 'not'
+    | 'some'
+    | 'startsWith'
   /**
    * Value to filter for
    */
-  value: string | string[];
-};
+  value: string | string[]
+}
 
 export type AggregateFieldQuery = {
   /**
    * Field to aggregate by
    */
-  field: string;
+  field: string
   /**
    * The granularity to use for ranged aggregates
    *
    * @example day
    */
-  granularity?: "day" | "month" | "week" | "year";
+  granularity?: 'day' | 'month' | 'week' | 'year'
   /**
    * The type of aggregate to perform
    *
    * @example count
    */
-  type: Record<string, any>;
-};
+  type: Record<string, any>
+}
 
 export type AggregateFieldResult = {
   /**
    * Field to aggregate by
    */
-  field: string;
+  field: string
   /**
    * The granularity to use for ranged aggregates
    *
    * @example day
    */
-  granularity?: "day" | "month" | "week" | "year";
+  granularity?: 'day' | 'month' | 'week' | 'year'
   /**
    * The type of aggregate to perform
    *
    * @example count
    */
-  type: Record<string, any>;
+  type: Record<string, any>
   /**
    * The value of the aggregate
    *
    * @example 10
    */
-  value: number;
-};
+  value: number
+}
 
 export type Metadata = {
   /**
@@ -1373,17 +1373,17 @@ export type Metadata = {
    *
    * @example 10
    */
-  limit: number;
+  limit: number
   /**
    * The current page
    *
    * @example 1
    */
-  offset: number;
+  offset: number
   /**
    * The total number of results
    *
    * @example 100
    */
-  totalResults: number;
-};
+  totalResults: number
+}

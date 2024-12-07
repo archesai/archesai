@@ -1,5 +1,8 @@
 'use client'
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
 import {
   useLabelsControllerCreate,

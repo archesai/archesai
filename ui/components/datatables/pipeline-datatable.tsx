@@ -20,7 +20,11 @@ export default function PipelineDataTable() {
   const { defaultOrgname } = useAuth()
 
   return (
-    <DataTable<PipelineEntity, PipelinesControllerFindAllPathParams, PipelinesControllerRemoveVariables>
+    <DataTable<
+      PipelineEntity,
+      PipelinesControllerFindAllPathParams,
+      PipelinesControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: 'name',
@@ -36,15 +40,30 @@ export default function PipelineDataTable() {
               </div>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Name'
+            />
+          )
         },
         {
           accessorKey: 'description',
           cell: ({ row }) => {
-            return <span>{(row.original.description || 'No Description').toString()}</span>
+            return (
+              <span>
+                {(row.original.description || 'No Description').toString()}
+              </span>
+            )
           },
           enableHiding: false,
-          header: ({ column }) => <DataTableColumnHeader className='text-sm' column={column} title='Description' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='text-sm'
+              column={column}
+              title='Description'
+            />
+          )
         },
         {
           accessorKey: 'Inputs',
@@ -59,14 +78,29 @@ export default function PipelineDataTable() {
           },
           enableHiding: false,
           enableSorting: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Input' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Input'
+            />
+          )
         },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return <span className='font-light'>{format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}</span>
+            return (
+              <span className='font-light'>
+                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
+              </span>
+            )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Created' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Created'
+            />
+          )
         }
       ]}
       dataIcon={<Workflow />}
@@ -80,7 +114,9 @@ export default function PipelineDataTable() {
           orgname: defaultOrgname
         }
       })}
-      handleSelect={(pipeline) => router.push(`/pipelines/single?pipelineId=${pipeline.id}`)}
+      handleSelect={(pipeline) =>
+        router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
+      }
       itemType='pipeline'
       useFindAll={usePipelinesControllerFindAll}
       useRemove={usePipelinesControllerRemove}

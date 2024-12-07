@@ -48,14 +48,20 @@ export function useArchesApiContext<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey
 >(
-  _queryOptions?: Omit<UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>, 'queryFn' | 'queryKey'>
+  _queryOptions?: Omit<
+    UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>,
+    'queryFn' | 'queryKey'
+  >
 ): ArchesApiContext {
   const { defaultOrgname, logout, setStatus } = useAuth()
   return {
     fetcherOptions: {},
     queryKeyFn,
     queryOptions: {
-      enabled: _queryOptions?.enabled !== undefined ? !!_queryOptions.enabled : !!defaultOrgname,
+      enabled:
+        _queryOptions?.enabled !== undefined
+          ? !!_queryOptions.enabled
+          : !!defaultOrgname,
       retry: async (failureCount: number, error: any) => {
         if (error?.statusCode === 401 && failureCount <= 2) {
           setStatus('Unauthenticated')
@@ -79,7 +85,10 @@ export const queryKeyFn = (operation: QueryOperation) => {
         .map((i) => resolvePathParam(i, operation.variables.pathParams))
     : operation.path.split('/').filter(Boolean)
 
-  if (operation.variables.queryParams && Object.keys(operation.variables.queryParams).length > 0) {
+  if (
+    operation.variables.queryParams &&
+    Object.keys(operation.variables.queryParams).length > 0
+  ) {
     queryKey.push(operation.variables.queryParams)
   }
 

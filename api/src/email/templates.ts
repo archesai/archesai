@@ -1,6 +1,9 @@
 // src/email-templates/email-templates.ts
 
-export function getEmailChangeConfirmationHtml(changeEmailLink: string, currentEmail: string): string {
+export function getEmailChangeConfirmationHtml(
+  changeEmailLink: string,
+  currentEmail: string
+): string {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
       <h2>Hello!</h2>

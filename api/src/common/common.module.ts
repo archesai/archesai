@@ -1,4 +1,8 @@
-import { ClassSerializerInterceptor, Module, ValidationPipe } from '@nestjs/common'
+import {
+  ClassSerializerInterceptor,
+  Module,
+  ValidationPipe
+} from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
 
 import { AllExceptionsFilter } from './filters/all-exceptions.filter'

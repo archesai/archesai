@@ -26,7 +26,8 @@ export class RunpodService {
           this.httpService
             .post(`https://api.runpod.ai/v2/${podId}/run`, input, {
               headers: {
-                Authorization: 'Bearer E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP',
+                Authorization:
+                  'Bearer E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP',
                 'Content-Type': 'application/json'
               }
             })
@@ -52,20 +53,27 @@ export class RunpodService {
             this.httpService
               .get(`https://api.runpod.ai/v2/${podId}/status/` + runpodJobId, {
                 headers: {
-                  Authorization: 'Bearer E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP',
+                  Authorization:
+                    'Bearer E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP',
                   'Content-Type': 'application/json'
                 }
               })
               .pipe(
                 catchError((err: AxiosError) => {
-                  this.logger.error('Could not hit runpod endpoint', err.message)
+                  this.logger.error(
+                    'Could not hit runpod endpoint',
+                    err.message
+                  )
                   throw new InternalServerErrorException(err.message)
                 })
               )
           ),
         5
       )
-      this.logger.log('Got runpod response: ' + JSON.stringify(rundpodCheckJobResponse, null, 2))
+      this.logger.log(
+        'Got runpod response: ' +
+          JSON.stringify(rundpodCheckJobResponse, null, 2)
+      )
       if (rundpodCheckJobResponse.status == 'COMPLETED') {
         return rundpodCheckJobResponse.output
       } else if (rundpodCheckJobResponse.status === 'IN_PROGRESS') {
@@ -75,7 +83,10 @@ export class RunpodService {
           firstAttempt = false
         }
 
-        await this.runsService.setProgress(jobId, Number(rundpodCheckJobResponse.output) || 0.5)
+        await this.runsService.setProgress(
+          jobId,
+          Number(rundpodCheckJobResponse.output) || 0.5
+        )
       } else if (rundpodCheckJobResponse.status === 'FAILED') {
         throw new InternalServerErrorException('Runpod job failed')
       }

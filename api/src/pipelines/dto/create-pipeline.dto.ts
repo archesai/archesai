@@ -4,7 +4,10 @@ import { IsArray, ValidateNested } from 'class-validator'
 import { PipelineStepEntity } from '../entities/pipeline-step.entity'
 import { PipelineEntity } from '../entities/pipeline.entity'
 
-export class CreatePipelineDto extends PickType(PipelineEntity, ['name', 'description']) {
+export class CreatePipelineDto extends PickType(PipelineEntity, [
+  'name',
+  'description'
+]) {
   /**
    * An array of pipeline tools to be added to the pipeline
    */

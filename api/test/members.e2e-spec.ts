@@ -117,5 +117,6 @@ describe('Members', () => {
     await deactivateUser(uninvitedUser)
   }
 
-  const deactivateUser = (user) => request(app.getHttpServer()).post('/auth/deactivate').send(user)
+  const deactivateUser = (user) =>
+    request(app.getHttpServer()).post('/auth/deactivate').send(user)
 })

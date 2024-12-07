@@ -18,7 +18,13 @@ import {
 } from '@/components/ui/sidebar'
 import { useLabelsControllerFindAll } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
-import { Folder, Forward, ListMinus, MoreHorizontal, Trash2 } from 'lucide-react'
+import {
+  Folder,
+  Forward,
+  ListMinus,
+  MoreHorizontal,
+  Trash2
+} from 'lucide-react'
 import Link from 'next/link'
 
 export function RecentLabels() {

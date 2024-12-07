@@ -112,14 +112,20 @@ export class PipelineRepository extends BaseRepository<
     return this.findOne(orgname, pipeline.id)
   }
 
-  async update(orgname: string, id: string, updatePipelineDto: UpdatePipelineDto) {
+  async update(
+    orgname: string,
+    id: string,
+    updatePipelineDto: UpdatePipelineDto
+  ) {
     const previousPipeline = await this.prisma.pipeline.findUnique({
       include: PIPELINE_INCLUDE,
       where: {
         id
       }
     })
-    const pipelineStepsToDelete = previousPipeline.pipelineSteps.map((tool) => tool.id)
+    const pipelineStepsToDelete = previousPipeline.pipelineSteps.map(
+      (tool) => tool.id
+    )
 
     await this.prisma.pipeline.update({
       data: {

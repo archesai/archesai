@@ -53,10 +53,16 @@ describe('ApiTokenRepository', () => {
         username: 'test-user'
       }
 
-      prismaService.apiToken.create = jest.fn().mockResolvedValue(expectedResult)
+      prismaService.apiToken.create = jest
+        .fn()
+        .mockResolvedValue(expectedResult)
 
       // Act
-      const result = await repository.create(orgname, createApiTokenDto, additionalData)
+      const result = await repository.create(
+        orgname,
+        createApiTokenDto,
+        additionalData
+      )
 
       // Assert
       expect(prismaService.apiToken.create).toHaveBeenCalledWith({

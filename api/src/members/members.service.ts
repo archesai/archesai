@@ -24,8 +24,12 @@ export class MembersService extends BaseService<
   }
 
   async join(orgname: string, inviteEmail: string, username: string) {
-    this.logger.log(`Accepting member ${inviteEmail} to organization ${orgname}`)
-    return this.toEntity(await this.memberRepository.join(orgname, inviteEmail, username))
+    this.logger.log(
+      `Accepting member ${inviteEmail} to organization ${orgname}`
+    )
+    return this.toEntity(
+      await this.memberRepository.join(orgname, inviteEmail, username)
+    )
   }
 
   protected emitMutationEvent(orgname: string): void {

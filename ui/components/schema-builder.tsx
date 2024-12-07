@@ -1,6 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Plus, Trash } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -35,9 +41,15 @@ const SchemaBuilder: React.FC = () => {
   return (
     <div className='flex flex-wrap'>
       <div className='w-full'>
-        <FieldList fields={fields} setFields={setFields} />
+        <FieldList
+          fields={fields}
+          setFields={setFields}
+        />
         <div className='flex w-full justify-end'>
-          <Button className='mt-4' onClick={handleSubmit}>
+          <Button
+            className='mt-4'
+            onClick={handleSubmit}
+          >
             Submit Schema
           </Button>
         </div>
@@ -68,9 +80,18 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
   return (
     <div className='flex flex-col gap-4'>
       {fields.map((field, index) => (
-        <FieldEditor field={field} fields={fields} index={index} key={index} setFields={setFields} />
+        <FieldEditor
+          field={field}
+          fields={fields}
+          index={index}
+          key={index}
+          setFields={setFields}
+        />
       ))}
-      <Button onClick={addField} variant='outline'>
+      <Button
+        onClick={addField}
+        variant='outline'
+      >
         <Plus className='mr-2 h-4 w-4' />
         Add Field
       </Button>
@@ -85,7 +106,12 @@ interface FieldEditorProps {
   setFields: React.Dispatch<React.SetStateAction<FieldDefinition[]>>
 }
 
-const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFields }) => {
+const FieldEditor: React.FC<FieldEditorProps> = ({
+  field,
+  fields,
+  index,
+  setFields
+}) => {
   const handleFieldChange = (newField: FieldDefinition) => {
     const newFields = [...fields]
     newFields[index] = newField
@@ -102,17 +128,27 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFiel
     <div>
       <div className='flex items-center gap-2'>
         <Input
-          onChange={(e) => handleFieldChange({ ...field, fieldName: e.target.value })}
+          onChange={(e) =>
+            handleFieldChange({ ...field, fieldName: e.target.value })
+          }
           placeholder='Field Name'
           value={field.fieldName}
         />
-        <Select onValueChange={(value) => handleFieldChange({ ...field, fieldType: value })} value={field.fieldType}>
+        <Select
+          onValueChange={(value) =>
+            handleFieldChange({ ...field, fieldType: value })
+          }
+          value={field.fieldType}
+        >
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Select type' />
           </SelectTrigger>
           <SelectContent>
             {fieldTypes.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
+              <SelectItem
+                key={type.value}
+                value={type.value}
+              >
                 {type.label}
               </SelectItem>
             ))}
@@ -132,7 +168,11 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFiel
         </div>
         */}
 
-        <Button className='h-8' onClick={removeField} variant='ghost'>
+        <Button
+          className='h-8'
+          onClick={removeField}
+          variant='ghost'
+        >
           <Trash className='h-4 w-4 text-destructive' />
         </Button>
       </div>
@@ -143,7 +183,9 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFiel
           <Label>Sub Item Fields</Label>
           <FieldList
             fields={field.subFields || []}
-            setFields={(subFields) => handleFieldChange({ ...field, subFields: subFields as any })}
+            setFields={(subFields) =>
+              handleFieldChange({ ...field, subFields: subFields as any })
+            }
           />
         </div>
       )}
@@ -167,7 +209,10 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ field, fields, index, setFiel
               {fieldTypes
                 .filter((type) => type.value !== 'array') // Avoid nesting arrays
                 .map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
+                  <SelectItem
+                    key={type.value}
+                    value={type.value}
+                  >
                     {type.label}
                   </SelectItem>
                 ))}
@@ -188,7 +233,10 @@ const generateZodSchema = (fields: FieldDefinition[]): string => {
   return schemaString
 }
 
-const generateFieldSchema = (field: FieldDefinition, indentLevel: number): string => {
+const generateFieldSchema = (
+  field: FieldDefinition,
+  indentLevel: number
+): string => {
   const indent = '  '.repeat(indentLevel)
   let fieldString = `${indent}${field.fieldName}: `
   let fieldSchema = ''

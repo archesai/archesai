@@ -1,4 +1,8 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card'
 import { FileText, Image, Music, Video } from 'lucide-react'
 
 export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {

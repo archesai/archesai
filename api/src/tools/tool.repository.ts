@@ -23,7 +23,8 @@ export class ToolRepository extends BaseRepository<
     return this.prisma.tool.createMany({
       data: [
         {
-          description: 'Extract text from a file. This tool supports all file types.',
+          description:
+            'Extract text from a file. This tool supports all file types.',
           inputType: 'TEXT',
           name: 'Extract Text',
           orgname,
@@ -47,7 +48,8 @@ export class ToolRepository extends BaseRepository<
           toolBase: 'summarize'
         },
         {
-          description: 'Create embeddings from text. This tool supports all languages.',
+          description:
+            'Create embeddings from text. This tool supports all languages.',
           inputType: 'TEXT',
           name: 'Create Embeddings',
           orgname,
@@ -55,7 +57,8 @@ export class ToolRepository extends BaseRepository<
           toolBase: 'create-embeddings'
         },
         {
-          description: 'Convert text to speech. This tool supports all languages.',
+          description:
+            'Convert text to speech. This tool supports all languages.',
           inputType: 'TEXT',
           name: 'Text to Speech',
           orgname,

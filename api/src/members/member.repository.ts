@@ -32,7 +32,9 @@ export class MemberRepository extends BaseRepository<
             orgname
           }
         },
-        ...(existingUser?.username ? { user: { connect: { username: existingUser.username } } } : {}),
+        ...(existingUser?.username
+          ? { user: { connect: { username: existingUser.username } } }
+          : {}),
         inviteEmail: createMemberDto.inviteEmail,
         role: createMemberDto.role
       }

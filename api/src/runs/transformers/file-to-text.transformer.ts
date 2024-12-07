@@ -16,7 +16,9 @@ export const transformFileToText: IToolRunProcess = async (
   httpService: HttpService,
   configService: ConfigService
 ): Promise<ContentEntity[]> => {
-  logger.log(`Extracting text for run ${runId} with url ${runInputContents[0].url}`)
+  logger.log(
+    `Extracting text for run ${runId} with url ${runInputContents[0].url}`
+  )
 
   let content = runInputContents[0]
   const { data } = await firstValueFrom(
@@ -42,7 +44,9 @@ export const transformFileToText: IToolRunProcess = async (
 
   const sanitizedTextContent = textContent.map((data) => ({
     ...data,
-    text: data.text.replaceAll(/\0/g, '').replaceAll(/[^ -~\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD\n]/g, '')
+    text: data.text
+      .replaceAll(/\0/g, '')
+      .replaceAll(/[^ -~\u00A0-\uD7FF\uE000-\uFDCF\uFDF0-\uFFFD\n]/g, '')
   }))
 
   // update name

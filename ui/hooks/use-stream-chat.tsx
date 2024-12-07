@@ -6,7 +6,11 @@ import { useQueryClient } from '@tanstack/react-query'
 export const useStreamChat = () => {
   const queryClient = useQueryClient()
 
-  const streamContent = (orgname: string, labelId: string, content: ContentEntity) => {
+  const streamContent = (
+    orgname: string,
+    labelId: string,
+    content: ContentEntity
+  ) => {
     queryClient.setQueryData(
       queryKeyFn({
         operationId: 'contentControllerFindAll',
@@ -29,7 +33,9 @@ export const useStreamChat = () => {
             results: []
           }
         }
-        const prevStreamedMessage = oldData.results?.find((i) => i.id === content.id)
+        const prevStreamedMessage = oldData.results?.find(
+          (i) => i.id === content.id
+        )
         if (prevStreamedMessage) {
           return {
             ...oldData,

@@ -99,18 +99,46 @@ const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }) => {
           xmlns='http://www.w3.org/2000/svg'
           xmlnsXlink='http://www.w3.org/1999/xlink'
         >
-          <g id='tight-bounds' transform='matrix(1,0,0,1,-0.24049999999999727,0.12975000000000136)'>
-            <svg height='47.7405' viewBox='0 0 95.481 47.7405' width='95.481'>
+          <g
+            id='tight-bounds'
+            transform='matrix(1,0,0,1,-0.24049999999999727,0.12975000000000136)'
+          >
+            <svg
+              height='47.7405'
+              viewBox='0 0 95.481 47.7405'
+              width='95.481'
+            >
               <g>
-                <svg height='47.7405' viewBox='0 0 95.481 47.7405' width='95.481'>
+                <svg
+                  height='47.7405'
+                  viewBox='0 0 95.481 47.7405'
+                  width='95.481'
+                >
                   <g>
-                    <svg height='47.7405' viewBox='0 0 95.481 47.7405' width='95.481'>
+                    <svg
+                      height='47.7405'
+                      viewBox='0 0 95.481 47.7405'
+                      width='95.481'
+                    >
                       <g id='textblocktransform'>
-                        <svg height='47.7405' id='textblock' viewBox='0 0 95.481 47.7405' width='95.481'>
+                        <svg
+                          height='47.7405'
+                          id='textblock'
+                          viewBox='0 0 95.481 47.7405'
+                          width='95.481'
+                        >
                           <g>
-                            <svg height='47.7405' viewBox='0 0 95.481 47.7405' width='95.481'>
+                            <svg
+                              height='47.7405'
+                              viewBox='0 0 95.481 47.7405'
+                              width='95.481'
+                            >
                               <g>
-                                <svg height='47.7405' viewBox='0 0 95.481 47.7405' width='95.481'>
+                                <svg
+                                  height='47.7405'
+                                  viewBox='0 0 95.481 47.7405'
+                                  width='95.481'
+                                >
                                   <g>
                                     <svg
                                       className='icon-icon-0'
@@ -148,7 +176,13 @@ const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }) => {
               </g>
               <defs></defs>
             </svg>
-            <rect fill='none' height='47.7405' stroke='none' visibility='hidden' width='95.481'></rect>
+            <rect
+              fill='none'
+              height='47.7405'
+              stroke='none'
+              visibility='hidden'
+              width='95.481'
+            ></rect>
           </g>
         </svg>
       </g>

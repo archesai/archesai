@@ -43,7 +43,9 @@ describe('MemberRepository', () => {
       }
       const existingUser = { username: 'testuser' }
 
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(existingUser as any)
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(existingUser as any)
       jest.spyOn(prismaService.member, 'create').mockResolvedValue({} as any)
 
       await memberRepository.create(orgname, createMemberDto)
@@ -92,14 +94,18 @@ describe('MemberRepository', () => {
       const inviteEmail = 'test@example.com'
       const username = 'testuser'
 
-      jest.spyOn(prismaService.organization, 'findUniqueOrThrow').mockResolvedValue({} as any)
+      jest
+        .spyOn(prismaService.organization, 'findUniqueOrThrow')
+        .mockResolvedValue({} as any)
       jest.spyOn(prismaService.member, 'update').mockResolvedValue({} as any)
 
       await memberRepository.join(orgname, inviteEmail, username)
 
-      expect(prismaService.organization.findUniqueOrThrow).toHaveBeenCalledWith({
-        where: { orgname }
-      })
+      expect(prismaService.organization.findUniqueOrThrow).toHaveBeenCalledWith(
+        {
+          where: { orgname }
+        }
+      )
       expect(prismaService.member.update).toHaveBeenCalledWith({
         data: {
           inviteAccepted: true,

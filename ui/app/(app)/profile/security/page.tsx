@@ -1,7 +1,12 @@
 'use client'
 // FIXME - remove use client
 import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import {
   useAuthControllerPasswordResetRequest,
@@ -17,9 +22,12 @@ export default function ProfileSecuritySettingsPage() {
   const { toast } = useToast()
   const { logout } = useAuth()
 
-  const { isPending: deactivatePending, mutateAsync: deactivateAccount } = useUsersControllerDeactivate()
-  const { isPending: requestPasswordResetPending, mutateAsync: requestPasswordReset } =
-    useAuthControllerPasswordResetRequest()
+  const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
+    useUsersControllerDeactivate()
+  const {
+    isPending: requestPasswordResetPending,
+    mutateAsync: requestPasswordReset
+  } = useAuthControllerPasswordResetRequest()
 
   return (
     <div className='flex flex-col gap-3'>
@@ -27,8 +35,8 @@ export default function ProfileSecuritySettingsPage() {
         <CardHeader>
           <CardTitle className='text-lg'>Reset Password</CardTitle>
           <CardDescription>
-            If you would like to change your password, please click the button below. It will send you an email with
-            instructions on how to reset.
+            If you would like to change your password, please click the button
+            below. It will send you an email with instructions on how to reset.
           </CardDescription>
         </CardHeader>
         <Separator />
@@ -45,13 +53,16 @@ export default function ProfileSecuritySettingsPage() {
                 {
                   onError: (err) => {
                     toast({
-                      description: err?.message || 'An error occurred while trying to reset your password.',
+                      description:
+                        err?.message ||
+                        'An error occurred while trying to reset your password.',
                       title: 'Error'
                     })
                   },
                   onSuccess: () => {
                     toast({
-                      description: 'We have sent you an email with instructions on how to reset your password.',
+                      description:
+                        'We have sent you an email with instructions on how to reset your password.',
                       title: 'Email Sent'
                     })
                   }
@@ -60,7 +71,9 @@ export default function ProfileSecuritySettingsPage() {
             }
             size={'sm'}
           >
-            {requestPasswordResetPending && <ReloadIcon className='h-5 w-5 animate-spin' />}
+            {requestPasswordResetPending && (
+              <ReloadIcon className='h-5 w-5 animate-spin' />
+            )}
             <span> Reset Password</span>
           </Button>
         </div>
@@ -69,7 +82,8 @@ export default function ProfileSecuritySettingsPage() {
         <CardHeader>
           <CardTitle className='text-lg'>Deactivate Account</CardTitle>
           <CardDescription>
-            If you would like to deactivate your account, please click the button below. This action is irreversible.
+            If you would like to deactivate your account, please click the
+            button below. This action is irreversible.
           </CardDescription>
         </CardHeader>
         <Separator />
@@ -82,7 +96,9 @@ export default function ProfileSecuritySettingsPage() {
                 {
                   onError: (err) => {
                     toast({
-                      description: err?.message || 'An error occurred while trying to deactivate your account.',
+                      description:
+                        err?.message ||
+                        'An error occurred while trying to deactivate your account.',
                       title: 'Error'
                     })
                   },
@@ -95,7 +111,9 @@ export default function ProfileSecuritySettingsPage() {
             size='sm'
             variant={'destructive'}
           >
-            {deactivatePending && <ReloadIcon className='h-5 w-5 animate-spin' />}
+            {deactivatePending && (
+              <ReloadIcon className='h-5 w-5 animate-spin' />
+            )}
             <span>Delete Account</span>
           </Button>
         </div>

@@ -11,7 +11,12 @@ import { OrganizationsService } from './organizations.service'
 @Module({
   controllers: [OrganizationsController],
   exports: [OrganizationsService],
-  imports: [forwardRef(() => BillingModule), PrismaModule, ToolsModule, PipelinesModule],
+  imports: [
+    forwardRef(() => BillingModule),
+    PrismaModule,
+    ToolsModule,
+    PipelinesModule
+  ],
   providers: [OrganizationsService, OrganizationRepository]
 })
 export class OrganizationsModule {}

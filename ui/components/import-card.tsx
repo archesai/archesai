@@ -17,7 +17,11 @@ import React, { useRef, useState } from 'react'
 
 import { Badge } from './ui/badge'
 
-export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => void }) {
+export default function ImportCard({
+  cb
+}: {
+  cb?: (content: ContentEntity[]) => void
+}) {
   const { defaultOrgname } = useAuth()
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState<boolean>(false)
@@ -33,7 +37,10 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
   const handleFiles = (files: FileList | null) => {
     if (files) {
       const newFiles = Array.from(files).filter(
-        (file) => !selectedFiles.some((f) => f.name === file.name && f.size === file.size)
+        (file) =>
+          !selectedFiles.some(
+            (f) => f.name === file.name && f.size === file.size
+          )
       )
       setSelectedFiles((prev) => [...prev, ...newFiles])
     }
@@ -69,7 +76,9 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
 
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
-          const percentCompleted = Math.round((event.loaded * 100) / event.total)
+          const percentCompleted = Math.round(
+            (event.loaded * 100) / event.total
+          )
           setUploadProgress((prev) => Math.max(prev, percentCompleted))
         }
       })
@@ -164,7 +173,8 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
     } catch (error) {
       console.error('An error occurred during file upload:', error)
       toast({
-        description: (error as any).message || 'An error occurred while uploading files.',
+        description:
+          (error as any).message || 'An error occurred while uploading files.',
         title: 'Upload Failed',
         variant: 'destructive'
       })
@@ -173,7 +183,11 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
   }
 
   return (
-    <div className={'flex flex-col items-center gap-2 rounded-lg transition-all duration-300'}>
+    <div
+      className={
+        'flex flex-col items-center gap-2 rounded-lg transition-all duration-300'
+      }
+    >
       {/* Drop Area */}
       <Card
         className={cn(
@@ -186,9 +200,17 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
         onDrop={handleDrop}
       >
         <CloudUpload className='h-5 w-5 text-muted-foreground' />
-        <p className='text-sm text-muted-foreground'>Drag and drop files here, or click to select files</p>
+        <p className='text-sm text-muted-foreground'>
+          Drag and drop files here, or click to select files
+        </p>
 
-        <input className='hidden' multiple onChange={handleFileInputChange} ref={fileInputRef} type='file' />
+        <input
+          className='hidden'
+          multiple
+          onChange={handleFileInputChange}
+          ref={fileInputRef}
+          type='file'
+        />
       </Card>
 
       {/* Sidebar */}
@@ -196,12 +218,18 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
         <div className='flex w-full flex-col gap-2'>
           <ul className='flex max-h-52 grow flex-col gap-2 overflow-y-scroll'>
             {selectedFiles.map((file, idx) => (
-              <li className='flex items-center justify-between rounded border bg-muted/50 p-2' key={idx}>
+              <li
+                className='flex items-center justify-between rounded border bg-muted/50 p-2'
+                key={idx}
+              >
                 <span className='flex w-4/5 items-center gap-2 truncate text-foreground'>
                   <span>{file.name}</span>
                   <Badge>{file.type}</Badge>
                 </span>
-                <Badge className='text-nowrap text-primary' variant='outline'>
+                <Badge
+                  className='text-nowrap text-primary'
+                  variant='outline'
+                >
                   {`${(file.size / 1024).toFixed(2)} KB`}
                 </Badge>
                 <button
@@ -237,7 +265,9 @@ export default function ImportCard({ cb }: { cb?: (content: ContentEntity[]) => 
           {uploading && (
             <div className='flex flex-col gap-2'>
               <Progress value={uploadProgress} />
-              <p className='text-center text-sm text-gray-600'>{uploadProgress}% Uploaded</p>
+              <p className='text-center text-sm text-gray-600'>
+                {uploadProgress}% Uploaded
+              </p>
             </div>
           )}
         </div>

@@ -44,15 +44,27 @@ export default function PlaygroundPage() {
 
   return (
     <div className='flex h-full min-h-0 gap-3'>
-      <div className={cn('flex w-2/3 flex-1 flex-col gap-4 overflow-auto', !hasInputs ? 'hidden' : '')}>
+      <div
+        className={cn(
+          'flex w-2/3 flex-1 flex-col gap-4 overflow-auto',
+          !hasInputs ? 'hidden' : ''
+        )}
+      >
         {hasInputs ? (
-          <div className={cn('overflow-auto transition-all', hasOutputs ? 'h-1/2' : 'h-full')}>
+          <div
+            className={cn(
+              'overflow-auto transition-all',
+              hasOutputs ? 'h-1/2' : 'h-full'
+            )}
+          >
             <ContentDataTable
               customFilters={[
                 {
                   field: 'id',
                   operator: 'in',
-                  value: run ? run.inputs.map((r) => r.id) : selectedContent?.map((r) => r.id) || []
+                  value: run
+                    ? run.inputs.map((r) => r.id)
+                    : selectedContent?.map((r) => r.id) || []
                 }
               ]}
               readonly
@@ -81,7 +93,9 @@ export default function PlaygroundPage() {
       <div
         className={cn(
           'flex flex-col gap-1 transition-all',
-          !hasInputs ? 'h-auto w-full items-center justify-center py-24' : 'w-1/3 gap-3'
+          !hasInputs
+            ? 'h-auto w-full items-center justify-center py-24'
+            : 'w-1/3 gap-3'
         )}
       >
         {selectedRunId && run && <RunStatusButton run={run} />}

@@ -1,5 +1,11 @@
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import Image from 'next/image'
 
 interface FeatureProps {
@@ -43,7 +49,10 @@ const featureList: string[] = [
 
 export const Features = () => {
   return (
-    <section className='container space-y-8 py-24 sm:py-32' id='features'>
+    <section
+      className='container space-y-8 py-24 sm:py-32'
+      id='features'
+    >
       <h2 className='text-3xl font-bold md:text-center lg:text-4xl'>
         Many{' '}
         <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
@@ -54,7 +63,10 @@ export const Features = () => {
       <div className='flex flex-wrap gap-4 md:justify-center'>
         {featureList.map((feature: string) => (
           <div key={feature}>
-            <Badge className='text-sm' variant='secondary'>
+            <Badge
+              className='text-sm'
+              variant='secondary'
+            >
               {feature}
             </Badge>
           </div>
@@ -71,7 +83,13 @@ export const Features = () => {
             <CardContent>{description}</CardContent>
 
             <CardFooter>
-              <Image alt={title} className='mx-auto w-[200px] lg:w-[300px]' height={200} src={image} width={200} />
+              <Image
+                alt={title}
+                className='mx-auto w-[200px] lg:w-[300px]'
+                height={200}
+                src={image}
+                width={200}
+              />
             </CardFooter>
           </Card>
         ))}

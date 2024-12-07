@@ -41,7 +41,10 @@ export class UsersController {
    * @throws {404} NotFoundException
    */
   @Patch()
-  async update(@CurrentUser() user: UserEntity, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @CurrentUser() user: UserEntity,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
     return this.usersService.update(user.defaultOrgname, user.id, updateUserDto)
   }
 }

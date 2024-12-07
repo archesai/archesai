@@ -37,14 +37,20 @@ export class RedisIoAdapter extends IoAdapter {
         } catch (error) {
           this.logger.error('Redis connection error: ' + error)
 
-          const delay = retryStrategyOptions.initialDelay * Math.pow(retryStrategyOptions.factor, retryCount)
+          const delay =
+            retryStrategyOptions.initialDelay *
+            Math.pow(retryStrategyOptions.factor, retryCount)
 
           if (delay <= retryStrategyOptions.maxRetryDelay) {
-            this.logger.warn(`Reconnecting to Redis in ${delay}ms (attempt ${retryCount + 1})`)
+            this.logger.warn(
+              `Reconnecting to Redis in ${delay}ms (attempt ${retryCount + 1})`
+            )
             setTimeout(connectWithRetry, delay)
             retryCount += 1
           } else {
-            this.logger.error('Max retry attempts reached. Unable to reconnect.')
+            this.logger.error(
+              'Max retry attempts reached. Unable to reconnect.'
+            )
           }
         }
       }
@@ -66,7 +72,10 @@ export class RedisIoAdapter extends IoAdapter {
         : {})
     })
     const subClient = pubClient.duplicate()
-    await Promise.all([connectAndHandleErrors(pubClient), connectAndHandleErrors(subClient)])
+    await Promise.all([
+      connectAndHandleErrors(pubClient),
+      connectAndHandleErrors(subClient)
+    ])
     this.adapterConstructor = createAdapter(pubClient, subClient)
   }
 

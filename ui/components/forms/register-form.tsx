@@ -1,5 +1,8 @@
 'use client'
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
 import { RegisterDto } from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
@@ -7,13 +10,16 @@ import * as z from 'zod'
 
 // Define schema using Zod for form validation
 const formSchema = z.object({
-  confirmPassword: z.string().min(8, { message: 'Please confirm your password' }),
+  confirmPassword: z
+    .string()
+    .min(8, { message: 'Please confirm your password' }),
   email: z.string().email({ message: 'Invalid email address' }),
   password: z
     .string()
     .min(8, { message: 'Password must be at least 8 characters' })
     .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-      message: 'Password must contain at least one letter, one number, and one special character'
+      message:
+        'Password must contain at least one letter, one number, and one special character'
     })
 })
 //   .refine((data) => data.password === data.confirmPassword, {
@@ -68,7 +74,10 @@ export default function RegisterForm() {
       isUpdateForm={false}
       itemType='member'
       onSubmitCreate={async (registerDto) => {
-        await registerWithEmailAndPassword(registerDto.email, registerDto.password)
+        await registerWithEmailAndPassword(
+          registerDto.email,
+          registerDto.password
+        )
       }}
       onSubmitUpdate={async () => {}}
       title='Configuration'

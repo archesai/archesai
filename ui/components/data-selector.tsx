@@ -3,9 +3,19 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command'
 import { HoverCard, HoverCardContent } from '@/components/ui/hover-card'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { CaretSortIcon, CheckIcon, PlusIcon } from '@radix-ui/react-icons'
 import React, { useCallback, useState } from 'react'
@@ -48,17 +58,29 @@ export function DataSelector<TItem extends BaseItem>({
   // Filter data based on search term
   const filteredData = React.useMemo(() => {
     if (!data) return []
-    return data.results.filter((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase())) || []
+    return (
+      data.results.filter((item: any) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ) || []
+    )
   }, [data, searchTerm])
 
   // Handler for selecting/deselecting items
   const handleSelect = useCallback(
     (item: TItem) => {
       if (isMultiSelect) {
-        const selectedArray = Array.isArray(selectedData) ? selectedData : selectedData ? [selectedData] : []
-        const isSelected = selectedArray.some((i) => (i as any).id === (item as any).id)
+        const selectedArray = Array.isArray(selectedData)
+          ? selectedData
+          : selectedData
+            ? [selectedData]
+            : []
+        const isSelected = selectedArray.some(
+          (i) => (i as any).id === (item as any).id
+        )
         if (isSelected) {
-          setSelectedData(selectedArray.filter((i) => (i as any).id !== (item as any).id))
+          setSelectedData(
+            selectedArray.filter((i) => (i as any).id !== (item as any).id)
+          )
         } else {
           setSelectedData([...selectedArray, item])
         }
@@ -74,7 +96,9 @@ export function DataSelector<TItem extends BaseItem>({
   const handleRemove = useCallback(
     (item: TItem) => {
       if (isMultiSelect && Array.isArray(selectedData)) {
-        setSelectedData(selectedData.filter((i) => (i as any).id !== (item as any).id))
+        setSelectedData(
+          selectedData.filter((i) => (i as any).id !== (item as any).id)
+        )
       } else {
         setSelectedData(undefined)
       }
@@ -85,7 +109,10 @@ export function DataSelector<TItem extends BaseItem>({
   return (
     <div className='flex flex-col gap-2'>
       {/* Popover for Selection */}
-      <Popover onOpenChange={setOpen} open={open}>
+      <Popover
+        onOpenChange={setOpen}
+        open={open}
+      >
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
@@ -107,7 +134,12 @@ export function DataSelector<TItem extends BaseItem>({
                     {icons &&
                       icons
                         .filter((x) => x.name === (selectedData as TItem)?.name)
-                        .map((x: any, i) => <x.Icon className='h-4 w-4 text-muted-foreground' key={i} />)}
+                        .map((x: any, i) => (
+                          <x.Icon
+                            className='h-4 w-4 text-muted-foreground'
+                            key={i}
+                          />
+                        ))}
                     {(selectedData as TItem)?.name}
                   </div>
                 )}
@@ -142,15 +174,20 @@ export function DataSelector<TItem extends BaseItem>({
                     {icons &&
                       icons
                         .filter((x) => x.name === item.name)
-                        .map((x: any, i) => <x.Icon className='h-4 w-4 text-muted-foreground' key={i} />)}
+                        .map((x: any, i) => (
+                          <x.Icon
+                            className='h-4 w-4 text-muted-foreground'
+                            key={i}
+                          />
+                        ))}
                     <p>{item?.name}</p>
                   </div>
                   {/* Check Icon for Selected Items */}
                   {isMultiSelect &&
                     Array.isArray(selectedData) &&
-                    selectedData.some((i) => (i as any).id === (item as any).id) && (
-                      <CheckIcon className='h-4 w-4 text-green-500' />
-                    )}
+                    selectedData.some(
+                      (i) => (i as any).id === (item as any).id
+                    ) && <CheckIcon className='h-4 w-4 text-green-500' />}
                 </CommandItem>
               ))}
             </CommandList>
@@ -158,7 +195,10 @@ export function DataSelector<TItem extends BaseItem>({
           {/* HoverCard for Item Details */}
           {hoveredItem && getItemDetails && (
             <HoverCard open={true}>
-              <HoverCardContent align='end' className='w-[250px] p-4'>
+              <HoverCardContent
+                align='end'
+                className='w-[250px] p-4'
+              >
                 {getItemDetails(hoveredItem)}
               </HoverCardContent>
             </HoverCard>
@@ -167,21 +207,27 @@ export function DataSelector<TItem extends BaseItem>({
       </Popover>
 
       {/* Display Selected Items (for Multi-Select) */}
-      {isMultiSelect && Array.isArray(selectedData) && selectedData.length > 0 && (
-        <div className='flex flex-wrap gap-2'>
-          {selectedData.map((item) => (
-            <span
-              className='inline-flex items-center rounded bg-blue-100 px-2 py-1 text-sm text-blue-700'
-              key={(item as any).id}
-            >
-              {item.name}
-              <button className='ml-1 text-red-500 hover:text-red-700' onClick={() => handleRemove(item)} type='button'>
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
+      {isMultiSelect &&
+        Array.isArray(selectedData) &&
+        selectedData.length > 0 && (
+          <div className='flex flex-wrap gap-2'>
+            {selectedData.map((item) => (
+              <span
+                className='inline-flex items-center rounded bg-blue-100 px-2 py-1 text-sm text-blue-700'
+                key={(item as any).id}
+              >
+                {item.name}
+                <button
+                  className='ml-1 text-red-500 hover:text-red-700'
+                  onClick={() => handleRemove(item)}
+                  type='button'
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
     </div>
   )
 }

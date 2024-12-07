@@ -94,7 +94,13 @@ export class RunProcessor extends WorkerHost {
         )
         break
       case 'summarize':
-        outputs = await transformTextToText(job.id, inputs, this.logger, this.contentService, this.llmService)
+        outputs = await transformTextToText(
+          job.id,
+          inputs,
+          this.logger,
+          this.contentService,
+          this.llmService
+        )
         break
       case 'text-to-image':
         outputs = await transformTextToImage(
@@ -122,6 +128,10 @@ export class RunProcessor extends WorkerHost {
     }
 
     this.logger.log(`Adding run output contents to run ${job.id}`)
-    await this.runsService.setInputsOrOutputs(job.id.toString(), 'outputs', outputs)
+    await this.runsService.setInputsOrOutputs(
+      job.id.toString(),
+      'outputs',
+      outputs
+    )
   }
 }

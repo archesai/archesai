@@ -11,8 +11,14 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({
-      apiKey: this.configService.get('LLM_TYPE') == 'openai' ? this.configService.get('OPEN_AI_KEY') : 'ollama',
-      baseURL: this.configService.get('LLM_TYPE') == 'openai' ? undefined : this.configService.get('OLLAMA_ENDPOINT'),
+      apiKey:
+        this.configService.get('LLM_TYPE') == 'openai'
+          ? this.configService.get('OPEN_AI_KEY')
+          : 'ollama',
+      baseURL:
+        this.configService.get('LLM_TYPE') == 'openai'
+          ? undefined
+          : this.configService.get('OLLAMA_ENDPOINT'),
       organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
     })
   }
@@ -21,7 +27,10 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
     const start = Date.now()
     const { data, usage } = await this.openai.embeddings.create({
       input: texts,
-      model: this.configService.get('LLM_TYPE') == 'openai' ? 'text-embedding-ada-002' : 'mxbai-embed-large'
+      model:
+        this.configService.get('LLM_TYPE') == 'openai'
+          ? 'text-embedding-ada-002'
+          : 'mxbai-embed-large'
     })
     const response = data.map((d) => {
       return {
@@ -29,7 +38,9 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
         tokens: Math.ceil(usage.total_tokens / texts.length)
       }
     })
-    this.logger.log(`Embedded ${texts.length} texts with ${usage.total_tokens} in ${(Date.now() - start) / 1000}s`)
+    this.logger.log(
+      `Embedded ${texts.length} texts with ${usage.total_tokens} in ${(Date.now() - start) / 1000}s`
+    )
     return response
   }
 }

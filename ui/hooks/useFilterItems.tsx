@@ -1,4 +1,11 @@
-import { limitAtom, pageAtom, queryAtom, rangeAtom, sortByAtom, sortDirectionAtom } from '@/state/filterAtoms'
+import {
+  limitAtom,
+  pageAtom,
+  queryAtom,
+  rangeAtom,
+  sortByAtom,
+  sortDirectionAtom
+} from '@/state/filterAtoms'
 import { useAtom } from 'jotai'
 
 export const useFilterItems = () => {

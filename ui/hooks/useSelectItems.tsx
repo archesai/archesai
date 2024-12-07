@@ -5,10 +5,12 @@ export const useSelectItems = ({ items }: { items: any[] }) => {
   const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom)
 
   // Says if some items are selected
-  const selectedSomeItems = selectedItems.length > 0 && selectedItems.length < items.length
+  const selectedSomeItems =
+    selectedItems.length > 0 && selectedItems.length < items.length
 
   // Says if all items are selected
-  const selectedAllItems = selectedItems.length === items.length && items.length > 0
+  const selectedAllItems =
+    selectedItems.length === items.length && items.length > 0
 
   // Select or deselect all items
   const toggleSelectAll = (): void => {
@@ -20,7 +22,9 @@ export const useSelectItems = ({ items }: { items: any[] }) => {
     if (!selectedItems.includes(itemId)) {
       setSelectedItems((prevSelected) => [...prevSelected, itemId])
     } else {
-      setSelectedItems((prevSelected) => prevSelected.filter((id) => id !== itemId))
+      setSelectedItems((prevSelected) =>
+        prevSelected.filter((id) => id !== itemId)
+      )
     }
   }
 

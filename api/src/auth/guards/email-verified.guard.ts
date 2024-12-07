@@ -1,5 +1,10 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable
+} from '@nestjs/common'
 
 @Injectable()
 export class EmailVerifiedGuard implements CanActivate {
@@ -15,7 +20,9 @@ export class EmailVerifiedGuard implements CanActivate {
 
     // Check if user is email verified
     if (currentUser.emailVerified === false) {
-      throw new ForbiddenException('You must verify your e-mail before using this feature.')
+      throw new ForbiddenException(
+        'You must verify your e-mail before using this feature.'
+      )
     }
 
     return true

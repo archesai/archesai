@@ -22,13 +22,18 @@ export class PasswordResetService {
     private readonly configService: ConfigService
   ) {}
 
-  async confirm(confirmationTokenWithNewPasswordDto: ConfirmationTokenWithNewPasswordDto) {
+  async confirm(
+    confirmationTokenWithNewPasswordDto: ConfirmationTokenWithNewPasswordDto
+  ) {
     const { userId } = await this.arTokensService.verifyToken(
       ARTokenType.PASSWORD_RESET,
       confirmationTokenWithNewPasswordDto.token
     )
 
-    const hashedPassword = await bcrypt.hash(confirmationTokenWithNewPasswordDto.newPassword, 10)
+    const hashedPassword = await bcrypt.hash(
+      confirmationTokenWithNewPasswordDto.newPassword,
+      10
+    )
     const user = await this.prisma.user.update({
       data: { password: hashedPassword },
       include: {
@@ -49,7 +54,11 @@ export class PasswordResetService {
       return
     }
 
-    const token = await this.arTokensService.createToken(ARTokenType.PASSWORD_RESET, user.id, 1)
+    const token = await this.arTokensService.createToken(
+      ARTokenType.PASSWORD_RESET,
+      user.id,
+      1
+    )
 
     const resetLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=password-reset&token=${token}`
 

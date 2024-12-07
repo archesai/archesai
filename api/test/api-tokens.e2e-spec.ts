@@ -47,7 +47,12 @@ describe('Access Tokens', () => {
     await verifyTokenRevocation(orgname, apiToken.key)
 
     // Create a token with restricted domain
-    const badUserToken = await createToken(orgname, accessToken, 'USER', 'localhost')
+    const badUserToken = await createToken(
+      orgname,
+      accessToken,
+      'USER',
+      'localhost'
+    )
 
     // Verify restricted access due to bad domain
     await verifyRestrictedDomainAccess(orgname, badUserToken.key)
@@ -78,15 +83,23 @@ describe('Access Tokens', () => {
     return res.body.results[0].id
   }
 
-  const verifyUserRole = async (accessToken: string, expectedRole: RoleType) => {
-    const res = await request(app.getHttpServer()).get('/user').set('Authorization', `Bearer ${accessToken}`)
+  const verifyUserRole = async (
+    accessToken: string,
+    expectedRole: RoleType
+  ) => {
+    const res = await request(app.getHttpServer())
+      .get('/user')
+      .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(200)
     expect(res).toSatisfyApiSpec()
     expect(res.body.memberships.length).toBe(1)
     expect(res.body.memberships[0].role).toBe(expectedRole)
   }
 
-  const verifyRestrictedActions = async (orgname: string, accessToken: string) => {
+  const verifyRestrictedActions = async (
+    orgname: string,
+    accessToken: string
+  ) => {
     const res = await request(app.getHttpServer())
       .delete(`/organizations/${orgname}`)
       .set('Authorization', `Bearer ${accessToken}`)
@@ -100,14 +113,20 @@ describe('Access Tokens', () => {
     expect(res.status).toBe(200)
   }
 
-  const verifyTokenRevocation = async (orgname: string, accessToken: string) => {
+  const verifyTokenRevocation = async (
+    orgname: string,
+    accessToken: string
+  ) => {
     const res = await request(app.getHttpServer())
       .delete(`/organizations/${orgname}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(401)
   }
 
-  const verifyRestrictedDomainAccess = async (orgname: string, accessToken: string) => {
+  const verifyRestrictedDomainAccess = async (
+    orgname: string,
+    accessToken: string
+  ) => {
     const res = await request(app.getHttpServer())
       .get(`/organizations/${orgname}`)
       .set('Authorization', `Bearer ${accessToken}`)

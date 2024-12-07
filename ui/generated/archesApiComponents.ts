@@ -3,26 +3,26 @@
  *
  * @version v1
  */
-import * as reactQuery from "@tanstack/react-query";
-import { useArchesApiContext, ArchesApiContext } from "./archesApiContext";
-import type * as Fetcher from "./archesApiFetcher";
-import { archesApiFetch } from "./archesApiFetcher";
-import type * as Schemas from "./archesApiSchemas";
+import * as reactQuery from '@tanstack/react-query'
+import { useArchesApiContext, ArchesApiContext } from './archesApiContext'
+import type * as Fetcher from './archesApiFetcher'
+import { archesApiFetch } from './archesApiFetcher'
+import type * as Schemas from './archesApiSchemas'
 
 export type PipelinesControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type PipelinesControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type PipelinesControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerCreateVariables = {
-  body: Schemas.CreatePipelineDto;
-  pathParams: PipelinesControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreatePipelineDto
+  pathParams: PipelinesControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchPipelinesControllerCreate = (
   variables: PipelinesControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.PipelineEntity,
@@ -32,11 +32,11 @@ export const fetchPipelinesControllerCreate = (
     {},
     PipelinesControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/pipelines",
-    method: "post",
+    url: '/organizations/{orgname}/pipelines',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const usePipelinesControllerCreate = (
   options?: Omit<
@@ -45,10 +45,10 @@ export const usePipelinesControllerCreate = (
       PipelinesControllerCreateError,
       PipelinesControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.PipelineEntity,
     PipelinesControllerCreateError,
@@ -56,82 +56,82 @@ export const usePipelinesControllerCreate = (
   >({
     mutationFn: (variables: PipelinesControllerCreateVariables) =>
       fetchPipelinesControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type PipelinesControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type PipelinesControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type PipelinesControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type PipelinesControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.PipelineEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.PipelineEntity[]
+}
 
 export type PipelinesControllerFindAllVariables = {
-  pathParams: PipelinesControllerFindAllPathParams;
-  queryParams?: PipelinesControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: PipelinesControllerFindAllPathParams
+  queryParams?: PipelinesControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchPipelinesControllerFindAll = (
   variables: PipelinesControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     PipelinesControllerFindAllResponse,
@@ -141,14 +141,14 @@ export const fetchPipelinesControllerFindAll = (
     PipelinesControllerFindAllQueryParams,
     PipelinesControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/pipelines",
-    method: "get",
+    url: '/organizations/{orgname}/pipelines',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const usePipelinesControllerFindAll = <
-  TData = PipelinesControllerFindAllResponse,
+  TData = PipelinesControllerFindAllResponse
 >(
   variables: PipelinesControllerFindAllVariables,
   options?: Omit<
@@ -157,45 +157,45 @@ export const usePipelinesControllerFindAll = <
       PipelinesControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     PipelinesControllerFindAllResponse,
     PipelinesControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/pipelines",
-      operationId: "pipelinesControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/pipelines',
+      operationId: 'pipelinesControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchPipelinesControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type PipelinesControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type PipelinesControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type PipelinesControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerFindOneVariables = {
-  pathParams: PipelinesControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: PipelinesControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchPipelinesControllerFindOne = (
   variables: PipelinesControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.PipelineEntity,
@@ -205,13 +205,13 @@ export const fetchPipelinesControllerFindOne = (
     {},
     PipelinesControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/pipelines/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/pipelines/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const usePipelinesControllerFindOne = <TData = Schemas.PipelineEntity,>(
+export const usePipelinesControllerFindOne = <TData = Schemas.PipelineEntity>(
   variables: PipelinesControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -219,45 +219,45 @@ export const usePipelinesControllerFindOne = <TData = Schemas.PipelineEntity,>(
       PipelinesControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.PipelineEntity,
     PipelinesControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/pipelines/{id}",
-      operationId: "pipelinesControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/pipelines/{id}',
+      operationId: 'pipelinesControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchPipelinesControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type PipelinesControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type PipelinesControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type PipelinesControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerRemoveVariables = {
-  pathParams: PipelinesControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: PipelinesControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchPipelinesControllerRemove = (
   variables: PipelinesControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -267,11 +267,11 @@ export const fetchPipelinesControllerRemove = (
     {},
     PipelinesControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/pipelines/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/pipelines/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const usePipelinesControllerRemove = (
   options?: Omit<
@@ -280,10 +280,10 @@ export const usePipelinesControllerRemove = (
       PipelinesControllerRemoveError,
       PipelinesControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     PipelinesControllerRemoveError,
@@ -291,25 +291,25 @@ export const usePipelinesControllerRemove = (
   >({
     mutationFn: (variables: PipelinesControllerRemoveVariables) =>
       fetchPipelinesControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type PipelinesControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type PipelinesControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type PipelinesControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerUpdateVariables = {
-  body?: Schemas.UpdatePipelineDto;
-  pathParams: PipelinesControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdatePipelineDto
+  pathParams: PipelinesControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchPipelinesControllerUpdate = (
   variables: PipelinesControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.PipelineEntity,
@@ -319,11 +319,11 @@ export const fetchPipelinesControllerUpdate = (
     {},
     PipelinesControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/pipelines/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/pipelines/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const usePipelinesControllerUpdate = (
   options?: Omit<
@@ -332,10 +332,10 @@ export const usePipelinesControllerUpdate = (
       PipelinesControllerUpdateError,
       PipelinesControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.PipelineEntity,
     PipelinesControllerUpdateError,
@@ -343,23 +343,23 @@ export const usePipelinesControllerUpdate = (
   >({
     mutationFn: (variables: PipelinesControllerUpdateVariables) =>
       fetchPipelinesControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerEmailChangeConfirmError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerEmailChangeConfirmVariables = {
-  body: Schemas.ConfirmationTokenDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.ConfirmationTokenDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will confirm your e-mail change with a token
  */
 export const fetchAuthControllerEmailChangeConfirm = (
   variables: AuthControllerEmailChangeConfirmVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -369,11 +369,11 @@ export const fetchAuthControllerEmailChangeConfirm = (
     {},
     {}
   >({
-    url: "/auth/email-change/confirm",
-    method: "post",
+    url: '/auth/email-change/confirm',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will confirm your e-mail change with a token
@@ -385,10 +385,10 @@ export const useAuthControllerEmailChangeConfirm = (
       AuthControllerEmailChangeConfirmError,
       AuthControllerEmailChangeConfirmVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerEmailChangeConfirmError,
@@ -397,25 +397,25 @@ export const useAuthControllerEmailChangeConfirm = (
     mutationFn: (variables: AuthControllerEmailChangeConfirmVariables) =>
       fetchAuthControllerEmailChangeConfirm({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerEmailChangeRequestError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerEmailChangeRequestVariables = {
-  body: Schemas.EmailRequestDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.EmailRequestDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will request your e-mail change with a token
  */
 export const fetchAuthControllerEmailChangeRequest = (
   variables: AuthControllerEmailChangeRequestVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -425,11 +425,11 @@ export const fetchAuthControllerEmailChangeRequest = (
     {},
     {}
   >({
-    url: "/auth/email-change/request",
-    method: "post",
+    url: '/auth/email-change/request',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will request your e-mail change with a token
@@ -441,10 +441,10 @@ export const useAuthControllerEmailChangeRequest = (
       AuthControllerEmailChangeRequestError,
       AuthControllerEmailChangeRequestVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     AuthControllerEmailChangeRequestError,
@@ -453,25 +453,25 @@ export const useAuthControllerEmailChangeRequest = (
     mutationFn: (variables: AuthControllerEmailChangeRequestVariables) =>
       fetchAuthControllerEmailChangeRequest({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerEmailVerificationConfirmError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerEmailVerificationConfirmVariables = {
-  body: Schemas.ConfirmationTokenDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.ConfirmationTokenDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will confirm your e-mail with a token
  */
 export const fetchAuthControllerEmailVerificationConfirm = (
   variables: AuthControllerEmailVerificationConfirmVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -481,11 +481,11 @@ export const fetchAuthControllerEmailVerificationConfirm = (
     {},
     {}
   >({
-    url: "/auth/email-verification/confirm",
-    method: "post",
+    url: '/auth/email-verification/confirm',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will confirm your e-mail with a token
@@ -497,10 +497,10 @@ export const useAuthControllerEmailVerificationConfirm = (
       AuthControllerEmailVerificationConfirmError,
       AuthControllerEmailVerificationConfirmVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerEmailVerificationConfirmError,
@@ -509,24 +509,24 @@ export const useAuthControllerEmailVerificationConfirm = (
     mutationFn: (variables: AuthControllerEmailVerificationConfirmVariables) =>
       fetchAuthControllerEmailVerificationConfirm({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerEmailVerificationRequestError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerEmailVerificationRequestVariables =
-  ArchesApiContext["fetcherOptions"];
+  ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
  */
 export const fetchAuthControllerEmailVerificationRequest = (
   variables: AuthControllerEmailVerificationRequestVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -536,11 +536,11 @@ export const fetchAuthControllerEmailVerificationRequest = (
     {},
     {}
   >({
-    url: "/auth/email-verification/request",
-    method: "post",
+    url: '/auth/email-verification/request',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will send an e-mail verification link to you. ADMIN ONLY.
@@ -552,10 +552,10 @@ export const useAuthControllerEmailVerificationRequest = (
       AuthControllerEmailVerificationRequestError,
       AuthControllerEmailVerificationRequestVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     AuthControllerEmailVerificationRequestError,
@@ -564,24 +564,24 @@ export const useAuthControllerEmailVerificationRequest = (
     mutationFn: (variables: AuthControllerEmailVerificationRequestVariables) =>
       fetchAuthControllerEmailVerificationRequest({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type AuthControllerLoginError = Fetcher.ErrorWrapper<undefined>;
+export type AuthControllerLoginError = Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerLoginVariables = {
-  body: Schemas.LoginDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.LoginDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will log you in with your e-mail and password
  */
 export const fetchAuthControllerLogin = (
   variables: AuthControllerLoginVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -590,7 +590,7 @@ export const fetchAuthControllerLogin = (
     {},
     {},
     {}
-  >({ url: "/auth/login", method: "post", ...variables, signal });
+  >({ url: '/auth/login', method: 'post', ...variables, signal })
 
 /**
  * This endpoint will log you in with your e-mail and password
@@ -602,10 +602,10 @@ export const useAuthControllerLogin = (
       AuthControllerLoginError,
       AuthControllerLoginVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerLoginError,
@@ -613,27 +613,27 @@ export const useAuthControllerLogin = (
   >({
     mutationFn: (variables: AuthControllerLoginVariables) =>
       fetchAuthControllerLogin({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type AuthControllerLogoutError = Fetcher.ErrorWrapper<undefined>;
+export type AuthControllerLogoutError = Fetcher.ErrorWrapper<undefined>
 
-export type AuthControllerLogoutVariables = ArchesApiContext["fetcherOptions"];
+export type AuthControllerLogoutVariables = ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will log you out of the current session
  */
 export const fetchAuthControllerLogout = (
   variables: AuthControllerLogoutVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<undefined, AuthControllerLogoutError, undefined, {}, {}, {}>({
-    url: "/auth/logout",
-    method: "post",
+    url: '/auth/logout',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will log you out of the current session
@@ -645,10 +645,10 @@ export const useAuthControllerLogout = (
       AuthControllerLogoutError,
       AuthControllerLogoutVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     AuthControllerLogoutError,
@@ -656,23 +656,23 @@ export const useAuthControllerLogout = (
   >({
     mutationFn: (variables: AuthControllerLogoutVariables) =>
       fetchAuthControllerLogout({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerPasswordResetConfirmError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerPasswordResetConfirmVariables = {
-  body: Schemas.ConfirmationTokenWithNewPasswordDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.ConfirmationTokenWithNewPasswordDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will confirm your password change with a token
  */
 export const fetchAuthControllerPasswordResetConfirm = (
   variables: AuthControllerPasswordResetConfirmVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -682,11 +682,11 @@ export const fetchAuthControllerPasswordResetConfirm = (
     {},
     {}
   >({
-    url: "/auth/password-reset/confirm",
-    method: "post",
+    url: '/auth/password-reset/confirm',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will confirm your password change with a token
@@ -698,10 +698,10 @@ export const useAuthControllerPasswordResetConfirm = (
       AuthControllerPasswordResetConfirmError,
       AuthControllerPasswordResetConfirmVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerPasswordResetConfirmError,
@@ -710,25 +710,25 @@ export const useAuthControllerPasswordResetConfirm = (
     mutationFn: (variables: AuthControllerPasswordResetConfirmVariables) =>
       fetchAuthControllerPasswordResetConfirm({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type AuthControllerPasswordResetRequestError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerPasswordResetRequestVariables = {
-  body: Schemas.EmailRequestDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.EmailRequestDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will request a password reset link
  */
 export const fetchAuthControllerPasswordResetRequest = (
   variables: AuthControllerPasswordResetRequestVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -738,11 +738,11 @@ export const fetchAuthControllerPasswordResetRequest = (
     {},
     {}
   >({
-    url: "/auth/password-reset/request",
-    method: "post",
+    url: '/auth/password-reset/request',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will request a password reset link
@@ -754,10 +754,10 @@ export const useAuthControllerPasswordResetRequest = (
       AuthControllerPasswordResetRequestError,
       AuthControllerPasswordResetRequestVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     AuthControllerPasswordResetRequestError,
@@ -766,23 +766,23 @@ export const useAuthControllerPasswordResetRequest = (
     mutationFn: (variables: AuthControllerPasswordResetRequestVariables) =>
       fetchAuthControllerPasswordResetRequest({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type AuthControllerRefreshTokenError = Fetcher.ErrorWrapper<undefined>;
+export type AuthControllerRefreshTokenError = Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerRefreshTokenVariables =
-  ArchesApiContext["fetcherOptions"];
+  ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will refresh your access token
  */
 export const fetchAuthControllerRefreshToken = (
   variables: AuthControllerRefreshTokenVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -791,7 +791,7 @@ export const fetchAuthControllerRefreshToken = (
     {},
     {},
     {}
-  >({ url: "/auth/refresh-token", method: "post", ...variables, signal });
+  >({ url: '/auth/refresh-token', method: 'post', ...variables, signal })
 
 /**
  * This endpoint will refresh your access token
@@ -803,10 +803,10 @@ export const useAuthControllerRefreshToken = (
       AuthControllerRefreshTokenError,
       AuthControllerRefreshTokenVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerRefreshTokenError,
@@ -814,22 +814,22 @@ export const useAuthControllerRefreshToken = (
   >({
     mutationFn: (variables: AuthControllerRefreshTokenVariables) =>
       fetchAuthControllerRefreshToken({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type AuthControllerRegisterError = Fetcher.ErrorWrapper<undefined>;
+export type AuthControllerRegisterError = Fetcher.ErrorWrapper<undefined>
 
 export type AuthControllerRegisterVariables = {
-  body: Schemas.RegisterDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.RegisterDto
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will register a new account and return a JWT token which should be provided in your auth headers
  */
 export const fetchAuthControllerRegister = (
   variables: AuthControllerRegisterVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.TokenDto,
@@ -838,7 +838,7 @@ export const fetchAuthControllerRegister = (
     {},
     {},
     {}
-  >({ url: "/auth/register", method: "post", ...variables, signal });
+  >({ url: '/auth/register', method: 'post', ...variables, signal })
 
 /**
  * This endpoint will register a new account and return a JWT token which should be provided in your auth headers
@@ -850,10 +850,10 @@ export const useAuthControllerRegister = (
       AuthControllerRegisterError,
       AuthControllerRegisterVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.TokenDto,
     AuthControllerRegisterError,
@@ -861,21 +861,21 @@ export const useAuthControllerRegister = (
   >({
     mutationFn: (variables: AuthControllerRegisterVariables) =>
       fetchAuthControllerRegister({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type UsersControllerDeactivateError = Fetcher.ErrorWrapper<undefined>;
+export type UsersControllerDeactivateError = Fetcher.ErrorWrapper<undefined>
 
 export type UsersControllerDeactivateVariables =
-  ArchesApiContext["fetcherOptions"];
+  ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint deactivates a user.
  */
 export const fetchUsersControllerDeactivate = (
   variables: UsersControllerDeactivateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -884,7 +884,7 @@ export const fetchUsersControllerDeactivate = (
     {},
     {},
     {}
-  >({ url: "/user/deactivate", method: "post", ...variables, signal });
+  >({ url: '/user/deactivate', method: 'post', ...variables, signal })
 
 /**
  * This endpoint deactivates a user.
@@ -896,10 +896,10 @@ export const useUsersControllerDeactivate = (
       UsersControllerDeactivateError,
       UsersControllerDeactivateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     UsersControllerDeactivateError,
@@ -907,21 +907,20 @@ export const useUsersControllerDeactivate = (
   >({
     mutationFn: (variables: UsersControllerDeactivateVariables) =>
       fetchUsersControllerDeactivate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type UsersControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type UsersControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
-export type UsersControllerFindOneVariables =
-  ArchesApiContext["fetcherOptions"];
+export type UsersControllerFindOneVariables = ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint returns a user.
  */
 export const fetchUsersControllerFindOne = (
   variables: UsersControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.UserEntity,
@@ -930,12 +929,12 @@ export const fetchUsersControllerFindOne = (
     {},
     {},
     {}
-  >({ url: "/user", method: "get", ...variables, signal });
+  >({ url: '/user', method: 'get', ...variables, signal })
 
 /**
  * This endpoint returns a user.
  */
-export const useUsersControllerFindOne = <TData = Schemas.UserEntity,>(
+export const useUsersControllerFindOne = <TData = Schemas.UserEntity>(
   variables: UsersControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -943,37 +942,37 @@ export const useUsersControllerFindOne = <TData = Schemas.UserEntity,>(
       UsersControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.UserEntity,
     UsersControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/user",
-      operationId: "usersControllerFindOne",
-      variables,
+      path: '/user',
+      operationId: 'usersControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchUsersControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
-export type UsersControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type UsersControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type UsersControllerUpdateVariables = {
-  body?: Schemas.UpdateUserDto;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateUserDto
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchUsersControllerUpdate = (
   variables: UsersControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.UserEntity,
@@ -982,7 +981,7 @@ export const fetchUsersControllerUpdate = (
     {},
     {},
     {}
-  >({ url: "/user", method: "patch", ...variables, signal });
+  >({ url: '/user', method: 'patch', ...variables, signal })
 
 export const useUsersControllerUpdate = (
   options?: Omit<
@@ -991,10 +990,10 @@ export const useUsersControllerUpdate = (
       UsersControllerUpdateError,
       UsersControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.UserEntity,
     UsersControllerUpdateError,
@@ -1002,20 +1001,19 @@ export const useUsersControllerUpdate = (
   >({
     mutationFn: (variables: UsersControllerUpdateVariables) =>
       fetchUsersControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type OrganizationsControllerCreateError =
-  Fetcher.ErrorWrapper<undefined>;
+export type OrganizationsControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type OrganizationsControllerCreateVariables = {
-  body: Schemas.CreateOrganizationDto;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateOrganizationDto
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchOrganizationsControllerCreate = (
   variables: OrganizationsControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -1024,7 +1022,7 @@ export const fetchOrganizationsControllerCreate = (
     {},
     {},
     {}
-  >({ url: "/organizations", method: "post", ...variables, signal });
+  >({ url: '/organizations', method: 'post', ...variables, signal })
 
 export const useOrganizationsControllerCreate = (
   options?: Omit<
@@ -1033,10 +1031,10 @@ export const useOrganizationsControllerCreate = (
       OrganizationsControllerCreateError,
       OrganizationsControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.OrganizationEntity,
     OrganizationsControllerCreateError,
@@ -1044,24 +1042,23 @@ export const useOrganizationsControllerCreate = (
   >({
     mutationFn: (variables: OrganizationsControllerCreateVariables) =>
       fetchOrganizationsControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type OrganizationsControllerDeletePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type OrganizationsControllerDeleteError =
-  Fetcher.ErrorWrapper<undefined>;
+export type OrganizationsControllerDeleteError = Fetcher.ErrorWrapper<undefined>
 
 export type OrganizationsControllerDeleteVariables = {
-  pathParams: OrganizationsControllerDeletePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: OrganizationsControllerDeletePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchOrganizationsControllerDelete = (
   variables: OrganizationsControllerDeleteVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -1071,11 +1068,11 @@ export const fetchOrganizationsControllerDelete = (
     {},
     OrganizationsControllerDeletePathParams
   >({
-    url: "/organizations/{orgname}",
-    method: "delete",
+    url: '/organizations/{orgname}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useOrganizationsControllerDelete = (
   options?: Omit<
@@ -1084,10 +1081,10 @@ export const useOrganizationsControllerDelete = (
       OrganizationsControllerDeleteError,
       OrganizationsControllerDeleteVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     OrganizationsControllerDeleteError,
@@ -1095,24 +1092,24 @@ export const useOrganizationsControllerDelete = (
   >({
     mutationFn: (variables: OrganizationsControllerDeleteVariables) =>
       fetchOrganizationsControllerDelete({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type OrganizationsControllerFindOnePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type OrganizationsControllerFindOneError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type OrganizationsControllerFindOneVariables = {
-  pathParams: OrganizationsControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: OrganizationsControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchOrganizationsControllerFindOne = (
   variables: OrganizationsControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -1121,10 +1118,10 @@ export const fetchOrganizationsControllerFindOne = (
     {},
     {},
     OrganizationsControllerFindOnePathParams
-  >({ url: "/organizations/{orgname}", method: "get", ...variables, signal });
+  >({ url: '/organizations/{orgname}', method: 'get', ...variables, signal })
 
 export const useOrganizationsControllerFindOne = <
-  TData = Schemas.OrganizationEntity,
+  TData = Schemas.OrganizationEntity
 >(
   variables: OrganizationsControllerFindOneVariables,
   options?: Omit<
@@ -1133,46 +1130,45 @@ export const useOrganizationsControllerFindOne = <
       OrganizationsControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.OrganizationEntity,
     OrganizationsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}",
-      operationId: "organizationsControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}',
+      operationId: 'organizationsControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchOrganizationsControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type OrganizationsControllerUpdatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type OrganizationsControllerUpdateError =
-  Fetcher.ErrorWrapper<undefined>;
+export type OrganizationsControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type OrganizationsControllerUpdateVariables = {
-  body: Schemas.UpdateOrganizationDto;
-  pathParams: OrganizationsControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.UpdateOrganizationDto
+  pathParams: OrganizationsControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchOrganizationsControllerUpdate = (
   variables: OrganizationsControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.OrganizationEntity,
@@ -1181,7 +1177,7 @@ export const fetchOrganizationsControllerUpdate = (
     {},
     {},
     OrganizationsControllerUpdatePathParams
-  >({ url: "/organizations/{orgname}", method: "patch", ...variables, signal });
+  >({ url: '/organizations/{orgname}', method: 'patch', ...variables, signal })
 
 export const useOrganizationsControllerUpdate = (
   options?: Omit<
@@ -1190,10 +1186,10 @@ export const useOrganizationsControllerUpdate = (
       OrganizationsControllerUpdateError,
       OrganizationsControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.OrganizationEntity,
     OrganizationsControllerUpdateError,
@@ -1201,27 +1197,27 @@ export const useOrganizationsControllerUpdate = (
   >({
     mutationFn: (variables: OrganizationsControllerUpdateVariables) =>
       fetchOrganizationsControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type BillingControllerCancelSubscriptionPlanPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type BillingControllerCancelSubscriptionPlanError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerCancelSubscriptionPlanVariables = {
-  pathParams: BillingControllerCancelSubscriptionPlanPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerCancelSubscriptionPlanPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will cancel the subscription plan for an organization
  */
 export const fetchBillingControllerCancelSubscriptionPlan = (
   variables: BillingControllerCancelSubscriptionPlanVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -1231,11 +1227,11 @@ export const fetchBillingControllerCancelSubscriptionPlan = (
     {},
     BillingControllerCancelSubscriptionPlanPathParams
   >({
-    url: "/organizations/{orgname}/billing/subscription/cancel",
-    method: "post",
+    url: '/organizations/{orgname}/billing/subscription/cancel',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will cancel the subscription plan for an organization
@@ -1247,10 +1243,10 @@ export const useBillingControllerCancelSubscriptionPlan = (
       BillingControllerCancelSubscriptionPlanError,
       BillingControllerCancelSubscriptionPlanVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     BillingControllerCancelSubscriptionPlanError,
@@ -1259,34 +1255,34 @@ export const useBillingControllerCancelSubscriptionPlan = (
     mutationFn: (variables: BillingControllerCancelSubscriptionPlanVariables) =>
       fetchBillingControllerCancelSubscriptionPlan({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type BillingControllerChangeSubscriptionPlanPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type BillingControllerChangeSubscriptionPlanQueryParams = {
-  planId: string;
-};
+  planId: string
+}
 
 export type BillingControllerChangeSubscriptionPlanError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerChangeSubscriptionPlanVariables = {
-  pathParams: BillingControllerChangeSubscriptionPlanPathParams;
-  queryParams: BillingControllerChangeSubscriptionPlanQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerChangeSubscriptionPlanPathParams
+  queryParams: BillingControllerChangeSubscriptionPlanQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will change the subscription plan for an organization
  */
 export const fetchBillingControllerChangeSubscriptionPlan = (
   variables: BillingControllerChangeSubscriptionPlanVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -1296,11 +1292,11 @@ export const fetchBillingControllerChangeSubscriptionPlan = (
     BillingControllerChangeSubscriptionPlanQueryParams,
     BillingControllerChangeSubscriptionPlanPathParams
   >({
-    url: "/organizations/{orgname}/billing/subscription",
-    method: "post",
+    url: '/organizations/{orgname}/billing/subscription',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will change the subscription plan for an organization
@@ -1312,10 +1308,10 @@ export const useBillingControllerChangeSubscriptionPlan = (
       BillingControllerChangeSubscriptionPlanError,
       BillingControllerChangeSubscriptionPlanVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     BillingControllerChangeSubscriptionPlanError,
@@ -1324,29 +1320,29 @@ export const useBillingControllerChangeSubscriptionPlan = (
     mutationFn: (variables: BillingControllerChangeSubscriptionPlanVariables) =>
       fetchBillingControllerChangeSubscriptionPlan({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type BillingControllerCreateBillingPortalPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type BillingControllerCreateBillingPortalError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerCreateBillingPortalVariables = {
-  pathParams: BillingControllerCreateBillingPortalPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerCreateBillingPortalPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will create a billing portal for an organization to edit their subscription and billing information
  */
 export const fetchBillingControllerCreateBillingPortal = (
   variables: BillingControllerCreateBillingPortalVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
@@ -1356,11 +1352,11 @@ export const fetchBillingControllerCreateBillingPortal = (
     {},
     BillingControllerCreateBillingPortalPathParams
   >({
-    url: "/organizations/{orgname}/billing/portal",
-    method: "post",
+    url: '/organizations/{orgname}/billing/portal',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will create a billing portal for an organization to edit their subscription and billing information
@@ -1372,10 +1368,10 @@ export const useBillingControllerCreateBillingPortal = (
       BillingControllerCreateBillingPortalError,
       BillingControllerCreateBillingPortalVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.BillingUrlEntity,
     BillingControllerCreateBillingPortalError,
@@ -1384,34 +1380,34 @@ export const useBillingControllerCreateBillingPortal = (
     mutationFn: (variables: BillingControllerCreateBillingPortalVariables) =>
       fetchBillingControllerCreateBillingPortal({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type BillingControllerCreateCheckoutSessionPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type BillingControllerCreateCheckoutSessionQueryParams = {
-  planId: string;
-};
+  planId: string
+}
 
 export type BillingControllerCreateCheckoutSessionError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerCreateCheckoutSessionVariables = {
-  pathParams: BillingControllerCreateCheckoutSessionPathParams;
-  queryParams: BillingControllerCreateCheckoutSessionQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerCreateCheckoutSessionPathParams
+  queryParams: BillingControllerCreateCheckoutSessionQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will create a checkout session for an organization to purchase a subscription or one-time product
  */
 export const fetchBillingControllerCreateCheckoutSession = (
   variables: BillingControllerCreateCheckoutSessionVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.BillingUrlEntity,
@@ -1421,11 +1417,11 @@ export const fetchBillingControllerCreateCheckoutSession = (
     BillingControllerCreateCheckoutSessionQueryParams,
     BillingControllerCreateCheckoutSessionPathParams
   >({
-    url: "/organizations/{orgname}/billing/checkout",
-    method: "post",
+    url: '/organizations/{orgname}/billing/checkout',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will create a checkout session for an organization to purchase a subscription or one-time product
@@ -1437,10 +1433,10 @@ export const useBillingControllerCreateCheckoutSession = (
       BillingControllerCreateCheckoutSessionError,
       BillingControllerCreateCheckoutSessionVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.BillingUrlEntity,
     BillingControllerCreateCheckoutSessionError,
@@ -1449,25 +1445,25 @@ export const useBillingControllerCreateCheckoutSession = (
     mutationFn: (variables: BillingControllerCreateCheckoutSessionVariables) =>
       fetchBillingControllerCreateCheckoutSession({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
-export type BillingControllerGetPlansError = Fetcher.ErrorWrapper<undefined>;
+export type BillingControllerGetPlansError = Fetcher.ErrorWrapper<undefined>
 
-export type BillingControllerGetPlansResponse = Schemas.PlanEntity[];
+export type BillingControllerGetPlansResponse = Schemas.PlanEntity[]
 
 export type BillingControllerGetPlansVariables =
-  ArchesApiContext["fetcherOptions"];
+  ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will return a list of available billing plans
  */
 export const fetchBillingControllerGetPlans = (
   variables: BillingControllerGetPlansVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     BillingControllerGetPlansResponse,
@@ -1476,13 +1472,13 @@ export const fetchBillingControllerGetPlans = (
     {},
     {},
     {}
-  >({ url: "/plans", method: "get", ...variables, signal });
+  >({ url: '/plans', method: 'get', ...variables, signal })
 
 /**
  * This endpoint will return a list of available billing plans
  */
 export const useBillingControllerGetPlans = <
-  TData = BillingControllerGetPlansResponse,
+  TData = BillingControllerGetPlansResponse
 >(
   variables: BillingControllerGetPlansVariables,
   options?: Omit<
@@ -1491,51 +1487,51 @@ export const useBillingControllerGetPlans = <
       BillingControllerGetPlansError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     BillingControllerGetPlansResponse,
     BillingControllerGetPlansError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/plans",
-      operationId: "billingControllerGetPlans",
-      variables,
+      path: '/plans',
+      operationId: 'billingControllerGetPlans',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchBillingControllerGetPlans(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type BillingControllerListPaymentMethodsPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type BillingControllerListPaymentMethodsError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerListPaymentMethodsResponse =
-  Schemas.PaymentMethodEntity[];
+  Schemas.PaymentMethodEntity[]
 
 export type BillingControllerListPaymentMethodsVariables = {
-  pathParams: BillingControllerListPaymentMethodsPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerListPaymentMethodsPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will return a list of payment methods for an organization
  */
 export const fetchBillingControllerListPaymentMethods = (
   variables: BillingControllerListPaymentMethodsVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     BillingControllerListPaymentMethodsResponse,
@@ -1545,17 +1541,17 @@ export const fetchBillingControllerListPaymentMethods = (
     {},
     BillingControllerListPaymentMethodsPathParams
   >({
-    url: "/organizations/{orgname}/billing/payment-methods",
-    method: "get",
+    url: '/organizations/{orgname}/billing/payment-methods',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will return a list of payment methods for an organization
  */
 export const useBillingControllerListPaymentMethods = <
-  TData = BillingControllerListPaymentMethodsResponse,
+  TData = BillingControllerListPaymentMethodsResponse
 >(
   variables: BillingControllerListPaymentMethodsVariables,
   options?: Omit<
@@ -1564,49 +1560,49 @@ export const useBillingControllerListPaymentMethods = <
       BillingControllerListPaymentMethodsError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     BillingControllerListPaymentMethodsResponse,
     BillingControllerListPaymentMethodsError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/billing/payment-methods",
-      operationId: "billingControllerListPaymentMethods",
-      variables,
+      path: '/organizations/{orgname}/billing/payment-methods',
+      operationId: 'billingControllerListPaymentMethods',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchBillingControllerListPaymentMethods(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type BillingControllerRemovePaymentMethodPathParams = {
-  orgname: string;
-  paymentMethodId: string;
-};
+  orgname: string
+  paymentMethodId: string
+}
 
 export type BillingControllerRemovePaymentMethodError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
 export type BillingControllerRemovePaymentMethodVariables = {
-  pathParams: BillingControllerRemovePaymentMethodPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: BillingControllerRemovePaymentMethodPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will remove a payment method from an organization
  */
 export const fetchBillingControllerRemovePaymentMethod = (
   variables: BillingControllerRemovePaymentMethodVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -1616,11 +1612,11 @@ export const fetchBillingControllerRemovePaymentMethod = (
     {},
     BillingControllerRemovePaymentMethodPathParams
   >({
-    url: "/organizations/{orgname}/billing/payment-methods/{paymentMethodId}",
-    method: "delete",
+    url: '/organizations/{orgname}/billing/payment-methods/{paymentMethodId}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will remove a payment method from an organization
@@ -1632,10 +1628,10 @@ export const useBillingControllerRemovePaymentMethod = (
       BillingControllerRemovePaymentMethodError,
       BillingControllerRemovePaymentMethodVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     BillingControllerRemovePaymentMethodError,
@@ -1644,26 +1640,26 @@ export const useBillingControllerRemovePaymentMethod = (
     mutationFn: (variables: BillingControllerRemovePaymentMethodVariables) =>
       fetchBillingControllerRemovePaymentMethod({
         ...fetcherOptions,
-        ...variables,
+        ...variables
       }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ToolsControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type ToolsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ToolsControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerCreateVariables = {
-  body: Schemas.CreateToolDto;
-  pathParams: ToolsControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateToolDto
+  pathParams: ToolsControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchToolsControllerCreate = (
   variables: ToolsControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ToolEntity,
@@ -1673,11 +1669,11 @@ export const fetchToolsControllerCreate = (
     {},
     ToolsControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/tools",
-    method: "post",
+    url: '/organizations/{orgname}/tools',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useToolsControllerCreate = (
   options?: Omit<
@@ -1686,10 +1682,10 @@ export const useToolsControllerCreate = (
       ToolsControllerCreateError,
       ToolsControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ToolEntity,
     ToolsControllerCreateError,
@@ -1697,82 +1693,82 @@ export const useToolsControllerCreate = (
   >({
     mutationFn: (variables: ToolsControllerCreateVariables) =>
       fetchToolsControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ToolsControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type ToolsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type ToolsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type ToolsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.ToolEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.ToolEntity[]
+}
 
 export type ToolsControllerFindAllVariables = {
-  pathParams: ToolsControllerFindAllPathParams;
-  queryParams?: ToolsControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ToolsControllerFindAllPathParams
+  queryParams?: ToolsControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchToolsControllerFindAll = (
   variables: ToolsControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     ToolsControllerFindAllResponse,
@@ -1782,14 +1778,14 @@ export const fetchToolsControllerFindAll = (
     ToolsControllerFindAllQueryParams,
     ToolsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/tools",
-    method: "get",
+    url: '/organizations/{orgname}/tools',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useToolsControllerFindAll = <
-  TData = ToolsControllerFindAllResponse,
+  TData = ToolsControllerFindAllResponse
 >(
   variables: ToolsControllerFindAllVariables,
   options?: Omit<
@@ -1798,42 +1794,42 @@ export const useToolsControllerFindAll = <
       ToolsControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     ToolsControllerFindAllResponse,
     ToolsControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/tools",
-      operationId: "toolsControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/tools',
+      operationId: 'toolsControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchToolsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ToolsControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ToolsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type ToolsControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerFindOneVariables = {
-  pathParams: ToolsControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ToolsControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchToolsControllerFindOne = (
   variables: ToolsControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ToolEntity,
@@ -1843,13 +1839,13 @@ export const fetchToolsControllerFindOne = (
     {},
     ToolsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/tools/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/tools/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useToolsControllerFindOne = <TData = Schemas.ToolEntity,>(
+export const useToolsControllerFindOne = <TData = Schemas.ToolEntity>(
   variables: ToolsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -1857,42 +1853,42 @@ export const useToolsControllerFindOne = <TData = Schemas.ToolEntity,>(
       ToolsControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.ToolEntity,
     ToolsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/tools/{id}",
-      operationId: "toolsControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/tools/{id}',
+      operationId: 'toolsControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchToolsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ToolsControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ToolsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type ToolsControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerRemoveVariables = {
-  pathParams: ToolsControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ToolsControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchToolsControllerRemove = (
   variables: ToolsControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -1902,11 +1898,11 @@ export const fetchToolsControllerRemove = (
     {},
     ToolsControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/tools/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/tools/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useToolsControllerRemove = (
   options?: Omit<
@@ -1915,10 +1911,10 @@ export const useToolsControllerRemove = (
       ToolsControllerRemoveError,
       ToolsControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     ToolsControllerRemoveError,
@@ -1926,25 +1922,25 @@ export const useToolsControllerRemove = (
   >({
     mutationFn: (variables: ToolsControllerRemoveVariables) =>
       fetchToolsControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ToolsControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ToolsControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type ToolsControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerUpdateVariables = {
-  body?: Schemas.UpdateToolDto;
-  pathParams: ToolsControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateToolDto
+  pathParams: ToolsControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchToolsControllerUpdate = (
   variables: ToolsControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ToolEntity,
@@ -1954,11 +1950,11 @@ export const fetchToolsControllerUpdate = (
     {},
     ToolsControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/tools/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/tools/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useToolsControllerUpdate = (
   options?: Omit<
@@ -1967,10 +1963,10 @@ export const useToolsControllerUpdate = (
       ToolsControllerUpdateError,
       ToolsControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ToolEntity,
     ToolsControllerUpdateError,
@@ -1978,27 +1974,27 @@ export const useToolsControllerUpdate = (
   >({
     mutationFn: (variables: ToolsControllerUpdateVariables) =>
       fetchToolsControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ApiTokensControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type ApiTokensControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerCreateVariables = {
-  body: Schemas.CreateApiTokenDto;
-  pathParams: ApiTokensControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateApiTokenDto
+  pathParams: ApiTokensControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint requires the user to be authenticated
  */
 export const fetchApiTokensControllerCreate = (
   variables: ApiTokensControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -2008,11 +2004,11 @@ export const fetchApiTokensControllerCreate = (
     {},
     ApiTokensControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/api-tokens",
-    method: "post",
+    url: '/organizations/{orgname}/api-tokens',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint requires the user to be authenticated
@@ -2024,10 +2020,10 @@ export const useApiTokensControllerCreate = (
       ApiTokensControllerCreateError,
       ApiTokensControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ApiTokenEntity,
     ApiTokensControllerCreateError,
@@ -2035,82 +2031,82 @@ export const useApiTokensControllerCreate = (
   >({
     mutationFn: (variables: ApiTokensControllerCreateVariables) =>
       fetchApiTokensControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ApiTokensControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type ApiTokensControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type ApiTokensControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.ApiTokenEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.ApiTokenEntity[]
+}
 
 export type ApiTokensControllerFindAllVariables = {
-  pathParams: ApiTokensControllerFindAllPathParams;
-  queryParams?: ApiTokensControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ApiTokensControllerFindAllPathParams
+  queryParams?: ApiTokensControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchApiTokensControllerFindAll = (
   variables: ApiTokensControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     ApiTokensControllerFindAllResponse,
@@ -2120,14 +2116,14 @@ export const fetchApiTokensControllerFindAll = (
     ApiTokensControllerFindAllQueryParams,
     ApiTokensControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/api-tokens",
-    method: "get",
+    url: '/organizations/{orgname}/api-tokens',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useApiTokensControllerFindAll = <
-  TData = ApiTokensControllerFindAllResponse,
+  TData = ApiTokensControllerFindAllResponse
 >(
   variables: ApiTokensControllerFindAllVariables,
   options?: Omit<
@@ -2136,45 +2132,45 @@ export const useApiTokensControllerFindAll = <
       ApiTokensControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     ApiTokensControllerFindAllResponse,
     ApiTokensControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/api-tokens",
-      operationId: "apiTokensControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/api-tokens',
+      operationId: 'apiTokensControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchApiTokensControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ApiTokensControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ApiTokensControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerFindOneVariables = {
-  pathParams: ApiTokensControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ApiTokensControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchApiTokensControllerFindOne = (
   variables: ApiTokensControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -2184,13 +2180,13 @@ export const fetchApiTokensControllerFindOne = (
     {},
     ApiTokensControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/api-tokens/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/api-tokens/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity,>(
+export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity>(
   variables: ApiTokensControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -2198,45 +2194,45 @@ export const useApiTokensControllerFindOne = <TData = Schemas.ApiTokenEntity,>(
       ApiTokensControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.ApiTokenEntity,
     ApiTokensControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/api-tokens/{id}",
-      operationId: "apiTokensControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/api-tokens/{id}',
+      operationId: 'apiTokensControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchApiTokensControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ApiTokensControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ApiTokensControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerRemoveVariables = {
-  pathParams: ApiTokensControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ApiTokensControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchApiTokensControllerRemove = (
   variables: ApiTokensControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -2246,11 +2242,11 @@ export const fetchApiTokensControllerRemove = (
     {},
     ApiTokensControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/api-tokens/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/api-tokens/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useApiTokensControllerRemove = (
   options?: Omit<
@@ -2259,10 +2255,10 @@ export const useApiTokensControllerRemove = (
       ApiTokensControllerRemoveError,
       ApiTokensControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     ApiTokensControllerRemoveError,
@@ -2270,25 +2266,25 @@ export const useApiTokensControllerRemove = (
   >({
     mutationFn: (variables: ApiTokensControllerRemoveVariables) =>
       fetchApiTokensControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ApiTokensControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ApiTokensControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type ApiTokensControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerUpdateVariables = {
-  body?: Schemas.UpdateApiTokenDto;
-  pathParams: ApiTokensControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateApiTokenDto
+  pathParams: ApiTokensControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchApiTokensControllerUpdate = (
   variables: ApiTokensControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ApiTokenEntity,
@@ -2298,11 +2294,11 @@ export const fetchApiTokensControllerUpdate = (
     {},
     ApiTokensControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/api-tokens/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/api-tokens/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useApiTokensControllerUpdate = (
   options?: Omit<
@@ -2311,10 +2307,10 @@ export const useApiTokensControllerUpdate = (
       ApiTokensControllerUpdateError,
       ApiTokensControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ApiTokenEntity,
     ApiTokensControllerUpdateError,
@@ -2322,26 +2318,26 @@ export const useApiTokensControllerUpdate = (
   >({
     mutationFn: (variables: ApiTokensControllerUpdateVariables) =>
       fetchApiTokensControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type MembersControllerJoinPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type MembersControllerJoinError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerJoinError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerJoinVariables = {
-  pathParams: MembersControllerJoinPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: MembersControllerJoinPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint requires the user to be authenticated
  */
 export const fetchMembersControllerJoin = (
   variables: MembersControllerJoinVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -2351,11 +2347,11 @@ export const fetchMembersControllerJoin = (
     {},
     MembersControllerJoinPathParams
   >({
-    url: "/organizations/{orgname}/members/join",
-    method: "post",
+    url: '/organizations/{orgname}/members/join',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint requires the user to be authenticated
@@ -2367,10 +2363,10 @@ export const useMembersControllerJoin = (
       MembersControllerJoinError,
       MembersControllerJoinVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.MemberEntity,
     MembersControllerJoinError,
@@ -2378,24 +2374,24 @@ export const useMembersControllerJoin = (
   >({
     mutationFn: (variables: MembersControllerJoinVariables) =>
       fetchMembersControllerJoin({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type MembersControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type MembersControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerCreateVariables = {
-  body: Schemas.CreateMemberDto;
-  pathParams: MembersControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateMemberDto
+  pathParams: MembersControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchMembersControllerCreate = (
   variables: MembersControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -2405,11 +2401,11 @@ export const fetchMembersControllerCreate = (
     {},
     MembersControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/members",
-    method: "post",
+    url: '/organizations/{orgname}/members',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useMembersControllerCreate = (
   options?: Omit<
@@ -2418,10 +2414,10 @@ export const useMembersControllerCreate = (
       MembersControllerCreateError,
       MembersControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.MemberEntity,
     MembersControllerCreateError,
@@ -2429,82 +2425,82 @@ export const useMembersControllerCreate = (
   >({
     mutationFn: (variables: MembersControllerCreateVariables) =>
       fetchMembersControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type MembersControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type MembersControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type MembersControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.MemberEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.MemberEntity[]
+}
 
 export type MembersControllerFindAllVariables = {
-  pathParams: MembersControllerFindAllPathParams;
-  queryParams?: MembersControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: MembersControllerFindAllPathParams
+  queryParams?: MembersControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchMembersControllerFindAll = (
   variables: MembersControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     MembersControllerFindAllResponse,
@@ -2514,14 +2510,14 @@ export const fetchMembersControllerFindAll = (
     MembersControllerFindAllQueryParams,
     MembersControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/members",
-    method: "get",
+    url: '/organizations/{orgname}/members',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useMembersControllerFindAll = <
-  TData = MembersControllerFindAllResponse,
+  TData = MembersControllerFindAllResponse
 >(
   variables: MembersControllerFindAllVariables,
   options?: Omit<
@@ -2530,45 +2526,45 @@ export const useMembersControllerFindAll = <
       MembersControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     MembersControllerFindAllResponse,
     MembersControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/members",
-      operationId: "membersControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/members',
+      operationId: 'membersControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchMembersControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type MembersControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type MembersControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerFindOneVariables = {
-  pathParams: MembersControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: MembersControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchMembersControllerFindOne = (
   variables: MembersControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -2578,13 +2574,13 @@ export const fetchMembersControllerFindOne = (
     {},
     MembersControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/members/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/members/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useMembersControllerFindOne = <TData = Schemas.MemberEntity,>(
+export const useMembersControllerFindOne = <TData = Schemas.MemberEntity>(
   variables: MembersControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -2592,45 +2588,45 @@ export const useMembersControllerFindOne = <TData = Schemas.MemberEntity,>(
       MembersControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.MemberEntity,
     MembersControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/members/{id}",
-      operationId: "membersControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/members/{id}',
+      operationId: 'membersControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchMembersControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type MembersControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type MembersControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerRemoveVariables = {
-  pathParams: MembersControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: MembersControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchMembersControllerRemove = (
   variables: MembersControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -2640,11 +2636,11 @@ export const fetchMembersControllerRemove = (
     {},
     MembersControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/members/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/members/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useMembersControllerRemove = (
   options?: Omit<
@@ -2653,10 +2649,10 @@ export const useMembersControllerRemove = (
       MembersControllerRemoveError,
       MembersControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     MembersControllerRemoveError,
@@ -2664,25 +2660,25 @@ export const useMembersControllerRemove = (
   >({
     mutationFn: (variables: MembersControllerRemoveVariables) =>
       fetchMembersControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type MembersControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type MembersControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type MembersControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerUpdateVariables = {
-  body?: Schemas.UpdateMemberDto;
-  pathParams: MembersControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateMemberDto
+  pathParams: MembersControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchMembersControllerUpdate = (
   variables: MembersControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.MemberEntity,
@@ -2692,11 +2688,11 @@ export const fetchMembersControllerUpdate = (
     {},
     MembersControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/members/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/members/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useMembersControllerUpdate = (
   options?: Omit<
@@ -2705,10 +2701,10 @@ export const useMembersControllerUpdate = (
       MembersControllerUpdateError,
       MembersControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.MemberEntity,
     MembersControllerUpdateError,
@@ -2716,24 +2712,24 @@ export const useMembersControllerUpdate = (
   >({
     mutationFn: (variables: MembersControllerUpdateVariables) =>
       fetchMembersControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type LabelsControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type LabelsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerCreateVariables = {
-  body?: Schemas.CreateLabelDto;
-  pathParams: LabelsControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.CreateLabelDto
+  pathParams: LabelsControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchLabelsControllerCreate = (
   variables: LabelsControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.LabelEntity,
@@ -2743,11 +2739,11 @@ export const fetchLabelsControllerCreate = (
     {},
     LabelsControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/labels",
-    method: "post",
+    url: '/organizations/{orgname}/labels',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useLabelsControllerCreate = (
   options?: Omit<
@@ -2756,10 +2752,10 @@ export const useLabelsControllerCreate = (
       LabelsControllerCreateError,
       LabelsControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.LabelEntity,
     LabelsControllerCreateError,
@@ -2767,82 +2763,82 @@ export const useLabelsControllerCreate = (
   >({
     mutationFn: (variables: LabelsControllerCreateVariables) =>
       fetchLabelsControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type LabelsControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type LabelsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type LabelsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.LabelEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.LabelEntity[]
+}
 
 export type LabelsControllerFindAllVariables = {
-  pathParams: LabelsControllerFindAllPathParams;
-  queryParams?: LabelsControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: LabelsControllerFindAllPathParams
+  queryParams?: LabelsControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchLabelsControllerFindAll = (
   variables: LabelsControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     LabelsControllerFindAllResponse,
@@ -2852,14 +2848,14 @@ export const fetchLabelsControllerFindAll = (
     LabelsControllerFindAllQueryParams,
     LabelsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/labels",
-    method: "get",
+    url: '/organizations/{orgname}/labels',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useLabelsControllerFindAll = <
-  TData = LabelsControllerFindAllResponse,
+  TData = LabelsControllerFindAllResponse
 >(
   variables: LabelsControllerFindAllVariables,
   options?: Omit<
@@ -2868,42 +2864,42 @@ export const useLabelsControllerFindAll = <
       LabelsControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     LabelsControllerFindAllResponse,
     LabelsControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/labels",
-      operationId: "labelsControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/labels',
+      operationId: 'labelsControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchLabelsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type LabelsControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type LabelsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerFindOneVariables = {
-  pathParams: LabelsControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: LabelsControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchLabelsControllerFindOne = (
   variables: LabelsControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.LabelEntity,
@@ -2913,13 +2909,13 @@ export const fetchLabelsControllerFindOne = (
     {},
     LabelsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/labels/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/labels/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useLabelsControllerFindOne = <TData = Schemas.LabelEntity,>(
+export const useLabelsControllerFindOne = <TData = Schemas.LabelEntity>(
   variables: LabelsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -2927,42 +2923,42 @@ export const useLabelsControllerFindOne = <TData = Schemas.LabelEntity,>(
       LabelsControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.LabelEntity,
     LabelsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/labels/{id}",
-      operationId: "labelsControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/labels/{id}',
+      operationId: 'labelsControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchLabelsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type LabelsControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type LabelsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerRemoveVariables = {
-  pathParams: LabelsControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: LabelsControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchLabelsControllerRemove = (
   variables: LabelsControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -2972,11 +2968,11 @@ export const fetchLabelsControllerRemove = (
     {},
     LabelsControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/labels/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/labels/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useLabelsControllerRemove = (
   options?: Omit<
@@ -2985,10 +2981,10 @@ export const useLabelsControllerRemove = (
       LabelsControllerRemoveError,
       LabelsControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     LabelsControllerRemoveError,
@@ -2996,25 +2992,25 @@ export const useLabelsControllerRemove = (
   >({
     mutationFn: (variables: LabelsControllerRemoveVariables) =>
       fetchLabelsControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type LabelsControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type LabelsControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type LabelsControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerUpdateVariables = {
-  body?: Schemas.UpdateLabelDto;
-  pathParams: LabelsControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateLabelDto
+  pathParams: LabelsControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchLabelsControllerUpdate = (
   variables: LabelsControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.LabelEntity,
@@ -3024,11 +3020,11 @@ export const fetchLabelsControllerUpdate = (
     {},
     LabelsControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/labels/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/labels/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useLabelsControllerUpdate = (
   options?: Omit<
@@ -3037,10 +3033,10 @@ export const useLabelsControllerUpdate = (
       LabelsControllerUpdateError,
       LabelsControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.LabelEntity,
     LabelsControllerUpdateError,
@@ -3048,31 +3044,31 @@ export const useLabelsControllerUpdate = (
   >({
     mutationFn: (variables: LabelsControllerUpdateVariables) =>
       fetchLabelsControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type StorageControllerDeletePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type StorageControllerDeleteQueryParams = {
-  path: string;
-};
+  path: string
+}
 
-export type StorageControllerDeleteError = Fetcher.ErrorWrapper<undefined>;
+export type StorageControllerDeleteError = Fetcher.ErrorWrapper<undefined>
 
 export type StorageControllerDeleteVariables = {
-  pathParams: StorageControllerDeletePathParams;
-  queryParams: StorageControllerDeleteQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: StorageControllerDeletePathParams
+  queryParams: StorageControllerDeleteQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
  */
 export const fetchStorageControllerDelete = (
   variables: StorageControllerDeleteVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -3082,11 +3078,11 @@ export const fetchStorageControllerDelete = (
     StorageControllerDeleteQueryParams,
     StorageControllerDeletePathParams
   >({
-    url: "/organizations/{orgname}/storage/delete",
-    method: "delete",
+    url: '/organizations/{orgname}/storage/delete',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will delete a file or directory in the organization's secure storage at the specified path. ADMIN ONLY.
@@ -3098,10 +3094,10 @@ export const useStorageControllerDelete = (
       StorageControllerDeleteError,
       StorageControllerDeleteVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     StorageControllerDeleteError,
@@ -3109,27 +3105,27 @@ export const useStorageControllerDelete = (
   >({
     mutationFn: (variables: StorageControllerDeleteVariables) =>
       fetchStorageControllerDelete({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type StorageControllerGetReadUrlPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type StorageControllerGetReadUrlError = Fetcher.ErrorWrapper<undefined>;
+export type StorageControllerGetReadUrlError = Fetcher.ErrorWrapper<undefined>
 
 export type StorageControllerGetReadUrlVariables = {
-  body: Schemas.PathDto;
-  pathParams: StorageControllerGetReadUrlPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.PathDto
+  pathParams: StorageControllerGetReadUrlPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
  */
 export const fetchStorageControllerGetReadUrl = (
   variables: StorageControllerGetReadUrlVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ReadUrlDto,
@@ -3139,11 +3135,11 @@ export const fetchStorageControllerGetReadUrl = (
     {},
     StorageControllerGetReadUrlPathParams
   >({
-    url: "/organizations/{orgname}/storage/read",
-    method: "post",
+    url: '/organizations/{orgname}/storage/read',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will return a url for reading a file in the organization's secure storage. It will be valid for 15 minutes. ADMIN ONLY.
@@ -3155,10 +3151,10 @@ export const useStorageControllerGetReadUrl = (
       StorageControllerGetReadUrlError,
       StorageControllerGetReadUrlVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ReadUrlDto,
     StorageControllerGetReadUrlError,
@@ -3166,27 +3162,27 @@ export const useStorageControllerGetReadUrl = (
   >({
     mutationFn: (variables: StorageControllerGetReadUrlVariables) =>
       fetchStorageControllerGetReadUrl({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type StorageControllerGetWriteUrlPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type StorageControllerGetWriteUrlError = Fetcher.ErrorWrapper<undefined>;
+export type StorageControllerGetWriteUrlError = Fetcher.ErrorWrapper<undefined>
 
 export type StorageControllerGetWriteUrlVariables = {
-  body: Schemas.PathDto;
-  pathParams: StorageControllerGetWriteUrlPathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.PathDto
+  pathParams: StorageControllerGetWriteUrlPathParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
  */
 export const fetchStorageControllerGetWriteUrl = (
   variables: StorageControllerGetWriteUrlVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.WriteUrlDto,
@@ -3196,11 +3192,11 @@ export const fetchStorageControllerGetWriteUrl = (
     {},
     StorageControllerGetWriteUrlPathParams
   >({
-    url: "/organizations/{orgname}/storage/write",
-    method: "post",
+    url: '/organizations/{orgname}/storage/write',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will return a url for writing to a file location in the organization's secure storage. You must write your file to the url returned by this endpoint. If you use is isDir param, it will create a directory instead of a file and you do not need to write to the url. ADMIN ONLY.
@@ -3212,10 +3208,10 @@ export const useStorageControllerGetWriteUrl = (
       StorageControllerGetWriteUrlError,
       StorageControllerGetWriteUrlVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.WriteUrlDto,
     StorageControllerGetWriteUrlError,
@@ -3223,34 +3219,34 @@ export const useStorageControllerGetWriteUrl = (
   >({
     mutationFn: (variables: StorageControllerGetWriteUrlVariables) =>
       fetchStorageControllerGetWriteUrl({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type StorageControllerListDirectoryPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type StorageControllerListDirectoryQueryParams = {
-  path: string;
-};
+  path: string
+}
 
 export type StorageControllerListDirectoryError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<undefined>
 
-export type StorageControllerListDirectoryResponse = Schemas.StorageItemDto[];
+export type StorageControllerListDirectoryResponse = Schemas.StorageItemDto[]
 
 export type StorageControllerListDirectoryVariables = {
-  pathParams: StorageControllerListDirectoryPathParams;
-  queryParams: StorageControllerListDirectoryQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: StorageControllerListDirectoryPathParams
+  queryParams: StorageControllerListDirectoryQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 /**
  * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
  */
 export const fetchStorageControllerListDirectory = (
   variables: StorageControllerListDirectoryVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     StorageControllerListDirectoryResponse,
@@ -3260,17 +3256,17 @@ export const fetchStorageControllerListDirectory = (
     StorageControllerListDirectoryQueryParams,
     StorageControllerListDirectoryPathParams
   >({
-    url: "/organizations/{orgname}/storage/items",
-    method: "get",
+    url: '/organizations/{orgname}/storage/items',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 /**
  * This endpoint will return a list of files and directories in the organization's secure storage at the specified path. ADMIN ONLY.
  */
 export const useStorageControllerListDirectory = <
-  TData = StorageControllerListDirectoryResponse,
+  TData = StorageControllerListDirectoryResponse
 >(
   variables: StorageControllerListDirectoryVariables,
   options?: Omit<
@@ -3279,45 +3275,45 @@ export const useStorageControllerListDirectory = <
       StorageControllerListDirectoryError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     StorageControllerListDirectoryResponse,
     StorageControllerListDirectoryError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/storage/items",
-      operationId: "storageControllerListDirectory",
-      variables,
+      path: '/organizations/{orgname}/storage/items',
+      operationId: 'storageControllerListDirectory',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchStorageControllerListDirectory(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ContentControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerCreateVariables = {
-  body: Schemas.CreateContentDto;
-  pathParams: ContentControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateContentDto
+  pathParams: ContentControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchContentControllerCreate = (
   variables: ContentControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -3327,11 +3323,11 @@ export const fetchContentControllerCreate = (
     {},
     ContentControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/content",
-    method: "post",
+    url: '/organizations/{orgname}/content',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useContentControllerCreate = (
   options?: Omit<
@@ -3340,10 +3336,10 @@ export const useContentControllerCreate = (
       ContentControllerCreateError,
       ContentControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ContentEntity,
     ContentControllerCreateError,
@@ -3351,82 +3347,82 @@ export const useContentControllerCreate = (
   >({
     mutationFn: (variables: ContentControllerCreateVariables) =>
       fetchContentControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ContentControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type ContentControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.ContentEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.ContentEntity[]
+}
 
 export type ContentControllerFindAllVariables = {
-  pathParams: ContentControllerFindAllPathParams;
-  queryParams?: ContentControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ContentControllerFindAllPathParams
+  queryParams?: ContentControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchContentControllerFindAll = (
   variables: ContentControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     ContentControllerFindAllResponse,
@@ -3436,14 +3432,14 @@ export const fetchContentControllerFindAll = (
     ContentControllerFindAllQueryParams,
     ContentControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/content",
-    method: "get",
+    url: '/organizations/{orgname}/content',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useContentControllerFindAll = <
-  TData = ContentControllerFindAllResponse,
+  TData = ContentControllerFindAllResponse
 >(
   variables: ContentControllerFindAllVariables,
   options?: Omit<
@@ -3452,45 +3448,45 @@ export const useContentControllerFindAll = <
       ContentControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     ContentControllerFindAllResponse,
     ContentControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content",
-      operationId: "contentControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/content',
+      operationId: 'contentControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchContentControllerFindAll(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ContentControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ContentControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerFindOneVariables = {
-  pathParams: ContentControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ContentControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchContentControllerFindOne = (
   variables: ContentControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -3500,13 +3496,13 @@ export const fetchContentControllerFindOne = (
     {},
     ContentControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/content/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/content/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useContentControllerFindOne = <TData = Schemas.ContentEntity,>(
+export const useContentControllerFindOne = <TData = Schemas.ContentEntity>(
   variables: ContentControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3514,45 +3510,45 @@ export const useContentControllerFindOne = <TData = Schemas.ContentEntity,>(
       ContentControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.ContentEntity,
     ContentControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/content/{id}",
-      operationId: "contentControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/content/{id}',
+      operationId: 'contentControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchContentControllerFindOne(
         { ...fetcherOptions, ...variables },
-        signal,
+        signal
       ),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type ContentControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ContentControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerRemoveVariables = {
-  pathParams: ContentControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: ContentControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchContentControllerRemove = (
   variables: ContentControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -3562,11 +3558,11 @@ export const fetchContentControllerRemove = (
     {},
     ContentControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/content/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/content/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useContentControllerRemove = (
   options?: Omit<
@@ -3575,10 +3571,10 @@ export const useContentControllerRemove = (
       ContentControllerRemoveError,
       ContentControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     ContentControllerRemoveError,
@@ -3586,25 +3582,25 @@ export const useContentControllerRemove = (
   >({
     mutationFn: (variables: ContentControllerRemoveVariables) =>
       fetchContentControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type ContentControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type ContentControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type ContentControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerUpdateVariables = {
-  body?: Schemas.UpdateContentDto;
-  pathParams: ContentControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: Schemas.UpdateContentDto
+  pathParams: ContentControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchContentControllerUpdate = (
   variables: ContentControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.ContentEntity,
@@ -3614,11 +3610,11 @@ export const fetchContentControllerUpdate = (
     {},
     ContentControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/content/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/content/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useContentControllerUpdate = (
   options?: Omit<
@@ -3627,10 +3623,10 @@ export const useContentControllerUpdate = (
       ContentControllerUpdateError,
       ContentControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.ContentEntity,
     ContentControllerUpdateError,
@@ -3638,24 +3634,24 @@ export const useContentControllerUpdate = (
   >({
     mutationFn: (variables: ContentControllerUpdateVariables) =>
       fetchContentControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type RunsControllerCreatePathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
-export type RunsControllerCreateError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerCreateVariables = {
-  body: Schemas.CreateRunDto;
-  pathParams: RunsControllerCreatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body: Schemas.CreateRunDto
+  pathParams: RunsControllerCreatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchRunsControllerCreate = (
   variables: RunsControllerCreateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.RunEntity,
@@ -3665,11 +3661,11 @@ export const fetchRunsControllerCreate = (
     {},
     RunsControllerCreatePathParams
   >({
-    url: "/organizations/{orgname}/runs",
-    method: "post",
+    url: '/organizations/{orgname}/runs',
+    method: 'post',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useRunsControllerCreate = (
   options?: Omit<
@@ -3678,10 +3674,10 @@ export const useRunsControllerCreate = (
       RunsControllerCreateError,
       RunsControllerCreateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.RunEntity,
     RunsControllerCreateError,
@@ -3689,82 +3685,82 @@ export const useRunsControllerCreate = (
   >({
     mutationFn: (variables: RunsControllerCreateVariables) =>
       fetchRunsControllerCreate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type RunsControllerFindAllPathParams = {
-  orgname: string;
-};
+  orgname: string
+}
 
 export type RunsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[];
+  aggregates?: any[]
   /**
    * Filter fields and values
    */
-  filters?: any[];
+  filters?: any[]
   /**
    * The limit of the number of results returned
    *
    * @minimum 1
    * @default 10
    */
-  limit?: number;
+  limit?: number
   /**
    * The end date to search to
    *
    * @example 2022-01-01
    */
-  endDate?: string;
+  endDate?: string
   /**
    * The offset of the returned results
    *
    * @default 0
    * @example 10
    */
-  offset?: number;
+  offset?: number
   /**
    * The field to sort the results by
    *
    * @default createdAt
    * @example createdAt
    */
-  sortBy?: string;
+  sortBy?: string
   /**
    * The direction to sort the results by
    *
    * @default desc
    * @example desc
    */
-  sortDirection?: "asc" | "desc";
+  sortDirection?: 'asc' | 'desc'
   /**
    * The start date to search from
    *
    * @format date-time
    * @example 2021-01-01
    */
-  startDate?: string;
-};
+  startDate?: string
+}
 
-export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[];
-  metadata: Schemas.Metadata;
-  results: Schemas.RunEntity[];
-};
+  aggregates: Schemas.AggregateFieldResult[]
+  metadata: Schemas.Metadata
+  results: Schemas.RunEntity[]
+}
 
 export type RunsControllerFindAllVariables = {
-  pathParams: RunsControllerFindAllPathParams;
-  queryParams?: RunsControllerFindAllQueryParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: RunsControllerFindAllPathParams
+  queryParams?: RunsControllerFindAllQueryParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchRunsControllerFindAll = (
   variables: RunsControllerFindAllVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     RunsControllerFindAllResponse,
@@ -3774,15 +3770,13 @@ export const fetchRunsControllerFindAll = (
     RunsControllerFindAllQueryParams,
     RunsControllerFindAllPathParams
   >({
-    url: "/organizations/{orgname}/runs",
-    method: "get",
+    url: '/organizations/{orgname}/runs',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useRunsControllerFindAll = <
-  TData = RunsControllerFindAllResponse,
->(
+export const useRunsControllerFindAll = <TData = RunsControllerFindAllResponse>(
   variables: RunsControllerFindAllVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3790,42 +3784,42 @@ export const useRunsControllerFindAll = <
       RunsControllerFindAllError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     RunsControllerFindAllResponse,
     RunsControllerFindAllError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/runs",
-      operationId: "runsControllerFindAll",
-      variables,
+      path: '/organizations/{orgname}/runs',
+      operationId: 'runsControllerFindAll',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchRunsControllerFindAll({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type RunsControllerFindOnePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type RunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerFindOneError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerFindOneVariables = {
-  pathParams: RunsControllerFindOnePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: RunsControllerFindOnePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchRunsControllerFindOne = (
   variables: RunsControllerFindOneVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.RunEntity,
@@ -3835,13 +3829,13 @@ export const fetchRunsControllerFindOne = (
     {},
     RunsControllerFindOnePathParams
   >({
-    url: "/organizations/{orgname}/runs/{id}",
-    method: "get",
+    url: '/organizations/{orgname}/runs/{id}',
+    method: 'get',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
-export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
+export const useRunsControllerFindOne = <TData = Schemas.RunEntity>(
   variables: RunsControllerFindOneVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<
@@ -3849,42 +3843,42 @@ export const useRunsControllerFindOne = <TData = Schemas.RunEntity,>(
       RunsControllerFindOneError,
       TData
     >,
-    "queryKey" | "queryFn" | "initialData"
-  >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
-    useArchesApiContext(options);
+    useArchesApiContext(options)
   return reactQuery.useQuery<
     Schemas.RunEntity,
     RunsControllerFindOneError,
     TData
   >({
     queryKey: queryKeyFn({
-      path: "/organizations/{orgname}/runs/{id}",
-      operationId: "runsControllerFindOne",
-      variables,
+      path: '/organizations/{orgname}/runs/{id}',
+      operationId: 'runsControllerFindOne',
+      variables
     }),
     queryFn: ({ signal }) =>
       fetchRunsControllerFindOne({ ...fetcherOptions, ...variables }, signal),
     ...options,
-    ...queryOptions,
-  });
-};
+    ...queryOptions
+  })
+}
 
 export type RunsControllerRemovePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type RunsControllerRemoveError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerRemoveError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerRemoveVariables = {
-  pathParams: RunsControllerRemovePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  pathParams: RunsControllerRemovePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchRunsControllerRemove = (
   variables: RunsControllerRemoveVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     undefined,
@@ -3894,11 +3888,11 @@ export const fetchRunsControllerRemove = (
     {},
     RunsControllerRemovePathParams
   >({
-    url: "/organizations/{orgname}/runs/{id}",
-    method: "delete",
+    url: '/organizations/{orgname}/runs/{id}',
+    method: 'delete',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useRunsControllerRemove = (
   options?: Omit<
@@ -3907,10 +3901,10 @@ export const useRunsControllerRemove = (
       RunsControllerRemoveError,
       RunsControllerRemoveVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     undefined,
     RunsControllerRemoveError,
@@ -3918,25 +3912,25 @@ export const useRunsControllerRemove = (
   >({
     mutationFn: (variables: RunsControllerRemoveVariables) =>
       fetchRunsControllerRemove({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type RunsControllerUpdatePathParams = {
-  orgname: string;
-  id: string;
-};
+  orgname: string
+  id: string
+}
 
-export type RunsControllerUpdateError = Fetcher.ErrorWrapper<undefined>;
+export type RunsControllerUpdateError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerUpdateVariables = {
-  body?: string;
-  pathParams: RunsControllerUpdatePathParams;
-} & ArchesApiContext["fetcherOptions"];
+  body?: string
+  pathParams: RunsControllerUpdatePathParams
+} & ArchesApiContext['fetcherOptions']
 
 export const fetchRunsControllerUpdate = (
   variables: RunsControllerUpdateVariables,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ) =>
   archesApiFetch<
     Schemas.RunEntity,
@@ -3946,11 +3940,11 @@ export const fetchRunsControllerUpdate = (
     {},
     RunsControllerUpdatePathParams
   >({
-    url: "/organizations/{orgname}/runs/{id}",
-    method: "patch",
+    url: '/organizations/{orgname}/runs/{id}',
+    method: 'patch',
     ...variables,
-    signal,
-  });
+    signal
+  })
 
 export const useRunsControllerUpdate = (
   options?: Omit<
@@ -3959,10 +3953,10 @@ export const useRunsControllerUpdate = (
       RunsControllerUpdateError,
       RunsControllerUpdateVariables
     >,
-    "mutationFn"
-  >,
+    'mutationFn'
+  >
 ) => {
-  const { fetcherOptions } = useArchesApiContext();
+  const { fetcherOptions } = useArchesApiContext()
   return reactQuery.useMutation<
     Schemas.RunEntity,
     RunsControllerUpdateError,
@@ -3970,103 +3964,103 @@ export const useRunsControllerUpdate = (
   >({
     mutationFn: (variables: RunsControllerUpdateVariables) =>
       fetchRunsControllerUpdate({ ...fetcherOptions, ...variables }),
-    ...options,
-  });
-};
+    ...options
+  })
+}
 
 export type QueryOperation =
   | {
-      path: "/organizations/{orgname}/pipelines";
-      operationId: "pipelinesControllerFindAll";
-      variables: PipelinesControllerFindAllVariables;
+      path: '/organizations/{orgname}/pipelines'
+      operationId: 'pipelinesControllerFindAll'
+      variables: PipelinesControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/pipelines/{id}";
-      operationId: "pipelinesControllerFindOne";
-      variables: PipelinesControllerFindOneVariables;
+      path: '/organizations/{orgname}/pipelines/{id}'
+      operationId: 'pipelinesControllerFindOne'
+      variables: PipelinesControllerFindOneVariables
     }
   | {
-      path: "/user";
-      operationId: "usersControllerFindOne";
-      variables: UsersControllerFindOneVariables;
+      path: '/user'
+      operationId: 'usersControllerFindOne'
+      variables: UsersControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}";
-      operationId: "organizationsControllerFindOne";
-      variables: OrganizationsControllerFindOneVariables;
+      path: '/organizations/{orgname}'
+      operationId: 'organizationsControllerFindOne'
+      variables: OrganizationsControllerFindOneVariables
     }
   | {
-      path: "/plans";
-      operationId: "billingControllerGetPlans";
-      variables: BillingControllerGetPlansVariables;
+      path: '/plans'
+      operationId: 'billingControllerGetPlans'
+      variables: BillingControllerGetPlansVariables
     }
   | {
-      path: "/organizations/{orgname}/billing/payment-methods";
-      operationId: "billingControllerListPaymentMethods";
-      variables: BillingControllerListPaymentMethodsVariables;
+      path: '/organizations/{orgname}/billing/payment-methods'
+      operationId: 'billingControllerListPaymentMethods'
+      variables: BillingControllerListPaymentMethodsVariables
     }
   | {
-      path: "/organizations/{orgname}/tools";
-      operationId: "toolsControllerFindAll";
-      variables: ToolsControllerFindAllVariables;
+      path: '/organizations/{orgname}/tools'
+      operationId: 'toolsControllerFindAll'
+      variables: ToolsControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/tools/{id}";
-      operationId: "toolsControllerFindOne";
-      variables: ToolsControllerFindOneVariables;
+      path: '/organizations/{orgname}/tools/{id}'
+      operationId: 'toolsControllerFindOne'
+      variables: ToolsControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}/api-tokens";
-      operationId: "apiTokensControllerFindAll";
-      variables: ApiTokensControllerFindAllVariables;
+      path: '/organizations/{orgname}/api-tokens'
+      operationId: 'apiTokensControllerFindAll'
+      variables: ApiTokensControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/api-tokens/{id}";
-      operationId: "apiTokensControllerFindOne";
-      variables: ApiTokensControllerFindOneVariables;
+      path: '/organizations/{orgname}/api-tokens/{id}'
+      operationId: 'apiTokensControllerFindOne'
+      variables: ApiTokensControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}/members";
-      operationId: "membersControllerFindAll";
-      variables: MembersControllerFindAllVariables;
+      path: '/organizations/{orgname}/members'
+      operationId: 'membersControllerFindAll'
+      variables: MembersControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/members/{id}";
-      operationId: "membersControllerFindOne";
-      variables: MembersControllerFindOneVariables;
+      path: '/organizations/{orgname}/members/{id}'
+      operationId: 'membersControllerFindOne'
+      variables: MembersControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}/labels";
-      operationId: "labelsControllerFindAll";
-      variables: LabelsControllerFindAllVariables;
+      path: '/organizations/{orgname}/labels'
+      operationId: 'labelsControllerFindAll'
+      variables: LabelsControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/labels/{id}";
-      operationId: "labelsControllerFindOne";
-      variables: LabelsControllerFindOneVariables;
+      path: '/organizations/{orgname}/labels/{id}'
+      operationId: 'labelsControllerFindOne'
+      variables: LabelsControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}/storage/items";
-      operationId: "storageControllerListDirectory";
-      variables: StorageControllerListDirectoryVariables;
+      path: '/organizations/{orgname}/storage/items'
+      operationId: 'storageControllerListDirectory'
+      variables: StorageControllerListDirectoryVariables
     }
   | {
-      path: "/organizations/{orgname}/content";
-      operationId: "contentControllerFindAll";
-      variables: ContentControllerFindAllVariables;
+      path: '/organizations/{orgname}/content'
+      operationId: 'contentControllerFindAll'
+      variables: ContentControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/content/{id}";
-      operationId: "contentControllerFindOne";
-      variables: ContentControllerFindOneVariables;
+      path: '/organizations/{orgname}/content/{id}'
+      operationId: 'contentControllerFindOne'
+      variables: ContentControllerFindOneVariables
     }
   | {
-      path: "/organizations/{orgname}/runs";
-      operationId: "runsControllerFindAll";
-      variables: RunsControllerFindAllVariables;
+      path: '/organizations/{orgname}/runs'
+      operationId: 'runsControllerFindAll'
+      variables: RunsControllerFindAllVariables
     }
   | {
-      path: "/organizations/{orgname}/runs/{id}";
-      operationId: "runsControllerFindOne";
-      variables: RunsControllerFindOneVariables;
-    };
+      path: '/organizations/{orgname}/runs/{id}'
+      operationId: 'runsControllerFindOne'
+      variables: RunsControllerFindOneVariables
+    }

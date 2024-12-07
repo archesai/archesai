@@ -161,7 +161,10 @@ export default function Chat() {
                 ?.slice()
                 .reverse()
                 .map((msg) => (
-                  <div className='flex flex-col gap-2' key={msg.id}>
+                  <div
+                    className='flex flex-col gap-2'
+                    key={msg.id}
+                  >
                     {/* User Message */}
                     <div className='flex justify-end py-2'>
                       <div className='rounded-lg bg-gray-200 px-4 py-2 text-gray-800 dark:bg-gray-800 dark:text-gray-200'>
@@ -183,21 +186,34 @@ export default function Chat() {
                             .replaceAll(' -', '\n-')
                             .split(/(```[\s\S]*?```)/g)
                             .map((segment, index) => {
-                              const replaced = segment.split(/(\*\*[^*]+\*\*|`[^`]+`|\n)/g).map((part, partIndex) => {
-                                if (part.startsWith('**') && part.endsWith('**')) {
-                                  return <b key={partIndex}>{part.slice(2, -2)}</b>
-                                } else if (part.startsWith('`') && part.endsWith('`')) {
-                                  return (
-                                    <span className='markdown-code' key={partIndex}>
-                                      {part.slice(1, -1)}
-                                    </span>
-                                  )
-                                } else if (part === '\n') {
-                                  return <br key={partIndex} />
-                                } else {
-                                  return part
-                                }
-                              })
+                              const replaced = segment
+                                .split(/(\*\*[^*]+\*\*|`[^`]+`|\n)/g)
+                                .map((part, partIndex) => {
+                                  if (
+                                    part.startsWith('**') &&
+                                    part.endsWith('**')
+                                  ) {
+                                    return (
+                                      <b key={partIndex}>{part.slice(2, -2)}</b>
+                                    )
+                                  } else if (
+                                    part.startsWith('`') &&
+                                    part.endsWith('`')
+                                  ) {
+                                    return (
+                                      <span
+                                        className='markdown-code'
+                                        key={partIndex}
+                                      >
+                                        {part.slice(1, -1)}
+                                      </span>
+                                    )
+                                  } else if (part === '\n') {
+                                    return <br key={partIndex} />
+                                  } else {
+                                    return part
+                                  }
+                                })
 
                               return <span key={index}>{replaced}</span>
                             })}
@@ -238,11 +254,18 @@ export default function Chat() {
             />
 
             <Button
-              className={cn('flex items-center justify-center p-2', !message.trim() && 'cursor-not-allowed opacity-50')}
+              className={cn(
+                'flex items-center justify-center p-2',
+                !message.trim() && 'cursor-not-allowed opacity-50'
+              )}
               disabled={!message.trim()}
               type='submit'
             >
-              <svg className='h-5 w-5 text-white' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+              <svg
+                className='h-5 w-5 text-white'
+                viewBox='0 0 20 20'
+                xmlns='http://www.w3.org/2000/svg'
+              >
                 <title>Send Message</title>
                 <path
                   d='M15.44 1.68c.69-.05 1.47.08 2.13.74.66.67.8 1.45.75 2.14-.03.47-.15 1-.25 1.4l-.09.35a43.7 43.7 0 01-3.83 10.67A2.52 2.52 0 019.7 17l-1.65-3.03a.83.83 0 01.14-1l3.1-3.1a.83.83 0 10-1.18-1.17l-3.1 3.1a.83.83 0 01-.99.14L2.98 10.3a2.52 2.52 0 01.04-4.45 43.7 43.7 0 0111.02-3.9c.4-.1.92-.23 1.4-.26Z'

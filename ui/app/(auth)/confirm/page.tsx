@@ -1,7 +1,14 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
   useAuthControllerEmailChangeConfirm,
@@ -21,12 +28,15 @@ type ActionType = 'email-change' | 'email-verification' | 'password-reset'
 // Define schemas for different actions
 const passwordResetSchema = z
   .object({
-    confirmPassword: z.string().min(8, { message: 'Please confirm your password' }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: 'Please confirm your password' }),
     password: z
       .string()
       .min(8, { message: 'Password must be at least 8 characters' })
       .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-        message: 'Password must contain at least one letter, one number, and one special character'
+        message:
+          'Password must contain at least one letter, one number, and one special character'
       })
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -42,7 +52,8 @@ export default function ConfirmPage() {
   const type = searchParams?.get('type') as ActionType
   const token = searchParams?.get('token') as string
 
-  const { mutateAsync: verifyEmail } = useAuthControllerEmailVerificationConfirm()
+  const { mutateAsync: verifyEmail } =
+    useAuthControllerEmailVerificationConfirm()
   const { mutateAsync: resetPassword } = useAuthControllerPasswordResetConfirm()
   const { mutateAsync: changeEmail } = useAuthControllerEmailChangeConfirm()
 
@@ -82,7 +93,10 @@ export default function ConfirmPage() {
             router.push('/playground')
           } catch (err: any) {
             console.error(err)
-            setError(err?.response?.data?.message || 'Email change failed. Please try again.')
+            setError(
+              err?.response?.data?.message ||
+                'Email change failed. Please try again.'
+            )
           }
           break
         case 'email-verification':
@@ -129,23 +143,35 @@ export default function ConfirmPage() {
       router.push('/playground')
     } catch (err: any) {
       console.error('Password reset error:', err)
-      setError(err?.response?.data?.message || 'Password reset failed. Please try again.')
+      setError(
+        err?.response?.data?.message ||
+          'Password reset failed. Please try again.'
+      )
     }
   }
 
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2 text-center'>
-        <h1 className='text-2xl font-semibold tracking-tight'>{type.split('-').join(' ')}</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>
+          {type.split('-').join(' ')}
+        </h1>
         <p className='text-sm text-muted-foreground'>
           {message ||
-            (error ? '' : type === 'password-reset' ? 'Please follow the instructions below.' : 'Verifying...')}
+            (error
+              ? ''
+              : type === 'password-reset'
+                ? 'Please follow the instructions below.'
+                : 'Verifying...')}
         </p>
       </div>
       <div className='flex flex-col gap-2'>
         {/* Display Error Message */}
         {error && (
-          <p className='text-red-500' role='alert'>
+          <p
+            className='text-red-500'
+            role='alert'
+          >
             {error}
           </p>
         )}
@@ -153,7 +179,11 @@ export default function ConfirmPage() {
         {/* Handle Password Reset Form */}
         {type === 'password-reset' ? (
           <Form {...form}>
-            <form className='flex flex-col gap-2' noValidate onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className='flex flex-col gap-2'
+              noValidate
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               {/* New Password Field */}
               <FormField
                 control={form.control}
@@ -168,10 +198,14 @@ export default function ConfirmPage() {
                         placeholder='Enter your new password'
                         type='password'
                         {...field}
-                        aria-invalid={form.formState.errors.password ? 'true' : 'false'}
+                        aria-invalid={
+                          form.formState.errors.password ? 'true' : 'false'
+                        }
                       />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.password?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.password?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -182,7 +216,9 @@ export default function ConfirmPage() {
                 name='confirmPassword'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor='confirmPassword'>Confirm New Password</FormLabel>
+                    <FormLabel htmlFor='confirmPassword'>
+                      Confirm New Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         autoComplete='new-password'
@@ -190,17 +226,29 @@ export default function ConfirmPage() {
                         placeholder='Confirm your new password'
                         type='password'
                         {...field}
-                        aria-invalid={form.formState.errors.confirmPassword ? 'true' : 'false'}
+                        aria-invalid={
+                          form.formState.errors.confirmPassword
+                            ? 'true'
+                            : 'false'
+                        }
                       />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.confirmPassword?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.confirmPassword?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Submit Button */}
-              <Button className='w-full' disabled={form.formState.isSubmitting} type='submit'>
-                {form.formState.isSubmitting ? 'Resetting Password...' : 'Reset Password'}
+              <Button
+                className='w-full'
+                disabled={form.formState.isSubmitting}
+                type='submit'
+              >
+                {form.formState.isSubmitting
+                  ? 'Resetting Password...'
+                  : 'Reset Password'}
               </Button>
             </form>
           </Form>

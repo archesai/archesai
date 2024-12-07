@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import axios from 'axios'
 import * as fs from 'fs'
 import * as os from 'os'
@@ -31,7 +35,9 @@ export class LocalStorageService implements StorageService {
     const fullPath = this.getFullPath(orgname, dirPath)
     const exists = await this.checkFileExists(orgname, dirPath)
     if (exists) {
-      throw new ConflictException('Cannot create directory. File or path already exists at this location')
+      throw new ConflictException(
+        'Cannot create directory. File or path already exists at this location'
+      )
     }
     await fs.promises.mkdir(fullPath, { recursive: true })
   }
@@ -50,7 +56,11 @@ export class LocalStorageService implements StorageService {
     }
   }
 
-  async download(orgname: string, filePath: string, destination?: string): Promise<{ buffer: Buffer }> {
+  async download(
+    orgname: string,
+    filePath: string,
+    destination?: string
+  ): Promise<{ buffer: Buffer }> {
     const fullPath = this.getFullPath(orgname, filePath)
     const exists = await this.checkFileExists(orgname, filePath)
     if (!exists) {
@@ -67,7 +77,10 @@ export class LocalStorageService implements StorageService {
     return { buffer }
   }
 
-  async getMetaData(orgname: string, filePath: string): Promise<{ metadata: any }> {
+  async getMetaData(
+    orgname: string,
+    filePath: string
+  ): Promise<{ metadata: any }> {
     const fullPath = this.getFullPath(orgname, filePath)
     const exists = await this.checkFileExists(orgname, filePath)
     if (!exists) {
@@ -77,7 +90,11 @@ export class LocalStorageService implements StorageService {
     return { metadata: stats }
   }
 
-  async getSignedUrl(orgname: string, filePath: string, action: 'read' | 'write'): Promise<string> {
+  async getSignedUrl(
+    orgname: string,
+    filePath: string,
+    action: 'read' | 'write'
+  ): Promise<string> {
     const fullPath = this.getFullPath(orgname, filePath)
 
     if (action === 'write') {
@@ -106,7 +123,10 @@ export class LocalStorageService implements StorageService {
     }
   }
 
-  async listDirectory(orgname: string, dirPath: string): Promise<StorageItemDto[]> {
+  async listDirectory(
+    orgname: string,
+    dirPath: string
+  ): Promise<StorageItemDto[]> {
     const fullPath = this.getFullPath(orgname, dirPath)
     const exists = await this.checkFileExists(orgname, dirPath)
     if (!exists) {
@@ -132,7 +152,11 @@ export class LocalStorageService implements StorageService {
     return result
   }
 
-  async upload(orgname: string, filePath: string, file: Express.Multer.File): Promise<string> {
+  async upload(
+    orgname: string,
+    filePath: string,
+    file: Express.Multer.File
+  ): Promise<string> {
     let conflict = true
     let i = 0
     const originalFilePath = filePath
@@ -157,7 +181,11 @@ export class LocalStorageService implements StorageService {
     return `file://${fullPath}`
   }
 
-  async uploadFromUrl(orgname: string, filePath: string, url: string): Promise<string> {
+  async uploadFromUrl(
+    orgname: string,
+    filePath: string,
+    url: string
+  ): Promise<string> {
     const response = await axios.get(url, { responseType: 'arraybuffer' })
     const fileBuffer = Buffer.from(response.data)
 

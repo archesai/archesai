@@ -41,7 +41,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any): Promise<UserEntity> {
-    this.logger.debug(`Validating JWT token for user: ${JSON.stringify(payload.sub)}`)
+    this.logger.debug(
+      `Validating JWT token for user: ${JSON.stringify(payload.sub)}`
+    )
     if (!payload.sub) {
       return null
     }

@@ -1,7 +1,6 @@
 import eslint from '@eslint/js'
 import pluginNext from '@next/eslint-plugin-next'
-import perfectionist from 'eslint-plugin-perfectionist'
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended'
+import eslintConfigPrettier from 'eslint-config-prettier'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
@@ -15,7 +14,7 @@ export default [
       '@next/next': pluginNext
     },
     rules: {
-      ...pluginNext.configs.recommended.rules,
+      ...pluginNext.configs['recommended'].rules,
       ...pluginNext.configs['core-web-vitals'].rules
     }
   },
@@ -34,32 +33,8 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      'prettier/prettier': [
-        'error',
-        {
-          jsxSingleQuote: true,
-          printWidth: 120,
-          semi: false,
-          singleQuote: true,
-          tabWidth: 2,
-          trailingComma: 'none'
-        }
-      ]
+      '@typescript-eslint/no-explicit-any': 'off'
     }
   },
-  perfectionist.configs['recommended-natural'],
-  {
-    rules: {
-      'perfectionist/sort-imports': [
-        'error',
-        {
-          internalPattern: ['^@/.+'],
-          tsconfigRootDir: '.'
-        }
-      ],
-      ...eslintPluginPrettier.rules
-    },
-    ...eslintPluginPrettier
-  }
+  eslintConfigPrettier
 ]

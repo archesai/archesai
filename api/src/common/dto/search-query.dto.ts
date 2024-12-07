@@ -1,7 +1,16 @@
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger'
 import { Transform, Type } from 'class-transformer'
-import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsPositive, IsString, ValidateIf } from 'class-validator'
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  ValidateIf
+} from 'class-validator'
 
 export enum Granularity {
   DAY = 'day',
@@ -165,7 +174,9 @@ const transformValues = (value: string | string[]) => {
       return parsed
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new BadRequestException('Invalid filters format. It should be a JSON array.')
+      throw new BadRequestException(
+        'Invalid filters format. It should be a JSON array.'
+      )
     }
   } else {
     const filters = value.map((filter: string) => JSON.parse(filter))

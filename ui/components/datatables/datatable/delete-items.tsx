@@ -51,22 +51,35 @@ export const DeleteItems = <TDeleteVariables,>({
   }
 
   return (
-    <Dialog onOpenChange={(open) => setOpenConfirmDelete(open)} open={openConfirmDelete}>
+    <Dialog
+      onOpenChange={(open) => setOpenConfirmDelete(open)}
+      open={openConfirmDelete}
+    >
       <VisuallyHidden.Root>
         <DialogTitle />
         <DialogDescription />
       </VisuallyHidden.Root>
       <DialogTrigger asChild>
         {variant === 'sm' ? (
-          <div className='cursor-pointer text-destructive' onClick={() => setOpenConfirmDelete(true)}>
+          <div
+            className='cursor-pointer text-destructive'
+            onClick={() => setOpenConfirmDelete(true)}
+          >
             <Trash className='h-5 w-5 text-destructive' />
           </div>
         ) : variant === 'md' ? (
-          <div className='w-full' onClick={() => setOpenConfirmDelete(true)}>
+          <div
+            className='w-full'
+            onClick={() => setOpenConfirmDelete(true)}
+          >
             {t('Delete')}
           </div>
         ) : (
-          <Button className='h-8' onClick={() => setOpenConfirmDelete(true)} variant='destructive'>
+          <Button
+            className='h-8'
+            onClick={() => setOpenConfirmDelete(true)}
+            variant='destructive'
+          >
             {t('Delete')}
           </Button>
         )}
@@ -76,21 +89,34 @@ export const DeleteItems = <TDeleteVariables,>({
         <div className='flex flex-col items-center justify-center gap-3 p-4'>
           <Trash className='text-destructive' />
           <p className='text-center'>
-            {t(`Are you sure you want to permanently delete the following ${itemType}${items?.length > 1 ? 's' : ''}?`)}
+            {t(
+              `Are you sure you want to permanently delete the following ${itemType}${items?.length > 1 ? 's' : ''}?`
+            )}
           </p>
           {
             <ScrollArea>
-              <div className='max-h-72 p-4'>{items?.map((item, i) => <p key={i}>{item.name}</p>)}</div>
+              <div className='max-h-72 p-4'>
+                {items?.map((item, i) => <p key={i}>{item.name}</p>)}
+              </div>
             </ScrollArea>
           }
         </div>
         <Separator />
         <DialogFooter className='flex rounded-lg bg-gray-50 p-6 dark:bg-black'>
           <div className='flex w-full items-center gap-4'>
-            <Button className='w-full' onClick={() => setOpenConfirmDelete(false)} size='sm'>
+            <Button
+              className='w-full'
+              onClick={() => setOpenConfirmDelete(false)}
+              size='sm'
+            >
               {t('Cancel')}
             </Button>
-            <Button className='w-full' onClick={async () => await handleDelete()} size='sm' variant={'destructive'}>
+            <Button
+              className='w-full'
+              onClick={async () => await handleDelete()}
+              size='sm'
+              variant={'destructive'}
+            >
               {t('Delete')}
             </Button>
           </div>

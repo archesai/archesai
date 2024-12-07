@@ -26,7 +26,8 @@ import {
 import { BookOpen, Cpu, FileText, Image, Volume2 } from 'lucide-react'
 
 export const siteConfig = {
-  description: 'Arches AI is a platform that provides tools to transform data into various forms of content.',
+  description:
+    'Arches AI is a platform that provides tools to transform data into various forms of content.',
   name: 'Arches AI',
   ogImage: 'https://ui.shadcn.com/og.jpg',
   routes: [
@@ -121,14 +122,16 @@ export const siteConfig = {
     {
       children: [
         {
-          description: "View and update your organization's general information.",
+          description:
+            "View and update your organization's general information.",
           href: '/organization/general',
           Icon: Building2,
           showInTabs: true,
           title: 'General'
         },
         {
-          description: "View and update your organization's billing information. Upgrade your plan.",
+          description:
+            "View and update your organization's billing information. Upgrade your plan.",
           href: '/organization/billing',
           Icon: CreditCard,
           showInTabs: true,
@@ -167,12 +170,17 @@ export const siteConfig = {
 
 export const getMetadata = (href: string) => {
   // do this without using flatMap
-  const childRoutes = siteConfig.routes.map((route) => route.children).filter((children) => children)
+  const childRoutes = siteConfig.routes
+    .map((route) => route.children)
+    .filter((children) => children)
 
-  const allRoutes = siteConfig.routes.concat(childRoutes.reduce((acc, val) => acc.concat(val), [] as any))
+  const allRoutes = siteConfig.routes.concat(
+    childRoutes.reduce((acc, val) => acc.concat(val), [] as any)
+  )
   return {
     description: allRoutes.find((route) => route.href === href)?.description,
-    title: allRoutes.find((route) => route.href === href)?.title + ' | Arches AI'
+    title:
+      allRoutes.find((route) => route.href === href)?.title + ' | Arches AI'
   }
 }
 

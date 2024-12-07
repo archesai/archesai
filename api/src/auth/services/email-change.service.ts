@@ -1,6 +1,11 @@
 // src/email-change/email-change.service.ts
 
-import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common'
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ARTokenType } from '@prisma/client'
 
@@ -39,7 +44,10 @@ export class EmailChangeService {
     return this.authService.login(user)
   }
 
-  async request(userId: string, emailRequestDto: EmailRequestDto): Promise<void> {
+  async request(
+    userId: string,
+    emailRequestDto: EmailRequestDto
+  ): Promise<void> {
     const user = await this.usersService.findOne(null, userId)
     let newEmailInUse = false
     try {
@@ -64,7 +72,10 @@ export class EmailChangeService {
     const changeEmailLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-change&token=${token}`
 
     // Generate the HTML content for the email
-    const htmlContent = getEmailChangeConfirmationHtml(changeEmailLink, user.email)
+    const htmlContent = getEmailChangeConfirmationHtml(
+      changeEmailLink,
+      user.email
+    )
 
     // Send confirmation email to the new email address
     await this.emailService.sendMail({

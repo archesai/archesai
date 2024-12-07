@@ -1,7 +1,14 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/use-auth'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,13 +20,16 @@ import * as z from 'zod'
 // Define schema using Zod for form validation
 const schema = z
   .object({
-    confirmPassword: z.string().min(8, { message: 'Please confirm your password' }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: 'Please confirm your password' }),
     email: z.string().email({ message: 'Invalid email address' }),
     password: z
       .string()
       .min(8, { message: 'Password must be at least 8 characters' })
       .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-        message: 'Password must contain at least one letter, one number, and one special character'
+        message:
+          'Password must contain at least one letter, one number, and one special character'
       })
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -61,11 +71,17 @@ export default function RegisterPage() {
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Register</h1>
-        <p className='text-sm text-muted-foreground'>Create your account by entering your email and password</p>
+        <p className='text-sm text-muted-foreground'>
+          Create your account by entering your email and password
+        </p>
       </div>
       <div className='flex flex-col gap-2'>
         <Form {...form}>
-          <form className='flex flex-col gap-2' noValidate onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            className='flex flex-col gap-2'
+            noValidate
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             {/* Email Field */}
             <FormField
               control={form.control}
@@ -80,10 +96,14 @@ export default function RegisterPage() {
                       placeholder='m@example.com'
                       type='email'
                       {...field}
-                      aria-invalid={form.formState.errors.email ? 'true' : 'false'}
+                      aria-invalid={
+                        form.formState.errors.email ? 'true' : 'false'
+                      }
                     />
                   </FormControl>
-                  <FormMessage>{form.formState.errors.email?.message}</FormMessage>
+                  <FormMessage>
+                    {form.formState.errors.email?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -102,10 +122,14 @@ export default function RegisterPage() {
                       placeholder='Enter your password'
                       type='password'
                       {...field}
-                      aria-invalid={form.formState.errors.password ? 'true' : 'false'}
+                      aria-invalid={
+                        form.formState.errors.password ? 'true' : 'false'
+                      }
                     />
                   </FormControl>
-                  <FormMessage>{form.formState.errors.password?.message}</FormMessage>
+                  <FormMessage>
+                    {form.formState.errors.password?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
@@ -116,7 +140,9 @@ export default function RegisterPage() {
               name='confirmPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel htmlFor='confirmPassword'>Confirm Password</FormLabel>
+                  <FormLabel htmlFor='confirmPassword'>
+                    Confirm Password
+                  </FormLabel>
                   <FormControl>
                     <Input
                       autoComplete='new-password'
@@ -124,23 +150,34 @@ export default function RegisterPage() {
                       placeholder='Confirm your password'
                       type='password'
                       {...field}
-                      aria-invalid={form.formState.errors.confirmPassword ? 'true' : 'false'}
+                      aria-invalid={
+                        form.formState.errors.confirmPassword ? 'true' : 'false'
+                      }
                     />
                   </FormControl>
-                  <FormMessage>{form.formState.errors.confirmPassword?.message}</FormMessage>
+                  <FormMessage>
+                    {form.formState.errors.confirmPassword?.message}
+                  </FormMessage>
                 </FormItem>
               )}
             />
 
             {/* Display Error Message */}
             {error && (
-              <div className='text-center text-red-600' role='alert'>
+              <div
+                className='text-center text-red-600'
+                role='alert'
+              >
                 {error}
               </div>
             )}
 
             {/* Submit Button */}
-            <Button className='mt-5 w-full' disabled={form.formState.isSubmitting} type='submit'>
+            <Button
+              className='mt-5 w-full'
+              disabled={form.formState.isSubmitting}
+              type='submit'
+            >
               {form.formState.isSubmitting ? 'Registering...' : 'Register'}
             </Button>
           </form>
@@ -149,7 +186,10 @@ export default function RegisterPage() {
         {/* Redirect to Login */}
         <div className='text-center text-sm'>
           Already have an account?{' '}
-          <Link className='underline' href='/login'>
+          <Link
+            className='underline'
+            href='/login'
+          >
             Login
           </Link>
         </div>

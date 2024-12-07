@@ -5,7 +5,11 @@ import { io } from 'socket.io-client'
 import { useAuth } from './use-auth'
 import { useStreamChat } from './use-stream-chat'
 
-export const useWebsockets = ({ overrideToken }: { overrideToken?: string }) => {
+export const useWebsockets = ({
+  overrideToken
+}: {
+  overrideToken?: string
+}) => {
   const { defaultOrgname: accessToken } = useAuth()
   const queryClient = useQueryClient()
 

@@ -1,4 +1,9 @@
-import { ApiProperty, IntersectionType, PartialType, PickType } from '@nestjs/swagger'
+import {
+  ApiProperty,
+  IntersectionType,
+  PartialType,
+  PickType
+} from '@nestjs/swagger'
 import { IsArray, IsOptional, IsString } from 'class-validator'
 
 import { ContentEntity } from '../entities/content.entity'

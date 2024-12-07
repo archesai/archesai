@@ -1,7 +1,9 @@
 import { ApiTokenEntity } from '@/src/api-tokens/entities/api-token.entity'
 import { faker } from '@faker-js/faker'
 
-export function createRandomApiToken(overrides?: Partial<ApiTokenEntity>): ApiTokenEntity {
+export function createRandomApiToken(
+  overrides?: Partial<ApiTokenEntity>
+): ApiTokenEntity {
   return new ApiTokenEntity({
     createdAt: faker.date.recent(),
     domains: faker.internet.domainName(),

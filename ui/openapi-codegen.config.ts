@@ -1,5 +1,8 @@
 import { defineConfig } from '@openapi-codegen/cli'
-import { generateReactQueryComponents, generateSchemaTypes } from '@openapi-codegen/typescript'
+import {
+  generateReactQueryComponents,
+  generateSchemaTypes
+} from '@openapi-codegen/typescript'
 
 export default defineConfig({
   archesApi: {

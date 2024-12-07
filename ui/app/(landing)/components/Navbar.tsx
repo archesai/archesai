@@ -1,8 +1,17 @@
 'use client'
 import { ArchesLogo } from '@/components/arches-logo'
 import { Button, buttonVariants } from '@/components/ui/button'
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from '@/components/ui/navigation-menu'
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@/components/ui/sheet'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList
+} from '@/components/ui/navigation-menu'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger
+} from '@/components/ui/sheet'
 import { useIsTop } from '@/hooks/use-is-top'
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
 import { Menu } from 'lucide-react'
@@ -42,7 +51,9 @@ export const Navbar = () => {
   return (
     <header
       className={`sticky top-0 z-40 w-full ${
-        isTop ? 'bg-transparent' : 'border-b bg-white shadow-sm transition-all dark:bg-background'
+        isTop
+          ? 'bg-transparent'
+          : 'border-b bg-white shadow-sm transition-all dark:bg-background'
       }`}
     >
       <NavigationMenu>
@@ -53,9 +64,15 @@ export const Navbar = () => {
             </NavigationMenuItem>
             {/* mobile */}
             <span className='flex md:hidden'>
-              <Sheet onOpenChange={setIsOpen} open={isOpen}>
+              <Sheet
+                onOpenChange={setIsOpen}
+                open={isOpen}
+              >
                 <SheetTrigger className='px-2'>
-                  <Menu className='flex h-5 w-5 md:hidden' onClick={() => setIsOpen(true)}></Menu>
+                  <Menu
+                    className='flex h-5 w-5 md:hidden'
+                    onClick={() => setIsOpen(true)}
+                  ></Menu>
                 </SheetTrigger>
 
                 <SheetContent side={'left'}>

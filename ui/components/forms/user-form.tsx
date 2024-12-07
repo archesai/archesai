@@ -1,8 +1,14 @@
 'use client'
 
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
-import { useUsersControllerFindOne, useUsersControllerUpdate } from '@/generated/archesApiComponents'
+import {
+  useUsersControllerFindOne,
+  useUsersControllerUpdate
+} from '@/generated/archesApiComponents'
 import { UpdateUserDto } from '@/generated/archesApiSchemas'
 import React from 'react'
 import { z } from 'zod'

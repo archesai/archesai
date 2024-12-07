@@ -87,7 +87,9 @@ export class ContentRepository extends BaseRepository<
     topK: number,
     contentIds?: string[]
   ): Promise<{ id: string; score: number }[]> {
-    const results = await this.prisma.$queryRaw<{ id: string; score: number }[]>(Prisma.sql`
+    const results = await this.prisma.$queryRaw<
+      { id: string; score: number }[]
+    >(Prisma.sql`
       SELECT
         id,
         1 - (embedding <#> ${embedding}::vector) AS score
@@ -104,7 +106,11 @@ export class ContentRepository extends BaseRepository<
     return results
   }
 
-  async update(orgname: string, contentId: string, updateContentDto: UpdateContentDto) {
+  async update(
+    orgname: string,
+    contentId: string,
+    updateContentDto: UpdateContentDto
+  ) {
     const { labels, ...otherData } = updateContentDto
 
     return this.prisma.content.update({

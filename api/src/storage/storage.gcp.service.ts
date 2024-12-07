@@ -1,5 +1,9 @@
 import { Storage } from '@google-cloud/storage'
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import axios from 'axios'
 import * as path from 'path'
 
@@ -24,14 +28,19 @@ export class GoogleCloudStorageService implements StorageService {
   }
 
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
-    const [exists] = await this.storage.bucket(this.bucketName).file(this.getFilePath(orgname, filePath)).exists()
+    const [exists] = await this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
+      .exists()
     return exists
   }
 
   async createDirectory(orgname: string, dirPath: string): Promise<void> {
     const exists = await this.checkFileExists(orgname, dirPath)
     if (exists) {
-      throw new ConflictException('Cannot create directory. File or path already exists at this location')
+      throw new ConflictException(
+        'Cannot create directory. File or path already exists at this location'
+      )
     }
     await this.storage
       .bucket(this.bucketName)
@@ -44,10 +53,17 @@ export class GoogleCloudStorageService implements StorageService {
     if (!exists) {
       throw new NotFoundException(`File at ${filePath} does not exist`)
     }
-    await this.storage.bucket(this.bucketName).file(this.getFilePath(orgname, filePath)).delete()
+    await this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
+      .delete()
   }
 
-  async download(orgname: string, filePath: string, destination?: string): Promise<{ buffer: Buffer }> {
+  async download(
+    orgname: string,
+    filePath: string,
+    destination?: string
+  ): Promise<{ buffer: Buffer }> {
     const exists = await this.checkFileExists(orgname, filePath)
     if (!exists) {
       throw new NotFoundException(`File at ${filePath} does not exist`)
@@ -71,7 +87,11 @@ export class GoogleCloudStorageService implements StorageService {
     return { metadata }
   }
 
-  async getSignedUrl(orgname: string, filePath: string, action: 'read' | 'write'): Promise<string> {
+  async getSignedUrl(
+    orgname: string,
+    filePath: string,
+    action: 'read' | 'write'
+  ): Promise<string> {
     let fullPath = this.getFilePath(orgname, filePath)
     if (action === 'write') {
       let conflict = true
@@ -106,8 +126,12 @@ export class GoogleCloudStorageService implements StorageService {
     return url
   }
 
-  async listDirectory(orgname: string, dirPath: string): Promise<StorageItemDto[]> {
-    const fullPath = this.getFilePath(orgname, dirPath).replace(/\/+$/, '') + '/'
+  async listDirectory(
+    orgname: string,
+    dirPath: string
+  ): Promise<StorageItemDto[]> {
+    const fullPath =
+      this.getFilePath(orgname, dirPath).replace(/\/+$/, '') + '/'
 
     const [files] = await this.storage.bucket(this.bucketName).getFiles({
       delimiter: '/',
@@ -149,7 +173,11 @@ export class GoogleCloudStorageService implements StorageService {
     return [...directoryItems, ...fileItems]
   }
 
-  async upload(orgname: string, filePath: string, file: Express.Multer.File): Promise<string> {
+  async upload(
+    orgname: string,
+    filePath: string,
+    file: Express.Multer.File
+  ): Promise<string> {
     let conflict = await this.checkFileExists(orgname, filePath)
     const originalPath = filePath
     let i = 1
@@ -162,7 +190,9 @@ export class GoogleCloudStorageService implements StorageService {
       throw new ConflictException('File already exists')
     }
 
-    const ref = this.storage.bucket(this.bucketName).file(this.getFilePath(orgname, filePath))
+    const ref = this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
 
     await ref.save(file.buffer, {
       contentType: file.mimetype,
@@ -176,7 +206,11 @@ export class GoogleCloudStorageService implements StorageService {
     return this.getSignedUrl(orgname, filePath, 'read')
   }
 
-  async uploadFromUrl(orgname: string, filePath: string, url: string): Promise<string> {
+  async uploadFromUrl(
+    orgname: string,
+    filePath: string,
+    url: string
+  ): Promise<string> {
     let conflict = await this.checkFileExists(orgname, filePath)
     const originalPath = filePath
     let i = 1
@@ -189,7 +223,9 @@ export class GoogleCloudStorageService implements StorageService {
       throw new ConflictException('File already exists')
     }
 
-    const ref = this.storage.bucket(this.bucketName).file(this.getFilePath(orgname, filePath))
+    const ref = this.storage
+      .bucket(this.bucketName)
+      .file(this.getFilePath(orgname, filePath))
 
     const response = await axios({
       method: 'get',

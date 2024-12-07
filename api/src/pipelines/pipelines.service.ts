@@ -4,7 +4,10 @@ import { BaseService } from '../common/base.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { CreatePipelineDto } from './dto/create-pipeline.dto'
 import { UpdatePipelineDto } from './dto/update-pipeline.dto'
-import { PipelineEntity, PipelineWithPipelineStepsModel } from './entities/pipeline.entity'
+import {
+  PipelineEntity,
+  PipelineWithPipelineStepsModel
+} from './entities/pipeline.entity'
 import { PipelineRepository } from './pipeline.repository'
 
 @Injectable()
@@ -25,7 +28,9 @@ export class PipelinesService extends BaseService<
   }
 
   async createDefaultPipeline(orgname: string) {
-    return this.toEntity(await this.pipelineRepository.createDefaultPipeline(orgname))
+    return this.toEntity(
+      await this.pipelineRepository.createDefaultPipeline(orgname)
+    )
   }
 
   protected emitMutationEvent(orgname: string): void {

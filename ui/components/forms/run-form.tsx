@@ -1,5 +1,8 @@
 'use client'
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { siteConfig } from '@/config/site'
@@ -8,7 +11,11 @@ import {
   useRunsControllerCreate,
   useToolsControllerFindAll
 } from '@/generated/archesApiComponents'
-import { ContentEntity, CreateRunDto, ToolEntity } from '@/generated/archesApiSchemas'
+import {
+  ContentEntity,
+  CreateRunDto,
+  ToolEntity
+} from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
 import { usePlayground } from '@/hooks/use-playground'
 import { useState } from 'react'
@@ -28,15 +35,24 @@ const formSchema = z.object({
 export default function RunForm() {
   const { defaultOrgname } = useAuth()
   const { mutateAsync: runTool } = useRunsControllerCreate()
-  const { selectedContent, selectedTool, setSelectedContent, setSelectedRunId, setSelectedTool } = usePlayground()
+  const {
+    selectedContent,
+    selectedTool,
+    setSelectedContent,
+    setSelectedRunId,
+    setSelectedTool
+  } = usePlayground()
 
-  const [tab, setTab] = useState<'contentIds' | 'file' | 'text' | 'url'>('contentIds')
+  const [tab, setTab] = useState<'contentIds' | 'file' | 'text' | 'url'>(
+    'contentIds'
+  )
 
   const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: selectedTool?.id,
-      description: 'Select the tool you would like to run. Different tools have different inputs and outputs.',
+      description:
+        'Select the tool you would like to run. Different tools have different inputs and outputs.',
       label: 'Tool',
       name: 'toolId',
       renderControl: (field) => (
@@ -44,8 +60,12 @@ export default function RunForm() {
           getItemDetails={(tool) => {
             return (
               <div className='grid gap-2'>
-                <h4 className='flex items-center gap-1 font-medium leading-none'>{tool?.name}</h4>
-                <div className='text-sm text-muted-foreground'>{tool?.description}</div>
+                <h4 className='flex items-center gap-1 font-medium leading-none'>
+                  {tool?.name}
+                </h4>
+                <div className='text-sm text-muted-foreground'>
+                  {tool?.description}
+                </div>
               </div>
             )
           }}
@@ -91,22 +111,35 @@ export default function RunForm() {
     },
     {
       component: Input,
-      description: 'Select the content you would like to run the tool on. You can select multiple content items.',
+      description:
+        'Select the content you would like to run the tool on. You can select multiple content items.',
       label: 'Input',
       name: tab === 'file' ? 'contentIds' : tab,
       renderControl: (field) => (
         <Tabs value={tab}>
           <TabsList className='grid w-full grid-cols-4 px-1'>
-            <TabsTrigger onClick={() => setTab('contentIds')} value='contentIds'>
+            <TabsTrigger
+              onClick={() => setTab('contentIds')}
+              value='contentIds'
+            >
               Content
             </TabsTrigger>
-            <TabsTrigger onClick={() => setTab('text')} value='text'>
+            <TabsTrigger
+              onClick={() => setTab('text')}
+              value='text'
+            >
               Text
             </TabsTrigger>
-            <TabsTrigger onClick={() => setTab('file')} value='file'>
+            <TabsTrigger
+              onClick={() => setTab('file')}
+              value='file'
+            >
               File
             </TabsTrigger>
-            <TabsTrigger onClick={() => setTab('url')} value='url'>
+            <TabsTrigger
+              onClick={() => setTab('url')}
+              value='url'
+            >
               URL
             </TabsTrigger>
           </TabsList>
@@ -117,7 +150,9 @@ export default function RunForm() {
               selectedData={selectedContent as ContentEntity[]}
               setSelectedData={(content: any) => {
                 setSelectedContent(content)
-                field.onChange(content === null ? [] : content.map((c: any) => c.id))
+                field.onChange(
+                  content === null ? [] : content.map((c: any) => c.id)
+                )
               }}
               useFindAll={() =>
                 useContentControllerFindAll({
@@ -129,10 +164,17 @@ export default function RunForm() {
             />
           </TabsContent>
           <TabsContent value='text'>
-            <Textarea {...field} placeholder='Enter text here' />
+            <Textarea
+              {...field}
+              placeholder='Enter text here'
+            />
           </TabsContent>
           <TabsContent value='url'>
-            <Textarea {...field} placeholder='Enter url here' rows={5} />
+            <Textarea
+              {...field}
+              placeholder='Enter url here'
+              rows={5}
+            />
           </TabsContent>
           <TabsContent value='file'>
             <ImportCard
@@ -151,7 +193,9 @@ export default function RunForm() {
 
   return (
     <GenericForm<CreateRunDto, any>
-      description={'Run a tool on a piece of content. You can select multiple content items.'}
+      description={
+        'Run a tool on a piece of content. You can select multiple content items.'
+      }
       fields={formFields}
       isUpdateForm={false}
       itemType='tool run'

@@ -6,7 +6,10 @@ import { OrganizationsService } from '../organizations/organizations.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { UserEntity, UserWithMembershipsAndAuthProvidersModel } from './entities/user.entity'
+import {
+  UserEntity,
+  UserWithMembershipsAndAuthProvidersModel
+} from './entities/user.entity'
 import { UserRepository } from './user.repository'
 
 @Injectable()
@@ -75,11 +78,17 @@ export class UsersService extends BaseService<
     )
   }
 
-  async syncAuthProvider(email: string, provider: AuthProviderType, providerId: string): Promise<UserEntity> {
+  async syncAuthProvider(
+    email: string,
+    provider: AuthProviderType,
+    providerId: string
+  ): Promise<UserEntity> {
     const user = await this.userRepository.findOneByEmail(email)
     // if it does not have this provider, add it
     if (!user.authProviders.some((p) => p.provider === provider)) {
-      return this.toEntity(await this.userRepository.addAuthProvider(email, provider, providerId))
+      return this.toEntity(
+        await this.userRepository.addAuthProvider(email, provider, providerId)
+      )
     }
     this.emitMutationEvent(user.defaultOrgname)
     return this.toEntity(user)
@@ -91,7 +100,9 @@ export class UsersService extends BaseService<
     })
   }
 
-  protected toEntity(model: UserWithMembershipsAndAuthProvidersModel): UserEntity {
+  protected toEntity(
+    model: UserWithMembershipsAndAuthProvidersModel
+  ): UserEntity {
     return new UserEntity(model)
   }
 }

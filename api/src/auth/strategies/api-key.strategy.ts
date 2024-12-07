@@ -28,7 +28,9 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
     this.logger.log(`Validating API Key: ${payload.id}`)
     const { id, orgname, role, username } = payload
     const user = await this.usersService.findOneByUsername(username)
-    this.logger.log(`Found user valid for API Key: ${user.username}, checking memberships`)
+    this.logger.log(
+      `Found user valid for API Key: ${user.username}, checking memberships`
+    )
 
     user.memberships = user.memberships.filter((m) => m.orgname == orgname)
     if (!user.memberships.length) {

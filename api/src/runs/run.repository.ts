@@ -111,7 +111,11 @@ export class RunRepository extends BaseRepository<
     })
   }
 
-  async setInputsOrOutputs(runId: string, type: 'inputs' | 'outputs', contents: ContentEntity[]) {
+  async setInputsOrOutputs(
+    runId: string,
+    type: 'inputs' | 'outputs',
+    contents: ContentEntity[]
+  ) {
     return this.prisma.run.update({
       data: {
         [type]: {

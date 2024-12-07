@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 import React from 'react'
 
 const faqs = [
@@ -88,19 +93,34 @@ const faqs = [
 
 export const FAQ = () => {
   return (
-    <section className='container py-24 sm:py-32' id='faq'>
+    <section
+      className='container py-24 sm:py-32'
+      id='faq'
+    >
       <h2 className='mb-4 text-3xl font-bold md:text-4xl'>
         Frequently Asked{' '}
-        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>Questions</span>
+        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+          Questions
+        </span>
       </h2>
 
       {faqs.map(({ category, questions }, i) => (
         <React.Fragment key={i}>
           <h3 className='mt-8 text-lg font-bold'>{category}</h3>
-          <Accordion className='AccordionRoot w-full' collapsible key={i} type='single'>
+          <Accordion
+            className='AccordionRoot w-full'
+            collapsible
+            key={i}
+            type='single'
+          >
             {questions.map(({ answer, question }, i) => (
-              <AccordionItem key={i} value={i.toString()}>
-                <AccordionTrigger className='text-left'>{question}</AccordionTrigger>
+              <AccordionItem
+                key={i}
+                value={i.toString()}
+              >
+                <AccordionTrigger className='text-left'>
+                  {question}
+                </AccordionTrigger>
 
                 <AccordionContent>{answer}</AccordionContent>
               </AccordionItem>
@@ -111,7 +131,11 @@ export const FAQ = () => {
 
       <h3 className='mt-4 font-medium'>
         Still have questions?{' '}
-        <a className='border-primary text-primary transition-all hover:border-b-2' href='#' rel='noreferrer noopener'>
+        <a
+          className='border-primary text-primary transition-all hover:border-b-2'
+          href='#'
+          rel='noreferrer noopener'
+        >
           Contact us
         </a>
       </h3>

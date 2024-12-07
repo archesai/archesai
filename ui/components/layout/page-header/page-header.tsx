@@ -19,7 +19,9 @@ export const PageHeader = () => {
   const pathname = usePathname() as string
 
   // combine all the routes from siteConfig
-  const routes = siteConfig.routes.map((route) => [route, ...(route.children || [])]).flat()
+  const routes = siteConfig.routes
+    .map((route) => [route, ...(route.children || [])])
+    .flat()
 
   // find the current route
   const currentRoute = routes.find((route) => pathname === route.href)
@@ -38,7 +40,12 @@ export const PageHeader = () => {
       <VerifyEmailAlert />
 
       <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
-        <Button className='mr-3 flex h-8 w-8' onClick={toggleSidebar} size='icon' variant='outline'>
+        <Button
+          className='mr-3 flex h-8 w-8'
+          onClick={toggleSidebar}
+          size='icon'
+          variant='outline'
+        >
           <Menu className='h-5 w-5' />
         </Button>
         <div className='flex flex-1 items-center justify-end gap-3'>
@@ -72,7 +79,11 @@ export const PageHeader = () => {
         </Tabs>
       )}
 
-      <TitleAndDescription description={description} Icon={Icon} title={title} />
+      <TitleAndDescription
+        description={description}
+        Icon={Icon}
+        title={title}
+      />
     </>
   )
 }

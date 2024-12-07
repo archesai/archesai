@@ -20,7 +20,11 @@ export default function ToolDataTable() {
   const { defaultOrgname } = useAuth()
 
   return (
-    <DataTable<ToolEntity, ToolsControllerFindAllPathParams, ToolsControllerRemoveVariables>
+    <DataTable<
+      ToolEntity,
+      ToolsControllerFindAllPathParams,
+      ToolsControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: 'name',
@@ -36,7 +40,12 @@ export default function ToolDataTable() {
               </div>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Name'
+            />
+          )
         },
         {
           accessorKey: 'description',
@@ -45,7 +54,11 @@ export default function ToolDataTable() {
           },
           enableHiding: false,
           header: ({ column }) => (
-            <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Description' />
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Description'
+            />
           )
         },
         {
@@ -54,7 +67,13 @@ export default function ToolDataTable() {
             return <Badge>{row.original.inputType}</Badge>
           },
           enableHiding: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Input' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Input'
+            />
+          )
         },
         {
           accessorKey: 'outputType',
@@ -62,14 +81,30 @@ export default function ToolDataTable() {
             return <Badge>{row.original.outputType}</Badge>
           },
           enableHiding: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Output' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Output'
+            />
+          )
         },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return <span className='font-light'>{format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}</span>
+            return (
+              <span className='font-light'>
+                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
+              </span>
+            )
           },
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Created' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Created'
+            />
+          )
         }
       ]}
       dataIcon={<PackageCheck />}

@@ -20,7 +20,11 @@ export const transformTextToText: IToolRunProcess = async (
     .filter((x) => x)
     .join(' ')
   logger.log(`Got first tokens for content for run ${runId}`)
-  const { summary } = await retry(logger, async () => await llmService.createSummary(c), 3)
+  const { summary } = await retry(
+    logger,
+    async () => await llmService.createSummary(c),
+    3
+  )
   logger.log(`Got summary for content for run ${runId}`)
 
   logger.log('Summary saved. Completed in ' + (Date.now() - start) / 1000 + 's')

@@ -100,8 +100,14 @@ export class UserEntity extends BaseEntity implements User {
   constructor(user: UserWithMembershipsAndAuthProvidersModel) {
     super()
     Object.assign(this, user)
-    this.memberships = (this.memberships || []).map((membership) => new MemberEntity(membership))
-    this.authProviders = (this.authProviders || []).map((authProvider) => new AuthProviderEntity(authProvider))
-    this.displayName = this.firstName ? this.firstName + ' ' + this.lastName : this.username
+    this.memberships = (this.memberships || []).map(
+      (membership) => new MemberEntity(membership)
+    )
+    this.authProviders = (this.authProviders || []).map(
+      (authProvider) => new AuthProviderEntity(authProvider)
+    )
+    this.displayName = this.firstName
+      ? this.firstName + ' ' + this.lastName
+      : this.username
   }
 }

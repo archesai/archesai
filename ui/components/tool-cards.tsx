@@ -31,7 +31,9 @@ export const ToolCards = () => {
 
             <Button
               className='mt-1 h-8'
-              onClick={() => router.push(`/playground?selectedTool=${JSON.stringify(tool)}`)}
+              onClick={() =>
+                router.push(`/playground?selectedTool=${JSON.stringify(tool)}`)
+              }
               variant={'outline'}
             >
               Select Tool

@@ -1,5 +1,8 @@
 'use client'
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
 import {
   useMembersControllerCreate,
@@ -11,7 +14,13 @@ import { useAuth } from '@/hooks/use-auth'
 import * as z from 'zod'
 
 import { FormControl } from '../ui/form'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -56,7 +65,10 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       label: 'Role',
       name: 'role',
       renderControl: (field) => (
-        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)}>
+        <Select
+          defaultValue={field.value}
+          onValueChange={(value) => field.onChange(value)}
+        >
           <FormControl>
             <SelectTrigger>
               <SelectValue placeholder={'Choose your role...'} />
@@ -73,7 +85,10 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
                 name: 'User'
               }
             ].map((option) => (
-              <SelectItem key={option.id} value={option.id.toString()}>
+              <SelectItem
+                key={option.id}
+                value={option.id.toString()}
+              >
                 {option.name}
               </SelectItem>
             ))}
@@ -86,7 +101,9 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
 
   return (
     <GenericForm<CreateMemberDto, UpdateMemberDto>
-      description={!memberId ? 'Invite a new member' : 'Update an existing member'}
+      description={
+        !memberId ? 'Invite a new member' : 'Update an existing member'
+      }
       fields={formFields}
       isUpdateForm={!!memberId}
       itemType='member'

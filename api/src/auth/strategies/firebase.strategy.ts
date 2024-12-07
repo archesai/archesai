@@ -37,7 +37,10 @@ const firebase_params = {
 }
 
 @Injectable()
-export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase-auth') {
+export class FirebaseStrategy extends PassportStrategy(
+  Strategy,
+  'firebase-auth'
+) {
   private readonly logger = new Logger('Firebase Strategy')
 
   constructor(
@@ -48,13 +51,16 @@ export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase-auth'
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     })
 
-    const useLocalIdentityToolkit = this.configService.get('NODE_ENV') !== 'production'
+    const useLocalIdentityToolkit =
+      this.configService.get('NODE_ENV') !== 'production'
 
     if (!admin.apps.length) {
       this.logger.log('Initializing Firebase Admin SDK')
       admin.initializeApp({
         credential: admin.credential.cert(firebase_params),
-        projectId: useLocalIdentityToolkit ? 'filechat-io' : firebase_params.projectId
+        projectId: useLocalIdentityToolkit
+          ? 'filechat-io'
+          : firebase_params.projectId
       })
     }
   }
@@ -68,7 +74,10 @@ export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase-auth'
       return user
     } catch (e) {
       this.logger.log(`User not found: ${decodedToken.email}: ${e}`)
-      const username = user.email.split('@')[0] + '-' + Math.random().toString(36).substring(2, 6)
+      const username =
+        user.email.split('@')[0] +
+        '-' +
+        Math.random().toString(36).substring(2, 6)
       user = await this.usersService.create(null, {
         email: decodedToken.email,
         emailVerified: true,
@@ -78,7 +87,11 @@ export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase-auth'
         username
       })
     } finally {
-      user = await this.usersService.syncAuthProvider(decodedToken.email, AuthProviderType.FIREBASE, decodedToken.uid)
+      user = await this.usersService.syncAuthProvider(
+        decodedToken.email,
+        AuthProviderType.FIREBASE,
+        decodedToken.uid
+      )
     }
     return user
   }

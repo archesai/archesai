@@ -44,13 +44,22 @@ export default function RunDataTable() {
               </div>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Name'
+            />
+          )
         },
         {
           accessorKey: 'runType',
           cell: ({ row }) => {
             return (
-              <Button className='text-primary hover:text-primary/90' size='sm' variant={'outline'}>
+              <Button
+                className='text-primary hover:text-primary/90'
+                size='sm'
+                variant={'outline'}
+              >
                 {row.original.runType === 'PIPELINE_RUN' ? (
                   <Workflow className='h-5 w-5' />
                 ) : (
@@ -60,19 +69,34 @@ export default function RunDataTable() {
             )
           },
           enableHiding: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Run Type' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Run Type'
+            />
+          )
         },
         {
           accessorKey: 'status',
           cell: ({ row }) => {
             return (
               <div className='pl-3'>
-                <RunStatusButton run={row.original} size='sm' />
+                <RunStatusButton
+                  run={row.original}
+                  size='sm'
+                />
               </div>
             )
           },
           enableHiding: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Input' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Input'
+            />
+          )
         },
         {
           accessorKey: 'duration',
@@ -81,7 +105,8 @@ export default function RunDataTable() {
               <span className='font-light'>
                 {row.original.startedAt && row.original.completedAt
                   ? format(
-                      new Date(row.original.completedAt).getTime() - new Date(row.original.startedAt).getTime(),
+                      new Date(row.original.completedAt).getTime() -
+                        new Date(row.original.startedAt).getTime(),
                       'mm:ss'
                     )
                   : 'N/A'}
@@ -90,30 +115,50 @@ export default function RunDataTable() {
           },
           enableHiding: false,
           enableSorting: false,
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Duration' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Duration'
+            />
+          )
         },
         {
           accessorKey: 'startedAt',
           cell: ({ row }) => {
             return (
               <span className='font-light'>
-                {row.original.startedAt ? format(new Date(row.original.startedAt), 'M/d/yy h:mm a') : 'N/A'}
+                {row.original.startedAt
+                  ? format(new Date(row.original.startedAt), 'M/d/yy h:mm a')
+                  : 'N/A'}
               </span>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Started At' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Started At'
+            />
+          )
         },
         {
           accessorKey: 'completedAt',
           cell: ({ row }) => {
             return (
               <span className='font-light'>
-                {row.original.completedAt ? format(new Date(row.original.completedAt), 'M/d/yy h:mm a') : 'N/A'}
+                {row.original.completedAt
+                  ? format(new Date(row.original.completedAt), 'M/d/yy h:mm a')
+                  : 'N/A'}
               </span>
             )
           },
           header: ({ column }) => (
-            <DataTableColumnHeader className='-ml-2 text-sm' column={column} title='Completed At' />
+            <DataTableColumnHeader
+              className='-ml-2 text-sm'
+              column={column}
+              title='Completed At'
+            />
           )
         }
       ]}

@@ -13,9 +13,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     this.logger.error(exception)
 
-    let statusCode = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR
+    let statusCode =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR
 
-    let message = exception?.response?.message || exception?.message || 'Internal server error'
+    let message =
+      exception?.response?.message ||
+      exception?.message ||
+      'Internal server error'
 
     if (
       message.includes('Unique constraint failed') ||
@@ -34,7 +40,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const rx = /No '(\w+)' record\(s\)/g
       const matches = rx.exec(message)
       if (matches) {
-        message = 'No ' + matches[1].toLocaleLowerCase() + ' found with the provided identifer'
+        message =
+          'No ' +
+          matches[1].toLocaleLowerCase() +
+          ' found with the provided identifer'
       }
       statusCode = 404
     }

@@ -137,7 +137,9 @@ describe('WebsocketsGateway', () => {
         }
       } as unknown as Socket
 
-      ;(authService.verifyToken as jest.Mock).mockRejectedValue(new Error('Invalid token'))
+      ;(authService.verifyToken as jest.Mock).mockRejectedValue(
+        new Error('Invalid token')
+      )
 
       await gateway.handleConnection(socket)
 

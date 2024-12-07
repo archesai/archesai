@@ -10,11 +10,12 @@ import { LabelsService } from './labels.service'
 @ApiBearerAuth()
 @ApiTags('Labels')
 @Controller('/organizations/:orgname/labels')
-export class LabelsController extends BaseController<LabelEntity, CreateLabelDto, UpdateLabelDto, LabelsService>(
+export class LabelsController extends BaseController<
   LabelEntity,
   CreateLabelDto,
-  UpdateLabelDto
-) {
+  UpdateLabelDto,
+  LabelsService
+>(LabelEntity, CreateLabelDto, UpdateLabelDto) {
   constructor(private readonly labelsService: LabelsService) {
     super(labelsService)
   }

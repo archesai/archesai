@@ -25,8 +25,18 @@ export class AudioService {
     private keyframesService: KeyframesService
   ) {}
 
-  getKeyframes(audioUrl: string, framerate: number, fn: string, isTranslation: boolean) {
-    return this.keyframesService.getKeyframes(audioUrl, framerate, fn, isTranslation)
+  getKeyframes(
+    audioUrl: string,
+    framerate: number,
+    fn: string,
+    isTranslation: boolean
+  ) {
+    return this.keyframesService.getKeyframes(
+      audioUrl,
+      framerate,
+      fn,
+      isTranslation
+    )
   }
 
   async splitAudio(audioUrl: string) {
@@ -78,7 +88,10 @@ export class AudioService {
               })
               .pipe(
                 catchError((err: AxiosError) => {
-                  this.logger.error('Could not hit moises endpoint', err.message)
+                  this.logger.error(
+                    'Could not hit moises endpoint',
+                    err.message
+                  )
                   throw new InternalServerErrorException(err.message)
                 })
               )
@@ -99,7 +112,12 @@ export class AudioService {
     }
   }
 
-  async trimAudio(orgname: string, audioUrl: string, startTime: number, duration: number): Promise<string> {
+  async trimAudio(
+    orgname: string,
+    audioUrl: string,
+    startTime: number,
+    duration: number
+  ): Promise<string> {
     const inputTmpPath = ospath.join(os.tmpdir(), 'original.mp3')
     const outputTmpPath = ospath.join(os.tmpdir(), 'trimmed.mp3')
     const response = await axios.get(audioUrl, {
@@ -125,14 +143,18 @@ export class AudioService {
         .setDuration(duration)
         .output(outputTmpPath)
         .on('end', async () => {
-          const url = await this.storageService.upload(orgname, 'audio/' + new Date().valueOf().toString() + '.mp3', {
-            buffer: fs.readFileSync(outputTmpPath),
-            encoding: '7bit',
-            fieldname: 'audio',
-            mimetype: 'audio/mp3', // You may want to detect this automatically, e.g. with the `file-type` package
-            originalname: ospath.basename(outputTmpPath),
-            size: fs.statSync(outputTmpPath).size
-          } as Express.Multer.File)
+          const url = await this.storageService.upload(
+            orgname,
+            'audio/' + new Date().valueOf().toString() + '.mp3',
+            {
+              buffer: fs.readFileSync(outputTmpPath),
+              encoding: '7bit',
+              fieldname: 'audio',
+              mimetype: 'audio/mp3', // You may want to detect this automatically, e.g. with the `file-type` package
+              originalname: ospath.basename(outputTmpPath),
+              size: fs.statSync(outputTmpPath).size
+            } as Express.Multer.File
+          )
 
           fs.unlinkSync(outputTmpPath)
           fs.unlinkSync(inputTmpPath)

@@ -152,7 +152,8 @@ export class PaymentMethodEntity {
   billing_details: BillingDetails
 
   @ApiProperty({
-    description: 'If the PaymentMethod is a card, this contains the card details.',
+    description:
+      'If the PaymentMethod is a card, this contains the card details.',
     nullable: true,
     type: () => CardDetails
   })
@@ -180,7 +181,8 @@ export class PaymentMethodEntity {
   constructor(paymentMethod: Stripe.PaymentMethod) {
     this.id = paymentMethod.id
     this.type = paymentMethod.type
-    this.customer = typeof paymentMethod.customer === 'string' ? paymentMethod.customer : null
+    this.customer =
+      typeof paymentMethod.customer === 'string' ? paymentMethod.customer : null
     this.billing_details = new BillingDetails(paymentMethod.billing_details)
     this.card = paymentMethod.card ? new CardDetails(paymentMethod.card) : null
   }

@@ -39,7 +39,8 @@ async function main() {
     firstName: 'Jonathan',
     lastName: 'King',
     password: hashedPassword,
-    photoUrl: 'https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179',
+    photoUrl:
+      'https://nsabers.com/cdn/shop/articles/bebec223da75d29d8e03027fd2882262.png?v=1708781179',
     username: 'user'
   })
 

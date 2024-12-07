@@ -3,7 +3,9 @@ import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger'
 
 import { AggregateFieldResult, Metadata } from '../dto/paginated.dto'
 
-export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel
+) => {
   return applyDecorators(
     ApiOkResponse({
       description: 'Successfully returned paginated results',

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post
+} from '@nestjs/common'
 import { ApiBearerAuth } from '@nestjs/swagger'
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator'
@@ -20,9 +28,16 @@ export class OrganizationsController {
    * @throws {404} NotFoundException
    */
   @Post()
-  async create(@Body() createOrganizationDto: CreateOrganizationDto, @CurrentUser() user: UserEntity) {
+  async create(
+    @Body() createOrganizationDto: CreateOrganizationDto,
+    @CurrentUser() user: UserEntity
+  ) {
     return new OrganizationEntity(
-      await this.organizationsService.create(createOrganizationDto.orgname, createOrganizationDto, user)
+      await this.organizationsService.create(
+        createOrganizationDto.orgname,
+        createOrganizationDto,
+        user
+      )
     )
   }
 
@@ -45,7 +60,9 @@ export class OrganizationsController {
   @Get(':orgname')
   async findOne(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
-    return new OrganizationEntity(await this.organizationsService.findOne(orgname, organization.id))
+    return new OrganizationEntity(
+      await this.organizationsService.findOne(orgname, organization.id)
+    )
   }
 
   /**
@@ -55,10 +72,17 @@ export class OrganizationsController {
    * @throws {404} NotFoundException
    */
   @Patch(':orgname')
-  async update(@Param('orgname') orgname: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
+  async update(
+    @Param('orgname') orgname: string,
+    @Body() updateOrganizationDto: UpdateOrganizationDto
+  ) {
     const organization = await this.organizationsService.findByOrgname(orgname)
     return new OrganizationEntity(
-      await this.organizationsService.update(orgname, organization.id, updateOrganizationDto)
+      await this.organizationsService.update(
+        orgname,
+        organization.id,
+        updateOrganizationDto
+      )
     )
   }
 }

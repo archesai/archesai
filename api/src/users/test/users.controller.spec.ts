@@ -65,7 +65,10 @@ describe('UsersController', () => {
 
   describe('POST /user/deactivate', () => {
     it('should deactivate a user', async () => {
-      const response = await request(app.getHttpServer()).post('/user/deactivate').send().expect(201)
+      const response = await request(app.getHttpServer())
+        .post('/user/deactivate')
+        .send()
+        .expect(201)
 
       expect(response.body).toEqual({})
       expect(mockedUsersService.deactivate).toHaveBeenCalledWith('test-id')
@@ -74,7 +77,9 @@ describe('UsersController', () => {
 
   describe('GET /user', () => {
     it('should return the current user', async () => {
-      const response = await request(app.getHttpServer()).get('/user').expect(200)
+      const response = await request(app.getHttpServer())
+        .get('/user')
+        .expect(200)
 
       expect(response.body.id).toEqual('test-id')
     })
@@ -93,13 +98,20 @@ describe('UsersController', () => {
       })
       mockedUsersService.update.mockResolvedValue(mockedUser)
 
-      const response = await request(app.getHttpServer()).patch('/user').send(updateUserDto).expect(200)
+      const response = await request(app.getHttpServer())
+        .patch('/user')
+        .send(updateUserDto)
+        .expect(200)
 
       expect(response.body.firstName).toEqual('John')
       expect(response.body.lastName).toEqual('Doe')
       expect(response.body.id).toEqual('test-id')
 
-      expect(mockedUsersService.update).toHaveBeenCalledWith(mockedUser.defaultOrgname, mockedUser.id, updateUserDto)
+      expect(mockedUsersService.update).toHaveBeenCalledWith(
+        mockedUser.defaultOrgname,
+        mockedUser.id,
+        updateUserDto
+      )
     })
   })
 })

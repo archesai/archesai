@@ -1,6 +1,13 @@
 import { INestApplication } from '@nestjs/common'
 
-import { createApp, deactivateUser, getOrganization, getUser, registerUser, setEmailVerified } from './util'
+import {
+  createApp,
+  deactivateUser,
+  getOrganization,
+  getUser,
+  registerUser,
+  setEmailVerified
+} from './util'
 
 describe('Users', () => {
   let app: INestApplication

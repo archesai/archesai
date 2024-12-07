@@ -55,7 +55,10 @@ export function BaseController<
       type: EntityClass
     })
     @Get(':id')
-    async findOne(@Param('orgname') orgname: string, @Param('id') id: string): Promise<Entity> {
+    async findOne(
+      @Param('orgname') orgname: string,
+      @Param('id') id: string
+    ): Promise<Entity> {
       return this.service.findOne(orgname, id)
     }
 
@@ -65,7 +68,10 @@ export function BaseController<
       status: 200
     })
     @Delete(':id')
-    async remove(@Param('orgname') orgname: string, @Param('id') id: string): Promise<void> {
+    async remove(
+      @Param('orgname') orgname: string,
+      @Param('id') id: string
+    ): Promise<void> {
       return this.service.remove(orgname, id)
     }
 

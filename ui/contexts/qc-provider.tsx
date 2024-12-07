@@ -1,6 +1,10 @@
 'use client'
 
-import { keepPreviousData, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  QueryClient,
+  QueryClientProvider
+} from '@tanstack/react-query'
 import { useState } from 'react'
 
 export const QCProvider = ({ children }: any) => {

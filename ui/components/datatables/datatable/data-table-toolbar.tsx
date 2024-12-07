@@ -32,7 +32,8 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0
 
   const { query, setQuery } = useFilterItems()
-  const { selectedAllItems, selectedSomeItems, toggleSelectAll } = useSelectItems({ items: data || [] })
+  const { selectedAllItems, selectedSomeItems, toggleSelectAll } =
+    useSelectItems({ items: data || [] })
 
   return (
     <div className='flex flex-wrap items-center gap-2'>
@@ -62,7 +63,11 @@ export function DataTableToolbar<TData>({
         />
       )} */}
       {isFiltered && (
-        <Button className='flex h-8 gap-2 p-2' onClick={() => table.resetColumnFilters()} variant='outline'>
+        <Button
+          className='flex h-8 gap-2 p-2'
+          onClick={() => table.resetColumnFilters()}
+          variant='outline'
+        >
           <span>Reset</span>
           <Cross2Icon className='h-5 w-5' />
         </Button>
@@ -72,7 +77,12 @@ export function DataTableToolbar<TData>({
       <ViewToggle />
       <DataTableViewOptions table={table} />
       {createForm && !readonly ? (
-        <Button className='capitalize' onClick={() => setFormOpen(true)} size='sm' variant={'outline'}>
+        <Button
+          className='capitalize'
+          onClick={() => setFormOpen(true)}
+          size='sm'
+          variant={'outline'}
+        >
           Create {itemType.toLowerCase()}
         </Button>
       ) : null}
@@ -86,7 +96,9 @@ export function ViewToggle() {
     <div className='hidden h-8 gap-2 md:flex'>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === 'table' ? 'bg-secondary text-primary' : 'bg-transparent text-muted-foreground'
+          view === 'table'
+            ? 'bg-secondary text-primary'
+            : 'bg-transparent text-muted-foreground'
         }`}
         onClick={() => setView('table')}
         size='icon'
@@ -96,7 +108,9 @@ export function ViewToggle() {
       </Button>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === 'grid' ? 'bg-secondary text-primary' : 'bg-transparent text-muted-foreground'
+          view === 'grid'
+            ? 'bg-secondary text-primary'
+            : 'bg-transparent text-muted-foreground'
         }`}
         onClick={() => setView('grid')}
         size='icon'

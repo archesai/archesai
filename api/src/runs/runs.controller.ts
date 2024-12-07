@@ -9,11 +9,12 @@ import { RunsService } from './runs.service'
 @ApiBearerAuth()
 @ApiTags('Runs')
 @Controller('/organizations/:orgname/runs')
-export class RunsController extends BaseController<RunEntity, CreateRunDto, any, RunsService>(
+export class RunsController extends BaseController<
   RunEntity,
   CreateRunDto,
-  undefined
-) {
+  any,
+  RunsService
+>(RunEntity, CreateRunDto, undefined) {
   constructor(private readonly runsService: RunsService) {
     super(runsService)
   }

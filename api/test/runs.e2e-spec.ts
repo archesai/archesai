@@ -3,7 +3,12 @@ import { ToolEntity } from '@/src/tools/entities/tool.entity'
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 
-import { createApp, getUser, registerUser, setEmailVerified } from '../test/util'
+import {
+  createApp,
+  getUser,
+  registerUser,
+  setEmailVerified
+} from '../test/util'
 
 describe('Runs', () => {
   let app: INestApplication

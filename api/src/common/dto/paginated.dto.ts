@@ -44,7 +44,11 @@ export class PaginatedDto<TData> {
    */
   results: TData[]
 
-  constructor(input: { aggregates?: AggregateFieldResult[]; metadata: Metadata; results: TData[] }) {
+  constructor(input: {
+    aggregates?: AggregateFieldResult[]
+    metadata: Metadata
+    results: TData[]
+  }) {
     this.results = input.results
     this.metadata = input.metadata
     this.aggregates = input.aggregates

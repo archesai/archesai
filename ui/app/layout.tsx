@@ -39,11 +39,23 @@ export const metadata = {
   }
 } as Metadata
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html
+      lang='en'
+      suppressHydrationWarning
+    >
       <body className={GeistSans.className}>
-        <ThemeProvider attribute='class' defaultTheme='dark' disableTransitionOnChange enableSystem>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='dark'
+          disableTransitionOnChange
+          enableSystem
+        >
           <NuqsAdapter>
             <QCProvider>{children}</QCProvider>
           </NuqsAdapter>

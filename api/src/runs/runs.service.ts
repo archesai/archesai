@@ -14,7 +14,13 @@ import { RunEntity, RunModel } from './entities/run.entity'
 import { RunRepository } from './run.repository'
 
 @Injectable()
-export class RunsService extends BaseService<RunEntity, CreateRunDto, any, RunRepository, RunModel> {
+export class RunsService extends BaseService<
+  RunEntity,
+  CreateRunDto,
+  any,
+  RunRepository,
+  RunModel
+> {
   private logger = new Logger(RunsService.name)
 
   constructor(
@@ -111,8 +117,16 @@ export class RunsService extends BaseService<RunEntity, CreateRunDto, any, RunRe
     return runContent
   }
 
-  async setInputsOrOutputs(runId: string, type: 'inputs' | 'outputs', content: ContentEntity[]) {
-    const run = await this.runRepository.setInputsOrOutputs(runId, type, content)
+  async setInputsOrOutputs(
+    runId: string,
+    type: 'inputs' | 'outputs',
+    content: ContentEntity[]
+  ) {
+    const run = await this.runRepository.setInputsOrOutputs(
+      runId,
+      type,
+      content
+    )
     this.emitMutationEvent(run.orgname)
     return this.toEntity(run)
   }

@@ -14,7 +14,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { useUsersControllerFindOne, useUsersControllerUpdate } from '@/generated/archesApiComponents'
+import {
+  useUsersControllerFindOne,
+  useUsersControllerUpdate
+} from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { useToast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
@@ -55,7 +58,9 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
       <DropdownMenuTrigger asChild>
         <Button
           className={`flex h-auto items-center justify-between ${
-            size === 'lg' ? 'w-full p-2 font-semibold leading-6' : 'h-8 w-8 rounded-full p-0'
+            size === 'lg'
+              ? 'w-full p-2 font-semibold leading-6'
+              : 'h-8 w-8 rounded-full p-0'
           }`}
           variant='outline'
         >
@@ -81,10 +86,16 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className='overflow-hidden text-start'>
-                  <p aria-hidden='true' className='text-dark truncate text-sm font-medium'>
+                  <p
+                    aria-hidden='true'
+                    className='text-dark truncate text-sm font-medium'
+                  >
                     {user?.displayName}
                   </p>
-                  <p aria-hidden='true' className='text-gray-alpha-500 truncate text-xs font-normal'>
+                  <p
+                    aria-hidden='true'
+                    className='text-gray-alpha-500 truncate text-xs font-normal'
+                  >
                     {defaultOrgname}
                   </p>
                 </div>
@@ -124,11 +135,19 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-56' forceMount>
+      <DropdownMenuContent
+        align='end'
+        className='w-56'
+        forceMount
+      >
         <DropdownMenuLabel className='font-normal'>
           <div className='flex flex-col gap-1'>
-            <p className='text-sm font-medium leading-none'>{user?.displayName}</p>
-            <p className='text-xs leading-none text-muted-foreground'>{user?.email}</p>
+            <p className='text-sm font-medium leading-none'>
+              {user?.displayName}
+            </p>
+            <p className='text-xs leading-none text-muted-foreground'>
+              {user?.email}
+            </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -150,13 +169,17 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                     }}
                   >
                     {membership.orgname}
-                    {defaultOrgname === membership.orgname && <Badge>Current</Badge>}
+                    {defaultOrgname === membership.orgname && (
+                      <Badge>Current</Badge>
+                    )}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-          <DropdownMenuItem onClick={() => router.push('/organization/general')}>
+          <DropdownMenuItem
+            onClick={() => router.push('/organization/general')}
+          >
             Settings
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>

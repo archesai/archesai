@@ -8,7 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar
+} from '@/components/ui/sidebar'
 import {
   useOrganizationsControllerFindOne,
   useUsersControllerFindOne,
@@ -66,12 +71,19 @@ export function OrganizationSwitcher() {
               {}
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg border text-primary'>
                 <div className='-mt-0.5'>
-                  <ArchesLogo scale={0.1} size='sm' />
+                  <ArchesLogo
+                    scale={0.1}
+                    size='sm'
+                  />
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold'>{organization?.orgname}</span>
-                <span className='truncate text-xs capitalize'>{organization?.plan?.toLocaleLowerCase()} Plan</span>
+                <span className='truncate font-semibold'>
+                  {organization?.orgname}
+                </span>
+                <span className='truncate text-xs capitalize'>
+                  {organization?.plan?.toLocaleLowerCase()} Plan
+                </span>
               </div>
               <ChevronsUpDown className='ml-auto' />
             </SidebarMenuButton>
@@ -82,7 +94,9 @@ export function OrganizationSwitcher() {
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
-            <DropdownMenuLabel className='text-xs text-muted-foreground'>Organizations</DropdownMenuLabel>
+            <DropdownMenuLabel className='text-xs text-muted-foreground'>
+              Organizations
+            </DropdownMenuLabel>
             {memberships?.map((membership) => (
               <DropdownMenuItem
                 className='flex justify-between gap-2'
@@ -96,7 +110,9 @@ export function OrganizationSwitcher() {
                 }}
               >
                 {membership.orgname}
-                {defaultOrgname === membership.orgname && <Badge>Current</Badge>}
+                {defaultOrgname === membership.orgname && (
+                  <Badge>Current</Badge>
+                )}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
@@ -104,7 +120,9 @@ export function OrganizationSwitcher() {
               <div className='flex size-6 items-center justify-center rounded-md border bg-background'>
                 <Plus className='size-4' />
               </div>
-              <div className='font-medium text-muted-foreground'>New Organization</div>
+              <div className='font-medium text-muted-foreground'>
+                New Organization
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

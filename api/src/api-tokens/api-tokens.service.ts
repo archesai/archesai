@@ -49,11 +49,15 @@ export class ApiTokensService extends BaseService<
       }
     )
     const key = '*********' + token.slice(-5)
-    const apiToken = await this.apiTokenRepository.create(orgname, createTokenDto, {
-      id,
-      key,
-      username: additionalData.username
-    })
+    const apiToken = await this.apiTokenRepository.create(
+      orgname,
+      createTokenDto,
+      {
+        id,
+        key,
+        username: additionalData.username
+      }
+    )
 
     this.emitMutationEvent(orgname)
     return this.toEntity({

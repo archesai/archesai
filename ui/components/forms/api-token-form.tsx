@@ -1,17 +1,29 @@
 'use client'
-import { FormFieldConfig, GenericForm } from '@/components/forms/generic-form/generic-form'
+import {
+  FormFieldConfig,
+  GenericForm
+} from '@/components/forms/generic-form/generic-form'
 import { Input } from '@/components/ui/input'
 import {
   useApiTokensControllerCreate,
   useApiTokensControllerFindOne,
   useApiTokensControllerUpdate
 } from '@/generated/archesApiComponents'
-import { CreateApiTokenDto, UpdateApiTokenDto } from '@/generated/archesApiSchemas'
+import {
+  CreateApiTokenDto,
+  UpdateApiTokenDto
+} from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
 import * as z from 'zod'
 
 import { FormControl } from '../ui/form'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select'
 
 const formSchema = z.object({
   domains: z.string(),
@@ -50,7 +62,8 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
     {
       component: Input,
       defaultValue: apiToken?.domains || '',
-      description: 'These are the domains that will be used for this API token.',
+      description:
+        'These are the domains that will be used for this API token.',
       label: 'Domains',
       name: 'domains',
       props: {
@@ -65,7 +78,10 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       label: 'Role',
       name: 'role',
       renderControl: (field) => (
-        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)}>
+        <Select
+          defaultValue={field.value}
+          onValueChange={(value) => field.onChange(value)}
+        >
           <FormControl>
             <SelectTrigger>
               <SelectValue placeholder={'Choose your role...'} />
@@ -82,7 +98,10 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
                 name: 'User'
               }
             ].map((option) => (
-              <SelectItem key={option.id} value={option.id.toString()}>
+              <SelectItem
+                key={option.id}
+                value={option.id.toString()}
+              >
                 {option.name}
               </SelectItem>
             ))}
@@ -122,7 +141,9 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
           mutateOptions
         )
       }}
-      title={!apiTokenId ? 'Create API Token' : `Update API Token: ${apiToken?.name}`}
+      title={
+        !apiTokenId ? 'Create API Token' : `Update API Token: ${apiToken?.name}`
+      }
     />
   )
 }

@@ -13,7 +13,10 @@ import { createClient } from 'redis'
 import { AppModule } from './app.module'
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter'
 import { AggregateFieldResult, Metadata } from './common/dto/paginated.dto'
-import { AggregateFieldQuery, FieldFieldQuery } from './common/dto/search-query.dto'
+import {
+  AggregateFieldQuery,
+  FieldFieldQuery
+} from './common/dto/search-query.dto'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -33,7 +36,12 @@ async function bootstrap() {
       .build()
     const documentFactory = () =>
       SwaggerModule.createDocument(app, swaggerConfig, {
-        extraModels: [FieldFieldQuery, AggregateFieldQuery, AggregateFieldResult, Metadata]
+        extraModels: [
+          FieldFieldQuery,
+          AggregateFieldQuery,
+          AggregateFieldResult,
+          Metadata
+        ]
         // operationIdFactory: (controllerKey: string, methodKey: string) => methodKey
       })
 
@@ -57,7 +65,11 @@ async function bootstrap() {
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || allowedOrigins[0] === '*') {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins[0] === '*'
+      ) {
         callback(null, true)
       } else {
         callback(new Error('Not allowed by CORS'))

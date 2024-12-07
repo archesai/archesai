@@ -1,8 +1,19 @@
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { useFilterItems } from '@/hooks/useFilterItems'
 import { useSelectItems } from '@/hooks/useSelectItems'
-import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon
+} from '@radix-ui/react-icons'
 
 interface DataTablePaginationProps<TData> {
   data: {
@@ -15,15 +26,17 @@ interface DataTablePaginationProps<TData> {
   }
 }
 
-export function DataTablePagination<TData>({ data }: DataTablePaginationProps<TData>) {
+export function DataTablePagination<TData>({
+  data
+}: DataTablePaginationProps<TData>) {
   const { limit, page, setLimit, setPage } = useFilterItems()
   const { selectedItems } = useSelectItems({ items: data?.results || [] })
   return (
     <div className='flex items-center justify-between'>
       {/* Display the number of items found and selected on left side*/}
       <div className='hidden text-sm text-muted-foreground sm:block'>
-        {data?.metadata?.totalResults} found - {selectedItems.length} of {Math.min(limit, data?.results.length)} item(s)
-        selected.
+        {data?.metadata?.totalResults} found - {selectedItems.length} of{' '}
+        {Math.min(limit, data?.results.length)} item(s) selected.
       </div>
       {/* Pagination controls on right side*/}
       <div className='flex items-center gap-2 lg:gap-3'>
@@ -41,7 +54,10 @@ export function DataTablePagination<TData>({ data }: DataTablePaginationProps<TD
             </SelectTrigger>
             <SelectContent side='top'>
               {[10, 20, 30, 40, 50].map((limit) => (
-                <SelectItem key={limit} value={`${limit}`}>
+                <SelectItem
+                  key={limit}
+                  value={`${limit}`}
+                >
                   {limit}
                 </SelectItem>
               ))}
@@ -65,12 +81,19 @@ export function DataTablePagination<TData>({ data }: DataTablePaginationProps<TD
           >
             <DoubleArrowLeftIcon className='h-5 w-5' />
           </Button>
-          <Button className='h-8 w-8 p-0' disabled={page === 0} onClick={() => setPage(page - 1)} variant='outline'>
+          <Button
+            className='h-8 w-8 p-0'
+            disabled={page === 0}
+            onClick={() => setPage(page - 1)}
+            variant='outline'
+          >
             <ChevronLeftIcon className='h-5 w-5' />
           </Button>
           <Button
             className='h-8 w-8 p-0'
-            disabled={page >= Math.ceil(data?.metadata?.totalResults / limit) - 1}
+            disabled={
+              page >= Math.ceil(data?.metadata?.totalResults / limit) - 1
+            }
             onClick={() => setPage(page + 1)}
             variant='outline'
           >
@@ -78,8 +101,12 @@ export function DataTablePagination<TData>({ data }: DataTablePaginationProps<TD
           </Button>
           <Button
             className='hidden h-8 w-8 p-0 lg:flex'
-            disabled={page >= Math.ceil(data?.metadata?.totalResults / limit) - 1}
-            onClick={() => setPage(Math.ceil(data?.metadata?.totalResults / limit) - 1)}
+            disabled={
+              page >= Math.ceil(data?.metadata?.totalResults / limit) - 1
+            }
+            onClick={() =>
+              setPage(Math.ceil(data?.metadata?.totalResults / limit) - 1)
+            }
             variant='outline'
           >
             <DoubleArrowRightIcon className='h-5 w-5' />

@@ -1,17 +1,24 @@
 import { Alert, AlertTitle } from '@/components/ui/alert'
-import { useAuthControllerEmailVerificationRequest, useUsersControllerFindOne } from '@/generated/archesApiComponents'
+import {
+  useAuthControllerEmailVerificationRequest,
+  useUsersControllerFindOne
+} from '@/generated/archesApiComponents'
 import { useToast } from '@/hooks/use-toast'
 import { RocketIcon } from '@radix-ui/react-icons'
 
 export function VerifyEmailAlert() {
-  const { mutateAsync: requestEmailVerification } = useAuthControllerEmailVerificationRequest()
+  const { mutateAsync: requestEmailVerification } =
+    useAuthControllerEmailVerificationRequest()
   const { toast } = useToast()
   const { data: user } = useUsersControllerFindOne({})
 
   if (!user || user?.emailVerified) return null
   return (
     <Alert className='rounded-none border-none bg-primary'>
-      <RocketIcon className='h-5 w-5' color='white' />
+      <RocketIcon
+        className='h-5 w-5'
+        color='white'
+      />
       <AlertTitle className='font-normal text-white'>
         <span className='flex gap-1'>
           Please
@@ -21,7 +28,8 @@ export function VerifyEmailAlert() {
               try {
                 await requestEmailVerification({})
                 toast({
-                  description: 'Please check your inbox for the verification email',
+                  description:
+                    'Please check your inbox for the verification email',
                   title: 'Email verification sent'
                 })
               } catch (error) {

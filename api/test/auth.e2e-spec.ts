@@ -29,21 +29,23 @@ describe('Auth Module E2E Tests', () => {
 
     // Mock EmailService
     const emailService = app.get(EmailService)
-    jest.spyOn(emailService, 'sendMail').mockImplementation(async ({ html }) => {
-      const tokenMatch = (html as string).match(/token=([a-zA-Z0-9]+)/)
-      if (tokenMatch) {
-        const token = tokenMatch[1]
-        // Determine token type based on URL path or another identifier
-        if (html.toString().includes('email-change')) {
-          emailChangeToken = token
-        } else if (html.toString().includes('email-verification')) {
-          emailVerificationToken = token
-        } else if (html.toString().includes('password-reset')) {
-          passwordResetToken = token
+    jest
+      .spyOn(emailService, 'sendMail')
+      .mockImplementation(async ({ html }) => {
+        const tokenMatch = (html as string).match(/token=([a-zA-Z0-9]+)/)
+        if (tokenMatch) {
+          const token = tokenMatch[1]
+          // Determine token type based on URL path or another identifier
+          if (html.toString().includes('email-change')) {
+            emailChangeToken = token
+          } else if (html.toString().includes('email-verification')) {
+            emailVerificationToken = token
+          } else if (html.toString().includes('password-reset')) {
+            passwordResetToken = token
+          }
         }
-      }
-      return Promise.resolve()
-    })
+        return Promise.resolve()
+      })
 
     await app.init()
 
@@ -110,7 +112,9 @@ describe('Auth Module E2E Tests', () => {
       const invalidTokenDto: ConfirmationTokenDto = {
         token: 'invalid-token'
       }
-      const res = await request(app.getHttpServer()).post('/auth/email-change/confirm').send(invalidTokenDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/email-change/confirm')
+        .send(invalidTokenDto)
       expect(res.status).toBe(400)
     })
 
@@ -119,7 +123,9 @@ describe('Auth Module E2E Tests', () => {
       const validTokenDto: ConfirmationTokenDto = {
         token: emailChangeToken!
       }
-      const res = await request(app.getHttpServer()).post('/auth/email-change/confirm').send(validTokenDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/email-change/confirm')
+        .send(validTokenDto)
 
       expect(res.status).toBe(201)
       expect(res).toSatisfyApiSpec()
@@ -152,7 +158,9 @@ describe('Auth Module E2E Tests', () => {
       const validTokenDto: ConfirmationTokenDto = {
         token: emailVerificationToken!
       }
-      const res = await request(app.getHttpServer()).post('/auth/email-verification/confirm').send(validTokenDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/email-verification/confirm')
+        .send(validTokenDto)
 
       expect(res.status).toBe(201)
       expect(res).toSatisfyApiSpec()
@@ -166,7 +174,9 @@ describe('Auth Module E2E Tests', () => {
       const invalidTokenDto: ConfirmationTokenDto = {
         token: 'invalid-token'
       }
-      const res = await request(app.getHttpServer()).post('/auth/email-verification/confirm').send(invalidTokenDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/email-verification/confirm')
+        .send(invalidTokenDto)
 
       expect(res.status).toBe(400)
     })
@@ -177,7 +187,9 @@ describe('Auth Module E2E Tests', () => {
       const passwordResetRequestDto: EmailRequestDto = {
         email: newEmail // Use the updated email
       }
-      const res = await request(app.getHttpServer()).post('/auth/password-reset/request').send(passwordResetRequestDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/password-reset/request')
+        .send(passwordResetRequestDto)
 
       expect(res.status).toBe(201)
       expect(res).toSatisfyApiSpec()
@@ -188,7 +200,9 @@ describe('Auth Module E2E Tests', () => {
       const passwordResetRequestDto: EmailRequestDto = {
         email: 'non-existent@archesai.com'
       }
-      const res = await request(app.getHttpServer()).post('/auth/password-reset/request').send(passwordResetRequestDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/password-reset/request')
+        .send(passwordResetRequestDto)
 
       // Even if the email does not exist, respond with 201 to prevent email enumeration
       expect(res.status).toBe(201)
@@ -200,7 +214,9 @@ describe('Auth Module E2E Tests', () => {
         newPassword: 'NewPassword123!',
         token: 'invalid-token'
       }
-      const res = await request(app.getHttpServer()).post('/auth/password-reset/confirm').send(invalidTokenDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/password-reset/confirm')
+        .send(invalidTokenDto)
 
       expect(res.status).toBe(400)
     })
@@ -211,16 +227,20 @@ describe('Auth Module E2E Tests', () => {
         newPassword: 'NewPassword123!',
         token: passwordResetToken!
       }
-      const res = await request(app.getHttpServer()).post('/auth/password-reset/confirm').send(validResetDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/password-reset/confirm')
+        .send(validResetDto)
 
       expect(res.status).toBe(201)
       expect(res.body.accessToken).toBeDefined()
 
       // Attempt to login with the new password
-      const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
-        email: newEmail,
-        password: 'NewPassword123!'
-      })
+      const loginRes = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: newEmail,
+          password: 'NewPassword123!'
+        })
       expect(loginRes.status).toBe(201)
       expect(loginRes.body.accessToken).toBeDefined()
       expect(loginRes).toSatisfyApiSpec()
@@ -232,7 +252,9 @@ describe('Auth Module E2E Tests', () => {
         newPassword: 'AnotherNewPassword123!',
         token: passwordResetToken!
       }
-      const res1 = await request(app.getHttpServer()).post('/auth/password-reset/confirm').send(validResetDto)
+      const res1 = await request(app.getHttpServer())
+        .post('/auth/password-reset/confirm')
+        .send(validResetDto)
 
       expect(res1.status).toBe(400)
     })
@@ -242,7 +264,10 @@ describe('Auth Module E2E Tests', () => {
       const passwordResetRequestDto: EmailRequestDto = {
         email: newEmail
       }
-      await request(app.getHttpServer()).post('/auth/password-reset/request').send(passwordResetRequestDto).expect(201)
+      await request(app.getHttpServer())
+        .post('/auth/password-reset/request')
+        .send(passwordResetRequestDto)
+        .expect(201)
 
       expect(passwordResetToken).not.toBeNull()
 
@@ -256,7 +281,9 @@ describe('Auth Module E2E Tests', () => {
         newPassword: 'ExpiredPassword123!',
         token: passwordResetToken
       }
-      const res = await request(app.getHttpServer()).post('/auth/password-reset/confirm').send(expiredResetDto)
+      const res = await request(app.getHttpServer())
+        .post('/auth/password-reset/confirm')
+        .send(expiredResetDto)
 
       expect(res.status).toBe(400)
 

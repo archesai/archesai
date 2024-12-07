@@ -1,8 +1,20 @@
 'use client'
 // FIXME - remove use client
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import {
   useBillingControllerCancelSubscriptionPlan,
   useBillingControllerChangeSubscriptionPlan,
@@ -20,7 +32,9 @@ export default function BillingPageContent() {
   const router = useRouter()
   const { defaultOrgname } = useAuth()
   const { toast } = useToast()
-  const [clickedButtonIndex, setClickedButtonIndex] = useState<null | number>(-1)
+  const [clickedButtonIndex, setClickedButtonIndex] = useState<null | number>(
+    -1
+  )
 
   const { data: plans } = useBillingControllerGetPlans({})
 
@@ -30,27 +44,33 @@ export default function BillingPageContent() {
     }
   })
 
-  const { isPending: createCheckoutSessionLoading, mutateAsync: createCheckoutSesseion } =
-    useBillingControllerCreateCheckoutSession({
-      onError: (error) => {
-        toast({
-          description: error?.message,
-          title: 'Could not create checkout session',
-          variant: 'destructive'
-        })
-      },
-      onSuccess: () => {
-        toast({
-          description: 'The checkout session has been successfully created.',
-          title: 'Checkout session created',
-          variant: 'default'
-        })
-      }
-    })
-  const { isPending: switchSubscriptionLoading, mutateAsync: switchSubscriptionPlan } =
-    useBillingControllerChangeSubscriptionPlan()
-  const { isPending: cancelSubscriptionLoading, mutateAsync: cancelSubscription } =
-    useBillingControllerCancelSubscriptionPlan()
+  const {
+    isPending: createCheckoutSessionLoading,
+    mutateAsync: createCheckoutSesseion
+  } = useBillingControllerCreateCheckoutSession({
+    onError: (error) => {
+      toast({
+        description: error?.message,
+        title: 'Could not create checkout session',
+        variant: 'destructive'
+      })
+    },
+    onSuccess: () => {
+      toast({
+        description: 'The checkout session has been successfully created.',
+        title: 'Checkout session created',
+        variant: 'default'
+      })
+    }
+  })
+  const {
+    isPending: switchSubscriptionLoading,
+    mutateAsync: switchSubscriptionPlan
+  } = useBillingControllerChangeSubscriptionPlan()
+  const {
+    isPending: cancelSubscriptionLoading,
+    mutateAsync: cancelSubscription
+  } = useBillingControllerCancelSubscriptionPlan()
 
   return (
     <div className='flex flex-col gap-3'>
@@ -58,7 +78,9 @@ export default function BillingPageContent() {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl'>Available Plans</CardTitle>
-          <CardDescription>Subscribe to a plan to unlock additional features.</CardDescription>
+          <CardDescription>
+            Subscribe to a plan to unlock additional features.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <>
@@ -84,13 +106,18 @@ export default function BillingPageContent() {
                           : 'Free'}
                       </TableCell>
                       <TableCell>
-                        {plan.recurring ? `${plan.recurring.interval_count} ${plan.recurring.interval}(s)` : 'One-time'}
+                        {plan.recurring
+                          ? `${plan.recurring.interval_count} ${plan.recurring.interval}(s)`
+                          : 'One-time'}
                       </TableCell>
                       <TableCell>
                         {organization?.plan === plan.metadata?.key ? (
                           <Button
                             className='flex gap-2'
-                            disabled={clickedButtonIndex === plans.indexOf(plan) && cancelSubscriptionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              cancelSubscriptionLoading
+                            }
                             onClick={async () => {
                               setClickedButtonIndex(plans.indexOf(plan))
                               await cancelSubscription({
@@ -107,15 +134,19 @@ export default function BillingPageContent() {
                             size='sm'
                             variant='destructive'
                           >
-                            {clickedButtonIndex === plans.indexOf(plan) && cancelSubscriptionLoading && (
-                              <ReloadIcon className='h-5 w-5 animate-spin' />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              cancelSubscriptionLoading && (
+                                <ReloadIcon className='h-5 w-5 animate-spin' />
+                              )}
                             <span>Cancel Plan</span>
                           </Button>
                         ) : organization?.plan === 'FREE' ? (
                           <Button
                             className='flex gap-2'
-                            disabled={clickedButtonIndex === plans.indexOf(plan) && createCheckoutSessionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              createCheckoutSessionLoading
+                            }
                             onClick={async () => {
                               const data = await createCheckoutSesseion({
                                 pathParams: {
@@ -129,15 +160,19 @@ export default function BillingPageContent() {
                             }}
                             size='sm'
                           >
-                            {clickedButtonIndex === plans.indexOf(plan) && createCheckoutSessionLoading && (
-                              <ReloadIcon className='h-5 w-5 animate-spin' />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              createCheckoutSessionLoading && (
+                                <ReloadIcon className='h-5 w-5 animate-spin' />
+                              )}
                             <span>Subscribe</span>
                           </Button>
                         ) : (
                           <Button
                             className='flex gap-2'
-                            disabled={clickedButtonIndex === plans.indexOf(plan) && switchSubscriptionLoading}
+                            disabled={
+                              clickedButtonIndex === plans.indexOf(plan) &&
+                              switchSubscriptionLoading
+                            }
                             onClick={async () => {
                               setClickedButtonIndex(plans.indexOf(plan))
                               await switchSubscriptionPlan(
@@ -159,7 +194,8 @@ export default function BillingPageContent() {
                                   },
                                   onSuccess: () => {
                                     toast({
-                                      description: 'Plan switched successfully.',
+                                      description:
+                                        'Plan switched successfully.',
                                       title: 'Success',
                                       variant: 'default'
                                     })
@@ -169,9 +205,10 @@ export default function BillingPageContent() {
                             }}
                             size='sm'
                           >
-                            {clickedButtonIndex === plans.indexOf(plan) && switchSubscriptionLoading && (
-                              <ReloadIcon className='h-5 w-5 animate-spin' />
-                            )}
+                            {clickedButtonIndex === plans.indexOf(plan) &&
+                              switchSubscriptionLoading && (
+                                <ReloadIcon className='h-5 w-5 animate-spin' />
+                              )}
                             <span>Subscribe</span>
                           </Button>
                         )}

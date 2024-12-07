@@ -44,7 +44,10 @@ describe('UsersService', () => {
 
       await service.create('orgname', createUserDto)
 
-      expect(mockedUserRepository.create).toHaveBeenCalledWith('', createUserDto)
+      expect(mockedUserRepository.create).toHaveBeenCalledWith(
+        '',
+        createUserDto
+      )
       expect(mockedOrganizationsService.create).toHaveBeenCalled()
     })
   })
@@ -73,7 +76,11 @@ describe('UsersService', () => {
 
       await service.syncAuthProvider(email, provider, providerId)
 
-      expect(mockedUserRepository.addAuthProvider).toHaveBeenCalledWith(email, provider, providerId)
+      expect(mockedUserRepository.addAuthProvider).toHaveBeenCalledWith(
+        email,
+        provider,
+        providerId
+      )
     })
   })
 
@@ -84,9 +91,13 @@ describe('UsersService', () => {
       mockedUserRepository.updateRaw.mockResolvedValue(mockedUser)
       await service.setEmailVerified(mockedUser.id)
 
-      expect(mockedUserRepository.updateRaw).toHaveBeenCalledWith(null, mockedUser.id, {
-        emailVerified: true
-      })
+      expect(mockedUserRepository.updateRaw).toHaveBeenCalledWith(
+        null,
+        mockedUser.id,
+        {
+          emailVerified: true
+        }
+      )
     })
   })
 
@@ -96,7 +107,9 @@ describe('UsersService', () => {
       mockedUserRepository.deactivate.mockResolvedValue()
       await service.deactivate(mockedUser.id)
 
-      expect(mockedUserRepository.deactivate).toHaveBeenCalledWith(mockedUser.id)
+      expect(mockedUserRepository.deactivate).toHaveBeenCalledWith(
+        mockedUser.id
+      )
     })
   })
 })

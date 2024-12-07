@@ -3,7 +3,13 @@
 import { ContentViewer } from '@/components/content-viewer'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import { useContentControllerFindOne } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { format } from 'date-fns'
@@ -35,24 +41,43 @@ export default function ContentDetailsPage() {
           <CardHeader>
             <CardTitle className='flex items-center justify-between'>
               <div>{content?.name}</div>
-              <Button asChild size='sm' variant='outline'>
-                <a href={content?.url || ''} rel='noopener noreferrer' target='_blank'>
+              <Button
+                asChild
+                size='sm'
+                variant='outline'
+              >
+                <a
+                  href={content?.url || ''}
+                  rel='noopener noreferrer'
+                  target='_blank'
+                >
                   Download Content
                 </a>
               </Button>
             </CardTitle>
-            <CardDescription>{content?.description || 'No Description'}</CardDescription>
+            <CardDescription>
+              {content?.description || 'No Description'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className='flex items-center gap-2'>
               <Badge>{content?.mimeType}</Badge>
-              {content?.createdAt && <Badge>{format(new Date(content.createdAt), 'PPP')}</Badge>}
+              {content?.createdAt && (
+                <Badge>{format(new Date(content.createdAt), 'PPP')}</Badge>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
       {/*RIGHT SIDE*/}
-      <Card className='w-1/2 overflow-hidden'>{content && <ContentViewer content={content} size='lg' />}</Card>
+      <Card className='w-1/2 overflow-hidden'>
+        {content && (
+          <ContentViewer
+            content={content}
+            size='lg'
+          />
+        )}
+      </Card>
     </div>
   )
 }

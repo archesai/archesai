@@ -63,8 +63,11 @@ describe('AuthController', () => {
     authController = module.get<AuthController>(AuthController)
     authService = module.get<AuthService>(AuthService)
     emailChangeService = module.get<EmailChangeService>(EmailChangeService)
-    emailVerificationService = module.get<EmailVerificationService>(EmailVerificationService)
-    passwordResetService = module.get<PasswordResetService>(PasswordResetService)
+    emailVerificationService = module.get<EmailVerificationService>(
+      EmailVerificationService
+    )
+    passwordResetService =
+      module.get<PasswordResetService>(PasswordResetService)
   })
 
   it('should be defined', () => {
@@ -110,8 +113,12 @@ describe('AuthController', () => {
   describe('emailVerificationRequest', () => {
     it('should request email verification', async () => {
       const user = createRandomUser()
-      jest.spyOn(emailVerificationService, 'request').mockResolvedValue(undefined)
-      expect(await authController.emailVerificationRequest(user)).toBeUndefined()
+      jest
+        .spyOn(emailVerificationService, 'request')
+        .mockResolvedValue(undefined)
+      expect(
+        await authController.emailVerificationRequest(user)
+      ).toBeUndefined()
     })
   })
 
@@ -179,7 +186,9 @@ describe('AuthController', () => {
       jest.spyOn(authService, 'refreshAccessToken').mockResolvedValue(result)
       jest.spyOn(authService, 'setCookies').mockResolvedValue(undefined)
 
-      expect(await authController.refreshToken(refreshToken, req as Request, res)).toEqual(result)
+      expect(
+        await authController.refreshToken(refreshToken, req as Request, res)
+      ).toEqual(result)
     })
   })
 

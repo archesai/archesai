@@ -17,21 +17,37 @@ export default function MemberDataTable() {
   const { defaultOrgname } = useAuth()
 
   return (
-    <DataTable<MemberEntity, MembersControllerFindAllPathParams, MembersControllerRemoveVariables>
+    <DataTable<
+      MemberEntity,
+      MembersControllerFindAllPathParams,
+      MembersControllerRemoveVariables
+    >
       columns={[
         {
           accessorKey: 'role',
           cell: ({ row }) => {
             return <Badge>{row.original.role}</Badge>
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Role' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Role'
+            />
+          )
         },
         {
           accessorKey: 'inviteEmail',
           cell: ({ row }) => {
-            return <span className='font-medium'>{row.original.inviteEmail}</span>
+            return (
+              <span className='font-medium'>{row.original.inviteEmail}</span>
+            )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Email'
+            />
+          )
         },
         {
           accessorKey: 'inviteAccepted',
@@ -46,16 +62,29 @@ export default function MemberDataTable() {
               </span>
             )
           },
-          header: ({ column }) => <DataTableColumnHeader column={column} title='Accepted' />
+          header: ({ column }) => (
+            <DataTableColumnHeader
+              column={column}
+              title='Accepted'
+            />
+          )
         }
       ]}
       content={() => (
         <div className='flex h-full w-full items-center justify-center'>
-          <User className='opacity-30' size={100} />
+          <User
+            className='opacity-30'
+            size={100}
+          />
         </div>
       )}
       createForm={<MemberForm />}
-      dataIcon={<User className='opacity-30' size={24} />}
+      dataIcon={
+        <User
+          className='opacity-30'
+          size={24}
+        />
+      }
       defaultView='table'
       filterField='inviteEmail'
       findAllPathParams={{
