@@ -1,0 +1,129 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  SHORT_SHA: ${{ github.sha }}
+  GCP_PROJECT_ID: archesai
+
+jobs:
+  lint-and-format:
+    name: Lint and Format Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node for api
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: api/package-lock.json
+      - name: Install node_modules for api
+        run: npm ci
+        working-directory: api
+
+      - name: Setup node for ui
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+      - name: Install node_modules for ui
+        run: npm ci
+        working-directory: ui
+
+      - name: Lint Code
+        run: make lint
+
+      - name: Check Formatting
+        run: make format-check
+
+      - name: Run Unit Tests
+        run: make test
+
+  build-and-tag-api:
+    name: Build and Tag API
+    # needs: lint-and-format
+    uses: ./.github/workflows/build-and-tag.yaml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      service: api
+
+  build-and-tag-ui:
+    name: Build and Tag UI
+    # needs: lint-and-format
+    uses: ./.github/workflows/build-and-tag.yaml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      service: ui
+
+  build-and-tag-nlp:
+    name: Build and Tag NLP
+    # needs: lint-and-format
+    uses: ./.github/workflows/build-and-tag.yaml
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      service: nlp
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs:
+      - lint-and-format
+      - build-and-tag-api
+      - build-and-tag-nlp
+      - build-and-tag-ui
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate dotenv
+        run: ./deploy/scripts/generate-dotenv.sh
+
+      - name: Create GKE Release
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
+          gcloud deploy releases create arches-${{ github.sha }} \
+              --project=archesai \
+              --region=us-east1 \
+              --delivery-pipeline=arches-deployment \
+              --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ github.sha }} \
+              --skaffold-file=deploy/skaffold.yaml
+
+      - name: Check Deployment Status
+        run: |
+          deployment_status=""
+          while [[ "$deployment_status" != "SUCCEEDED" && "$deployment_status" != "FAILED" ]]; do
+            deployment_status=$(gcloud deploy rollouts list \
+              --release arches-${{ github.sha }} \
+              --project=archesai \
+              --region=us-east1 \
+              --delivery-pipeline=arches-deployment \
+              --format="value(state)")
+            echo "Current deployment status: $deployment_status"
+            sleep 10
+          done
+          if [ "$deployment_status" == "FAILED" ]; then
+            echo "Deployment failed."
+            exit 1
+          fi
+          echo "Deployment succeeded."

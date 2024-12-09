@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "next lint --dir .",
     "gen": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-codegen gen archesApi"
   },

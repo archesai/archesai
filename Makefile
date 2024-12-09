@@ -21,6 +21,10 @@ format:
 	cd ui && npm run format
 	cd api && npm run format
 
+format-check:
+	cd ui && npm run format:check
+	cd api && npm run format:check
+
 line-count:
 	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
 
