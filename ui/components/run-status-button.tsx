@@ -39,7 +39,6 @@ export const RunStatusButton = ({
     }
   })
 
-  console.log(tools)
   const renderIcon = () => {
     switch (run.status) {
       case 'COMPLETE':
