@@ -45,7 +45,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
     }
   )
   const { mutateAsync: updateApiToken } = useApiTokensControllerUpdate({})
-  const { mutateAsync: createChatbot } = useApiTokensControllerCreate({})
+  const { mutateAsync: createApiToken } = useApiTokensControllerCreate({})
 
   const formFields: FormFieldConfig[] = [
     {
@@ -119,7 +119,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       isUpdateForm={!!apiTokenId}
       itemType='API Token'
       onSubmitCreate={async (createApiTokenDto, mutateOptions) => {
-        await createChatbot(
+        await createApiToken(
           {
             body: createApiTokenDto,
             pathParams: {

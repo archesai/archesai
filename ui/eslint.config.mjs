@@ -19,7 +19,13 @@ const config = [
     }
   },
   {
-    ignores: ['dist/', '.next/', 'node_modules/**', 'generated/**']
+    ignores: [
+      'dist/',
+      '.next/',
+      'node_modules/**',
+      'generated/**',
+      'components/ui/**'
+    ]
   }
 ]
 export default config

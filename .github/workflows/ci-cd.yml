@@ -1,0 +1,169 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # Trigger the workflow on pushes to the main branch
+
+env:
+  SHORT_SHA: ${{ github.sha }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # You can specify a different runner if needed
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for accurate diff
+
+      # Step 2: Set up Google Cloud SDK
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/1080946766516/locations/global/workloadIdentityPools/github/providers/my-repo
+          project_id: archesai
+
+      # Step 2.1: Set up Google Cloud SDK
+      - name: Set up GCP Credentials
+        uses: google-github-actions/setup-gcloud@v2
+
+      # Step 3: (Optional) Debug the workspace
+      - name: Debug Workspace (Optional)
+        run: |
+          echo "Listing contents of $(pwd):"
+          ls -la
+          echo "Current Git status:"
+          git status
+
+      # Step 4: Detect changes in api/ and nlp/ directories
+      - name: Detect Changes
+        id: detect_changes
+        run: |
+          # Ensure full git history is available
+          git fetch --unshallow || true
+          git checkout ${{ github.ref }}
+
+          # Get the previous commit hash
+          previous_commit=$(git rev-parse HEAD~1)
+
+          # List files changed between the previous commit and the current one
+          changed_files=$(git diff --name-only "$previous_commit" HEAD)
+
+          echo "Changed files:"
+          echo "$changed_files"
+
+          # Detect changes in ./api/
+          if echo "$changed_files" | grep -q '^api/'; then
+            echo "api_changed=true" >> $GITHUB_ENV
+          else
+            echo "api_changed=false" >> $GITHUB_ENV
+          fi
+
+          # Detect changes in ./nlp/
+          if echo "$changed_files" | grep -q '^nlp/'; then
+            echo "nlp_changed=true" >> $GITHUB_ENV
+          else
+            echo "nlp_changed=false" >> $GITHUB_ENV
+          fi
+
+          echo "API Changed: ${{ env.api_changed }}"
+          echo "NLP Changed: ${{ env.nlp_changed }}"
+
+      # Step 5: Linting
+      - name: Install Dependencies and Lint
+        run: |
+          cd ./api
+          npm install
+          cd ../ui
+          npm install
+          cd ..
+          make lint
+
+      # Step 6: Unit Testing
+      - name: Run Unit Tests
+        run: make test
+
+      # Step 7: Conditionally Build arches-api with Kaniko
+      - name: Build arches-api
+        if: env.api_changed == 'true'
+        uses: docker://gcr.io/kaniko-project/executor:debug
+        env:
+          DOCKER_CONFIG: /kaniko/.docker/
+        with:
+          args: >
+            --destination=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-api:latest
+            --cache=true
+            --cache-ttl=24h
+            --context=./api
+            --snapshot-mode=redo
+            --use-new-run
+
+      # Step 8: Conditionally Build arches-nlp with Kaniko
+      - name: Build arches-nlp
+        if: env.nlp_changed == 'true'
+        uses: docker://gcr.io/kaniko-project/executor:debug
+        env:
+          DOCKER_CONFIG: /kaniko/.docker/
+        with:
+          args: >
+            --destination=us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-nlp:latest
+            --cache=true
+            --cache-ttl=24h
+            --context=./nlp
+            --snapshot-mode=redo
+            --use-new-run
+
+      # Step 9: Tag arches-api Image If No Changes Detected
+      - name: Tag arches-api Image
+        if: env.api_changed == 'false'
+        run: |
+          gcloud container images add-tag \
+            us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-api:latest \
+            us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-api:${{ github.sha }}
+
+      # Step 10: Tag arches-nlp Image If No Changes Detected
+      - name: Tag arches-nlp Image
+        if: env.nlp_changed == 'false'
+        run: |
+          gcloud container images add-tag \
+            us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-nlp:latest \
+            us-east4-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/arches-nlp:${{ github.sha }}
+
+      # Step 11: Generate .env File
+      - name: Generate dotenv
+        run: ./deploy/scripts/generate-dotenv.sh
+
+      # Step 12: Create a Release in GKE
+      - name: Create GKE Release
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
+          gcloud deploy releases create arches-${{ github.sha }} \
+              --project=archesai \
+              --region=us-east1 \
+              --delivery-pipeline=arches-deployment \
+              --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ github.sha }} \
+              --skaffold-file=./deploy/skaffold.yaml
+
+      # Step 13: Check Deployment Status
+      - name: Check Deployment Status
+        run: |
+          deployment_status=""
+          while [[ "$deployment_status" != "SUCCEEDED" && "$deployment_status" != "FAILED" ]]; do
+            deployment_status=$(gcloud deploy rollouts list \
+              --release arches-${{ github.sha }} \
+              --project=archesai \
+              --region=us-east1 \
+              --delivery-pipeline=arches-deployment \
+              --format="value(state)")
+            echo "Current deployment status: $deployment_status"
+            sleep 10
+          done
+          if [ "$deployment_status" == "FAILED" ]; then
+            echo "Deployment failed."
+            exit 1
+          fi
+          echo "Deployment succeeded."
