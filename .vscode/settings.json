@@ -1,8 +1,5 @@
 {
-  "eslint.workingDirectories": [
-    "./ui",
-    "./api"
-  ],
+  "eslint.workingDirectories": ["./ui", "./api"],
   "jest.rootPath": "./api",
   "jest.jestCommandLine": "npm run test --"
 }

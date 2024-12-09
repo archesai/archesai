@@ -1,27 +1,20 @@
 'use client'
 import ContentDataTable from '@/components/datatables/content-datatable'
-// FIXME - remove use client
 import RunForm from '@/components/forms/run-form'
+// FIXME - remove use clientimport RunForm from '@/components/forms/run-form'
 import { RunStatusButton } from '@/components/run-status-button'
 import { ToolCards } from '@/components/tool-cards'
-// import { Separator } from "@/components/ui/separator";
 import { useRunsControllerFindOne } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { usePlayground } from '@/hooks/use-playground'
 import { cn } from '@/lib/utils'
+import { Suspense } from 'react'
 
 export default function PlaygroundPage() {
   const { defaultOrgname } = useAuth()
-  const {
-    // clearParams,
-    selectedContent,
-    selectedRunId,
-    selectedTool
-  } = usePlayground()
+  const { selectedContent, selectedRunId, selectedTool } = usePlayground()
 
-  // console.log("selectedContent", selectedContent);
-  // console.log("selectedRunId", selectedRunId);
-  // console.log("selectedTool", selectedTool);
+  console.log(selectedContent, selectedRunId, selectedTool)
 
   const { data: run } = useRunsControllerFindOne(
     {
@@ -57,18 +50,20 @@ export default function PlaygroundPage() {
               hasOutputs ? 'h-1/2' : 'h-full'
             )}
           >
-            <ContentDataTable
-              customFilters={[
-                {
-                  field: 'id',
-                  operator: 'in',
-                  value: run
-                    ? run.inputs.map((r) => r.id)
-                    : selectedContent?.map((r) => r.id) || []
-                }
-              ]}
-              readonly
-            />
+            <Suspense fallback={<p>Loading feed...</p>}>
+              <ContentDataTable
+                customFilters={[
+                  {
+                    field: 'id',
+                    operator: 'in',
+                    value: run
+                      ? run.inputs.map((r) => r.id)
+                      : selectedContent?.map((r) => r.id) || []
+                  }
+                ]}
+                readonly
+              />
+            </Suspense>
           </div>
         ) : null}
         {/* <Separator /> */}

@@ -1,82 +1,28 @@
-'use client'
-// FIXME - remove use client
 import { ContentViewer } from '@/components/content-viewer'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { useContentControllerFindOne } from '@/generated/archesApiComponents'
-import { useAuth } from '@/hooks/use-auth'
-import { format } from 'date-fns'
-import { useSearchParams } from 'next/navigation'
+import { Card } from '@/components/ui/card'
+
+import { Suspense } from 'react'
+import { ContentDetailsBody, ContentDetailsHeader } from './details'
 
 export default function ContentDetailsPage() {
-  const searchParams = useSearchParams()
-  const contentId = searchParams?.get('contentId')
-
-  const { defaultOrgname } = useAuth()
-
-  const { data: content } = useContentControllerFindOne(
-    {
-      pathParams: {
-        id: contentId as string,
-        orgname: defaultOrgname
-      }
-    },
-    {
-      enabled: !!defaultOrgname && !!contentId
-    }
-  )
-
   return (
     <div className='flex h-full w-full gap-3'>
       {/*LEFT SIDE*/}
       <div className='flex w-1/2 flex-initial flex-col gap-3'>
         <Card>
-          <CardHeader>
-            <CardTitle className='flex items-center justify-between'>
-              <div>{content?.name}</div>
-              <Button
-                asChild
-                size='sm'
-                variant='outline'
-              >
-                <a
-                  href={content?.url || ''}
-                  rel='noopener noreferrer'
-                  target='_blank'
-                >
-                  Download Content
-                </a>
-              </Button>
-            </CardTitle>
-            <CardDescription>
-              {content?.description || 'No Description'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='flex items-center gap-2'>
-              <Badge>{content?.mimeType}</Badge>
-              {content?.createdAt && (
-                <Badge>{format(new Date(content.createdAt), 'PPP')}</Badge>
-              )}
-            </div>
-          </CardContent>
+          <Suspense fallback={<p>Loading feed...</p>}>
+            <ContentDetailsHeader />
+          </Suspense>
+          <Suspense fallback={<p>Loading feed...</p>}>
+            <ContentDetailsBody />
+          </Suspense>
         </Card>
       </div>
       {/*RIGHT SIDE*/}
       <Card className='w-1/2 overflow-hidden'>
-        {content && (
-          <ContentViewer
-            content={content}
-            size='lg'
-          />
-        )}
+        <Suspense fallback={<p>Loading feed...</p>}>
+          <ContentViewer />
+        </Suspense>
       </Card>
     </div>
   )

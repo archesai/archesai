@@ -42,8 +42,6 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(data.email, data.password)
       // Redirect handled by useEffect
     } catch (error: any) {
-      console.error('Login error', error)
-      // Enhanced error handling to capture specific error messages
       if (error?.message) {
         setFormError(error.message)
       } else {

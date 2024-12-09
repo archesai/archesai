@@ -250,19 +250,19 @@ export type EmailRequestDto = {
 
 export type LoginDto = {
   /**
-   * The user's e-mail
-   *
-   * @format email
-   * @example example@archesai.com
-   */
-  email: string
-  /**
    * The password to create and/or login to an account
    *
    * @minLength 7
    * @example password
    */
   password: string
+  /**
+   * The user's e-mail
+   *
+   * @example example@archesai.com
+   * @format email
+   */
+  email: string
 }
 
 export type ConfirmationTokenWithNewPasswordDto = {
@@ -282,19 +282,19 @@ export type ConfirmationTokenWithNewPasswordDto = {
 
 export type RegisterDto = {
   /**
-   * The user's e-mail
-   *
-   * @format email
-   * @example example@archesai.com
-   */
-  email: string
-  /**
    * The password to create and/or login to an account
    *
    * @minLength 7
    * @example password
    */
   password: string
+  /**
+   * The user's e-mail
+   *
+   * @example example@archesai.com
+   * @format email
+   */
+  email: string
 }
 
 export type AuthProviderEntity = {
@@ -375,7 +375,7 @@ export type MemberEntity = {
 
 export type UserEntity = {
   /**
-   * The memberships of the currently signed in user
+   * The memberships of the currently signed-in user
    */
   authProviders: AuthProviderEntity[]
   /**
@@ -399,8 +399,8 @@ export type UserEntity = {
   /**
    * The user's e-mail
    *
-   * @format email
    * @example example@archesai.com
+   * @format email
    */
   email: string
   /**
@@ -420,11 +420,11 @@ export type UserEntity = {
    */
   lastName: string
   /**
-   * The memberships of the currently signed in user
+   * The memberships of the currently signed-in user
    */
   memberships: MemberEntity[]
   /**
-   * The user's photo url
+   * The user's photo URL
    *
    * @example /avatar.png
    */
@@ -432,8 +432,8 @@ export type UserEntity = {
   /**
    * The user's username
    *
-   * @minLength 5
    * @example jonathan
+   * @minLength 5
    */
   username: string
   /**

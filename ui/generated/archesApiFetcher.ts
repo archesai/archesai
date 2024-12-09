@@ -102,7 +102,6 @@ export async function archesApiFetch<
     }
   } catch (e) {
     const errorObject = e as any
-    console.error(e)
     throw {
       message: errorObject.message,
       statusCode: errorObject.statusCode || 'unknown'

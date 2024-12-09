@@ -22,7 +22,11 @@ export function Authenticated() {
         hasAuthenticated.current = false // Reset the flag
       })()
     }
-  }, [status])
+
+    return () => {
+      hasAuthenticated.current = false
+    }
+  }, [status, authenticate, getNewRefreshToken])
 
   return null
 }

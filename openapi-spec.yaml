@@ -2446,19 +2446,19 @@ components:
     LoginDto:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-          description: The user's e-mail
-          example: example@archesai.com
         password:
           type: string
           minLength: 7
           description: The password to create and/or login to an account
           example: password
+        email:
+          type: string
+          description: The user's e-mail
+          example: example@archesai.com
+          format: email
       required:
-        - email
         - password
+        - email
     ConfirmationTokenWithNewPasswordDto:
       type: object
       properties:
@@ -2478,19 +2478,19 @@ components:
     RegisterDto:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-          description: The user's e-mail
-          example: example@archesai.com
         password:
           type: string
           minLength: 7
           description: The password to create and/or login to an account
           example: password
+        email:
+          type: string
+          description: The user's e-mail
+          example: example@archesai.com
+          format: email
       required:
-        - email
         - password
+        - email
     AuthProviderEntity:
       type: object
       properties:
@@ -2570,7 +2570,7 @@ components:
       type: object
       properties:
         authProviders:
-          description: The memberships of the currently signed in user
+          description: The memberships of the currently signed-in user
           type: array
           items:
             $ref: '#/components/schemas/AuthProviderEntity'
@@ -2588,9 +2588,9 @@ components:
           example: John Smith
         email:
           type: string
-          format: email
           description: The user's e-mail
           example: example@archesai.com
+          format: email
         emailVerified:
           type: boolean
           description: Whether or not the user's e-mail has been verified
@@ -2603,19 +2603,19 @@ components:
           description: The user's last name
           example: Smith
         memberships:
-          description: The memberships of the currently signed in user
+          description: The memberships of the currently signed-in user
           type: array
           items:
             $ref: '#/components/schemas/MemberEntity'
         photoUrl:
           type: string
-          description: The user's photo url
+          description: The user's photo URL
           example: /avatar.png
         username:
           type: string
-          minLength: 5
           description: The user's username
           example: jonathan
+          minLength: 5
         createdAt:
           format: date-time
           type: string

@@ -70,8 +70,8 @@ export default function PipelineDataTable() {
           cell: ({ row }) => {
             return (
               <div className='flex gap-1'>
-                {row.original.pipelineSteps?.map((step) => {
-                  return <Badge>{step.tool?.name}</Badge>
+                {row.original.pipelineSteps?.map((step, i) => {
+                  return <Badge key={i}>{step.tool?.name}</Badge>
                 })}
               </div>
             )

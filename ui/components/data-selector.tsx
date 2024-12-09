@@ -21,16 +21,21 @@ import { CaretSortIcon, CheckIcon, PlusIcon } from '@radix-ui/react-icons'
 import React, { useCallback, useState } from 'react'
 
 import { BaseItem } from './datatables/datatable/data-table'
+import { RunsControllerFindAllQueryParams } from '@/generated/archesApiComponents'
 
-interface DataSelectorProps<TItem extends BaseItem> {
+interface DataSelectorProps<TItem extends BaseItem, TFindAllPathParams> {
   getItemDetails?: (item: TItem) => React.ReactNode
   //   iconMap?: { [key: string]: IconType };
   icons?: { Icon: any; name: string }[]
   isMultiSelect?: boolean
   itemType: string
   selectedData: TItem | TItem[] | undefined
+  orgname?: string
   setSelectedData: (data: TItem | TItem[] | undefined) => void
-  useFindAll: () => {
+  useFindAll: (s: {
+    pathParams: TFindAllPathParams
+    queryParams?: RunsControllerFindAllQueryParams
+  }) => {
     data:
       | undefined
       | {
@@ -38,9 +43,10 @@ interface DataSelectorProps<TItem extends BaseItem> {
         }
     isLoading: boolean
   }
+  findAllParams: TFindAllPathParams
 }
 
-export function DataSelector<TItem extends BaseItem>({
+export function DataSelector<TItem extends BaseItem, TFindAllPathParams>({
   getItemDetails,
   icons,
   //   iconMap,
@@ -48,9 +54,13 @@ export function DataSelector<TItem extends BaseItem>({
   itemType,
   selectedData,
   setSelectedData,
-  useFindAll
-}: DataSelectorProps<TItem>) {
-  const { data } = useFindAll()
+  useFindAll,
+  findAllParams
+}: DataSelectorProps<TItem, TFindAllPathParams>) {
+  const { data } = useFindAll({
+    pathParams: findAllParams,
+    queryParams: { limit: 10 }
+  })
   const [open, setOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<TItem | undefined>()
   const [searchTerm, setSearchTerm] = useState('')

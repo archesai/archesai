@@ -1,13 +1,14 @@
+'use client'
 import { baseUrl } from '@/generated/archesApiFetcher'
 import { TokenDto, UserEntity } from '@/generated/archesApiSchemas'
 import { useToast } from '@/hooks/use-toast'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useAtom } from 'jotai'
-import { useRouter } from 'next/navigation'
 import { useCallback } from 'react'
-
 import { auth } from '../lib/firebase'
 import { authStatusAtom, defaultOrgnameAtom } from '../state/authState'
+import { useRouter } from 'next/navigation'
+import { AuthControllerLoginError } from '@/generated/archesApiComponents'
 
 export const useAuth = () => {
   const [defaultOrgname, setDefaultOrgname] = useAtom(defaultOrgnameAtom)
@@ -17,6 +18,7 @@ export const useAuth = () => {
   const { toast } = useToast()
 
   const logout = useCallback(async () => {
+    console.log('Logging out')
     const response = await fetch(baseUrl + '/auth/logout', {
       credentials: 'include',
       method: 'POST',
@@ -28,9 +30,9 @@ export const useAuth = () => {
     }
     router.push('/')
     setStatus('Unauthenticated')
-  }, [setStatus])
+  }, [setStatus, router])
 
-  const getNewRefreshToken = async () => {
+  const getNewRefreshToken = useCallback(async () => {
     if (status === 'Refreshing') {
       console.log('Already refreshing token, skipping')
       return
@@ -58,7 +60,7 @@ export const useAuth = () => {
       await logout()
       return null
     }
-  }
+  }, [logout, setStatus, status])
 
   const authenticate = useCallback(async () => {
     console.log('Attempting to authenticate')
@@ -80,10 +82,9 @@ export const useAuth = () => {
         mode: 'cors'
       })
 
-      if (response.status !== 200) {
-        console.error('Error loading user')
+      if (response.status === 401) {
+        console.log('Unauthenticated')
         await logout()
-        router.push('/')
         return
       }
 
@@ -98,7 +99,7 @@ export const useAuth = () => {
       console.error('Error in getUserFromToken: ', error)
       await logout()
     }
-  }, [logout, router, setStatus, setDefaultOrgname])
+  }, [logout, setStatus, setDefaultOrgname, toast, getNewRefreshToken])
 
   const signInWithEmailAndPassword = useCallback(
     async (email: string, password: string) => {
@@ -115,15 +116,15 @@ export const useAuth = () => {
         }
         router.push('/playground')
       } catch (error) {
+        const err = error as AuthControllerLoginError
         toast({
-          description: 'Invalid credentials.',
+          description: err?.message as any,
           variant: 'destructive'
         })
-        console.error('Error signing in with email and password:', error)
-        throw error
+        throw err
       }
     },
-    [router]
+    [toast, router]
   )
 
   const signInWithGoogle = useCallback(async () => {
@@ -150,7 +151,7 @@ export const useAuth = () => {
       })
       console.error('Error signing in with Google: ', error)
     }
-  }, [router, logout])
+  }, [logout, router, toast])
 
   const registerWithEmailAndPassword = useCallback(
     async (email: string, password: string) => {
@@ -175,7 +176,7 @@ export const useAuth = () => {
         throw error
       }
     },
-    [router]
+    [toast, router]
   )
 
   return {

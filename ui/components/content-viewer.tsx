@@ -1,23 +1,31 @@
-import { ContentEntity } from '@/generated/archesApiSchemas'
+'use client'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger
-} from '@/components/ui/hover-card'
-import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/use-auth'
+import { fetchContentControllerFindOne } from '@/generated/archesApiComponents'
+import { useSuspenseQuery } from '@tanstack/react-query'
 
-export function ContentViewer({
-  content,
-  size
-}: {
-  content: ContentEntity
-  size: 'lg' | 'sm'
-}) {
-  const { mimeType, text, url } = content
+const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
+
+export function ContentViewer({ id }: { id?: string }) {
+  const searchParams = useSearchParams()
+  const contentId = searchParams?.get('contentId') || id
+  const { defaultOrgname } = useAuth()
+
+  const { data: content } = useSuspenseQuery({
+    queryKey: ['organizations', defaultOrgname, 'content', contentId as string],
+    queryFn: () =>
+      fetchContentControllerFindOne({
+        pathParams: {
+          id: contentId as string,
+          orgname: defaultOrgname
+        }
+      })
+  })
+
+  const { mimeType, text, url } = content || {}
 
   let hoverContent = null
 
@@ -40,7 +48,7 @@ export function ContentViewer({
   } else if (mimeType?.startsWith('image/')) {
     hoverContent = (
       <Image
-        alt={content.description || ''}
+        alt={content?.description || ''}
         className='h-full w-full object-contain'
         height={516}
         src={url || ''}
@@ -69,21 +77,5 @@ export function ContentViewer({
     )
   }
 
-  if (size === 'lg') {
-    return hoverContent
-  } else {
-    return (
-      <HoverCard openDelay={0}>
-        <HoverCardTrigger asChild>
-          <Link
-            className='underline underline-offset-4'
-            href={`/content/single?contentId=${content.id}`}
-          >
-            View Content
-          </Link>
-        </HoverCardTrigger>
-        <HoverCardContent>{hoverContent}</HoverCardContent>
-      </HoverCard>
-    )
-  }
+  return hoverContent
 }

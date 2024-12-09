@@ -12,11 +12,19 @@ import {
 } from '@/generated/archesApiComponents'
 import { ContentEntity, FieldFieldQuery } from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger
+} from '@/components/ui/hover-card'
+
 import { format } from 'date-fns'
 import { File } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Suspense } from 'react'
+import { Skeleton } from '../ui/skeleton'
 
 export default function ContentDataTable({
   customFilters,
@@ -75,10 +83,21 @@ export default function ContentDataTable({
             return (
               <div className='truncate text-wrap text-base md:text-sm'>
                 {row.original.text || (
-                  <ContentViewer
-                    content={row.original}
-                    size='sm'
-                  />
+                  <HoverCard openDelay={0}>
+                    <HoverCardTrigger asChild>
+                      <Link
+                        className='underline underline-offset-4'
+                        href={`/content/single?contentId=${row.original?.id}`}
+                      >
+                        View Content
+                      </Link>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                      <Suspense fallback={<Skeleton />}>
+                        <ContentViewer id={row.original.id} />
+                      </Suspense>
+                    </HoverCardContent>
+                  </HoverCard>
                 )}
               </div>
             )

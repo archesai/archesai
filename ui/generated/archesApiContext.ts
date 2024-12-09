@@ -17,8 +17,6 @@ export type ArchesApiContext = {
      * Query params to inject in the fetcher
      */
     queryParams?: object
-
-    signal?: AbortSignal
   }
   /**
    * Query key manager.
@@ -63,6 +61,7 @@ export function useArchesApiContext<
           ? !!_queryOptions.enabled
           : !!defaultOrgname,
       retry: async (failureCount: number, error: any) => {
+        console.log('FAILED, RETRYING', failureCount, error)
         if (error?.statusCode === 401 && failureCount <= 2) {
           setStatus('Unauthenticated')
           return true

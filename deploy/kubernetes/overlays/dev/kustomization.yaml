@@ -24,6 +24,12 @@ patches:
       - op: add
         path: /type
         value: kubernetes.io/tls
+  # - target:
+  #     kind: Deployment
+  #     name: arches-api
+  #   patch: |-
+  #     - op: remove
+  #       path: /spec/template/spec/initContainers/0
 
 secretGenerator:
   - name: mkcert-tls

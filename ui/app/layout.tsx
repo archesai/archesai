@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/contexts/theme-provider'
 import { GeistSans } from 'geist/font/sans'
 import { Metadata } from 'next'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+export const fetchCache = 'default-cache'
 
 import '../styles/globals.css'
 

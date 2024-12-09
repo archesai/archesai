@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss'
-
+import animation from 'tailwindcss-animate'
 const config = {
   content: [
     './pages/**/*.{ts,tsx}',
@@ -8,12 +8,11 @@ const config = {
     './src/**/*.{ts,tsx}'
   ],
   darkMode: ['class'],
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require('tailwindcss-animate')],
+  plugins: [animation],
   prefix: '',
   theme: {
     container: {
-      center: true,
+      center: 'true',
       padding: '2rem',
       screens: {
         '2xl': '1400px'
@@ -22,7 +21,8 @@ const config = {
     extend: {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'caret-blink': 'caret-blink 1.25s ease-out infinite'
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -96,6 +96,14 @@ const config = {
           },
           to: {
             height: '0'
+          }
+        },
+        'caret-blink': {
+          '0%,70%,100%': {
+            opacity: '1'
+          },
+          '20%,50%': {
+            opacity: '0'
           }
         }
       }

@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { siteConfig } from '@/config/site'
 import {
+  ContentControllerFindAllPathParams,
+  ToolsControllerFindAllPathParams,
   useContentControllerFindAll,
   useRunsControllerCreate,
   useToolsControllerFindAll
@@ -56,7 +58,10 @@ export default function RunForm() {
       label: 'Tool',
       name: 'toolId',
       renderControl: (field) => (
-        <DataSelector<ToolEntity>
+        <DataSelector<ToolEntity, ToolsControllerFindAllPathParams>
+          findAllParams={{
+            orgname: defaultOrgname
+          }}
           getItemDetails={(tool) => {
             return (
               <div className='grid gap-2'>
@@ -98,13 +103,7 @@ export default function RunForm() {
             setSelectedTool(tool)
             field.onChange(tool.id)
           }}
-          useFindAll={() =>
-            useToolsControllerFindAll({
-              pathParams: {
-                orgname: defaultOrgname
-              }
-            })
-          }
+          useFindAll={useToolsControllerFindAll}
         />
       ),
       validationRule: formSchema.shape.toolId
@@ -144,7 +143,10 @@ export default function RunForm() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value='contentIds'>
-            <DataSelector<ContentEntity>
+            <DataSelector<ContentEntity, ContentControllerFindAllPathParams>
+              findAllParams={{
+                orgname: defaultOrgname
+              }}
               isMultiSelect={true}
               itemType='content'
               selectedData={selectedContent as ContentEntity[]}
@@ -154,13 +156,7 @@ export default function RunForm() {
                   content === null ? [] : content.map((c: any) => c.id)
                 )
               }}
-              useFindAll={() =>
-                useContentControllerFindAll({
-                  pathParams: {
-                    orgname: defaultOrgname
-                  }
-                })
-              }
+              useFindAll={useContentControllerFindAll}
             />
           </TabsContent>
           <TabsContent value='text'>

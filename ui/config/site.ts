@@ -114,7 +114,7 @@ export const siteConfig = {
         }
       ],
       description: 'View your profile information.',
-      href: '/profile',
+      href: '/profile/general',
       Icon: User,
       section: 'Settings',
       title: 'Account'
@@ -152,7 +152,7 @@ export const siteConfig = {
           title: 'API Tokens'
         }
       ],
-      href: '/organization',
+      href: '/organization/general',
       Icon: Settings2,
       section: 'Settings',
       title: 'Settings'

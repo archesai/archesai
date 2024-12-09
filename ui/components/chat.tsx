@@ -4,14 +4,15 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import {
-  useContentControllerFindAll,
-  useLabelsControllerCreate,
-  useRunsControllerCreate
+  fetchContentControllerFindAll,
+  fetchLabelsControllerCreate as createLabel,
+  fetchRunsControllerCreate as createRun
 } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { useStreamChat } from '@/hooks/use-stream-chat'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { RefreshCcw } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
@@ -24,36 +25,27 @@ export default function Chat() {
   const { defaultOrgname } = useAuth()
   const [message, setMessage] = useState<string>('')
   const tid = searchParams?.get('labelId')
-  const [enableFetching, setEnableFetching] = useState(false)
-
-  useEffect(() => {
-    if (tid) {
-      setLabelId(tid as string)
-      setEnableFetching(true)
-    }
-  }, [tid])
 
   const { streamContent } = useStreamChat()
 
-  const { data: messages } = useContentControllerFindAll(
-    {
-      pathParams: {
-        orgname: defaultOrgname
-      },
-      queryParams: {
-        filters: labelId
-          ? (JSON.stringify({
-              labelId: labelId
-            }) as any)
-          : undefined,
-        sortBy: 'createdAt',
-        sortDirection: 'desc'
-      }
-    },
-    {
-      enabled: enableFetching
-    }
-  )
+  const { data: messages } = useSuspenseQuery({
+    queryKey: ['organizations', defaultOrgname, 'content'],
+    queryFn: () =>
+      fetchContentControllerFindAll({
+        pathParams: {
+          orgname: defaultOrgname
+        },
+        queryParams: {
+          filters: labelId
+            ? (JSON.stringify({
+                labelId: tid
+              }) as any)
+            : undefined,
+          sortBy: 'createdAt',
+          sortDirection: 'desc'
+        }
+      })
+  })
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -65,8 +57,6 @@ export default function Chat() {
     }
   }, [messages])
 
-  const { mutateAsync: createLabel } = useLabelsControllerCreate()
-  const { mutateAsync: createRun } = useRunsControllerCreate()
   const handleSend = async () => {
     if (!message.trim()) return // Prevent sending empty messages
 
@@ -97,8 +87,9 @@ export default function Chat() {
       orgname: defaultOrgname,
       text: message.trim()
     })
-    await createRun(
-      {
+
+    try {
+      await createRun({
         body: {
           runType: 'TOOL_RUN',
           text: message.trim()
@@ -106,16 +97,13 @@ export default function Chat() {
         pathParams: {
           orgname: defaultOrgname
         }
-      },
-      {
-        onError: (error) => {
-          toast({
-            description: error?.message,
-            title: 'Failed to send message'
-          })
-        }
-      }
-    )
+      })
+    } catch (error) {
+      toast({
+        description: error as any,
+        title: 'Failed to send message'
+      })
+    }
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -137,7 +125,7 @@ export default function Chat() {
 
   return (
     <div className='relative flex h-full gap-6'>
-      {/* Full Screen Button */}
+      {/* Refresh Button */}
       <div className='absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex'>
         <Button
           className='text-muted-foreground hover:text-primary'

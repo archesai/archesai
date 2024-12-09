@@ -32,7 +32,15 @@ export default function App() {
     }
   })
 
-  console.log(pipelines)
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+
+  const onConnect = useCallback(
+    (params: Connection | Edge) =>
+      setEdges((edges) => addEdge<Edge>(params, edges)),
+    [setEdges]
+  )
+
   useEffect(() => {
     if (pipelines && pipelines.results[0]) {
       const pipelineSteps = pipelines.results[0].pipelineSteps
@@ -56,16 +64,7 @@ export default function App() {
         )
       }
     }
-  }, [pipelines])
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
-  const onConnect = useCallback(
-    (params: Connection | Edge) =>
-      setEdges((edges) => addEdge<Edge>(params, edges)),
-    [setEdges]
-  )
+  }, [pipelines, onConnect, setNodes])
 
   const nodeTypes = useMemo(() => ({ runFormNode: RunFormNode }), [])
 
