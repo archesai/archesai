@@ -42,6 +42,10 @@ secretGenerator:
     files:
       - tls.crt=./cert.pem
       - tls.key=./key.pem
+  - name: arches-api-config-secret
+    literals:
+      - LOGGING_LEVEL=info
+    behavior: merge
 
 generatorOptions:
   disableNameSuffixHash: true
