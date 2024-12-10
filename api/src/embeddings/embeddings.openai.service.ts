@@ -11,14 +11,8 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({
-      apiKey:
-        this.configService.get('LLM_TYPE') == 'openai'
-          ? this.configService.get('OPEN_AI_KEY')
-          : 'ollama',
-      baseURL:
-        this.configService.get('LLM_TYPE') == 'openai'
-          ? undefined
-          : this.configService.get('OLLAMA_ENDPOINT'),
+      apiKey: this.configService.get('LLM_API_KEY'),
+      baseURL: this.configService.get('LLM_ENDPOINT'),
       organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
     })
   }

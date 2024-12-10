@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:dev:full": "npm run db:reset && npm run db:seed && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint . && tsc --noEmit",
@@ -21,8 +22,11 @@
     "test:e2e": "TS_JEST=true jest --config ./test/jest.config.ts --coverage --color $FILE_NAME",
     "migrations:dev": "prisma migrate dev",
     "migrations:prod": "prisma migrate deploy",
-    "db:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force && prisma migrate dev"
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only -r tsconfig-paths/register prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.703.0",

@@ -7,8 +7,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { MulterModule } from '@nestjs/platform-express'
 import { ScheduleModule } from '@nestjs/schedule'
 import { readFileSync } from 'fs'
-import Joi from 'joi'
-import { LoggerErrorInterceptor, LoggerModule } from 'nestjs-pino'
+import { LoggerErrorInterceptor, LoggerModule, Params } from 'nestjs-pino'
 
 import { ApiTokensModule } from './api-tokens/api-tokens.module'
 import { AudioModule } from './audio/audio.module'
@@ -35,6 +34,7 @@ import { ToolsModule } from './tools/tools.module'
 import { UsersModule } from './users/users.module'
 import { WebsocketsGateway } from './websockets/websockets.gateway'
 import { WebsocketsModule } from './websockets/websockets.module'
+import { validationSchema } from './config/schema'
 
 @Module({
   controllers: [],
@@ -45,10 +45,9 @@ import { WebsocketsModule } from './websockets/websockets.module'
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const loggerConfig = {
+        const loggerConfig: Params = {
           pinoHttp: {
-            customProps: (req, res) => ({
-              body: req?.body,
+            customProps: (req: any, res) => ({
               context: 'HTTP',
               origin: req?.headers?.origin,
               params: req?.params,
@@ -64,24 +63,28 @@ import { WebsocketsModule } from './websockets/websockets.module'
                     }
                   }
                 : undefined,
-            level:
-              configService.get('NODE_ENV') === 'test' ? 'silent' : 'debug',
+            level: configService.get<string>('LOGGING_LEVEL'),
             redact: {
-              paths: ['req', 'res']
+              paths: ['req', 'res'],
+              remove: true
             },
             transport: {
               targets: [
-                {
-                  options: {
-                    host: configService.get<string>('LOKI_HOST'),
-                    json: true,
-                    labels: {
-                      app: 'archesai',
-                      environment: 'production'
-                    }
-                  },
-                  target: 'pino-loki'
-                },
+                ...(configService.get<string>('LOKI_HOST')
+                  ? [
+                      {
+                        options: {
+                          host: configService.get<string>('LOKI_HOST'),
+                          json: true,
+                          labels: {
+                            app: 'archesai',
+                            environment: 'production'
+                          }
+                        },
+                        target: 'pino-loki'
+                      }
+                    ]
+                  : []),
                 {
                   options: {
                     colorize: true,
@@ -101,101 +104,9 @@ import { WebsocketsModule } from './websockets/websockets.module'
     OrganizationsModule,
     MembersModule,
     ConfigModule.forRoot({
-      envFilePath: ['../.env'],
-      ignoreEnvFile: process.env.NODE_ENV == 'production',
+      ignoreEnvFile: true,
       isGlobal: true,
-      validationSchema: Joi.object({
-        // CORS CONFIG
-        ALLOWED_ORIGINS: Joi.string().required(),
-
-        // DATABASE CONFIG
-        DATABASE_URL: Joi.string().required(),
-        EMAIL_PASSWORD: Joi.when('FEATURE_EMAIL', {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required()
-        }),
-        EMAIL_SERVICE: Joi.when('FEATURE_EMAIL', {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required()
-        }),
-        EMAIL_USER: Joi.when('FEATURE_EMAIL', {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required()
-        }),
-
-        // EMBEDDING CONFIG
-        EMBEDDING_TYPE: Joi.string().valid('openai', 'ollama').required(),
-
-        // STRIPE CONFIG
-        FEATURE_BILLING: Joi.boolean().required(),
-
-        // EMAIL CONFIG
-        FEATURE_EMAIL: Joi.boolean().required(),
-
-        // JWT API TOKEN CONFIG
-        JWT_API_TOKEN_EXPIRATION_TIME: Joi.string().required(),
-        JWT_API_TOKEN_SECRET: Joi.string().required(),
-
-        // LLM CONFIG
-        LLM_TYPE: Joi.string().valid('openai', 'ollama').required(),
-        // LOADER CONFIG
-        LOADER_ENDPOINT: Joi.string().required(),
-
-        // GLOBAL CONFIG
-        NODE_ENV: Joi.string().required(),
-
-        OLLAMA_ENDPOINT: Joi.string().when('LLM_TYPE', {
-          is: 'ollama',
-          otherwise: Joi.string().when('EMBEDDING_TYPE', {
-            is: 'ollama',
-            otherwise: Joi.optional(),
-            then: Joi.required()
-          }),
-          then: Joi.required()
-        }),
-
-        OPEN_AI_KEY: Joi.string().when('LLM_TYPE', {
-          is: 'openai',
-          otherwise: Joi.string().when('EMBEDDING_TYPE', {
-            is: 'openai',
-            otherwise: Joi.optional(),
-            then: Joi.required()
-          }),
-          then: Joi.required()
-        }),
-
-        PORT: Joi.number().required(),
-
-        // REDIS CONFIG
-        REDIS_AUTH: Joi.string().required(),
-        REDIS_CA_CERT_PATH: Joi.string().optional(),
-        REDIS_HOST: Joi.string().required(),
-        REDIS_PORT: Joi.number().required(),
-
-        SERVER_HOST: Joi.string().required(),
-
-        SESSION_SECRET: Joi.string().required(),
-
-        // STORAGE TYPE
-        STORAGE_TYPE: Joi.string()
-          .valid('google-cloud', 'local', 'minio')
-          .required(),
-
-        STRIPE_PRIVATE_API_KEY: Joi.when('FEATURE_BILLING', {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required()
-        }),
-
-        STRIPE_WEBHOOK_SECRET: Joi.when('FEATURE_BILLING', {
-          is: true,
-          otherwise: Joi.string().forbidden(),
-          then: Joi.string().required()
-        })
-      })
+      validationSchema: validationSchema
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],

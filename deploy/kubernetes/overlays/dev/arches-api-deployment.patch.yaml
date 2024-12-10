@@ -9,6 +9,22 @@ spec:
         - name: arches-api
           image: arches-api:dev
           imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - npm run start:dev:full
+        # This is the Stripe CLI container sidecar
+        - name: arches-stripe
+          image: stripe/stripe-cli:latest
+          command:
+            - stripe
+            - listen
+            - "--forward-to"
+            - "https://arches-api.test/webhooks/stripe"
+            - "--api-key"
+            - "sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV"
+          ports:
+            - containerPort: 3000
       securityContext:
         runAsUser: 0
         runAsGroup: 0

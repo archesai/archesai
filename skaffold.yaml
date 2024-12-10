@@ -63,7 +63,7 @@ profiles:
       - name: seed
         executionMode:
           kubernetesCluster:
-            jobManifestPath: deploy/kubernetes/overlays/dev/arches-api-seed-job.yaml
+            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"arches-api-seed"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"arches-api-seed","image":"arches-api:dev","envFrom":[{"secretRef":{"name":"arches-api-config-secret"}}]}]}}}}'
         containers:
           - image: arches-api
             name: arches-api-seed

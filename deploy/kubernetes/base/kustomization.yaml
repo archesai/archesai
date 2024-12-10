@@ -32,3 +32,58 @@ replacements:
           name: arches-api-role
         fieldPaths:
           - rules.0.resourceNames.0
+
+secretGenerator:
+  - name: arches-api-config-secret
+    literals:
+      # GLOBAL CONFIG
+      - NODE_ENV=development
+      - SERVER_HOST=https://arches-api.test
+      - FRONTEND_HOST=https://arches-ui.test
+      - PORT=3001
+      - ALLOWED_ORIGINS=*
+
+      # DATABASE CONFIG
+      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
+
+      # EMAIL CONFIG
+      - FEATURE_EMAIL=false
+
+      # EMBEDDING CONFIG
+      - EMBEDDING_TYPE=openai
+
+      # JWT CONFIG
+      - JWT_API_TOKEN_EXPIRATION_TIME=31536000
+      - JWT_API_TOKEN_SECRET=asdfasdf
+
+      # BILLING CONFIG
+      - FEATURE_BILLING=false
+
+      # LLM CONFIG
+      - LLM_TYPE=openai
+      - LLM_API_KEY=open-ai-key
+
+      # LOADER CONFIG
+      - LOADER_ENDPOINT=http://arches-nlp:3002/indexDocument
+
+      # STORAGE CONFIG
+      - STORAGE_TYPE=minio
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_BUCKET=archesai
+      - MINIO_ENDPOINT=http://arches-minio:9000
+      - MINIO_SECRET_KEY=minioadmin
+
+      # REDIS CONFIG
+      - REDIS_AUTH=PASSWORD
+      - REDIS_HOST=arches-redis
+      - REDIS_PORT=6379
+
+      # SESSION CONFIG
+      - SESSION_SECRET=secret
+
+      # LOGGING CONFIG
+      - LOGGING_LEVEL=debug
+      - LOKI_HOST=http://arches-loki:3100
+
+generatorOptions:
+  disableNameSuffixHash: true

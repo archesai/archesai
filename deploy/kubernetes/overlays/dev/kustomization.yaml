@@ -2,8 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - "../../base"
-  - "./arches-stripe-deployment.yaml"
-  - "./arches-stripe-service.yaml"
 
 components:
   - ../../components/database
@@ -16,7 +14,6 @@ patches:
   - path: "./arches-api-deployment.patch.yaml"
   - path: "./arches-ui-deployment.patch.yaml"
   - path: "./arches-nlp-deployment.patch.yaml"
-  - path: "./arches-api-upgrade-job.patch.yaml"
   - target:
       kind: Secret
       name: mkcert-tls
@@ -24,12 +21,21 @@ patches:
       - op: add
         path: /type
         value: kubernetes.io/tls
-  # - target:
-  #     kind: Deployment
-  #     name: arches-api
-  #   patch: |-
-  #     - op: remove
-  #       path: /spec/template/spec/initContainers/0
+  - target:
+      kind: Job
+      name: arches-api-upgrade
+    patch: |-
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: arches-api-upgrade
+      $patch: delete
+  - target:
+      kind: Deployment
+      name: arches-api
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/initContainers/0
 
 secretGenerator:
   - name: mkcert-tls

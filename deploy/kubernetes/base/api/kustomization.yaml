@@ -1,38 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-secretGenerator:
-  - name: arches-api-config-secret
-    literals:
-      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
-      - EMBEDDING_TYPE=openai
-      - FEATURE_BILLING=false
-      - FEATURE_EMAIL=false
-      - FRONTEND_HOST=https://arches-ui.test
-      - JWT_API_TOKEN_EXPIRATION_TIME=31536000
-      - JWT_API_TOKEN_SECRET=asdfasdf
-      - LLM_TYPE=openai
-      - LOADER_ENDPOINT=http://arches-nlp:3002/indexDocument
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_BUCKET=archesai
-      - MINIO_ENDPOINT=http://arches-minio:9000
-      - MINIO_SECRET_KEY=minioadmin
-      - NODE_ENV=development
-      - OPEN_AI_KEY=open-ai-key
-      - PORT=3001
-      - REDIS_AUTH=PASSWORD
-      - REDIS_HOST=arches-redis
-      - REDIS_PORT=6379
-      - SERVER_HOST=https://arches-api.test
-      - STORAGE_TYPE=minio
-      - TS_JEST=false
-      - ALLOWED_ORIGINS=*
-      - SESSION_SECRET=secret
-      - LOKI_HOST=http://arches-loki:3100
-
-generatorOptions:
-  disableNameSuffixHash: true
-
 resources:
   - ./arches-api-deployment.yaml
   - ./arches-api-service.yaml
