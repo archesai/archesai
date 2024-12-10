@@ -120,7 +120,6 @@ paths:
                           $ref: '#/components/schemas/PipelineEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfPipelineEntity
@@ -879,7 +878,6 @@ paths:
                           $ref: '#/components/schemas/ToolEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfToolEntity
@@ -1087,7 +1085,6 @@ paths:
                           $ref: '#/components/schemas/ApiTokenEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfApiTokenEntity
@@ -1322,7 +1319,6 @@ paths:
                           $ref: '#/components/schemas/MemberEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfMemberEntity
@@ -1529,7 +1525,6 @@ paths:
                           $ref: '#/components/schemas/LabelEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfLabelEntity
@@ -1879,7 +1874,6 @@ paths:
                           $ref: '#/components/schemas/ContentEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfContentEntity
@@ -2086,7 +2080,6 @@ paths:
                           $ref: '#/components/schemas/RunEntity'
                         type: array
                     required:
-                      - aggregates
                       - metadata
                       - results
                 title: PaginatedResponseOfRunEntity

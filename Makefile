@@ -2,16 +2,13 @@ TEST_FILE ?= ""
 SUBDIR ?= .
 
 run:
-	skaffold dev --profile dev
+	skaffold dev --profile dev --no-prune=false --cache-artifacts=false
 
 seed:
 	skaffold build --file-output=build.json --profile dev && skaffold exec seed --build-artifacts=build.json --profile dev && rm build.json
 
-migrations:
-	cd api && DATABASE_URL="postgresql://admin:admin@localhost:5431/nestjs?schema=public" npm run db:reset && cd ..
-
 generate:
-	curl -X GET "http://arches-api.test/swagger/yaml"  > openapi-spec.yaml && cd ui && npm run gen
+	curl -X GET "http://arches-api.test/swagger/yaml"  > ./api/test/openapi-spec.yaml && curl -X GET "http://arches-api.test/swagger/yaml"  > openapi-spec.yaml && cd ui && npm run gen
 
 lint:
 	cd ui && npm run lint
@@ -32,7 +29,7 @@ test:
 	cd api && npm run test:cov && cd ..
 
 test-e2e: generate
-	PROFILE=$(PROFILE) docker compose -f docker-compose.yaml -f docker-compose.dev.yaml --profile $(PROFILE) up arches-api-test-e2e
+	skaffold build --file-output=build.json --profile dev && skaffold exec test-e2e --build-artifacts=build.json --profile dev && rm build.json
 
 minikube:
-	./deploy/scripts/minikube.sh
+	./deploy/minikube.sh

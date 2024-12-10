@@ -90,13 +90,7 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Generate dotenv
-        run: ./deploy/scripts/generate-dotenv.sh
+      - uses: actions/checkout@v4
 
       - name: Create GKE Release
         run: |
@@ -107,7 +101,7 @@ jobs:
               --region=us-east1 \
               --delivery-pipeline=arches-deployment \
               --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-nlp=us-east4-docker.pkg.dev/archesai/images/arches-nlp:${{ github.sha }} \
-              --skaffold-file=deploy/skaffold.yaml
+              --skaffold-file=skaffold.yaml
 
       - name: Check Deployment Status
         run: |

@@ -8,7 +8,6 @@ components:
   - ../../components/redis
   - ../../components/storage
   - ../../components/ui
-  - ../../components/grafana
 
 patches:
   - path: "./arches-api-deployment.patch.yaml"

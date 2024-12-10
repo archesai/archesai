@@ -1,21 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: arches-api
+  name: arches-stripe
+  labels:
+    component: arches-stripe
 spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-stripe
   template:
+    metadata:
+      labels:
+        component: arches-stripe
     spec:
       containers:
-        - name: arches-api
-          image: arches-api:dev
-          imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-            - -c
-            - npm run start:dev:full
-        # This is the Stripe CLI container sidecar
         - name: arches-stripe
           image: stripe/stripe-cli:latest
+          ports:
+            - containerPort: 3000
           command:
             - stripe
             - listen
@@ -23,8 +26,3 @@ spec:
             - "https://arches-api.test/webhooks/stripe"
             - "--api-key"
             - "sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV"
-          ports:
-            - containerPort: 3000
-      securityContext:
-        runAsUser: 0
-        runAsGroup: 0

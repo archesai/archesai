@@ -1,7 +1,7 @@
 ###################
 # BASE STAGE
 ###################
-FROM node:20-alpine AS base
+FROM node:20-alpine3.19 AS base
 
 # Set working directory
 WORKDIR /app
@@ -24,7 +24,7 @@ FROM dev-dependencies AS development
 COPY --chown=node:node . .
 RUN npx prisma generate
 USER node
-CMD ["/bin/sh", "-c", "npm run migrations:prod && npm run start:dev"]
+CMD ["/bin/sh", "-c", "npm run start:dev:full"]
 
 ###################
 # BUILD STAGE

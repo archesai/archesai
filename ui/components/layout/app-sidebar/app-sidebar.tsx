@@ -21,7 +21,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader className='flex h-14 items-center justify-center'>
         <OrganizationSwitcher />
       </SidebarHeader>
-      <hr />
       <SidebarContent className='gap-0'>
         <SidebarLinks />
         {/* <RecentLabels /> */}

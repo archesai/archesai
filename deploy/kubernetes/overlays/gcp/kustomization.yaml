@@ -7,29 +7,14 @@ secretGenerator:
       - "./redis-ca.pem"
 
 resources:
-  - "../../../base"
+  - "../../base"
   - "./arches-frontend-config.yaml"
   - "./arches-api-managedcertificate.yaml"
   - "./arches-ui-managedcertificate.yaml"
 
 patches:
   - path: "./arches-api-deployment.patch.yaml"
-    target:
-      kind: Deployment
-      name: arches-api
   - path: "./arches-api-upgrade-job.patch.yaml"
-    target:
-      kind: Job
-      name: arches-api-upgrade
   - path: "./arches-api-service-account.patch.yaml"
-    target:
-      kind: ServiceAccount
-      name: arches-api-service-account
   - path: "./arches-api-ingress.patch.yaml"
-    target:
-      kind: Ingress
-      name: arches-api-ingress
   - path: "./arches-ui-ingress.patch.yaml"
-    target:
-      kind: Ingress
-      name: arches-ui-ingress

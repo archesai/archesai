@@ -32,7 +32,7 @@ export class PaginatedDto<TData> {
   /**
    * The aggregates for the paginated results
    */
-  aggregates: AggregateFieldResult[]
+  aggregates?: AggregateFieldResult[]
 
   /**
    * The metadata for the paginated results

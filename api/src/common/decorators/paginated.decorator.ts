@@ -25,7 +25,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
                 type: 'array'
               }
             },
-            required: ['aggregates', 'metadata', 'results'] // Make these properties required
+            required: ['metadata', 'results'] // Make these properties required
           }
         ],
         title: `PaginatedResponseOf${model.name}`

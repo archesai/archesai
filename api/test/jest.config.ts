@@ -21,7 +21,7 @@ export default async (): Promise<Config> => {
         'ts-jest',
         {
           astTransformers: {
-            before: ['../swagger-plugin-jest.js']
+            before: ['./swagger-plugin-jest.js']
           }
         }
       ]

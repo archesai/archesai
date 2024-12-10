@@ -6,3 +6,4 @@ dist
 .next
 **/*.env*
 **/build.json
+**/*.pem

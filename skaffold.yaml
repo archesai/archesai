@@ -8,7 +8,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/gcp/stage"
+          - "deploy/kubernetes/overlays/stage-gcp"
   - name: production
     deploy:
       statusCheckDeadlineSeconds: 300
@@ -16,7 +16,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/gcp/production"
+          - "deploy/kubernetes/overlays/production-gcp"
   - name: dev
     build:
       local:
@@ -58,7 +58,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/dev"
+          - "deploy/kubernetes/overlays/development-min"
     customActions:
       - name: seed
         executionMode:
@@ -71,3 +71,14 @@ profiles:
             args:
               - |
                 npm run db:seed
+      - name: test-e2e
+        executionMode:
+          kubernetesCluster:
+            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"arches-api-test-e2e"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"arches-api-test-e2e","image":"arches-api:dev","envFrom":[{"secretRef":{"name":"arches-api-config-secret"}}],"env":[{"name":"LOGGING_LEVEL","value":"silent"}]}]}}}}'
+        containers:
+          - image: arches-api
+            name: arches-api-test-e2e
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                npm run test:e2e

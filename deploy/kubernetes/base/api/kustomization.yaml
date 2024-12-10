@@ -8,3 +8,4 @@ resources:
   - ./arches-api-rbac.yaml
   - ./arches-api-service-account.yaml
   - ./arches-api-ingress.yaml
+  - ./arches-api-upgrade-job.yaml

@@ -119,7 +119,7 @@ export type PipelinesControllerFindAllQueryParams = {
 export type PipelinesControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type PipelinesControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.PipelineEntity[]
 }
@@ -1756,7 +1756,7 @@ export type ToolsControllerFindAllQueryParams = {
 export type ToolsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ToolsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.ToolEntity[]
 }
@@ -2094,7 +2094,7 @@ export type ApiTokensControllerFindAllQueryParams = {
 export type ApiTokensControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ApiTokensControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.ApiTokenEntity[]
 }
@@ -2488,7 +2488,7 @@ export type MembersControllerFindAllQueryParams = {
 export type MembersControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type MembersControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.MemberEntity[]
 }
@@ -2826,7 +2826,7 @@ export type LabelsControllerFindAllQueryParams = {
 export type LabelsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.LabelEntity[]
 }
@@ -3410,7 +3410,7 @@ export type ContentControllerFindAllQueryParams = {
 export type ContentControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type ContentControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.ContentEntity[]
 }
@@ -3748,7 +3748,7 @@ export type RunsControllerFindAllQueryParams = {
 export type RunsControllerFindAllError = Fetcher.ErrorWrapper<undefined>
 
 export type RunsControllerFindAllResponse = {
-  aggregates: Schemas.AggregateFieldResult[]
+  aggregates?: Schemas.AggregateFieldResult[]
   metadata: Schemas.Metadata
   results: Schemas.RunEntity[]
 }
