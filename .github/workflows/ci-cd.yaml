@@ -50,7 +50,7 @@ jobs:
 
   build-and-tag-api:
     name: Build and Tag API
-    # needs: lint-and-format
+    needs: lint-and-format
     uses: ./.github/workflows/build-and-tag.yaml
     permissions:
       contents: read
@@ -60,7 +60,7 @@ jobs:
 
   build-and-tag-ui:
     name: Build and Tag UI
-    # needs: lint-and-format
+    needs: lint-and-format
     uses: ./.github/workflows/build-and-tag.yaml
     permissions:
       contents: read
@@ -70,7 +70,7 @@ jobs:
 
   build-and-tag-nlp:
     name: Build and Tag NLP
-    # needs: lint-and-format
+    needs: lint-and-format
     uses: ./.github/workflows/build-and-tag.yaml
     permissions:
       contents: read

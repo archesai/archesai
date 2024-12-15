@@ -15,7 +15,6 @@ export class SpeechService {
 
   async generateSpeech(text: string): Promise<Buffer> {
     const res = await this.client.textToSpeech.convert('pMsXgVXv3BLzUgSXRplE', {
-      optimize_streaming_latency: ElevenLabs.OptimizeStreamingLatency.Zero,
       output_format: ElevenLabs.OutputFormat.Mp32205032,
       text: text,
       voice_settings: {

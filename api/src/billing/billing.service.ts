@@ -7,7 +7,7 @@ export class BillingService {
   private stripe: Stripe
   constructor(private configService: ConfigService) {
     this.stripe = new Stripe(this.configService.get('STRIPE_PRIVATE_API_KEY'), {
-      apiVersion: '2024-06-20'
+      apiVersion: '2024-11-20.acacia'
     })
   }
 
