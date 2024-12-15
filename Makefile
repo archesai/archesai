@@ -26,7 +26,8 @@ line-count:
 	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
 
 test:
-	cd api && npm run test:cov && cd ..
+	cd api && npm run test:cov
+	cd ui && npm run test
 
 test-e2e: generate
 	skaffold build --file-output=build.json --profile dev && skaffold exec test-e2e --build-artifacts=build.json --profile dev && rm build.json

@@ -14,3 +14,7 @@ export function toSentenceCase(str: string) {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+export function toCapitalized(str: string): string {
+  return str.replace(/\b\w/g, (char) => char.toUpperCase())
+}

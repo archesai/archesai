@@ -6,9 +6,12 @@ import Stripe from 'stripe'
 export class BillingService {
   private stripe: Stripe
   constructor(private configService: ConfigService) {
-    this.stripe = new Stripe(this.configService.get('STRIPE_PRIVATE_API_KEY'), {
-      apiVersion: '2024-11-20.acacia'
-    })
+    this.stripe = new Stripe(
+      this.configService.get('STRIPE_PRIVATE_API_KEY') || 'n/a',
+      {
+        apiVersion: '2024-11-20.acacia'
+      }
+    )
   }
 
   async cancelSubscription(customerId: string) {

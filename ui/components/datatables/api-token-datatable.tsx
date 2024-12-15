@@ -30,13 +30,7 @@ export default function ApiTokenDataTable() {
           accessorKey: 'role',
           cell: ({ row }) => {
             return <Badge>{row.original.role}</Badge>
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Role'
-            />
-          )
+          }
         },
         {
           accessorKey: 'name',
