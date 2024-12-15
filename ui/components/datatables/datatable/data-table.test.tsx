@@ -28,7 +28,8 @@ describe('DataTable Component', () => {
       results: mockData
     },
     isLoading: false,
-    isPlaceholderData: false
+    isPlaceholderData: false,
+    isFetched: true
   }))
   const mockUseRemove = jest.fn(() => ({
     mutateAsync: jest.fn().mockResolvedValueOnce(undefined)
