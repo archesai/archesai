@@ -8,7 +8,7 @@ export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
       <SmallLogo scale={scale} />
     ) : (
       <div className='flex items-center gap-0.5'>
-        <div className='mt-[5px] text-primary'>
+        <div className='mt-[5px] text-white'>
           <SmallLogo scale={scale / 8} />
         </div>
         <LargeLogo scale={scale} />

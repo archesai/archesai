@@ -41,7 +41,7 @@ export function ContentViewer({ id }: { id?: string }) {
         }}
         controls
         height='100%'
-        url={url || ''}
+        url={url as string}
         width='100%'
       />
     )
@@ -51,7 +51,7 @@ export function ContentViewer({ id }: { id?: string }) {
         alt={content?.description || ''}
         className='h-full w-full object-contain'
         height={516}
-        src={url || ''}
+        src={url as string}
         width={516}
       />
     )
@@ -59,7 +59,7 @@ export function ContentViewer({ id }: { id?: string }) {
     hoverContent = (
       <iframe
         className='h-full w-full'
-        src={url || ''}
+        src={url as string}
         title='PDF Document'
       ></iframe>
     )

@@ -158,7 +158,7 @@ export default function ContentDataTable({
             <Image
               alt='source image'
               height={256}
-              src={item.previewImage || ''}
+              src={item.previewImage as string}
               width={256}
             />
           </div>

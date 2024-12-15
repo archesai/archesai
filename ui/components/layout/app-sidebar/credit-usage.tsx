@@ -20,8 +20,8 @@ export const CreditQuota = () => {
     return <></>
   }
   return (
-    <div className='inter flex w-full flex-col gap-2 rounded-lg bg-muted p-2 text-xs'>
-      <div className='text-gray-alpha-500 flex items-center justify-between'>
+    <div className='inter flex w-full flex-col gap-2 rounded-lg bg-sidebar-accent p-2 text-xs'>
+      <div className='flex items-center justify-between'>
         <div className='font-semibold'>Credit Usage</div>
         <div>
           <Link href='/organization/billing'>
@@ -37,7 +37,7 @@ export const CreditQuota = () => {
               {isFetched ? (
                 organization?.credits
               ) : (
-                <Skeleton className='h-2 w-20' />
+                <Skeleton className='h-2 w-20 bg-slate-600' />
               )}
             </div>
           </div>
@@ -47,7 +47,7 @@ export const CreditQuota = () => {
               {isFetched ? (
                 organization?.credits
               ) : (
-                <Skeleton className='h-2 w-20' />
+                <Skeleton className='h-2 w-20 bg-slate-600' />
               )}
             </div>
           </div>

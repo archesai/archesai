@@ -3,7 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger
 } from '@/components/ui/hover-card'
-import { FileText, Image, Music, Video } from 'lucide-react'
+import { FileText, Image as ImageIcon, Music, Video } from 'lucide-react'
 
 export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {
   const getLabel = (contentType: string) => {
@@ -21,7 +21,7 @@ export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {
       case 'image/jpeg':
       case 'image/png':
       case 'image/svg+xml':
-        return <Image className='h-5 w-5 text-muted-foreground' />
+        return <ImageIcon className='h-5 w-5 text-muted-foreground' />
 
       case 'video/mp4':
       case 'video/mpeg':

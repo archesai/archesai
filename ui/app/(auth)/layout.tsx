@@ -21,7 +21,7 @@ export default function AuthenticationLayout({
         </Link>
         {/* Left side of the screen */}
         <div className='relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex'>
-          <div className='absolute inset-0 bg-zinc-900' /> {/* FIXME */}
+          <div className='absolute inset-0 bg-primary' /> {/* FIXME */}
           <div className='relative z-20 flex items-center text-lg font-medium'>
             <ArchesLogo />
           </div>

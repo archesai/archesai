@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import * as React from 'react'
@@ -18,7 +19,10 @@ export function ModeToggle({ h = 'h-8' }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className={h}
+          className={cn(
+            h,
+            'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+          )}
           size='icon'
           variant='ghost'
         >

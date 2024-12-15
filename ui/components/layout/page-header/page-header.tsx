@@ -11,7 +11,8 @@ import { CommandMenu } from './command-menu'
 import { VerifyEmailAlert } from './email-verify'
 import { ModeToggle } from './mode-toggle'
 import { TitleAndDescription } from './title-and-description'
-import { UserButton } from './user-button'
+import { UserButton } from '../../user-button'
+import { cn } from '@/lib/utils'
 
 export const PageHeader = () => {
   const { toggleSidebar } = useSidebar()
@@ -41,7 +42,7 @@ export const PageHeader = () => {
 
       <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
         <Button
-          className='mr-3 flex h-8 w-8'
+          className='mr-3 flex h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
           onClick={toggleSidebar}
           size='icon'
           variant='ghost'
@@ -51,12 +52,17 @@ export const PageHeader = () => {
         <div className='flex flex-1 items-center justify-end gap-3'>
           <CommandMenu />
           <ModeToggle />
-          <UserButton size='sm' />
+          <div className='h-8 w-8'>
+            <UserButton
+              size={'sm'}
+              side='bottom'
+            />
+          </div>
         </div>
       </header>
 
       {!currentTabs || currentTabs.length === 0 ? (
-        <div className='border-b' />
+        <div className='border-b border-b-sidebar-accent' />
       ) : (
         <Tabs value={activeTab}>
           <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>
@@ -64,7 +70,10 @@ export const PageHeader = () => {
               const isActive = tab.href === activeTab
               return (
                 <TabsTrigger
-                  className={`relative h-8 font-normal shadow-none transition-all hover:bg-muted [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-primary [&::after]:transition-all [&::after]:content-[''] ${isActive ? 'text-foreground [&::after]:w-full' : 'text-muted-foreground [&::after]:w-0'}`}
+                  className={cn(
+                    `relative h-8 font-normal shadow-none transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:text-sidebar-foreground [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
+                    `${isActive ? 'text-sidebar-foreground [&::after]:w-full' : 'text-muted-foreground [&::after]:w-0'}`
+                  )}
                   key={tab.href}
                   onClick={() => {
                     router.push(tab.href)

@@ -22,7 +22,7 @@ export const ToolCards = () => {
       <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
         {[...Array(6)].map((_, index) => (
           <Card
-            className='flex h-[194px] flex-col justify-between gap-2 bg-sidebar p-4 text-center transition-shadow hover:shadow-lg'
+            className='flex h-[194px] flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
             key={index}
           >
             <Skeleton className='mx-auto h-8 w-8' />
@@ -41,14 +41,15 @@ export const ToolCards = () => {
         const Icon = siteConfig.toolBaseIcons[tool.toolBase]
         return (
           <Card
-            className='flex flex-col justify-between gap-2 bg-sidebar p-4 text-center transition-shadow hover:shadow-lg'
+            className='flex flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
             key={index}
           >
-            <Icon className='mx-auto h-8 w-8 text-primary/80' />
+            <Icon className='mx-auto h-8 w-8 text-slate-700 dark:text-slate-500' />
             <div className='text-lg font-semibold'>{tool.name}</div>
             <div className='text-sm font-normal'> {tool.description}</div>
 
             <Button
+              variant={'secondary'}
               className='mt-1 h-8'
               onClick={() =>
                 router.push(`/playground?selectedTool=${JSON.stringify(tool)}`)

@@ -14,16 +14,16 @@ export function VerifyEmailAlert() {
 
   if (!user || user?.emailVerified) return null
   return (
-    <Alert className='rounded-none border-none bg-primary'>
+    <Alert className='flex items-center rounded-none border-none bg-amber-700'>
       <RocketIcon
         className='h-5 w-5'
         color='white'
       />
-      <AlertTitle className='font-normal text-white'>
+      <AlertTitle className='flex items-center font-normal text-primary-foreground'>
         <span className='flex gap-1'>
           Please
           <div
-            className='cursor-pointer font-semibold'
+            className='cursor-pointer font-semibold underline'
             onClick={async () => {
               try {
                 await requestEmailVerification({})

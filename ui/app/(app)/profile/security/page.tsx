@@ -40,7 +40,7 @@ export default function ProfileSecuritySettingsPage() {
           </CardDescription>
         </CardHeader>
         <Separator />
-        <div className='flex justify-end rounded-lg bg-gray-50 p-4 py-2 dark:bg-black'>
+        <div className='flex justify-end rounded-xl p-4 py-2'>
           <Button
             disabled={requestPasswordResetPending}
             onClick={async () =>
@@ -87,7 +87,7 @@ export default function ProfileSecuritySettingsPage() {
           </CardDescription>
         </CardHeader>
         <Separator />
-        <div className='flex justify-end rounded-lg bg-gray-50 p-4 py-2 dark:bg-black'>
+        <div className='flex justify-end rounded-xl p-4 py-2'>
           <Button
             disabled={deactivatePending}
             onClick={async () =>

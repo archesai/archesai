@@ -96,7 +96,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
         showCard ? '' : 'border-none shadow-none'
       )}
     >
-      <CardHeader className='rounded-t-xl bg-sidebar'>
+      <CardHeader>
         <CardTitle className='text-lg'>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
@@ -183,7 +183,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
               ))}
           </CardContent>
           <Separator />
-          <div className='flex rounded-b-xl bg-sidebar p-4'>
+          <div className='flex justify-end rounded-xl p-4 py-2'>
             {(onSubmitCreate || onSubmitUpdate) && (
               <div className='flex w-full items-center justify-end gap-2'>
                 <Button

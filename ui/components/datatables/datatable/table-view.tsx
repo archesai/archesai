@@ -29,7 +29,7 @@ export function TableView<TItem extends BaseItem>({
   isFetched
 }: TableViewProps<TItem>) {
   return (
-    <div className='rounded-md border bg-sidebar shadow-sm'>
+    <div className='rounded-lg border shadow-sm'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup: any) => (

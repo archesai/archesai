@@ -72,7 +72,7 @@ export class RunProcessor extends WorkerHost {
   }
 
   async process(job: RunJob) {
-    const inputs = job.data as ContentEntity[]
+    const inputs = job.data
     let outputs: ContentEntity[] = []
     switch (job.name) {
       case 'create-embeddings':

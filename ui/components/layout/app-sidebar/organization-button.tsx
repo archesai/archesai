@@ -28,7 +28,7 @@ import { ArchesLogo } from '../../arches-logo'
 import { Badge } from '../../ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 
-export function OrganizationSwitcher() {
+export function OrganizationButton() {
   const { defaultOrgname } = useAuth()
   const { data: user } = useUsersControllerFindOne({})
   const { data: organization, isPending } = useOrganizationsControllerFindOne({
@@ -66,7 +66,7 @@ export function OrganizationSwitcher() {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               size='lg'
             >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg border text-primary'>
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg border-sidebar-accent text-sidebar-foreground'>
                 <div className='-mt-0.5'>
                   <ArchesLogo
                     scale={0.1}
@@ -77,14 +77,14 @@ export function OrganizationSwitcher() {
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
                   {isPending ? (
-                    <Skeleton className='m-1 h-2' />
+                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
                   ) : (
                     organization?.orgname
                   )}
                 </span>
                 <span className='truncate text-xs capitalize'>
                   {isPending ? (
-                    <Skeleton className='m-1 h-2' />
+                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
                   ) : (
                     organization?.plan?.toLocaleLowerCase() + ' Plan'
                   )}

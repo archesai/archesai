@@ -45,14 +45,14 @@ export function SidebarLinks() {
                       <SidebarMenuItem key={i}>
                         <Link href={rootRoute.href}>
                           <SidebarMenuButton
-                            className={`${pathname === rootRoute.href ? 'bg-muted' : ''}`}
+                            className={`${pathname === rootRoute.href ? 'bg-sidebar-accent' : ''}`}
                             tooltip={rootRoute.title}
                           >
                             {rootRoute.Icon && (
                               <rootRoute.Icon
                                 className={cn(
                                   pathname == rootRoute.href
-                                    ? 'text-primary'
+                                    ? 'text-sidebar-foreground'
                                     : ''
                                 )}
                               />
@@ -79,7 +79,7 @@ export function SidebarLinks() {
                               <rootRoute.Icon
                                 className={cn(
                                   pathname == rootRoute.href
-                                    ? 'text-primary'
+                                    ? 'text-sidebar-foreground'
                                     : ''
                                 )}
                               />
@@ -94,7 +94,7 @@ export function SidebarLinks() {
                               <SidebarMenuSubItem key={route.title}>
                                 <SidebarMenuSubButton
                                   asChild
-                                  className={`${pathname === route.href ? 'bg-muted' : ''}`}
+                                  className={`${pathname === route.href ? 'bg-sidebar-accent' : ''}`}
                                 >
                                   <Link href={route.href}>
                                     <span>{route.title}</span>
