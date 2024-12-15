@@ -7,9 +7,8 @@ import { useRunsControllerFindOne } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
 import { usePlayground } from '@/hooks/use-playground'
 import { cn } from '@/lib/utils'
-import { Suspense } from 'react'
 
-export function Client() {
+export default function Playground() {
   const { defaultOrgname } = useAuth()
   const { selectedContent, selectedRunId, selectedTool } = usePlayground()
 
@@ -43,23 +42,20 @@ export function Client() {
               hasOutputs ? 'h-1/2' : 'h-full'
             )}
           >
-            <Suspense fallback={<p>Loading feed...</p>}>
-              <ContentDataTable
-                customFilters={[
-                  {
-                    field: 'id',
-                    operator: 'in',
-                    value: run
-                      ? run.inputs.map((r) => r.id)
-                      : selectedContent?.map((r) => r.id) || []
-                  }
-                ]}
-                readonly
-              />
-            </Suspense>
+            <ContentDataTable
+              customFilters={[
+                {
+                  field: 'id',
+                  operator: 'in',
+                  value: run
+                    ? run.inputs.map((r) => r.id)
+                    : selectedContent?.map((r) => r.id) || []
+                }
+              ]}
+              readonly
+            />
           </div>
         ) : null}
-        {/* <Separator /> */}
 
         {run?.outputs?.length ? (
           <div className='h-1/2 overflow-auto'>
@@ -77,7 +73,6 @@ export function Client() {
         ) : null}
       </div>
 
-      {/* SIDEBAR */}
       <div
         className={cn(
           'flex flex-col gap-1 transition-all',

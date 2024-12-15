@@ -26,11 +26,12 @@ import * as React from 'react'
 
 import { ArchesLogo } from '../../arches-logo'
 import { Badge } from '../../ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export function OrganizationSwitcher() {
   const { defaultOrgname } = useAuth()
   const { data: user } = useUsersControllerFindOne({})
-  const { data: organization } = useOrganizationsControllerFindOne({
+  const { data: organization, isPending } = useOrganizationsControllerFindOne({
     pathParams: {
       orgname: defaultOrgname
     }
@@ -65,10 +66,6 @@ export function OrganizationSwitcher() {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               size='lg'
             >
-              {
-                // add eslint ignore for the next lint
-              }
-              {}
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg border text-primary'>
                 <div className='-mt-0.5'>
                   <ArchesLogo
@@ -79,10 +76,18 @@ export function OrganizationSwitcher() {
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
-                  {organization?.orgname}
+                  {isPending ? (
+                    <Skeleton className='m-1 h-2' />
+                  ) : (
+                    organization?.orgname
+                  )}
                 </span>
                 <span className='truncate text-xs capitalize'>
-                  {organization?.plan?.toLocaleLowerCase()} Plan
+                  {isPending ? (
+                    <Skeleton className='m-1 h-2' />
+                  ) : (
+                    organization?.plan?.toLocaleLowerCase() + ' Plan'
+                  )}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />

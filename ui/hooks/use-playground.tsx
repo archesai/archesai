@@ -1,3 +1,4 @@
+'use client'
 import { ContentEntity, ToolEntity } from '@/generated/archesApiSchemas'
 import { parseAsArrayOf, parseAsJson, parseAsString, useQueryState } from 'nuqs'
 import { useCallback } from 'react'

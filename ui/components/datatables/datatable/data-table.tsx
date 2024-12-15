@@ -79,6 +79,7 @@ interface DataTableProps<
           results: TItem[]
         }
     isLoading: boolean
+    isFetched: boolean
     isPlaceholderData: boolean
   }
   useRemove: () => {
@@ -122,7 +123,7 @@ export function DataTable<
   } = useFilterItems()
 
   // Use the useDebounce hook to debounce the query
-  const debouncedQuery = useDebounce(query, 500) // 500ms delay
+  const debouncedQuery = useDebounce(query, 200) // 500ms delay
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -150,7 +151,7 @@ export function DataTable<
     }
   }, [defaultView, setView])
 
-  const { data } = useFindAll({
+  const { data, isFetched } = useFindAll({
     pathParams: findAllPathParams,
     queryParams: {
       ...(range?.to
@@ -206,12 +207,14 @@ export function DataTable<
         ? [
             {
               cell: ({ row }) => (
-                <Checkbox
-                  aria-label='Select row'
-                  checked={selectedItems.includes(row.original.id)}
-                  className=''
-                  onCheckedChange={() => toggleSelection(row.original.id)}
-                />
+                <div className='flex'>
+                  <Checkbox
+                    aria-label='Select row'
+                    checked={selectedItems.includes(row.original.id)}
+                    className='justify-self-center'
+                    onCheckedChange={() => toggleSelection(row.original.id)}
+                  />
+                </div>
               ),
               enableHiding: false,
               enableSorting: false,
@@ -365,6 +368,7 @@ export function DataTable<
           />
         ) : (
           <TableView
+            isFetched={isFetched}
             columns={columns}
             itemType={itemType}
             table={table}

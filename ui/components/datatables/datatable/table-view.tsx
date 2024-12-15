@@ -12,18 +12,21 @@ import {
 import { flexRender } from '@tanstack/react-table'
 
 import { BaseItem } from './data-table'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface TableViewProps<TItem extends BaseItem> {
   columns: any[] // Replace with appropriate type if possible
   items?: TItem[]
   itemType: string
   table: any // Replace with appropriate type from react-table if possible
+  isFetched: boolean
 }
 
 export function TableView<TItem extends BaseItem>({
   columns,
   itemType,
-  table
+  table,
+  isFetched
 }: TableViewProps<TItem>) {
   return (
     <div className='rounded-md border bg-sidebar shadow-sm'>
@@ -52,7 +55,31 @@ export function TableView<TItem extends BaseItem>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {!isFetched ? (
+            <>
+              {[...Array(10)].map((_, index) => (
+                <TableRow
+                  className={
+                    'transition-all hover:bg-muted' +
+                    (index % 2 ? ' bg-background/40' : ' ')
+                  }
+                  key={index}
+                >
+                  {columns.map((column, i) => (
+                    <TableCell
+                      className='h-12 p-2'
+                      key={i}
+                    >
+                      <Skeleton className='h-4' />
+                    </TableCell>
+                  ))}
+                  <TableCell className='h-12 p-2'>
+                    <Skeleton className='h-4' />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </>
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row: any, index: number) => (
               <TableRow
                 className={

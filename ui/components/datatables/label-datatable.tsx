@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import LabelForm from '@/components/forms/label-form'
 import {
   LabelsControllerFindAllPathParams,
@@ -39,13 +38,7 @@ export default function LabelDataTable() {
                 </span>
               </div>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         }
       ]}
       createForm={<LabelForm />}

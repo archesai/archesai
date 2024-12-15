@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import { Badge } from '@/components/ui/badge'
 import {
   PipelinesControllerFindAllPathParams,
@@ -39,13 +38,7 @@ export default function PipelineDataTable() {
                 </Link>
               </div>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         },
         {
           accessorKey: 'description',
@@ -56,14 +49,7 @@ export default function PipelineDataTable() {
               </span>
             )
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='text-sm'
-              column={column}
-              title='Description'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'Inputs',
@@ -77,14 +63,7 @@ export default function PipelineDataTable() {
             )
           },
           enableHiding: false,
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Input'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'createdAt',
@@ -94,13 +73,7 @@ export default function PipelineDataTable() {
                 {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Created'
-            />
-          )
+          }
         }
       ]}
       dataIcon={<Workflow />}

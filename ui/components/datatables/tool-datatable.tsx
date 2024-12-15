@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import { Badge } from '@/components/ui/badge'
 import {
   ToolsControllerFindAllPathParams,
@@ -32,62 +31,35 @@ export default function ToolDataTable() {
             return (
               <div className='flex gap-2'>
                 <Link
-                  className='underline-dotted max-w-[200px] shrink truncate font-medium underline'
+                  className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
                   href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
                 >
                   {row.original.name}
                 </Link>
               </div>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         },
         {
           accessorKey: 'description',
           cell: ({ row }) => {
             return <span>{row.original.description || 'No Description'}</span>
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Description'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'inputType',
           cell: ({ row }) => {
             return <Badge>{row.original.inputType}</Badge>
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Input'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'outputType',
           cell: ({ row }) => {
             return <Badge>{row.original.outputType}</Badge>
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Output'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'createdAt',
@@ -97,14 +69,7 @@ export default function ToolDataTable() {
                 {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Created'
-            />
-          )
+          }
         }
       ]}
       dataIcon={<PackageCheck />}

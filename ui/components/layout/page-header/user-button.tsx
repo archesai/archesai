@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 
 import { Badge } from '../../ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface UserButtonProps {
   size: 'lg' | 'sm'
@@ -33,7 +34,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
   const { defaultOrgname, logout } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
-  const { data: user } = useUsersControllerFindOne({})
+  const { data: user, isFetched } = useUsersControllerFindOne({})
 
   const { mutateAsync: updateDefaultOrg } = useUsersControllerUpdate({
     onError: (error) => {
@@ -79,10 +80,7 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
                     }
                   />
                   <AvatarFallback>
-                    {user?.displayName
-                      ?.split(' ')
-                      .map((x) => x[0])
-                      .join('')}
+                    <Skeleton className='h-10 w-10 rounded-lg' />
                   </AvatarFallback>
                 </Avatar>
                 <div className='overflow-hidden text-start'>
@@ -118,18 +116,17 @@ export const UserButton: FC<UserButtonProps> = ({ size }) => {
               <AvatarImage
                 alt={user?.displayName || 'User'}
                 src={
-                  user?.photoUrl ||
-                  `https://ui-avatars.com/api/?name=${user?.displayName
-                    ?.split(' ')
-                    .map((x) => x[0])
-                    .join('+')}&background=3D61FF&color=fff`
+                  isFetched
+                    ? user?.photoUrl ||
+                      `https://ui-avatars.com/api/?name=${user?.displayName
+                        ?.split(' ')
+                        .map((x) => x[0])
+                        .join('+')}&background=3D61FF&color=fff`
+                    : undefined
                 }
               />
               <AvatarFallback>
-                {user?.displayName
-                  ?.split(' ')
-                  .map((x) => x[0])
-                  .join('')}
+                <Skeleton className='h-8 w-8 rounded-lg' />
               </AvatarFallback>
             </Avatar>
           )}

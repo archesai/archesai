@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '@/components/ui/sidebar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useUsersControllerFindOne } from '@/generated/archesApiComponents'
 import {
   BadgeCheck,
@@ -28,7 +29,7 @@ import {
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { data: user } = useUsersControllerFindOne({})
+  const { data: user, isFetched } = useUsersControllerFindOne({})
 
   return (
     <SidebarMenu>
@@ -44,13 +45,21 @@ export function NavUser() {
                   alt={user?.displayName}
                   src={user?.photoUrl}
                 />
-                <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
+                <AvatarFallback className='rounded-lg'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                </AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
-                  {user?.displayName}
+                  {isFetched ? (
+                    user?.displayName
+                  ) : (
+                    <Skeleton className='m-1 h-4' />
+                  )}
                 </span>
-                <span className='truncate text-xs'>{user?.email}</span>
+                <span className='truncate text-xs'>
+                  {isFetched ? user?.email : <Skeleton className='m-1 h-3' />}
+                </span>
               </div>
               <ChevronsUpDown className='ml-auto size-4' />
             </SidebarMenuButton>

@@ -1,7 +1,6 @@
 'use client'
 import { ContentViewer } from '@/components/content-viewer'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import ContentForm from '@/components/forms/content-form'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -50,32 +49,20 @@ export default function ContentDataTable({
               <div className='flex gap-2'>
                 {/* <ContentTypeToIcon contentType={row.original.mimeType} /> */}
                 <Link
-                  className='shrink truncate text-wrap md:text-sm'
+                  className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
                   href={`/content/single?contentId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
               </div>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         },
         {
           accessorKey: 'mimeType',
           cell: ({ row }) => {
             return <Badge>{row.original?.mimeType}</Badge>
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Type'
-            />
-          )
+          }
         },
         {
           accessorKey: 'value',
@@ -92,7 +79,7 @@ export default function ContentDataTable({
                         View Content
                       </Link>
                     </HoverCardTrigger>
-                    <HoverCardContent>
+                    <HoverCardContent className='h-[800px] w-[500px]'>
                       <Suspense fallback={<Skeleton />}>
                         <ContentViewer id={row.original.id} />
                       </Suspense>
@@ -103,14 +90,7 @@ export default function ContentDataTable({
             )
           },
           enableHiding: false,
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Data'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'parent',
@@ -126,14 +106,7 @@ export default function ContentDataTable({
               <div className='text-muted-foreground'>None</div>
             )
           },
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Parent'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'producedBy',
@@ -149,14 +122,7 @@ export default function ContentDataTable({
               <div className='text-muted-foreground'>None</div>
             )
           },
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Produced By'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'labels',
@@ -173,14 +139,7 @@ export default function ContentDataTable({
               </div>
             )
           },
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Labels'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'createdAt',
@@ -190,13 +149,7 @@ export default function ContentDataTable({
                 {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Created'
-            />
-          )
+          }
         }
       ]}
       content={(item) => {

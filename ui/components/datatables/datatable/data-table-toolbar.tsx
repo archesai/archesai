@@ -78,7 +78,7 @@ export function DataTableToolbar<TData>({
       <DataTableViewOptions table={table} />
       {createForm && !readonly ? (
         <Button
-          className='capitalize'
+          className='text-sm font-normal capitalize'
           onClick={() => setFormOpen(true)}
           size='sm'
           variant={'outline'}
@@ -114,7 +114,7 @@ export function ViewToggle() {
         }`}
         onClick={() => setView('grid')}
         size='icon'
-        variant={'secondary'}
+        variant={'outline'}
       >
         <GridIcon className='h-5 w-5' />
       </Button>

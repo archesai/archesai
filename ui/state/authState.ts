@@ -6,6 +6,6 @@ export type AuthStatus =
   | 'Refreshing'
   | 'Unauthenticated'
 
-export const authStatusAtom = atom<AuthStatus>('Unauthenticated')
+export const authStatusAtom = atom<AuthStatus>('Loading')
 
 export const defaultOrgnameAtom = atom<string>('')

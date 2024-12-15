@@ -5,11 +5,12 @@ import { useOrganizationsControllerFindOne } from '@/generated/archesApiComponen
 import { useAuth } from '@/hooks/use-auth'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export const CreditQuota = () => {
   const { open } = useSidebar()
   const { defaultOrgname } = useAuth()
-  const { data: organization } = useOrganizationsControllerFindOne({
+  const { data: organization, isFetched } = useOrganizationsControllerFindOne({
     pathParams: {
       orgname: defaultOrgname
     }
@@ -24,7 +25,7 @@ export const CreditQuota = () => {
         <div className='font-semibold'>Credit Usage</div>
         <div>
           <Link href='/organization/billing'>
-            <Badge className='text-emerald-700 outline-black'>Upgrade</Badge>
+            <Badge>Upgrade</Badge>
           </Link>
         </div>
       </div>
@@ -32,11 +33,23 @@ export const CreditQuota = () => {
         <div className='flex flex-grow flex-col gap-2'>
           <div className='inter flex justify-between'>
             <div>Total</div>
-            <div className='tabular-nums'>{organization?.credits}</div>
+            <div className='tabular-nums'>
+              {isFetched ? (
+                organization?.credits
+              ) : (
+                <Skeleton className='h-2 w-20' />
+              )}
+            </div>
           </div>
           <div className='inter flex justify-between'>
             <div>Remaining</div>
-            <div className='tabular-nums'>{organization?.credits}</div>
+            <div className='tabular-nums'>
+              {isFetched ? (
+                organization?.credits
+              ) : (
+                <Skeleton className='h-2 w-20' />
+              )}
+            </div>
           </div>
         </div>
         <></>

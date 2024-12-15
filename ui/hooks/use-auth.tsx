@@ -64,7 +64,6 @@ export const useAuth = () => {
 
   const authenticate = useCallback(async () => {
     console.log('Attempting to authenticate')
-    setStatus('Loading')
     try {
       let response = await fetch(baseUrl + '/user', {
         credentials: 'include', // Include cookies
@@ -83,9 +82,7 @@ export const useAuth = () => {
       })
 
       if (response.status === 401) {
-        console.log('Unauthenticated')
-        await logout()
-        return
+        return logout()
       }
 
       const user = (await response.json()) as UserEntity
@@ -97,7 +94,7 @@ export const useAuth = () => {
         variant: 'destructive'
       })
       console.error('Error in getUserFromToken: ', error)
-      await logout()
+      return logout()
     }
   }, [logout, setStatus, setDefaultOrgname, toast, getNewRefreshToken])
 

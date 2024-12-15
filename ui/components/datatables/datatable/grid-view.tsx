@@ -52,13 +52,13 @@ export function GridView<TItem extends BaseItem>({
         return (
           <Card
             className={`relative flex aspect-auto h-64 flex-col shadow-sm transition-all hover:bg-muted ${
-              isItemSelected ? 'ring-4 ring-blue-500' : ''
+              isItemSelected ? 'ring-1 ring-blue-500' : ''
             } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={item.id}
           >
             {/* Top Content */}
             <div
-              className='group relative grow cursor-pointer overflow-auto rounded-t-sm transition-all'
+              className='group relative grow cursor-pointer overflow-hidden rounded-t-xl transition-all'
               onClick={() => handleSelect(item)}
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(-1)}

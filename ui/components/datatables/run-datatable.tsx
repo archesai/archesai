@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import { RunStatusButton } from '@/components/run-status-button'
 import {
   RunsControllerFindAllPathParams,
@@ -43,13 +42,7 @@ export default function RunDataTable() {
                 </Link>
               </div>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         },
         {
           accessorKey: 'runType',
@@ -68,14 +61,7 @@ export default function RunDataTable() {
               </Button>
             )
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Run Type'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'status',
@@ -89,14 +75,7 @@ export default function RunDataTable() {
               </div>
             )
           },
-          enableHiding: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Input'
-            />
-          )
+          enableHiding: false
         },
         {
           accessorKey: 'duration',
@@ -114,14 +93,7 @@ export default function RunDataTable() {
             )
           },
           enableHiding: false,
-          enableSorting: false,
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Duration'
-            />
-          )
+          enableSorting: false
         },
         {
           accessorKey: 'startedAt',
@@ -133,14 +105,7 @@ export default function RunDataTable() {
                   : 'N/A'}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Started At'
-            />
-          )
+          }
         },
         {
           accessorKey: 'completedAt',
@@ -152,14 +117,7 @@ export default function RunDataTable() {
                   : 'N/A'}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              className='-ml-2 text-sm'
-              column={column}
-              title='Completed At'
-            />
-          )
+          }
         }
       ]}
       dataIcon={<PackageCheck />}

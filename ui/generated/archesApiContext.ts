@@ -63,7 +63,7 @@ export function useArchesApiContext<
       retry: async (failureCount: number, error: any) => {
         console.log('FAILED, RETRYING', failureCount, error)
         if (error?.statusCode === 401 && failureCount <= 2) {
-          setStatus('Unauthenticated')
+          setStatus('Loading')
           return true
         } else if (error?.statusCode === 401 && failureCount > 2) {
           console.log('Too many retries, logging out')

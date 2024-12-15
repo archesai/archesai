@@ -132,7 +132,14 @@ export function DataSelector<TItem extends BaseItem, TFindAllPathParams>({
             variant='outline'
           >
             <div className='flex items-center gap-2'>
-              <div className='flex flex-wrap gap-2'>
+              <div
+                className={cn(
+                  'flex flex-wrap gap-2',
+                  (selectedData as TItem[])?.length > 0 || !isMultiSelect
+                    ? ''
+                    : 'text-muted-foreground'
+                )}
+              >
                 {isMultiSelect ? (
                   (selectedData as TItem[])?.length > 0 ? (
                     (selectedData as TItem[])?.length + ' selected'

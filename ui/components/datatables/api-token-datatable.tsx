@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import APITokenForm from '@/components/forms/api-token-form'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -40,25 +39,13 @@ export default function ApiTokenDataTable() {
                 {row.original.name}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Name'
-            />
-          )
+          }
         },
         {
           accessorKey: 'key',
           cell: ({ row }) => {
             return <span className='font-medium'>{row.original.key}</span>
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Value'
-            />
-          )
+          }
         },
         {
           accessorKey: 'createdAt',
@@ -68,13 +55,7 @@ export default function ApiTokenDataTable() {
                 {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Created'
-            />
-          )
+          }
         }
       ]}
       content={() => (

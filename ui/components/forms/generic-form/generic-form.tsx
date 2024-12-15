@@ -89,8 +89,6 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
     form.reset(defaultValues)
   }, [fields.map((f) => f.defaultValue).join()])
 
-  console.log(form.formState.errors)
-  console.log(form.getValues()) // FIXME
   return (
     <Card
       className={cn(
@@ -98,7 +96,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
         showCard ? '' : 'border-none shadow-none'
       )}
     >
-      <CardHeader className='rounded-t-lg bg-sidebar'>
+      <CardHeader className='rounded-t-xl bg-sidebar'>
         <CardTitle className='text-lg'>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
@@ -185,7 +183,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
               ))}
           </CardContent>
           <Separator />
-          <div className='flex rounded-b-lg bg-sidebar p-4'>
+          <div className='flex rounded-b-xl bg-sidebar p-4'>
             {(onSubmitCreate || onSubmitUpdate) && (
               <div className='flex w-full items-center justify-end gap-2'>
                 <Button

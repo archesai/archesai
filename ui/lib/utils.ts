@@ -7,12 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 export function toSentenceCase(str: string) {
   return str
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase())
-    .replace(/\s+/g, ' ')
-    .trim()
+    .replace(/_/g, ' ') // Replace underscores with spaces
+    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+    .toLowerCase() // Convert the string to lowercase
+    .replace(/\s+/g, ' ') // Remove extra spaces
+    .trim() // Remove leading/trailing spaces
+    .split(' ') // Split the string into words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+    .join(' ') // Join the words back into a single string
 }
 
 export function toCapitalized(str: string): string {

@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { DataTableColumnHeader } from '@/components/datatables/datatable/data-table-column-header'
 import MemberForm from '@/components/forms/member-form'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -27,13 +26,7 @@ export default function MemberDataTable() {
           accessorKey: 'role',
           cell: ({ row }) => {
             return <Badge>{row.original.role}</Badge>
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Role'
-            />
-          )
+          }
         },
         {
           accessorKey: 'inviteEmail',
@@ -41,13 +34,7 @@ export default function MemberDataTable() {
             return (
               <span className='font-medium'>{row.original.inviteEmail}</span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Email'
-            />
-          )
+          }
         },
         {
           accessorKey: 'inviteAccepted',
@@ -61,13 +48,7 @@ export default function MemberDataTable() {
                 )}
               </span>
             )
-          },
-          header: ({ column }) => (
-            <DataTableColumnHeader
-              column={column}
-              title='Accepted'
-            />
-          )
+          }
         }
       ]}
       content={() => (
