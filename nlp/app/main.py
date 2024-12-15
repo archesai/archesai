@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
 from langchain_community.document_loaders import TextLoader
 
-# from bs4 import BeautifulSoup
 from langchain.text_splitter import TokenTextSplitter
 from typing import Optional
 from types import SimpleNamespace
@@ -41,29 +40,23 @@ class GetPreviewEvent(BaseModel):
 
 @app.post("/indexDocument")
 async def indexDocument(indexDocumentEvent: IndexDocumentEvent):
-    print(indexDocumentEvent)
     # Get start time
     globalStart = time.time()
-    print("Got request to process " + indexDocumentEvent.url, flush=True)
+    print("Got request to process " + str(indexDocumentEvent), flush=True)
 
     # Get file from storage
     try:
         # Download file
+        start = time.time()
         file_to_process, isYoutube, contentType = download_to_file(
             indexDocumentEvent.url, indexDocumentEvent.text
         )
+        print(
+            "Downloaded file in " + str(time.time() - start) + " seconds",
+            flush=True,
+        )
 
-        # # Get title if exists
-        # title = indexDocumentEvent.url
-        # if contentType == "text/html":
-        #     print("Parsing title from BeautifulSoup", flush=True)
-        #     soup = BeautifulSoup(resp.text, "html.parser")
-        #     if soup.title:
-        #         title = soup.title.string.strip()
-
-        # print("Got title " + title, flush=True)
-
-        # Load data
+        # Set loader
         start = time.time()
         if contentType == "application/pdf":
             print("Using application/pdf loader", flush=True)
@@ -82,7 +75,13 @@ async def indexDocument(indexDocumentEvent: IndexDocumentEvent):
         else:
             print("Using unstructured loader", flush=True)
             loader = UnstructuredFileLoader(file_to_process)
+        print(
+            "Set loader in " + str(time.time() - start) + " seconds",
+            flush=True,
+        )
 
+        # Load and split data
+        start = time.time()
         if indexDocumentEvent.delimiter:
             print(
                 "Using character splitter with delimiter "
@@ -116,10 +115,13 @@ async def indexDocument(indexDocumentEvent: IndexDocumentEvent):
                 )
             )
         print(
-            "Loaded data in " + str(time.time() - start) + " seconds",
+            "Loaded and split data in "
+            + str(time.time() - start)
+            + " seconds",
             flush=True,
         )
 
+        # Tokenize data and build response
         start = time.time()
         response = {
             "textContent": [
@@ -137,18 +139,18 @@ async def indexDocument(indexDocumentEvent: IndexDocumentEvent):
             "Tokenized document in " + str(time.time() - start) + " seconds",
             flush=True,
         )
-        print(
-            "Total time: " + str(time.time() - globalStart) + " seconds",
-            flush=True,
-        )
 
         # Cleanup files
         cleanup_files(file_to_process)
 
+        print(
+            "Total time: " + str(time.time() - globalStart) + " seconds",
+            flush=True,
+        )
         return response
 
     except Exception as e:
-        print("GOT ERROR", e)
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 

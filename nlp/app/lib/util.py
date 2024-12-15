@@ -9,12 +9,11 @@ def download_to_file(url, text) -> str:
     isYoutube = False
     start = time.time()
     if url:
-        print("Downloading content", flush=True)
+        print("Downloading file and writing to disk - URL: " + url, flush=True)
         resp = requests.get(url)
         if resp.status_code != 200:
-            raise HTTPException(
-                status_code=400, detail="Could not process request"
-            )
+            raise HTTPException(status_code=400, detail=resp.text)
+
         print("Downloaded content in " + str(time.time() - start) + " seconds")
 
         # Get content type
@@ -38,6 +37,7 @@ def download_to_file(url, text) -> str:
                 file_to_process = file.name
 
     elif text:
+        print("Writing text to disk - Text: " + text, flush=True)
         contentType = "text/plain"
         file_to_process = "/tmp/" + datetime.now().strftime("%H%M%S")
         with open(file_to_process, "w") as file:
