@@ -1,10 +1,13 @@
+import { Expose } from 'class-transformer'
 import { AggregateFieldQuery } from './search-query.dto'
+import { IsArray, IsNumber, ValidateNested } from 'class-validator'
 
 export class AggregateFieldResult extends AggregateFieldQuery {
   /**
    * The value of the aggregate
    * @example 10
    */
+  @Expose()
   value: number
 }
 
@@ -13,18 +16,24 @@ export class Metadata {
    * The number of results per page
    * @example 10
    */
+  @IsNumber()
+  @Expose()
   limit: number
 
   /**
    * The current page
    * @example 1
    */
+  @IsNumber()
+  @Expose()
   offset: number
 
   /**
    * The total number of results
    * @example 100
    */
+  @IsNumber()
+  @Expose()
   totalResults: number
 }
 
@@ -32,20 +41,32 @@ export class PaginatedDto<TData> {
   /**
    * The aggregates for the paginated results
    */
-  aggregates?: AggregateFieldResult[]
+  @IsArray()
+  @ValidateNested({
+    each: true
+  })
+  @Expose()
+  aggregates: AggregateFieldResult[]
 
   /**
    * The metadata for the paginated results
    */
+  @ValidateNested()
+  @Expose()
   metadata: Metadata
 
   /**
    * The paginated results
    */
+  @IsArray()
+  @ValidateNested({
+    each: true
+  })
+  @Expose()
   results: TData[]
 
   constructor(input: {
-    aggregates?: AggregateFieldResult[]
+    aggregates: AggregateFieldResult[]
     metadata: Metadata
     results: TData[]
   }) {

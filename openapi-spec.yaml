@@ -51,21 +51,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -809,21 +810,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -1016,21 +1018,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -1250,21 +1253,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -1456,21 +1460,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -1805,21 +1810,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -2011,21 +2017,22 @@ paths:
             default: []
             type: array
             items: {}
-        - name: limit
-          required: false
-          in: query
-          description: The limit of the number of results returned
-          schema:
-            minimum: 1
-            default: 10
-            type: number
         - name: endDate
           required: false
           in: query
           description: The end date to search to
           schema:
+            format: date-time
             example: '2022-01-01'
             type: string
+        - name: limit
+          required: false
+          in: query
+          description: The limit of the number of results returned
+          schema:
+            default: 10
+            example: 10
+            type: number
         - name: offset
           required: false
           in: query
@@ -2248,39 +2255,39 @@ components:
     ToolEntity:
       type: object
       properties:
-        inputType:
+        description:
           type: string
+          description: The tool description
+        inputType:
           description: The tools input type
+          example: TEXT
           enum:
             - TEXT
             - IMAGE
-            - VIDEO
             - AUDIO
-          example: TEXT
+            - VIDEO
+          type: string
         name:
           type: string
-          description: The tool's name
+          description: The tool name
           example: extract-text
         orgname:
           type: string
           description: The organization name
           example: my-organization
         outputType:
-          type: string
           description: The tools output type
+          example: TEXT
           enum:
             - TEXT
             - IMAGE
-            - VIDEO
             - AUDIO
-          example: TEXT
+            - VIDEO
+          type: string
         toolBase:
           type: string
-          description: The tool's base path
+          description: The base of the tool
           example: extract-text
-        description:
-          type: string
-          description: The tool description
         createdAt:
           format: date-time
           type: string
@@ -2291,12 +2298,12 @@ components:
           description: The ID of the item
           example: item-id
       required:
+        - description
         - inputType
         - name
         - orgname
         - outputType
         - toolBase
-        - description
         - createdAt
         - id
     PipelineStepEntity:
@@ -2431,9 +2438,9 @@ components:
       properties:
         email:
           type: string
-          format: email
           description: The e-mail to send the confirmation token to
           example: user@archesai.com
+          format: email
       required:
         - email
     LoginDto:
@@ -2441,9 +2448,9 @@ components:
       properties:
         password:
           type: string
-          minLength: 7
           description: The password to create and/or login to an account
           example: password
+          minLength: 7
         email:
           type: string
           description: The user's e-mail
@@ -2473,9 +2480,9 @@ components:
       properties:
         password:
           type: string
-          minLength: 7
           description: The password to create and/or login to an account
           example: password
+          minLength: 7
         email:
           type: string
           description: The user's e-mail
@@ -2490,17 +2497,18 @@ components:
         provider:
           type: string
           description: The auth provider's provider
+          example: LOCAL
           enum:
             - LOCAL
             - FIREBASE
             - TWITTER
-          example: LOCAL
         providerId:
           type: string
-          description: The auth provider's provider ID
+          description: The provider ID associated with the auth provider
         userId:
           type: string
-          description: The auth provider's user ID
+          description: The user ID associated with the auth provider
+          example: '123456'
         createdAt:
           format: date-time
           type: string
@@ -2525,19 +2533,20 @@ components:
           example: false
         inviteEmail:
           type: string
-          description: The invited email of this member
+          description: The email of the invited member
           example: invited-user@archesai.com
+          format: email
         orgname:
           type: string
           description: The organization name
           example: my-organization
         role:
-          type: string
           description: The role of the member
-          enum:
-            - USER
-            - ADMIN
           example: ADMIN
+          enum:
+            - ADMIN
+            - USER
+          type: string
         username:
           type: string
           nullable: true
@@ -2557,6 +2566,7 @@ components:
         - inviteEmail
         - orgname
         - role
+        - username
         - createdAt
         - id
     UserEntity:
@@ -2650,44 +2660,44 @@ components:
     CreateOrganizationDto:
       type: object
       properties:
-        billingEmail:
-          type: string
-          format: email
-          description: The billing email to use for the organization
-          example: example@test.com
         orgname:
           type: string
-          description: The name of the organization to create
+          description: The name of the organization
           example: organization-name
+        billingEmail:
+          type: string
+          description: The billing email to use for the organization
+          example: example@test.com
+          format: email
       required:
-        - billingEmail
         - orgname
+        - billingEmail
     OrganizationEntity:
       type: object
       properties:
         billingEmail:
           type: string
-          format: email
           description: The billing email to use for the organization
           example: example@test.com
+          format: email
         credits:
           type: number
           description: The number of credits you have remaining for this organization
           example: 500000
         orgname:
           type: string
-          description: The name of the organization to create
+          description: The name of the organization
           example: organization-name
         plan:
-          type: string
           description: The plan that the organization is subscribed to
+          example: FREE
           enum:
             - FREE
             - BASIC
             - STANDARD
             - PREMIUM
             - UNLIMITED
-          example: FREE
+          type: string
         createdAt:
           format: date-time
           type: string
@@ -2709,9 +2719,9 @@ components:
       properties:
         billingEmail:
           type: string
-          format: email
           description: The billing email to use for the organization
           example: example@test.com
+          format: email
       required:
         - billingEmail
     BillingUrlEntity:
@@ -2733,13 +2743,12 @@ components:
         description:
           type: string
           nullable: true
+          description: The description of the plan
           example: A plan for a small business
         id:
           type: string
           description: The ID of the plan
           example: prod_1234567890
-        metadata:
-          type: object
         name:
           type: string
           description: The name of the plan
@@ -2748,20 +2757,21 @@ components:
           type: string
           description: The ID of the price associated with the plan
           example: price_1234567890
-        priceMetadata:
-          type: object
         recurring:
           type: object
           nullable: true
+          description: The interval of the plan
         unitAmount:
           type: number
           description: The amount in cents to be charged on the interval specified
           example: 1000
       required:
         - currency
+        - description
         - id
         - name
         - priceId
+        - recurring
         - unitAmount
     Address:
       type: object
@@ -2888,7 +2898,7 @@ components:
           example: cus_J0a1b2c3d4e5f6g7h8i9
         id:
           type: string
-          description: Unique identifier for the payment method
+          description: Unique identifier for the payment method.
           example: pm_1J2Y3A4B5C6D7E8F9G0H
         type:
           type: string
@@ -2903,88 +2913,87 @@ components:
     CreateToolDto:
       type: object
       properties:
-        inputType:
-          type: string
-          description: The tools input type
-          enum:
-            - TEXT
-            - IMAGE
-            - VIDEO
-            - AUDIO
-          example: TEXT
         name:
           type: string
-          description: The tool's name
-          example: extract-text
-        outputType:
-          type: string
-          description: The tools output type
-          enum:
-            - TEXT
-            - IMAGE
-            - VIDEO
-            - AUDIO
-          example: TEXT
-        toolBase:
-          type: string
-          description: The tool's base path
+          description: The tool name
           example: extract-text
         description:
           type: string
           description: The tool description
+        inputType:
+          type: string
+          description: The tools input type
+          example: TEXT
+          enum:
+            - TEXT
+            - IMAGE
+            - AUDIO
+            - VIDEO
+        outputType:
+          type: string
+          description: The tools output type
+          example: TEXT
+          enum:
+            - TEXT
+            - IMAGE
+            - AUDIO
+            - VIDEO
+        toolBase:
+          type: string
+          description: The base of the tool
+          example: extract-text
       required:
-        - inputType
         - name
+        - description
+        - inputType
         - outputType
         - toolBase
-        - description
     UpdateToolDto:
       type: object
       properties:
-        inputType:
-          type: string
-          description: The tools input type
-          enum:
-            - TEXT
-            - IMAGE
-            - VIDEO
-            - AUDIO
-          example: TEXT
         name:
           type: string
-          description: The tool's name
-          example: extract-text
-        outputType:
-          type: string
-          description: The tools output type
-          enum:
-            - TEXT
-            - IMAGE
-            - VIDEO
-            - AUDIO
-          example: TEXT
-        toolBase:
-          type: string
-          description: The tool's base path
+          description: The tool name
           example: extract-text
         description:
           type: string
           description: The tool description
+        inputType:
+          type: string
+          description: The tools input type
+          example: TEXT
+          enum:
+            - TEXT
+            - IMAGE
+            - AUDIO
+            - VIDEO
+        outputType:
+          type: string
+          description: The tools output type
+          example: TEXT
+          enum:
+            - TEXT
+            - IMAGE
+            - AUDIO
+            - VIDEO
+        toolBase:
+          type: string
+          description: The base of the tool
+          example: extract-text
     CreateApiTokenDto:
       type: object
       properties:
         role:
           type: string
           description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
           example: ADMIN
+          enum:
+            - ADMIN
+            - USER
         domains:
           type: string
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
-          default: '*'
         name:
           type: string
           description: The name of the API token
@@ -2995,18 +3004,10 @@ components:
     ApiTokenEntity:
       type: object
       properties:
-        role:
-          type: string
-          description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
-          example: ADMIN
         domains:
           type: string
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
-          default: '*'
         key:
           type: string
           description: The API token key. This will only be shown once
@@ -3018,6 +3019,13 @@ components:
           type: string
           description: The organization name
           example: my-organization
+        role:
+          description: The role of the API token
+          example: ADMIN
+          enum:
+            - ADMIN
+            - USER
+          type: string
         username:
           type: string
           description: The username of the user who owns this API token
@@ -3032,11 +3040,11 @@ components:
           description: The ID of the item
           example: item-id
       required:
-        - role
         - domains
         - key
         - name
         - orgname
+        - role
         - username
         - createdAt
         - id
@@ -3046,15 +3054,14 @@ components:
         role:
           type: string
           description: The role of the API token
-          enum:
-            - USER
-            - ADMIN
           example: ADMIN
+          enum:
+            - ADMIN
+            - USER
         domains:
           type: string
           description: The domains that can access this API token
           example: archesai.com,localhost:3000
-          default: '*'
         name:
           type: string
           description: The name of the API token
@@ -3063,48 +3070,50 @@ components:
       properties:
         inviteEmail:
           type: string
-          description: The invited email of this member
+          description: The email of the invited member
           example: invited-user@archesai.com
+          format: email
         role:
           type: string
           description: The role of the member
-          enum:
-            - USER
-            - ADMIN
           example: ADMIN
+          enum:
+            - ADMIN
+            - USER
       required:
         - inviteEmail
         - role
     UpdateMemberDto:
       type: object
       properties:
-        inviteEmail:
-          type: string
-          description: The invited email of this member
-          example: invited-user@archesai.com
         role:
           type: string
           description: The role of the member
-          enum:
-            - USER
-            - ADMIN
           example: ADMIN
+          enum:
+            - ADMIN
+            - USER
+        inviteEmail:
+          type: string
+          description: The email of the invited member
+          example: invited-user@archesai.com
+          format: email
     CreateLabelDto:
       type: object
       properties:
         name:
           type: string
-          default: New Chat
           description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
+          example: What are the morals of the story in Aesops Fables?
+      required:
+        - name
     LabelEntity:
       type: object
       properties:
         name:
           type: string
-          default: New Chat
           description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
+          example: What are the morals of the story in Aesops Fables?
         orgname:
           type: string
           description: The organization name
@@ -3119,6 +3128,7 @@ components:
           description: The ID of the item
           example: item-id
       required:
+        - name
         - orgname
         - createdAt
         - id
@@ -3127,22 +3137,22 @@ components:
       properties:
         name:
           type: string
-          default: New Chat
           description: The chat label name
-          example: What are the morals of the story in Aesop's Fables?
+          example: What are the morals of the story in Aesops Fables?
     PathDto:
       type: object
       properties:
         isDir:
           type: boolean
-          default: false
           description: Whether or not this path points to a directory
           example: false
+          default: false
         path:
           type: string
           description: The path that the file should upload to
           example: /location/in/storage
       required:
+        - isDir
         - path
     ReadUrlDto:
       type: object
@@ -3150,7 +3160,7 @@ components:
         read:
           type: string
           description: >-
-            A read-only url that you can use to download the file from secure
+            The read-only url that you can use to download the file from secure
             storage
           example: www.example.com?token=read-token
       required:
@@ -3167,60 +3177,61 @@ components:
     StorageItemDto:
       type: object
       properties:
-        createdAt:
-          format: date-time
-          type: string
-          description: Whether or not this is a directory
-          example: true
-        id:
-          type: string
-          description: The id of the storage item
-          example: '14'
         isDir:
           type: boolean
           description: Whether or not this is a directory
           example: true
         name:
           type: string
-          description: The path that the file is located in
+          description: The path of the storage item
           example: /location/in/storage
         size:
           type: number
           description: The size of the item in bytes
           example: 12341234
+        createdAt:
+          format: date-time
+          type: string
+          description: The date that this item was created
+          example: '2023-07-11T21:09:20.895Z'
+        id:
+          type: string
+          description: The ID of the item
+          example: item-id
       required:
-        - createdAt
-        - id
         - isDir
         - name
         - size
+        - createdAt
+        - id
     CreateContentDto:
       type: object
       properties:
+        labels:
+          description: The labels to associate with the content
+          example:
+            - label-1
+            - label-2
+          default: []
+          type: array
+          items:
+            type: string
         name:
           type: string
           description: The content's name
           example: my-file.pdf
-        text:
-          type: string
-          nullable: true
-          description: The content's text, if TEXT content
-          example: Hello world. I am a text.
         url:
           type: string
           nullable: true
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
-        labels:
-          default: []
-          description: The labels to associate with the content
-          example:
-            - label-1
-            - label-2
-          type: array
-          items:
-            type: string
+        text:
+          type: string
+          nullable: true
+          description: The content's text, if TEXT content
+          example: Hello world. I am a text.
       required:
+        - labels
         - name
     ContentEntity:
       type: object
@@ -3307,9 +3318,21 @@ components:
           description: The ID of the item
           example: item-id
       required:
+        - children
+        - consumedBy
         - credits
+        - description
+        - labels
+        - mimeType
         - name
         - orgname
+        - parent
+        - parentId
+        - previewImage
+        - producedBy
+        - producedById
+        - text
+        - url
         - createdAt
         - id
     UpdateContentDto:
@@ -3319,35 +3342,58 @@ components:
           type: string
           description: The content's name
           example: my-file.pdf
-        text:
-          type: string
-          nullable: true
-          description: The content's text, if TEXT content
-          example: Hello world. I am a text.
         url:
           type: string
           nullable: true
           description: The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
           example: https://example.com/example.mp4
+        text:
+          type: string
+          nullable: true
+          description: The content's text, if TEXT content
+          example: Hello world. I am a text.
         labels:
-          default: []
           description: The labels to associate with the content
           example:
             - label-1
             - label-2
+          default: []
           type: array
           items:
             type: string
     CreateRunDto:
       type: object
       properties:
+        contentIds:
+          description: >-
+            If using already created content, specify the content IDs to use as
+            input for the run.
+
+            example: ['content-id-1', 'content-id-2']
+          type: array
+          items:
+            type: string
+        text:
+          type: string
+          description: >-
+            If using direct text input, specify the text to use as input for the
+            run. It will automatically be added as content.
+
+            example: 'This is the text to use as input for the run.'
+        url:
+          type: string
+          description: >-
+            If using a URL as input, specify the URL to use as input for the
+            run. It will automatically be added as content.
+
+            example: 'https://example.com'
         runType:
           type: string
           description: The type of run, either an individual tool run or a pipeline run
-          enum:
-            - PIPELINE_RUN
-            - TOOL_RUN
           example: TOOL_RUN
+          enum:
+            - TOOL_RUN
+            - PIPELINE_RUN
         pipelineId:
           type: string
           nullable: true
@@ -3358,33 +3404,17 @@ components:
           nullable: true
           description: The tool ID associated with the run, if applicable
           example: 123e4567-e89b-12d3-a456-426614174000
-        contentIds:
-          description: >-
-            If using already created content, specify the content IDs to use as
-            input for the run.
-          example:
-            - content-id-1
-            - content-id-2
-          type: array
-          items:
-            type: string
-        text:
-          type: string
-          description: >-
-            If using direct text input, specify the text to use as input for the
-            run. It will automatically be added as content.
-          example: This is the text to use as input for the run.
-        url:
-          type: string
-          description: >-
-            If using direct text input, specify the text to use as input for the
-            run. It will automatically be added as content.
-          example: This is a url to use as input for the run.
       required:
         - runType
     RunEntity:
       type: object
       properties:
+        completedAt:
+          format: date-time
+          type: string
+          nullable: true
+          description: The timestamp when the run completed
+          example: '2024-11-05T11:42:02.258Z'
         error:
           type: string
           nullable: true
@@ -3410,44 +3440,37 @@ components:
           nullable: true
           description: The pipeline ID associated with the run, if applicable
           example: 123e4567-e89b-12d3-a456-426614174000
-        runType:
-          type: string
-          description: The type of run, either an individual tool run or a pipeline run
-          enum:
-            - PIPELINE_RUN
-            - TOOL_RUN
-          example: TOOL_RUN
-        status:
-          type: string
-          description: The status of the run
-          enum:
-            - QUEUED
-            - PROCESSING
-            - COMPLETE
-            - ERROR
-          example: QUEUED
-        toolId:
-          type: string
-          nullable: true
-          description: The tool ID associated with the run, if applicable
-          example: 123e4567-e89b-12d3-a456-426614174000
-        completedAt:
-          format: date-time
-          type: string
-          nullable: true
-          description: The timestamp when the run completed
-          example: '2024-11-05T11:42:02.258Z'
         progress:
           type: number
           description: The progress of the run as a percentage
           example: 50.5
-          default: 0
+        runType:
+          description: The type of run, either an individual tool run or a pipeline run
+          example: TOOL_RUN
+          enum:
+            - TOOL_RUN
+            - PIPELINE_RUN
+          type: string
         startedAt:
           format: date-time
           type: string
           nullable: true
           description: The timestamp when the run started
           example: '2024-11-05T11:42:02.258Z'
+        status:
+          description: The status of the run
+          example: QUEUED
+          enum:
+            - QUEUED
+            - PROCESSING
+            - COMPLETE
+            - ERROR
+          type: string
+        toolId:
+          type: string
+          nullable: true
+          description: The tool ID associated with the run, if applicable
+          example: 123e4567-e89b-12d3-a456-426614174000
         createdAt:
           format: date-time
           type: string
@@ -3458,12 +3481,17 @@ components:
           description: The ID of the item
           example: item-id
       required:
-        - inputs
-        - runType
-        - status
         - completedAt
+        - error
+        - inputs
+        - name
+        - outputs
+        - pipelineId
         - progress
+        - runType
         - startedAt
+        - status
+        - toolId
         - createdAt
         - id
     FieldFieldQuery:
@@ -3471,9 +3499,12 @@ components:
       properties:
         field:
           type: string
-          description: Field to filter by
+          description: The field to filter by
+          example: createdAt
         operator:
-          default: contains
+          type: string
+          description: The operator to use for filtering
+          example: contains
           enum:
             - contains
             - endsWith
@@ -3484,24 +3515,21 @@ components:
             - not
             - some
             - startsWith
-          type: string
-          description: Operator to use for filtering
         value:
-          description: Value to filter for
-          oneOf:
-            - type: string
-            - items:
-                type: string
-              type: array
+          type: object
+          description: The value to filter by
+          example: '2021-01-01'
       required:
         - field
+        - operator
         - value
     AggregateFieldQuery:
       type: object
       properties:
         field:
           type: string
-          description: Field to aggregate by
+          description: The field to aggregate by
+          example: createdAt
         granularity:
           type: string
           description: The granularity to use for ranged aggregates
@@ -3517,13 +3545,15 @@ components:
           example: count
       required:
         - field
+        - granularity
         - type
     AggregateFieldResult:
       type: object
       properties:
         field:
           type: string
-          description: Field to aggregate by
+          description: The field to aggregate by
+          example: createdAt
         granularity:
           description: The granularity to use for ranged aggregates
           example: day
@@ -3543,6 +3573,7 @@ components:
           example: 10
       required:
         - field
+        - granularity
         - type
         - value
     Metadata:

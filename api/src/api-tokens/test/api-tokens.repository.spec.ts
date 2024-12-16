@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../prisma/prisma.service'
 import { ApiTokenRepository } from '../api-token.repository'
 import { CreateApiTokenDto } from '../dto/create-api-token.dto'
-import { ApiTokenModel } from '../entities/api-token.entity'
+import { ApiTokenModel, RoleTypeEnum } from '../entities/api-token.entity'
 
 describe('ApiTokenRepository', () => {
   let repository: ApiTokenRepository
@@ -35,7 +35,7 @@ describe('ApiTokenRepository', () => {
       const createApiTokenDto: CreateApiTokenDto = {
         domains: '*',
         name: 'Test Token',
-        role: 'USER'
+        role: RoleTypeEnum.USER
       }
       const additionalData = {
         id: 'test-id',

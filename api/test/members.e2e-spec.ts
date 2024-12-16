@@ -38,7 +38,8 @@ describe('Members', () => {
 
     orgname = (await getUser(app, accessToken)).defaultOrgname
 
-    await usersService.setEmailVerified(credentials.email)
+    const userEntity = await getUser(app, accessToken)
+    await usersService.setEmailVerified(userEntity.id)
     await organizationsService.setPlan(orgname, 'UNLIMITED')
   })
 
@@ -65,10 +66,12 @@ describe('Members', () => {
     await joinOrganization(invitedUserToken, 403) // Not verified
     await joinOrganization(uninvitedUserToken, 403) // Not verified
 
-    await usersService.setEmailVerified(uninvitedUser.email)
+    const uninvitedUserEntity = await getUser(app, uninvitedUserToken)
+    await usersService.setEmailVerified(uninvitedUserEntity.id)
     await joinOrganization(uninvitedUserToken, 404) // Uninvited
 
-    await usersService.setEmailVerified(invitedUser.email)
+    const invitedUserEntity = await getUser(app, invitedUserToken)
+    await usersService.setEmailVerified(invitedUserEntity.id)
     await joinOrganization(invitedUserToken, 201) // Verified and invited
 
     // Verify invited user added as member

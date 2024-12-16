@@ -1,5 +1,5 @@
 import { CreateToolDto } from '@/src/tools/dto/create-tool.dto'
-import { ToolEntity } from '@/src/tools/entities/tool.entity'
+import { ToolEntity, ToolIOTypeEnum } from '@/src/tools/entities/tool.entity'
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 
@@ -41,9 +41,9 @@ describe('Tools', () => {
   it('should create a new tool', async () => {
     const newTool: CreateToolDto = {
       description: 'A new tool for testing purposes',
-      inputType: 'TEXT',
+      inputType: ToolIOTypeEnum.TEXT,
       name: 'New Tool',
-      outputType: 'TEXT',
+      outputType: ToolIOTypeEnum.TEXT,
       toolBase: 'extract-text'
     }
 
@@ -53,9 +53,9 @@ describe('Tools', () => {
   it('should update an existing tool', async () => {
     const newTool: CreateToolDto = {
       description: 'A new tool for testing purposes',
-      inputType: 'TEXT',
+      inputType: ToolIOTypeEnum.TEXT,
       name: 'New Tool',
-      outputType: 'TEXT',
+      outputType: ToolIOTypeEnum.TEXT,
       toolBase: 'extract-text'
     }
 

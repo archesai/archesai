@@ -76,9 +76,7 @@ export default function Playground() {
       <div
         className={cn(
           'flex flex-col gap-1 transition-all',
-          !hasInputs
-            ? 'h-auto w-full items-center justify-center py-24'
-            : 'w-1/3 gap-3'
+          !hasInputs ? 'h-auto max-h-0 w-full items-center' : 'w-1/3 gap-3'
         )}
       >
         {selectedRunId && run && <RunStatusButton run={run} />}

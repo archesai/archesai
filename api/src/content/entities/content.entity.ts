@@ -1,13 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger'
 import { Content as _PrismaContent } from '@prisma/client'
-import { Exclude, Expose } from 'class-transformer'
-import { IsNumber, IsString } from 'class-validator'
 
 import {
   _PrismaSubItemModel,
   SubItemEntity
 } from '../../common/entities/base-sub-item.entity'
 import { BaseEntity } from '../../common/entities/base.entity'
+import { Expose } from 'class-transformer'
+import { IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 export type ContentModel = _PrismaContent & {
   children: _PrismaSubItemModel[]
@@ -17,141 +16,135 @@ export type ContentModel = _PrismaContent & {
   producedBy: _PrismaSubItemModel
 }
 
-@Exclude()
 export class ContentEntity extends BaseEntity implements ContentModel {
-  @ApiProperty({
-    description: 'The child content, if any',
-    required: false,
-    type: [SubItemEntity]
+  /**
+   * The child content, if any
+   */
+  @ValidateNested({
+    each: true
   })
   @Expose()
   children: SubItemEntity[]
 
-  @ApiProperty({
-    description: 'The tool runs that consumed this content, if any',
-    required: false,
-    type: [SubItemEntity]
+  /**
+   * The tool runs that consumed this content, if any
+   */
+  @ValidateNested({
+    each: true
   })
   @Expose()
   consumedBy: SubItemEntity[]
 
-  @ApiProperty({
-    description: 'The number of credits used to process this content',
-    example: 0
-  })
-  @Expose()
+  /**
+   * The number of credits used to process this content
+   * @example 0
+   */
   @IsNumber()
+  @Expose()
   credits: number
 
-  @ApiProperty({
-    description: "The content's description",
-    example: 'my-file.pdf',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The content's description
+   * @example 'my-file.pdf'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   description: null | string
 
-  @ApiProperty({
-    description: "The content's labels",
-    required: false,
-    type: [SubItemEntity]
+  /**
+   * The content's labels
+   */
+  @ValidateNested({
+    each: true
   })
   @Expose()
   labels: SubItemEntity[]
 
-  @ApiProperty({
-    description: 'The MIME type of the content',
-    example: 'application/pdf',
-    required: false,
-    type: String
-  })
+  /**
+   * The MIME type of the content
+   * @example 'application/pdf'
+   */
+  @IsOptional()
+  @IsString()
   @Expose()
   mimeType: null | string
 
-  @ApiProperty({
-    description: "The content's name",
-    example: 'my-file.pdf'
-  })
-  @Expose()
+  /**
+   * The content's name
+   * @example 'my-file.pdf'
+   */
   @IsString()
+  @Expose()
   name: string
 
-  @ApiProperty({
-    description: 'The organization name',
-    example: 'my-organization'
-  })
-  @Expose()
+  /**
+   * The organization name
+   * @example 'my-organization'
+   */
   @IsString()
+  @Expose()
   orgname: string
 
-  @ApiProperty({
-    description: 'The parent content, if any',
-    required: false,
-    type: SubItemEntity
-  })
+  /**
+   * The parent content, if any
+   */
+  @IsOptional()
+  @ValidateNested()
   @Expose()
   parent: null | SubItemEntity
 
-  @ApiProperty({
-    description:
-      'The parent content ID, if this content is a child of another content',
-    example: 'content-id',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The parent content ID, if this content is a child of another content
+   * @example 'content-id'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   parentId: null | string
 
-  @ApiProperty({
-    description: 'The preview image of the content',
-    example: 'https://preview-image.com/example.png',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The preview image of the content
+   * @example 'https://preview-image.com/example.png'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   previewImage: null | string
 
-  @ApiProperty({
-    description: 'The toolRun that produced this content, if any',
-    required: false,
-    type: SubItemEntity
-  })
+  /**
+   * The toolRun that produced this content, if any
+   */
+  @IsOptional()
+  @ValidateNested()
   @Expose()
   producedBy: null | SubItemEntity
 
-  @ApiProperty({
-    description: 'The ID of the toolRun that produced this content, if any',
-    example: 'toolRun-id',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The ID of the toolRun that produced this content, if any
+   * @example 'toolRun-id'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   producedById: null | string
 
-  @ApiProperty({
-    description: "The content's text, if TEXT content",
-    example: 'Hello world. I am a text.',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The content's text, if TEXT content
+   * @example 'Hello world. I am a text.'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   text: null | string
 
-  @ApiProperty({
-    description:
-      'The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content',
-    example: 'https://example.com/example.mp4',
-    required: false,
-    type: String
-  })
-  @Expose()
+  /**
+   * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
+   * @example 'https://example.com/example.mp4'
+   */
+  @IsOptional()
   @IsString()
+  @Expose()
   url: null | string
 
   constructor(content: ContentModel) {

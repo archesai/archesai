@@ -11,6 +11,7 @@ import { LabelEntity } from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
 import { ListMinus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { Badge } from '../ui/badge'
 
 export default function LabelDataTable() {
   const { defaultOrgname } = useAuth()
@@ -34,7 +35,7 @@ export default function LabelDataTable() {
                     router.push(`/chatbots/chat?labelId=${row.original.id}`)
                   }
                 >
-                  {row.original.name}
+                  <Badge variant={'secondary'}>{row.original.name}</Badge>
                 </span>
               </div>
             )

@@ -210,6 +210,7 @@ export class S3StorageProvider implements StorageService {
         items.push(
           new StorageItemDto({
             createdAt: null,
+            updatedAt: null,
             id: commonPrefix.Prefix,
             isDir: true,
             name: path.basename(commonPrefix.Prefix.replace(/\/$/, '')),
@@ -227,6 +228,7 @@ export class S3StorageProvider implements StorageService {
         items.push(
           new StorageItemDto({
             createdAt: content.LastModified,
+            updatedAt: content.LastModified,
             id: content.Key,
             isDir: false,
             name: path.basename(content.Key),

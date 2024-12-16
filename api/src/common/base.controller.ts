@@ -1,5 +1,4 @@
-// base.controller.mixin.ts
-import { Type } from '@nestjs/common'
+import { Type, UsePipes } from '@nestjs/common'
 import { Body, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
@@ -7,6 +6,7 @@ import { BaseService } from './base.service'
 import { ApiPaginatedResponse } from './decorators/paginated.decorator'
 import { PaginatedDto } from './dto/paginated.dto'
 import { SearchQueryDto } from './dto/search-query.dto'
+import { AbstractValidationPipe } from './pipes/abstract-validation.pipe'
 
 export function BaseController<
   Entity,
@@ -29,6 +29,7 @@ export function BaseController<
       status: 201,
       type: EntityClass
     })
+    @UsePipes(new AbstractValidationPipe({ body: CreateDtoClass }))
     @Post()
     async create(
       @Param('orgname') orgname: string,
@@ -40,6 +41,7 @@ export function BaseController<
 
     @ApiOperation({ summary: `Get all ${itemType}s` })
     @ApiPaginatedResponse(EntityClass)
+    @UsePipes(new AbstractValidationPipe({}))
     @Get()
     async findAll(
       @Param('orgname') orgname: string,
@@ -54,6 +56,7 @@ export function BaseController<
       status: 200,
       type: EntityClass
     })
+    @UsePipes(new AbstractValidationPipe({}))
     @Get(':id')
     async findOne(
       @Param('orgname') orgname: string,
@@ -67,6 +70,7 @@ export function BaseController<
       description: `${itemType} deleted successfully.`,
       status: 200
     })
+    @UsePipes(new AbstractValidationPipe({}))
     @Delete(':id')
     async remove(
       @Param('orgname') orgname: string,
@@ -82,6 +86,11 @@ export function BaseController<
       status: 200,
       type: EntityClass
     })
+    @UsePipes(
+      new AbstractValidationPipe({
+        body: UpdateDtoClass
+      })
+    )
     @Patch(':id')
     async update(
       @Param('orgname') orgname: string,

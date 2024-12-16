@@ -74,18 +74,19 @@ export type PipelinesControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -1711,18 +1712,19 @@ export type ToolsControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -2049,18 +2051,19 @@ export type ApiTokensControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -2443,18 +2446,19 @@ export type MembersControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -2723,7 +2727,7 @@ export type LabelsControllerCreatePathParams = {
 export type LabelsControllerCreateError = Fetcher.ErrorWrapper<undefined>
 
 export type LabelsControllerCreateVariables = {
-  body?: Schemas.CreateLabelDto
+  body: Schemas.CreateLabelDto
   pathParams: LabelsControllerCreatePathParams
 } & ArchesApiContext['fetcherOptions']
 
@@ -2781,18 +2785,19 @@ export type LabelsControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -3365,18 +3370,19 @@ export type ContentControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *
@@ -3703,18 +3709,19 @@ export type RunsControllerFindAllQueryParams = {
    */
   filters?: any[]
   /**
-   * The limit of the number of results returned
-   *
-   * @minimum 1
-   * @default 10
-   */
-  limit?: number
-  /**
    * The end date to search to
    *
+   * @format date-time
    * @example 2022-01-01
    */
   endDate?: string
+  /**
+   * The limit of the number of results returned
+   *
+   * @default 10
+   * @example 10
+   */
+  limit?: number
   /**
    * The offset of the returned results
    *

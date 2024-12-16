@@ -1,7 +1,13 @@
 import { ApiHideProperty } from '@nestjs/swagger'
 import { AuthProvider, Member, User } from '@prisma/client'
-import { Exclude, Expose } from 'class-transformer'
-import { IsEmail, IsString, MinLength } from 'class-validator'
+import { Expose } from 'class-transformer'
+import {
+  IsBoolean,
+  IsEmail,
+  IsString,
+  MinLength,
+  ValidateNested
+} from 'class-validator'
 
 import { BaseEntity } from '../../common/entities/base.entity'
 import { MemberEntity } from '../../members/entities/member.entity'
@@ -16,6 +22,7 @@ export class UserEntity extends BaseEntity implements User {
   /**
    * The memberships of the currently signed-in user
    */
+  @ValidateNested({ each: true })
   @Expose()
   authProviders: AuthProviderEntity[]
 
@@ -23,13 +30,15 @@ export class UserEntity extends BaseEntity implements User {
    * Whether or not the user is deactivated
    * @example false
    */
+  @IsBoolean()
   @Expose()
-  deactivated!: boolean
+  deactivated: boolean
 
   /**
    * The user's default organization name
    * @example 'my-organization'
    */
+  @IsString()
   @Expose()
   defaultOrgname: string
 
@@ -37,6 +46,7 @@ export class UserEntity extends BaseEntity implements User {
    * The user's display name
    * @example 'John Smith'
    */
+  @IsString()
   @Expose()
   displayName: string
 
@@ -44,20 +54,22 @@ export class UserEntity extends BaseEntity implements User {
    * The user's e-mail
    * @example 'example@archesai.com'
    */
-  @Expose()
   @IsEmail()
-  email!: string
+  @Expose()
+  email: string
 
   /**
    * Whether or not the user's e-mail has been verified
    */
+  @IsBoolean()
   @Expose()
-  emailVerified!: boolean
+  emailVerified: boolean
 
   /**
    * The user's first name
    * @example 'John'
    */
+  @IsString()
   @Expose()
   firstName: string
 
@@ -65,37 +77,39 @@ export class UserEntity extends BaseEntity implements User {
    * The user's last name
    * @example 'Smith'
    */
+  @IsString()
   @Expose()
   lastName: string
 
   /**
    * The memberships of the currently signed-in user
    */
+  @ValidateNested({ each: true })
   @Expose()
   memberships: MemberEntity[]
 
   @ApiHideProperty()
-  @Exclude()
   password: string
 
   /**
    * The user's photo URL
    * @example '/avatar.png'
    */
-  @Expose()
   @IsString()
-  photoUrl!: string
+  @Expose()
+  photoUrl: string
+
   @ApiHideProperty()
-  @Exclude()
   refreshToken: string
 
   /**
    * The user's username
    * @example 'jonathan'
    */
-  @Expose()
+  @IsString()
   @MinLength(5)
-  username!: string
+  @Expose()
+  username: string
 
   constructor(user: UserWithMembershipsAndAuthProvidersModel) {
     super()

@@ -26,6 +26,7 @@ import * as z from 'zod'
 import { DataSelector } from '../data-selector'
 import ImportCard from '../import-card'
 import { Textarea } from '../ui/textarea'
+import { stringToColor } from '@/lib/utils'
 
 const formSchema = z.object({
   contentIds: z.array(z.string()).optional(),
@@ -77,23 +78,28 @@ export default function RunForm() {
           icons={[
             {
               Icon: siteConfig.toolBaseIcons['extract-text'],
-              name: 'Extract Text'
+              name: 'Extract Text',
+              color: stringToColor('extract-text')
             },
             {
               Icon: siteConfig.toolBaseIcons['create-embeddings'],
-              name: 'Create Embeddings'
+              name: 'Create Embeddings',
+              color: stringToColor('create-embeddings')
             },
             {
               Icon: siteConfig.toolBaseIcons['summarize'],
-              name: 'Summarize'
+              name: 'Summarize',
+              color: stringToColor('summarize')
             },
             {
               Icon: siteConfig.toolBaseIcons['text-to-image'],
-              name: 'Text to Image'
+              name: 'Text to Image',
+              color: stringToColor('text-to-image')
             },
             {
               Icon: siteConfig.toolBaseIcons['text-to-speech'],
-              name: 'Text to Speech'
+              name: 'Text to Speech',
+              color: stringToColor('text-to-speech')
             }
           ]}
           isMultiSelect={false}

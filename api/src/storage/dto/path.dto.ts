@@ -1,21 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { Expose } from 'class-transformer'
 import { IsBoolean, IsOptional, IsString } from 'class-validator'
 
 export class PathDto {
-  @ApiProperty({
-    default: false,
-    description: 'Whether or not this path points to a directory',
-    example: false,
-    required: false
-  })
-  @IsBoolean()
+  /**
+   * Whether or not this path points to a directory
+   * @example false
+   */
   @IsOptional()
-  isDir?: boolean = false
+  @IsBoolean()
+  @Expose()
+  isDir: boolean = false
 
-  @ApiProperty({
-    description: 'The path that the file should upload to',
-    example: '/location/in/storage'
-  })
+  /**
+   * The path that the file should upload to
+   * @example '/location/in/storage'
+   */
   @IsString()
+  @Expose()
   path: string
 }

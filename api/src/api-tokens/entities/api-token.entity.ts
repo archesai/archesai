@@ -1,10 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { ApiToken as _PrismaApiToken, RoleType } from '@prisma/client'
-import { IsEnum, IsString } from 'class-validator'
+import { ApiToken as _PrismaApiToken } from '@prisma/client'
 
-import { BaseEntity } from '../../common/entities/base.entity'
+import { BaseEntity } from '@/src/common/entities/base.entity'
+import { IsEnum, IsString } from 'class-validator'
+import { Expose } from 'class-transformer'
 
 export type ApiTokenModel = _PrismaApiToken
+
+export enum RoleTypeEnum {
+  ADMIN = 'ADMIN',
+  USER = 'USER'
+}
 
 export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
   /**
@@ -12,12 +17,15 @@ export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
    * @example archesai.com,localhost:3000
    */
   @IsString()
-  domains: string = '*'
+  @Expose()
+  domains: string
 
   /**
    * The API token key. This will only be shown once
    * @example ********1234567890
    */
+  @IsString()
+  @Expose()
   key: string
 
   /**
@@ -25,26 +33,31 @@ export class ApiTokenEntity extends BaseEntity implements ApiTokenModel {
    * @example My Token
    */
   @IsString()
+  @Expose()
   name: string
 
   /**
    * The organization name
    * @example my-organization
    */
+  @IsString()
+  @Expose()
   orgname: string
 
-  @ApiProperty({
-    description: 'The role of the API token',
-    enum: RoleType,
-    example: RoleType.ADMIN
-  })
-  @IsEnum(RoleType)
-  role: RoleType
+  /**
+   * The role of the API token
+   * @example ADMIN
+   */
+  @IsEnum(RoleTypeEnum)
+  @Expose()
+  role: RoleTypeEnum
 
   /**
    * The username of the user who owns this API token
    * @example jonathan
    */
+  @IsString()
+  @Expose()
   username: string
 
   constructor(apiToken: ApiTokenModel) {

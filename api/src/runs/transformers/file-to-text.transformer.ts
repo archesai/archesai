@@ -58,7 +58,8 @@ export const transformFileToText: IToolRunProcess = async (
     sanitizedTextContent.map((data, i) =>
       contentService.create(content.orgname, {
         name: `${content.name} - Page ${data.page} - Index ${i}`,
-        text: data.text
+        text: data.text,
+        labels: []
       })
     )
   )

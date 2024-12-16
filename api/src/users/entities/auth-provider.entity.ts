@@ -1,40 +1,41 @@
 import { BaseEntity } from '@/src/common/entities/base.entity'
-import { ApiProperty } from '@nestjs/swagger'
-import {
-  AuthProvider as _PrismaAuthProvider,
-  AuthProviderType
-} from '@prisma/client'
+import { AuthProvider as _PrismaAuthProvider } from '@prisma/client'
 import { Expose } from 'class-transformer'
 import { IsEnum, IsString } from 'class-validator'
 
 export type AuthProviderModel = _PrismaAuthProvider
 
+export enum AuthProviderTypeEnum {
+  LOCAL = 'LOCAL',
+  FIREBASE = 'FIREBASE',
+  TWITTER = 'TWITTER'
+}
+
 export class AuthProviderEntity
   extends BaseEntity
   implements AuthProviderModel
 {
-  @ApiProperty({
-    description: "The auth provider's provider",
-    enum: AuthProviderType,
-    example: AuthProviderType.LOCAL
-  })
+  /**
+   * The auth provider's provider
+   * @example LOCAL
+   */
+  @IsEnum(AuthProviderTypeEnum)
   @Expose()
-  @IsEnum(AuthProviderType)
-  @IsString()
-  provider: AuthProviderType
+  provider: AuthProviderTypeEnum
 
-  @ApiProperty({
-    description: "The auth provider's provider ID"
-  })
-  @Expose()
+  /**
+   * The provider ID associated with the auth provider
+   */
   @IsString()
+  @Expose()
   providerId: string
 
-  @ApiProperty({
-    description: "The auth provider's user ID"
-  })
-  @Expose()
+  /**
+   * The user ID associated with the auth provider
+   * @example 123456
+   */
   @IsString()
+  @Expose()
   userId: string
 
   constructor(authProvider: AuthProviderModel) {

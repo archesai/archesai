@@ -1,49 +1,55 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
-import { Organization as _PrismaOrganization, PlanType } from '@prisma/client'
-import { Exclude, Expose } from 'class-transformer'
-import { IsEmail, IsEnum, IsNumber } from 'class-validator'
+import { ApiHideProperty } from '@nestjs/swagger'
+import { Organization as _PrismaOrganization } from '@prisma/client'
+import { Expose } from 'class-transformer'
+import { IsEmail, IsEnum, IsNumber, IsString } from 'class-validator'
 
 import { BaseEntity } from '../../common/entities/base.entity'
 
 export type OrganizationModel = _PrismaOrganization
 
-@Exclude()
+export enum PlanTypeEnum {
+  FREE = 'FREE',
+  BASIC = 'BASIC',
+  STANDARD = 'STANDARD',
+  PREMIUM = 'PREMIUM',
+  UNLIMITED = 'UNLIMITED'
+}
+
 export class OrganizationEntity
   extends BaseEntity
   implements OrganizationModel
 {
-  @ApiProperty({
-    description: 'The billing email to use for the organization',
-    example: 'example@test.com'
-  })
-  @Expose()
+  /**
+   * The billing email to use for the organization
+   * @example 'example@test.com'
+   */
   @IsEmail()
+  @Expose()
   billingEmail: string
 
-  @ApiProperty({
-    description:
-      'The number of credits you have remaining for this organization',
-    example: 500000
-  })
-  @Expose()
+  /**
+   * The number of credits you have remaining for this organization
+   * @example 500000
+   */
   @IsNumber()
+  @Expose()
   credits: number
 
-  @ApiProperty({
-    description: 'The name of the organization to create',
-    example: 'organization-name'
-  })
+  /**
+   * The name of the organization
+   * @example 'organization-name'
+   */
+  @IsString()
   @Expose()
   orgname: string
 
-  @ApiProperty({
-    description: 'The plan that the organization is subscribed to',
-    enum: PlanType,
-    example: PlanType.FREE
-  })
+  /**
+   * The plan that the organization is subscribed to
+   * @example FREE
+   */
+  @IsEnum(PlanTypeEnum)
   @Expose()
-  @IsEnum(PlanType)
-  plan: PlanType
+  plan: PlanTypeEnum
 
   @ApiHideProperty()
   stripeCustomerId: string

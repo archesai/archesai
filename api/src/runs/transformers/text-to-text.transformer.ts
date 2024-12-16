@@ -33,7 +33,8 @@ export const transformTextToText: IToolRunProcess = async (
 
   const summaryContent = await contentService.create(runInput[0].orgname, {
     name: 'Summary Tool - ' + runInput.map((x) => x.name).join(', '),
-    text: summary
+    text: summary,
+    labels: []
   })
 
   return [new ContentEntity(summaryContent)]

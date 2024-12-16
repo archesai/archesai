@@ -19,14 +19,28 @@ import { OrganizationEntity } from '../src/organizations/entities/organization.e
 import { UserEntity } from '../src/users/entities/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { AppModule } from './../src/app.module' // This enables path aliasing based on tsconfig.json
+import { createMock } from '@golevelup/ts-jest'
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule]
+    imports: [AppModule],
+    providers: [
+      {
+        provide: ConfigService,
+        useValue: createMock<ConfigService>()
+      }
+    ]
   }).compile()
   const app = moduleFixture.createNestApplication()
 
   const configService = app.get(ConfigService)
+  jest.spyOn(configService, 'get').mockImplementation((key: string) => {
+    if (key === 'FEATURE_EMAIL') {
+      return 'true'
+    } else {
+      return process.env[key]
+    }
+  })
 
   //  Setup Logger
   app.useLogger(app.get(Logger))
@@ -37,7 +51,11 @@ export const createApp = async () => {
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins[0] === '*'
+      ) {
         callback(null, true)
       } else {
         callback(new Error('Not allowed by CORS'))

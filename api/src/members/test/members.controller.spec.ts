@@ -1,4 +1,4 @@
-import { createRandomApiToken } from '@/prisma/factories/api-token.factory'
+import { createRandomMember } from '@/prisma/factories/member.factory'
 import { createRandomUser } from '@/prisma/factories/user.factory'
 import { CommonModule } from '@/src/common/common.module'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
@@ -7,18 +7,18 @@ import { APP_GUARD } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
 
-import { ApiTokensController } from '../api-tokens.controller'
-import { ApiTokensService } from '../api-tokens.service'
-import { CreateApiTokenDto } from '../dto/create-api-token.dto'
-import { RoleTypeEnum } from '../entities/api-token.entity'
+import { MembersController } from '../members.controller'
+import { MembersService } from '../members.service'
+import { CreateMemberDto } from '../dto/create-member.dto'
+import { RoleTypeEnum } from '../entities/member.entity'
 
-describe('ApiTokensController', () => {
+describe('MembersController', () => {
   let app: INestApplication
-  let mockedApiTokensService: DeepMocked<ApiTokensService>
+  let mockedMembersService: DeepMocked<MembersService>
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [ApiTokensController],
+      controllers: [MembersController],
       imports: [CommonModule],
       providers: [
         {
@@ -32,8 +32,8 @@ describe('ApiTokensController', () => {
           })
         },
         {
-          provide: ApiTokensService,
-          useValue: createMock<ApiTokensService>({
+          provide: MembersService,
+          useValue: createMock<MembersService>({
             create: jest.fn(),
             findAll: jest.fn(),
             findOne: jest.fn(),
@@ -47,7 +47,7 @@ describe('ApiTokensController', () => {
     app = moduleRef.createNestApplication()
     await app.init()
 
-    mockedApiTokensService = moduleRef.get(ApiTokensService)
+    mockedMembersService = moduleRef.get(MembersService)
   })
 
   afterAll(async () => {
@@ -55,23 +55,38 @@ describe('ApiTokensController', () => {
   })
 
   it('should be defined', () => {
-    expect(app.get(ApiTokensController)).toBeDefined()
-    expect(mockedApiTokensService).toBeDefined()
+    expect(app.get(MembersController)).toBeDefined()
+    expect(mockedMembersService).toBeDefined()
   })
 
-  it('POST /organizations/:orgname/api-tokens should call service.create', async () => {
+  it('POST /organizations/:orgname/members should validate role', async () => {
     const orgname = 'testOrg'
-    const createApiTokenDto: CreateApiTokenDto = {
-      domains: '*',
-      name: 'testToken',
+    const createMemberDto: any = {
+      inviteEmail: 'jonathan@gmail.com',
+      role: 'BADROLE' as any
+    }
+    const response = await request(app.getHttpServer())
+      .post(`/organizations/${orgname}/members`)
+      .set('Content-Type', 'application/json')
+      .send(createMemberDto)
+
+    expect(response.status).toBe(400)
+  })
+
+  it('POST /organizations/:orgname/members should call service.create', async () => {
+    const orgname = 'testOrg'
+    const createMemberDto: CreateMemberDto = {
+      inviteEmail: 'jonathan@gmail.com',
       role: RoleTypeEnum.ADMIN
     }
-    const mockedApiToken = createRandomApiToken(createApiTokenDto)
-    mockedApiTokensService.create.mockResolvedValue(mockedApiToken)
+    const mockedApiToken = createRandomMember({
+      role: RoleTypeEnum.ADMIN
+    })
+    mockedMembersService.create.mockResolvedValue(mockedApiToken)
 
     const response = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/api-tokens`)
-      .send(createApiTokenDto)
+      .post(`/organizations/${orgname}/members`)
+      .send(createMemberDto)
 
     expect(response.status).toBe(201)
     expect(response.body).toEqual({
@@ -80,17 +95,17 @@ describe('ApiTokensController', () => {
       updatedAt: undefined
     })
 
-    expect(mockedApiTokensService.create).toHaveBeenCalledWith(
+    expect(mockedMembersService.create).toHaveBeenCalledWith(
       orgname,
-      { domains: '*', name: 'testToken', role: RoleTypeEnum.ADMIN },
-      { username: 'testUser' }
+      createMemberDto,
+      []
     )
   })
 
-  it('GET /organizations/:orgname/api-tokens should call service.findAll', async () => {
+  it('GET /organizations/:orgname/members should call service.findAll', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomApiToken()
-    const mockedPaginatedApiTokens = {
+    const mockedApiToken = createRandomMember()
+    const mockedPaginatedMembers = {
       aggregates: [],
       metadata: {
         limit: 10,
@@ -99,15 +114,15 @@ describe('ApiTokensController', () => {
       },
       results: [mockedApiToken]
     }
-    mockedApiTokensService.findAll.mockResolvedValue(mockedPaginatedApiTokens)
+    mockedMembersService.findAll.mockResolvedValue(mockedPaginatedMembers)
 
     const response = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/api-tokens`)
+      .get(`/organizations/${orgname}/members`)
       .query({})
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({
-      ...mockedPaginatedApiTokens,
+      ...mockedPaginatedMembers,
       results: [
         {
           ...mockedApiToken,
@@ -116,7 +131,7 @@ describe('ApiTokensController', () => {
         }
       ]
     })
-    expect(mockedApiTokensService.findAll).toHaveBeenCalledWith(orgname, {
+    expect(mockedMembersService.findAll).toHaveBeenCalledWith(orgname, {
       aggregates: [],
       endDate: undefined,
       filters: [],
@@ -128,13 +143,13 @@ describe('ApiTokensController', () => {
     })
   })
 
-  it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
+  it('GET /organizations/:orgname/members/:id should call service.findOne', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomApiToken()
-    mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
+    const mockedApiToken = createRandomMember()
+    mockedMembersService.findOne.mockResolvedValue(mockedApiToken)
 
     const response = await request(app.getHttpServer()).get(
-      `/organizations/${orgname}/api-tokens/1`
+      `/organizations/${orgname}/members/1`
     )
 
     expect(response.status).toBe(200)
@@ -143,17 +158,17 @@ describe('ApiTokensController', () => {
       createdAt: mockedApiToken.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedMembersService.findOne).toHaveBeenCalledWith('testOrg', '1')
   })
 
-  it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
+  it('PATCH /organizations/:orgname/members/:id should call service.update', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomApiToken()
-    mockedApiTokensService.update.mockResolvedValue(mockedApiToken)
+    const mockedApiToken = createRandomMember()
+    mockedMembersService.update.mockResolvedValue(mockedApiToken)
 
     const response = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/api-tokens/1`)
-      .send({ name: 'updatedToken' })
+      .patch(`/organizations/${orgname}/members/1`)
+      .send({ role: RoleTypeEnum.ADMIN })
       .set('Authorization', 'Bearer token')
 
     expect(response.status).toBe(200)
@@ -162,18 +177,18 @@ describe('ApiTokensController', () => {
       createdAt: mockedApiToken.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedApiTokensService.update).toHaveBeenCalledWith('testOrg', '1', {
-      name: 'updatedToken'
+    expect(mockedMembersService.update).toHaveBeenCalledWith('testOrg', '1', {
+      role: RoleTypeEnum.ADMIN
     })
   })
 
-  it('DELETE /organizations/:orgname/api-tokens/:id should call service.remove', async () => {
+  it('DELETE /organizations/:orgname/members/:id should call service.remove', async () => {
     const response = await request(app.getHttpServer())
-      .delete('/organizations/testOrg/api-tokens/1')
+      .delete('/organizations/testOrg/members/1')
       .set('Authorization', 'Bearer token')
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({})
-    expect(mockedApiTokensService.remove).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedMembersService.remove).toHaveBeenCalledWith('testOrg', '1')
   })
 })

@@ -1,42 +1,34 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { BaseEntity } from '@/src/common/entities/base.entity'
+import { Expose } from 'class-transformer'
 import { IsBoolean, IsNumber, IsString } from 'class-validator'
 
-export class StorageItemDto {
-  @ApiProperty({
-    description: 'Whether or not this is a directory',
-    example: true
-  })
-  createdAt: Date
-
-  @ApiProperty({
-    description: 'The id of the storage item',
-    example: '14'
-  })
-  @IsString()
-  id: string
-
-  @ApiProperty({
-    description: 'Whether or not this is a directory',
-    example: true
-  })
+export class StorageItemDto extends BaseEntity {
+  /**
+   * Whether or not this is a directory
+   * @example true
+   */
   @IsBoolean()
+  @Expose()
   isDir: boolean
 
-  @ApiProperty({
-    description: 'The path that the file is located in',
-    example: '/location/in/storage'
-  })
+  /**
+   * The path of the storage item
+   * @example '/location/in/storage'
+   */
   @IsString()
+  @Expose()
   name: string
 
-  @ApiProperty({
-    description: 'The size of the item in bytes',
-    example: 12341234
-  })
+  /**
+   * The size of the item in bytes
+   * @example 12341234
+   */
   @IsNumber()
+  @Expose()
   size: number
 
   constructor(storageItemDto: StorageItemDto) {
+    super()
     Object.assign(this, storageItemDto)
   }
 }

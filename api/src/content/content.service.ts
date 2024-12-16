@@ -1,5 +1,11 @@
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common'
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AxiosError } from 'axios'
 import * as mime from 'mime-types'
@@ -82,7 +88,9 @@ export class ContentService extends BaseService<
         .pipe(
           catchError((err: AxiosError) => {
             this.logger.error('Error hitting loader endpoint: ' + err.message)
-            throw new BadRequestException()
+            throw new InternalServerErrorException(
+              'Error hitting loader endpoint'
+            )
           })
         )
     )

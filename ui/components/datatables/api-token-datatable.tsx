@@ -27,9 +27,14 @@ export default function ApiTokenDataTable() {
       columns={[
         {
           accessorKey: 'role',
-          cell: ({ row }) => {
-            return <Badge>{row.original.role}</Badge>
-          }
+          cell: ({ row }) => (
+            <Badge
+              variant={'secondary'}
+              className='capitalize'
+            >
+              {row.original.role.toLowerCase()}
+            </Badge>
+          )
         },
         {
           accessorKey: 'name',

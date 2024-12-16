@@ -18,12 +18,13 @@ import {
 } from '@/components/ui/hover-card'
 
 import { format } from 'date-fns'
-import { File } from 'lucide-react'
+import { File, ScanSearch } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { Skeleton } from '../ui/skeleton'
+import { ContentTypeToIcon } from '../content-type-to-icon'
 
 export default function ContentDataTable({
   customFilters,
@@ -47,7 +48,7 @@ export default function ContentDataTable({
           cell: ({ row }) => {
             return (
               <div className='flex gap-2'>
-                {/* <ContentTypeToIcon contentType={row.original.mimeType} /> */}
+                <ContentTypeToIcon contentType={row.original.mimeType || ''} />
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
                   href={`/content/single?contentId=${row.original.id}`}
@@ -59,27 +60,24 @@ export default function ContentDataTable({
           }
         },
         {
-          accessorKey: 'mimeType',
-          cell: ({ row }) => {
-            return <Badge>{row.original?.mimeType}</Badge>
-          }
-        },
-        {
           accessorKey: 'value',
           cell: ({ row }) => {
             return (
               <div className='truncate text-wrap text-base md:text-sm'>
                 {row.original.text || (
-                  <HoverCard openDelay={0}>
-                    <HoverCardTrigger asChild>
-                      <Link
-                        className='underline underline-offset-4'
-                        href={`/content/single?contentId=${row.original?.id}`}
-                      >
-                        View Content
-                      </Link>
-                    </HoverCardTrigger>
-                    <HoverCardContent className='h-[800px] w-[500px]'>
+                  <HoverCard openDelay={200}>
+                    <Link
+                      href={`/content/single?contentId=${row.original?.id}`}
+                    >
+                      <HoverCardTrigger asChild>
+                        <ScanSearch />
+                      </HoverCardTrigger>
+                    </Link>
+
+                    <HoverCardContent
+                      className='h-[500px] w-[500px]'
+                      side='right'
+                    >
                       <Suspense fallback={<Skeleton />}>
                         <ContentViewer id={row.original.id} />
                       </Suspense>
@@ -131,7 +129,12 @@ export default function ContentDataTable({
               <div className='flex gap-1'>
                 {row.original.labels?.length ? (
                   row.original.labels?.map((label, index) => (
-                    <Badge key={index}>{label.name}</Badge>
+                    <Badge
+                      key={index}
+                      variant={'secondary'}
+                    >
+                      {label.name}
+                    </Badge>
                   ))
                 ) : (
                   <div className='text-muted-foreground'>None</div>
@@ -158,7 +161,7 @@ export default function ContentDataTable({
             <Image
               alt='source image'
               height={256}
-              src={item.previewImage as string}
+              src={item.previewImage}
               width={256}
             />
           </div>

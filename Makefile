@@ -26,7 +26,7 @@ line-count:
 	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
 
 test:
-	cd api && npm run test:cov
+	cd api && npm run test
 	cd ui && npm run test
 
 test-e2e: generate

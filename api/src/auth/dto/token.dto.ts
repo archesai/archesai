@@ -1,16 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { Expose } from 'class-transformer'
+import { IsString } from 'class-validator'
 
 export class TokenDto {
-  @ApiProperty({
-    description: 'The authorization token that can be used to access Arches AI',
-    example: 'supersecretauthorizationtoken'
-  })
+  /**
+   * The authorization token that can be used to access Arches AI
+   * @example 'supersecretauthorizationtoken'
+   */
+  @IsString()
+  @Expose()
   accessToken: string
 
-  @ApiProperty({
-    description: 'The refresh token that can be used to get a new access token',
-    example: 'supersecretauthorizationtoken'
-  })
+  /**
+   * The refresh token that can be used to get a new access token
+   * @example 'supersecretauthorizationtoken'
+   */
+  @IsString()
+  @Expose()
   refreshToken: string
 
   constructor({

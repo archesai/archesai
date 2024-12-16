@@ -65,13 +65,17 @@ export type SubItemEntity = {
 
 export type ToolEntity = {
   /**
+   * The tool description
+   */
+  description: string
+  /**
    * The tools input type
    *
    * @example TEXT
    */
-  inputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
+  inputType: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
   /**
-   * The tool's name
+   * The tool name
    *
    * @example extract-text
    */
@@ -87,17 +91,13 @@ export type ToolEntity = {
    *
    * @example TEXT
    */
-  outputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
+  outputType: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
   /**
-   * The tool's base path
+   * The base of the tool
    *
    * @example extract-text
    */
   toolBase: string
-  /**
-   * The tool description
-   */
-  description: string
   /**
    * The date that this item was created
    *
@@ -242,8 +242,8 @@ export type EmailRequestDto = {
   /**
    * The e-mail to send the confirmation token to
    *
-   * @format email
    * @example user@archesai.com
+   * @format email
    */
   email: string
 }
@@ -252,8 +252,8 @@ export type LoginDto = {
   /**
    * The password to create and/or login to an account
    *
-   * @minLength 7
    * @example password
+   * @minLength 7
    */
   password: string
   /**
@@ -284,8 +284,8 @@ export type RegisterDto = {
   /**
    * The password to create and/or login to an account
    *
-   * @minLength 7
    * @example password
+   * @minLength 7
    */
   password: string
   /**
@@ -305,11 +305,13 @@ export type AuthProviderEntity = {
    */
   provider: 'LOCAL' | 'FIREBASE' | 'TWITTER'
   /**
-   * The auth provider's provider ID
+   * The provider ID associated with the auth provider
    */
   providerId: string
   /**
-   * The auth provider's user ID
+   * The user ID associated with the auth provider
+   *
+   * @example 123456
    */
   userId: string
   /**
@@ -335,9 +337,10 @@ export type MemberEntity = {
    */
   inviteAccepted: boolean
   /**
-   * The invited email of this member
+   * The email of the invited member
    *
    * @example invited-user@archesai.com
+   * @format email
    */
   inviteEmail: string
   /**
@@ -351,13 +354,13 @@ export type MemberEntity = {
    *
    * @example ADMIN
    */
-  role: 'USER' | 'ADMIN'
+  role: 'ADMIN' | 'USER'
   /**
    * The username of this member
    *
    * @example jonathan
    */
-  username?: string | null
+  username: string | null
   /**
    * The date that this item was created
    *
@@ -474,26 +477,26 @@ export type UpdateUserDto = {
 
 export type CreateOrganizationDto = {
   /**
-   * The billing email to use for the organization
-   *
-   * @format email
-   * @example example@test.com
-   */
-  billingEmail: string
-  /**
-   * The name of the organization to create
+   * The name of the organization
    *
    * @example organization-name
    */
   orgname: string
+  /**
+   * The billing email to use for the organization
+   *
+   * @example example@test.com
+   * @format email
+   */
+  billingEmail: string
 }
 
 export type OrganizationEntity = {
   /**
    * The billing email to use for the organization
    *
-   * @format email
    * @example example@test.com
+   * @format email
    */
   billingEmail: string
   /**
@@ -503,7 +506,7 @@ export type OrganizationEntity = {
    */
   credits: number
   /**
-   * The name of the organization to create
+   * The name of the organization
    *
    * @example organization-name
    */
@@ -533,8 +536,8 @@ export type UpdateOrganizationDto = {
   /**
    * The billing email to use for the organization
    *
-   * @format email
    * @example example@test.com
+   * @format email
    */
   billingEmail: string
 }
@@ -556,16 +559,17 @@ export type PlanEntity = {
    */
   currency: string
   /**
+   * The description of the plan
+   *
    * @example A plan for a small business
    */
-  description?: string | null
+  description: string | null
   /**
    * The ID of the plan
    *
    * @example prod_1234567890
    */
   id: string
-  metadata?: Record<string, any>
   /**
    * The name of the plan
    *
@@ -578,8 +582,10 @@ export type PlanEntity = {
    * @example price_1234567890
    */
   priceId: string
-  priceMetadata?: Record<string, any>
-  recurring?: Record<string, any> | null
+  /**
+   * The interval of the plan
+   */
+  recurring: Record<string, any> | null
   /**
    * The amount in cents to be charged on the interval specified
    *
@@ -711,7 +717,7 @@ export type PaymentMethodEntity = {
    */
   customer: string | null
   /**
-   * Unique identifier for the payment method
+   * Unique identifier for the payment method.
    *
    * @example pm_1J2Y3A4B5C6D7E8F9G0H
    */
@@ -726,64 +732,64 @@ export type PaymentMethodEntity = {
 
 export type CreateToolDto = {
   /**
-   * The tools input type
-   *
-   * @example TEXT
-   */
-  inputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
-  /**
-   * The tool's name
+   * The tool name
    *
    * @example extract-text
    */
   name: string
   /**
-   * The tools output type
-   *
-   * @example TEXT
-   */
-  outputType: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
-  /**
-   * The tool's base path
-   *
-   * @example extract-text
-   */
-  toolBase: string
-  /**
    * The tool description
    */
   description: string
-}
-
-export type UpdateToolDto = {
   /**
    * The tools input type
    *
    * @example TEXT
    */
-  inputType?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
-  /**
-   * The tool's name
-   *
-   * @example extract-text
-   */
-  name?: string
+  inputType: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
   /**
    * The tools output type
    *
    * @example TEXT
    */
-  outputType?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'AUDIO'
+  outputType: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
   /**
-   * The tool's base path
+   * The base of the tool
    *
    * @example extract-text
    */
-  toolBase?: string
+  toolBase: string
+}
+
+export type UpdateToolDto = {
+  /**
+   * The tool name
+   *
+   * @example extract-text
+   */
+  name?: string
   /**
    * The tool description
    */
   description?: string
+  /**
+   * The tools input type
+   *
+   * @example TEXT
+   */
+  inputType?: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
+  /**
+   * The tools output type
+   *
+   * @example TEXT
+   */
+  outputType?: 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO'
+  /**
+   * The base of the tool
+   *
+   * @example extract-text
+   */
+  toolBase?: string
 }
 
 export type CreateApiTokenDto = {
@@ -792,12 +798,11 @@ export type CreateApiTokenDto = {
    *
    * @example ADMIN
    */
-  role: 'USER' | 'ADMIN'
+  role: 'ADMIN' | 'USER'
   /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
-   * @default *
    */
   domains: string
   /**
@@ -808,16 +813,9 @@ export type CreateApiTokenDto = {
 
 export type ApiTokenEntity = {
   /**
-   * The role of the API token
-   *
-   * @example ADMIN
-   */
-  role: 'USER' | 'ADMIN'
-  /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
-   * @default *
    */
   domains: string
   /**
@@ -836,6 +834,12 @@ export type ApiTokenEntity = {
    * @example my-organization
    */
   orgname: string
+  /**
+   * The role of the API token
+   *
+   * @example ADMIN
+   */
+  role: 'ADMIN' | 'USER'
   /**
    * The username of the user who owns this API token
    *
@@ -863,12 +867,11 @@ export type UpdateApiTokenDto = {
    *
    * @example ADMIN
    */
-  role?: 'USER' | 'ADMIN'
+  role?: 'ADMIN' | 'USER'
   /**
    * The domains that can access this API token
    *
    * @example archesai.com,localhost:3000
-   * @default *
    */
   domains?: string
   /**
@@ -879,9 +882,10 @@ export type UpdateApiTokenDto = {
 
 export type CreateMemberDto = {
   /**
-   * The invited email of this member
+   * The email of the invited member
    *
    * @example invited-user@archesai.com
+   * @format email
    */
   inviteEmail: string
   /**
@@ -889,42 +893,41 @@ export type CreateMemberDto = {
    *
    * @example ADMIN
    */
-  role: 'USER' | 'ADMIN'
+  role: 'ADMIN' | 'USER'
 }
 
 export type UpdateMemberDto = {
-  /**
-   * The invited email of this member
-   *
-   * @example invited-user@archesai.com
-   */
-  inviteEmail?: string
   /**
    * The role of the member
    *
    * @example ADMIN
    */
-  role?: 'USER' | 'ADMIN'
+  role?: 'ADMIN' | 'USER'
+  /**
+   * The email of the invited member
+   *
+   * @example invited-user@archesai.com
+   * @format email
+   */
+  inviteEmail?: string
 }
 
 export type CreateLabelDto = {
   /**
    * The chat label name
    *
-   * @default New Chat
-   * @example What are the morals of the story in Aesop's Fables?
+   * @example What are the morals of the story in Aesops Fables?
    */
-  name?: string
+  name: string
 }
 
 export type LabelEntity = {
   /**
    * The chat label name
    *
-   * @default New Chat
-   * @example What are the morals of the story in Aesop's Fables?
+   * @example What are the morals of the story in Aesops Fables?
    */
-  name?: string
+  name: string
   /**
    * The organization name
    *
@@ -950,8 +953,7 @@ export type UpdateLabelDto = {
   /**
    * The chat label name
    *
-   * @default New Chat
-   * @example What are the morals of the story in Aesop's Fables?
+   * @example What are the morals of the story in Aesops Fables?
    */
   name?: string
 }
@@ -960,10 +962,10 @@ export type PathDto = {
   /**
    * Whether or not this path points to a directory
    *
-   * @default false
    * @example false
+   * @default false
    */
-  isDir?: boolean
+  isDir: boolean
   /**
    * The path that the file should upload to
    *
@@ -974,7 +976,7 @@ export type PathDto = {
 
 export type ReadUrlDto = {
   /**
-   * A read-only url that you can use to download the file from secure storage
+   * The read-only url that you can use to download the file from secure storage
    *
    * @example www.example.com?token=read-token
    */
@@ -994,24 +996,11 @@ export type StorageItemDto = {
   /**
    * Whether or not this is a directory
    *
-   * @format date-time
-   * @example true
-   */
-  createdAt: string
-  /**
-   * The id of the storage item
-   *
-   * @example 14
-   */
-  id: string
-  /**
-   * Whether or not this is a directory
-   *
    * @example true
    */
   isDir: boolean
   /**
-   * The path that the file is located in
+   * The path of the storage item
    *
    * @example /location/in/storage
    */
@@ -1022,9 +1011,29 @@ export type StorageItemDto = {
    * @example 12341234
    */
   size: number
+  /**
+   * The date that this item was created
+   *
+   * @format date-time
+   * @example 2023-07-11T21:09:20.895Z
+   */
+  createdAt: string
+  /**
+   * The ID of the item
+   *
+   * @example item-id
+   */
+  id: string
 }
 
 export type CreateContentDto = {
+  /**
+   * The labels to associate with the content
+   *
+   * @example label-1
+   * @example label-2
+   */
+  labels: string[]
   /**
    * The content's name
    *
@@ -1032,35 +1041,28 @@ export type CreateContentDto = {
    */
   name: string
   /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string | null
-  /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
   url?: string | null
   /**
-   * The labels to associate with the content
+   * The content's text, if TEXT content
    *
-   * @example label-1
-   * @example label-2
+   * @example Hello world. I am a text.
    */
-  labels?: string[]
+  text?: string | null
 }
 
 export type ContentEntity = {
   /**
    * The child content, if any
    */
-  children?: SubItemEntity[]
+  children: SubItemEntity[]
   /**
    * The tool runs that consumed this content, if any
    */
-  consumedBy?: SubItemEntity[]
+  consumedBy: SubItemEntity[]
   /**
    * The number of credits used to process this content
    *
@@ -1072,17 +1074,17 @@ export type ContentEntity = {
    *
    * @example my-file.pdf
    */
-  description?: string | null
+  description: string | null
   /**
    * The content's labels
    */
-  labels?: SubItemEntity[]
+  labels: SubItemEntity[]
   /**
    * The MIME type of the content
    *
    * @example application/pdf
    */
-  mimeType?: string | null
+  mimeType: string | null
   /**
    * The content's name
    *
@@ -1098,41 +1100,41 @@ export type ContentEntity = {
   /**
    * The parent content, if any
    */
-  parent?: SubItemEntity
+  parent: SubItemEntity
   /**
    * The parent content ID, if this content is a child of another content
    *
    * @example content-id
    */
-  parentId?: string | null
+  parentId: string | null
   /**
    * The preview image of the content
    *
    * @example https://preview-image.com/example.png
    */
-  previewImage?: string | null
+  previewImage: string | null
   /**
    * The toolRun that produced this content, if any
    */
-  producedBy?: SubItemEntity
+  producedBy: SubItemEntity
   /**
    * The ID of the toolRun that produced this content, if any
    *
    * @example toolRun-id
    */
-  producedById?: string | null
+  producedById: string | null
   /**
    * The content's text, if TEXT content
    *
    * @example Hello world. I am a text.
    */
-  text?: string | null
+  text: string | null
   /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
-  url?: string | null
+  url: string | null
   /**
    * The date that this item was created
    *
@@ -1156,17 +1158,17 @@ export type UpdateContentDto = {
    */
   name?: string
   /**
-   * The content's text, if TEXT content
-   *
-   * @example Hello world. I am a text.
-   */
-  text?: string | null
-  /**
    * The URL of the content, if AUDIO, VIDEO, IMAGE, or FILE content
    *
    * @example https://example.com/example.mp4
    */
   url?: string | null
+  /**
+   * The content's text, if TEXT content
+   *
+   * @example Hello world. I am a text.
+   */
+  text?: string | null
   /**
    * The labels to associate with the content
    *
@@ -1178,11 +1180,26 @@ export type UpdateContentDto = {
 
 export type CreateRunDto = {
   /**
+   * If using already created content, specify the content IDs to use as input for the run.
+   * example: ['content-id-1', 'content-id-2']
+   */
+  contentIds?: string[]
+  /**
+   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
+   * example: 'This is the text to use as input for the run.'
+   */
+  text?: string
+  /**
+   * If using a URL as input, specify the URL to use as input for the run. It will automatically be added as content.
+   * example: 'https://example.com'
+   */
+  url?: string
+  /**
    * The type of run, either an individual tool run or a pipeline run
    *
    * @example TOOL_RUN
    */
-  runType: 'PIPELINE_RUN' | 'TOOL_RUN'
+  runType: 'TOOL_RUN' | 'PIPELINE_RUN'
   /**
    * The pipeline ID associated with the run, if applicable
    *
@@ -1195,34 +1212,22 @@ export type CreateRunDto = {
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
   toolId?: string | null
-  /**
-   * If using already created content, specify the content IDs to use as input for the run.
-   *
-   * @example content-id-1
-   * @example content-id-2
-   */
-  contentIds?: string[]
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is the text to use as input for the run.
-   */
-  text?: string
-  /**
-   * If using direct text input, specify the text to use as input for the run. It will automatically be added as content.
-   *
-   * @example This is a url to use as input for the run.
-   */
-  url?: string
 }
 
 export type RunEntity = {
+  /**
+   * The timestamp when the run completed
+   *
+   * @format date-time
+   * @example 2024-11-05T11:42:02.258Z
+   */
+  completedAt: string | null
   /**
    * The error message, if any, associated with the run
    *
    * @example An unexpected error occurred.
    */
-  error?: string | null
+  error: string | null
   /**
    * The inputs associated with the run
    */
@@ -1232,23 +1237,36 @@ export type RunEntity = {
    *
    * @example Data Processing PipelineRun
    */
-  name?: string | null
+  name: string | null
   /**
    * The outputs associated with the run
    */
-  outputs?: SubItemEntity[]
+  outputs: SubItemEntity[]
   /**
    * The pipeline ID associated with the run, if applicable
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  pipelineId?: string | null
+  pipelineId: string | null
+  /**
+   * The progress of the run as a percentage
+   *
+   * @example 50.5
+   */
+  progress: number
   /**
    * The type of run, either an individual tool run or a pipeline run
    *
    * @example TOOL_RUN
    */
-  runType: 'PIPELINE_RUN' | 'TOOL_RUN'
+  runType: 'TOOL_RUN' | 'PIPELINE_RUN'
+  /**
+   * The timestamp when the run started
+   *
+   * @format date-time
+   * @example 2024-11-05T11:42:02.258Z
+   */
+  startedAt: string | null
   /**
    * The status of the run
    *
@@ -1260,28 +1278,7 @@ export type RunEntity = {
    *
    * @example 123e4567-e89b-12d3-a456-426614174000
    */
-  toolId?: string | null
-  /**
-   * The timestamp when the run completed
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  completedAt: string | null
-  /**
-   * The progress of the run as a percentage
-   *
-   * @example 50.5
-   * @default 0
-   */
-  progress: number
-  /**
-   * The timestamp when the run started
-   *
-   * @format date-time
-   * @example 2024-11-05T11:42:02.258Z
-   */
-  startedAt: string | null
+  toolId: string | null
   /**
    * The date that this item was created
    *
@@ -1299,15 +1296,17 @@ export type RunEntity = {
 
 export type FieldFieldQuery = {
   /**
-   * Field to filter by
+   * The field to filter by
+   *
+   * @example createdAt
    */
   field: string
   /**
-   * Operator to use for filtering
+   * The operator to use for filtering
    *
-   * @default contains
+   * @example contains
    */
-  operator?:
+  operator:
     | 'contains'
     | 'endsWith'
     | 'equals'
@@ -1318,14 +1317,18 @@ export type FieldFieldQuery = {
     | 'some'
     | 'startsWith'
   /**
-   * Value to filter for
+   * The value to filter by
+   *
+   * @example 2021-01-01
    */
-  value: string | string[]
+  value: Record<string, any>
 }
 
 export type AggregateFieldQuery = {
   /**
-   * Field to aggregate by
+   * The field to aggregate by
+   *
+   * @example createdAt
    */
   field: string
   /**
@@ -1333,7 +1336,7 @@ export type AggregateFieldQuery = {
    *
    * @example day
    */
-  granularity?: 'day' | 'month' | 'week' | 'year'
+  granularity: 'day' | 'month' | 'week' | 'year'
   /**
    * The type of aggregate to perform
    *
@@ -1344,7 +1347,9 @@ export type AggregateFieldQuery = {
 
 export type AggregateFieldResult = {
   /**
-   * Field to aggregate by
+   * The field to aggregate by
+   *
+   * @example createdAt
    */
   field: string
   /**
@@ -1352,7 +1357,7 @@ export type AggregateFieldResult = {
    *
    * @example day
    */
-  granularity?: 'day' | 'month' | 'week' | 'year'
+  granularity: 'day' | 'month' | 'week' | 'year'
   /**
    * The type of aggregate to perform
    *

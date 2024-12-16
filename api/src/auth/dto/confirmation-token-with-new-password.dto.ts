@@ -1,6 +1,7 @@
 import { IsString } from 'class-validator'
 
 import { ConfirmationTokenDto } from './confirmation-token.dto'
+import { Expose } from 'class-transformer'
 
 export class ConfirmationTokenWithNewPasswordDto extends ConfirmationTokenDto {
   /**
@@ -8,5 +9,6 @@ export class ConfirmationTokenWithNewPasswordDto extends ConfirmationTokenDto {
    * @example 'newPassword'
    */
   @IsString()
+  @Expose()
   newPassword: string
 }

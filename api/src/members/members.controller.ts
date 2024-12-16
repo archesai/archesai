@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common'
+import { Controller, Param, Post, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator'
@@ -8,6 +8,7 @@ import { CreateMemberDto } from './dto/create-member.dto'
 import { UpdateMemberDto } from './dto/update-member.dto'
 import { MemberEntity } from './entities/member.entity'
 import { MembersService } from './members.service'
+import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard'
 
 @ApiBearerAuth()
 @ApiTags(`Members`)
@@ -29,6 +30,7 @@ export class MembersController extends BaseController<
    * @throws {403} Email not verified
    * @throws {404} Not Found
    */
+  @UseGuards(EmailVerifiedGuard)
   @Post('join')
   async join(
     @Param('orgname') orgname: string,

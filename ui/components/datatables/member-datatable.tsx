@@ -25,7 +25,14 @@ export default function MemberDataTable() {
         {
           accessorKey: 'role',
           cell: ({ row }) => {
-            return <Badge>{row.original.role}</Badge>
+            return (
+              <Badge
+                variant={'secondary'}
+                className='capitalize'
+              >
+                {row.original.role.toLowerCase()}
+              </Badge>
+            )
           }
         },
         {

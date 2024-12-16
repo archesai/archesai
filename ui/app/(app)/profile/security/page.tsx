@@ -33,7 +33,7 @@ export default function ProfileSecuritySettingsPage() {
     <div className='flex flex-col gap-3'>
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Reset Password</CardTitle>
+          <CardTitle>Reset Password</CardTitle>
           <CardDescription>
             If you would like to change your password, please click the button
             below. It will send you an email with instructions on how to reset.
@@ -80,7 +80,7 @@ export default function ProfileSecuritySettingsPage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Deactivate Account</CardTitle>
+          <CardTitle>Deactivate Account</CardTitle>
           <CardDescription>
             If you would like to deactivate your account, please click the
             button below. This action is irreversible.

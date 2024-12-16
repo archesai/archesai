@@ -97,7 +97,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
       )}
     >
       <CardHeader>
-        <CardTitle className='text-lg'>{title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <Separator />
@@ -143,7 +143,7 @@ export function GenericForm<TCreateVariables, TUpdateVariables>({
                 }
           )}
         >
-          <CardContent className='flex flex-1 flex-col gap-4 bg-muted/30 p-4'>
+          <CardContent className='flex flex-1 flex-col gap-4 p-4'>
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
               .map((fieldConfig) => (

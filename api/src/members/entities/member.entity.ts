@@ -1,52 +1,61 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Member as _PrismaMember, RoleType } from '@prisma/client'
-import { Expose } from 'class-transformer'
-import { IsEnum, IsNotEmpty } from 'class-validator'
+import { Member as _PrismaMember } from '@prisma/client'
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString
+} from 'class-validator'
 
 import { BaseEntity } from '../../common/entities/base.entity'
+import { Expose } from 'class-transformer'
 
 export type MemberModel = _PrismaMember
 
+export enum RoleTypeEnum {
+  ADMIN = 'ADMIN',
+  USER = 'USER'
+}
+
 export class MemberEntity extends BaseEntity implements MemberModel {
-  @ApiProperty({
-    description: 'Whether the invite was accepted',
-    example: false
-  })
+  /**
+   * Whether the invite was accepted
+   * @example false
+   */
+  @IsBoolean()
   @Expose()
-  @IsNotEmpty()
   inviteAccepted: boolean
 
-  // Exposed Properties
-  @ApiProperty({
-    description: 'The invited email of this member',
-    example: 'invited-user@archesai.com'
-  })
+  /**
+   * The email of the invited member
+   * @example 'invited-user@archesai.com'
+   */
+  @IsEmail()
   @Expose()
-  @IsNotEmpty()
   inviteEmail: string
 
-  @ApiProperty({
-    description: 'The organization name',
-    example: 'my-organization'
-  })
+  /**
+   * The organization name
+   * @example 'my-organization'
+   */
+  @IsString()
   @Expose()
   orgname: string
 
-  @ApiProperty({
-    description: 'The role of the member',
-    enum: RoleType,
-    example: RoleType.ADMIN
-  })
+  /**
+   * The role of the member
+   * @example 'ADMIN'
+   */
+  @IsEnum(RoleTypeEnum)
   @Expose()
-  @IsEnum(RoleType)
-  role: RoleType
+  role: RoleTypeEnum
 
-  @ApiProperty({
-    description: 'The username of this member',
-    example: 'jonathan',
-    required: false,
-    type: String
-  })
+  /**
+   * The username of this member
+   * @example 'jonathan'
+   */
+  @IsOptional()
+  @IsString()
   @Expose()
   username: null | string
 

@@ -1,6 +1,6 @@
 import {
   FieldFieldQuery,
-  Operator,
+  OperatorEnum,
   SearchQueryDto
 } from './dto/search-query.dto'
 
@@ -73,7 +73,7 @@ export abstract class BaseRepository<
         if (filter.operator)
           if (
             // If this is a relation filter
-            [Operator.EVERY, Operator.NONE, Operator.SOME].includes(
+            [OperatorEnum.EVERY, OperatorEnum.NONE, OperatorEnum.SOME].includes(
               filter.operator
             )
           ) {

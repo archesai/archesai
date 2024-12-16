@@ -7,19 +7,18 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   ValidateIf
 } from 'class-validator'
 
-export enum Granularity {
+export enum GranularityEnum {
   DAY = 'day',
   MONTH = 'month',
   WEEK = 'week',
   YEAR = 'year'
 }
 
-export enum Operator {
+export enum OperatorEnum {
   CONTAINS = 'contains',
   ENDS_WITH = 'endsWith',
   EQUALS = 'equals',
@@ -31,13 +30,16 @@ export enum Operator {
   STARTS_WITH = 'startsWith'
 }
 
-export enum SortDirection {
+export enum SortDirectionEnum {
   ASCENDING = 'asc',
   DESCENDING = 'desc'
 }
 
 export class AggregateFieldQuery {
-  @ApiProperty({ description: 'Field to aggregate by', type: String })
+  /**
+   * The field to aggregate by
+   * @example createdAt
+   */
   @IsString()
   field: string
 
@@ -45,34 +47,36 @@ export class AggregateFieldQuery {
    *The granularity to use for ranged aggregates
    * @example day
    */
-  @IsEnum(Granularity, { always: false })
-  @IsOptional()
-  granularity?: Granularity
+  @IsEnum(GranularityEnum)
+  granularity: GranularityEnum
 
   /**
    *The type of aggregate to perform
    * @example count
    */
-  @IsString()
+  @IsEnum(['count', 'sum'])
   type: 'count' | 'sum'
 }
 
 export class FieldFieldQuery {
-  @ApiProperty({ description: 'Field to filter by', type: String })
+  /**
+   * The field to filter by
+   * @example createdAt
+   */
   @IsString()
   field: string
 
-  @ApiProperty({
-    description: 'Operator to use for filtering',
-    enum: Operator,
-    required: false
-  })
-  operator?: Operator = Operator.CONTAINS
+  /**
+   * The operator to use for filtering
+   * @example contains
+   */
+  @IsEnum(OperatorEnum)
+  operator: OperatorEnum
 
-  @ApiProperty({
-    description: 'Value to filter for',
-    oneOf: [{ type: 'string' }, { items: { type: 'string' }, type: 'array' }]
-  })
+  /**
+   * The value to filter by
+   * @example 2021-01-01
+   */
   @IsArray()
   @IsString()
   @Type(() => String) // Ensures the array elements are treated as strings
@@ -101,9 +105,9 @@ export class SearchQueryDto {
    *The end date to search to
    * @example 2022-01-01
    */
-  @IsDateString()
   @IsOptional()
-  endDate?: string
+  @IsDateString()
+  endDate?: Date
 
   @ApiProperty({
     default: [],
@@ -120,14 +124,11 @@ export class SearchQueryDto {
   @Transform(({ value }) => transformValues(value))
   filters?: FieldFieldQuery[] = []
 
-  @ApiProperty({
-    default: 10,
-    description: 'The limit of the number of results returned',
-    required: false
-  })
+  /**
+   * The limit of the number of results returned
+   * @example 10
+   */
   @IsNumber()
-  @IsOptional()
-  @IsPositive()
   limit?: number = 10
 
   /**
@@ -135,14 +136,12 @@ export class SearchQueryDto {
    * @example 10
    */
   @IsNumber()
-  @IsOptional()
   offset?: number = 0
 
   /**
    *The field to sort the results by
    * @example createdAt
    */
-  @IsOptional()
   @IsString()
   sortBy?: string = 'createdAt'
 
@@ -150,16 +149,15 @@ export class SearchQueryDto {
    *The direction to sort the results by
    * @example desc
    */
-  @IsEnum(SortDirection)
-  @IsOptional()
-  sortDirection?: SortDirection = SortDirection.DESCENDING
+  @IsEnum(SortDirectionEnum)
+  sortDirection?: SortDirectionEnum = SortDirectionEnum.DESCENDING
 
   /**
    *The start date to search from
    * @example 2021-01-01
    */
-  @IsDateString()
   @IsOptional()
+  @IsDateString()
   startDate?: Date
 }
 

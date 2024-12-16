@@ -1,5 +1,9 @@
 {
   "eslint.workingDirectories": ["./ui", "./api"],
   "jest.rootPath": "./api",
-  "jest.jestCommandLine": "npm run test --"
+  "jest.jestCommandLine": "npm run test --",
+  "jest.runMode": {
+    "runAllTestsOnStartup": false,
+    "type": "on-demand"
+  }
 }

@@ -63,7 +63,7 @@ secretGenerator:
       - LLM_API_KEY=open-ai-key
 
       # LOADER CONFIG
-      - LOADER_ENDPOINT=http://arches-nlp:3002/indexDocument
+      - LOADER_ENDPOINT=http://arches-nlp:3002
 
       # STORAGE CONFIG
       - STORAGE_TYPE=minio

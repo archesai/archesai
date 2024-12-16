@@ -1,62 +1,65 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Tool as _PrismaTool, ToolIOType } from '@prisma/client'
-import { Exclude, Expose } from 'class-transformer'
-import { IsEnum, IsString } from 'class-validator'
+import { Tool as _PrismaTool } from '@prisma/client'
 
 import { BaseEntity } from '../../common/entities/base.entity'
+import { IsEnum, IsString } from 'class-validator'
+import { Expose } from 'class-transformer'
 
 export type ToolModel = _PrismaTool
 
-@Exclude()
+export enum ToolIOTypeEnum {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  AUDIO = 'AUDIO',
+  VIDEO = 'VIDEO'
+}
+
 export class ToolEntity extends BaseEntity implements ToolModel {
   /**
    * The tool description
    * @example This tool converts a file to text, regardless of the file type.
    */
-  @Expose()
   @IsString()
+  @Expose()
   description: string
 
-  @ApiProperty({
-    description: 'The tools input type',
-    enum: ToolIOType,
-    example: ToolIOType.TEXT
-  })
+  /**
+   * The tools input type
+   * @example TEXT
+   */
+  @IsEnum(ToolIOTypeEnum)
   @Expose()
-  @IsEnum(ToolIOType)
-  inputType: ToolIOType
+  inputType: ToolIOTypeEnum
 
-  @ApiProperty({
-    description: "The tool's name",
-    example: 'extract-text'
-  })
-  @Expose()
+  /**
+   * The tool name
+   * @example extract-text
+   */
   @IsString()
+  @Expose()
   name: string
 
-  @ApiProperty({
-    description: 'The organization name',
-    example: 'my-organization'
-  })
-  @Expose()
+  /**
+   * The organization name
+   * @example my-organization
+   */
   @IsString()
+  @Expose()
   orgname: string
 
-  @ApiProperty({
-    description: 'The tools output type',
-    enum: ToolIOType,
-    example: ToolIOType.TEXT
-  })
+  /**
+   * The tools output type
+   * @example TEXT
+   */
+  @IsEnum(ToolIOTypeEnum)
   @Expose()
-  @IsEnum(ToolIOType)
-  outputType: ToolIOType
+  outputType: ToolIOTypeEnum
 
-  @ApiProperty({
-    description: "The tool's base path",
-    example: 'extract-text'
-  })
-  @Expose()
+  /**
+   * The base of the tool
+   * @example extract-text
+   */
   @IsString()
+  @Expose()
   toolBase: string
 
   constructor(tool: ToolModel) {

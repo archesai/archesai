@@ -40,12 +40,12 @@ export const PageHeader = () => {
     <>
       <VerifyEmailAlert />
 
-      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
+      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-4'>
         <Button
-          className='mr-3 flex h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+          className='mr-3 flex h-8 w-8 border-sidebar-accent bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
           onClick={toggleSidebar}
           size='icon'
-          variant='ghost'
+          variant='outline'
         >
           <Menu className='h-5 w-5' />
         </Button>
@@ -62,7 +62,7 @@ export const PageHeader = () => {
       </header>
 
       {!currentTabs || currentTabs.length === 0 ? (
-        <div className='border-b border-b-sidebar-accent' />
+        <div className='border-b' />
       ) : (
         <Tabs value={activeTab}>
           <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>

@@ -43,19 +43,6 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
     }
     user.memberships[0].role = role
 
-    // Make sure if there was a domain in their header that this request is authorized for it
-    // if (domains && domains != "*") {
-    //   const url = new URL(request.headers.origin);
-    //   const origin = url.hostname
-    //     .replace("www.", "")
-    //     .replace("http://", "")
-    //     .replace("https://", "")
-    //     .split(":")[0];
-    //   if (!domains.split(",").includes(origin)) {
-    //     throw new UnauthorizedException("Unauthorized domain");
-    //   }
-    // }
-
     return user
   }
 }

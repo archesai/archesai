@@ -26,7 +26,7 @@ import { RunsControllerFindAllQueryParams } from '@/generated/archesApiComponent
 interface DataSelectorProps<TItem extends BaseItem, TFindAllPathParams> {
   getItemDetails?: (item: TItem) => React.ReactNode
   //   iconMap?: { [key: string]: IconType };
-  icons?: { Icon: any; name: string }[]
+  icons?: { Icon: any; name: string; color: string }[]
   isMultiSelect?: boolean
   itemType: string
   selectedData: TItem | TItem[] | undefined
@@ -151,12 +151,23 @@ export function DataSelector<TItem extends BaseItem, TFindAllPathParams>({
                     {icons &&
                       icons
                         .filter((x) => x.name === (selectedData as TItem)?.name)
-                        .map((x: any, i) => (
-                          <x.Icon
-                            className='h-4 w-4 text-muted-foreground'
-                            key={i}
-                          />
-                        ))}
+                        .map((x, i) => {
+                          const iconColor = x.color
+                          return (
+                            <x.Icon
+                              key={i}
+                              className={cn(
+                                'mx-auto h-4 w-4',
+                                iconColor.startsWith('text-') ? iconColor : ''
+                              )}
+                              style={{
+                                ...(iconColor.startsWith('#')
+                                  ? { color: iconColor }
+                                  : {})
+                              }}
+                            />
+                          )
+                        })}
                     {(selectedData as TItem)?.name}
                   </div>
                 )}
@@ -191,12 +202,23 @@ export function DataSelector<TItem extends BaseItem, TFindAllPathParams>({
                     {icons &&
                       icons
                         .filter((x) => x.name === item.name)
-                        .map((x: any, i) => (
-                          <x.Icon
-                            className='h-4 w-4 text-muted-foreground'
-                            key={i}
-                          />
-                        ))}
+                        .map((x: any, i) => {
+                          const iconColor = x.color
+                          return (
+                            <x.Icon
+                              className={cn(
+                                'mx-auto h-4 w-4',
+                                iconColor.startsWith('text-') ? iconColor : ''
+                              )}
+                              style={{
+                                ...(iconColor.startsWith('#')
+                                  ? { color: iconColor }
+                                  : {})
+                              }}
+                              key={i}
+                            />
+                          )
+                        })}
                     <p>{item?.name}</p>
                   </div>
                   {/* Check Icon for Selected Items */}

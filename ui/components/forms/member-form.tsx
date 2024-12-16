@@ -110,7 +110,10 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       onSubmitCreate={async (createMemberDto, mutateOptions) => {
         await createMember(
           {
-            body: createMemberDto,
+            body: {
+              inviteEmail: createMemberDto.inviteEmail,
+              role: createMemberDto.role
+            },
             pathParams: {
               orgname: defaultOrgname
             }

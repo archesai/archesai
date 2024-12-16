@@ -8,6 +8,7 @@ import {
   NotFoundException
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
+import { Request } from 'express'
 import { Observable } from 'rxjs'
 
 @Injectable()
@@ -18,12 +19,23 @@ export class MembershipGuard implements CanActivate {
   canActivate(
     context: ExecutionContext
   ): boolean | Observable<boolean> | Promise<boolean> {
-    const { params, user } = context.switchToHttp().getRequest() as any
+    const { params, user, path } = context
+      .switchToHttp()
+      .getRequest() as Request
     const currentUser = user as UserEntity
     const orgname = params.orgname
 
     // Check for user and orgname, if they are not present this route is public and we skip. Alternatively, if orgname is not present, we skip.
     if (!orgname || !currentUser) {
+      return true
+    }
+
+    this.logger.log(
+      `Checking membership for user ${currentUser.username} to access ${path}`
+    )
+    // Match path dynamically
+    if (path.match(/^\/organizations\/[^/]+\/members\/join$/)) {
+      this.logger.log('This is a public route to join an organization')
       return true
     }
 

@@ -41,6 +41,7 @@ export abstract class BaseService<
     const { count, results } = await this.repository.findAll(orgname, queryDto)
     const entities = results.map((result) => this.toEntity(result))
     return new PaginatedDto<Entity>({
+      aggregates: [],
       metadata: {
         limit: queryDto.limit,
         offset: queryDto.offset,

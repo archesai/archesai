@@ -98,7 +98,8 @@ export class RunsService extends BaseService<
       runContent.push(
         await this.contentService.create(orgname, {
           name: 'Input Text',
-          text: createRunDto.text
+          text: createRunDto.text,
+          labels: []
         })
       )
     }
@@ -106,7 +107,8 @@ export class RunsService extends BaseService<
       runContent.push(
         await this.contentService.create(orgname, {
           name: 'Input URL',
-          url: createRunDto.url
+          url: createRunDto.url,
+          labels: []
         })
       )
     }

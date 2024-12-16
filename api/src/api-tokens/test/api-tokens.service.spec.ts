@@ -8,6 +8,7 @@ import { WebsocketsService } from '../../websockets/websockets.service'
 import { ApiTokenRepository } from '../api-token.repository'
 import { ApiTokensService } from '../api-tokens.service'
 import { CreateApiTokenDto } from '../dto/create-api-token.dto'
+import { RoleTypeEnum } from '../entities/api-token.entity'
 
 jest.mock('uuid', () => ({
   v4: jest.fn()
@@ -67,7 +68,7 @@ describe('ApiTokensService', () => {
       const createTokenDto: CreateApiTokenDto = {
         domains: '*',
         name: 'test-token',
-        role: 'ADMIN'
+        role: RoleTypeEnum.ADMIN
       }
       const additionalData = {
         username: 'test-user'

@@ -150,6 +150,7 @@ export class GoogleCloudStorageService implements StorageService {
         fileItems.push(
           new StorageItemDto({
             createdAt: new Date(file.metadata.timeCreated),
+            updatedAt: new Date(file.metadata.updated),
             id: file.id,
             isDir: false,
             name: relativePath,
@@ -163,6 +164,7 @@ export class GoogleCloudStorageService implements StorageService {
       (dirName) =>
         new StorageItemDto({
           createdAt: null,
+          updatedAt: null,
           id: `${fullPath}${dirName}/`,
           isDir: true,
           name: dirName + '/',

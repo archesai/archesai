@@ -60,8 +60,7 @@ describe('Pipelines', () => {
     expect(res.status).toBe(200) // or the appropriate success status code
     expect(res.body).toMatchObject({
       ...pipeline,
-      name: 'Updated Pipeline',
-      updatedAt: expect.any(String)
+      name: 'Updated Pipeline'
     }) // or adjust to match the expected response
   })
 

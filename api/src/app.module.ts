@@ -35,6 +35,7 @@ import { UsersModule } from './users/users.module'
 import { WebsocketsGateway } from './websockets/websockets.gateway'
 import { WebsocketsModule } from './websockets/websockets.module'
 import { validationSchema } from './config/schema'
+import { ApiTokenRestrictedDomainGuard } from './auth/guards/api-token-restricted-domain.guard'
 
 @Module({
   controllers: [],
@@ -159,7 +160,10 @@ import { validationSchema } from './config/schema'
       provide: APP_GUARD,
       useClass: MembershipGuard
     },
-
+    {
+      provide: APP_GUARD,
+      useClass: ApiTokenRestrictedDomainGuard
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggerErrorInterceptor

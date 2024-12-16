@@ -77,7 +77,7 @@ export default function BillingPageContent() {
       {/* New Card for Available Plans */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-xl'>Available Plans</CardTitle>
+          <CardTitle>Available Plans</CardTitle>
           <CardDescription>
             Subscribe to a plan to unlock additional features.
           </CardDescription>

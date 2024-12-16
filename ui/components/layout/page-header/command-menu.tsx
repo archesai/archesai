@@ -53,7 +53,7 @@ export function CommandMenu({ ...props }: DialogProps) {
   }, [])
 
   return (
-    <div className='w-full'>
+    <div>
       <Button
         className={cn(
           'h-8 w-full justify-between gap-2 rounded-lg border-sidebar-border bg-sidebar text-base font-normal text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:text-sm'

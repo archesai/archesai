@@ -15,6 +15,7 @@ import { CreateOrganizationDto } from './dto/create-organization.dto'
 import { UpdateOrganizationDto } from './dto/update-organization.dto'
 import { OrganizationEntity } from './entities/organization.entity'
 import { OrganizationsService } from './organizations.service'
+import { Roles } from '../auth/decorators/roles.decorator'
 
 @ApiBearerAuth()
 @Controller('/organizations')
@@ -46,6 +47,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
+  @Roles('ADMIN')
   @Delete(':orgname')
   async delete(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
@@ -71,6 +73,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
+  @Roles('ADMIN')
   @Patch(':orgname')
   async update(
     @Param('orgname') orgname: string,

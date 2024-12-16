@@ -1,6 +1,5 @@
 'use client'
 import { DataTable } from '@/components/datatables/datatable/data-table'
-import { Badge } from '@/components/ui/badge'
 import {
   ToolsControllerFindAllPathParams,
   ToolsControllerRemoveVariables,
@@ -13,6 +12,7 @@ import { format } from 'date-fns'
 import { PackageCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { ContentTypeToIcon } from '../content-type-to-icon'
 
 export default function ToolDataTable() {
   const router = useRouter()
@@ -50,14 +50,26 @@ export default function ToolDataTable() {
         {
           accessorKey: 'inputType',
           cell: ({ row }) => {
-            return <Badge>{row.original.inputType}</Badge>
+            return (
+              <div className='flex h-full items-center justify-center'>
+                <ContentTypeToIcon
+                  contentType={row.original.inputType.toLowerCase()}
+                />
+              </div>
+            )
           },
           enableHiding: false
         },
         {
           accessorKey: 'outputType',
           cell: ({ row }) => {
-            return <Badge>{row.original.outputType}</Badge>
+            return (
+              <div className='flex h-full items-center justify-center'>
+                <ContentTypeToIcon
+                  contentType={row.original.outputType.toLowerCase()}
+                />
+              </div>
+            )
           },
           enableHiding: false
         },

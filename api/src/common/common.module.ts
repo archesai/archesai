@@ -1,12 +1,8 @@
-import {
-  ClassSerializerInterceptor,
-  Module,
-  ValidationPipe
-} from '@nestjs/common'
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
+import { ClassSerializerInterceptor, Module } from '@nestjs/common'
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core'
 
 import { AllExceptionsFilter } from './filters/all-exceptions.filter'
-import { ExcludeNullInterceptor } from './interceptors/exclude-null.interceptor'
+import { CustomValidationPipe } from './pipes/custom-validation.pipe'
 
 @Module({
   providers: [
@@ -16,26 +12,16 @@ import { ExcludeNullInterceptor } from './interceptors/exclude-null.interceptor'
     },
     {
       provide: APP_PIPE,
-      useFactory: () => {
-        return new ValidationPipe({
-          forbidNonWhitelisted: true,
-          forbidUnknownValues: true,
-          transform: true,
-          transformOptions: {
-            enableImplicitConversion: true,
-            exposeDefaultValues: true
-          },
-          whitelist: true
+      useFactory: () => new CustomValidationPipe()
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      inject: [Reflector],
+      useFactory: (reflector: Reflector) =>
+        new ClassSerializerInterceptor(reflector, {
+          excludeExtraneousValues: true,
+          enableImplicitConversion: true
         })
-      }
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ExcludeNullInterceptor
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor
     }
   ]
 })

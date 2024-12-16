@@ -7,6 +7,7 @@ import { UserEntity } from '../users/entities/user.entity'
 import { CreateOrganizationDto } from './dto/create-organization.dto'
 import { UpdateOrganizationDto } from './dto/update-organization.dto'
 import { OrganizationModel } from './entities/organization.entity'
+import { RoleTypeEnum } from '../members/entities/member.entity'
 
 @Injectable()
 export class OrganizationRepository extends BaseRepository<
@@ -46,7 +47,7 @@ export class OrganizationRepository extends BaseRepository<
           create: {
             inviteAccepted: true,
             inviteEmail: user.email, // FIXME
-            role: 'ADMIN',
+            role: RoleTypeEnum.ADMIN,
             user: {
               connect: {
                 username: user.username

@@ -1,50 +1,43 @@
-import { ApiProperty } from '@nestjs/swagger'
 import Stripe from 'stripe'
 
 export class Address {
-  @ApiProperty({
-    description: 'City/District/Suburb/Town/Village.',
-    example: 'San Francisco',
-    nullable: true
-  })
-  city: null | string
+  /**
+   * City/District/Suburb/Town/Village.
+   * @example 'San Francisco'
+   */
+  city: string | null
 
-  @ApiProperty({
-    description: 'Two-letter country code (ISO 3166-1 alpha-2).',
-    example: 'US',
-    nullable: true
-  })
-  country: null | string
+  /**
+   * Two-letter country code (ISO 3166-1 alpha-2).
+   * @example 'US'
+   */
+  country: string | null
 
-  @ApiProperty({
-    description: 'Address line 1 (e.g., street, PO Box, or company name).',
-    example: '123 Main Street',
-    nullable: true
-  })
-  line1: null | string
+  /**
+   * Address line 1 (e.g., street, PO Box, or company name).
+   * @example '123 Main Street'
+   */
+  line1: string | null
 
-  @ApiProperty({
-    description: 'Address line 2 (e.g., apartment, suite, unit, or building).',
-    example: 'Apt 4B',
-    nullable: true
-  })
-  line2: null | string
+  /**
+   * Address line 2 (e.g., apartment, suite, unit, or building).
+   * @example 'Apt 4B'
+   */
+  line2: string | null
 
-  @ApiProperty({
-    description: 'ZIP or postal code.',
-    example: '94111',
-    nullable: true
-  })
-  postal_code: null | string
+  /**
+   * ZIP or postal code.
+   * @example '94111'
+   */
+  postal_code: string | null
 
-  @ApiProperty({
-    description: 'State/County/Province/Region.',
-    example: 'CA',
-    nullable: true
-  })
-  state: null | string
+  /**
+   * State/County/Province/Region.
+   * @example 'CA'
+   */
+  state: string | null
 
-  constructor(address: null | Stripe.Address) {
+  constructor(address: Stripe.Address | null) {
     this.city = address?.city || null
     this.country = address?.country || null
     this.line1 = address?.line1 || null
@@ -55,32 +48,28 @@ export class Address {
 }
 
 export class BillingDetails {
-  @ApiProperty({
-    description: 'Billing address associated with the payment method.',
-    type: () => Address
-  })
+  /**
+   * Billing address associated with the payment method.
+   */
   address: Address
 
-  @ApiProperty({
-    description: 'Email address associated with the payment method.',
-    example: 'customer@example.com',
-    nullable: true
-  })
-  email: null | string
+  /**
+   * Email address associated with the payment method.
+   * @example 'customer@example.com'
+   */
+  email: string | null
 
-  @ApiProperty({
-    description: 'Full name associated with the payment method.',
-    example: 'Jane Doe',
-    nullable: true
-  })
-  name: null | string
+  /**
+   * Full name associated with the payment method.
+   * @example 'Jane Doe'
+   */
+  name: string | null
 
-  @ApiProperty({
-    description: 'Phone number associated with the payment method.',
-    example: '+1234567890',
-    nullable: true
-  })
-  phone: null | string
+  /**
+   * Phone number associated with the payment method.
+   * @example '+1234567890'
+   */
+  phone: string | null
 
   constructor(billingDetails: Stripe.PaymentMethod.BillingDetails) {
     this.address = new Address(billingDetails.address)
@@ -91,46 +80,45 @@ export class BillingDetails {
 }
 
 export class CardDetails {
-  @ApiProperty({
-    description: 'Card brand (e.g., Visa, MasterCard).',
-    example: 'visa'
-  })
+  /**
+   * Card brand (e.g., Visa, MasterCard).
+   * @example 'visa'
+   */
   brand: string
 
-  @ApiProperty({
-    description: 'Two-letter ISO code representing the country of the card.',
-    example: 'US'
-  })
+  /**
+   * Two-letter ISO code representing the country of the card.
+   * @example 'US'
+   */
   country: string
 
-  @ApiProperty({
-    description: 'Two-digit number representing the card’s expiration month.',
-    example: 12
-  })
+  /**
+   * Two-digit number representing the card’s expiration month.
+   * @example 12
+   */
   exp_month: number
 
-  @ApiProperty({
-    description: 'Four-digit number representing the card’s expiration year.',
-    example: 2024
-  })
+  /**
+   * Four-digit number representing the card’s expiration year.
+   * @example 2024
+   */
   exp_year: number
 
-  @ApiProperty({
-    description: 'Unencrypted PAN tokens (optional, sensitive).',
-    nullable: true
-  })
-  fingerprint: null | string
+  /**
+   * Unencrypted PAN tokens (optional, sensitive).
+   */
+  fingerprint: string | null
 
-  @ApiProperty({
-    description: 'Card funding type (credit, debit, prepaid, unknown).',
-    example: 'credit'
-  })
+  /**
+   * Card funding type (credit, debit, prepaid, unknown).
+   * @example 'credit'
+   */
   funding: string
 
-  @ApiProperty({
-    description: 'The last four digits of the card.',
-    example: '4242'
-  })
+  /**
+   * The last four digits of the card.
+   * @example '4242'
+   */
   last4: string
 
   constructor(card: Stripe.PaymentMethod.Card) {
@@ -145,37 +133,32 @@ export class CardDetails {
 }
 
 export class PaymentMethodEntity {
-  @ApiProperty({
-    description: 'Billing details associated with the payment method.',
-    type: () => BillingDetails
-  })
+  /**
+   * Billing details associated with the payment method.
+   */
   billing_details: BillingDetails
 
-  @ApiProperty({
-    description:
-      'If the PaymentMethod is a card, this contains the card details.',
-    nullable: true,
-    type: () => CardDetails
-  })
+  /**
+   * If the PaymentMethod is a card, this contains the card details.
+   */
   card: CardDetails | null
 
-  @ApiProperty({
-    description: 'ID of the customer this payment method is saved to.',
-    example: 'cus_J0a1b2c3d4e5f6g7h8i9',
-    nullable: true
-  })
-  customer: null | string
+  /**
+   * ID of the customer this payment method is saved to.
+   * @example 'cus_J0a1b2c3d4e5f6g7h8i9'
+   */
+  customer: string | null
 
-  @ApiProperty({
-    description: 'Unique identifier for the payment method',
-    example: 'pm_1J2Y3A4B5C6D7E8F9G0H'
-  })
+  /**
+   * Unique identifier for the payment method.
+   * @example 'pm_1J2Y3A4B5C6D7E8F9G0H'
+   */
   id: string
 
-  @ApiProperty({
-    description: 'The type of the PaymentMethod. An example value is "card".',
-    example: 'card'
-  })
+  /**
+   * The type of the PaymentMethod. An example value is "card".
+   * @example 'card'
+   */
   type: string
 
   constructor(paymentMethod: Stripe.PaymentMethod) {

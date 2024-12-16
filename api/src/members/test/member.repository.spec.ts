@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { PrismaService } from '../../prisma/prisma.service'
 import { CreateMemberDto } from '../dto/create-member.dto'
 import { MemberRepository } from '../member.repository'
+import { RoleTypeEnum } from '../entities/member.entity'
 
 describe('MemberRepository', () => {
   let memberRepository: MemberRepository
@@ -39,7 +40,7 @@ describe('MemberRepository', () => {
       const orgname = 'test-org'
       const createMemberDto: CreateMemberDto = {
         inviteEmail: 'test@example.com',
-        role: 'ADMIN'
+        role: RoleTypeEnum.ADMIN
       }
       const existingUser = { username: 'testuser' }
 
@@ -67,7 +68,7 @@ describe('MemberRepository', () => {
       const orgname = 'test-org'
       const createMemberDto: CreateMemberDto = {
         inviteEmail: 'test@example.com',
-        role: 'ADMIN'
+        role: RoleTypeEnum.ADMIN
       }
 
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null)

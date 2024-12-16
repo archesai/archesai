@@ -56,6 +56,9 @@ describe('Access Tokens', () => {
 
     // Verify restricted access due to bad domain
     await verifyRestrictedDomainAccess(orgname, badUserToken.key)
+
+    // Verify allowed access due to good domain
+    await verifyAllowedDomainAccess(orgname, badUserToken.key)
   })
 
   const createToken = async (
@@ -131,5 +134,16 @@ describe('Access Tokens', () => {
       .get(`/organizations/${orgname}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(401)
+  }
+
+  const verifyAllowedDomainAccess = async (
+    orgname: string,
+    accessToken: string
+  ) => {
+    const res = await request(app.getHttpServer())
+      .get(`/organizations/${orgname}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .set('Origin', 'localhost')
+    expect(res.status).toBe(200)
   }
 })

@@ -9,6 +9,7 @@ import {
   registerUser,
   setEmailVerified
 } from '../test/util'
+import { RunTypeEnum } from '@/src/runs/entities/run.entity'
 
 describe('Runs', () => {
   let app: INestApplication
@@ -39,23 +40,26 @@ describe('Runs', () => {
     const badInputs: CreateRunDto[] = [
       {
         contentIds: ['1'],
-        runType: 'TOOL_RUN'
+        runType: RunTypeEnum.TOOL_RUN
       },
       {
-        runType: 'TOOL_RUN',
-        text: 'This is the text to use as input for the run.'
+        runType: RunTypeEnum.TOOL_RUN,
+        text: 'This is the text to use as input for the run.',
+        contentIds: []
       },
       {
         pipelineId: '1',
-        runType: 'TOOL_RUN',
-        url: 'https://example.com'
+        runType: RunTypeEnum.TOOL_RUN,
+        url: 'https://example.com',
+        contentIds: []
       },
       {
         contentIds: ['1'],
-        runType: 'PIPELINE_RUN'
+        runType: RunTypeEnum.PIPELINE_RUN
       },
       {
-        runType: 'PIPELINE_RUN'
+        runType: RunTypeEnum.PIPELINE_RUN,
+        contentIds: []
       }
     ]
 
@@ -73,9 +77,10 @@ describe('Runs', () => {
     const summarizerTool = tools.find((tool) => tool.name === 'Summarize')
 
     const createRunDto: CreateRunDto = {
-      runType: 'TOOL_RUN',
+      runType: RunTypeEnum.TOOL_RUN,
       text: 'This is the text to use as input for the run.',
-      toolId: summarizerTool.id
+      toolId: summarizerTool.id,
+      contentIds: []
     }
     const res = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/runs`)

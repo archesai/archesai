@@ -1,4 +1,5 @@
 import { ApiTokenEntity } from '@/src/api-tokens/entities/api-token.entity'
+import { RoleTypeEnum } from '@/src/members/entities/member.entity'
 import { faker } from '@faker-js/faker'
 
 export function createRandomApiToken(
@@ -11,7 +12,7 @@ export function createRandomApiToken(
     key: faker.internet.password(),
     name: faker.word.noun(),
     orgname: faker.internet.domainName(),
-    role: 'ADMIN',
+    role: RoleTypeEnum.ADMIN,
     updatedAt: faker.date.recent(),
     username: faker.internet.username(),
     ...overrides

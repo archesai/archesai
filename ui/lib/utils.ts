@@ -20,3 +20,32 @@ export function toSentenceCase(str: string) {
 export function toCapitalized(str: string): string {
   return str.replace(/\b\w/g, (char) => char.toUpperCase())
 }
+
+export function stringToColor(str: string) {
+  if (str.includes('video')) {
+    return 'text-green-600'
+  } else if (
+    str.includes('audio') ||
+    str.includes('music') ||
+    str.includes('speech')
+  ) {
+    return 'text-purple-600'
+  } else if (str.includes('image')) {
+    return 'text-blue-900'
+  } else if (str.includes('application')) {
+    return 'text-blue-800'
+  } else if (str.includes('text')) {
+    return 'text-green-600'
+  } else {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    let color = '#'
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff
+      color += ('00' + value.toString(16)).slice(-2)
+    }
+    return color
+  }
+}

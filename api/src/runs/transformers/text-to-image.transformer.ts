@@ -47,7 +47,8 @@ export const transformTextToImage: IToolRunProcess = async (
   const content = await contentService.create(runInputContents[0].orgname, {
     name:
       'Text to Speech Tool -' + runInputContents.map((x) => x.name).join(', '),
-    url
+    url,
+    labels: []
   })
 
   return [new ContentEntity(content)]

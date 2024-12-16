@@ -142,6 +142,7 @@ export class LocalStorageService implements StorageService {
       result.push(
         new StorageItemDto({
           createdAt: stats.birthtime,
+          updatedAt: stats.mtime,
           id: itemFullPath,
           isDir: isDir,
           name: item,

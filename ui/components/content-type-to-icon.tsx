@@ -3,39 +3,46 @@ import {
   HoverCardContent,
   HoverCardTrigger
 } from '@/components/ui/hover-card'
-import { FileText, Image as ImageIcon, Music, Video } from 'lucide-react'
+import { cn, stringToColor } from '@/lib/utils'
+import {
+  FileText,
+  Image as ImageIcon,
+  LetterText,
+  Music,
+  Video
+} from 'lucide-react'
 
 export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {
-  const getLabel = (contentType: string) => {
-    switch (contentType) {
-      case 'application/msword':
-      case 'application/pdf':
-      case 'application/vnd.ms-excel':
-      case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-      case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        return <FileText className='h-5 w-5 text-muted-foreground' />
-      case 'audio/mp3':
-      case 'audio/mpeg':
-        return <Music className='h-5 w-5 text-muted-foreground' />
-      case 'image/gif':
-      case 'image/jpeg':
-      case 'image/png':
-      case 'image/svg+xml':
-        return <ImageIcon className='h-5 w-5 text-muted-foreground' />
-
-      case 'video/mp4':
-      case 'video/mpeg':
-        return <Video className='h-5 w-5 text-muted-foreground' />
+  const sharedClass = cn('h-5 w-5')
+  const mediaType = contentType.split('/')[0] as string
+  const color = stringToColor(contentType)
+  const getLabel = (mediaType: string) => {
+    switch (mediaType) {
+      case 'application':
+        return <FileText className={cn(sharedClass, color)} />
+      case 'audio':
+        return <Music className={cn(sharedClass, color)} />
+      case 'image':
+        return <ImageIcon className={cn(sharedClass, color)} />
+      case 'video':
+        return <Video className={cn(sharedClass, color)} />
       default:
-        return <FileText className='h-5 w-5 text-muted-foreground' />
+        return (
+          <LetterText
+            className={cn(sharedClass)}
+            style={{
+              color: color
+            }}
+          />
+        )
     }
   }
 
   return (
     <HoverCard>
-      <HoverCardTrigger asChild>{getLabel(contentType)}</HoverCardTrigger>
+      <HoverCardTrigger asChild>{getLabel(mediaType)}</HoverCardTrigger>
       <HoverCardContent className='flex w-auto items-center gap-2 p-2'>
-        {getLabel(contentType)}
+        {getLabel(mediaType)}
         <p className='text-sm'>{contentType}</p>
       </HoverCardContent>
     </HoverCard>
