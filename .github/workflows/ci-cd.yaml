@@ -93,7 +93,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install google-cloud-cli-gke-gcloud-auth-plugin
-        run: sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
+        run: |
+          sudo apt-get update
+          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
       - name: Create GKE Release
         run: |
