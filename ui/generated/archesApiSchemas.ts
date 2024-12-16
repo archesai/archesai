@@ -551,6 +551,15 @@ export type BillingUrlEntity = {
   url: string
 }
 
+export type PlanMetadata = {
+  /**
+   * The key of the metadata
+   *
+   * @example STANDARD
+   */
+  key?: 'FREE' | 'BASIC' | 'STANDARD' | 'PREMIUM' | 'UNLIMITED'
+}
+
 export type PlanEntity = {
   /**
    * The currency of the plan
@@ -570,6 +579,10 @@ export type PlanEntity = {
    * @example prod_1234567890
    */
   id: string
+  /**
+   * The metadata of the plan
+   */
+  metadata: PlanMetadata
   /**
    * The name of the plan
    *

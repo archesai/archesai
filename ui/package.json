@@ -8,7 +8,7 @@
     "start": "next start",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "next lint --dir .",
+    "lint": "next lint --dir . && npx tsc --noEmit",
     "gen": "NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-codegen gen archesApi",
     "test": "jest",
     "test:watch": "jest --watch"

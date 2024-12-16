@@ -66,6 +66,9 @@ export default function Chat() {
         const label = await createLabel({
           pathParams: {
             orgname: defaultOrgname
+          },
+          body: {
+            name: 'Chat'
           }
         })
         setLabelId(label.id)
@@ -85,7 +88,23 @@ export default function Chat() {
       id: 'pending',
       name: 'Pending',
       orgname: defaultOrgname,
-      text: message.trim()
+      text: message.trim(),
+      children: [],
+      consumedBy: [],
+      labels: [],
+      mimeType: 'text/plain',
+      parentId: null,
+      parent: {
+        id: '',
+        name: 'Chat'
+      },
+      previewImage: null,
+      producedBy: {
+        id: '',
+        name: 'Chat'
+      },
+      producedById: null,
+      url: null
     })
 
     try {

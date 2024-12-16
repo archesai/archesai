@@ -91,7 +91,8 @@ export default function ImportCard({
 
             const readUrlResponse = await getReadUrl({
               body: {
-                path: `uploads/${file.name}`
+                path: `uploads/${file.name}`,
+                isDir: false
               },
               pathParams: {
                 orgname: defaultOrgname
@@ -101,7 +102,8 @@ export default function ImportCard({
             const content = await createContent({
               body: {
                 name: file.name,
-                url: readUrlResponse.read
+                url: readUrlResponse.read,
+                labels: []
               },
               pathParams: {
                 orgname: defaultOrgname
@@ -143,7 +145,8 @@ export default function ImportCard({
           // Get a unique write URL for each file
           const writeUrlResponse = await getWriteUrl({
             body: {
-              path: `uploads/${file.name}`
+              path: `uploads/${file.name}`,
+              isDir: false
             },
             pathParams: {
               orgname: defaultOrgname

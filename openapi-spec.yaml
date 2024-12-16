@@ -2733,6 +2733,19 @@ components:
           example: www.stripe.com/checkout/filchat-io
       required:
         - url
+    PlanMetadata:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key of the metadata
+          example: STANDARD
+          enum:
+            - FREE
+            - BASIC
+            - STANDARD
+            - PREMIUM
+            - UNLIMITED
     PlanEntity:
       type: object
       properties:
@@ -2749,6 +2762,10 @@ components:
           type: string
           description: The ID of the plan
           example: prod_1234567890
+        metadata:
+          description: The metadata of the plan
+          allOf:
+            - $ref: '#/components/schemas/PlanMetadata'
         name:
           type: string
           description: The name of the plan
@@ -2769,6 +2786,7 @@ components:
         - currency
         - description
         - id
+        - metadata
         - name
         - priceId
         - recurring
