@@ -1,5 +1,5 @@
 import {
-  FieldFieldQuery,
+  FieldFilter,
   OperatorEnum,
   SearchQueryDto
 } from './dto/search-query.dto'
@@ -60,6 +60,7 @@ export abstract class BaseRepository<
     orgname: string,
     queryDto: SearchQueryDto
   ): Promise<{ count: number; results: PrismaModel[] }> {
+    console.log(queryDto)
     const whereConditions: any = {
       createdAt: {
         gte: queryDto.startDate,
@@ -69,7 +70,7 @@ export abstract class BaseRepository<
     }
 
     if (queryDto.filters) {
-      queryDto.filters.forEach((filter: FieldFieldQuery) => {
+      queryDto.filters.forEach((filter: FieldFilter) => {
         if (filter.operator)
           if (
             // If this is a relation filter

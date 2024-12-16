@@ -1,14 +1,12 @@
 import { BadRequestException } from '@nestjs/common'
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger'
-import { Transform, Type } from 'class-transformer'
+import { Expose, plainToInstance, Transform, Type } from 'class-transformer'
 import {
-  IsArray,
   IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
-  ValidateIf
+  ValidateNested
 } from 'class-validator'
 
 export enum GranularityEnum {
@@ -16,6 +14,11 @@ export enum GranularityEnum {
   MONTH = 'month',
   WEEK = 'week',
   YEAR = 'year'
+}
+
+export enum AggregateTypeEnum {
+  COUNT = 'count',
+  SUM = 'sum'
 }
 
 export enum OperatorEnum {
@@ -35,12 +38,13 @@ export enum SortDirectionEnum {
   DESCENDING = 'desc'
 }
 
-export class AggregateFieldQuery {
+export class FieldAggregate {
   /**
    * The field to aggregate by
    * @example createdAt
    */
   @IsString()
+  @Expose()
   field: string
 
   /**
@@ -48,22 +52,25 @@ export class AggregateFieldQuery {
    * @example day
    */
   @IsEnum(GranularityEnum)
+  @Expose()
   granularity: GranularityEnum
 
   /**
    *The type of aggregate to perform
    * @example count
    */
-  @IsEnum(['count', 'sum'])
-  type: 'count' | 'sum'
+  @IsEnum(AggregateTypeEnum)
+  @Expose()
+  type: AggregateTypeEnum
 }
 
-export class FieldFieldQuery {
+export class FieldFilter {
   /**
    * The field to filter by
    * @example createdAt
    */
   @IsString()
+  @Expose()
   field: string
 
   /**
@@ -71,35 +78,36 @@ export class FieldFieldQuery {
    * @example contains
    */
   @IsEnum(OperatorEnum)
+  @Expose()
   operator: OperatorEnum
 
   /**
    * The value to filter by
    * @example 2021-01-01
    */
-  @IsArray()
   @IsString()
-  @Type(() => String) // Ensures the array elements are treated as strings
-  @ValidateIf((o) => typeof o.value === 'string')
-  @ValidateIf((o) => Array.isArray(o.value))
-  value: string | string[]
+  @Expose()
+  value: string
 }
 
 export class SearchQueryDto {
-  @ApiProperty({
-    default: [],
-    description: 'Aggregates to collect for the search results',
-    isArray: true,
-    items: {
-      $ref: getSchemaPath(AggregateFieldQuery)
-    },
-    required: false,
-    type: 'array'
-  })
-  @IsArray()
+  /**
+   * Aggregates to collect for the search results
+   */
   @IsOptional()
-  @Transform(({ value }) => transformValues(value))
-  aggregates?: AggregateFieldQuery[] = []
+  @ValidateNested({ each: true })
+  @Type(() => FieldAggregate)
+  @Transform(({ value }) => transformValues(value, FieldAggregate))
+  aggregates?: FieldAggregate[]
+
+  /**
+   * Filters to apply to the search results
+   */
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => FieldFilter)
+  @Transform(({ value }) => transformValues(value, FieldFilter))
+  filters?: FieldFilter[]
 
   /**
    *The end date to search to
@@ -108,21 +116,6 @@ export class SearchQueryDto {
   @IsOptional()
   @IsDateString()
   endDate?: Date
-
-  @ApiProperty({
-    default: [],
-    description: 'Filter fields and values',
-    isArray: true,
-    items: {
-      $ref: getSchemaPath(FieldFieldQuery)
-    },
-    required: false,
-    type: 'array'
-  })
-  @IsArray()
-  @IsOptional()
-  @Transform(({ value }) => transformValues(value))
-  filters?: FieldFieldQuery[] = []
 
   /**
    * The limit of the number of results returned
@@ -133,7 +126,7 @@ export class SearchQueryDto {
 
   /**
    *The offset of the returned results
-   * @example 10
+   * @example 0
    */
   @IsNumber()
   offset?: number = 0
@@ -161,23 +154,18 @@ export class SearchQueryDto {
   startDate?: Date
 }
 
-const transformValues = (value: string | string[]) => {
-  if (typeof value === 'string') {
-    try {
-      const parsed = JSON.parse(value)
-      if (!Array.isArray(parsed)) {
-        const filters = [parsed]
-        return filters
-      }
-      return parsed
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      throw new BadRequestException(
-        'Invalid filters format. It should be a JSON array.'
-      )
-    }
-  } else {
-    const filters = value.map((filter: string) => JSON.parse(filter))
-    return filters
+export const transformValues = (value: any, cls: any): any[] => {
+  if (!value) {
+    return []
+  } else if (Array.isArray(value)) {
+    return value.map((v) => plainToInstance(cls, v))
+  }
+  try {
+    const val = JSON.parse(value)
+    return Array.isArray(val)
+      ? val.map((v) => plainToInstance(cls, v))
+      : [plainToInstance(cls, val)]
+  } catch (error) {
+    throw new BadRequestException(error)
   }
 }

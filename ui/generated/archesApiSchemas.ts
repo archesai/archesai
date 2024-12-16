@@ -1307,7 +1307,7 @@ export type RunEntity = {
   id: string
 }
 
-export type FieldFieldQuery = {
+export type FieldFilter = {
   /**
    * The field to filter by
    *
@@ -1337,7 +1337,7 @@ export type FieldFieldQuery = {
   value: Record<string, any>
 }
 
-export type AggregateFieldQuery = {
+export type FieldAggregate = {
   /**
    * The field to aggregate by
    *

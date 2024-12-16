@@ -1,8 +1,8 @@
 import { Expose } from 'class-transformer'
-import { AggregateFieldQuery } from './search-query.dto'
+import { FieldAggregate } from './search-query.dto'
 import { IsArray, IsNumber, ValidateNested } from 'class-validator'
 
-export class AggregateFieldResult extends AggregateFieldQuery {
+export class AggregateFieldResult extends FieldAggregate {
   /**
    * The value of the aggregate
    * @example 10

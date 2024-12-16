@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/popover'
 import { siteConfig } from '@/config/site'
 import { useToolsControllerFindAll } from '@/generated/archesApiComponents'
-import { FieldFieldQuery, RunEntity } from '@/generated/archesApiSchemas'
+import { FieldFilter, RunEntity } from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
 import { cn } from '@/lib/utils'
 import { CounterClockwiseClockIcon } from '@radix-ui/react-icons'
@@ -35,7 +35,7 @@ export const RunStatusButton = ({
           operator: 'in',
           value: [run.toolId]
         }
-      ] as FieldFieldQuery[]) as any
+      ] as FieldFilter[]) as any
     }
   })
 

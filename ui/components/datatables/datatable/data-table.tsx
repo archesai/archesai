@@ -20,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { FieldFieldQuery } from '@/generated/archesApiSchemas'
+import { FieldFilter } from '@/generated/archesApiSchemas'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useFilterItems } from '@/hooks/useFilterItems'
 import { useSelectItems } from '@/hooks/useSelectItems'
@@ -54,7 +54,7 @@ interface DataTableProps<
   columns: AccessorKeyColumnDef<TItem, TDeleteVariables>[]
   content?: (item: TItem) => JSX.Element
   createForm?: React.ReactNode
-  customFilters?: FieldFieldQuery[]
+  customFilters?: FieldFilter[]
   dataIcon: JSX.Element
   defaultView?: 'grid' | 'table'
   filterField?: string

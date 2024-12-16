@@ -13,10 +13,7 @@ import { createClient } from 'redis'
 import { AppModule } from './app.module'
 import { RedisIoAdapter } from './common/adapters/redis-io.adapter'
 import { AggregateFieldResult, Metadata } from './common/dto/paginated.dto'
-import {
-  AggregateFieldQuery,
-  FieldFieldQuery
-} from './common/dto/search-query.dto'
+import { FieldAggregate, FieldFilter } from './common/dto/search-query.dto'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -37,8 +34,8 @@ async function bootstrap() {
     const documentFactory = () =>
       SwaggerModule.createDocument(app, swaggerConfig, {
         extraModels: [
-          FieldFieldQuery,
-          AggregateFieldQuery,
+          FieldFilter,
+          FieldAggregate,
           AggregateFieldResult,
           Metadata
         ]

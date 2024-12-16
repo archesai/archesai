@@ -14,14 +14,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePipelineDto'
+              $ref: "#/components/schemas/CreatePipelineDto"
       responses:
-        '201':
+        "201":
           description: pipeline created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
+                $ref: "#/components/schemas/PipelineEntity"
       security:
         - bearer: []
       summary: Create a new pipeline
@@ -57,7 +57,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -100,10 +100,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -112,13 +112,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/PipelineEntity'
+                          $ref: "#/components/schemas/PipelineEntity"
                         type: array
                     required:
                       - metadata
@@ -144,12 +144,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: pipeline found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
+                $ref: "#/components/schemas/PipelineEntity"
       security:
         - bearer: []
       summary: Get a single pipeline
@@ -169,7 +169,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: pipeline deleted successfully.
       security:
         - bearer: []
@@ -194,14 +194,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePipelineDto'
+              $ref: "#/components/schemas/UpdatePipelineDto"
       responses:
-        '200':
+        "200":
           description: pipeline updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PipelineEntity'
+                $ref: "#/components/schemas/PipelineEntity"
       security:
         - bearer: []
       summary: Update a pipeline
@@ -217,15 +217,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenDto'
+              $ref: "#/components/schemas/ConfirmationTokenDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
+                $ref: "#/components/schemas/TokenDto"
+        "400":
           description: BadRequestException
       summary: Confirm e-mail change with a token
       tags:
@@ -240,10 +240,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequestDto'
+              $ref: "#/components/schemas/EmailRequestDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
       security:
         - bearer: []
       summary: Request e-mail change with a token
@@ -259,17 +259,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenDto'
+              $ref: "#/components/schemas/ConfirmationTokenDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
+                $ref: "#/components/schemas/TokenDto"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
       summary: Confirm e-mail verification with a token
       tags:
@@ -280,13 +280,13 @@ paths:
       operationId: AuthController_emailVerificationRequest
       parameters: []
       responses:
-        '201':
-          description: ''
-        '400':
+        "201":
+          description: ""
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
-        '403':
+        "403":
           description: ForbiddenException
       security:
         - bearer: []
@@ -303,17 +303,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginDto'
+              $ref: "#/components/schemas/LoginDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
+                $ref: "#/components/schemas/TokenDto"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
       summary: Login with e-mail and password
       tags:
@@ -324,9 +324,9 @@ paths:
       operationId: AuthController_logout
       parameters: []
       responses:
-        '201':
-          description: ''
-        '401':
+        "201":
+          description: ""
+        "401":
           description: UnauthorizedException
       summary: Logout of the current session
       tags:
@@ -341,17 +341,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConfirmationTokenWithNewPasswordDto'
+              $ref: "#/components/schemas/ConfirmationTokenWithNewPasswordDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '400':
+                $ref: "#/components/schemas/TokenDto"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
       summary: Confirm password change with a token
       tags:
@@ -366,10 +366,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailRequestDto'
+              $ref: "#/components/schemas/EmailRequestDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
       summary: Request password reset
       tags:
         - Authentication
@@ -379,13 +379,13 @@ paths:
       operationId: AuthController_refreshToken
       parameters: []
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '401':
+                $ref: "#/components/schemas/TokenDto"
+        "401":
           description: UnauthorizedException
       summary: Refresh access token
       tags:
@@ -402,15 +402,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterDto'
+              $ref: "#/components/schemas/RegisterDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenDto'
-        '409':
+                $ref: "#/components/schemas/TokenDto"
+        "409":
           description: ConflictException
       summary: Register a new user
       tags:
@@ -421,11 +421,11 @@ paths:
       operationId: UsersController_deactivate
       parameters: []
       responses:
-        '201':
-          description: ''
-        '400':
+        "201":
+          description: ""
+        "400":
           description: Bad Request.
-        '401':
+        "401":
           description: Unauthorized.
       security:
         - bearer: []
@@ -438,15 +438,15 @@ paths:
       operationId: UsersController_findOne
       parameters: []
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserEntity'
-        '401':
+                $ref: "#/components/schemas/UserEntity"
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -461,19 +461,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserDto'
+              $ref: "#/components/schemas/UpdateUserDto"
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserEntity'
-        '400':
+                $ref: "#/components/schemas/UserEntity"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -489,19 +489,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrganizationDto'
+              $ref: "#/components/schemas/CreateOrganizationDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '400':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -518,11 +518,11 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
-        '401':
+        "200":
+          description: ""
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -538,15 +538,15 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '401':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -566,19 +566,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOrganizationDto'
+              $ref: "#/components/schemas/UpdateOrganizationDto"
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrganizationEntity'
-        '400':
+                $ref: "#/components/schemas/OrganizationEntity"
+        "400":
           description: BadRequestException
-        '401':
+        "401":
           description: UnauthorizedException
-        '404':
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -596,9 +596,9 @@ paths:
           schema:
             type: string
       responses:
-        '201':
-          description: ''
-        '403':
+        "201":
+          description: ""
+        "403":
           description: ForbiddenException
       security:
         - bearer: []
@@ -621,11 +621,11 @@ paths:
           schema:
             type: string
       responses:
-        '201':
-          description: ''
-        '400':
+        "201":
+          description: ""
+        "400":
           description: BadRequestException
-        '403':
+        "403":
           description: ForbiddenException
       security:
         - bearer: []
@@ -645,13 +645,13 @@ paths:
           schema:
             type: string
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingUrlEntity'
-        '403':
+                $ref: "#/components/schemas/BillingUrlEntity"
+        "403":
           description: ForbiddenException
       security:
         - bearer: []
@@ -676,15 +676,15 @@ paths:
           schema:
             type: string
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BillingUrlEntity'
-        '400':
+                $ref: "#/components/schemas/BillingUrlEntity"
+        "400":
           description: BadRequestException
-        '403':
+        "403":
           description: ForbiddenException
       security:
         - bearer: []
@@ -697,14 +697,14 @@ paths:
       operationId: BillingController_getPlans
       parameters: []
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PlanEntity'
+                  $ref: "#/components/schemas/PlanEntity"
       security:
         - bearer: []
       summary: Get plans
@@ -721,14 +721,14 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PaymentMethodEntity'
+                  $ref: "#/components/schemas/PaymentMethodEntity"
       security:
         - bearer: []
       summary: List payment methods
@@ -750,9 +750,9 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
-        '404':
+        "200":
+          description: ""
+        "404":
           description: NotFoundException
       security:
         - bearer: []
@@ -773,14 +773,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateToolDto'
+              $ref: "#/components/schemas/CreateToolDto"
       responses:
-        '201':
+        "201":
           description: tool created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
+                $ref: "#/components/schemas/ToolEntity"
       security:
         - bearer: []
       summary: Create a new tool
@@ -816,7 +816,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -859,10 +859,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -871,13 +871,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/ToolEntity'
+                          $ref: "#/components/schemas/ToolEntity"
                         type: array
                     required:
                       - metadata
@@ -903,12 +903,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: tool found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
+                $ref: "#/components/schemas/ToolEntity"
       security:
         - bearer: []
       summary: Get a single tool
@@ -928,7 +928,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: tool deleted successfully.
       security:
         - bearer: []
@@ -953,14 +953,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateToolDto'
+              $ref: "#/components/schemas/UpdateToolDto"
       responses:
-        '200':
+        "200":
           description: tool updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolEntity'
+                $ref: "#/components/schemas/ToolEntity"
       security:
         - bearer: []
       summary: Update a tool
@@ -981,14 +981,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateApiTokenDto'
+              $ref: "#/components/schemas/CreateApiTokenDto"
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
+                $ref: "#/components/schemas/ApiTokenEntity"
       security:
         - bearer: []
       summary: Create a new API token
@@ -1024,7 +1024,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -1067,10 +1067,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -1079,13 +1079,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/ApiTokenEntity'
+                          $ref: "#/components/schemas/ApiTokenEntity"
                         type: array
                     required:
                       - metadata
@@ -1111,12 +1111,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: apitoken found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
+                $ref: "#/components/schemas/ApiTokenEntity"
       security:
         - bearer: []
       summary: Get a single apitoken
@@ -1136,7 +1136,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: apitoken deleted successfully.
       security:
         - bearer: []
@@ -1161,14 +1161,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateApiTokenDto'
+              $ref: "#/components/schemas/UpdateApiTokenDto"
       responses:
-        '200':
+        "200":
           description: apitoken updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiTokenEntity'
+                $ref: "#/components/schemas/ApiTokenEntity"
       security:
         - bearer: []
       summary: Update a apitoken
@@ -1185,17 +1185,17 @@ paths:
           schema:
             type: string
       responses:
-        '201':
-          description: ''
+        "201":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
-        '401':
+                $ref: "#/components/schemas/MemberEntity"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Email not verified
-        '404':
+        "404":
           description: Not Found
       security:
         - bearer: []
@@ -1216,14 +1216,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMemberDto'
+              $ref: "#/components/schemas/CreateMemberDto"
       responses:
-        '201':
+        "201":
           description: member created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
+                $ref: "#/components/schemas/MemberEntity"
       security:
         - bearer: []
       summary: Create a new member
@@ -1259,7 +1259,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -1302,10 +1302,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -1314,13 +1314,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/MemberEntity'
+                          $ref: "#/components/schemas/MemberEntity"
                         type: array
                     required:
                       - metadata
@@ -1346,12 +1346,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: member found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
+                $ref: "#/components/schemas/MemberEntity"
       security:
         - bearer: []
       summary: Get a single member
@@ -1371,7 +1371,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: member deleted successfully.
       security:
         - bearer: []
@@ -1396,14 +1396,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateMemberDto'
+              $ref: "#/components/schemas/UpdateMemberDto"
       responses:
-        '200':
+        "200":
           description: member updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberEntity'
+                $ref: "#/components/schemas/MemberEntity"
       security:
         - bearer: []
       summary: Update a member
@@ -1423,14 +1423,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateLabelDto'
+              $ref: "#/components/schemas/CreateLabelDto"
       responses:
-        '201':
+        "201":
           description: label created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LabelEntity'
+                $ref: "#/components/schemas/LabelEntity"
       security:
         - bearer: []
       summary: Create a new label
@@ -1466,7 +1466,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -1509,10 +1509,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -1521,13 +1521,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/LabelEntity'
+                          $ref: "#/components/schemas/LabelEntity"
                         type: array
                     required:
                       - metadata
@@ -1553,12 +1553,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: label found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LabelEntity'
+                $ref: "#/components/schemas/LabelEntity"
       security:
         - bearer: []
       summary: Get a single label
@@ -1578,7 +1578,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: label deleted successfully.
       security:
         - bearer: []
@@ -1603,14 +1603,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateLabelDto'
+              $ref: "#/components/schemas/UpdateLabelDto"
       responses:
-        '200':
+        "200":
           description: label updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LabelEntity'
+                $ref: "#/components/schemas/LabelEntity"
       security:
         - bearer: []
       summary: Update a label
@@ -1634,13 +1634,13 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Path was successfully deleted
-        '401':
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       security:
         - bearer: []
@@ -1664,19 +1664,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PathDto'
+              $ref: "#/components/schemas/PathDto"
       responses:
-        '201':
+        "201":
           description: Read  url was successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadUrlDto'
-        '401':
+                $ref: "#/components/schemas/ReadUrlDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       security:
         - bearer: []
@@ -1703,19 +1703,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PathDto'
+              $ref: "#/components/schemas/PathDto"
       responses:
-        '201':
+        "201":
           description: Write urls was successfully created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WriteUrlDto'
-        '401':
+                $ref: "#/components/schemas/WriteUrlDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       security:
         - bearer: []
@@ -1740,19 +1740,19 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Path was successfully retrieved
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/StorageItemDto'
-        '401':
+                  $ref: "#/components/schemas/StorageItemDto"
+        "401":
           description: Unauthorized
-        '403':
+        "403":
           description: Forbidden
-        '404':
+        "404":
           description: Not Found
       security:
         - bearer: []
@@ -1773,14 +1773,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateContentDto'
+              $ref: "#/components/schemas/CreateContentDto"
       responses:
-        '201':
+        "201":
           description: content created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
+                $ref: "#/components/schemas/ContentEntity"
       security:
         - bearer: []
       summary: Create a new content
@@ -1816,7 +1816,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -1859,10 +1859,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -1871,13 +1871,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/ContentEntity'
+                          $ref: "#/components/schemas/ContentEntity"
                         type: array
                     required:
                       - metadata
@@ -1903,12 +1903,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: content found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
+                $ref: "#/components/schemas/ContentEntity"
       security:
         - bearer: []
       summary: Get a single content
@@ -1928,7 +1928,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: content deleted successfully.
       security:
         - bearer: []
@@ -1953,14 +1953,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContentDto'
+              $ref: "#/components/schemas/UpdateContentDto"
       responses:
-        '200':
+        "200":
           description: content updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContentEntity'
+                $ref: "#/components/schemas/ContentEntity"
       security:
         - bearer: []
       summary: Update a content
@@ -1980,14 +1980,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateRunDto'
+              $ref: "#/components/schemas/CreateRunDto"
       responses:
-        '201':
+        "201":
           description: run created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RunEntity'
+                $ref: "#/components/schemas/RunEntity"
       security:
         - bearer: []
       summary: Create a new run
@@ -2023,7 +2023,7 @@ paths:
           description: The end date to search to
           schema:
             format: date-time
-            example: '2022-01-01'
+            example: "2022-01-01"
             type: string
         - name: limit
           required: false
@@ -2066,10 +2066,10 @@ paths:
           description: The start date to search from
           schema:
             format: date-time
-            example: '2021-01-01'
+            example: "2021-01-01"
             type: string
       responses:
-        '200':
+        "200":
           description: Successfully returned paginated results
           content:
             application/json:
@@ -2078,13 +2078,13 @@ paths:
                   - properties:
                       aggregates:
                         items:
-                          $ref: '#/components/schemas/AggregateFieldResult'
+                          $ref: "#/components/schemas/AggregateFieldResult"
                         type: array
                       metadata:
-                        $ref: '#/components/schemas/Metadata'
+                        $ref: "#/components/schemas/Metadata"
                       results:
                         items:
-                          $ref: '#/components/schemas/RunEntity'
+                          $ref: "#/components/schemas/RunEntity"
                         type: array
                     required:
                       - metadata
@@ -2110,12 +2110,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: run found.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RunEntity'
+                $ref: "#/components/schemas/RunEntity"
       security:
         - bearer: []
       summary: Get a single run
@@ -2135,7 +2135,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: run deleted successfully.
       security:
         - bearer: []
@@ -2162,12 +2162,12 @@ paths:
             schema:
               type: string
       responses:
-        '200':
+        "200":
           description: run updated successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RunEntity'
+                $ref: "#/components/schemas/RunEntity"
       security:
         - bearer: []
       summary: Update a run
@@ -2224,7 +2224,7 @@ components:
           description: An array of pipeline tools to be added to the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/CreatePipelineStepDto'
+            $ref: "#/components/schemas/CreatePipelineStepDto"
         name:
           type: string
           description: The name of the pipeline
@@ -2292,7 +2292,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2313,12 +2313,12 @@ components:
           description: The order of the step in the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         dependsOn:
           description: These are the steps that this step depends on.
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         name:
           type: string
           description: >-
@@ -2331,7 +2331,7 @@ components:
         tool:
           description: The name of the tool that this step uses.
           allOf:
-            - $ref: '#/components/schemas/ToolEntity'
+            - $ref: "#/components/schemas/ToolEntity"
         toolId:
           type: string
           description: This is the ID of the tool that this step uses.
@@ -2340,7 +2340,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2374,12 +2374,12 @@ components:
           description: The steps in the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/PipelineStepEntity'
+            $ref: "#/components/schemas/PipelineStepEntity"
         createdAt:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2407,7 +2407,7 @@ components:
           description: An array of pipeline tools to be added to the pipeline
           type: array
           items:
-            $ref: '#/components/schemas/CreatePipelineStepDto'
+            $ref: "#/components/schemas/CreatePipelineStepDto"
     ConfirmationTokenDto:
       type: object
       properties:
@@ -2508,12 +2508,12 @@ components:
         userId:
           type: string
           description: The user ID associated with the auth provider
-          example: '123456'
+          example: "123456"
         createdAt:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2556,7 +2556,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2576,7 +2576,7 @@ components:
           description: The memberships of the currently signed-in user
           type: array
           items:
-            $ref: '#/components/schemas/AuthProviderEntity'
+            $ref: "#/components/schemas/AuthProviderEntity"
         deactivated:
           type: boolean
           description: Whether or not the user is deactivated
@@ -2609,7 +2609,7 @@ components:
           description: The memberships of the currently signed-in user
           type: array
           items:
-            $ref: '#/components/schemas/MemberEntity'
+            $ref: "#/components/schemas/MemberEntity"
         photoUrl:
           type: string
           description: The user's photo URL
@@ -2623,7 +2623,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2702,7 +2702,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -2765,7 +2765,7 @@ components:
         metadata:
           description: The metadata of the plan
           allOf:
-            - $ref: '#/components/schemas/PlanMetadata'
+            - $ref: "#/components/schemas/PlanMetadata"
         name:
           type: string
           description: The name of the plan
@@ -2818,7 +2818,7 @@ components:
           type: string
           nullable: true
           description: ZIP or postal code.
-          example: '94111'
+          example: "94111"
         state:
           type: string
           nullable: true
@@ -2837,7 +2837,7 @@ components:
         address:
           description: Billing address associated with the payment method.
           allOf:
-            - $ref: '#/components/schemas/Address'
+            - $ref: "#/components/schemas/Address"
         email:
           type: string
           nullable: true
@@ -2852,7 +2852,7 @@ components:
           type: string
           nullable: true
           description: Phone number associated with the payment method.
-          example: '+1234567890'
+          example: "+1234567890"
       required:
         - address
         - email
@@ -2888,7 +2888,7 @@ components:
         last4:
           type: string
           description: The last four digits of the card.
-          example: '4242'
+          example: "4242"
       required:
         - brand
         - country
@@ -2903,12 +2903,12 @@ components:
         billing_details:
           description: Billing details associated with the payment method.
           allOf:
-            - $ref: '#/components/schemas/BillingDetails'
+            - $ref: "#/components/schemas/BillingDetails"
         card:
           nullable: true
           description: If the PaymentMethod is a card, this contains the card details.
           allOf:
-            - $ref: '#/components/schemas/CardDetails'
+            - $ref: "#/components/schemas/CardDetails"
         customer:
           type: string
           nullable: true
@@ -3029,7 +3029,7 @@ components:
         key:
           type: string
           description: The API token key. This will only be shown once
-          example: '********1234567890'
+          example: "********1234567890"
         name:
           type: string
           description: The name of the API token
@@ -3052,7 +3052,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -3140,7 +3140,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -3211,7 +3211,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -3258,12 +3258,12 @@ components:
           description: The child content, if any
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         consumedBy:
           description: The tool runs that consumed this content, if any
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         credits:
           type: number
           description: The number of credits used to process this content
@@ -3277,7 +3277,7 @@ components:
           description: The content's labels
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         mimeType:
           type: string
           nullable: true
@@ -3295,7 +3295,7 @@ components:
           nullable: true
           description: The parent content, if any
           allOf:
-            - $ref: '#/components/schemas/SubItemEntity'
+            - $ref: "#/components/schemas/SubItemEntity"
         parentId:
           type: string
           nullable: true
@@ -3310,7 +3310,7 @@ components:
           nullable: true
           description: The toolRun that produced this content, if any
           allOf:
-            - $ref: '#/components/schemas/SubItemEntity'
+            - $ref: "#/components/schemas/SubItemEntity"
         producedById:
           type: string
           nullable: true
@@ -3330,7 +3330,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -3432,7 +3432,7 @@ components:
           type: string
           nullable: true
           description: The timestamp when the run completed
-          example: '2024-11-05T11:42:02.258Z'
+          example: "2024-11-05T11:42:02.258Z"
         error:
           type: string
           nullable: true
@@ -3442,7 +3442,7 @@ components:
           description: The inputs associated with the run
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         name:
           type: string
           nullable: true
@@ -3452,7 +3452,7 @@ components:
           description: The outputs associated with the run
           type: array
           items:
-            $ref: '#/components/schemas/SubItemEntity'
+            $ref: "#/components/schemas/SubItemEntity"
         pipelineId:
           type: string
           nullable: true
@@ -3474,7 +3474,7 @@ components:
           type: string
           nullable: true
           description: The timestamp when the run started
-          example: '2024-11-05T11:42:02.258Z'
+          example: "2024-11-05T11:42:02.258Z"
         status:
           description: The status of the run
           example: QUEUED
@@ -3493,7 +3493,7 @@ components:
           format: date-time
           type: string
           description: The date that this item was created
-          example: '2023-07-11T21:09:20.895Z'
+          example: "2023-07-11T21:09:20.895Z"
         id:
           type: string
           description: The ID of the item
@@ -3512,7 +3512,7 @@ components:
         - toolId
         - createdAt
         - id
-    FieldFieldQuery:
+    FieldFilter:
       type: object
       properties:
         field:
@@ -3536,12 +3536,12 @@ components:
         value:
           type: object
           description: The value to filter by
-          example: '2021-01-01'
+          example: "2021-01-01"
       required:
         - field
         - operator
         - value
-    AggregateFieldQuery:
+    FieldAggregate:
       type: object
       properties:
         field:

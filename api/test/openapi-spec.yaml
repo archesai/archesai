@@ -3512,7 +3512,7 @@ components:
         - toolId
         - createdAt
         - id
-    FieldFieldQuery:
+    FieldFilter:
       type: object
       properties:
         field:
@@ -3541,7 +3541,7 @@ components:
         - field
         - operator
         - value
-    AggregateFieldQuery:
+    FieldAggregate:
       type: object
       properties:
         field:

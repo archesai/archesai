@@ -9,7 +9,7 @@ import {
   useContentControllerFindAll,
   useContentControllerRemove
 } from '@/generated/archesApiComponents'
-import { ContentEntity, FieldFieldQuery } from '@/generated/archesApiSchemas'
+import { ContentEntity, FieldFilter } from '@/generated/archesApiSchemas'
 import { useAuth } from '@/hooks/use-auth'
 import {
   HoverCard,
@@ -30,7 +30,7 @@ export default function ContentDataTable({
   customFilters,
   readonly
 }: {
-  customFilters?: FieldFieldQuery[]
+  customFilters?: FieldFilter[]
   readonly?: boolean
 }) {
   const router = useRouter()
