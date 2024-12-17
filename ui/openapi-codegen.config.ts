@@ -7,7 +7,7 @@ import {
 export default defineConfig({
   archesApi: {
     from: {
-      relativePath: '../openapi-spec.yaml',
+      relativePath: '../api/openapi-spec.yaml',
       source: 'file'
     },
     outputDir: 'generated',

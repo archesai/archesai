@@ -47,9 +47,9 @@ export default function Playground() {
                 {
                   field: 'id',
                   operator: 'in',
-                  value: run
+                  value: (run
                     ? run.inputs.map((r) => r.id)
-                    : selectedContent?.map((r) => r.id) || []
+                    : selectedContent?.map((r) => r.id) || []) as any
                 }
               ]}
               readonly
@@ -64,7 +64,7 @@ export default function Playground() {
                 {
                   field: 'id',
                   operator: 'in',
-                  value: run ? run.outputs.map((r) => r.id) : []
+                  value: (run ? run.outputs.map((r) => r.id) : []) as any
                 }
               ]}
               readonly

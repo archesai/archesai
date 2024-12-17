@@ -8,6 +8,6 @@ tmp
 .gitignore
 .git
 .prettierrc
-.swcrc
+# .swcrc
 cors_file.json
 firebase.json

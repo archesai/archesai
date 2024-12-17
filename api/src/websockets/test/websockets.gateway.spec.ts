@@ -34,14 +34,6 @@ describe('WebsocketsGateway', () => {
           useValue: {
             socket: null
           }
-        },
-        {
-          provide: Logger,
-          useValue: {
-            debug: jest.fn(),
-            error: jest.fn(),
-            log: jest.fn()
-          }
         }
       ]
     }).compile()
@@ -50,6 +42,8 @@ describe('WebsocketsGateway', () => {
     authService = module.get<AuthService>(AuthService)
     usersService = module.get<UsersService>(UsersService)
     websocketsService = module.get<WebsocketsService>(WebsocketsService)
+
+    Logger.overrideLogger(false)
   })
 
   it('should be defined', () => {

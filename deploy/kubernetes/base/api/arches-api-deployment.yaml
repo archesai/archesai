@@ -25,11 +25,18 @@ spec:
         fsGroup: 1000
       initContainers:
         - name: arches-api-wait-for-migration
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           imagePullPolicy: IfNotPresent
+          image: bitnami/kubectl:latest
+          command: ["sh", "-c"]
           args:
-            - "job"
-            - "arches-api-upgrade"
+            - >
+              kubectl --namespace $(POD_NAMESPACE) wait
+              --for=condition=complete job/arches-api-upgrade --timeout=300s
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
       containers:
         - name: arches-api
           envFrom:

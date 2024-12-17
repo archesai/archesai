@@ -68,11 +68,11 @@ export type PipelinesControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -91,7 +91,7 @@ export type PipelinesControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -1706,11 +1706,11 @@ export type ToolsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -1729,7 +1729,7 @@ export type ToolsControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -2045,11 +2045,11 @@ export type ApiTokensControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -2068,7 +2068,7 @@ export type ApiTokensControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -2440,11 +2440,11 @@ export type MembersControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -2463,7 +2463,7 @@ export type MembersControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -2779,11 +2779,11 @@ export type LabelsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -2802,7 +2802,7 @@ export type LabelsControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -3364,11 +3364,11 @@ export type ContentControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -3387,7 +3387,7 @@ export type ContentControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -3703,11 +3703,11 @@ export type RunsControllerFindAllQueryParams = {
   /**
    * Aggregates to collect for the search results
    */
-  aggregates?: any[]
+  aggregates?: Schemas.FieldAggregate[]
   /**
-   * Filter fields and values
+   * Filters to apply to the search results
    */
-  filters?: any[]
+  filters?: Schemas.FieldFilter[]
   /**
    * The end date to search to
    *
@@ -3726,7 +3726,7 @@ export type RunsControllerFindAllQueryParams = {
    * The offset of the returned results
    *
    * @default 0
-   * @example 10
+   * @example 0
    */
   offset?: number
   /**
@@ -3975,6 +3975,128 @@ export const useRunsControllerUpdate = (
   })
 }
 
+export type HealthControllerCheckError = Fetcher.ErrorWrapper<{
+  status: 503
+  payload: {
+    /**
+     * @example error
+     */
+    status?: string
+    /**
+     * @example {"database":{"status":"up"}}
+     */
+    info?: {
+      [key: string]: {
+        status: string
+      } & {
+        [key: string]: any
+      }
+    } | null
+    /**
+     * @example {"redis":{"status":"down","message":"Could not connect"}}
+     */
+    error?: {
+      [key: string]: {
+        status: string
+      } & {
+        [key: string]: any
+      }
+    } | null
+    /**
+     * @example {"database":{"status":"up"},"redis":{"status":"down","message":"Could not connect"}}
+     */
+    details?: {
+      [key: string]: {
+        status: string
+      } & {
+        [key: string]: any
+      }
+    }
+  }
+}>
+
+export type HealthControllerCheckResponse = {
+  /**
+   * @example ok
+   */
+  status?: string
+  /**
+   * @example {"database":{"status":"up"}}
+   */
+  info?: {
+    [key: string]: {
+      status: string
+    } & {
+      [key: string]: any
+    }
+  } | null
+  /**
+   * @example {}
+   */
+  error?: {
+    [key: string]: {
+      status: string
+    } & {
+      [key: string]: any
+    }
+  } | null
+  /**
+   * @example {"database":{"status":"up"}}
+   */
+  details?: {
+    [key: string]: {
+      status: string
+    } & {
+      [key: string]: any
+    }
+  }
+}
+
+export type HealthControllerCheckVariables = ArchesApiContext['fetcherOptions']
+
+export const fetchHealthControllerCheck = (
+  variables: HealthControllerCheckVariables,
+  signal?: AbortSignal
+) =>
+  archesApiFetch<
+    HealthControllerCheckResponse,
+    HealthControllerCheckError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: '/health', method: 'get', ...variables, signal })
+
+export const useHealthControllerCheck = <TData = HealthControllerCheckResponse>(
+  variables: HealthControllerCheckVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      HealthControllerCheckResponse,
+      HealthControllerCheckError,
+      TData
+    >,
+    'queryKey' | 'queryFn' | 'initialData'
+  >
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    useArchesApiContext(options)
+  return reactQuery.useQuery<
+    HealthControllerCheckResponse,
+    HealthControllerCheckError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: '/health',
+      operationId: 'healthControllerCheck',
+      variables
+    }),
+    queryFn: ({ signal }) =>
+      fetchHealthControllerCheck({ ...fetcherOptions, ...variables }, signal),
+    ...options,
+    ...queryOptions
+  })
+}
+
 export type QueryOperation =
   | {
       path: '/organizations/{orgname}/pipelines'
@@ -4070,4 +4192,9 @@ export type QueryOperation =
       path: '/organizations/{orgname}/runs/{id}'
       operationId: 'runsControllerFindOne'
       variables: RunsControllerFindOneVariables
+    }
+  | {
+      path: '/health'
+      operationId: 'healthControllerCheck'
+      variables: HealthControllerCheckVariables
     }

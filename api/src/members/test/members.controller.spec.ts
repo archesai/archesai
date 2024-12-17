@@ -2,7 +2,7 @@ import { createRandomMember } from '@/prisma/factories/member.factory'
 import { createRandomUser } from '@/prisma/factories/user.factory'
 import { CommonModule } from '@/src/common/common.module'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
-import { INestApplication } from '@nestjs/common'
+import { INestApplication, Logger } from '@nestjs/common'
 import { APP_GUARD } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
@@ -48,6 +48,7 @@ describe('MembersController', () => {
     await app.init()
 
     mockedMembersService = moduleRef.get(MembersService)
+    Logger.overrideLogger(false)
   })
 
   afterAll(async () => {

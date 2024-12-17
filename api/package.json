@@ -7,11 +7,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write .",
+    "format": "prettier --write --log-level warn .",
     "format:check": "prettier --check .",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:dev:full": "npm run db:reset && npm run db:seed && npm run start:dev",
+    "start:dev:seed": "npm run db:seed && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint . && tsc --noEmit",
@@ -19,7 +19,7 @@
     "test:watch": "jest --watch --color",
     "test:cov": "jest --coverage --color",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "TS_JEST=true jest --config ./test/jest.config.ts --coverage --color $FILE_NAME",
+    "test:e2e": "TS_JEST=true jest --config ./test/jest.config.ts --color $FILE_NAME",
     "migrations:dev": "prisma migrate dev",
     "migrations:prod": "prisma migrate deploy",
     "db:seed": "prisma db seed",
@@ -43,6 +43,7 @@
     "@nestjs/platform-socket.io": "^10.4.15",
     "@nestjs/schedule": "^4.1.2",
     "@nestjs/swagger": "^8.1.0",
+    "@nestjs/terminus": "^10.2.3",
     "@nestjs/websockets": "^10.4.15",
     "@pinecone-database/pinecone": "^4.0.0",
     "@prisma/client": "^6.0.1",
@@ -125,42 +126,5 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "moduleDirectories": [
-      "node_modules",
-      "<rootDir>/..",
-      "<rooDir>"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/../$1"
-    },
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": [
-        "ts-jest",
-        {
-          "astTransformers": {
-            "before": [
-              "swagger-plugin-jest.js"
-            ]
-          }
-        }
-      ]
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s",
-      "!**/*.module.ts",
-      "!**/main.ts"
-    ],
-    "collectCoverage": true,
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }

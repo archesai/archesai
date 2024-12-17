@@ -24,7 +24,7 @@ FROM dev-dependencies AS development
 COPY --chown=node:node . .
 RUN npx prisma generate
 USER node
-CMD ["/bin/sh", "-c", "npm run start:dev:full"]
+CMD ["/bin/sh", "-c", "npm run start:dev:seed"]
 
 ###################
 # BUILD STAGE

@@ -73,9 +73,6 @@ export class OrganizationsService extends BaseService<
     createOrganizationDto: CreateOrganizationDto,
     user: UserEntity
   ) {
-    this.logger.log(
-      `Creating organization for user ${user.username}: ${JSON.stringify(createOrganizationDto, null, 2)}`
-    )
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
     const billingEnabled = this.configService.get('FEATURE_BILLING') === true
     let stripeCustomerId = createOrganizationDto.orgname

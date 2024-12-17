@@ -195,6 +195,57 @@ export type PipelineEntity = {
   id: string
 }
 
+export type FieldAggregate = {
+  /**
+   * The field to aggregate by
+   *
+   * @example createdAt
+   */
+  field: string
+  /**
+   * The granularity to use for ranged aggregates
+   *
+   * @example day
+   */
+  granularity: 'day' | 'month' | 'week' | 'year'
+  /**
+   * The type of aggregate to perform
+   *
+   * @example count
+   */
+  type: 'count' | 'sum'
+}
+
+export type FieldFilter = {
+  /**
+   * The field to filter by
+   *
+   * @example createdAt
+   */
+  field: string
+  /**
+   * The operator to use for filtering
+   *
+   * @example contains
+   */
+  operator:
+    | 'contains'
+    | 'endsWith'
+    | 'equals'
+    | 'every'
+    | 'in'
+    | 'none'
+    | 'not'
+    | 'some'
+    | 'startsWith'
+  /**
+   * The value to filter by
+   *
+   * @example 2021-01-01
+   */
+  value: Record<string, any>
+}
+
 export type UpdatePipelineDto = {
   /**
    * The name of the pipeline
@@ -1307,57 +1358,6 @@ export type RunEntity = {
   id: string
 }
 
-export type FieldFilter = {
-  /**
-   * The field to filter by
-   *
-   * @example createdAt
-   */
-  field: string
-  /**
-   * The operator to use for filtering
-   *
-   * @example contains
-   */
-  operator:
-    | 'contains'
-    | 'endsWith'
-    | 'equals'
-    | 'every'
-    | 'in'
-    | 'none'
-    | 'not'
-    | 'some'
-    | 'startsWith'
-  /**
-   * The value to filter by
-   *
-   * @example 2021-01-01
-   */
-  value: Record<string, any>
-}
-
-export type FieldAggregate = {
-  /**
-   * The field to aggregate by
-   *
-   * @example createdAt
-   */
-  field: string
-  /**
-   * The granularity to use for ranged aggregates
-   *
-   * @example day
-   */
-  granularity: 'day' | 'month' | 'week' | 'year'
-  /**
-   * The type of aggregate to perform
-   *
-   * @example count
-   */
-  type: Record<string, any>
-}
-
 export type AggregateFieldResult = {
   /**
    * The field to aggregate by
@@ -1376,7 +1376,7 @@ export type AggregateFieldResult = {
    *
    * @example count
    */
-  type: Record<string, any>
+  type: 'count' | 'sum'
   /**
    * The value of the aggregate
    *

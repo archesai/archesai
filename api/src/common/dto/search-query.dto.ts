@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common'
 import { Expose, plainToInstance, Transform, Type } from 'class-transformer'
 import {
   IsDateString,
+  IsDefined,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -85,9 +86,9 @@ export class FieldFilter {
    * The value to filter by
    * @example 2021-01-01
    */
-  @IsString()
+  @IsDefined()
   @Expose()
-  value: string
+  value: string | string[]
 }
 
 export class SearchQueryDto {
@@ -98,7 +99,7 @@ export class SearchQueryDto {
   @ValidateNested({ each: true })
   @Type(() => FieldAggregate)
   @Transform(({ value }) => transformValues(value, FieldAggregate))
-  aggregates?: FieldAggregate[]
+  aggregates?: FieldAggregate[] = []
 
   /**
    * Filters to apply to the search results
@@ -107,7 +108,7 @@ export class SearchQueryDto {
   @ValidateNested({ each: true })
   @Type(() => FieldFilter)
   @Transform(({ value }) => transformValues(value, FieldFilter))
-  filters?: FieldFilter[]
+  filters?: FieldFilter[] = []
 
   /**
    *The end date to search to

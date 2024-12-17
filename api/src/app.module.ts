@@ -36,6 +36,7 @@ import { WebsocketsGateway } from './websockets/websockets.gateway'
 import { WebsocketsModule } from './websockets/websockets.module'
 import { validationSchema } from './config/schema'
 import { ApiTokenRestrictedDomainGuard } from './auth/guards/api-token-restricted-domain.guard'
+import { HealthModule } from './health/health.module'
 
 @Module({
   controllers: [],
@@ -144,7 +145,8 @@ import { ApiTokenRestrictedDomainGuard } from './auth/guards/api-token-restricte
     RunpodModule,
     SpeechModule,
     ToolsModule,
-    RunsModule
+    RunsModule,
+    HealthModule
   ],
   providers: [
     WebsocketsGateway,

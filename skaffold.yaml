@@ -22,6 +22,7 @@ profiles:
       local:
         push: false
         useBuildkit: true
+        concurrency: 0
       artifacts:
         - image: arches-api
           context: ./api

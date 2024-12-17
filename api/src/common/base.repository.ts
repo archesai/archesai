@@ -60,7 +60,6 @@ export abstract class BaseRepository<
     orgname: string,
     queryDto: SearchQueryDto
   ): Promise<{ count: number; results: PrismaModel[] }> {
-    console.log(queryDto)
     const whereConditions: any = {
       createdAt: {
         gte: queryDto.startDate,

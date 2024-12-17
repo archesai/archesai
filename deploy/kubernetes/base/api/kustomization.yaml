@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - ./arches-api-deployment.yaml
   - ./arches-api-service.yaml
-  - ./arches-api-hpa.yaml
   - ./arches-api-rbac.yaml
   - ./arches-api-service-account.yaml
   - ./arches-api-ingress.yaml

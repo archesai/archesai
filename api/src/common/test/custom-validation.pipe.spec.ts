@@ -58,6 +58,22 @@ describe('SearchQueryDto with CustomValidationPipe', () => {
     ])
   })
 
+  it('should handle strings and arrays as values', async () => {
+    const input = {
+      filters: JSON.stringify([
+        { field: 'status', operator: 'equals', value: 'COMPLETE' },
+        { field: 'time', operator: 'in', value: ['COMPLETE'] }
+      ])
+    }
+    const result = await validationPipe.transform(input, metadata)
+    const filters = result.filters as FieldFilter[]
+
+    expect(filters).toEqual([
+      { field: 'status', operator: 'equals', value: 'COMPLETE' },
+      { field: 'time', operator: 'in', value: ['COMPLETE'] }
+    ])
+  })
+
   it('should throw a BadRequestException for invalid aggregates or filters', async () => {
     for (const input of [
       { filters: 'not-valid-json', aggregates: 'not-valid-json' },
@@ -68,7 +84,13 @@ describe('SearchQueryDto with CustomValidationPipe', () => {
       },
       {
         aggregates: JSON.stringify([
-          { field: 'status', operator: 'BAD GRANULARITY', value: ['active'] }
+          { field: 'createdAt', type: 'count', granularity: 'bad_granularity' }
+        ])
+      },
+      {
+        filters: JSON.stringify([
+          { field: 'status', operator: 'equals', value: 'COMPLETE' },
+          { field: 'time', operator: 'in' }
         ])
       }
     ]) {

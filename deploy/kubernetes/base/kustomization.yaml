@@ -16,21 +16,21 @@ images:
     newName: us-east4-docker.pkg.dev/archesai/images/arches-nlp
     newTag: latest
 
-replacements:
-  - source:
-      kind: Job
-      fieldPath: metadata.name
-    targets:
-      - select:
-          kind: Deployment
-          name: arches-api
-        fieldPaths:
-          - spec.template.spec.initContainers.0.args.1
-      - select:
-          kind: Role
-          name: arches-api-role
-        fieldPaths:
-          - rules.0.resourceNames.0
+# replacements:
+#   - source:
+#       kind: Job
+#       fieldPath: metadata.name
+#     targets:
+#       - select:
+#           kind: Deployment
+#           name: arches-api
+#         fieldPaths:
+#           - spec.template.spec.initContainers.0.args.1
+#       - select:
+#           kind: Role
+#           name: arches-api-role
+#         fieldPaths:
+#           - rules.0.resourceNames.0
 
 secretGenerator:
   - name: arches-api-config-secret

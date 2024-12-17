@@ -24,17 +24,12 @@ patches:
       kind: Job
       name: arches-api-upgrade
     patch: |-
-      apiVersion: batch/v1
-      kind: Job
-      metadata:
-        name: arches-api-upgrade
-      $patch: delete
-  - target:
-      kind: Deployment
-      name: arches-api
-    patch: |-
-      - op: remove
-        path: /spec/template/spec/initContainers/0
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: arches-api:dev
+      - op: replace
+        path: /spec/template/spec/restartPolicy
+        value: OnFailure
 
 secretGenerator:
   - name: mkcert-tls

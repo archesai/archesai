@@ -30,7 +30,9 @@ export const resetDatabase = async () => {
 async function main() {
   await resetDatabase()
 
-  const app = await NestFactory.createApplicationContext(AppModule)
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: ['warn', 'error']
+  })
   const usersService = app.get(UsersService)
   const hashedPassword = await bcrypt.hash('password', 10)
   const user = await usersService.create(null, {
