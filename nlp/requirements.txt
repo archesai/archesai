@@ -2,7 +2,7 @@ fastapi==0.111.1
 langchain==0.2.11
 langchain-community==0.2.10
 librosa==0.10.2.post1
-openai==1.37.0
+openai==1.57.4
 pdf2image==1.17.0
 pycryptodome==3.20.0
 pydantic==2.8.2
