@@ -10,4 +10,4 @@ pydub==0.25.1
 pypdf==4.3.1
 tiktoken==0.7.0
 uvicorn==0.30.3
-yt-dlp==2024.7.16
+yt-dlp==2024.12.13
