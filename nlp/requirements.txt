@@ -9,5 +9,5 @@ pydantic==2.8.2
 pydub==0.25.1
 pypdf==4.3.1
 tiktoken==0.7.0
-uvicorn==0.30.3
+uvicorn==0.34.0
 yt-dlp==2024.7.16
