@@ -1,4 +1,4 @@
-import { Injectable, ValidationPipe } from '@nestjs/common'
+import { BadRequestException, Injectable, ValidationPipe } from '@nestjs/common'
 
 @Injectable()
 export class CustomValidationPipe extends ValidationPipe {
@@ -14,7 +14,15 @@ export class CustomValidationPipe extends ValidationPipe {
       whitelist: true,
       skipMissingProperties: false,
       enableDebugMessages: true,
-      stopAtFirstError: true
+      stopAtFirstError: true,
+      exceptionFactory: (errors) => {
+        const messages = errors
+          .filter((err) => err.constraints)
+          .map((err) => Object.values(err.constraints))
+          .flat()
+          .join('; ')
+        return new BadRequestException(messages)
+      }
     })
   }
 }

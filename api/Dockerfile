@@ -3,6 +3,9 @@
 ###################
 FROM node:20-alpine3.19 AS base
 
+# Install FFmpeg
+RUN apk update && apk add --no-cache ffmpeg imagemagick graphicsmagick ghostscript
+
 # Set working directory
 WORKDIR /app
 

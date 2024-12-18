@@ -6,13 +6,11 @@ metadata:
   name: arches-minio
 spec:
   ports:
-    - name: "9000"
-      port: 9000
-      targetPort: 9000
+    - name: "443"
+      port: 443
+      targetPort: 443
     - name: "9001"
       port: 9001
       targetPort: 9001
   selector:
     component: arches-minio
-status:
-  loadBalancer: {}

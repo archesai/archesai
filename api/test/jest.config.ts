@@ -13,7 +13,7 @@ const config: Config = {
   rootDir: '..',
   setupFilesAfterEnv: ['<rootDir>/test/jest.setup.ts'],
   testEnvironment: 'node',
-  testRegex: '.e2e-spec.ts$',
+  testRegex: '\\.(e2e|integration)-spec\\.ts$',
   testTimeout: 120000,
   transform: {
     '^.+\\.(t|j)s?$': '@swc/jest'

@@ -12,7 +12,6 @@ components:
 patches:
   - path: "./arches-api-deployment.patch.yaml"
   - path: "./arches-ui-deployment.patch.yaml"
-  - path: "./arches-nlp-deployment.patch.yaml"
   - target:
       kind: Secret
       name: mkcert-tls
@@ -40,6 +39,7 @@ secretGenerator:
   - name: arches-api-config-secret
     literals:
       - LOGGING_LEVEL=info
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
     behavior: merge
 
 generatorOptions:

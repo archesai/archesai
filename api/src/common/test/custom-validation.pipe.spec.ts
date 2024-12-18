@@ -120,8 +120,6 @@ describe('SearchQueryDto with CustomValidationPipe', () => {
       fail('Expected a BadRequestException due to invalid enum')
     } catch (error) {
       expect(error).toBeInstanceOf(BadRequestException)
-
-      const response = error.getResponse()
       // The response typically has a structure like:
       // {
       //   statusCode: 400,
@@ -130,9 +128,8 @@ describe('SearchQueryDto with CustomValidationPipe', () => {
       // }
 
       // Check the validation messages here
-      expect(response).toHaveProperty('message')
-      expect(Array.isArray(response['message'])).toBe(true)
-      expect(response['message']).toContain(
+      expect(error).toHaveProperty('message')
+      expect(error.message).toContain(
         'sortDirection must be one of the following values: asc, desc'
       )
     }

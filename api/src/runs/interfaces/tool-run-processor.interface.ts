@@ -8,7 +8,7 @@ import { ContentEntity } from '../../content/entities/content.entity'
 export interface IToolRunProcess {
   (
     runId: string,
-    runInputContents: ContentEntity[],
+    inputs: ContentEntity[],
     logger: Logger,
     contentService: ContentService,
     ...args: any[]

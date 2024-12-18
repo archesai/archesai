@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-unstructured
+  name: arches-unstructured
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1 # Maximum pods that can be unavailable during the update
+      maxSurge: 1 # Maximum additional pods that can be created during the update
+  selector:
+    matchLabels:
+      component: arches-unstructured
+  template:
+    metadata:
+      labels:
+        component: arches-unstructured
+    spec:
+      containers:
+        - image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
+          name: arches-unstructured
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "0.5"
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+          # readinessProbe: # define readiness probe
+          #   httpGet:
+          #     path: /docs
+          #     port: 80
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10
+          # livenessProbe: # define liveness probe
+          #   httpGet:
+          #     path: /docs
+          #     port: 80
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 20
+      restartPolicy: Always

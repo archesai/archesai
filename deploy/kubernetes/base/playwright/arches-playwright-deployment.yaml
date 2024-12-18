@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: arches-playwright
+  name: arches-playwright
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: arches-playwright
+  template:
+    metadata:
+      labels:
+        component: arches-playwright
+    spec:
+      containers:
+        - name: arches-playwright
+          image: mcr.microsoft.com/playwright:v1.49.1
+          ports:
+            - containerPort: 3000
+          command: ["npx", "playwright", "run-server", "--port", "3000"]
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+            requests:
+              memory: "512Mi"
+              cpu: "250m"

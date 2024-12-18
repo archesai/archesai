@@ -17,7 +17,7 @@ import { transformTextToImage } from './transformers/text-to-image.transformer'
 import { transformTextToSpeech } from './transformers/text-to-speech.transformer'
 import { transformTextToText } from './transformers/text-to-text.transformer'
 
-type RunJob = Job<ContentEntity[], ContentEntity[], string>
+export type RunJob = Job<ContentEntity[], ContentEntity[], string>
 
 @Processor('run')
 export class RunProcessor extends WorkerHost {

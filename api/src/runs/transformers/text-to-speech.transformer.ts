@@ -8,7 +8,7 @@ import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
 
 export const transformTextToSpeech: IToolRunProcess = async (
   runId: string,
-  runInputContents: ContentEntity[],
+  inputs: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
   storageService: StorageService,
@@ -16,7 +16,7 @@ export const transformTextToSpeech: IToolRunProcess = async (
 ): Promise<ContentEntity[]> => {
   logger.log(`Processing text to speech for run ${runId}`)
   const audioBuffer = await speechService.generateSpeech(
-    runInputContents.map((x) => x.text).join(' ')
+    inputs.map((x) => x.text).join(' ')
   )
 
   const multerFile = {
@@ -26,14 +26,13 @@ export const transformTextToSpeech: IToolRunProcess = async (
     size: audioBuffer.length
   } as Express.Multer.File
   const url = await storageService.upload(
-    runInputContents[0].orgname,
+    inputs[0].orgname,
     `contents/${runId}.mp3`,
     multerFile
   )
 
-  const content = await contentService.create(runInputContents[0].orgname, {
-    name:
-      'Text to Speech Tool -' + runInputContents.map((x) => x.name).join(', '),
+  const content = await contentService.create(inputs[0].orgname, {
+    name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
     url,
     labels: []
   })

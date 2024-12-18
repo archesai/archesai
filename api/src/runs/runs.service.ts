@@ -12,6 +12,7 @@ import { WebsocketsService } from '../websockets/websockets.service'
 import { CreateRunDto } from './dto/create-run.dto'
 import { RunEntity, RunModel } from './entities/run.entity'
 import { RunRepository } from './run.repository'
+import { RunJob } from './run.processor'
 
 @Injectable()
 export class RunsService extends BaseService<
@@ -29,7 +30,7 @@ export class RunsService extends BaseService<
     private pipelinesService: PipelinesService,
     private toolsService: ToolsService,
     @InjectFlowProducer('flow') private readonly flowProducer: FlowProducer,
-    @InjectQueue('run') private readonly runQueue: Queue,
+    @InjectQueue('run') private readonly runQueue: Queue<RunJob>,
     private contentService: ContentService
   ) {
     super(runRepository)
@@ -72,15 +73,9 @@ export class RunsService extends BaseService<
       await this.setInputsOrOutputs(run.id, 'inputs', runContent)
       // Add to tool queue
       const tool = await this.toolsService.findOne(orgname, createRunDto.toolId)
-      await this.runQueue.add(
-        tool.toolBase,
-        {
-          inputs: runContent
-        },
-        {
-          jobId: run.id
-        }
-      )
+      await this.runQueue.add(tool.toolBase, runContent, {
+        jobId: run.id
+      })
       // Return run
       this.emitMutationEvent(orgname)
       return this.toEntity(run)

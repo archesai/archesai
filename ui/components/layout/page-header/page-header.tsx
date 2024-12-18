@@ -40,7 +40,7 @@ export const PageHeader = () => {
     <>
       <VerifyEmailAlert />
 
-      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-4'>
+      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
         <Button
           className='mr-3 flex h-8 w-8 border-sidebar-accent bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
           onClick={toggleSidebar}

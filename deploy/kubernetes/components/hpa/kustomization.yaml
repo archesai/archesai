@@ -2,4 +2,4 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 resources:
   - "./arches-api-hpa.yaml"
-  - "./arches-nlp-hpa.yaml"
+  - "./arches-unstructured-hpa.yaml"

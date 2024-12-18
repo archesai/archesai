@@ -42,15 +42,6 @@ profiles:
             manual:
               - src: "**/*"
                 dest: .
-        - image: arches-nlp
-          context: ./nlp
-          docker:
-            target: development
-            dockerfile: Dockerfile
-          sync:
-            manual:
-              - src: "**/*"
-                dest: .
       tagPolicy:
         inputDigest: {}
     deploy:

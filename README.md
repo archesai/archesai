@@ -1,15 +1,5 @@
 # Development Setup
 
-## Hosts File
-
-You must add the following to your hosts file. This is so that the frontend can communicate with internal docker services.
-This is only needed for the offline version
-
-```
-127.0.0.1 arches-auth-keycloak
-127.0.0.1 arches-minio
-```
-
 ## GCP Setup
 
 ### I forgot what this is but we need it

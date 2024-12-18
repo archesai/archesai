@@ -28,13 +28,13 @@ export class S3StorageProvider implements StorageService {
   private s3Client: S3Client
 
   constructor() {
-    this.bucketName = process.env.MINIO_BUCKET || 'my-bucket' // Replace with your bucket name
+    this.bucketName = process.env.MINIO_BUCKET
     this.s3Client = new S3Client({
       credentials: {
-        accessKeyId: process.env.MINIO_ACCESS_KEY || 'minioadmin',
-        secretAccessKey: process.env.MINIO_SECRET_KEY || 'minioadmin'
+        accessKeyId: process.env.MINIO_ACCESS_KEY,
+        secretAccessKey: process.env.MINIO_SECRET_KEY
       },
-      endpoint: process.env.MINIO_ENDPOINT || 'http://localhost:9000',
+      endpoint: process.env.MINIO_ENDPOINT,
       forcePathStyle: true, // Required for MinIO
       region: 'us-east-1'
     })

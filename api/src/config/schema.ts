@@ -70,11 +70,28 @@ export const validationSchema = Joi.object({
     then: Joi.required()
   }),
 
-  // LOADER CONFIG
-  LOADER_ENDPOINT: Joi.string().required(),
-
   // STORAGE TYPE
   STORAGE_TYPE: Joi.string().valid('google-cloud', 'local', 'minio').required(),
+  MINIO_ENDPOINT: Joi.string().when('STORAGE_TYPE', {
+    is: 'minio',
+    otherwise: Joi.optional(),
+    then: Joi.required()
+  }),
+  MINIO_ACCESS_KEY: Joi.string().when('STORAGE_TYPE', {
+    is: 'minio',
+    otherwise: Joi.optional(),
+    then: Joi.required()
+  }),
+  MINIO_SECRET_KEY: Joi.string().when('STORAGE_TYPE', {
+    is: 'minio',
+    otherwise: Joi.optional(),
+    then: Joi.required()
+  }),
+  MINIO_BUCKET: Joi.string().when('STORAGE_TYPE', {
+    is: 'minio',
+    otherwise: Joi.optional(),
+    then: Joi.required()
+  }),
 
   // REDIS CONFIG
   REDIS_AUTH: Joi.string().required(),
@@ -89,5 +106,21 @@ export const validationSchema = Joi.object({
   LOGGING_LEVEL: Joi.string()
     .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent')
     .required(),
-  LOKI_HOST: Joi.string().optional()
+  LOKI_HOST: Joi.string().optional(),
+
+  // SCRAPER CONFIG
+  FEATURE_SCRAPER: Joi.boolean().required(),
+  SCRAPER_ENDPOINT: Joi.string().when('FEATURE_SCRAPER', {
+    is: true,
+    otherwise: Joi.string().forbidden(),
+    then: Joi.required()
+  }),
+
+  // UNSTRUCTURED CONFIG
+  FEATURE_UNSTRUCTURED: Joi.boolean().required(),
+  UNSTRUCTURED_ENDPOINT: Joi.string().when('FEATURE_UNSTRUCTURED', {
+    is: true,
+    otherwise: Joi.string().forbidden(),
+    then: Joi.required()
+  })
 })

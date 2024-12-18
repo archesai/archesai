@@ -1,46 +1,45 @@
-import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Logger } from '@nestjs/common'
+import { Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { AxiosError } from 'axios'
-import { catchError, firstValueFrom } from 'rxjs'
 
 import { ContentService } from '../../content/content.service'
 import { ContentEntity } from '../../content/entities/content.entity'
 import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
+import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured'
+import { StorageService } from '@/src/storage/storage.service'
 
 export const transformFileToText: IToolRunProcess = async (
   runId: string,
-  runInputContents: ContentEntity[],
+  inputs: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
-  httpService: HttpService,
-  configService: ConfigService
+  configService: ConfigService,
+  storageService: StorageService
 ): Promise<ContentEntity[]> => {
-  logger.log(
-    `Extracting text for run ${runId} with url ${runInputContents[0].url}`
+  logger.log(`Extracting text for run ${runId} with url ${inputs[0].url}`)
+
+  let content = inputs[0]
+  const { buffer } = await storageService.download(content.orgname, content.url)
+  const loader = new UnstructuredLoader(
+    {
+      buffer: buffer,
+      fileName: content.url
+    },
+    {
+      apiUrl: configService.get('LOADER_ENDPOINT')
+    }
   )
 
-  let content = runInputContents[0]
-  const { data } = await firstValueFrom(
-    httpService
-      .post(configService.get('LOADER_ENDPOINT') + '/indexDocument', {
-        url: content.url
-      })
-      .pipe(
-        catchError((err: AxiosError) => {
-          logger.error('Error hitting loader endpoint: ' + err.message)
-          throw new BadRequestException()
-        })
-      )
-  )
-  const { textContent, title } = data as {
-    contentType: string
-    preview: string
-    textContent: { page: number; text: string; tokens: number }[]
-    title: string
-  }
+  const docs = await loader.load()
 
-  logger.log(`Extracted text for ${content.name}`)
+  const textContent = docs.map((doc) => {
+    return {
+      text: doc.pageContent,
+      page: doc.metadata.page,
+      tokens: doc.metadata.tokens
+    }
+  })
+
+  const title = 'UNIMPLEMENTED TITLE'
 
   const sanitizedTextContent = textContent.map((data) => ({
     ...data,

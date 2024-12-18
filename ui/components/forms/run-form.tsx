@@ -205,10 +205,8 @@ export default function RunForm() {
         const run = await runTool(
           {
             body: {
-              contentIds: createToolRunDto.contentIds,
-              runType: 'TOOL_RUN',
-              text: createToolRunDto.text,
-              toolId: createToolRunDto.toolId
+              ...createToolRunDto,
+              runType: 'TOOL_RUN'
             },
             pathParams: {
               orgname: defaultOrgname

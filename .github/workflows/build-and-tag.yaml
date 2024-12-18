@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       service:
-        description: "Name of the service to build and tag (e.g., api, ui, nlp)"
+        description: "Name of the service to build and tag (e.g., api, ui)"
         required: true
         type: string
 

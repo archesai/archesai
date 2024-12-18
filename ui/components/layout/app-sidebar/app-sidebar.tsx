@@ -17,7 +17,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       collapsible='icon'
       {...props}
     >
-      <SidebarHeader className='flex h-16 items-center justify-center'>
+      <SidebarHeader className='flex h-14 items-center justify-center'>
         <OrganizationButton />
       </SidebarHeader>
       <SidebarContent className='gap-0'>

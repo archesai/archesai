@@ -3,7 +3,8 @@ kind: Kustomization
 
 resources:
   - ./api
-  - ./nlp
+  - ./unstructured
+  - ./playwright
 
 images:
   - name: us-east4-docker.pkg.dev/archesai/images/arches-api
@@ -11,9 +12,6 @@ images:
     newTag: latest
   - name: us-east4-docker.pkg.dev/archesai/images/arches-ui
     newName: us-east4-docker.pkg.dev/archesai/images/arches-ui
-    newTag: latest
-  - name: us-east4-docker.pkg.dev/archesai/images/arches-nlp
-    newName: us-east4-docker.pkg.dev/archesai/images/arches-nlp
     newTag: latest
 
 # replacements:
@@ -62,14 +60,12 @@ secretGenerator:
       - LLM_TYPE=openai
       - LLM_API_KEY=open-ai-key
 
-      # LOADER CONFIG
-      - LOADER_ENDPOINT=http://arches-nlp:3002
-
       # STORAGE CONFIG
       - STORAGE_TYPE=minio
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_BUCKET=archesai
-      - MINIO_ENDPOINT=http://arches-minio:9000
+      - MINIO_ENDPOINT=https://arches-minio.test
+      - MINIO_DASHBOARD_ENDPOINT=https://dashboard.arches-minio.test
       - MINIO_SECRET_KEY=minioadmin
 
       # REDIS CONFIG
@@ -82,6 +78,14 @@ secretGenerator:
 
       # LOGGING CONFIG
       - LOGGING_LEVEL=debug
+
+      # SCRAPER CONFIG
+      - FEATURE_SCRAPER=true
+      - SCRAPER_ENDPOINT=http://arches-playwright:3000
+
+      # UNSTRUCTURED CONFIG
+      - FEATURE_UNSTRUCTURED=true
+      - UNSTRUCTURED_ENDPOINT=http://arches-unstructured:8000
 
 generatorOptions:
   disableNameSuffixHash: true

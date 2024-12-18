@@ -11,3 +11,4 @@ env/
 __pycache__/
 *.pyc
 .pytest_cache/
+**/scraper/test/testdata/

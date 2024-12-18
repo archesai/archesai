@@ -5,7 +5,7 @@ sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart doc
 
 # Create the secret for tls
 mkcert -install
-mkcert -cert-file deploy/kubernetes/overlays/dev/cert.pem -key-file deploy/kubernetes/overlays/development-min/key.pem arches-api.test arches-ui.test arches-grafana.test
+mkcert -cert-file deploy/kubernetes/overlays/development-min/cert.pem -key-file deploy/kubernetes/overlays/development-min/key.pem arches-api.test arches-ui.test arches-grafana.test arches-minio.test dashboard.arches-minio.test
 
 # Start minikube
 minikube start --driver=docker --container-runtime docker --gpus all

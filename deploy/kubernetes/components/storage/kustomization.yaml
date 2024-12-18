@@ -3,4 +3,5 @@ kind: Component
 resources:
   - "./arches-minio-deployment.yaml"
   - "./arches-minio-service.yaml"
+  - "./arches-minio-ingress.yaml"
   - "./minio-data-persistentvolumeclaim.yaml"

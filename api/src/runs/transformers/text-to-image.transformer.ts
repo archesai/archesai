@@ -9,7 +9,7 @@ import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
 
 export const transformTextToImage: IToolRunProcess = async (
   runId: string,
-  runInputContents: ContentEntity[],
+  inputs: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
   runpodService: RunpodService,
@@ -22,7 +22,7 @@ export const transformTextToImage: IToolRunProcess = async (
     }
   }
 
-  const orgname = runInputContents[0].orgname
+  const orgname = inputs[0].orgname
 
   const { image_url } = await runpodService.runPod(
     runId,
@@ -44,9 +44,8 @@ export const transformTextToImage: IToolRunProcess = async (
   } as Express.Multer.File)
   logger.log(`Text to image completed and uploaded for run ${runId}`)
 
-  const content = await contentService.create(runInputContents[0].orgname, {
-    name:
-      'Text to Speech Tool -' + runInputContents.map((x) => x.name).join(', '),
+  const content = await contentService.create(inputs[0].orgname, {
+    name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
     url,
     labels: []
   })
