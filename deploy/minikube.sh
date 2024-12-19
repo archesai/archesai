@@ -1,51 +1,163 @@
 #!/bin/bash
 
-# Install GPU Stuff
-sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker
+set -e # Exit immediately if a command exits with a non-zero status
 
-# Create the secret for tls
-mkcert -install
-mkcert -cert-file deploy/kubernetes/overlays/development-min/cert.pem -key-file deploy/kubernetes/overlays/development-min/key.pem arches-api.test arches-ui.test arches-grafana.test arches-minio.test dashboard.arches-minio.test
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Install jq if not present (optional but recommended)
+if ! command_exists jq; then
+    echo "🔄 jq not found. Installing jq..."
+    sudo apt update
+    sudo apt install -y jq
+else
+    echo "✅ jq is already installed."
+fi
+
+# Install GPU Stuff
+DOCKER_DAEMON_CONFIG="/etc/docker/daemon.json"
+if [ -f "$DOCKER_DAEMON_CONFIG" ]; then
+    # Check if 'nvidia' runtime is already configured
+    if jq '.runtimes.nvidia' "$DOCKER_DAEMON_CONFIG" >/dev/null 2>&1; then
+        echo "✅ NVIDIA runtime for Docker is already configured."
+    else
+        echo "🔄 Configuring NVIDIA runtime for Docker..."
+        sudo nvidia-ctk runtime configure --runtime=docker
+        sudo systemctl restart docker
+    fi
+else
+    echo "🔄 Docker daemon.json not found. Configuring NVIDIA runtime for Docker..."
+    sudo nvidia-ctk runtime configure --runtime=docker
+    sudo systemctl restart docker
+fi
+
+# Create the secret for TLS
+CERT_DIR="deploy/kubernetes/overlays/development-min"
+CERT_FILE="$CERT_DIR/cert.pem"
+KEY_FILE="$CERT_DIR/key.pem"
+
+if [ ! -f "$CERT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
+    echo "🔄 Generating TLS certificates with mkcert..."
+    mkcert -install
+    mkdir -p "$CERT_DIR"
+    mkcert -cert-file "$CERT_FILE" -key-file "$KEY_FILE" \
+        arches-api.test arches-ui.test arches-grafana.test arches-minio.test dashboard.arches-minio.test
+else
+    echo "✅ TLS certificates already exist."
+fi
 
 # Start minikube
-minikube start --driver=docker --container-runtime docker --gpus all
+if ! minikube status >/dev/null 2>&1; then
+    echo "🔄 Starting Minikube..."
+    minikube start --driver=docker --container-runtime docker --gpus all
+else
+    echo "✅ Minikube is already running."
+fi
 
 # Pull base images
-minikube ssh docker pull node:20-alpine
-minikube ssh docker pull quay.io/unstructured-io/base-images@sha256:38de7347cad45c069b1fd0c2ab8f52947aaf45e8a5eda553d8d968e7167510e4
+BASE_IMAGES=(
+    "node:20-alpine"
+)
+
+for image in "${BASE_IMAGES[@]}"; do
+    IMAGE_NAME="${image%%:*}" # Extract the image name (e.g., node)
+    IMAGE_TAG="${image##*:}"  # Extract the image tag (e.g., 20-alpine)
+
+    # Check if the image is already present
+    IMAGE_FOUND=$(minikube ssh -- docker images "$IMAGE_NAME" --format '{{.Repository}}:{{.Tag}}' | grep -F "$IMAGE_TAG")
+
+    if [ -z "$IMAGE_FOUND" ]; then
+        echo "🔄 Pulling Docker image: $image..."
+        minikube ssh -- "docker pull $image"
+    else
+        echo "✅ Docker image $image already exists in Minikube."
+    fi
+done
 
 # Enable the ingress controller
-echo "default/mkcert-tls" | minikube addons configure ingress
-minikube addons enable ingress
-minikube addons enable ingress-dns
+if minikube addons list | grep -E 'ingress\s+\|\s+minikube\s+\|\s+disabled' >/dev/null; then
+    echo "Enabling ingress addon..."
+    minikube addons enable ingress
+else
+    echo "✅ Ingress addon is already enabled."
+fi
 
-# Write to resolved.conf.d/minikube.com
-sudo bash -c "cat > /etc/systemd/resolved.conf.d/minikube.conf <<EOF
-[Resolve]
+# Enable the ingress controller
+if minikube addons list | grep -E 'ingress-dns\s+\|\s+minikube\s+\|\s+disabled' >/dev/null; then
+    echo "🔄 Enabling ingress addon..."
+    minikube addons enable ingress-dns
+else
+    echo "✅ Ingress addon is already enabled."
+fi
+
+# Configure ingress TLS
+if ! kubectl -n ingress-nginx get deployment ingress-nginx-controller -o yaml | grep -q "default/mkcert-tls"; then
+    echo "🔄 Configuring ingress TLS... and refreshing the ingress-dns addon"
+    echo "default/mkcert-tls" | minikube addons configure ingress
+    minikube addons enable ingress --refresh
+else
+    echo "✅ Ingress TLS is already configured."
+fi
+
+# Write to resolved.conf.d/minikube.com if not already present
+RESOLVED_CONF="/etc/systemd/resolved.conf.d/minikube.conf"
+RESOLVED_CONTENT="[Resolve]
 DNSStubListener=no
-DNS=127.0.0.1
+DNS=127.0.0.1"
+
+if [ ! -f "$RESOLVED_CONF" ] || ! grep -Fxq "DNSStubListener=no" "$RESOLVED_CONF"; then
+    echo "🔄 Writing Minikube DNS configuration..."
+    sudo mkdir -p /etc/systemd/resolved.conf.d
+    sudo bash -c "cat > $RESOLVED_CONF <<EOF
+$RESOLVED_CONTENT
 EOF"
+    # Restart systemd-resolved only if configuration changed
+    sudo systemctl restart systemd-resolved
+else
+    echo "✅ Minikube DNS configuration already exists."
+fi
 
-# Restart systemd-resolved
-sudo systemctl restart systemd-resolved
-
-# Install dnsmasq
-sudo apt update
-sudo apt install dnsmasq
+# Install dnsmasq if not installed
+if ! command_exists dnsmasq; then
+    echo "🔄 Installing dnsmasq..."
+    sudo apt update
+    sudo apt install -y dnsmasq
+else
+    echo "✅ dnsmasq is already installed."
+fi
 
 # Get Minikube IP
 MINIKUBE_IP=$(minikube ip)
+if [ -z "$MINIKUBE_IP" ]; then
+    echo "🚫 Failed to retrieve Minikube IP."
+    exit 1
+fi
+echo "✅ Minikube IP: $MINIKUBE_IP"
 
 # Update dnsmasq configuration
-sudo bash -c "cat > /etc/dnsmasq.d/minikube.conf <<EOF
+DNSMASQ_CONF="/etc/dnsmasq.d/minikube.conf"
+DESIRED_DNSMASQ_CONTENT=$(
+    cat <<EOF
 server=192.168.1.178
 server=192.168.1.1
 server=/test/$MINIKUBE_IP
 listen-address=127.0.0.1
 no-resolv
 no-poll
-EOF"
+EOF
+)
 
-# Restart services
-sudo systemctl restart dnsmasq
-sudo systemctl restart systemd-resolved
+if [ ! -f "$DNSMASQ_CONF" ] || ! grep -Fxq "server=/test/$MINIKUBE_IP" "$DNSMASQ_CONF"; then
+    echo "🔄 Updating dnsmasq configuration..."
+    sudo bash -c "cat > $DNSMASQ_CONF <<EOF
+$DESIRED_DNSMASQ_CONTENT
+EOF"
+    # Restart dnsmasq only if configuration changed
+    sudo systemctl restart dnsmasq
+else
+    echo "✅ dnsmasq configuration is already up-to-date."
+fi
+
+echo "✅ Setup complete."
