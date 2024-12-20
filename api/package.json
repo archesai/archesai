@@ -29,7 +29,7 @@
     "seed": "ts-node --transpile-only -r tsconfig-paths/register prisma/seed.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.712.0",
+    "@aws-sdk/client-s3": "^3.716.0",
     "@aws-sdk/s3-request-presigner": "^3.712.0",
     "@hapi/joi": "^17.1.1",
     "@langchain/community": "^0.3.19",
