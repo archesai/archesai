@@ -66,7 +66,7 @@ export class RunEntity extends BaseEntity implements RunModel {
   @IsOptional()
   @IsString()
   @Expose()
-  name: null | string
+  name: string
 
   @ApiHideProperty()
   orgname: string

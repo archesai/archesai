@@ -2291,7 +2291,7 @@ info:
   contact: {}
 tags: []
 servers:
-  - url: https://arches-api.test
+  - url: https://api.archesai.test
 components:
   securitySchemes:
     bearer:
@@ -3034,6 +3034,7 @@ components:
           example: visa
         country:
           type: string
+          nullable: true
           description: Two-letter ISO code representing the country of the card.
           example: US
         exp_month:
@@ -3612,7 +3613,6 @@ components:
             $ref: '#/components/schemas/SubItemEntity'
         name:
           type: string
-          nullable: true
           description: The name of the run
           example: Data Processing PipelineRun
         outputs:

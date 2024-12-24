@@ -21,7 +21,7 @@ export type RunJob = Job<ContentEntity[], ContentEntity[], string>
 
 @Processor('run')
 export class RunProcessor extends WorkerHost {
-  private readonly logger: Logger = new Logger('Run Processor')
+  private readonly logger: Logger = new Logger(RunProcessor.name)
 
   constructor(
     private runsService: RunsService,
@@ -40,21 +40,21 @@ export class RunProcessor extends WorkerHost {
   @OnWorkerEvent('active')
   async onActive(job: RunJob) {
     this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`)
-    await this.runsService.setStatus(job.id.toString(), 'PROCESSING')
+    await this.runsService.setStatus(job.id!.toString(), 'PROCESSING')
   }
 
   @OnWorkerEvent('completed')
   async onCompleted(job: RunJob) {
     this.logger.log(`Completed job ${job.id}`)
-    await this.runsService.setStatus(job.id.toString(), 'COMPLETE')
+    await this.runsService.setStatus(job.id!.toString(), 'COMPLETE')
   }
 
   @OnWorkerEvent('error')
   async onError(job: RunJob, error: any) {
-    this.logger.error(`Error running job ${job.id}: ${error?.message}`)
+    this.logger.error(`Error running job ${job.id}: ${error.message}`)
     try {
-      await this.runsService.setStatus(job.id.toString(), 'ERROR')
-      await this.runsService.setRunError(job.id.toString(), error?.message)
+      await this.runsService.setStatus(job.id!.toString(), 'ERROR')
+      await this.runsService.setRunError(job.id!.toString(), error?.message)
     } catch {
       this.logger.error(`Failed to update run status for job ${job?.id}`)
     }
@@ -62,12 +62,12 @@ export class RunProcessor extends WorkerHost {
 
   @OnWorkerEvent('failed')
   async onFailed(job: RunJob, error: any) {
-    this.logger.error(`Failed job ${job.id} : ${error?.message}`)
+    this.logger.error(`Failed job ${job.id} : ${error.message}`)
     try {
-      await this.runsService.setStatus(job.id.toString(), 'ERROR')
-      await this.runsService.setRunError(job.id.toString(), error?.message)
+      await this.runsService.setStatus(job.id!.toString(), 'ERROR')
+      await this.runsService.setRunError(job.id!.toString(), error.message)
     } catch {
-      this.logger.error(`Failed to update run status for job ${job?.id}`)
+      this.logger.error(`Failed to update run status for job ${job.id}`)
     }
   }
 
@@ -85,7 +85,7 @@ export class RunProcessor extends WorkerHost {
         break
       case 'extract-text':
         outputs = await transformFileToText(
-          job.id,
+          job.id!,
           inputs,
           this.logger,
           this.contentService,
@@ -95,7 +95,7 @@ export class RunProcessor extends WorkerHost {
         break
       case 'summarize':
         outputs = await transformTextToText(
-          job.id,
+          job.id!,
           inputs,
           this.logger,
           this.contentService,
@@ -104,7 +104,7 @@ export class RunProcessor extends WorkerHost {
         break
       case 'text-to-image':
         outputs = await transformTextToImage(
-          job.id,
+          job.id!,
           inputs,
           this.logger,
           this.contentService,
@@ -114,7 +114,7 @@ export class RunProcessor extends WorkerHost {
         break
       case 'text-to-speech':
         outputs = await transformTextToSpeech(
-          job.id,
+          job.id!,
           inputs,
           this.logger,
           this.contentService,
@@ -123,13 +123,12 @@ export class RunProcessor extends WorkerHost {
         )
         break
       default:
-        this.logger.error(`Unknown toolId ${job.name}`)
         throw new Error(`Unknown toolId ${job.name}`)
     }
 
-    this.logger.log(`Adding run output contents to run ${job.id}`)
+    this.logger.log(`Adding run output contents to run ${job.id!}`)
     await this.runsService.setInputsOrOutputs(
-      job.id.toString(),
+      job.id!.toString(),
       'outputs',
       outputs
     )

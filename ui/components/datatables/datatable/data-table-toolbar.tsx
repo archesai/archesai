@@ -98,7 +98,7 @@ export function ViewToggle() {
         className={`flex h-full items-center justify-center transition-colors ${
           view === 'table'
             ? 'bg-secondary text-primary'
-            : 'bg-transparent text-muted-foreground'
+            : 'text-muted-foreground bg-transparent'
         }`}
         onClick={() => setView('table')}
         size='icon'
@@ -110,7 +110,7 @@ export function ViewToggle() {
         className={`flex h-full items-center justify-center transition-colors ${
           view === 'grid'
             ? 'bg-secondary text-primary'
-            : 'bg-transparent text-muted-foreground'
+            : 'text-muted-foreground bg-transparent'
         }`}
         onClick={() => setView('grid')}
         size='icon'

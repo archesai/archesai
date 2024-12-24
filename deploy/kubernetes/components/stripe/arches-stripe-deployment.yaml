@@ -23,6 +23,6 @@ spec:
             - stripe
             - listen
             - "--forward-to"
-            - "https://arches-api.test/webhooks/stripe"
+            - "https://api.archesai.test/webhooks/stripe"
             - "--api-key"
             - "sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV"

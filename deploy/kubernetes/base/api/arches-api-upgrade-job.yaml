@@ -9,17 +9,11 @@ spec:
       containers:
         - name: arches-api-upgrade
           image: us-east4-docker.pkg.dev/archesai/images/arches-api
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              npx prisma migrate deploy --schema /app/prisma/schema.prisma
+          command: ['pnpm']
+          args: ['--filter', 'api', 'migrations:prod']
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   key: DATABASE_URL
                   name: arches-api-config-secret
-      securityContext:
-        runAsUser: 1000 # Replace with actual UID
-        runAsGroup: 1000 # Replace with actual GID
-        fsGroup: 1000 # Replace with actual GID

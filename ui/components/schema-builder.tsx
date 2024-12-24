@@ -32,9 +32,8 @@ const SchemaBuilder: React.FC = () => {
   const [fields, setFields] = useState<FieldDefinition[]>([])
 
   const handleSubmit = () => {
-    const schemaString = generateZodSchema(fields)
+    generateZodSchema(fields)
     // Send schemaString to backend
-    console.log('Generated Zod Schema:', schemaString)
     // For example, use fetch or axios to send schemaString to your backend
   }
 
@@ -173,7 +172,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           onClick={removeField}
           variant='ghost'
         >
-          <Trash className='h-4 w-4 text-destructive' />
+          <Trash className='text-destructive h-4 w-4' />
         </Button>
       </div>
 

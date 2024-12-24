@@ -19,7 +19,7 @@ describe('CreateRunDto with CustomValidationPipe', () => {
     try {
       await validationPipe.transform(dto, metadata)
       fail('Expected a BadRequestException due to missing required fields')
-    } catch (error) {
+    } catch (error: any) {
       expect(error).toBeInstanceOf(BadRequestException)
       expect(error.message).toContain(
         'runType must be one of the following values: TOOL_RUN, PIPELINE_RUN'

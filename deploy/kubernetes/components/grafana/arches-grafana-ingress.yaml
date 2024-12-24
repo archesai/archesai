@@ -4,7 +4,7 @@ metadata:
   name: arches-grafana-ingress
 spec:
   rules:
-    - host: arches-grafana.test
+    - host: grafana.archesai.test
       http:
         paths:
           - pathType: Prefix

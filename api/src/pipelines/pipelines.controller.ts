@@ -1,4 +1,4 @@
-import { Controller, Logger } from '@nestjs/common'
+import { Controller } from '@nestjs/common'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 import { BaseController } from '../common/base.controller'
@@ -16,8 +16,6 @@ export class PipelinesController extends BaseController<
   UpdatePipelineDto,
   PipelinesService
 >(PipelineEntity, CreatePipelineDto, UpdatePipelineDto) {
-  private logger = new Logger(PipelinesController.name)
-
   constructor(private readonly pipelinesService: PipelinesService) {
     super(pipelinesService)
   }

@@ -43,9 +43,13 @@ export const DeleteItems = <TDeleteVariables,>({
         await deleteFunction(deleteVars)
         setOpenConfirmDelete(false)
         toast({ title: t(`The ${itemType} has been removed`) })
-      } catch (err) {
-        console.error(err)
-        toast({ title: t(`Could not remove ${itemType}`) })
+      } catch (error: any) {
+        console.error(error)
+        toast({
+          title: t(`Could not remove ${itemType}`),
+          description: error.message,
+          variant: 'destructive'
+        })
       }
     }
   }
@@ -62,10 +66,10 @@ export const DeleteItems = <TDeleteVariables,>({
       <DialogTrigger asChild>
         {variant === 'sm' ? (
           <div
-            className='cursor-pointer text-destructive'
+            className='text-destructive cursor-pointer'
             onClick={() => setOpenConfirmDelete(true)}
           >
-            <Trash className='h-5 w-5 text-destructive' />
+            <Trash className='text-destructive h-5 w-5' />
           </div>
         ) : variant === 'md' ? (
           <div

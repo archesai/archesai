@@ -45,6 +45,6 @@ export class UsersController {
     @CurrentUser() user: UserEntity,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.usersService.update(user.defaultOrgname, user.id, updateUserDto)
+    return this.usersService.update(user.id, updateUserDto)
   }
 }

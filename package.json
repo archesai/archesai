@@ -1,0 +1,49 @@
+{
+  "name": "archesai",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "format": "pnpm prettier  \"{ui,api}/**/*.{ts,tsx,js,json}\" --ignore-path .gitignore --log-level warn",
+    "format:check": "pnpm run format --check",
+    "format:write": "pnpm run format --write",
+    "tsc": "pnpm -r tsc",
+    "lint": "pnpm -r lint",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:watch": "pnpm -r test:watch",
+    "test:coverage": "pnpm -r test:coverage",
+    "validate": "pnpm format:write && pnpm tsc && pnpm lint && pnpm build",
+    "preinstall": "pnpm only-allow pnpm",
+    "prepare": "pnpm husky install",
+    "cloc": "pnpm cloc --exclude-dir=node_modules,dist,build,npm.lock,package.json,generated.tsx,.next, .",
+    "clean": "pnpm -r exec rm -rf node_modules"
+  },
+  "packageManager": "pnpm@9.15.1",
+  "devDependencies": {
+    "@eslint/compat": "^1.2.4",
+    "@eslint/js": "^9.17.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "22.10.2",
+    "@typescript-eslint/parser": "^8.18.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.10.0",
+    "globals": "^15.14.0",
+    "husky": "^9.1.7",
+    "jest": "^29.7.0",
+    "jest-openapi": "^0.14.2",
+    "only-allow": "^1.2.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-sort-json": "^4.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "5.7.2"
+    }
+  }
+}

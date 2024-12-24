@@ -734,7 +734,7 @@ export type CardDetails = {
    *
    * @example US
    */
-  country: string
+  country: string | null
   /**
    * Two-digit number representing the card’s expiration month.
    *
@@ -1301,7 +1301,7 @@ export type RunEntity = {
    *
    * @example Data Processing PipelineRun
    */
-  name: string | null
+  name: string
   /**
    * The outputs associated with the run
    */

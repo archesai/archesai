@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs'
 
 import { AppModule } from '../src/app.module'
 import { UsersService } from '../src/users/users.service'
+import { Logger } from '@nestjs/common'
 
 const prisma = new PrismaClient()
 
@@ -28,14 +29,16 @@ export const resetDatabase = async () => {
 }
 
 async function main() {
+  const logger = new Logger('SeedProcess')
+
   await resetDatabase()
 
   const app = await NestFactory.createApplicationContext(AppModule, {
-    logger: ['warn', 'error']
+    logger
   })
   const usersService = app.get(UsersService)
   const hashedPassword = await bcrypt.hash('password', 10)
-  const user = await usersService.create(null, {
+  const user = await usersService.create({
     email: 'user@example.com',
     emailVerified: true,
     firstName: 'Jonathan',
@@ -63,7 +66,7 @@ async function main() {
   for (let i = 0; i < 3; i++) {
     await prisma.label.create({
       data: {
-        name: labels[i],
+        name: labels[i]!,
         orgname: user.defaultOrgname
       }
     })
@@ -115,9 +118,9 @@ async function main() {
     })
   }
 
-  console.log('Successfully seeded database')
-
   await app.close()
+
+  logger.log('Seeding complete')
 }
 
 ;(async () => {

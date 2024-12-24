@@ -36,11 +36,11 @@ describe('Auth Module E2E Tests', () => {
         if (tokenMatch) {
           const token = tokenMatch[1]
           // Determine token type based on URL path or another identifier
-          if (html.toString().includes('email-change')) {
+          if (html!.toString().includes('email-change')) {
             emailChangeToken = token
-          } else if (html.toString().includes('email-verification')) {
+          } else if (html!.toString().includes('email-verification')) {
             emailVerificationToken = token
-          } else if (html.toString().includes('password-reset')) {
+          } else if (html!.toString().includes('password-reset')) {
             passwordResetToken = token
           }
         }
@@ -279,7 +279,7 @@ describe('Auth Module E2E Tests', () => {
 
       const expiredResetDto: ConfirmationTokenWithNewPasswordDto = {
         newPassword: 'ExpiredPassword123!',
-        token: passwordResetToken
+        token: passwordResetToken!
       }
       const res = await request(app.getHttpServer())
         .post('/auth/password-reset/confirm')
@@ -289,7 +289,7 @@ describe('Auth Module E2E Tests', () => {
 
       // Clean up: remove the expired token
       await prisma.aRToken.deleteMany({
-        where: { token: passwordResetToken }
+        where: { token: passwordResetToken! }
       })
       passwordResetToken = null
     })

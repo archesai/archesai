@@ -1,5 +1,5 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthProviderType } from '@prisma/client'
@@ -41,7 +41,7 @@ export class FirebaseStrategy extends PassportStrategy(
   Strategy,
   'firebase-auth'
 ) {
-  private readonly logger = new Logger('Firebase Strategy')
+  private readonly logger = new Logger(FirebaseStrategy.name)
 
   constructor(
     private configService: ConfigService,
@@ -66,33 +66,36 @@ export class FirebaseStrategy extends PassportStrategy(
   }
 
   async validate(token: string): Promise<UserEntity> {
-    this.logger.log(`Validating Firebase Token: ${token}`)
+    this.logger.debug(`Validating Firebase Token: ${token}`)
     const decodedToken = await admin.auth().verifyIdToken(token)
-    let user: UserEntity
+    if (!decodedToken.email) {
+      throw new UnauthorizedException('Token does not contain email')
+    }
+
     try {
-      const user = await this.usersService.findOneByEmail(decodedToken.email)
-      return user
+      await this.usersService.findOneByEmail(decodedToken.email)
+      return this.usersService.syncAuthProvider(
+        decodedToken.email,
+        AuthProviderType.FIREBASE,
+        decodedToken.uid
+      )
     } catch (e) {
-      this.logger.log(`User not found: ${decodedToken.email}: ${e}`)
+      this.logger.debug(`User not found: ${decodedToken.email}: ${e}`)
       const username =
-        user.email.split('@')[0] +
+        decodedToken.email.split('@')[0] +
         '-' +
         Math.random().toString(36).substring(2, 6)
-      user = await this.usersService.create(null, {
+      await this.usersService.create({
         email: decodedToken.email,
         emailVerified: true,
-        password: null,
-        photoUrl: decodedToken.picture,
-        // plus - and a random string of 4 letters
+        photoUrl: decodedToken.picture || '',
         username
       })
-    } finally {
-      user = await this.usersService.syncAuthProvider(
+      return this.usersService.syncAuthProvider(
         decodedToken.email,
         AuthProviderType.FIREBASE,
         decodedToken.uid
       )
     }
-    return user
   }
 }

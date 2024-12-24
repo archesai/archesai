@@ -45,12 +45,12 @@ export const HowItWorks = () => {
     >
       <h2 className='text-3xl font-bold md:text-4xl'>
         How It{' '}
-        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
           Works{' '}
         </span>
         Step-by-Step Guide
       </h2>
-      <p className='mx-auto mb-8 mt-4 text-xl text-muted-foreground md:w-3/4'>
+      <p className='text-muted-foreground mx-auto mb-8 mt-4 text-xl md:w-3/4'>
         Discover how Arches AI empowers your business with advanced AI
         solutions. Here’s a simple guide on how to get started.
       </p>

@@ -12,8 +12,8 @@ export type ContentModel = _PrismaContent & {
   children: _PrismaSubItemModel[]
   consumedBy: _PrismaSubItemModel[]
   labels: _PrismaSubItemModel[]
-  parent: _PrismaSubItemModel
-  producedBy: _PrismaSubItemModel
+  parent: _PrismaSubItemModel | null
+  producedBy: _PrismaSubItemModel | null
 }
 
 export class ContentEntity extends BaseEntity implements ContentModel {

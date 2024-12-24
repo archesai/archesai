@@ -32,7 +32,7 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
         tokens: Math.ceil(usage.total_tokens / texts.length)
       }
     })
-    this.logger.log(
+    this.logger.debug(
       `Embedded ${texts.length} texts with ${usage.total_tokens} in ${(Date.now() - start) / 1000}s`
     )
     return response

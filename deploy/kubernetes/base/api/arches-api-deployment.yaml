@@ -19,10 +19,6 @@ spec:
       labels:
         component: arches-api
     spec:
-      securityContext:
-        runAsUser: 1000 # Replace with actual UID
-        runAsGroup: 1000 # Replace with actual GID
-        fsGroup: 1000
       initContainers:
         - name: arches-api-wait-for-migration
           imagePullPolicy: IfNotPresent

@@ -109,7 +109,11 @@ describe('Access Tokens', () => {
     expect(res.status).toBe(403)
   }
 
-  const deleteToken = async (orgname: string, accessToken: string, tokenId) => {
+  const deleteToken = async (
+    orgname: string,
+    accessToken: string,
+    tokenId: string
+  ) => {
     const res = await request(app.getHttpServer())
       .delete(`/organizations/${orgname}/api-tokens/${tokenId}`)
       .set('Authorization', `Bearer ${accessToken}`)

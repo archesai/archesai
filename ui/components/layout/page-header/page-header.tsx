@@ -40,9 +40,9 @@ export const PageHeader = () => {
     <>
       <VerifyEmailAlert />
 
-      <header className='flex w-full items-center justify-between bg-sidebar p-3 py-3'>
+      <header className='bg-sidebar flex w-full items-center justify-between p-3 py-3'>
         <Button
-          className='mr-3 flex h-8 w-8 border-sidebar-accent bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
+          className='border-sidebar-accent bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground mr-3 flex h-8 w-8'
           onClick={toggleSidebar}
           size='icon'
           variant='outline'
@@ -65,13 +65,13 @@ export const PageHeader = () => {
         <div className='border-b' />
       ) : (
         <Tabs value={activeTab}>
-          <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>
+          <TabsList className='bg-sidebar h-8 w-full items-end justify-start rounded-none border-b'>
             {currentTabs.map((tab) => {
               const isActive = tab.href === activeTab
               return (
                 <TabsTrigger
                   className={cn(
-                    `relative h-8 font-normal shadow-none transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:bg-sidebar data-[state=active]:text-sidebar-foreground [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
+                    `hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:bg-sidebar data-[state=active]:text-sidebar-foreground relative h-8 font-normal shadow-none transition-all [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
                     `${isActive ? 'text-sidebar-foreground [&::after]:w-full' : 'text-muted-foreground [&::after]:w-0'}`
                   )}
                   key={tab.href}

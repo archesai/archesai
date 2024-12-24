@@ -5,7 +5,6 @@ import { BaseRepository } from '../common/base.repository'
 import { ContentEntity } from '../content/entities/content.entity'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateRunDto } from './dto/create-run.dto'
-import { RunModel } from './entities/run.entity'
 
 const RUN_INCLUDE = {
   inputs: {
@@ -20,20 +19,12 @@ const RUN_INCLUDE = {
       name: true
     }
   }
-  // pipeline: true,
-  // pipelineRun: true,
-  // pipelineStep: true,
-  // tool: true,
-  // toolRuns: true,
 }
 
 @Injectable()
 export class RunRepository extends BaseRepository<
-  RunModel,
-  CreateRunDto,
-  any,
-  Prisma.RunInclude,
-  Prisma.RunUpdateInput
+  Prisma.RunDelegate,
+  typeof RUN_INCLUDE
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.run, RUN_INCLUDE)
@@ -44,7 +35,7 @@ export class RunRepository extends BaseRepository<
       include: {
         pipelineSteps: true
       },
-      where: { id: createRunDto.pipelineId }
+      where: { id: createRunDto.pipelineId! }
     })
     const pipelineRun = await this.prisma.run.create({
       data: {
@@ -73,7 +64,7 @@ export class RunRepository extends BaseRepository<
       await this.prisma.run.update({
         data: {
           inputs: {
-            connect: createRunDto.contentIds.map((contentId) => ({
+            connect: createRunDto.contentIds?.map((contentId) => ({
               id: contentId
             }))
           }
@@ -92,7 +83,7 @@ export class RunRepository extends BaseRepository<
       })
     }
 
-    return this.prisma.run.findUnique({
+    return this.prisma.run.findUniqueOrThrow({
       include: RUN_INCLUDE,
       where: { id: pipelineRun.id }
     })

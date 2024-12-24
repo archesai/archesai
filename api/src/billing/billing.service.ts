@@ -9,7 +9,7 @@ export class BillingService {
     this.stripe = new Stripe(
       this.configService.get('STRIPE_PRIVATE_API_KEY') || 'n/a',
       {
-        apiVersion: '2024-11-20.acacia'
+        apiVersion: '2024-12-18.acacia'
       }
     )
   }
@@ -82,6 +82,10 @@ export class BillingService {
       payment_method_types: ['card'],
       success_url: `${this.configService.get('FRONTEND_HOST')}/organization/billing`
     })
+
+    if (!session.url) {
+      throw new BadRequestException('Failed to create checkout session.')
+    }
 
     return { url: session.url }
   }

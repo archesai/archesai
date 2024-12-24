@@ -15,10 +15,6 @@ spec:
       labels:
         component: arches-ui
     spec:
-      securityContext:
-        runAsUser: 100 # Replace with actual UID
-        runAsGroup: 101 # Replace with actual GID
-        fsGroup: 101 # Replace with actual GID
       containers:
         - image: us-east4-docker.pkg.dev/archesai/images/arches-ui
           name: arches-ui
@@ -27,8 +23,8 @@ spec:
           resources: {}
           env:
             - name: NEXT_PUBLIC_WEBSOCKET_URL
-              value: "wss://arches-api.test"
+              value: 'wss://api.archesai.test'
             - name: NEXT_PUBLIC_API_URL
-              value: "https://arches-api.test"
+              value: 'https://api.archesai.test'
       hostname: ui-tcp
       restartPolicy: Always

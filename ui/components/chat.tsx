@@ -9,24 +9,21 @@ import {
   fetchRunsControllerCreate as createRun
 } from '@/generated/archesApiComponents'
 import { useAuth } from '@/hooks/use-auth'
-import { useStreamChat } from '@/hooks/use-stream-chat'
 import { useToast } from '@/hooks/use-toast'
-import { cn } from '@/lib/utils'
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { cn, streamContent } from '@/lib/utils'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { RefreshCcw } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
 
 export default function Chat() {
   const { toast } = useToast()
-
+  const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const [labelId, setLabelId] = useState<string>('')
   const { defaultOrgname } = useAuth()
   const [message, setMessage] = useState<string>('')
   const tid = searchParams?.get('labelId')
-
-  const { streamContent } = useStreamChat()
 
   const { data: messages } = useSuspenseQuery({
     queryKey: ['organizations', defaultOrgname, 'content'],
@@ -73,39 +70,46 @@ export default function Chat() {
         })
         setLabelId(label.id)
         currentLabelId = label.id
-      } catch (error) {
-        console.error('Failed to create label:', error)
-        // Optionally, show a toast notification
-        return
+      } catch (error: any) {
+        console.error(error)
+        toast({
+          description: error.message,
+          title: 'Failed to create label'
+        })
       }
     }
 
     setMessage('')
-    streamContent(defaultOrgname, currentLabelId, {
-      createdAt: new Date().toISOString(),
-      credits: 0,
-      description: 'Pending',
-      id: 'pending',
-      name: 'Pending',
-      orgname: defaultOrgname,
-      text: message.trim(),
-      children: [],
-      consumedBy: [],
-      labels: [],
-      mimeType: 'text/plain',
-      parentId: null,
-      parent: {
-        id: '',
-        name: 'Chat'
+    streamContent(
+      defaultOrgname,
+      currentLabelId,
+      {
+        createdAt: new Date().toISOString(),
+        credits: 0,
+        description: 'Pending',
+        id: 'pending',
+        name: 'Pending',
+        orgname: defaultOrgname,
+        text: message.trim(),
+        children: [],
+        consumedBy: [],
+        labels: [],
+        mimeType: 'text/plain',
+        parentId: null,
+        parent: {
+          id: '',
+          name: 'Chat'
+        },
+        previewImage: null,
+        producedBy: {
+          id: '',
+          name: 'Chat'
+        },
+        producedById: null,
+        url: null
       },
-      previewImage: null,
-      producedBy: {
-        id: '',
-        name: 'Chat'
-      },
-      producedById: null,
-      url: null
-    })
+      queryClient
+    )
 
     try {
       await createRun({
@@ -242,7 +246,7 @@ export default function Chat() {
         >
           <div className='flex items-center gap-2'>
             <Textarea
-              className='text-md max-h-40 flex-1 resize-none rounded-lg bg-muted/50 text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
+              className='text-md bg-muted/50 max-h-40 flex-1 resize-none rounded-lg text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
               onChange={handleChange}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement

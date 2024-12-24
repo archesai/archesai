@@ -1,14 +1,12 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
 import { UsersService } from '@/src/users/users.service'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthProviderType } from '@prisma/client'
 import { Profile, Strategy } from 'passport-twitter'
 
 @Injectable()
 export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
-  private logger = new Logger(TwitterStrategy.name)
-
   constructor(private readonly usersService: UsersService) {
     super({
       callbackURL:
@@ -29,19 +27,19 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
       const twitterId = profile.id
       const email = profile.emails?.[0]?.value
       const username = profile.username
-
+      if (!email) {
+        return cb(new Error('No email found'), false)
+      }
       let user: UserEntity
       try {
         user = await this.usersService.findOneByEmail(email)
-      } catch (e) {
-        this.logger.log(`User not found: ${email}: ${e}`)
-        user = await this.usersService.create(null, {
+      } catch {
+        user = await this.usersService.create({
           email: email,
           emailVerified: true,
-          password: null,
-          photoUrl: profile.photos?.[0]?.value,
+          photoUrl: profile.photos?.[0]?.value || '',
           username
-        })
+        }) // FIXME unsafe
       } finally {
         user = await this.usersService.syncAuthProvider(
           email,

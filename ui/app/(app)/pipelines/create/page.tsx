@@ -81,12 +81,7 @@ export default function App() {
       onNodesChange={onNodesChange}
     >
       <Panel position='top-right'>
-        <Button
-          className='z-50'
-          onClick={() => console.log(nodes, edges)}
-        >
-          Log
-        </Button>
+        <Button className='z-50'>Useless Button</Button>
       </Panel>
       <Controls />
       <MiniMap

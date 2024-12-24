@@ -3,7 +3,7 @@ import { Server } from 'socket.io'
 
 @Injectable()
 export class WebsocketsService {
-  public socket: Server = null
+  public socket: Server | null = null
 
   constructor() {}
 }

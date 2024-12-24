@@ -2,7 +2,6 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  Logger,
   UnauthorizedException
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
@@ -11,7 +10,6 @@ import { Request } from 'express'
 
 @Injectable()
 export class ApiTokenRestrictedDomainGuard implements CanActivate {
-  private logger = new Logger(ApiTokenRestrictedDomainGuard.name)
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService
@@ -25,7 +23,7 @@ export class ApiTokenRestrictedDomainGuard implements CanActivate {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return true
     }
-    this.logger.debug(`Auth Header: ${authHeader}`)
+
     const token = authHeader.split(' ')[1]
     const payload = this.jwtService.decode(token)
     if (!payload || !payload.domains) {
@@ -35,16 +33,6 @@ export class ApiTokenRestrictedDomainGuard implements CanActivate {
 
     const clientIp = request.ip
     const origin = request.headers['origin'] || request.headers['referer']
-
-    this.logger.debug(`Domains: ${allowedDomains}`)
-    this.logger.debug(
-      `Request Headers: ${JSON.stringify(request.headers, null, 2)}`
-    )
-    this.logger.debug(
-      `Raw Headers: ${JSON.stringify(request.rawHeaders, null, 2)}`
-    )
-    this.logger.debug(`Client IP: ${clientIp}`)
-    this.logger.debug(`Origin: ${origin}`)
 
     // Make sure if there was a domain in their header that this request is authorized for it
     if (allowedDomains && allowedDomains != '*') {

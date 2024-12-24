@@ -73,9 +73,9 @@ export class BillingDetails {
 
   constructor(billingDetails: Stripe.PaymentMethod.BillingDetails) {
     this.address = new Address(billingDetails.address)
-    this.email = billingDetails.email || null
-    this.name = billingDetails.name || null
-    this.phone = billingDetails.phone || null
+    this.email = billingDetails.email
+    this.name = billingDetails.name
+    this.phone = billingDetails.phone
   }
 }
 
@@ -90,7 +90,7 @@ export class CardDetails {
    * Two-letter ISO code representing the country of the card.
    * @example 'US'
    */
-  country: string
+  country: string | null
 
   /**
    * Two-digit number representing the card’s expiration month.

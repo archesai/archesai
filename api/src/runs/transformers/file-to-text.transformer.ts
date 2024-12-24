@@ -18,6 +18,9 @@ export const transformFileToText: IToolRunProcess = async (
   logger.log(`Extracting text for run ${runId} with url ${inputs[0].url}`)
 
   let content = inputs[0]
+  if (!content.url) {
+    throw new Error('No url provided')
+  }
   const { buffer } = await storageService.download(content.orgname, content.url)
   const loader = new UnstructuredLoader(
     {
@@ -50,15 +53,19 @@ export const transformFileToText: IToolRunProcess = async (
 
   // update name
   if (title?.indexOf('http') == -1) {
-    content = await contentService.setTitle(content.orgname, content.id, title)
+    content = await contentService.update(content.id, {
+      name: title
+    })
   }
 
   const chunkedContent = await Promise.all(
     sanitizedTextContent.map((data, i) =>
-      contentService.create(content.orgname, {
+      contentService.create({
         name: `${content.name} - Page ${data.page} - Index ${i}`,
         text: data.text,
-        labels: []
+        labels: [],
+        orgname: content.orgname,
+        url: null
       })
     )
   )

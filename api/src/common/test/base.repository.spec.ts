@@ -1,6 +1,6 @@
 import { BaseRepository } from '../base.repository'
 
-class TestRepository extends BaseRepository<any, any, any, any, any> {
+class TestRepository extends BaseRepository<any, any, any, any> {
   constructor(delegate: any) {
     super(delegate)
   }
@@ -24,18 +24,19 @@ describe('BaseRepository', () => {
 
   describe('create', () => {
     it('should create a new record', async () => {
-      const orgname = 'test-org'
       const createDto = { name: 'Test Item' }
-      const additionalData = { extraField: 'extraValue' }
+      const additionalData = { extraField: 'extraValue', orgname: 'test-org' }
       const expectedResult = { id: '1', ...createDto, ...additionalData }
 
       mockDelegate.create.mockResolvedValue(expectedResult)
 
-      const result = await repository.create(orgname, createDto, additionalData)
+      const result = await repository.create({
+        ...createDto,
+        ...additionalData
+      })
 
       expect(mockDelegate.create).toHaveBeenCalledWith({
         data: {
-          organization: { connect: { orgname } },
           ...createDto,
           ...additionalData
         },

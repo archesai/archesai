@@ -86,7 +86,7 @@ export function UserButton({
                   src={user?.photoUrl}
                 />
                 <AvatarFallback className='rounded-xl'>
-                  <Skeleton className='h-9 w-9 bg-sidebar-accent' />
+                  <Skeleton className='bg-sidebar-accent h-9 w-9' />
                 </AvatarFallback>
               </Avatar>
               {size !== 'sm' && (
@@ -96,14 +96,14 @@ export function UserButton({
                       {isFetched ? (
                         user?.displayName
                       ) : (
-                        <Skeleton className='m-1 h-4 bg-sidebar-accent' />
+                        <Skeleton className='bg-sidebar-accent m-1 h-4' />
                       )}
                     </span>
                     <span className='truncate text-xs'>
                       {isFetched ? (
                         user?.email
                       ) : (
-                        <Skeleton className='m-1 h-3 bg-sidebar-accent' />
+                        <Skeleton className='bg-sidebar-accent m-1 h-3' />
                       )}
                     </span>
                   </div>

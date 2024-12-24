@@ -5,14 +5,16 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { BaseService } from './base.service'
 import { ApiPaginatedResponse } from './decorators/paginated.decorator'
 import { PaginatedDto } from './dto/paginated.dto'
-import { SearchQueryDto } from './dto/search-query.dto'
+import { OperatorEnum, SearchQueryDto } from './dto/search-query.dto'
 import { AbstractValidationPipe } from './pipes/abstract-validation.pipe'
+import { CurrentUser } from '../auth/decorators/current-user.decorator'
+import { UserEntity } from '../users/entities/user.entity'
 
 export function BaseController<
   Entity,
-  CreateDto,
-  UpdateDto,
-  Service extends BaseService<Entity, CreateDto, UpdateDto, any, any>
+  CreateDto extends Partial<Entity>,
+  UpdateDto extends Partial<Entity>,
+  Service extends BaseService<Entity, any, any>
 >(
   EntityClass: Type<Entity>,
   CreateDtoClass: Type<CreateDto>,
@@ -34,9 +36,13 @@ export function BaseController<
     async create(
       @Param('orgname') orgname: string,
       @Body() createDto: CreateDto,
-      ...additionalData: any[]
+      @CurrentUser() currentUserDto?: UserEntity
     ): Promise<Entity> {
-      return this.service.create(orgname, createDto, additionalData)
+      return this.service.create({
+        ...createDto,
+        orgname,
+        username: currentUserDto?.username
+      })
     }
 
     @ApiOperation({ summary: `Get all ${itemType}s` })
@@ -47,7 +53,17 @@ export function BaseController<
       @Param('orgname') orgname: string,
       @Query() searchQueryDto: SearchQueryDto
     ): Promise<PaginatedDto<Entity>> {
-      return this.service.findAll(orgname, searchQueryDto)
+      return this.service.findAll({
+        ...searchQueryDto,
+        filters: [
+          ...(searchQueryDto.filters || []),
+          {
+            field: 'orgname',
+            operator: OperatorEnum.EQUALS,
+            value: orgname
+          }
+        ]
+      })
     }
 
     @ApiOperation({ summary: `Get a single ${itemType}` })
@@ -62,7 +78,7 @@ export function BaseController<
       @Param('orgname') orgname: string,
       @Param('id') id: string
     ): Promise<Entity> {
-      return this.service.findOne(orgname, id)
+      return this.service.findOne(id)
     }
 
     @ApiOperation({ summary: `Delete a ${itemType}` })
@@ -75,8 +91,8 @@ export function BaseController<
     async remove(
       @Param('orgname') orgname: string,
       @Param('id') id: string
-    ): Promise<void> {
-      return this.service.remove(orgname, id)
+    ): Promise<Entity> {
+      return this.service.remove(id)
     }
 
     @ApiBody({ type: UpdateDtoClass })
@@ -97,7 +113,7 @@ export function BaseController<
       @Param('id') id: string,
       @Body() updateDto: UpdateDto
     ): Promise<Entity> {
-      return this.service.update(orgname, id, updateDto)
+      return this.service.update(id, updateDto)
     }
   }
 

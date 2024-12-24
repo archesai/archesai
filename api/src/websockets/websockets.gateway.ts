@@ -16,11 +16,7 @@ import { WebsocketsService } from './websockets.service'
   connectTimeout: 10000,
   cors: {
     credentials: true,
-    origin: [
-      'https://platform.archesai.com',
-      'http://localhost:3000',
-      'http://arches-api:3001'
-    ]
+    origin: ['https://platform.archesai.com', 'https://platform.archesai.test']
   },
   transports: ['websocket']
 })
@@ -30,7 +26,7 @@ export class WebsocketsGateway
   @WebSocketServer()
   server: Server
 
-  private readonly logger: Logger = new Logger('WebsocketsGateway')
+  private readonly logger: Logger = new Logger(WebSocketGateway.name)
 
   constructor(
     private readonly authService: AuthService,
@@ -41,41 +37,47 @@ export class WebsocketsGateway
   afterInit(server: Server) {
     this.websocketsService.socket = server
     server.on('error', (error) => {
-      this.logger.error(`WebSocket error: ${error}`)
+      this.logger.error(error)
     })
   }
 
   async handleConnection(socket: Socket) {
     try {
-      const cookie = socket.handshake.headers.cookie
-      if (!cookie) {
-        throw new Error('No cookie provided')
-      }
-      const token = decodeURIComponent(cookie)
-        .split(';')
-        .find((c) => c.trim().startsWith('archesai.accessToken='))
-        ?.split('=')[1]
-      if (!token) {
-        throw new Error('No jwt token found in cookie')
-      }
+      const token = await this.getTokenFromSocket(socket)
+      const { sub: id } = await this.authService.verifyToken(token)
+      const user = await this.usersService.findOne(id)
 
-      // Remove the 's:' prefix if it exists. Express adds this to the beginning when its a signed cookie
-      const cleanToken = token.startsWith('s:') ? token.slice(2) : token
-
-      const { sub: id } = await this.authService.verifyToken(cleanToken)
-      const user = await this.usersService.findOne(null, id)
-      this.logger.debug(`Connected with websockets ${user.defaultOrgname}`)
       socket.join(user.defaultOrgname)
+      socket.data.username = user.username
+      this.logger.log(
+        `Connected ${user.username} to room ${user.defaultOrgname}`
+      )
     } catch (error) {
       this.logger.error(error)
       socket.disconnect()
     }
   }
 
-  // Implement the handleDisconnect method
   async handleDisconnect(socket: Socket) {
     this.logger.log(
-      `Disconnected ${socket.id} ${Array.from(socket.rooms).toString()}`
+      `Disconnected ${socket.data.username} from ${Array.from(socket.rooms).toString()}`
     )
+  }
+
+  async getTokenFromSocket(socket: Socket) {
+    const cookie = socket.handshake.headers.cookie
+    if (!cookie) {
+      throw new Error('No cookie provided in websocket handshake')
+    }
+    const token = decodeURIComponent(cookie)
+      .split(';')
+      .find((c) => c.trim().startsWith('archesai.accessToken='))
+      ?.split('=')[1]
+    if (!token) {
+      throw new Error('Invalid cookie provided in websocket handshake')
+    }
+
+    // Remove the 's:' prefix if it exists. Express adds this to the beginning when its a signed cookie
+    return token.startsWith('s:') ? token.slice(2) : token
   }
 }

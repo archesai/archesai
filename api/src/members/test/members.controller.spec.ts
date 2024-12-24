@@ -80,10 +80,11 @@ describe('MembersController', () => {
       inviteEmail: 'jonathan@gmail.com',
       role: RoleTypeEnum.ADMIN
     }
-    const mockedApiToken = createRandomMember({
-      role: RoleTypeEnum.ADMIN
+    const mockedMember = createRandomMember({
+      ...createMemberDto,
+      orgname
     })
-    mockedMembersService.create.mockResolvedValue(mockedApiToken)
+    mockedMembersService.create.mockResolvedValue(mockedMember)
 
     const response = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/members`)
@@ -91,21 +92,21 @@ describe('MembersController', () => {
 
     expect(response.status).toBe(201)
     expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt.toISOString(),
+      ...mockedMember,
+      createdAt: mockedMember.createdAt.toISOString(),
       updatedAt: undefined
     })
 
-    expect(mockedMembersService.create).toHaveBeenCalledWith(
+    expect(mockedMembersService.create).toHaveBeenCalledWith({
+      ...createMemberDto,
       orgname,
-      createMemberDto,
-      []
-    )
+      username: 'testUser'
+    })
   })
 
   it('GET /organizations/:orgname/members should call service.findAll', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomMember()
+    const mockedMember = createRandomMember()
     const mockedPaginatedMembers = {
       aggregates: [],
       metadata: {
@@ -113,7 +114,7 @@ describe('MembersController', () => {
         offset: 0,
         totalResults: 1
       },
-      results: [mockedApiToken]
+      results: [mockedMember]
     }
     mockedMembersService.findAll.mockResolvedValue(mockedPaginatedMembers)
 
@@ -126,16 +127,22 @@ describe('MembersController', () => {
       ...mockedPaginatedMembers,
       results: [
         {
-          ...mockedApiToken,
-          createdAt: mockedApiToken.createdAt.toISOString(),
+          ...mockedMember,
+          createdAt: mockedMember.createdAt.toISOString(),
           updatedAt: undefined
         }
       ]
     })
-    expect(mockedMembersService.findAll).toHaveBeenCalledWith(orgname, {
+    expect(mockedMembersService.findAll).toHaveBeenCalledWith({
       aggregates: [],
       endDate: undefined,
-      filters: [],
+      filters: [
+        {
+          field: 'orgname',
+          operator: 'equals',
+          value: orgname
+        }
+      ],
       limit: 10,
       offset: 0,
       sortBy: 'createdAt',
@@ -146,8 +153,8 @@ describe('MembersController', () => {
 
   it('GET /organizations/:orgname/members/:id should call service.findOne', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomMember()
-    mockedMembersService.findOne.mockResolvedValue(mockedApiToken)
+    const mockedMember = createRandomMember()
+    mockedMembersService.findOne.mockResolvedValue(mockedMember)
 
     const response = await request(app.getHttpServer()).get(
       `/organizations/${orgname}/members/1`
@@ -155,17 +162,19 @@ describe('MembersController', () => {
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt.toISOString(),
+      ...mockedMember,
+      createdAt: mockedMember.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedMembersService.findOne).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedMembersService.findOne).toHaveBeenCalledWith('1')
   })
 
   it('PATCH /organizations/:orgname/members/:id should call service.update', async () => {
     const orgname = 'testOrg'
-    const mockedApiToken = createRandomMember()
-    mockedMembersService.update.mockResolvedValue(mockedApiToken)
+    const mockedMember = createRandomMember({
+      orgname
+    })
+    mockedMembersService.update.mockResolvedValue(mockedMember)
 
     const response = await request(app.getHttpServer())
       .patch(`/organizations/${orgname}/members/1`)
@@ -174,11 +183,11 @@ describe('MembersController', () => {
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt.toISOString(),
+      ...mockedMember,
+      createdAt: mockedMember.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedMembersService.update).toHaveBeenCalledWith('testOrg', '1', {
+    expect(mockedMembersService.update).toHaveBeenCalledWith('1', {
       role: RoleTypeEnum.ADMIN
     })
   })
@@ -190,6 +199,6 @@ describe('MembersController', () => {
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({})
-    expect(mockedMembersService.remove).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedMembersService.remove).toHaveBeenCalledWith('1')
   })
 })

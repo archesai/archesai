@@ -41,6 +41,7 @@ import { type JSX, useEffect, useMemo, useState } from 'react'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { toSentenceCase } from '@/lib/utils'
 
+// shared
 export interface BaseItem {
   id: string
   name?: string
@@ -233,7 +234,7 @@ export function DataTable<
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
+                        className='data-[state=open]:bg-muted flex h-8 w-8 p-0'
                         variant='ghost'
                         aria-label='Expand row options'
                       >

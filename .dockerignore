@@ -4,10 +4,10 @@ node_modules
 dist
 .env*
 tmp
-.eslintrc.js
 .gitignore
 .git
 .prettierrc
 # .swcrc
-cors_file.json
-firebase.json
+npm-debug.log
+dist
+.next

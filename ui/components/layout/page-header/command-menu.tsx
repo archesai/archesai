@@ -56,7 +56,7 @@ export function CommandMenu({ ...props }: DialogProps) {
     <div>
       <Button
         className={cn(
-          'h-8 w-full justify-between gap-2 rounded-lg border-sidebar-border bg-sidebar text-base font-normal text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:text-sm'
+          'border-sidebar-border bg-sidebar text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-8 w-full justify-between gap-2 rounded-lg text-base font-normal md:text-sm'
         )}
         onClick={() => setOpen(true)}
         variant='outline'
@@ -67,7 +67,7 @@ export function CommandMenu({ ...props }: DialogProps) {
         </span>
         <span className='inline-flex sm:hidden'>Search...</span>
 
-        <kbd className='pointer-events-none flex h-5 select-none items-center gap-1 rounded border border-sidebar-accent bg-sidebar-accent p-2 font-mono text-[10px] font-medium'>
+        <kbd className='border-sidebar-accent bg-sidebar-accent pointer-events-none flex h-5 select-none items-center gap-1 rounded border p-2 font-mono text-[10px] font-medium'>
           <span className='text-xs'>⌘</span>
           <span>K</span>
         </kbd>

@@ -3,7 +3,7 @@ export default () => ({
   NODE_ENV: process.env.NODE_ENV,
   SERVER_HOST: process.env.SERVER_HOST,
   FRONTEND_HOST: process.env.FRONTEND_HOST,
-  PORT: parseInt(process.env.PORT, 10),
+  PORT: parseInt(process.env.PORT!, 10),
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
 
   // DATABASE CONFIG
@@ -43,7 +43,7 @@ export default () => ({
   REDIS_AUTH: process.env.REDIS_AUTH,
   REDIS_CA_CERT_PATH: process.env.REDIS_CA_CERT_PATH,
   REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: parseInt(process.env.REDIS_PORT, 10),
+  REDIS_PORT: parseInt(process.env.REDIS_PORT!, 10),
 
   // SESSION CONFIG
   SESSION_SECRET: process.env.SESSION_SECRET,

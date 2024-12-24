@@ -21,7 +21,7 @@ export class AuthService {
   ) {}
 
   async login(user: UserEntity) {
-    this.logger.log('Logging in user: ' + user.id)
+    this.logger.debug('Logging in user: ' + user.id)
     const accessToken = this.generateAccessToken(user.id)
     const refreshToken = this.generateRefreshToken(user.id)
 
@@ -36,12 +36,12 @@ export class AuthService {
 
   // Refresh Access Token using Refresh Token
   async refreshAccessToken(refreshToken: string) {
-    this.logger.log('Refreshing access token using refresh token')
+    this.logger.debug('Refreshing access token using refresh token')
     const payload = this.jwtService.verify(refreshToken, {
       // secret: this.configService.get("JWT_REFRESH_SECRET"),
     })
 
-    const user = await this.usersService.findOne(null, payload.sub)
+    const user = await this.usersService.findOne(payload.sub)
 
     if (!user || user.refreshToken !== refreshToken) {
       throw new UnauthorizedException('Refresh token is invalid')
@@ -61,15 +61,15 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    this.logger.log('Registering user: ' + registerDto.email)
+    this.logger.debug('Registering user: ' + registerDto.email)
     const hashedPassword = await bcrypt.hash(registerDto.password, 10)
     const orgname =
       registerDto.email.split('@')[0] +
       '-' +
       Math.random().toString(36).substring(2, 6)
-    const user = await this.usersService.create(null, {
+    const user = await this.usersService.create({
       email: registerDto.email,
-      emailVerified: this.configService.get('FEATURE_EMAIL') === false,
+      emailVerified: this.configService.get('FEATURE_EMAIL') === 'false',
       password: hashedPassword,
       photoUrl: '',
       username: orgname
@@ -109,7 +109,7 @@ export class AuthService {
 
   // Generate Access Token
   private generateAccessToken(userId: string) {
-    this.logger.log('Generating access token for user: ' + userId)
+    this.logger.debug('Generating access token for user: ' + userId)
     return this.jwtService.sign(
       { sub: userId },
       {
@@ -120,7 +120,7 @@ export class AuthService {
 
   // Generate Refresh Token
   private generateRefreshToken(userId: string) {
-    this.logger.log('Generating refresh token for user: ' + userId)
+    this.logger.debug('Generating refresh token for user: ' + userId)
     return this.jwtService.sign(
       { sub: userId },
       {

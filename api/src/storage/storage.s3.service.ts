@@ -7,6 +7,7 @@ import {
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3'
+import { NodeHttpHandler } from '@smithy/node-http-handler'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import {
   ConflictException,
@@ -20,6 +21,9 @@ import { Readable } from 'stream'
 
 import { StorageItemDto } from './dto/storage-item.dto'
 import { StorageService } from './storage.service'
+import { Agent } from 'https'
+import { ConfigService } from '@nestjs/config'
+import { v4 } from 'uuid'
 
 @Injectable()
 export class S3StorageProvider implements StorageService {
@@ -27,16 +31,23 @@ export class S3StorageProvider implements StorageService {
   private expirationTime = 60 * 60 * 1000 // 1 hour in milliseconds
   private s3Client: S3Client
 
-  constructor() {
-    this.bucketName = process.env.MINIO_BUCKET
+  constructor(configService: ConfigService) {
+    const agent = new Agent({
+      rejectUnauthorized: false
+    })
+    this.bucketName = configService.get<string>('MINIO_BUCKET') || ''
     this.s3Client = new S3Client({
       credentials: {
-        accessKeyId: process.env.MINIO_ACCESS_KEY,
-        secretAccessKey: process.env.MINIO_SECRET_KEY
+        accessKeyId: configService.get<string>('MINIO_ACCESS_KEY') || '',
+        secretAccessKey: configService.get<string>('MINIO_SECRET_KEY') || ''
       },
-      endpoint: process.env.MINIO_ENDPOINT,
+      endpoint: configService.get<string>('MINIO_ENDPOINT') || '',
       forcePathStyle: true, // Required for MinIO
-      region: 'us-east-1'
+      region: 'us-east-1',
+      requestHandler: new NodeHttpHandler({
+        httpAgent: agent,
+        httpsAgent: agent
+      })
     })
 
     // Ensure the bucket exists
@@ -52,7 +63,7 @@ export class S3StorageProvider implements StorageService {
         })
       )
       return true
-    } catch (error) {
+    } catch (error: any) {
       if (
         error.name === 'NotFound' ||
         error.$metadata?.httpStatusCode === 404
@@ -207,13 +218,14 @@ export class S3StorageProvider implements StorageService {
 
     if (result.CommonPrefixes) {
       for (const commonPrefix of result.CommonPrefixes) {
+        const prefix = commonPrefix.Prefix || ''
         items.push(
           new StorageItemDto({
-            createdAt: null,
-            updatedAt: null,
-            id: commonPrefix.Prefix,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            id: prefix,
             isDir: true,
-            name: path.basename(commonPrefix.Prefix.replace(/\/$/, '')),
+            name: path.basename(prefix.replace(/\/$/, '')),
             size: 0
           })
         )
@@ -227,12 +239,12 @@ export class S3StorageProvider implements StorageService {
         }
         items.push(
           new StorageItemDto({
-            createdAt: content.LastModified,
-            updatedAt: content.LastModified,
-            id: content.Key,
+            createdAt: content.LastModified || new Date(),
+            updatedAt: content.LastModified || new Date(),
+            id: content.Key || v4(),
             isDir: false,
-            name: path.basename(content.Key),
-            size: content.Size
+            name: path.basename(content.Key || ''),
+            size: content.Size || 0
           })
         )
       }
@@ -297,7 +309,7 @@ export class S3StorageProvider implements StorageService {
       path: '',
       size: fileBuffer.length,
       stream: null
-    } as Express.Multer.File)
+    } as any)
 
     return readUrl
   }
@@ -307,7 +319,7 @@ export class S3StorageProvider implements StorageService {
       await this.s3Client.send(
         new CreateBucketCommand({ Bucket: this.bucketName })
       )
-    } catch (error) {
+    } catch (error: any) {
       if (error.name !== 'BucketAlreadyOwnedByYou') {
         throw error
       }

@@ -48,12 +48,9 @@ export default function ForgotPasswordPage() {
       setMessage(
         'If an account with that email exists, a password reset link has been sent.'
       )
-    } catch (err: any) {
-      console.error('Password reset request error:', err)
-      setError(
-        err?.response?.data?.message ||
-          'An unexpected error occurred. Please try again.'
-      )
+    } catch (error: any) {
+      console.error(error)
+      setError('An unexpected error occurred. Please try again.')
     }
   }
 

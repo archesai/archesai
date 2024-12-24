@@ -10,7 +10,7 @@ import { CreateChatCompletionDto } from './dto/create-chat-completion.dto'
 export class LLMService {
   public openai: OpenAI
 
-  private readonly logger: Logger = new Logger('LLMService')
+  private readonly logger: Logger = new Logger(LLMService.name)
 
   constructor(private configService: ConfigService) {
     this.openai = new OpenAI({
@@ -24,7 +24,7 @@ export class LLMService {
     createChatCompletionDto: CreateChatCompletionDto,
     emitAnswer: (answer: string) => void
   ) {
-    this.logger.log(
+    this.logger.debug(
       'Sending messages to OpenAI: ' +
         JSON.stringify(createChatCompletionDto, null, 2)
     )
@@ -45,7 +45,7 @@ export class LLMService {
       }
     }
 
-    this.logger.log('Received Answer: ' + answer)
+    this.logger.debug('Received Answer: ' + answer)
     return answer
   }
 
@@ -86,7 +86,7 @@ export class LLMService {
 
     return {
       summary: (choices[0].text as string).trim(),
-      tokens: usage.total_tokens as number
+      tokens: usage?.total_tokens || 0
     }
   }
 }

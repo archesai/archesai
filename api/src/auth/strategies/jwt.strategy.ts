@@ -9,7 +9,7 @@ import { UsersService } from '../../users/users.service'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  private readonly logger: Logger = new Logger('JWT Strategy')
+  private readonly logger: Logger = new Logger(JwtStrategy.name)
 
   constructor(
     private configService: ConfigService,
@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: any): Promise<UserEntity> {
+  async validate(payload: any): Promise<UserEntity | null> {
     this.logger.debug(
       `Validating JWT token for user: ${JSON.stringify(payload.sub)}`
     )
@@ -48,6 +48,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       return null
     }
     const { sub: id } = payload
-    return this.usersService.findOne(null, id)
+    return this.usersService.findOne(id)
   }
 }

@@ -4,7 +4,7 @@ metadata:
   name: arches-minio-ingress
 spec:
   rules:
-    - host: dashboard.arches-minio.test
+    - host: storage-dashboard.archesai.test
       http:
         paths:
           - pathType: Prefix
@@ -14,7 +14,7 @@ spec:
                 name: arches-minio
                 port:
                   number: 9001
-    - host: arches-minio.test
+    - host: storage.archesai.test
       http:
         paths:
           - pathType: Prefix

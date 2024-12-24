@@ -4,7 +4,12 @@ import { CustomValidationPipe } from './custom-validation.pipe'
 @Injectable()
 export class AbstractValidationPipe extends CustomValidationPipe {
   constructor(
-    private readonly targetTypes: { body?: Type; query?: Type; param?: Type }
+    private readonly targetTypes: {
+      body?: Type
+      query?: Type
+      param?: Type
+      custom?: Type
+    } = {}
   ) {
     super()
   }

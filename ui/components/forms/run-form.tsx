@@ -69,7 +69,7 @@ export default function RunForm() {
                 <h4 className='flex items-center gap-1 font-medium leading-none'>
                   {tool?.name}
                 </h4>
-                <div className='text-sm text-muted-foreground'>
+                <div className='text-muted-foreground text-sm'>
                   {tool?.description}
                 </div>
               </div>

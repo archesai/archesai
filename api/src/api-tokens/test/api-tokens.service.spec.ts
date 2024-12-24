@@ -70,10 +70,14 @@ describe('ApiTokensService', () => {
         name: 'test-token',
         role: RoleTypeEnum.ADMIN
       }
-      const additionalData = {
-        username: 'test-user'
+      const overrides = {
+        username: 'test-user',
+        orgname
       }
-      const mockedApiToken = createRandomApiToken(createTokenDto)
+      const mockedApiToken = createRandomApiToken({
+        ...createTokenDto,
+        ...overrides
+      })
 
       ;(uuidv4 as jest.Mock).mockReturnValue(mockedApiToken.id)
       ;(configService.get as jest.Mock).mockImplementation((key: string) => {
@@ -85,12 +89,11 @@ describe('ApiTokensService', () => {
         mockedApiToken
       )
 
-      const result = await service.create(
-        orgname,
-        createTokenDto,
-        additionalData
-      )
-
+      const result = await service.create({
+        ...createTokenDto,
+        ...overrides
+      })
+      expect(result.orgname).toEqual(orgname)
       expect(uuidv4).toHaveBeenCalled()
       expect(configService.get).toHaveBeenCalledWith(
         'JWT_API_TOKEN_EXPIRATION_TIME'
@@ -100,27 +103,22 @@ describe('ApiTokensService', () => {
         {
           domains: createTokenDto.domains,
           id: mockedApiToken.id,
-          orgname,
           role: createTokenDto.role,
-          username: additionalData.username
+          ...overrides
         },
         {
           expiresIn: '3600s',
           secret: 'secret'
         }
       )
-      expect(apiTokenRepository.create).toHaveBeenCalledWith(
-        orgname,
-        createTokenDto,
-        {
-          id: mockedApiToken.id,
-          key: '*********token',
-          username: additionalData.username
-        }
-      )
-      expect(websocketsService.socket.to).toHaveBeenCalledWith(orgname)
+      expect(apiTokenRepository.create).toHaveBeenCalledWith({
+        id: mockedApiToken.id,
+        key: '*********token',
+        ...overrides,
+        ...createTokenDto
+      })
       expect(websocketsService.socket.emit).toHaveBeenCalledWith('update', {
-        queryKey: ['organizations', orgname, 'api-tokens']
+        queryKey: ['organizations', result.orgname, 'api-tokens']
       })
       expect(result).toEqual(
         createRandomApiToken({ ...mockedApiToken, key: 'token' })

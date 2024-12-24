@@ -99,7 +99,7 @@ export const FAQ = () => {
     >
       <h2 className='mb-4 text-3xl font-bold md:text-4xl'>
         Frequently Asked{' '}
-        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
           Questions
         </span>
       </h2>

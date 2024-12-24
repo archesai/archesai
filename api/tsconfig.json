@@ -1,25 +1,20 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": false,
-    "incremental": true,
+    "incremental": false,
     "module": "commonjs",
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitAny": false,
+    "noEmit": false,
     "outDir": "./dist",
     "paths": {
       "@/*": ["./*"]
     },
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
+    "rootDir": "./src",
     "sourceMap": true,
-    "strictBindCallApply": true,
-    "strictNullChecks": false,
-    "target": "es2022"
-  }
+    "strictPropertyInitialization": false,
+    "types": ["node", "multer"]
+  },
+  "extends": "../tsconfig.json",
+  "include": ["**/*.ts"]
 }

@@ -52,13 +52,13 @@ export const Pricing = () => {
     >
       <h2 className='text-center text-3xl font-bold md:text-4xl'>
         Get
-        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
           {' '}
           Unlimited{' '}
         </span>
         Access
       </h2>
-      <h3 className='pb-8 pt-4 text-center text-xl text-muted-foreground'>
+      <h3 className='text-muted-foreground pb-8 pt-4 text-center text-xl'>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias
         reiciendis.
       </h3>
@@ -77,7 +77,7 @@ export const Pricing = () => {
                 {plan.name}
                 {plan?.metadata?.key === 'STANDARD' ? (
                   <Badge
-                    className='text-sm text-primary'
+                    className='text-primary text-sm'
                     variant='secondary'
                   >
                     Most popular

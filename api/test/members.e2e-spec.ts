@@ -91,7 +91,11 @@ describe('Members', () => {
     await cleanupOrganizationAndUsers()
   })
 
-  const inviteUser = async (email, role, expectedStatus) => {
+  const inviteUser = async (
+    email: string,
+    role: string,
+    expectedStatus: number
+  ) => {
     const res = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/members`)
       .send({ inviteEmail: email, role })
@@ -102,7 +106,10 @@ describe('Members', () => {
     expect(res.status).toBe(expectedStatus)
   }
 
-  const joinOrganization = async (userToken, expectedStatus) => {
+  const joinOrganization = async (
+    userToken: string,
+    expectedStatus: number
+  ) => {
     const res = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/members/join`)
       .send({})
@@ -120,6 +127,6 @@ describe('Members', () => {
     await deactivateUser(uninvitedUser)
   }
 
-  const deactivateUser = (user) =>
+  const deactivateUser = (user: { email: string; password: string }) =>
     request(app.getHttpServer()).post('/auth/deactivate').send(user)
 })

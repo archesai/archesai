@@ -8,7 +8,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/stage-gcp"
+          - 'deploy/kubernetes/overlays/stage-gcp'
   - name: production
     deploy:
       statusCheckDeadlineSeconds: 300
@@ -16,7 +16,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/production-gcp"
+          - 'deploy/kubernetes/overlays/production-gcp'
   - name: dev
     build:
       local:
@@ -25,32 +25,30 @@ profiles:
         concurrency: 0
       artifacts:
         - image: arches-api
-          context: ./api
+          context: ./
           docker:
             target: development
-            dockerfile: Dockerfile
+            dockerfile: ./api/Dockerfile
           sync:
             manual:
-              - src: "**/*"
+              - src: '**/*'
                 dest: .
         - image: arches-ui
-          context: ./ui
+          context: ./
           docker:
             target: development
-            dockerfile: Dockerfile
+            dockerfile: ./ui/Dockerfile
           sync:
             manual:
-              - src: "**/*"
+              - src: '**/*'
                 dest: .
-      tagPolicy:
-        inputDigest: {}
     deploy:
       statusCheckDeadlineSeconds: 300
       tolerateFailuresUntilDeadline: true
     manifests:
       kustomize:
         paths:
-          - "deploy/kubernetes/overlays/development-min"
+          - 'deploy/kubernetes/overlays/development'
     customActions:
       - name: seed
         executionMode:
@@ -59,10 +57,8 @@ profiles:
         containers:
           - image: arches-api
             name: arches-api-seed
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                npm run db:seed
+            command: ['pnpm']
+            args: ['--filter', 'api', 'db:seed']
       - name: test-e2e
         executionMode:
           kubernetesCluster:
@@ -70,7 +66,5 @@ profiles:
         containers:
           - image: arches-api
             name: arches-api-test-e2e
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                npm run test:e2e
+            command: ['pnpm']
+            args: ['--filter', 'api', 'test:e2e']

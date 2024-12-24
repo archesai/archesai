@@ -17,7 +17,7 @@ import { KeyframesService } from './keyframes.service'
 
 @Injectable()
 export class AudioService {
-  private readonly logger: Logger = new Logger('Audio Service')
+  private readonly logger: Logger = new Logger(AudioService.name)
 
   constructor(
     @Inject(STORAGE_SERVICE) private storageService: StorageService,
@@ -40,7 +40,7 @@ export class AudioService {
   }
 
   async splitAudio(audioUrl: string) {
-    this.logger.log("Hitting moises' API...")
+    this.logger.debug("Hitting moises' API...")
     const { data: moisesResponse } = await retry(
       this.logger,
       () =>
@@ -64,17 +64,16 @@ export class AudioService {
             )
             .pipe(
               catchError((err: AxiosError) => {
-                this.logger.error('Could not hit moises endpoint', err.message)
-                throw new InternalServerErrorException(err.message)
+                throw new InternalServerErrorException(err)
               })
             )
         ),
       5
     )
-    this.logger.log('Moises response: ' + JSON.stringify(moisesResponse))
+    this.logger.debug('Moises response: ' + JSON.stringify(moisesResponse))
     const moisesJobId = moisesResponse.id
     while (true) {
-      this.logger.log('Checking moises job status...')
+      this.logger.debug('Checking moises job status...')
       await new Promise((resolve) => setTimeout(resolve, 5000))
       const { data: moisesCheckJobResponse } = await retry(
         this.logger,
@@ -88,22 +87,20 @@ export class AudioService {
               })
               .pipe(
                 catchError((err: AxiosError) => {
-                  this.logger.error(
-                    'Could not hit moises endpoint',
-                    err.message
-                  )
-                  throw new InternalServerErrorException(err.message)
+                  throw new InternalServerErrorException(err)
                 })
               )
           ),
         5
       )
-      this.logger.log('Got status from moises' + moisesCheckJobResponse.status)
+      this.logger.debug(
+        'Got status from moises' + moisesCheckJobResponse.status
+      )
       if (moisesCheckJobResponse.status == 'SUCCEEDED') {
         const bassSrc = moisesCheckJobResponse.result.Bass
         const drumsSrc = moisesCheckJobResponse.result.Drums
-        this.logger.log('Bass src: ' + bassSrc)
-        this.logger.log('Drums src: ' + drumsSrc)
+        this.logger.debug('Bass src: ' + bassSrc)
+        this.logger.debug('Drums src: ' + drumsSrc)
 
         return { bassSrc, drumsSrc }
       } else if (moisesCheckJobResponse.status === 'FAILED') {
@@ -132,7 +129,7 @@ export class AudioService {
         if (err) {
           reject(err)
         }
-        if (data.format.duration < startTime + duration) {
+        if ((data.format.duration || 0) < startTime + duration) {
           fs.unlinkSync(inputTmpPath)
           resolve(audioUrl)
         }

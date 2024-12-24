@@ -1,3 +1,7 @@
+import { ContentControllerFindAllResponse } from '@/generated/archesApiComponents'
+import { queryKeyFn } from '@/generated/archesApiContext'
+import { ContentEntity } from '@/generated/archesApiSchemas'
+import { QueryClient } from '@tanstack/react-query'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -48,4 +52,55 @@ export function stringToColor(str: string) {
     }
     return color
   }
+}
+
+export const streamContent = (
+  orgname: string,
+  labelId: string,
+  content: ContentEntity,
+  queryClient: QueryClient
+) => {
+  queryClient.setQueryData(
+    queryKeyFn({
+      operationId: 'contentControllerFindAll',
+      path: '/organizations/{orgname}/content',
+      variables: {
+        pathParams: {
+          orgname: orgname
+        },
+        queryParams: {
+          sortBy: 'createdAt',
+          sortDirection: 'desc'
+        }
+      }
+    }),
+    (oldData: ContentControllerFindAllResponse) => {
+      if (!oldData) {
+        oldData = {
+          aggregates: [],
+          metadata: { limit: 100, offset: 0, totalResults: 0 },
+          results: []
+        }
+      }
+      const prevStreamedMessage = oldData.results?.find(
+        (i) => i.id === content.id
+      )
+      if (prevStreamedMessage) {
+        return {
+          ...oldData,
+          results: [
+            { ...prevStreamedMessage, answer: content.text },
+            ...(oldData.results || [])
+              .filter((i) => i.createdAt !== prevStreamedMessage?.createdAt)
+              .filter((i) => i.id !== 'pending')
+          ]
+        }
+      } else {
+        return {
+          ...oldData,
+          results: [content, ...(oldData.results || [])]
+        }
+      }
+    }
+  )
 }

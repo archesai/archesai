@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true, // both
+    "allowSyntheticDefaultImports": true, // both
+    "esModuleInterop": true, // both
+    "incremental": true, // both,
+    "module": "CommonJS",
+    "noEmit": true,
+    // "noUncheckedIndexedAccess": true, // both
+    "removeComments": true, // both,
+    "resolveJsonModule": true, // both
+    "skipLibCheck": true, // both
+    "strict": true, // both,
+    "target": "es2022", // both
+    "types": ["node"] // both
+  }
+}

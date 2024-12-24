@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { io } from 'socket.io-client'
 
 import { useAuth } from './use-auth'
-import { useStreamChat } from './use-stream-chat'
+import { streamContent } from '@/lib/utils'
 
 export const useWebsockets = ({
   overrideToken
@@ -12,8 +12,6 @@ export const useWebsockets = ({
 }) => {
   const { defaultOrgname: accessToken } = useAuth()
   const queryClient = useQueryClient()
-
-  const { streamContent } = useStreamChat()
 
   useEffect(() => {
     if (accessToken) {
@@ -32,9 +30,7 @@ export const useWebsockets = ({
         withCredentials: true
       })
 
-      websocket.on('connect', () => {
-        console.debug('connected')
-      })
+      websocket.on('connect', () => {})
 
       websocket.on('ping', () => {})
 
@@ -45,7 +41,7 @@ export const useWebsockets = ({
       })
 
       websocket.on('chat', (event) => {
-        streamContent(event.orgname, event.labelId, event.content)
+        streamContent(event.orgname, event.labelId, event.content, queryClient)
       })
 
       return () => {

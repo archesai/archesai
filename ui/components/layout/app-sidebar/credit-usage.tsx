@@ -20,7 +20,7 @@ export const CreditQuota = () => {
     return <></>
   }
   return (
-    <div className='inter flex w-full flex-col gap-2 rounded-lg bg-sidebar-accent p-2 text-xs'>
+    <div className='inter bg-sidebar-accent flex w-full flex-col gap-2 rounded-lg p-2 text-xs'>
       <div className='flex items-center justify-between'>
         <div className='font-semibold'>Credit Usage</div>
         <div>

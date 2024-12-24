@@ -118,7 +118,7 @@ describe('SearchQueryDto with CustomValidationPipe', () => {
     try {
       await validationPipe.transform(input, metadata)
       fail('Expected a BadRequestException due to invalid enum')
-    } catch (error) {
+    } catch (error: any) {
       expect(error).toBeInstanceOf(BadRequestException)
       // The response typically has a structure like:
       // {

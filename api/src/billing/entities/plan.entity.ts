@@ -94,7 +94,7 @@ export class PlanEntity {
   @Expose()
   unitAmount: number
 
-  constructor(partial: Partial<PlanEntity>) {
+  constructor(partial: any) {
     Object.assign(this, partial)
   }
 }

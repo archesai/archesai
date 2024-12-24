@@ -61,16 +61,12 @@ export function useArchesApiContext<
           ? !!_queryOptions.enabled
           : !!defaultOrgname,
       retry: async (failureCount: number, error: any) => {
-        console.log('FAILED, RETRYING', failureCount, error)
-        if (error?.statusCode === 401 && failureCount <= 2) {
+        if (error.statusCode === 401 && failureCount <= 2) {
           setStatus('Loading')
           return true
-        } else if (error?.statusCode === 401 && failureCount > 2) {
-          console.log('Too many retries, logging out')
-          await logout()
+        } else {
           return false
         }
-        return false
       }
     }
   }

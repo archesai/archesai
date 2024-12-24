@@ -30,12 +30,12 @@ export class MembershipGuard implements CanActivate {
       return true
     }
 
-    this.logger.log(
+    this.logger.debug(
       `Checking membership for user ${currentUser.username} to access ${path}`
     )
     // Match path dynamically
     if (path.match(/^\/organizations\/[^/]+\/members\/join$/)) {
-      this.logger.log('This is a public route to join an organization')
+      this.logger.debug('This is a public route to join an organization')
       return true
     }
 
@@ -44,7 +44,7 @@ export class MembershipGuard implements CanActivate {
       (val) => val.orgname == orgname
     )
     if (!membership) {
-      this.logger.error(
+      this.logger.debug(
         `User ${currentUser.username} is not a member of organization ${orgname}`
       )
       throw new NotFoundException()
@@ -61,7 +61,7 @@ export class MembershipGuard implements CanActivate {
 
     // Check if user has the required role
     if (!roles.includes(membership.role)) {
-      this.logger.error(
+      this.logger.debug(
         `User ${currentUser.username} does not have the required role in organization ${orgname}`
       )
       throw new ForbiddenException(

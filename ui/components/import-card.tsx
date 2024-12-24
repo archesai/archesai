@@ -72,8 +72,10 @@ export default function ImportCard({
 
   const uploadFile = (file: File, writeUrl: string): Promise<ContentEntity> => {
     return new Promise((resolve, reject) => {
+      // Create a new XMLHttpRequest
       const xhr = new XMLHttpRequest()
 
+      // Add progress event listener
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentCompleted = Math.round(
@@ -83,12 +85,10 @@ export default function ImportCard({
         }
       })
 
+      // Add onload event listener
       xhr.onload = async () => {
         if (xhr.status === 200 || xhr.status === 201) {
           try {
-            // File uploaded successfully
-            console.log(`File ${file.name} uploaded successfully`)
-
             const readUrlResponse = await getReadUrl({
               body: {
                 path: `uploads/${file.name}`,
@@ -112,22 +112,19 @@ export default function ImportCard({
 
             resolve(content)
           } catch (error) {
-            console.error(`Error processing file ${file.name}:`, error)
             reject(error)
           }
         } else {
-          // Handle server errors
-          console.error(`Upload failed for ${file.name}:`, xhr.responseText)
-          reject(new Error(`Upload failed with status ${xhr.status}`))
+          reject(new Error(`Upload failed: ${xhr.responseText}`))
         }
       }
 
+      // Add onerror event listener
       xhr.onerror = () => {
-        // Handle network errors
-        console.error(`Network error while uploading file ${file.name}`)
         reject(new Error('Network error'))
       }
 
+      // Open the request and send the file
       xhr.open('PUT', writeUrl)
       xhr.setRequestHeader('Content-Type', file.type)
       xhr.send(file)
@@ -142,8 +139,7 @@ export default function ImportCard({
     try {
       const urls = await Promise.all(
         selectedFiles.map(async (file) => {
-          // Get a unique write URL for each file
-          const writeUrlResponse = await getWriteUrl({
+          const res = await getWriteUrl({
             body: {
               path: `uploads/${file.name}`,
               isDir: false
@@ -152,17 +148,9 @@ export default function ImportCard({
               orgname: defaultOrgname
             }
           })
-
-          const writeUrl = writeUrlResponse.write
-          console.log('Write URL for', file.name, ':', writeUrl)
-
-          // Upload the file using the write URL
-          const readUrl = await uploadFile(file, writeUrl)
-
-          return readUrl
+          return uploadFile(file, res.write)
         })
       )
-
       setUploading(false)
       setSelectedFiles([])
       setUploadProgress(100)
@@ -174,7 +162,7 @@ export default function ImportCard({
         cb(urls)
       }
     } catch (error) {
-      console.error('An error occurred during file upload:', error)
+      console.error(error)
       toast({
         description:
           (error as any).message || 'An error occurred while uploading files.',
@@ -202,8 +190,8 @@ export default function ImportCard({
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <CloudUpload className='h-5 w-5 text-muted-foreground' />
-        <p className='text-sm text-muted-foreground'>
+        <CloudUpload className='text-muted-foreground h-5 w-5' />
+        <p className='text-muted-foreground text-sm'>
           Drag and drop files here, or click to select files
         </p>
 
@@ -222,15 +210,15 @@ export default function ImportCard({
           <ul className='flex max-h-52 grow flex-col gap-2 overflow-y-scroll'>
             {selectedFiles.map((file, idx) => (
               <li
-                className='flex items-center justify-between rounded border bg-muted/50 p-2'
+                className='bg-muted/50 flex items-center justify-between rounded border p-2'
                 key={idx}
               >
-                <span className='flex w-4/5 items-center gap-2 truncate text-foreground'>
+                <span className='text-foreground flex w-4/5 items-center gap-2 truncate'>
                   <span>{file.name}</span>
                   <Badge>{file.type}</Badge>
                 </span>
                 <Badge
-                  className='text-nowrap text-primary'
+                  className='text-primary text-nowrap'
                   variant='outline'
                 >
                   {`${(file.size / 1024).toFixed(2)} KB`}

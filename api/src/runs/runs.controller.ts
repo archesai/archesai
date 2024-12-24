@@ -14,7 +14,7 @@ export class RunsController extends BaseController<
   CreateRunDto,
   any,
   RunsService
->(RunEntity, CreateRunDto, undefined) {
+>(RunEntity, CreateRunDto, String) {
   constructor(private readonly runsService: RunsService) {
     super(runsService)
   }

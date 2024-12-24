@@ -26,7 +26,7 @@ export class StorageModule {
               case 'local':
                 return new LocalStorageService()
               case 'minio':
-                return new S3StorageProvider()
+                return new S3StorageProvider(configService)
               default:
                 return new GoogleCloudStorageService()
             }

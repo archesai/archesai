@@ -55,7 +55,7 @@ export const Features = () => {
     >
       <h2 className='text-3xl font-bold md:text-center lg:text-4xl'>
         Many{' '}
-        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
           Great Features
         </span>
       </h2>

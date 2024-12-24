@@ -195,7 +195,7 @@ export class LocalStorageService implements StorageService {
 
     await fs.promises.writeFile(tempFilePath, fileBuffer)
 
-    const file: Express.Multer.File = {
+    const file: any = {
       buffer: fileBuffer,
       destination: '',
       encoding: '',

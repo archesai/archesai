@@ -1,48 +1,51 @@
 ###################
 # BASE STAGE
 ###################
-FROM node:20-alpine AS base
-WORKDIR /app
+FROM node:20-alpine3.19 AS base
+
+# Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Install pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+# Set working directory
+WORKDIR /app
 
 ###################
 # DEPENDENCIES STAGE
 ###################
-FROM base AS dev-dependencies
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
-
-FROM base AS prod-dependencies
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --only=prod
-
-###################
-# BUILD STAGE
-###################
-FROM dev-dependencies AS build
-COPY --chown=node:node . .
-RUN npm run build
+FROM base AS deps
+COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY --chown=node:node ./ui/package.json ./ui/package.json
+RUN pnpm install --filter ui --frozen-lockfile
 
 ###################
 # DEVELOPMENT STAGE
 ###################
-FROM dev-dependencies AS development
+FROM deps AS development
 COPY --chown=node:node . .
 USER node
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "--filter", "ui", "run", "dev"]
+
+###################
+# BUILD STAGE
+###################
+FROM deps AS build
+COPY --chown=node:node . .
+RUN pnpm run build --filter ui
+RUN pnpm deploy --filter=ui --prod /prod/ui
 
 ###################
 # PRODUCTION STAGE
 ###################
 FROM base AS production
-
 ENV NODE_ENV=production
-
 RUN mkdir .next
 RUN chown node:node .next
-
 COPY --from=build --chown=node:node /app/public ./public
 COPY --from=build --chown=node:node /app/.next ./.next
-
 USER node
 CMD ["npm", "start"]

@@ -7,23 +7,21 @@ import { BillingService } from '../billing/billing.service'
 import { BaseService } from '../common/base.service'
 import { PipelinesService } from '../pipelines/pipelines.service'
 import { ToolsService } from '../tools/tools.service'
-import { UserEntity } from '../users/entities/user.entity'
 import { WebsocketsService } from '../websockets/websockets.service'
-import { CreateOrganizationDto } from './dto/create-organization.dto'
-import { UpdateOrganizationDto } from './dto/update-organization.dto'
 import {
   OrganizationEntity,
-  OrganizationModel
+  OrganizationModel,
+  PlanTypeEnum
 } from './entities/organization.entity'
 import { OrganizationRepository } from './organization.repository'
+import { RoleTypeEnum } from '../members/entities/member.entity'
+import { UserEntity } from '../users/entities/user.entity'
 
 @Injectable()
 export class OrganizationsService extends BaseService<
   OrganizationEntity,
-  CreateOrganizationDto,
-  UpdateOrganizationDto,
-  OrganizationRepository,
-  OrganizationModel
+  OrganizationModel,
+  OrganizationRepository
 > {
   private readonly logger = new Logger(OrganizationsService.name)
   constructor(
@@ -39,24 +37,20 @@ export class OrganizationsService extends BaseService<
   }
 
   async addOrRemoveCredits(orgname: string, numCredits: number) {
-    this.logger.log(`Adding ${numCredits} credits to ${orgname}`)
+    this.logger.debug(`Adding ${numCredits} credits to ${orgname}`)
     const organization = await this.findByOrgname(orgname)
-    const organizationEntity = await this.organizationRepository.updateRaw(
-      orgname,
-      organization.id,
-      {
-        credits:
-          numCredits < 0
-            ? { decrement: -numCredits }
-            : { increment: numCredits }
-      }
-    )
-    this.emitMutationEvent(orgname)
+    const model = await this.organizationRepository.update(organization.id, {
+      credits:
+        numCredits < 0 ? { decrement: -numCredits } : { increment: numCredits },
+      billingEmail: organization.billingEmail
+    })
+    const organizationEntity = this.toEntity(model)
+    this.emitMutationEvent(organizationEntity)
     return this.toEntity(organizationEntity)
   }
 
   async checkCredits(orgname: string, numCredits: number) {
-    this.logger.log(`Checking ${numCredits} credits for ${orgname}`)
+    this.logger.debug(`Checking ${numCredits} credits for ${orgname}`)
     const organization = await this.findByOrgname(orgname)
     if (organization.plan != 'PREMIUM' && organization.credits <= numCredits) {
       throw new ForbiddenException(
@@ -68,33 +62,45 @@ export class OrganizationsService extends BaseService<
     }
   }
 
-  async create(
-    orgname: string,
-    createOrganizationDto: CreateOrganizationDto,
-    user: UserEntity
-  ) {
+  async addUserToOrganization(orgname: string, user: UserEntity) {
+    const organization = await this.findByOrgname(orgname)
+    const model = await this.organizationRepository.update(organization.id, {
+      members: {
+        create: {
+          inviteAccepted: true,
+          inviteEmail: user.email,
+          role: RoleTypeEnum.USER,
+          username: user.username
+        }
+      }
+    })
+    const organizationEntity = this.toEntity(model)
+    this.emitMutationEvent(organizationEntity)
+    return organizationEntity
+  }
+
+  async create(data: Pick<OrganizationEntity, 'billingEmail' | 'orgname'>) {
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
-    const billingEnabled = this.configService.get('FEATURE_BILLING') === true
-    let stripeCustomerId = createOrganizationDto.orgname
+    const billingEnabled = this.configService.get('FEATURE_BILLING') === 'true'
+    let stripeCustomerId = data.orgname
     if (billingEnabled) {
-      this.logger.log('BILLING ENABLED - Creating stripe customer')
+      this.logger.debug(
+        'BILLING ENABLED - Creating stripe customer for: ' + data.orgname
+      )
       const stripeCustomer = await this.billingService.createCustomer(
-        createOrganizationDto.orgname,
-        createOrganizationDto.billingEmail
+        data.orgname,
+        data.billingEmail
       )
       stripeCustomerId = stripeCustomer.id
     }
 
     // Create organization and tools
-    const organization = await this.organizationRepository.create(
-      null,
-      createOrganizationDto,
-      {
-        billingEnabled,
-        stripeCustomerId,
-        user
-      }
-    )
+    const organization = await this.organizationRepository.create({
+      ...data,
+      credits: billingEnabled ? 0 : 100000000,
+      stripeCustomerId,
+      plan: billingEnabled ? PlanTypeEnum.FREE : PlanTypeEnum.UNLIMITED
+    })
 
     await this.toolsService.createDefaultTools(organization.orgname)
     await this.pipelinesService.createDefaultPipeline(organization.orgname)
@@ -117,17 +123,17 @@ export class OrganizationsService extends BaseService<
   async setPlan(orgname: string, plan: PlanType) {
     const organization = await this.findByOrgname(orgname)
     const organizationEntity = this.toEntity(
-      await this.organizationRepository.updateRaw(orgname, organization.id, {
+      await this.organizationRepository.update(organization.id, {
         plan
       })
     )
-    this.emitMutationEvent(orgname)
+    this.emitMutationEvent(organizationEntity)
     return organizationEntity
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit('update', {
-      queryKey: ['organizations', orgname]
+  protected emitMutationEvent(entity: OrganizationEntity): void {
+    this.websocketsService.socket?.to(entity.orgname).emit('update', {
+      queryKey: ['organizations', entity.orgname]
     })
   }
 

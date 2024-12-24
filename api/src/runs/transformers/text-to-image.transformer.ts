@@ -44,10 +44,12 @@ export const transformTextToImage: IToolRunProcess = async (
   } as Express.Multer.File)
   logger.log(`Text to image completed and uploaded for run ${runId}`)
 
-  const content = await contentService.create(inputs[0].orgname, {
+  const content = await contentService.create({
     name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
     url,
-    labels: []
+    labels: [],
+    orgname,
+    text: null
   })
 
   return [new ContentEntity(content)]

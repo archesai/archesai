@@ -1,14 +1,14 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core'
 
-import { AllExceptionsFilter } from './filters/all-exceptions.filter'
+import { ExceptionsFilter } from './filters/exceptions.filter'
 import { CustomValidationPipe } from './pipes/custom-validation.pipe'
 
 @Module({
   providers: [
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter
+      useClass: ExceptionsFilter
     },
     {
       provide: APP_PIPE,

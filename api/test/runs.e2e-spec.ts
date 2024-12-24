@@ -3,12 +3,7 @@ import { ToolEntity } from '@/src/tools/entities/tool.entity'
 import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 
-import {
-  createApp,
-  getUser,
-  registerUser,
-  setEmailVerified
-} from '../test/util'
+import { createApp, getUser, registerUser, setEmailVerified } from './util'
 import { RunTypeEnum } from '@/src/runs/entities/run.entity'
 
 describe('Runs', () => {
@@ -74,7 +69,7 @@ describe('Runs', () => {
 
   it('CREATE - should create a new run with a tool', async () => {
     const tools = await getDefaultTools()
-    const summarizerTool = tools.find((tool) => tool.name === 'Summarize')
+    const summarizerTool = tools.find((tool) => tool.name === 'Summarize')!
 
     const createRunDto: CreateRunDto = {
       runType: RunTypeEnum.TOOL_RUN,

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - ./arches-playwright-deployment.yaml
+  - ./arches-playwright-service.yaml
+
+secretGenerator:
+  - name: arches-api-config-secret
+    literals:
+      # SCRAPER CONFIG
+      - FEATURE_SCRAPER=true
+      - SCRAPER_ENDPOINT=http://arches-playwright:3000
+    behavior: merge

@@ -80,11 +80,13 @@ describe('ApiTokensController', () => {
       updatedAt: undefined
     })
 
-    expect(mockedApiTokensService.create).toHaveBeenCalledWith(
+    expect(mockedApiTokensService.create).toHaveBeenCalledWith({
+      domains: '*',
+      name: 'testToken',
+      role: RoleTypeEnum.ADMIN,
       orgname,
-      { domains: '*', name: 'testToken', role: RoleTypeEnum.ADMIN },
-      { username: 'testUser' }
-    )
+      username: 'testUser'
+    })
   })
 
   it('GET /organizations/:orgname/api-tokens should call service.findAll', async () => {
@@ -116,16 +118,27 @@ describe('ApiTokensController', () => {
         }
       ]
     })
-    expect(mockedApiTokensService.findAll).toHaveBeenCalledWith(orgname, {
-      aggregates: [],
-      endDate: undefined,
-      filters: [],
-      limit: 10,
-      offset: 0,
-      sortBy: 'createdAt',
-      sortDirection: 'desc',
-      startDate: undefined
-    })
+    expect(mockedApiTokensService.findAll).toHaveBeenCalledWith(
+      {
+        aggregates: [],
+        endDate: undefined,
+        filters: [
+          {
+            field: 'orgname',
+            operator: 'equals',
+            value: orgname
+          }
+        ],
+        limit: 10,
+        offset: 0,
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+        startDate: undefined
+      }
+      // {
+      //   orgname
+      // }
+    )
   })
 
   it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
@@ -143,7 +156,7 @@ describe('ApiTokensController', () => {
       createdAt: mockedApiToken.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('1')
   })
 
   it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
@@ -162,7 +175,7 @@ describe('ApiTokensController', () => {
       createdAt: mockedApiToken.createdAt.toISOString(),
       updatedAt: undefined
     })
-    expect(mockedApiTokensService.update).toHaveBeenCalledWith('testOrg', '1', {
+    expect(mockedApiTokensService.update).toHaveBeenCalledWith('1', {
       name: 'updatedToken'
     })
   })
@@ -174,6 +187,6 @@ describe('ApiTokensController', () => {
 
     expect(response.status).toBe(200)
     expect(response.body).toEqual({})
-    expect(mockedApiTokensService.remove).toHaveBeenCalledWith('testOrg', '1')
+    expect(mockedApiTokensService.remove).toHaveBeenCalledWith('1')
   })
 })

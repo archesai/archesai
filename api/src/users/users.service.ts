@@ -1,11 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { AuthProviderType } from '@prisma/client'
 
 import { BaseService } from '../common/base.service'
 import { OrganizationsService } from '../organizations/organizations.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
 import {
   UserEntity,
   UserWithMembershipsAndAuthProvidersModel
@@ -15,12 +14,9 @@ import { UserRepository } from './user.repository'
 @Injectable()
 export class UsersService extends BaseService<
   UserEntity,
-  undefined,
-  UpdateUserDto,
-  UserRepository,
-  UserWithMembershipsAndAuthProvidersModel
+  UserWithMembershipsAndAuthProvidersModel,
+  UserRepository
 > {
-  private readonly logger: Logger = new Logger(UsersService.name)
   constructor(
     private userRepository: UserRepository,
     private organizationsService: OrganizationsService,
@@ -29,17 +25,22 @@ export class UsersService extends BaseService<
     super(userRepository)
   }
 
-  async create(orgname: string, createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create('', createUserDto)
-    await this.organizationsService.create(
-      null,
-      {
-        billingEmail: user.email,
-        orgname: user.username
-      },
-      new UserEntity(user)
+  async create(createUserDto: CreateUserDto) {
+    let user = await this.userRepository.create({
+      ...createUserDto
+    })
+    const organization = await this.organizationsService.create({
+      billingEmail: user.email,
+      orgname: user.username
+    })
+    await this.organizationsService.addUserToOrganization(
+      organization.orgname,
+      this.toEntity(user)
     )
-    return this.toEntity(await this.userRepository.findOne('', user.id))
+    user = await this.userRepository.update(user.id, {
+      defaultOrgname: organization.orgname
+    })
+    return this.toEntity(user)
   }
 
   async deactivate(id: string) {
@@ -56,7 +57,7 @@ export class UsersService extends BaseService<
 
   async setEmail(id: string, newEmail: string) {
     return this.toEntity(
-      await this.userRepository.updateRaw(null, id, {
+      await this.userRepository.update(id, {
         email: newEmail
       })
     )
@@ -64,7 +65,7 @@ export class UsersService extends BaseService<
 
   async setEmailVerified(id: string) {
     return this.toEntity(
-      await this.userRepository.updateRaw(null, id, {
+      await this.userRepository.update(id, {
         emailVerified: true
       })
     )
@@ -72,7 +73,7 @@ export class UsersService extends BaseService<
 
   async setRefreshToken(id: string, refreshToken: string) {
     return this.toEntity(
-      await this.userRepository.updateRaw(null, id, {
+      await this.userRepository.update(id, {
         refreshToken
       })
     )
@@ -90,12 +91,13 @@ export class UsersService extends BaseService<
         await this.userRepository.addAuthProvider(email, provider, providerId)
       )
     }
-    this.emitMutationEvent(user.defaultOrgname)
-    return this.toEntity(user)
+    const userEntity = this.toEntity(user)
+    this.emitMutationEvent(userEntity)
+    return userEntity
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit('update', {
+  protected emitMutationEvent(entity: UserEntity): void {
+    this.websocketsService.socket?.to(entity.defaultOrgname).emit('update', {
       queryKey: ['user']
     })
   }

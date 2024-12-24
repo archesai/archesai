@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
 import * as math from 'mathjs'
-import fetch from 'node-fetch'
+import axios from 'axios'
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { AudioContext } from 'web-audio-api'
 
 import { retry } from '../common/retry'
@@ -21,13 +24,16 @@ export class KeyframesService {
 
     const arrayBuffer = await retry(
       this.logger,
-      () => fetch(url).then((response) => response.arrayBuffer()),
+      async () => {
+        const response = await axios.get(url, { responseType: 'arraybuffer' })
+        return response.data as ArrayBuffer
+      },
       5
     )
 
     const audioBuffer = await context.decodeAudioData(arrayBuffer)
     // Average between channels. Take abs so we don't have phase issues (and we eventually want absolute value anyway, for volume).
-    function addAbsArrayElements(a, b) {
+    function addAbsArrayElements(a: number[], b: number[]) {
       return a.map((e, i) => Math.abs(e) + Math.abs(b[i]))
     }
     const channels = []
@@ -36,14 +42,14 @@ export class KeyframesService {
     }
     const rawData = channels
       .reduce(addAbsArrayElements)
-      .map((x) => x / audioBuffer.numberOfChannels)
+      .map((x: any) => x / audioBuffer.numberOfChannels)
     // const rawData = audioBuffer.getChannelData(0); // We only need to work with one channel of data
     const samples = audioBuffer.duration * framerate //rawData.length; // Number of samples we want to have in our final data set
     const blockSize = Math.floor(rawData.length / samples) // Number of samples in each subdivision
     let filteredData = []
     for (let i = 0; i < samples; i++) {
       const chunk = rawData.slice(i * blockSize, (i + 1) * blockSize - 1)
-      const sum = chunk.reduce((a, b) => a + b, 0)
+      const sum = chunk.reduce((a: number, b: number) => a + b, 0)
       filteredData.push(sum / chunk.length)
     }
     const max = Math.max(...filteredData) // Normalise - maybe not ideal.
@@ -62,7 +68,7 @@ export class KeyframesService {
     return string
   }
 
-  getString(arr, isTranslation: boolean) {
+  getString(arr: any, isTranslation: boolean) {
     let string = ''
     for (const ind of Object.keys(arr)) {
       let sample = parseFloat(arr[ind])
@@ -79,9 +85,10 @@ export class KeyframesService {
 
   installPolyfill() {
     function decodeAudioData_polyfill(
-      audioData,
-      successCallback,
-      errorCallback
+      this: any,
+      audioData: any,
+      successCallback: any,
+      errorCallback: any
     ) {
       if (arguments.length > 1) {
         // Callback

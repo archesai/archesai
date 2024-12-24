@@ -9,9 +9,9 @@ import { ServerOptions } from 'socket.io'
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>
 
-  private readonly logger: Logger = new Logger('RedisIoAdapter')
+  private readonly logger: Logger = new Logger(RedisIoAdapter.name)
   constructor(
-    app,
+    app: any,
     private readonly configService: ConfigService
   ) {
     super(app)
@@ -24,8 +24,8 @@ export class RedisIoAdapter extends IoAdapter {
       maxRetryDelay: 5000
     }
 
-    const connectAndHandleErrors = async (client) => {
-      client.on('error', (error) => {
+    const connectAndHandleErrors = async (client: any) => {
+      client.on('error', (error: any) => {
         this.logger.error('Redis client error: ' + error)
       })
 
@@ -64,7 +64,7 @@ export class RedisIoAdapter extends IoAdapter {
       ...(this.configService.get('REDIS_CA_CERT_PATH')
         ? {
             socket: {
-              ca: readFileSync(this.configService.get('REDIS_CA_CERT_PATH')),
+              ca: readFileSync(this.configService.get('REDIS_CA_CERT_PATH')!),
               rejectUnauthorized: false,
               tls: true
             }

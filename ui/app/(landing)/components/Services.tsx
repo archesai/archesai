@@ -43,13 +43,13 @@ export const Services = () => {
       <div className='grid place-items-center gap-8 lg:grid-cols-[1fr,1fr]'>
         <div>
           <h2 className='text-3xl font-bold md:text-4xl'>
-            <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
+            <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
               Client-Centric{' '}
             </span>
             Services
           </h2>
 
-          <p className='mb-8 mt-4 text-xl text-muted-foreground'>
+          <p className='text-muted-foreground mb-8 mt-4 text-xl'>
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
             dolor.
           </p>
@@ -58,7 +58,7 @@ export const Services = () => {
             {serviceList.map(({ description, icon, title }: ServiceProps) => (
               <Card key={title}>
                 <CardHeader className='flex items-start justify-start gap-4 space-y-1 md:flex-row'>
-                  <div className='mt-1 rounded-2xl bg-primary/20 p-1'>
+                  <div className='bg-primary/20 mt-1 rounded-2xl p-1'>
                     {icon}
                   </div>
                   <div>

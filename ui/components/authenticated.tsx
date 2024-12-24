@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from '@/hooks/use-auth'
-import { useWebsockets } from '@/hooks/useWebsockets'
+import { useWebsockets } from '@/hooks/use-websockets'
 import { useEffect } from 'react'
 
 export function Authenticated() {

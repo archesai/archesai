@@ -40,27 +40,22 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await signInWithEmailAndPassword(data.email, data.password)
-      // Redirect handled by useEffect
     } catch (error: any) {
-      if (error?.message) {
-        setFormError(error.message)
-      } else {
-        setFormError('An unexpected error occurred. Please try again.')
-      }
+      console.error(error)
+      setFormError(
+        error.message || 'An unexpected error occurred. Please try again.'
+      )
     }
   }
 
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle()
-      // Redirect handled by useEffect
     } catch (error: any) {
-      console.error('Google Sign-In error', error)
-      if (error?.message) {
-        setFormError(error.message)
-      } else {
-        setFormError('An unexpected error occurred. Please try again.')
-      }
+      console.error(error)
+      setFormError(
+        error.message || 'An unexpected error occurred. Please try again.'
+      )
     }
   }
 
@@ -68,7 +63,7 @@ export default function LoginPage() {
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Login</h1>
-        <p className='text-sm text-muted-foreground'>
+        <p className='text-muted-foreground text-sm'>
           Enter your email and password to login to your account
         </p>
       </div>

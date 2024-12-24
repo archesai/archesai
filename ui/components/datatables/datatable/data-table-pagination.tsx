@@ -34,7 +34,7 @@ export function DataTablePagination<TData>({
   return (
     <div className='flex items-center justify-between'>
       {/* Display the number of items found and selected on left side*/}
-      <div className='hidden text-sm text-muted-foreground sm:block'>
+      <div className='text-muted-foreground hidden text-sm sm:block'>
         {data?.metadata?.totalResults} found - {selectedItems.length || 0} of{' '}
         {Math.min(limit, data?.results.length) || 0} item(s) selected.
       </div>

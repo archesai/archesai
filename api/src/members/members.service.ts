@@ -2,25 +2,46 @@ import { Injectable, Logger } from '@nestjs/common'
 
 import { BaseService } from '../common/base.service'
 import { WebsocketsService } from '../websockets/websockets.service'
-import { CreateMemberDto } from './dto/create-member.dto'
-import { UpdateMemberDto } from './dto/update-member.dto'
 import { MemberEntity, MemberModel } from './entities/member.entity'
 import { MemberRepository } from './member.repository'
+import { UsersService } from '../users/users.service'
 
 @Injectable()
 export class MembersService extends BaseService<
   MemberEntity,
-  CreateMemberDto,
-  UpdateMemberDto,
-  MemberRepository,
-  MemberModel
+  MemberModel,
+  MemberRepository
 > {
   private readonly logger = new Logger(MembersService.name)
   constructor(
+    private usersService: UsersService,
     private memberRepository: MemberRepository,
     private websocketsService: WebsocketsService
   ) {
     super(memberRepository)
+  }
+
+  async create(data: Pick<MemberEntity, 'inviteEmail' | 'orgname' | 'role'>) {
+    let membership = await this.memberRepository.create({
+      ...data
+    })
+    const existingUser = await this.usersService.findOneByEmail(
+      data.inviteEmail
+    )
+    if (existingUser) {
+      membership = await this.memberRepository.findByInviteEmailAndOrgname(
+        membership.inviteEmail,
+        membership.orgname
+      )
+      membership = await this.memberRepository.update(membership.id, {
+        user: {
+          connect: {
+            id: existingUser.id
+          }
+        }
+      })
+    }
+    return this.toEntity(membership)
   }
 
   async join(orgname: string, inviteEmail: string, username: string) {
@@ -32,9 +53,9 @@ export class MembersService extends BaseService<
     )
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit('update', {
-      queryKey: ['organizations', orgname, 'members']
+  protected emitMutationEvent(entity: MemberEntity): void {
+    this.websocketsService.socket?.to(entity.orgname).emit('update', {
+      queryKey: ['organizations', entity.orgname, 'members']
     })
   }
 

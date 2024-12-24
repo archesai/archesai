@@ -10,6 +10,7 @@ import * as path from 'path'
 import { archesaiSa } from './archesai-sa'
 import { StorageItemDto } from './dto/storage-item.dto'
 import { StorageService } from './storage.service'
+import { v4 } from 'uuid'
 
 @Injectable()
 export class GoogleCloudStorageService implements StorageService {
@@ -149,9 +150,9 @@ export class GoogleCloudStorageService implements StorageService {
       } else if (relativePath) {
         fileItems.push(
           new StorageItemDto({
-            createdAt: new Date(file.metadata.timeCreated),
-            updatedAt: new Date(file.metadata.updated),
-            id: file.id,
+            createdAt: new Date(file.metadata.timeCreated || Date.now()),
+            updatedAt: new Date(file.metadata.updated || Date.now()),
+            id: file.id || v4(),
             isDir: false,
             name: relativePath,
             size: Number(file.metadata.size)
@@ -163,8 +164,8 @@ export class GoogleCloudStorageService implements StorageService {
     const directoryItems = Array.from(directories).map(
       (dirName) =>
         new StorageItemDto({
-          createdAt: null,
-          updatedAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           id: `${fullPath}${dirName}/`,
           isDir: true,
           name: dirName + '/',

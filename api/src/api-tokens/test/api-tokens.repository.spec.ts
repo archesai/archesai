@@ -37,20 +37,18 @@ describe('ApiTokenRepository', () => {
         name: 'Test Token',
         role: RoleTypeEnum.USER
       }
-      const additionalData = {
+      const overrides = {
         id: 'test-id',
         key: 'test-key',
-        username: 'test-user'
+        username: 'test-user',
+        orgname
       }
 
       const expectedResult: ApiTokenModel = {
         ...createApiTokenDto,
+        ...overrides,
         createdAt: new Date(),
-        id: additionalData.id,
-        key: additionalData.key,
-        orgname: 'org-id',
-        updatedAt: new Date(),
-        username: 'test-user'
+        updatedAt: new Date()
       }
 
       prismaService.apiToken.create = jest
@@ -58,28 +56,16 @@ describe('ApiTokenRepository', () => {
         .mockResolvedValue(expectedResult)
 
       // Act
-      const result = await repository.create(
-        orgname,
-        createApiTokenDto,
-        additionalData
-      )
+      const result = await repository.create({
+        ...createApiTokenDto,
+        ...overrides
+      })
 
       // Assert
       expect(prismaService.apiToken.create).toHaveBeenCalledWith({
         data: {
           ...createApiTokenDto,
-          id: additionalData.id,
-          key: additionalData.key,
-          organization: {
-            connect: {
-              orgname
-            }
-          },
-          user: {
-            connect: {
-              username: additionalData.username
-            }
-          }
+          ...overrides
         }
       })
       expect(result).toEqual(expectedResult)

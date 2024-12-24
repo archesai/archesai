@@ -32,8 +32,10 @@ export class ApiTokensController extends BaseController<
     @Body() createTokenDto: CreateApiTokenDto,
     @CurrentUser() currentUserDto: UserEntity
   ) {
-    return this.apiTokensService.create(orgname, createTokenDto, {
-      username: currentUserDto.username
+    return this.apiTokensService.create({
+      ...createTokenDto,
+      username: currentUserDto.username,
+      orgname
     })
   }
 }

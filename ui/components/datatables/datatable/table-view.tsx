@@ -60,7 +60,7 @@ export function TableView<TItem extends BaseItem>({
               {[...Array(10)].map((_, index) => (
                 <TableRow
                   className={
-                    'transition-all hover:bg-muted' +
+                    'hover:bg-muted transition-all' +
                     (index % 2 ? ' bg-background/40' : ' ')
                   }
                   key={index}
@@ -83,7 +83,7 @@ export function TableView<TItem extends BaseItem>({
             table.getRowModel().rows.map((row: any, index: number) => (
               <TableRow
                 className={
-                  'transition-all hover:bg-muted' +
+                  'hover:bg-muted transition-all' +
                   (index % 2 ? ' bg-background/40' : ' ')
                 }
                 data-state={row.getIsSelected() && 'selected'}

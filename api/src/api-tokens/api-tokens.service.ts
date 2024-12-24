@@ -7,16 +7,13 @@ import { BaseService } from '../common/base.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { ApiTokenRepository } from './api-token.repository'
 import { CreateApiTokenDto } from './dto/create-api-token.dto'
-import { UpdateApiTokenDto } from './dto/update-api-token.dto'
 import { ApiTokenEntity, ApiTokenModel } from './entities/api-token.entity'
 
 @Injectable()
 export class ApiTokensService extends BaseService<
   ApiTokenEntity,
-  CreateApiTokenDto,
-  UpdateApiTokenDto,
-  ApiTokenRepository,
-  ApiTokenModel
+  ApiTokenModel,
+  ApiTokenRepository
 > {
   constructor(
     private apiTokenRepository: ApiTokenRepository,
@@ -28,20 +25,19 @@ export class ApiTokensService extends BaseService<
   }
 
   async create(
-    orgname: string,
-    createTokenDto: CreateApiTokenDto,
-    additionalData: {
+    data: CreateApiTokenDto & {
       username: string
+      orgname: string
     }
   ) {
     const id = v4()
     const token = this.jwtService.sign(
       {
-        domains: createTokenDto.domains,
+        domains: data.domains,
         id,
-        orgname,
-        role: createTokenDto.role,
-        username: additionalData.username
+        orgname: data.orgname,
+        role: data.role,
+        username: data.username
       },
       {
         expiresIn: `${this.configService.get('JWT_API_TOKEN_EXPIRATION_TIME')}s`,
@@ -49,26 +45,22 @@ export class ApiTokensService extends BaseService<
       }
     )
     const key = '*********' + token.slice(-5)
-    const apiToken = await this.apiTokenRepository.create(
-      orgname,
-      createTokenDto,
-      {
-        id,
-        key,
-        username: additionalData.username
-      }
-    )
-
-    this.emitMutationEvent(orgname)
-    return this.toEntity({
+    const apiToken = await this.apiTokenRepository.create({
+      ...data,
+      id,
+      key
+    })
+    const entity = this.toEntity({
       ...apiToken,
       key: token
     })
+    this.emitMutationEvent(entity)
+    return entity
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit('update', {
-      queryKey: ['organizations', orgname, 'api-tokens']
+  protected emitMutationEvent(entity: ApiTokenEntity): void {
+    this.websocketsService.socket?.to(entity.orgname).emit('update', {
+      queryKey: ['organizations', entity.orgname, 'api-tokens']
     })
   }
 

@@ -18,7 +18,7 @@ import { TokenDto } from '../src/auth/dto/token.dto'
 import { OrganizationEntity } from '../src/organizations/entities/organization.entity'
 import { UserEntity } from '../src/users/entities/user.entity'
 import { UsersService } from '../src/users/users.service'
-import { AppModule } from './../src/app.module' // This enables path aliasing based on tsconfig.json
+import { AppModule } from '../src/app.module' // This enables path aliasing based on tsconfig.json
 import { createMock } from '@golevelup/ts-jest'
 
 export const createApp = async () => {
@@ -46,7 +46,9 @@ export const createApp = async () => {
   app.useLogger(app.get(Logger))
 
   // CORS Configuration
-  const allowedOrigins = configService.get<string>('ALLOWED_ORIGINS').split(',')
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS')!
+    .split(',')
   app.enableCors({
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
@@ -77,7 +79,7 @@ export const createApp = async () => {
     ...(configService.get('REDIS_CA_CERT_PATH')
       ? {
           socket: {
-            ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')),
+            ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')!),
             rejectUnauthorized: false,
             tls: true
           }

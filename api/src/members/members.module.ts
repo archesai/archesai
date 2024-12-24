@@ -4,11 +4,12 @@ import { PrismaModule } from '../prisma/prisma.module'
 import { MemberRepository } from './member.repository'
 import { MembersController } from './members.controller'
 import { MembersService } from './members.service'
+import { UsersModule } from '../users/users.module'
 
 @Module({
   controllers: [MembersController],
   exports: [MembersService],
-  imports: [PrismaModule],
+  imports: [PrismaModule, UsersModule],
   providers: [MembersService, MemberRepository]
 })
 export class MembersModule {}

@@ -55,15 +55,11 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await registerWithEmailAndPassword(data.email, data.password)
-      // Optionally, you can set a success message or perform additional actions here
-    } catch (err: any) {
-      console.error('Registration error:', err)
-      // Enhanced error handling to capture specific error messages
-      if (err?.message) {
-        setError(err.message)
-      } else {
-        setError('An unexpected error occurred. Please try again.')
-      }
+    } catch (error: any) {
+      console.error(error)
+      setError(
+        error.message || 'An unexpected error occurred. Please try again.'
+      )
     }
   }
 
@@ -71,7 +67,7 @@ export default function RegisterPage() {
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Register</h1>
-        <p className='text-sm text-muted-foreground'>
+        <p className='text-muted-foreground text-sm'>
           Create your account by entering your email and password
         </p>
       </div>

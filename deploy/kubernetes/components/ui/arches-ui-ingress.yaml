@@ -4,7 +4,7 @@ metadata:
   name: arches-ui-ingress
 spec:
   rules:
-    - host: arches-ui.test
+    - host: platform.archesai.test
       http:
         paths:
           - pathType: Prefix

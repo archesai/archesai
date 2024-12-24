@@ -12,7 +12,6 @@ import {
   RawBodyRequest,
   Req
 } from '@nestjs/common'
-import { Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 import { PlanType } from '@prisma/client'
@@ -32,8 +31,6 @@ import { PlanEntity } from './entities/plan.entity'
 @Controller()
 @Roles('ADMIN')
 export class BillingController {
-  private readonly logger: Logger = new Logger('Billing Controller')
-
   constructor(
     private billingService: BillingService,
     private organizationsService: OrganizationsService,
@@ -48,13 +45,10 @@ export class BillingController {
    */
   @Post('/organizations/:orgname/billing/subscription/cancel')
   async cancelSubscriptionPlan(@Param('orgname') orgname: string) {
-    if (this.configService.get('FEATURE_BILLING') == false) {
+    if (this.configService.get('FEATURE_BILLING') === 'false') {
       throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
 
     // Cancel the subscription
     await this.billingService.cancelSubscription(organization.stripeCustomerId)
@@ -71,13 +65,10 @@ export class BillingController {
     @Param('orgname') orgname: string,
     @Query('planId') planId: string
   ) {
-    if (this.configService.get('FEATURE_BILLING') == false) {
+    if (this.configService.get('FEATURE_BILLING') === 'false') {
       throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
 
     const plans = await this.billingService.listPlans()
     const plan = plans.find((p) => p.id === planId)
@@ -102,13 +93,10 @@ export class BillingController {
   async createBillingPortal(
     @Param('orgname') orgname: string
   ): Promise<BillingUrlEntity> {
-    if (this.configService.get('FEATURE_BILLING') == false) {
+    if (this.configService.get('FEATURE_BILLING') === 'false') {
       throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
 
     return new BillingUrlEntity(
       await this.billingService.createBillingPortal(
@@ -128,13 +116,10 @@ export class BillingController {
     @Param('orgname') orgname: string,
     @Query('planId') planId: string
   ): Promise<BillingUrlEntity> {
-    if (this.configService.get('FEATURE_BILLING') == false) {
+    if (this.configService.get('FEATURE_BILLING') === 'false') {
       throw new ForbiddenException('Billing is disabled')
     }
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
     if (['BASIC', 'PREMIUM', 'STANDARD'].includes(organization.plan)) {
       throw new BadRequestException(
         'Cannot purchase a plan when already on a plan'
@@ -179,10 +164,7 @@ export class BillingController {
    */
   @Get('/organizations/:orgname/billing/payment-methods')
   async listPaymentMethods(@Param('orgname') orgname: string) {
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
     const paymentMethods = await this.billingService.listPaymentMethods(
       organization.stripeCustomerId
     )
@@ -199,10 +181,7 @@ export class BillingController {
     @Param('orgname') orgname: string,
     @Param('paymentMethodId') paymentMethodId: string
   ) {
-    const organization = await this.organizationsService.findOne(
-      orgname,
-      orgname
-    )
+    const organization = await this.organizationsService.findOne(orgname)
     const paymentMethods = await this.billingService.listPaymentMethods(
       organization.stripeCustomerId
     )
@@ -257,7 +236,7 @@ export class BillingController {
         )
       }
 
-      this.websocketsService.socket.to(orgname).emit('update', {
+      this.websocketsService.socket?.to(orgname).emit('update', {
         queryKey: ['organizations', orgname, 'billing']
       })
     }
@@ -276,6 +255,10 @@ export class BillingController {
       throw new BadRequestException('Missing stripe-signature header')
     }
 
+    if (!req.rawBody) {
+      throw new BadRequestException('Missing raw body')
+    }
+
     const event = await this.billingService.constructEventFromPayload(
       signature,
       req.rawBody
@@ -288,7 +271,11 @@ export class BillingController {
         const organization =
           await this.organizationsService.findByStripeCustomerId(customerId)
         for (const lineItem of data.lines.data) {
-          const price = await this.billingService.getPrice(lineItem.price.id)
+          const priceId = lineItem?.price?.id
+          if (!priceId) {
+            continue
+          }
+          const price = await this.billingService.getPrice(priceId)
           const product = price.product as Stripe.Product
           const credits = product.metadata['credits']
           const quantity = lineItem.quantity || 1
@@ -325,7 +312,7 @@ export class BillingController {
       } else {
         await this.organizationsService.setPlan(organization.orgname, 'FREE')
       }
-      this.websocketsService.socket.to(organization.orgname).emit('update', {
+      this.websocketsService.socket?.to(organization.orgname).emit('update', {
         queryKey: ['organizations', organization.orgname]
       })
     }

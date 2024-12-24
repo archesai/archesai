@@ -31,10 +31,12 @@ export const transformTextToText: IToolRunProcess = async (
 
   logger.log(summary)
 
-  const summaryContent = await contentService.create(runInput[0].orgname, {
+  const summaryContent = await contentService.create({
     name: 'Summary Tool - ' + runInput.map((x) => x.name).join(', '),
     text: summary,
-    labels: []
+    labels: [],
+    orgname: runInput[0].orgname,
+    url: null
   })
 
   return [new ContentEntity(summaryContent)]

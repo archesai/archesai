@@ -33,12 +33,12 @@ export class OrganizationsController {
     @Body() createOrganizationDto: CreateOrganizationDto,
     @CurrentUser() user: UserEntity
   ) {
-    return new OrganizationEntity(
-      await this.organizationsService.create(
-        createOrganizationDto.orgname,
-        createOrganizationDto,
-        user
-      )
+    const organization = await this.organizationsService.create(
+      createOrganizationDto
+    )
+    return this.organizationsService.addUserToOrganization(
+      organization.orgname,
+      user
     )
   }
 
@@ -51,7 +51,7 @@ export class OrganizationsController {
   @Delete(':orgname')
   async delete(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
-    return this.organizationsService.remove(orgname, organization.id)
+    return this.organizationsService.remove(organization.id)
   }
 
   /**
@@ -63,7 +63,7 @@ export class OrganizationsController {
   async findOne(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
     return new OrganizationEntity(
-      await this.organizationsService.findOne(orgname, organization.id)
+      await this.organizationsService.findOne(organization.id)
     )
   }
 
@@ -82,7 +82,6 @@ export class OrganizationsController {
     const organization = await this.organizationsService.findByOrgname(orgname)
     return new OrganizationEntity(
       await this.organizationsService.update(
-        orgname,
         organization.id,
         updateOrganizationDto
       )

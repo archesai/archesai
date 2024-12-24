@@ -15,7 +15,7 @@ export class ARTokensService {
     type: ARTokenType,
     userId: string,
     expiresInHours: number,
-    additionalData?: Record<string, any>
+    overrides?: any
   ): Promise<string> {
     const token = crypto.randomBytes(32).toString('hex')
     const hashedToken = await bcrypt.hash(token, 10)
@@ -30,8 +30,8 @@ export class ARTokensService {
       user: { connect: { id: userId } }
     }
 
-    if (type === ARTokenType.EMAIL_CHANGE && additionalData?.newEmail) {
-      tokenData.newEmail = additionalData.newEmail
+    if (type === ARTokenType.EMAIL_CHANGE && overrides?.newEmail) {
+      tokenData.newEmail = overrides.newEmail
     }
 
     // check if one token of this type already exists
@@ -49,10 +49,7 @@ export class ARTokensService {
     return token
   }
 
-  async verifyToken(
-    type: ARTokenType,
-    token: string
-  ): Promise<{ additionalData?: Record<string, any>; userId: string }> {
+  async verifyToken(type: ARTokenType, token: string) {
     const tokens = await this.prisma.aRToken.findMany({
       include: { user: true },
       where: { type }
@@ -67,17 +64,12 @@ export class ARTokensService {
         }
 
         const userId = tokenRecord.userId
-        const additionalData: Record<string, any> = {}
-
-        // Extract additional data based on token type
-        if (type === ARTokenType.EMAIL_CHANGE && tokenRecord.newEmail) {
-          additionalData.newEmail = tokenRecord.newEmail
-        }
+        const newEmail = tokenRecord.newEmail
 
         // Delete the token after successful verification
         await this.prisma.aRToken.delete({ where: { id: tokenRecord.id } })
 
-        return { additionalData, userId }
+        return { newEmail, userId }
       }
     }
 

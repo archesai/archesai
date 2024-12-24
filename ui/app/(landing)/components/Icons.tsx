@@ -26,7 +26,7 @@ export const LogoIcon = () => {
 export const MedalIcon = () => {
   return (
     <svg
-      className='w-14 fill-primary'
+      className='fill-primary w-14'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -107,7 +107,7 @@ export const MedalIcon = () => {
 export const MapIcon = () => {
   return (
     <svg
-      className='w-14 fill-primary'
+      className='fill-primary w-14'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -184,7 +184,7 @@ export const MapIcon = () => {
 export const PlaneIcon = () => {
   return (
     <svg
-      className='w-14 fill-primary'
+      className='fill-primary w-14'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -245,7 +245,7 @@ export const PlaneIcon = () => {
 export const GiftIcon = () => {
   return (
     <svg
-      className='w-14 fill-primary'
+      className='fill-primary w-14'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -346,7 +346,7 @@ export const GiftIcon = () => {
 export const LightBulbIcon = () => {
   return (
     <svg
-      className='w-12 fill-primary'
+      className='fill-primary w-12'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -423,7 +423,7 @@ export const LightBulbIcon = () => {
 export const WalletIcon = () => {
   return (
     <svg
-      className='w-12 fill-primary'
+      className='fill-primary w-12'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -516,7 +516,7 @@ export const WalletIcon = () => {
 export const ChartIcon = () => {
   return (
     <svg
-      className='w-12 fill-primary'
+      className='fill-primary w-12'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >
@@ -589,7 +589,7 @@ export const ChartIcon = () => {
 export const MagnifierIcon = () => {
   return (
     <svg
-      className='w-12 fill-primary'
+      className='fill-primary w-12'
       viewBox='0 0 128 128'
       xmlns='http://www.w3.org/2000/svg'
     >

@@ -11,7 +11,7 @@ export const Hero = () => {
           Elevate Your Business with AI-Driven Solutions
         </main>
 
-        <p className='mx-auto text-xl text-muted-foreground md:w-10/12'>
+        <p className='text-muted-foreground mx-auto text-xl md:w-10/12'>
           Create intelligent chatbots, generate vibrant AI visuals, and
           integrate seamlessly using our API or no-code widgets.
         </p>

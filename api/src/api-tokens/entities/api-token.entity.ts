@@ -1,6 +1,5 @@
-import { ApiToken as _PrismaApiToken } from '@prisma/client'
-
 import { BaseEntity } from '@/src/common/entities/base.entity'
+import { ApiToken as _PrismaApiToken } from '@prisma/client'
 import { IsEnum, IsString } from 'class-validator'
 import { Expose } from 'class-transformer'
 

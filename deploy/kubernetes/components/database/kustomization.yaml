@@ -3,3 +3,10 @@ kind: Component
 resources:
   - "./arches-postgres-deployment.yaml"
   - "./arches-postgres-service.yaml"
+
+secretGenerator:
+  - name: arches-api-config-secret
+    literals:
+      # DATABASE CONFIG
+      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
+    behavior: merge

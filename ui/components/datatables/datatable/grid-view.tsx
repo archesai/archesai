@@ -51,7 +51,7 @@ export function GridView<TItem extends BaseItem>({
         const isItemSelected = selectedItems.includes(item.id)
         return (
           <Card
-            className={`relative flex aspect-auto h-64 flex-col shadow-sm transition-all hover:bg-muted ${
+            className={`hover:bg-muted relative flex aspect-auto h-64 flex-col shadow-sm transition-all ${
               isItemSelected ? 'ring-1 ring-blue-500' : ''
             } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={item.id}
@@ -91,7 +91,7 @@ export function GridView<TItem extends BaseItem>({
               <div className='flex flex-shrink-0 items-center gap-2'>
                 {!readonly && getEditFormFromItem && (
                   <FilePenLine
-                    className='h-5 w-5 cursor-pointer text-primary'
+                    className='text-primary h-5 w-5 cursor-pointer'
                     onClick={() => {
                       setFinalForm(getEditFormFromItem(item))
                       setFormOpen(true)

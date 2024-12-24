@@ -18,7 +18,7 @@ export class CustomValidationPipe extends ValidationPipe {
       exceptionFactory: (errors) => {
         const messages = errors
           .filter((err) => err.constraints)
-          .map((err) => Object.values(err.constraints))
+          .map((err) => Object.values(err.constraints as any))
           .flat()
           .join('; ')
         return new BadRequestException(messages)

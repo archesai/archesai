@@ -9,7 +9,7 @@ import { RunsService } from '../runs/runs.service'
 
 @Injectable()
 export class RunpodService {
-  private readonly logger: Logger = new Logger('Runpod Service')
+  private readonly logger: Logger = new Logger(RunpodService.name)
 
   constructor(
     private readonly httpService: HttpService,
@@ -18,7 +18,7 @@ export class RunpodService {
 
   async runPod(jobId: string, podId: string, input: any) {
     // START RUNPOD JOB
-    this.logger.log('Running runpod')
+    this.logger.debug('Running runpod')
     const { data: runpodCreateResponse } = await retry(
       this.logger,
       () =>
@@ -33,8 +33,7 @@ export class RunpodService {
             })
             .pipe(
               catchError((err: AxiosError) => {
-                this.logger.error('Could not hit runpod endpoint', err.message)
-                throw new InternalServerErrorException(err.message)
+                throw new InternalServerErrorException(err)
               })
             )
         ),
@@ -60,11 +59,7 @@ export class RunpodService {
               })
               .pipe(
                 catchError((err: AxiosError) => {
-                  this.logger.error(
-                    'Could not hit runpod endpoint',
-                    err.message
-                  )
-                  throw new InternalServerErrorException(err.message)
+                  throw new InternalServerErrorException(err)
                 })
               )
           ),

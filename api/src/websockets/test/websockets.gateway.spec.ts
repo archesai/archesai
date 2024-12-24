@@ -89,7 +89,7 @@ describe('WebsocketsGateway', () => {
       await gateway.handleConnection(socket)
 
       expect(authService.verifyToken).toHaveBeenCalledWith('validToken')
-      expect(usersService.findOne).toHaveBeenCalledWith(null, 'userId')
+      expect(usersService.findOne).toHaveBeenCalledWith('userId')
       expect(socket.join).toHaveBeenCalledWith('testOrg')
     })
 
@@ -146,8 +146,11 @@ describe('WebsocketsGateway', () => {
     it('should log disconnection', async () => {
       const socket = {
         id: 'socketId',
-        rooms: new Set(['room1', 'room2'])
-      } as unknown as Socket
+        rooms: new Set(['room1', 'room2']),
+        data: {
+          username: 'testUser'
+        }
+      } as Socket
 
       await gateway.handleDisconnect(socket)
     })

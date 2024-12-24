@@ -29,7 +29,7 @@ async function bootstrap() {
       .setDescription('The Arches AI API')
       .setVersion('v1')
       .addBearerAuth()
-      .addServer(configService.get<string>('SERVER_HOST'))
+      .addServer(configService.get<string>('SERVER_HOST')!)
       .build()
     const documentFactory = () =>
       SwaggerModule.createDocument(app, swaggerConfig, {
@@ -57,7 +57,9 @@ async function bootstrap() {
   app.useLogger(app.get(Logger))
 
   // CORS Configuration
-  const allowedOrigins = configService.get<string>('ALLOWED_ORIGINS').split(',')
+  const allowedOrigins = configService
+    .get<string>('ALLOWED_ORIGINS')!
+    .split(',')
   app.enableCors({
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
@@ -88,7 +90,7 @@ async function bootstrap() {
     ...(configService.get('REDIS_CA_CERT_PATH')
       ? {
           socket: {
-            ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')),
+            ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')!),
             rejectUnauthorized: false,
             tls: true
           }
@@ -132,6 +134,6 @@ async function bootstrap() {
   app.enableShutdownHooks()
 
   // Start listening for requests
-  await app.listen(parseInt(configService.get<string>('PORT')) || 3000)
+  await app.listen(parseInt(configService.get<string>('PORT')!) || 3000)
 }
 bootstrap()

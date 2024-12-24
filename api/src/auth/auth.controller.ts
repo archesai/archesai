@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, Req, Res } from '@nestjs/common'
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common'
 import { UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
@@ -23,7 +23,6 @@ import { PasswordResetService } from './services/password-reset.service'
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  private readonly logger = new Logger(AuthController.name)
   constructor(
     private readonly authService: AuthService,
     private passwordResetService: PasswordResetService,

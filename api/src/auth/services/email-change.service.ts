@@ -19,7 +19,7 @@ import { AuthService } from './auth.service'
 
 @Injectable()
 export class EmailChangeService {
-  logger = new Logger(EmailChangeService.name)
+  private readonly logger = new Logger(EmailChangeService.name)
 
   constructor(
     private readonly emailService: EmailService,
@@ -30,12 +30,10 @@ export class EmailChangeService {
   ) {}
 
   async confirm(confirmationTokenDto: ConfirmationTokenDto) {
-    const { additionalData, userId } = await this.arTokensService.verifyToken(
+    const { newEmail, userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_CHANGE,
       confirmationTokenDto.token
     )
-
-    const newEmail = additionalData?.newEmail
     if (!newEmail) {
       throw new BadRequestException('New email is missing.')
     }
@@ -48,13 +46,13 @@ export class EmailChangeService {
     userId: string,
     emailRequestDto: EmailRequestDto
   ): Promise<void> {
-    const user = await this.usersService.findOne(null, userId)
+    const user = await this.usersService.findOne(userId)
     let newEmailInUse = false
     try {
       await this.usersService.findOneByEmail(emailRequestDto.email)
       newEmailInUse = true
-    } catch (e) {
-      this.logger.error(e)
+    } catch (error) {
+      this.logger.warn(error)
     }
     if (newEmailInUse) {
       throw new ConflictException('New email is already in use.')

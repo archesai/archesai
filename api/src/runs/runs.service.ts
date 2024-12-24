@@ -10,20 +10,17 @@ import { PipelinesService } from '../pipelines/pipelines.service'
 import { ToolsService } from '../tools/tools.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { CreateRunDto } from './dto/create-run.dto'
-import { RunEntity, RunModel } from './entities/run.entity'
+import { RunEntity, RunModel, RunTypeEnum } from './entities/run.entity'
 import { RunRepository } from './run.repository'
 import { RunJob } from './run.processor'
 
 @Injectable()
 export class RunsService extends BaseService<
   RunEntity,
-  CreateRunDto,
-  any,
-  RunRepository,
-  RunModel
+  RunModel,
+  RunRepository
 > {
   private logger = new Logger(RunsService.name)
-
   constructor(
     private runRepository: RunRepository,
     private websocketsService: WebsocketsService,
@@ -36,20 +33,36 @@ export class RunsService extends BaseService<
     super(runRepository)
   }
 
-  async create(orgname: string, createRunDto: CreateRunDto) {
-    if (createRunDto.runType === 'PIPELINE_RUN' && !createRunDto.pipelineId) {
+  async create(
+    createRunDto: CreateRunDto & {
+      orgname: string
+    }
+  ) {
+    if (
+      createRunDto.runType === RunTypeEnum.PIPELINE_RUN &&
+      !createRunDto.pipelineId
+    ) {
       throw new BadRequestException('Pipeline ID is required for pipeline runs')
-    } else if (createRunDto.runType === 'TOOL_RUN' && !createRunDto.toolId) {
+    } else if (
+      createRunDto.runType === RunTypeEnum.TOOL_RUN &&
+      !createRunDto.toolId
+    ) {
       throw new BadRequestException('Tool ID is required for tool runs')
     }
 
-    const runContent = await this.ensureRunContent(orgname, createRunDto)
-    if (createRunDto.runType === 'PIPELINE_RUN') {
+    const runContent = await this.ensureRunContent(
+      createRunDto.orgname,
+      createRunDto
+    )
+    if (createRunDto.runType === RunTypeEnum.PIPELINE_RUN) {
       // Create pipeline run
-      const run = await this.runRepository.createPipelineRun(orgname, {
-        contentIds: runContent.map((content) => content.id),
-        ...createRunDto
-      })
+      const run = await this.runRepository.createPipelineRun(
+        createRunDto.orgname,
+        {
+          contentIds: runContent.map((content) => content.id),
+          ...createRunDto
+        }
+      )
       // Set inputs
       await this.setInputsOrOutputs(run.id, 'inputs', runContent)
       // Add to flow queue
@@ -61,24 +74,26 @@ export class RunsService extends BaseService<
         queueName: 'tool'
       })
       // Return run
-      this.emitMutationEvent(orgname)
-      return this.toEntity(run)
-    } else if (createRunDto.runType === 'TOOL_RUN') {
+      const runEntity = this.toEntity(run)
+      this.emitMutationEvent(runEntity)
+      return runEntity
+    } else {
       // Create tool run
-      const run = await this.runRepository.createToolRun(orgname, {
+      const run = await this.runRepository.createToolRun(createRunDto.orgname, {
         contentIds: runContent.map((content) => content.id),
         ...createRunDto
       })
       // Set inputs
       await this.setInputsOrOutputs(run.id, 'inputs', runContent)
       // Add to tool queue
-      const tool = await this.toolsService.findOne(orgname, createRunDto.toolId)
+      const tool = await this.toolsService.findOne(createRunDto.toolId!)
       await this.runQueue.add(tool.toolBase, runContent, {
         jobId: run.id
       })
       // Return run
-      this.emitMutationEvent(orgname)
-      return this.toEntity(run)
+      const runEntity = this.toEntity(run)
+      this.emitMutationEvent(runEntity)
+      return runEntity
     }
   }
 
@@ -86,24 +101,28 @@ export class RunsService extends BaseService<
     const runContent: ContentEntity[] = []
     if (createRunDto.contentIds?.length) {
       for (const contentId of createRunDto.contentIds) {
-        runContent.push(await this.contentService.findOne(orgname, contentId))
+        runContent.push(await this.contentService.findOne(contentId))
       }
     }
     if (createRunDto.text) {
       runContent.push(
-        await this.contentService.create(orgname, {
+        await this.contentService.create({
           name: 'Input Text',
           text: createRunDto.text,
-          labels: []
+          labels: [],
+          orgname,
+          url: null
         })
       )
     }
     if (createRunDto.url) {
       runContent.push(
-        await this.contentService.create(orgname, {
+        await this.contentService.create({
           name: 'Input URL',
           url: createRunDto.url,
-          labels: []
+          labels: [],
+          orgname,
+          text: null
         })
       )
     }
@@ -124,57 +143,61 @@ export class RunsService extends BaseService<
       type,
       content
     )
-    this.emitMutationEvent(run.orgname)
-    return this.toEntity(run)
+    const runEntity = this.toEntity(run)
+    this.emitMutationEvent(runEntity)
+    return runEntity
   }
 
   async setProgress(id: string, progress: number) {
-    const run = await this.runRepository.updateRaw(null, id, {
+    const run = await this.runRepository.update(id, {
       progress
     })
-    this.emitMutationEvent(run.orgname)
-    return this.toEntity(run)
+    const runEntity = this.toEntity(run)
+    this.emitMutationEvent(runEntity)
+    return runEntity
   }
 
   async setRunError(id: string, error: string) {
-    const run = await this.runRepository.updateRaw(null, id, {
+    const run = await this.runRepository.update(id, {
       error
     })
-    this.emitMutationEvent(run.orgname)
-    return this.toEntity(run)
+    const runEntity = this.toEntity(run)
+    this.emitMutationEvent(runEntity)
+    return runEntity
   }
 
   async setStatus(id: string, status: RunStatus) {
     switch (status) {
       case 'COMPLETE':
-        await this.runRepository.updateRaw(null, id, {
+        await this.runRepository.update(id, {
           completedAt: new Date()
         })
-        await this.runRepository.updateRaw(null, id, {
+        await this.runRepository.update(id, {
           progress: 1
         })
         break
       case 'ERROR':
-        await this.runRepository.updateRaw(null, id, {
+        await this.runRepository.update(id, {
           completedAt: new Date()
         })
         break
       case 'PROCESSING':
-        await this.runRepository.updateRaw(null, id, {
+        await this.runRepository.update(id, {
           startedAt: new Date()
         })
         break
     }
-    const run = await this.runRepository.updateRaw(null, id, {
+    const run = await this.runRepository.update(id, {
       status
     })
-    this.emitMutationEvent(run.orgname)
-    return this.toEntity(run)
+    const runEntity = this.toEntity(run)
+    this.emitMutationEvent(runEntity)
+    return runEntity
   }
 
-  protected emitMutationEvent(orgname: string): void {
-    this.websocketsService.socket.to(orgname).emit('update', {
-      queryKey: ['organizations', orgname, 'runs']
+  protected emitMutationEvent(entity: RunEntity): void {
+    this.websocketsService.socket?.to(entity.orgname).emit('update', {
+      queryKey: ['organizations', entity.orgname, 'runs']
     })
   }
 

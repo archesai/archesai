@@ -4,21 +4,16 @@ import { AuthProviderType, Prisma } from '@prisma/client'
 import { BaseRepository } from '../common/base.repository'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { UserWithMembershipsAndAuthProvidersModel } from './entities/user.entity'
 
 const USER_INCLUDE = {
   authProviders: true,
   memberships: true
-}
+} as const
 
 @Injectable()
 export class UserRepository extends BaseRepository<
-  UserWithMembershipsAndAuthProvidersModel,
-  CreateUserDto,
-  UpdateUserDto,
-  Prisma.UserInclude,
-  Prisma.UserUpdateInput
+  Prisma.UserDelegate,
+  typeof USER_INCLUDE
 > {
   constructor(private prisma: PrismaService) {
     super(prisma.user, USER_INCLUDE)
@@ -43,7 +38,7 @@ export class UserRepository extends BaseRepository<
     })
   }
 
-  async create(orgname: string, createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const prexistingMemberships = await this.prisma.member.findMany({
       where: {
         inviteEmail: createUserDto.email

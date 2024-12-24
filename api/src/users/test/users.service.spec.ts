@@ -42,12 +42,9 @@ describe('UsersService', () => {
       mockedUserRepository.create.mockResolvedValue(mockedUser)
       mockedUserRepository.findOne.mockResolvedValue(mockedUser)
 
-      await service.create('orgname', createUserDto)
+      await service.create(createUserDto)
 
-      expect(mockedUserRepository.create).toHaveBeenCalledWith(
-        '',
-        createUserDto
-      )
+      expect(mockedUserRepository.create).toHaveBeenCalledWith(createUserDto)
       expect(mockedOrganizationsService.create).toHaveBeenCalled()
     })
   })
@@ -62,6 +59,7 @@ describe('UsersService', () => {
 
       mockedUserRepository.findOneByEmail.mockResolvedValue(mockedUser)
       mockedUserRepository.addAuthProvider.mockResolvedValue({
+        ...mockedUser,
         authProviders: [
           {
             createdAt: new Date(),
@@ -70,8 +68,7 @@ describe('UsersService', () => {
             providerId,
             userId: mockedUser.id
           }
-        ],
-        ...mockedUser
+        ]
       })
 
       await service.syncAuthProvider(email, provider, providerId)
@@ -88,16 +85,12 @@ describe('UsersService', () => {
     it('should set email as verified', async () => {
       const mockedUser = createRandomUser()
 
-      mockedUserRepository.updateRaw.mockResolvedValue(mockedUser)
+      mockedUserRepository.update.mockResolvedValue(mockedUser)
       await service.setEmailVerified(mockedUser.id)
 
-      expect(mockedUserRepository.updateRaw).toHaveBeenCalledWith(
-        null,
-        mockedUser.id,
-        {
-          emailVerified: true
-        }
-      )
+      expect(mockedUserRepository.update).toHaveBeenCalledWith(mockedUser.id, {
+        emailVerified: true
+      })
     })
   })
 

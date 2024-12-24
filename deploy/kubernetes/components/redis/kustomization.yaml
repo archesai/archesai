@@ -3,3 +3,12 @@ kind: Component
 resources:
   - "./arches-redis-deployment.yaml"
   - "./arches-redis-service.yaml"
+
+secretGenerator:
+  - name: arches-api-config-secret
+    literals:
+      # REDIS CONFIG
+      - REDIS_AUTH=PASSWORD
+      - REDIS_HOST=arches-redis
+      - REDIS_PORT=6379
+    behavior: merge

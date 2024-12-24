@@ -82,12 +82,9 @@ export const PasswordResetForm = ({
             }
           })
           setMessage('Your email has been successfully updated!')
-        } catch (err: any) {
-          console.error(err)
-          setError(
-            err?.response?.data?.message ||
-              'Email change failed. Please try again.'
-          )
+        } catch (error: any) {
+          console.error(error)
+          setError('Email change failed. Please try again.')
         }
         break
       case 'email-verification':
@@ -98,17 +95,13 @@ export const PasswordResetForm = ({
             }
           })
           setMessage('Your email has been successfully verified!')
-        } catch (err: any) {
-          console.error(err)
-          // setError(
-          //   err?.response?.data?.message || "Email verification failed."
-          // );
+        } catch (error: any) {
+          console.error(error)
+          setError('Email verification failed. Please try again.')
         }
         break
       case 'password-reset':
-        // Do nothing
         break
-
       default:
         setError('Unsupported action type.')
         break
@@ -124,12 +117,9 @@ export const PasswordResetForm = ({
         }
       })
       setMessage('Your password has been successfully reset!')
-    } catch (err: any) {
-      console.error('Password reset error:', err)
-      setError(
-        err?.response?.data?.message ||
-          'Password reset failed. Please try again.'
-      )
+    } catch (error: any) {
+      console.error(error)
+      setError('Password reset failed. Please try again.')
     }
   }
 
@@ -205,7 +195,7 @@ export const PasswordResetForm = ({
             : 'Reset Password'}
         </Button>
       </form>
-      <p className='text-sm text-muted-foreground'>
+      <p className='text-muted-foreground text-sm'>
         {message ||
           (error
             ? ''

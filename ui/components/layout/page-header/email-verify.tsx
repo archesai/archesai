@@ -19,7 +19,7 @@ export function VerifyEmailAlert() {
         className='h-5 w-5'
         color='white'
       />
-      <AlertTitle className='flex items-center font-normal text-primary-foreground'>
+      <AlertTitle className='text-primary-foreground flex items-center font-normal'>
         <span className='flex gap-1'>
           Please
           <div

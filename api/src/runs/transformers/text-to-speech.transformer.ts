@@ -31,10 +31,12 @@ export const transformTextToSpeech: IToolRunProcess = async (
     multerFile
   )
 
-  const content = await contentService.create(inputs[0].orgname, {
+  const content = await contentService.create({
     name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
     url,
-    labels: []
+    labels: [],
+    orgname: inputs[0].orgname,
+    text: null
   })
 
   return [new ContentEntity(content)]

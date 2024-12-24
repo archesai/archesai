@@ -121,7 +121,7 @@ import { ScraperModule } from './scraper/scraper.module'
           port: Number(configService.get('REDIS_PORT')),
           tls: configService.get('REDIS_CA_CERT_PATH')
             ? {
-                ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')),
+                ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')!),
                 rejectUnauthorized: false
               }
             : undefined

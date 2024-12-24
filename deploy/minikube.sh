@@ -34,16 +34,14 @@ else
 fi
 
 # Create the secret for TLS
-CERT_DIR="deploy/kubernetes/overlays/development-min"
+CERT_DIR="deploy/kubernetes/overlays/development"
 CERT_FILE="$CERT_DIR/cert.pem"
 KEY_FILE="$CERT_DIR/key.pem"
-
 if [ ! -f "$CERT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
     echo "🔄 Generating TLS certificates with mkcert..."
     mkcert -install
     mkdir -p "$CERT_DIR"
-    mkcert -cert-file "$CERT_FILE" -key-file "$KEY_FILE" \
-        arches-api.test arches-ui.test arches-grafana.test arches-minio.test dashboard.arches-minio.test
+    mkcert -cert-file "$CERT_FILE" -key-file "$KEY_FILE" *.archesai.test
 else
     echo "✅ TLS certificates already exist."
 fi
@@ -94,7 +92,11 @@ fi
 
 # Configure ingress TLS
 if ! kubectl -n ingress-nginx get deployment ingress-nginx-controller -o yaml | grep -q "default/mkcert-tls"; then
-    echo "🔄 Configuring ingress TLS... and refreshing the ingress-dns addon"
+    echo "🔄 Configuring ingress TLS... and refreshing the ingress addon"
+    kubectl create secret tls mkcert-tls \
+        --cert=$CERT_FILE \
+        --key=$KEY_FILE \
+        --namespace=default
     echo "default/mkcert-tls" | minikube addons configure ingress
     minikube addons enable ingress --refresh
 else

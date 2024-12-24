@@ -1,5 +1,5 @@
 import { ApiHideProperty } from '@nestjs/swagger'
-import { AuthProvider, Member, User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import { Expose } from 'class-transformer'
 import {
   IsBoolean,
@@ -13,10 +13,12 @@ import { BaseEntity } from '../../common/entities/base.entity'
 import { MemberEntity } from '../../members/entities/member.entity'
 import { AuthProviderEntity } from './auth-provider.entity'
 
-export type UserWithMembershipsAndAuthProvidersModel = User & {
-  authProviders: AuthProvider[]
-  memberships: Member[]
-}
+export type UserWithMembershipsAndAuthProvidersModel = Prisma.UserGetPayload<{
+  include: {
+    authProviders: true
+    memberships: true
+  }
+}>
 
 export class UserEntity extends BaseEntity implements User {
   /**

@@ -9,7 +9,7 @@ import { UsersService } from '../../users/users.service'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  private readonly logger: Logger = new Logger('Local Strategy')
+  private readonly logger: Logger = new Logger(LocalStrategy.name)
 
   constructor(private usersService: UsersService) {
     super({ usernameField: 'email' })
@@ -18,15 +18,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(email: string, password: string): Promise<UserEntity> {
     try {
       const user = await this.usersService.findOneByEmail(email)
-      if (
-        user &&
-        user.password &&
-        (await bcrypt.compare(password, user.password))
-      ) {
+      const match = await bcrypt.compare(password, user.password)
+      if (match) {
         return user
+      } else {
+        throw new Error()
       }
-    } catch (e) {
-      this.logger.log(`Could not validate email and password: ${email}: ${e}`)
+    } catch (error: any) {
+      this.logger.debug(
+        `Invalid credentials for user with e-mail ${email}:` + error.message
+      )
       throw new UnauthorizedException('Invalid credentials')
     }
   }

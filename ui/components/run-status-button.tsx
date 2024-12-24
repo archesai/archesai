@@ -48,7 +48,7 @@ export const RunStatusButton = ({
       case 'PROCESSING':
         return (
           <div className='flex items-center gap-2'>
-            <Loader2Icon className='animate-spin text-primary' />
+            <Loader2Icon className='text-primary animate-spin' />
             <span>{(run.progress * 100).toFixed(0)}%</span>
           </div>
         )

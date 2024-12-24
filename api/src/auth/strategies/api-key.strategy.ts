@@ -1,5 +1,5 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
@@ -7,10 +7,11 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { ApiTokensService } from '../../api-tokens/api-tokens.service'
 import { UsersService } from '../../users/users.service'
+import { OperatorEnum } from '@/src/common/dto/search-query.dto'
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
-  private readonly logger: Logger = new Logger('Api Key Strategy')
+  private readonly logger: Logger = new Logger(ApiKeyStrategy.name)
 
   constructor(
     private configService: ConfigService,
@@ -25,21 +26,29 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
   }
 
   async validate(payload: any): Promise<UserEntity> {
-    this.logger.log(`Validating API Key: ${payload.id}`)
+    this.logger.debug(`Validating API Key: ${payload.id}`)
     const { id, orgname, role, username } = payload
     const user = await this.usersService.findOneByUsername(username)
-    this.logger.log(
+    this.logger.debug(
       `Found user valid for API Key: ${user.username}, checking memberships`
     )
 
     user.memberships = user.memberships.filter((m) => m.orgname == orgname)
     if (!user.memberships.length) {
-      return null
+      throw new UnauthorizedException()
     }
 
-    const tokens = await this.apiTokensService.findAll(orgname, {})
+    const tokens = await this.apiTokensService.findAll({
+      filters: [
+        {
+          field: 'orgname',
+          operator: OperatorEnum.EQUALS,
+          value: orgname
+        }
+      ]
+    })
     if (!tokens || !tokens.results.find((t) => t.id == id)) {
-      return null
+      throw new UnauthorizedException()
     }
     user.memberships[0].role = role
 

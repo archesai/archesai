@@ -27,7 +27,7 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async initializeBrowser() {
-    const scraperEndpoint = this.configService.get<string>('SCRAPER_ENDPOINT')
+    const scraperEndpoint = this.configService.get<string>('SCRAPER_ENDPOINT')!
     this.browser = await chromium.connect(scraperEndpoint)
     this.logger.log('Connected to remote browser service at ' + scraperEndpoint)
   }
@@ -40,6 +40,7 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
   }
 
   async takeScreenshot(url: string): Promise<Buffer> {
+    this.logger.debug('Taking screenshot of ' + url)
     const context = await this.browser.newContext({
       viewport: { width: 1920, height: 1080 } // Optional: Set a consistent viewport size
     })
@@ -50,13 +51,16 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
       fullPage: true
     })
     await context.close()
+    this.logger.debug('Screenshot taken')
     return screenshot
   }
 
   async detectMimeType(url: string): Promise<string> {
+    this.logger.debug('Detecting MIME type of ' + url)
+    let mimeType: string
     try {
       const response = await fetch(url, { method: 'HEAD' })
-      let mimeType = response.headers.get('content-type')?.split(';')[0] || ''
+      mimeType = response.headers.get('content-type')?.split(';')[0] || ''
       if (mimeType) {
         return mimeType
       }
@@ -67,32 +71,45 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
       const pathname = urlObj.pathname
       const fileName = pathname.split('/').pop()
       if (!fileName) {
-        return null
+        throw new BadRequestException('Failed to detect MIME type')
       }
       mimeType = mime.lookup(fileName) || ''
-      if (mimeType) {
-        return mimeType
+      if (mimeType === '') {
+        throw new BadRequestException('Failed to detect MIME type')
       }
     } catch (error) {
-      this.logger.error('Failed to detect MIME type:', error)
-      throw new BadRequestException('Failed to detect MIME type')
+      throw new BadRequestException({
+        message: 'Failed to detect MIME type',
+        cause: error
+      })
     }
+    return mimeType
   }
 
   async generateThumbnail(
-    url: string,
-    text: string,
-    mimeType: string
+    url: string | null,
+    text: string | null,
+    mimeType: string | null
   ): Promise<Buffer> {
     switch (mimeType) {
       case 'application/pdf':
+        if (!url) {
+          throw new BadRequestException('PDF URL is required')
+        }
         return this.getThumbnailFromFirstPagePdf(
           Buffer.from(await (await fetch(url)).arrayBuffer())
         )
       case 'text/plain':
+        if (!text) {
+          throw new BadRequestException('PDF URL is required')
+        }
         return this.getThumbnailFromText(text)
       default:
-        return this.takeScreenshot(url)
+        if (url) {
+          return this.takeScreenshot(url)
+        } else {
+          throw new BadRequestException('URL is required')
+        }
     }
   }
 
@@ -127,17 +144,16 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
     width: number = 800,
     height: number = 600
   ): Promise<Buffer> {
-    try {
-      // Truncate text if it's too long to prevent overflowing
-      const maxLength = 1000
-      const displayText =
-        text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+    // Truncate text if it's too long to prevent overflowing
+    const maxLength = 1000
+    const displayText =
+      text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 
-      // Escape XML characters to prevent SVG injection
-      const escapedText = this.escapeXml(displayText)
+    // Escape XML characters to prevent SVG injection
+    const escapedText = this.escapeXml(displayText)
 
-      // Create an SVG image with the text
-      const svgImage = `
+    // Create an SVG image with the text
+    const svgImage = `
       <svg width="${width}" height="${height}">
         <style>
           .title { fill: black; font-size: 24px; font-family: Arial, sans-serif; }
@@ -147,14 +163,8 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
       </svg>
     `
 
-      const buffer = Buffer.from(svgImage)
-
-      // Convert SVG to PNG using sharp
-      return await sharp(buffer).png().toBuffer()
-    } catch (error) {
-      this.logger.error('Error generating thumbnail from text:', error)
-      throw error
-    }
+    // Convert SVG to PNG using sharp
+    return sharp(Buffer.from(svgImage)).png().toBuffer()
   }
 
   private async getThumbnailFromYoutubeUrl(url: string): Promise<Buffer> {

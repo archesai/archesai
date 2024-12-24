@@ -108,7 +108,6 @@ describe('UsersController', () => {
       expect(response.body.id).toEqual('test-id')
 
       expect(mockedUsersService.update).toHaveBeenCalledWith(
-        mockedUser.defaultOrgname,
         mockedUser.id,
         updateUserDto
       )
