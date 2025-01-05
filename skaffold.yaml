@@ -9,13 +9,11 @@ build:
     - image: us-east4-docker.pkg.dev/archesai/images/api
       context: .
       docker:
-        target: development
-        dockerfile: ./api/Dockerfile
+        dockerfile: ./apps/api/Dockerfile
     - image: us-east4-docker.pkg.dev/archesai/images/ui
       context: .
       docker:
-        target: development
-        dockerfile: ./ui/Dockerfile
+        dockerfile: ./apps/ui/Dockerfile
 manifests:
   kustomize:
     paths:
@@ -77,17 +75,17 @@ profiles:
           context: .
           docker:
             target: development
-            dockerfile: ./api/Dockerfile
+            dockerfile: ./apps/api/Dockerfile
           sync:
             manual:
-              - src: 'api/**/*'
+              - src: 'apps/api/**/*'
                 dest: .
         - image: ui
           context: .
           docker:
             target: development
-            dockerfile: ./ui/Dockerfile
+            dockerfile: ./apps/ui/Dockerfile
           sync:
             manual:
-              - src: 'ui/**/*'
+              - src: 'apps/ui/**/*'
                 dest: .

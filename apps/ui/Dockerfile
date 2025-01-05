@@ -12,14 +12,14 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 # Set working directory
-WORKDIR /app
+WORKDIR /arches
 
 ###################
 # DEPENDENCIES STAGE
 ###################
 FROM base AS deps
 COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY --chown=node:node ./ui/package.json ./ui/package.json
+COPY --chown=node:node ./apps/ui/package.json ./apps/ui/package.json
 RUN pnpm install --filter ui --frozen-lockfile
 COPY --chown=node:node tsconfig.json ./
 
@@ -27,7 +27,7 @@ COPY --chown=node:node tsconfig.json ./
 # DEVELOPMENT STAGE
 ###################
 FROM deps AS development
-COPY --chown=node:node ui ui
+COPY --chown=node:node ./apps/ui ./apps/ui
 USER node
 CMD ["pnpm", "--filter", "ui", "run", "dev"]
 
@@ -35,9 +35,9 @@ CMD ["pnpm", "--filter", "ui", "run", "dev"]
 # BUILD STAGE
 ###################
 FROM deps AS build
-COPY --chown=node:node ui ui
-RUN pnpm run build --filter ui
-RUN pnpm deploy --filter=ui --prod /prod/ui
+COPY --chown=node:node ./apps/ui ./apps/ui
+RUN pnpm run --filter ui build
+RUN pnpm deploy --filter ui --prod /prod
 
 ###################
 # PRODUCTION STAGE
@@ -46,7 +46,6 @@ FROM base AS production
 ENV NODE_ENV=production
 RUN mkdir .next
 RUN chown node:node .next
-COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/.next ./.next
+COPY --from=build --chown=node:node /prod .
 USER node
 CMD ["npm", "start"]
