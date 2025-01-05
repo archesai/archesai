@@ -56,51 +56,51 @@ jobs:
       - name: Lint and Typecheck
         run: make test
 
-  build-and-tag-api:
-    name: Build and Tag API
-    needs:
-      - lint-and-format
-      - unit-test
-    uses: ./.github/workflows/build-and-tag.yaml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      service: api
+  # build-and-tag-api:
+  #   name: Build and Tag API
+  #   needs:
+  #     - lint-and-format
+  #     - unit-test
+  #   uses: ./.github/workflows/build-and-tag.yaml
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   with:
+  #     service: api
 
-  build-and-tag-ui:
-    name: Build and Tag UI
-    needs:
-      - lint-and-format
-      - unit-test
-    uses: ./.github/workflows/build-and-tag.yaml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      service: ui
+  # build-and-tag-ui:
+  #   name: Build and Tag UI
+  #   needs:
+  #     - lint-and-format
+  #     - unit-test
+  #   uses: ./.github/workflows/build-and-tag.yaml
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   with:
+  #     service: ui
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs:
-      - build-and-tag-api
-      - build-and-tag-ui
+    # needs:
+    #   - build-and-tag-api
+    #   - build-and-tag-ui
     permissions:
       contents: read
       id-token: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install google-cloud-cli-gke-gcloud-auth-plugin
-        run: |
-          sudo apt-get update
-          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
+      # - name: Install google-cloud-cli-gke-gcloud-auth-plugin
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
 
       - name: Create GKE Release
         run: |
-          gcloud components install gke-gcloud-auth-plugin
-          gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
+          # gcloud components install gke-gcloud-auth-plugin
+          # gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
           gcloud deploy releases create ${{ github.sha }} \
               --project=archesai \
               --region=us-east1 \
