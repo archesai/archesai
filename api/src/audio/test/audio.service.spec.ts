@@ -6,9 +6,12 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as ospath from 'path'
 
-import { STORAGE_SERVICE, StorageService } from '../../storage/storage.service'
-import { AudioService } from '../audio.service'
-import { KeyframesService } from '../keyframes.service'
+import { AudioService } from '@/src/audio/audio.service'
+import { KeyframesService } from '@/src/audio/keyframes.service'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from '@/src/storage/interfaces/storage-provider.interface'
 
 jest.mock('axios')
 jest.mock('fs')
@@ -16,7 +19,7 @@ jest.mock('fluent-ffmpeg')
 
 describe('AudioService', () => {
   let service: AudioService
-  let storageService: StorageService
+  let storageService: IStorageService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -43,7 +46,7 @@ describe('AudioService', () => {
     }).compile()
 
     service = module.get<AudioService>(AudioService)
-    storageService = module.get<StorageService>(STORAGE_SERVICE)
+    storageService = module.get<IStorageService>(STORAGE_SERVICE)
   })
 
   afterEach(() => {

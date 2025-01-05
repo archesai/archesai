@@ -20,13 +20,13 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { Readable } from 'stream'
 
-import { StorageItemDto } from './dto/storage-item.dto'
-import { StorageService } from './storage.service'
+import { StorageItemDto } from '../dto/storage-item.dto'
+import { IStorageService } from '../interfaces/storage-provider.interface'
 import { v4 } from 'uuid'
-import { ArchesConfigService } from '../config/config.service'
+import { ArchesConfigService } from '../../config/config.service'
 
 @Injectable()
-export class S3StorageProvider implements StorageService, OnModuleInit {
+export class S3StorageProvider implements IStorageService, OnModuleInit {
   private readonly logger = new Logger(S3StorageProvider.name)
 
   private bucketName: string

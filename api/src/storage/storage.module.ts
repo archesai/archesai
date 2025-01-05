@@ -1,10 +1,14 @@
 import { DynamicModule, Module } from '@nestjs/common'
 
 import { StorageController } from './storage.controller'
-import { GoogleCloudStorageService } from './storage.gcp.service'
-import { LocalStorageService } from './storage.local.service'
-import { S3StorageProvider } from './storage.s3.service'
-import { STORAGE_SERVICE, StorageService } from './storage.service'
+import { GoogleCloudStorageService } from './services/gcp.service'
+import { LocalStorageService } from './services/local.service'
+import { S3StorageProvider } from './services/s3.service'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from './interfaces/storage-provider.interface'
+
 import { ArchesConfigService } from '../config/config.service'
 
 @Module({})
@@ -18,7 +22,7 @@ export class StorageModule {
         {
           inject: [ArchesConfigService],
           provide: STORAGE_SERVICE,
-          useFactory: (configService: ArchesConfigService): StorageService => {
+          useFactory: (configService: ArchesConfigService): IStorageService => {
             const storageType = configService.get('storage.type')
             switch (storageType) {
               case 'google-cloud':

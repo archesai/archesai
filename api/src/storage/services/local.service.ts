@@ -8,11 +8,11 @@ import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 
-import { StorageItemDto } from './dto/storage-item.dto'
-import { StorageService } from './storage.service'
+import { StorageItemDto } from '../dto/storage-item.dto'
+import { IStorageService } from '../interfaces/storage-provider.interface'
 
 @Injectable()
-export class LocalStorageService implements StorageService {
+export class LocalStorageService implements IStorageService {
   private baseDir: string
   private expirationTime = 60 * 60 * 1000 // Not used in mock but kept for consistency
 

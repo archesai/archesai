@@ -4,8 +4,8 @@ import { ContentService } from '../../content/content.service'
 import { ContentEntity } from '../../content/entities/content.entity'
 import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
 import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured'
-import { StorageService } from '@/src/storage/storage.service'
 import { ArchesConfigService } from '@/src/config/config.service'
+import { IStorageService } from '@/src/storage/interfaces/storage-provider.interface'
 
 export const transformFileToText: IToolRunProcess = async (
   runId: string,
@@ -13,7 +13,7 @@ export const transformFileToText: IToolRunProcess = async (
   logger: Logger,
   contentService: ContentService,
   configService: ArchesConfigService,
-  storageService: StorageService
+  storageService: IStorageService
 ): Promise<ContentEntity[]> => {
   logger.log(`Extracting text for run ${runId} with url ${inputs[0].url}`)
 

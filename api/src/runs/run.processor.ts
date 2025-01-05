@@ -3,19 +3,22 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq'
 import { Inject, Logger } from '@nestjs/common'
 import { Job } from 'bullmq'
 
-import { ContentService } from '../content/content.service'
-import { ContentEntity } from '../content/entities/content.entity'
-import { LLMService } from '../llm/llm.service'
-import { RunpodService } from '../runpod/runpod.service'
-import { SpeechService } from '../speech/speech.service'
-import { STORAGE_SERVICE, StorageService } from '../storage/storage.service'
+import { ContentService } from '@/src/content/content.service'
+import { ContentEntity } from '@/src/content/entities/content.entity'
+import { LLMService } from '@/src/llm/llm.service'
+import { RunpodService } from '@/src/runpod/runpod.service'
+import { SpeechService } from '@/src/speech/speech.service'
 import { RunsService } from './runs.service'
 import { transformFileToText } from './transformers/file-to-text.transformer'
 import { transformTextToEmbeddings } from './transformers/text-to-embeddings.transformer'
 import { transformTextToImage } from './transformers/text-to-image.transformer'
 import { transformTextToSpeech } from './transformers/text-to-speech.transformer'
 import { transformTextToText } from './transformers/text-to-text.transformer'
-import { ArchesConfigService } from '../config/config.service'
+import { ArchesConfigService } from '@/src/config/config.service'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from '@/src/storage/interfaces/storage-provider.interface'
 
 export type RunJob = Job<ContentEntity[], ContentEntity[], string>
 
@@ -26,7 +29,7 @@ export class RunProcessor extends WorkerHost {
   constructor(
     private runsService: RunsService,
     @Inject(STORAGE_SERVICE)
-    private storageService: StorageService,
+    private storageService: IStorageService,
     private contentService: ContentService,
     private llmService: LLMService,
     private speechService: SpeechService,

@@ -1,8 +1,8 @@
-import { StorageItemDto } from './dto/storage-item.dto'
+import { StorageItemDto } from '../dto/storage-item.dto'
 
 export const STORAGE_SERVICE = 'STORAGE_SERVICE'
 
-export interface StorageService {
+export interface IStorageService {
   createDirectory(orgname: string, path: string): Promise<void>
   delete(orgname: string, path: string): Promise<void>
   download(

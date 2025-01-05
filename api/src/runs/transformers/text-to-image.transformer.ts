@@ -4,8 +4,9 @@ import * as ospath from 'path'
 
 import { ContentEntity } from '../../content/entities/content.entity'
 import { RunpodService } from '../../runpod/runpod.service'
-import { StorageService } from '../../storage/storage.service'
+
 import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
+import { IStorageService } from '@/src/storage/interfaces/storage-provider.interface'
 
 export const transformTextToImage: IToolRunProcess = async (
   runId: string,
@@ -13,7 +14,7 @@ export const transformTextToImage: IToolRunProcess = async (
   logger: Logger,
   contentService: ContentService,
   runpodService: RunpodService,
-  storageService: StorageService
+  storageService: IStorageService
 ): Promise<ContentEntity[]> => {
   logger.log(`Processing text to image for run ${runId}`)
   const input = {

@@ -12,15 +12,18 @@ import { catchError, firstValueFrom } from 'rxjs'
 import { v4 } from 'uuid'
 
 import { retry } from '../common/retry'
-import { STORAGE_SERVICE, StorageService } from '../storage/storage.service'
 import { KeyframesService } from './keyframes.service'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from '@/src/storage/interfaces/storage-provider.interface'
 
 @Injectable()
 export class AudioService {
   private readonly logger: Logger = new Logger(AudioService.name)
 
   constructor(
-    @Inject(STORAGE_SERVICE) private storageService: StorageService,
+    @Inject(STORAGE_SERVICE) private storageService: IStorageService,
     private httpService: HttpService,
     private keyframesService: KeyframesService
   ) {}

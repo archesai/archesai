@@ -12,7 +12,10 @@ import { PathDto } from './dto/path.dto'
 import { ReadUrlDto } from './dto/read-url.dto'
 import { StorageItemDto } from './dto/storage-item.dto'
 import { WriteUrlDto } from './dto/write-url.dto'
-import { STORAGE_SERVICE, StorageService } from './storage.service'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from './interfaces/storage-provider.interface'
 
 @ApiBearerAuth()
 @ApiTags('Storage')
@@ -20,7 +23,7 @@ import { STORAGE_SERVICE, StorageService } from './storage.service'
 @Roles('ADMIN')
 export class StorageController {
   constructor(
-    @Inject(STORAGE_SERVICE) private readonly storageService: StorageService
+    @Inject(STORAGE_SERVICE) private readonly storageService: IStorageService
   ) {}
 
   @ApiOperation({

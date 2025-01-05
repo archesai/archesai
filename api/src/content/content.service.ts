@@ -1,12 +1,15 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common'
 
 import { BaseService } from '../common/base.service'
-import { STORAGE_SERVICE, StorageService } from '../storage/storage.service'
 import { WebsocketsService } from '../websockets/websockets.service'
 import { ContentRepository } from './content.repository'
 import { ContentEntity, ContentModel } from './entities/content.entity'
 import { ScraperService } from '../scraper/scraper.service'
 import { v4 } from 'uuid'
+import {
+  IStorageService,
+  STORAGE_SERVICE
+} from '../storage/interfaces/storage-provider.interface'
 
 @Injectable()
 export class ContentService extends BaseService<
@@ -18,7 +21,7 @@ export class ContentService extends BaseService<
 
   constructor(
     @Inject(STORAGE_SERVICE)
-    private storageService: StorageService,
+    private storageService: IStorageService,
     private contentRepository: ContentRepository,
     private websocketsService: WebsocketsService,
     private scraperService: ScraperService
