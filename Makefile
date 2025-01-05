@@ -15,9 +15,13 @@ SUBDIR ?= .
 dev:
 	skaffold dev --profile dev 
 
+# Run the application : TEMP this are removed  --cleanup=false \ --default-repo=registry.localhost:5000
+start:
+	skaffold run --default-repo=''
+
 # Run the application
 stop:
-	skaffold delete --profile dev 
+	skaffold delete
 
 # Install Dependencies
 install:
