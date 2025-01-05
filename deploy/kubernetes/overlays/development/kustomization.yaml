@@ -15,7 +15,6 @@ components:
   - ../../components/database
   - ../../components/redis
   - ../../components/storage
-  - ../../components/monitoring
   - ../../components/ui
   - ../../components/scraper
   - ../../components/unstructured
