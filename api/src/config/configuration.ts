@@ -1,62 +1,65 @@
-export default () => ({
-  // GLOBAL CONFIG
-  NODE_ENV: process.env.NODE_ENV,
-  SERVER_HOST: process.env.SERVER_HOST,
-  FRONTEND_HOST: process.env.FRONTEND_HOST,
-  PORT: parseInt(process.env.PORT!, 10),
-  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
+import { readFileSync, existsSync, statSync, readdirSync } from 'fs'
+import yaml from 'js-yaml'
+import { join } from 'path'
+import { z, ZodSchema } from 'zod'
+import merge from 'deepmerge'
 
-  // DATABASE CONFIG
-  DATABASE_URL: process.env.DATABASE_URL,
+export const loadConfiguration = <T extends ZodSchema>(schema: T) => {
+  const yamlConfig = loadYamlConfig()
+  const envConfig = loadEnvConfig()
+  const mergedConfig = merge(yamlConfig, envConfig)
+  if (process.env.ARCHES_NOVALIDATE === 'false') {
+    return mergedConfig as z.infer<T>
+  }
+  return schema.parse(mergedConfig) as z.infer<T>
+}
 
-  // EMAIL CONFIG
-  FEATURE_EMAIL: process.env.FEATURE_EMAIL,
-  EMAIL_USER: process.env.EMAIL_USER,
-  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
-  EMAIL_SERVICE: process.env.EMAIL_SERVICE,
+export function loadYamlConfig(): Record<string, any> {
+  const configDir = process.env.ARCHES_CONF_DIR || '/etc/archesai'
+  const baseConfigPath = join(configDir, 'config.yaml')
 
-  // EMBEDDING CONFIG
-  EMBEDDING_TYPE: process.env.EMBEDDING_TYPE,
+  let baseConfig: Record<string, any> = {}
+  if (existsSync(baseConfigPath) && statSync(baseConfigPath).isFile()) {
+    baseConfig = yaml.load(readFileSync(baseConfigPath, 'utf8')) as Record<
+      string,
+      any
+    >
+  }
 
-  // JWT CONFIG
-  JWT_API_TOKEN_EXPIRATION_TIME: process.env.JWT_API_TOKEN_EXPIRATION_TIME,
-  JWT_API_TOKEN_SECRET: process.env.JWT_API_TOKEN_SECRET,
+  const configDropInDir = join(baseConfigPath + '.d')
+  if (existsSync(configDropInDir) && statSync(configDropInDir).isDirectory()) {
+    const files = readdirSync(configDropInDir)
+      .filter((file) => file.endsWith('.yaml'))
+      .sort() // Alphabetical order
+      .map((file) => join(configDropInDir, file))
 
-  // BILLING CONFIG
-  FEATURE_BILLING: process.env.FEATURE_BILLING,
-  STRIPE_PRIVATE_API_KEY: process.env.STRIPE_PRIVATE_API_KEY,
-  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    for (const file of files) {
+      const fileConfig = yaml.load(readFileSync(file, 'utf8')) as Record<
+        string,
+        any
+      >
+      baseConfig = merge(baseConfig, fileConfig)
+    }
+  }
 
-  // LLM CONFIG
-  LLM_TYPE: process.env.LLM_TYPE,
-  LLM_ENDPOINT: process.env.LLM_ENDPOINT,
-  LLM_API_KEY: process.env.LLM_API_KEY,
+  return baseConfig
+}
 
-  // STORAGE CONFIG
-  STORAGE_TYPE: process.env.STORAGE_TYPE,
-  MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
-  MINIO_BUCKET: process.env.MINIO_BUCKET,
-  MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
-  MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
-
-  // REDIS CONFIG
-  REDIS_AUTH: process.env.REDIS_AUTH,
-  REDIS_CA_CERT_PATH: process.env.REDIS_CA_CERT_PATH,
-  REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: parseInt(process.env.REDIS_PORT!, 10),
-
-  // SESSION CONFIG
-  SESSION_SECRET: process.env.SESSION_SECRET,
-
-  // LOGGING CONFIG
-  LOGGING_LEVEL: process.env.LOGGING_LEVEL,
-  LOKI_HOST: process.env.LOKI_HOST,
-
-  // SCRAPER CONFIG
-  FEATURE_SCRAPER: process.env.FEATURE_SCRAPER,
-  SCRAPER_ENDPOINT: process.env.SCRAPER_ENDPOINT,
-
-  // UNSTRUCTURED CONFIG
-  FEATURE_UNSTRUCTURED: process.env.FEATURE_UNSTRUCTURED,
-  UNSTRUCTURED_ENDPOINT: process.env.UNSTRUCTURED_ENDPOINT
-})
+export function loadEnvConfig(): Record<string, any> {
+  const envConfig: Record<string, any> = {}
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.startsWith('ARCHES.')) {
+      const keys = key.replace('ARCHES.', '').toLowerCase().split('.')
+      let current = envConfig
+      keys.forEach((k, index) => {
+        if (index === keys.length - 1) {
+          current[k] = value // Set the final key
+        } else {
+          current[k] = current[k] || {}
+          current = current[k]
+        }
+      })
+    }
+  }
+  return envConfig
+}

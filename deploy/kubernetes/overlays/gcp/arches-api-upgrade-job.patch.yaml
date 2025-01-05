@@ -1,29 +1,29 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: arches-api-upgrade
+  name: api-upgrade
 spec:
   template:
     spec:
-      serviceAccountName: arches-api-service-account
+      serviceAccountName: api-service-account
       containers:
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
           args:
-            - "--structured-logs"
-            - "--port=5432"
-            - "--quitquitquit"
-            - "archesai:us-east1:arches-postgres"
+            - '--structured-logs'
+            - '--port=5432'
+            - '--quitquitquit'
+            - 'archesai:us-east1:arches-postgres'
           securityContext:
             runAsNonRoot: true
           resources:
             requests:
-              memory: "100Mi"
-              cpu: "100m"
+              memory: '100Mi'
+              cpu: '100m'
             limits:
-              memory: "200Mi"
-              cpu: "200m"
-        - name: arches-api-upgrade
+              memory: '200Mi'
+              cpu: '200m'
+        - name: api-upgrade
           args:
             - |
               until wget --spider --tries=1 --timeout=5 http://localhost:9091 2>&1 | grep -q '404 Not Found'; do

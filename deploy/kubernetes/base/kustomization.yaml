@@ -3,6 +3,8 @@ kind: Kustomization
 
 resources:
   - ./api
+  - ./archesai-config-secret.yaml
+  - ./archesai-ingress.yaml
 
 images:
   - name: us-east4-docker.pkg.dev/archesai/images/arches-api
@@ -11,39 +13,3 @@ images:
   - name: us-east4-docker.pkg.dev/archesai/images/arches-ui
     newName: us-east4-docker.pkg.dev/archesai/images/arches-ui
     newTag: latest
-
-secretGenerator:
-  - name: arches-api-config-secret
-    literals:
-      # GLOBAL CONFIG
-      - NODE_ENV=development
-      - SERVER_HOST=https://api.archesai.test
-      - FRONTEND_HOST=https://platform.archesai.test
-      - PORT=3001
-      - ALLOWED_ORIGINS=*
-
-      # EMAIL CONFIG
-      - FEATURE_EMAIL=false
-
-      # EMBEDDING CONFIG
-      - EMBEDDING_TYPE=openai
-
-      # JWT CONFIG
-      - JWT_API_TOKEN_EXPIRATION_TIME=31536000
-      - JWT_API_TOKEN_SECRET=asdfasdf
-
-      # BILLING CONFIG
-      - FEATURE_BILLING=false
-
-      # LLM CONFIG
-      - LLM_TYPE=openai
-      - LLM_API_KEY=open-ai-key
-
-      # SESSION CONFIG
-      - SESSION_SECRET=secret
-
-      # LOGGING CONFIG
-      - LOGGING_LEVEL=info
-
-generatorOptions:
-  disableNameSuffixHash: true

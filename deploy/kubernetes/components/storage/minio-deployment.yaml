@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+spec:
+  selector:
+    matchLabels:
+      component: minio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: minio
+    spec:
+      containers:
+        - image: minio/minio:latest
+          args:
+            - minio
+            - server
+            - /minio_data
+            - --console-address
+            - ':9001'
+            - --address
+            - ':443'
+          env:
+            - name: MINIO_ACCESS_KEY
+              value: minioadmin
+            - name: MINIO_SECRET_KEY
+              value: minioadmin
+            - name: MINIO_BROWSER_REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  key: ARCHES.STORAGE.DASHBOARD
+                  name: archesai-config-secret
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - http://localhost:443/minio/health/live
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 20
+          name: minio
+          ports:
+            - containerPort: 443
+            - containerPort: 9001
+          volumeMounts:
+            - mountPath: /minio_data
+              name: minio-data
+      volumes:
+        - name: minio-data
+          persistentVolumeClaim:
+            claimName: minio-data

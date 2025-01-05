@@ -53,7 +53,7 @@ export class AudioService {
                 params: {
                   inputUrl: audioUrl
                 },
-                workflow: 'arches-workflow'
+                workflow: 'archesai-workflow'
               },
               {
                 headers: {

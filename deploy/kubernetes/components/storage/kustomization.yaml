@@ -2,19 +2,58 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 resources:
-  - "./arches-minio-deployment.yaml"
-  - "./arches-minio-service.yaml"
-  - "./arches-minio-ingress.yaml"
-  - "./minio-data-persistentvolumeclaim.yaml"
+  - minio-deployment.yaml
+  - minio-service.yaml
+  - minio-persistentvolumeclaim.yaml
 
-secretGenerator:
-  - name: arches-api-config-secret
-    literals:
-      # STORAGE CONFIG
-      - STORAGE_TYPE=minio
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_BUCKET=archesai
-      - MINIO_ENDPOINT=https://storage.archesai.test
-      - MINIO_DASHBOARD_ENDPOINT=https://storage-dashbaord.archesai.test
-      - MINIO_SECRET_KEY=minioadmin
-    behavior: merge
+patches:
+  - target:
+      name: archesai-config-secret
+    patch: |-
+      - op: add
+        path: /stringData/ARCHES.STORAGE.TYPE
+        value: minio
+      - op: add
+        path: /stringData/ARCHES.STORAGE.ACCESSKEY
+        value: minioadmin
+      - op: add
+        path: /stringData/ARCHES.STORAGE.SECRETKEY
+        value: minioadmin
+      - op: add
+        path: /stringData/ARCHES.STORAGE.ENDPOINT
+        value: https://storage.mydomain
+      - op: add
+        path: /stringData/ARCHES.STORAGE.DASHBOARD
+        value: https://storaged.mydomain
+      - op: add
+        path: /stringData/ARCHES.STORAGE.BUCKET
+        value: archesai
+  - target:
+      name: archesai-ingress
+    patch: |-
+      - op: add
+        path: /spec/rules/-
+        value:
+          host: storaged.mydomain
+          http:
+            paths:
+              - pathType: Prefix
+                path: '/'
+                backend:
+                  service:
+                    name: minio
+                    port:
+                      number: 9001
+      - op: add
+        path: /spec/rules/-
+        value:
+          host: storage.mydomain
+          http:
+            paths:
+              - pathType: Prefix
+                path: '/'
+                backend:
+                  service:
+                    name: minio
+                    port:
+                      number: 443

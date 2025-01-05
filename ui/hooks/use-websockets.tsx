@@ -15,20 +15,26 @@ export const useWebsockets = ({
 
   useEffect(() => {
     if (accessToken) {
-      const websocket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL as string, {
-        auth: {
-          token: overrideToken || accessToken
-        },
-        extraHeaders: {
-          Authorization: `Bearer ${overrideToken || accessToken}`
-        },
-        reconnection: true,
-        reconnectionAttempts: Infinity,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        transports: ['websocket'],
-        withCredentials: true
-      })
+      const websocket = io(
+        process.env.NEXT_PUBLIC_SERVER_HOST!.replace(
+          `http${process.env.NEXT_PUBLIC_TLS_ENABLED === 'true' ? 's' : ''}://`,
+          `ws${process.env.NEXT_PUBLIC_TLS_ENABLED === 'true' ? 's' : ''}://`
+        ),
+        {
+          auth: {
+            token: overrideToken || accessToken
+          },
+          extraHeaders: {
+            Authorization: `Bearer ${overrideToken || accessToken}`
+          },
+          reconnection: true,
+          reconnectionAttempts: Infinity,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+          transports: ['websocket'],
+          withCredentials: true
+        }
+      )
 
       websocket.on('connect', () => {})
 

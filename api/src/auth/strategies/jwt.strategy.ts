@@ -1,18 +1,18 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
 import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { Request } from 'express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { UsersService } from '../../users/users.service'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger: Logger = new Logger(JwtStrategy.name)
 
   constructor(
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private usersService: UsersService
   ) {
     super({
@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           return null
         }
       ]),
-      secretOrKey: configService.get<string>('JWT_API_TOKEN_SECRET')
+      secretOrKey: configService.get('jwt.secret')
     })
   }
 

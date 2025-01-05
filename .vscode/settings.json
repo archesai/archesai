@@ -1,9 +1,14 @@
 {
   "eslint.workingDirectories": ["./ui", "./api"],
-  "jest.rootPath": "./api",
   "jest.jestCommandLine": "npm run test --",
+  "jest.rootPath": "./api",
   "jest.runMode": {
     "runAllTestsOnStartup": false,
     "type": "on-demand"
+  },
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/k3d-io/k3d/refs/heads/main/pkg/config/v1alpha5/schema.json": [
+      "k3d-config.yaml"
+    ]
   }
 }

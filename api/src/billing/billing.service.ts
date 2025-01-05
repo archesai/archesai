@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import Stripe from 'stripe'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class BillingService {
   private stripe: Stripe
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ArchesConfigService) {
     this.stripe = new Stripe(
-      this.configService.get('STRIPE_PRIVATE_API_KEY') || 'n/a',
+      this.configService.get('billing.stripe.token') || 'n/a',
       {
         apiVersion: '2024-12-18.acacia'
       }
@@ -40,7 +40,7 @@ export class BillingService {
   }
 
   async constructEventFromPayload(signature: string, payload: Buffer) {
-    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET')
+    const webhookSecret = this.configService.get('billing.stripe.whsec')!
 
     return this.stripe.webhooks.constructEvent(
       payload,
@@ -52,7 +52,7 @@ export class BillingService {
   async createBillingPortal(customerId: string) {
     return this.stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${this.configService.get('FRONTEND_HOST')}/organization/billing`
+      return_url: `${this.configService.get('frontend.host')}/organization/billing`
     })
   }
 
@@ -63,7 +63,7 @@ export class BillingService {
   ) {
     const session = await this.stripe.checkout.sessions.create({
       allow_promotion_codes: isOneTime ? undefined : true,
-      cancel_url: `${this.configService.get('FRONTEND_HOST')}/organization/billing`,
+      cancel_url: `${this.configService.get('frontend.host')}/organization/billing`,
       customer: customerId,
       invoice_creation: isOneTime
         ? {
@@ -80,7 +80,7 @@ export class BillingService {
       ],
       mode: isOneTime ? 'payment' : 'subscription',
       payment_method_types: ['card'],
-      success_url: `${this.configService.get('FRONTEND_HOST')}/organization/billing`
+      success_url: `${this.configService.get('frontend.host')}/organization/billing`
     })
 
     if (!session.url) {

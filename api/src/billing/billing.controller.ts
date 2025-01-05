@@ -12,7 +12,6 @@ import {
   RawBodyRequest,
   Req
 } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger'
 import { PlanType } from '@prisma/client'
 import { Stripe } from 'stripe'
@@ -25,6 +24,7 @@ import { BillingService } from './billing.service'
 import { BillingUrlEntity } from './entities/billing-url.entity'
 import { PaymentMethodEntity } from './entities/payment-method.entity'
 import { PlanEntity } from './entities/plan.entity'
+import { ArchesConfigService } from '../config/config.service'
 
 @ApiBearerAuth()
 @ApiTags('Organization - Billing')
@@ -34,7 +34,7 @@ export class BillingController {
   constructor(
     private billingService: BillingService,
     private organizationsService: OrganizationsService,
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private websocketsService: WebsocketsService
   ) {}
 
@@ -45,7 +45,7 @@ export class BillingController {
    */
   @Post('/organizations/:orgname/billing/subscription/cancel')
   async cancelSubscriptionPlan(@Param('orgname') orgname: string) {
-    if (this.configService.get('FEATURE_BILLING') === 'false') {
+    if (!this.configService.get('billing.enabled')) {
       throw new ForbiddenException('Billing is disabled')
     }
     const organization = await this.organizationsService.findOne(orgname)
@@ -65,7 +65,7 @@ export class BillingController {
     @Param('orgname') orgname: string,
     @Query('planId') planId: string
   ) {
-    if (this.configService.get('FEATURE_BILLING') === 'false') {
+    if (!this.configService.get('billing.enabled')) {
       throw new ForbiddenException('Billing is disabled')
     }
     const organization = await this.organizationsService.findOne(orgname)
@@ -93,7 +93,7 @@ export class BillingController {
   async createBillingPortal(
     @Param('orgname') orgname: string
   ): Promise<BillingUrlEntity> {
-    if (this.configService.get('FEATURE_BILLING') === 'false') {
+    if (!this.configService.get('billing.enabled')) {
       throw new ForbiddenException('Billing is disabled')
     }
     const organization = await this.organizationsService.findOne(orgname)
@@ -116,7 +116,7 @@ export class BillingController {
     @Param('orgname') orgname: string,
     @Query('planId') planId: string
   ): Promise<BillingUrlEntity> {
-    if (this.configService.get('FEATURE_BILLING') === 'false') {
+    if (!this.configService.get('billing.enabled')) {
       throw new ForbiddenException('Billing is disabled')
     }
     const organization = await this.organizationsService.findOne(orgname)
@@ -284,7 +284,7 @@ export class BillingController {
             Number(credits) * quantity
           )
           this.websocketsService.socket
-            .to(organization.orgname)
+            ?.to(organization.orgname)
             .emit('update', {
               queryKey: ['organizations', organization.orgname]
             })

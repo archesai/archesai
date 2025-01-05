@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: archesai-managed-certificate
+spec:
+  domains:
+    - api.mydomain
+    - platform.mydomain

@@ -1,58 +1,69 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 resources:
-  - '../../base'
+  - ../../base
+  - ./stripe-webhook-proxy.yaml
+
+images:
+  - name: us-east4-docker.pkg.dev/archesai/images/api
+    newName: api
+  - name: us-east4-docker.pkg.dev/archesai/images/ui
+    newName: ui
 
 components:
   - ../../components/database
   - ../../components/redis
   - ../../components/storage
+  - ../../components/monitoring
   - ../../components/ui
-  - ../../components/grafana
-  - ../../components/playwright
+  - ../../components/scraper
   - ../../components/unstructured
+  - ../../components/tls
 
 patches:
   - target:
-      kind: Secret
-      name: mkcert-tls
-    patch: |-
-      - op: add
-        path: /type
-        value: kubernetes.io/tls
-  - target:
       kind: Job
-      name: arches-api-upgrade
+      name: api-upgrade
     patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/image
-        value: arches-api:dev
       - op: replace
         path: /spec/template/spec/restartPolicy
         value: OnFailure
+      - op: add
+        path: /spec/ttlSecondsAfterFinished
+        value: 10
   - target:
-      kind: Deployment
-      name: arches-api
+      name: archesai-config-secret
     patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/image
-        value: arches-api:dev
-      - op: replace
-        path: /spec/template/spec/securityContext
-        value:
-          runAsUser: 0
-          runAsGroup: 0
-          fsGroup: 0
-  - target:
-      kind: Deployment
-      name: arches-ui
-    patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/image
-        value: arches-ui:dev
-      - op: replace
-        path: /spec/template/spec/securityContext
-        value:
-          runAsUser: 0
-          runAsGroup: 0
-          fsGroup: 0
+      - op: add
+        path: /stringData/ARCHES.SERVER.SWAGGER.ENABLED
+        value: 'true'
+
+configMapGenerator:
+  - name: archesai-ingress-config
+    literals:
+      - DOMAIN=archesai.dev
+
+replacements:
+  - source:
+      name: archesai-ingress-config
+      fieldPath: data.DOMAIN
+    targets:
+      - select:
+          name: archesai-ingress
+        fieldPaths:
+          - spec.rules.*.host
+          - spec.tls.*.hosts.*
+        options:
+          delimiter: .
+          index: 1
+      - select:
+          name: archesai-config-secret
+        fieldPaths:
+          - stringData.[ARCHES.SERVER.HOST]
+          - stringData.[ARCHES.FRONTEND.HOST]
+          - stringData.[ARCHES.STORAGE.ENDPOINT]
+          - stringData.[ARCHES.STORAGE.DASHBOARD]
+        options:
+          delimiter: .
+          index: 1

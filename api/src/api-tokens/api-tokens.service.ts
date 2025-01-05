@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { v4 } from 'uuid'
 
@@ -8,6 +7,7 @@ import { WebsocketsService } from '../websockets/websockets.service'
 import { ApiTokenRepository } from './api-token.repository'
 import { CreateApiTokenDto } from './dto/create-api-token.dto'
 import { ApiTokenEntity, ApiTokenModel } from './entities/api-token.entity'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class ApiTokensService extends BaseService<
@@ -17,7 +17,7 @@ export class ApiTokensService extends BaseService<
 > {
   constructor(
     private apiTokenRepository: ApiTokenRepository,
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private jwtService: JwtService,
     private websocketsService: WebsocketsService
   ) {
@@ -40,8 +40,8 @@ export class ApiTokensService extends BaseService<
         username: data.username
       },
       {
-        expiresIn: `${this.configService.get('JWT_API_TOKEN_EXPIRATION_TIME')}s`,
-        secret: this.configService.get('JWT_API_TOKEN_SECRET')
+        expiresIn: `${this.configService.get('jwt.expiration')}s`,
+        secret: this.configService.get('jwt.secret')
       }
     )
     const key = '*********' + token.slice(-5)

@@ -16,7 +16,7 @@ import { WebsocketsService } from './websockets.service'
   connectTimeout: 10000,
   cors: {
     credentials: true,
-    origin: ['https://platform.archesai.com', 'https://platform.archesai.test']
+    origin: [process.env['ARCHES.FRONTEND.HOST']]
   },
   transports: ['websocket']
 })

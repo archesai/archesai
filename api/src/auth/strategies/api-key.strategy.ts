@@ -1,27 +1,27 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { ApiTokensService } from '../../api-tokens/api-tokens.service'
 import { UsersService } from '../../users/users.service'
 import { OperatorEnum } from '@/src/common/dto/search-query.dto'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
   private readonly logger: Logger = new Logger(ApiKeyStrategy.name)
 
   constructor(
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private usersService: UsersService,
     private apiTokensService: ApiTokensService
   ) {
     super({
       ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('JWT_API_TOKEN_SECRET')
+      secretOrKey: configService.get('jwt.secret')
     })
   }
 

@@ -1,12 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
-resources:
-  - "./arches-postgres-deployment.yaml"
-  - "./arches-postgres-service.yaml"
 
-secretGenerator:
-  - name: arches-api-config-secret
-    literals:
-      # DATABASE CONFIG
-      - DATABASE_URL=postgresql://admin:admin@arches-postgres:5432/nestjs?schema=public
-    behavior: merge
+resources:
+  - postgres-deployment.yaml
+  - postgres-service.yaml
+
+patches:
+  - target:
+      name: archesai-config-secret
+    patch: |-
+      - op: add
+        path: /stringData/ARCHES.DATABASE.ENDPOINT
+        value: postgresql://admin:admin@postgres:5432/nestjs?schema=public

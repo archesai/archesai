@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  selector:
+    matchLabels:
+      component: ui
+  template:
+    metadata:
+      labels:
+        component: ui
+    spec:
+      containers:
+        - image: us-east4-docker.pkg.dev/archesai/images/ui
+          imagePullPolicy: IfNotPresent
+          name: ui
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_SERVER_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-config-secret
+                  key: ARCHES.SERVER.HOST
+            - name: NEXT_PUBLIC_TLS_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-config-secret
+                  key: ARCHES.TLS.ENABLED

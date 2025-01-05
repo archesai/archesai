@@ -1,8 +1,8 @@
+import { ArchesConfigService } from '@/src/config/config.service'
 import { Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { IoAdapter } from '@nestjs/platform-socket.io'
 import { createAdapter } from '@socket.io/redis-adapter'
-import { readFileSync } from 'fs-extra'
+import { readFileSync } from 'fs'
 import { createClient } from 'redis'
 import { ServerOptions } from 'socket.io'
 
@@ -12,7 +12,7 @@ export class RedisIoAdapter extends IoAdapter {
   private readonly logger: Logger = new Logger(RedisIoAdapter.name)
   constructor(
     app: any,
-    private readonly configService: ConfigService
+    private readonly configService: ArchesConfigService
   ) {
     super(app)
   }
@@ -59,12 +59,12 @@ export class RedisIoAdapter extends IoAdapter {
     }
 
     const pubClient = createClient({
-      password: this.configService.get('REDIS_AUTH'),
-      url: `redis://${this.configService.get('REDIS_HOST')}:${this.configService.get('REDIS_PORT')}`,
-      ...(this.configService.get('REDIS_CA_CERT_PATH')
+      password: this.configService.get('redis.auth'),
+      url: `redis://${this.configService.get('redis.host')}:${this.configService.get('redis.port')}`,
+      ...(this.configService.get('redis.ca')
         ? {
             socket: {
-              ca: readFileSync(this.configService.get('REDIS_CA_CERT_PATH')!),
+              ca: readFileSync(this.configService.get('redis.ca')!),
               rejectUnauthorized: false,
               tls: true
             }

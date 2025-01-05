@@ -11,9 +11,13 @@ MAKEFLAGS += -j4
 TEST_FILE ?= ""
 SUBDIR ?= .
 
-# Run the application
+# Run the application : TEMP this are removed  --cleanup=false \ --default-repo=registry.localhost:5000
 run:
-	skaffold dev --profile dev --no-prune=false --cache-artifacts=false
+	skaffold dev --profile dev 
+
+# Run the application
+stop:
+	skaffold delete --profile dev 
 
 # Install Dependencies
 install:
@@ -43,9 +47,21 @@ tsc:
 line-count:
 	cd $(SUBDIR) && git ls-files --others --exclude-standard --cached | grep -vE 'package-lock.json|openapi-spec.yaml|prisma/migrations/*|.pdf|.tiff' | xargs wc -l | sort -nr | awk '{print $$2, $$1}'
 
-# Set up Minikube
-minikube:
-	./deploy/minikube.sh
+# Run valiation
+validate:
+	pnpm validate
+
+# K8S Cluster Commands
+cluster-up:
+	./deploy/k3d-up.sh
+
+cluster-down:
+	./deploy/k3d-down.sh
+
+# Migrate the database
+migrate:
+	skaffold build --file-output=build.json --profile dev --quiet
+	skaffold exec migrate --build-artifacts=build.json --profile dev
 
 # Seed the database
 seed:
@@ -54,7 +70,7 @@ seed:
 
 # Generate OpenAPI Spec and UI
 generate:
-	curl --fail -X GET "https://api.archesai.test/swagger/yaml"  > ./api/openapi-spec.yaml
+	curl --fail -X GET "https://api.archesai.dev/swagger/yaml"  > ./api/openapi-spec.yaml
 	cd ui && npm run gen
 	$(MAKE) format
 	

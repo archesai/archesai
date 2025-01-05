@@ -2,19 +2,49 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 secretGenerator:
-  - name: arches-redis-ca-cert
+  - name: redis-ca-cert
     files:
-      - "./redis-ca.pem"
+      - './redis-ca.pem'
 
 resources:
-  - "../../base"
-  - "./arches-frontend-config.yaml"
-  - "./arches-api-managedcertificate.yaml"
-  - "./arches-ui-managedcertificate.yaml"
+  - '../../base'
+  - './managedcertificate.yaml'
 
 patches:
-  - path: "./arches-api-deployment.patch.yaml"
-  - path: "./arches-api-upgrade-job.patch.yaml"
-  - path: "./arches-api-service-account.patch.yaml"
-  - path: "./arches-api-ingress.patch.yaml"
-  - path: "./arches-ui-ingress.patch.yaml"
+  - path: './api-deployment.patch.yaml'
+  - path: './api-upgrade-job.patch.yaml'
+
+  - target:
+      version: v1
+      group: networking.k8s.io
+      kind: Ingress
+      name: archesai-ingress
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          kubernetes.io/ingress.global-static-ip-name: archesai-static-ip
+          networking.gke.io/managed-certificates: archesai-managed-certificate
+          networking.gke.io/v1beta1.FrontendConfig: archesai-frontend-config
+      - op: replace
+        path: /spec/rules/0/host
+        value: stage.api.archesai.com
+
+  - target:
+      kind: ManagedCertificate
+      name: archesai-managed-certificate
+    patch: |-
+      - op: replace
+        path: /spec/domains
+        value: 
+          - api.archesai.com
+          - platform.archesai.com
+
+  - target:
+      kind: ServiceAccount
+      name: api-service-account
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value: 
+          iam.gke.io/gcp-service-account: cloud-sql-proxy@archesai.iam.gserviceaccount.com

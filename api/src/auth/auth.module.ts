@@ -1,6 +1,5 @@
 import { HttpModule } from '@nestjs/axios'
 import { forwardRef, Module } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
@@ -21,6 +20,7 @@ import { FirebaseStrategy } from './strategies/firebase.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { LocalStrategy } from './strategies/local-strategy'
 import { TwitterStrategy } from './strategies/twitter.strategy'
+import { ArchesConfigService } from '../config/config.service'
 
 @Module({
   controllers: [AuthController],
@@ -30,9 +30,9 @@ import { TwitterStrategy } from './strategies/twitter.strategy'
     UsersModule,
     forwardRef(() => ApiTokensModule),
     JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_API_TOKEN_SECRET')
+      inject: [ArchesConfigService],
+      useFactory: async (configService: ArchesConfigService) => ({
+        secret: configService.get('jwt.secret')
       })
     }),
     OrganizationsModule,

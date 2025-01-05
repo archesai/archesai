@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { ARTokenType } from '@prisma/client'
 
 import { EmailService } from '../../email/email.service'
@@ -8,13 +7,14 @@ import { UsersService } from '../../users/users.service'
 import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
 import { ARTokensService } from './ar-tokens.service'
 import { AuthService } from './auth.service'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class EmailVerificationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly emailService: EmailService,
-    private readonly configService: ConfigService,
+    private readonly configService: ArchesConfigService,
     private readonly authService: AuthService,
     private readonly arTokensService: ARTokensService
   ) {}
@@ -38,7 +38,7 @@ export class EmailVerificationService {
       24
     )
 
-    const verificationLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-verification&token=${token}`
+    const verificationLink = `${this.configService.get('frontend.host')}/confirm?type=email-verification&token=${token}`
 
     const htmlContent = getEmailVerificationHtml(verificationLink)
     await this.emailService.sendMail({

@@ -54,13 +54,14 @@ export class ExceptionsFilter implements ExceptionFilter {
     this.logError(request, exception, statusCode)
 
     // Prepare the error response
-    const errorResponse: any = {
+    const errorResponse = {
       statusCode,
       message,
       // Include stack and cause only in development
-      ...(process.env.NODE_ENV === 'development' && { stack: exception.stack }),
-      ...(process.env.NODE_ENV === 'development' &&
-        exception.cause && { cause: exception.cause })
+      ...(process.env.NODE_ENV === 'development' && {
+        stack: exception?.stack,
+        cause: exception?.cause
+      })
     }
 
     response.status(statusCode).json(errorResponse)

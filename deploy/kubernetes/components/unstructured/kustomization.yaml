@@ -2,13 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 resources:
-  - ./arches-unstructured-deployment.yaml
-  - ./arches-unstructured-service.yaml
+  - unstructured-deployment.yaml
+  - unstructured-service.yaml
+  # - unstructured-hpa.yaml
 
-secretGenerator:
-  - name: arches-api-config-secret
-    literals:
-      # UNSTRUCTURED CONFIG
-      - FEATURE_UNSTRUCTURED=true
-      - UNSTRUCTURED_ENDPOINT=http://arches-unstructured:8000
-    behavior: merge
+patches:
+  - target:
+      name: archesai-config-secret
+    patch: |-
+      - op: add
+        path: /stringData/ARCHES.UNSTRUCTURED.ENABLED
+        value: 'true'
+      - op: add
+        path: /stringData/ARCHES.UNSTRUCTURED.ENDPOINT
+        value: http://unstructured:8000

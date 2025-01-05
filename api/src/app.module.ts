@@ -1,7 +1,6 @@
 import { HttpModule } from '@nestjs/axios'
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
 import { MulterModule } from '@nestjs/platform-express'
@@ -34,10 +33,11 @@ import { ToolsModule } from './tools/tools.module'
 import { UsersModule } from './users/users.module'
 import { WebsocketsGateway } from './websockets/websockets.gateway'
 import { WebsocketsModule } from './websockets/websockets.module'
-import { validationSchema } from './config/schema'
+import { ArchesConfigModule } from './config/config.module'
 import { ApiTokenRestrictedDomainGuard } from './auth/guards/api-token-restricted-domain.guard'
 import { HealthModule } from './health/health.module'
 import { ScraperModule } from './scraper/scraper.module'
+import { ArchesConfigService } from './config/config.service'
 
 @Module({
   controllers: [],
@@ -45,9 +45,9 @@ import { ScraperModule } from './scraper/scraper.module'
     CommonModule,
     PipelinesModule,
     LoggerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      imports: [ArchesConfigModule],
+      inject: [ArchesConfigService],
+      useFactory: (configService: ArchesConfigService) => {
         const loggerConfig: Params = {
           pinoHttp: {
             customProps: (req: any, res) => ({
@@ -58,26 +58,25 @@ import { ScraperModule } from './scraper/scraper.module'
               query: req?.query,
               statusCode: res?.statusCode
             }),
-            formatters:
-              configService.get<string>('NODE_ENV') === 'production'
-                ? {
-                    level(label: string) {
-                      return { level: label, severity: label.toUpperCase() }
-                    }
+            formatters: configService.get('logging.gcpfix')
+              ? {
+                  level(label: string) {
+                    return { level: label, severity: label.toUpperCase() }
                   }
-                : undefined,
-            level: configService.get<string>('LOGGING_LEVEL'),
+                }
+              : undefined,
+            level: configService.get('logging.level'),
             redact: {
               paths: ['req', 'res'],
               remove: true
             },
             transport: {
               targets: [
-                ...(configService.get<string>('LOKI_HOST')
+                ...(configService.get('logging.loki.enabled')
                   ? [
                       {
                         options: {
-                          host: configService.get<string>('LOKI_HOST'),
+                          host: configService.get('logging.loki.host'),
                           json: true,
                           labels: {
                             app: 'archesai',
@@ -106,22 +105,18 @@ import { ScraperModule } from './scraper/scraper.module'
     UsersModule,
     OrganizationsModule,
     MembersModule,
-    ConfigModule.forRoot({
-      ignoreEnvFile: true,
-      isGlobal: true,
-      validationSchema: validationSchema
-    }),
+    ArchesConfigModule,
     BullModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      imports: [ArchesConfigModule],
+      inject: [ArchesConfigService],
+      useFactory: async (configService: ArchesConfigService) => ({
         connection: {
-          host: configService.get('REDIS_HOST'),
-          password: configService.get('REDIS_AUTH'),
-          port: Number(configService.get('REDIS_PORT')),
-          tls: configService.get('REDIS_CA_CERT_PATH')
+          host: configService.get('redis.host'),
+          password: configService.get('redis.auth'),
+          port: configService.get('redis.port'),
+          tls: configService.get('redis.ca')
             ? {
-                ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')!),
+                ca: readFileSync(configService.get('redis.ca')!),
                 rejectUnauthorized: false
               }
             : undefined

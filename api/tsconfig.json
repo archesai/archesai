@@ -10,7 +10,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "rootDir": "./src",
+    "rootDir": ".",
     "sourceMap": true,
     "strictPropertyInitialization": false,
     "types": ["node", "multer"]

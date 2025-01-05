@@ -1,18 +1,18 @@
 import { Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 
 import { ContentService } from '../../content/content.service'
 import { ContentEntity } from '../../content/entities/content.entity'
 import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
 import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured'
 import { StorageService } from '@/src/storage/storage.service'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 export const transformFileToText: IToolRunProcess = async (
   runId: string,
   inputs: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
-  configService: ConfigService,
+  configService: ArchesConfigService,
   storageService: StorageService
 ): Promise<ContentEntity[]> => {
   logger.log(`Extracting text for run ${runId} with url ${inputs[0].url}`)
@@ -28,7 +28,7 @@ export const transformFileToText: IToolRunProcess = async (
       fileName: content.url
     },
     {
-      apiUrl: configService.get('LOADER_ENDPOINT')
+      apiUrl: configService.get('unstructured.endpoint')
     }
   )
 
