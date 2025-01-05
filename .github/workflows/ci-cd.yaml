@@ -19,31 +19,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup node for api
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: api/package-lock.json
-      - name: Install node_modules for api
-        run: npm ci
-        working-directory: api
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.json
+      - name: Install node_modules
+        run: pnpm install --frozen-lockfile
 
-      - name: Setup node for ui
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ui/package-lock.json
-      - name: Install node_modules for ui
-        run: npm ci
-        working-directory: ui
-
-      - name: Lint Code
-        run: make lint
-
-      - name: Check Formatting
-        run: make format-check
+      - name: Lint and Typecheck
+        run: make validate
 
       - name: Run Unit Tests
         run: make test
