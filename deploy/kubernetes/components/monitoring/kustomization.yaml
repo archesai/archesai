@@ -12,11 +12,11 @@ patches:
       name: archesai-config-secret
     patch: |-
       - op: add
-        path: /stringData/ARCHES.LOGGER.LOKI.ENABLED
+        path: /stringData/ARCHES.LOGGING.LOKI.ENABLED
         value: 'true'
       - op: add
-        path: /stringData/ARCHES.LOGGER.LOKI.HOST
-        value: loki:3100
+        path: /stringData/ARCHES.LOGGING.LOKI.HOST
+        value: http://loki:3100
   - target:
       name: archesai-ingress
     patch: |-
