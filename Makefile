@@ -12,7 +12,7 @@ TEST_FILE ?= ""
 SUBDIR ?= .
 
 # Run the application : TEMP this are removed  --cleanup=false \ --default-repo=registry.localhost:5000
-run:
+dev:
 	skaffold dev --profile dev 
 
 # Run the application
@@ -52,11 +52,11 @@ validate: lint format-check tsc
 	
 
 # K8S Cluster Commands
-cluster-up:
+k3d-start:
 	./deploy/k3d-up.sh
 
-cluster-down:
-	./deploy/k3d-down.sh
+k3d-stop:
+	k3d cluster delete -a
 
 # Migrate the database
 migrate:
