@@ -26,6 +26,14 @@ spec:
             - http://api:3001/webhooks/stripe
             - --api-key
             - sk_test_51MNRo0H6bUDIQy1YT4qtqlVMHGjaavjWSaU027iSOYOsELPCcqH6BDcNn4HCZ9uavdTdYYFiFLsf9Xzd7ljlmyVr002loFNEGV
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+
 ---
 apiVersion: v1
 kind: Service
