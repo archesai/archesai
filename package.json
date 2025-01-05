@@ -3,7 +3,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "format": "pnpm prettier  \"{ui,api}/**/*.{ts,tsx,js,json}\" --ignore-path .gitignore --log-level warn",
+    "format": "pnpm prettier  \"**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore",
     "format:check": "pnpm run format --check",
     "format:write": "pnpm run format --write",
     "tsc": "pnpm -r tsc",
@@ -14,12 +14,14 @@
     "test:coverage": "pnpm -r test:coverage",
     "validate": "pnpm format:write && pnpm tsc && pnpm lint && pnpm build",
     "preinstall": "pnpm only-allow pnpm",
-    "prepare": "pnpm husky install",
+    "prepare": "husky",
     "cloc": "pnpm cloc --exclude-dir=node_modules,dist,build,npm.lock,package.json,generated.tsx,.next, .",
     "clean": "pnpm -r exec rm -rf node_modules"
   },
   "packageManager": "pnpm@9.15.1",
   "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
     "@eslint/compat": "^1.2.4",
     "@eslint/js": "^9.17.0",
     "@types/jest": "^29.5.14",
@@ -32,6 +34,7 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-openapi": "^0.14.2",
+    "lint-staged": "^15.3.0",
     "only-allow": "^1.2.1",
     "prettier": "^3.4.2",
     "prettier-plugin-sort-json": "^4.0.0",
@@ -45,5 +48,10 @@
     "overrides": {
       "typescript": "5.7.2"
     }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,json,css,md}": [
+      "pnpm prettier --write --ignore-path .gitignore"
+    ]
   }
 }
