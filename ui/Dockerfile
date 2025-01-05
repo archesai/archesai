@@ -21,12 +21,13 @@ FROM base AS deps
 COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY --chown=node:node ./ui/package.json ./ui/package.json
 RUN pnpm install --filter ui --frozen-lockfile
+COPY --chown=node:node tsconfig.json ./
 
 ###################
 # DEVELOPMENT STAGE
 ###################
 FROM deps AS development
-COPY --chown=node:node . .
+COPY --chown=node:node ui ui
 USER node
 CMD ["pnpm", "--filter", "ui", "run", "dev"]
 
@@ -34,7 +35,7 @@ CMD ["pnpm", "--filter", "ui", "run", "dev"]
 # BUILD STAGE
 ###################
 FROM deps AS build
-COPY --chown=node:node . .
+COPY --chown=node:node ui ui
 RUN pnpm run build --filter ui
 RUN pnpm deploy --filter=ui --prod /prod/ui
 

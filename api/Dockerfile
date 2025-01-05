@@ -22,19 +22,21 @@ COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY --chown=node:node ./api/package.json ./api/package.json
 COPY --chown=node:node ./api/prisma ./api/prisma
 RUN pnpm install --filter api --frozen-lockfile
+COPY --chown=node:node tsconfig.json ./
 
 ###################
 # DEVELOPMENT STAGE
 ###################
 FROM deps AS development
-COPY --chown=node:node . .
+COPY --chown=node:node api api
+USER node
 CMD ["pnpm", "--filter", "api", "run", "start:dev"]
 
 ###################
 # BUILD STAGE
 ###################
 FROM deps AS build
-COPY --chown=node:node . .
+COPY --chown=node:node api api
 RUN pnpm run build --filter api
 RUN pnpm deploy --filter=api --prod /prod/api
 
