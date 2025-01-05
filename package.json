@@ -3,7 +3,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "format": "pnpm prettier  \"**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore",
+    "format": "pnpm prettier  \"**/*.{js,jsx,ts,tsx,json,css,md,yaml}\" --ignore-path .gitignore --log-level warn",
     "format:check": "pnpm run format --check",
     "format:write": "pnpm run format --write",
     "tsc": "pnpm -r tsc",
@@ -12,7 +12,6 @@
     "test": "pnpm -r test",
     "test:watch": "pnpm -r test:watch",
     "test:coverage": "pnpm -r test:coverage",
-    "validate": "pnpm format:write && pnpm tsc && pnpm lint && pnpm build",
     "preinstall": "pnpm only-allow pnpm",
     "prepare": "husky",
     "cloc": "pnpm cloc --exclude-dir=node_modules,dist,build,npm.lock,package.json,generated.tsx,.next, .",
@@ -50,8 +49,8 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json,css,md}": [
-      "pnpm prettier --write --ignore-path .gitignore"
+    "**/*.{js,jsx,ts,tsx,json,css,md,yaml}": [
+      "pnpm prettier --write --ignore-path .gitignore --log-level warn"
     ]
   }
 }
