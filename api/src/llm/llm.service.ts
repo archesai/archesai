@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import OpenAI from 'openai'
 import { ChatCompletionCreateParamsStreaming } from 'openai/resources'
 
 import { CreateChatCompletionDto } from './dto/create-chat-completion.dto'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class LLMService {
@@ -12,10 +12,10 @@ export class LLMService {
 
   private readonly logger: Logger = new Logger(LLMService.name)
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ArchesConfigService) {
     this.openai = new OpenAI({
-      apiKey: this.configService.get('LLM_API_KEY'),
-      baseURL: this.configService.get('LLM_ENDPOINT'),
+      apiKey: this.configService.get('llm.token'),
+      baseURL: this.configService.get('llm.endpoint'),
       organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
     })
   }
@@ -33,7 +33,7 @@ export class LLMService {
     const stream = await this.openai.chat.completions.create({
       ...(createChatCompletionDto as ChatCompletionCreateParamsStreaming),
       model:
-        this.configService.get('LLM_TYPE') == 'openai' ? 'gpt-4o' : 'llama3.1',
+        this.configService.get('llm.type') == 'openai' ? 'gpt-4o' : 'llama3.1',
       stream: true
     })
 
@@ -75,7 +75,7 @@ export class LLMService {
       frequency_penalty: 0,
       max_tokens: 80,
       model:
-        this.configService.get('LLM_TYPE') == 'openai'
+        this.configService.get('llm.type') == 'openai'
           ? 'gpt-3.5-turbo-instruct'
           : 'llama3.1',
       presence_penalty: 0,

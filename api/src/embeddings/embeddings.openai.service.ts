@@ -1,18 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import OpenAI from 'openai'
 
 import { EmbeddingsService } from './embeddings.service'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class OpenAiEmbeddingsService implements EmbeddingsService {
   public openai: OpenAI
   private logger = new Logger(OpenAiEmbeddingsService.name)
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ArchesConfigService) {
     this.openai = new OpenAI({
-      apiKey: this.configService.get('LLM_API_KEY'),
-      baseURL: this.configService.get('LLM_ENDPOINT'),
+      apiKey: this.configService.get('llm.token'),
+      baseURL: this.configService.get('llm.endpoint'),
       organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
     })
   }
@@ -22,7 +22,7 @@ export class OpenAiEmbeddingsService implements EmbeddingsService {
     const { data, usage } = await this.openai.embeddings.create({
       input: texts,
       model:
-        this.configService.get('LLM_TYPE') == 'openai'
+        this.configService.get('llm.type') == 'openai'
           ? 'text-embedding-ada-002'
           : 'mxbai-embed-large'
     })

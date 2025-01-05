@@ -19,31 +19,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup node for api
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: api/package-lock.json
-      - name: Install node_modules for api
-        run: npm ci
-        working-directory: api
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Setup node for ui
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: ui/package-lock.json
-      - name: Install node_modules for ui
-        run: npm ci
-        working-directory: ui
+      - name: Install node_modules
+        run: pnpm install --frozen-lockfile
 
-      - name: Lint Code
+      - name: Lint and Typecheck
         run: make lint
-
-      - name: Check Formatting
-        run: make format-check
 
       - name: Run Unit Tests
         run: make test
@@ -90,11 +80,11 @@ jobs:
         run: |
           gcloud components install gke-gcloud-auth-plugin
           gcloud container clusters get-credentials archesai-cluster --zone us-east1-c --project archesai
-          gcloud deploy releases create arches-${{ github.sha }} \
+          gcloud deploy releases create ${{ github.sha }} \
               --project=archesai \
               --region=us-east1 \
-              --delivery-pipeline=arches-deployment \
-              --images=us-east4-docker.pkg.dev/archesai/images/arches-api=us-east4-docker.pkg.dev/archesai/images/arches-api:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/arches-ui=us-east4-docker.pkg.dev/archesai/images/arches-ui:${{ github.sha }} \
+              --delivery-pipeline=archesai-deployment \
+              --images=us-east4-docker.pkg.dev/archesai/images/api=us-east4-docker.pkg.dev/archesai/images/api:${{ github.sha }},us-east4-docker.pkg.dev/archesai/images/ui=us-east4-docker.pkg.dev/archesai/images/ui:${{ github.sha }} \
               --skaffold-file=skaffold.yaml
 
       - name: Check Deployment Status
@@ -102,10 +92,10 @@ jobs:
           deployment_status=""
           while [[ "$deployment_status" != "SUCCEEDED" && "$deployment_status" != "FAILED" ]]; do
             deployment_status=$(gcloud deploy rollouts list \
-              --release arches-${{ github.sha }} \
+              --release ${{ github.sha }} \
               --project=archesai \
               --region=us-east1 \
-              --delivery-pipeline=arches-deployment \
+              --delivery-pipeline=archesai-deployment \
               --format="value(state)")
             echo "Current deployment status: $deployment_status"
             sleep 10

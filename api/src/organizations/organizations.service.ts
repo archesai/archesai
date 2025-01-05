@@ -1,6 +1,5 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common'
 import { ForbiddenException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { PlanType } from '@prisma/client'
 
 import { BillingService } from '../billing/billing.service'
@@ -16,6 +15,7 @@ import {
 import { OrganizationRepository } from './organization.repository'
 import { RoleTypeEnum } from '../members/entities/member.entity'
 import { UserEntity } from '../users/entities/user.entity'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class OrganizationsService extends BaseService<
@@ -27,7 +27,7 @@ export class OrganizationsService extends BaseService<
   constructor(
     @Inject(forwardRef(() => BillingService))
     private billingService: BillingService,
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private organizationRepository: OrganizationRepository,
     private toolsService: ToolsService,
     private pipelinesService: PipelinesService,
@@ -81,7 +81,7 @@ export class OrganizationsService extends BaseService<
 
   async create(data: Pick<OrganizationEntity, 'billingEmail' | 'orgname'>) {
     // If billing is enabled, create a stripe user, otherwsie set it to orgname
-    const billingEnabled = this.configService.get('FEATURE_BILLING') === 'true'
+    const billingEnabled = this.configService.get('billing.enabled')
     let stripeCustomerId = data.orgname
     if (billingEnabled) {
       this.logger.debug(

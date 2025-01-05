@@ -1,126 +1,211 @@
-import Joi from 'joi'
+import { z } from 'zod'
 
-export const validationSchema = Joi.object({
-  // GLOBAL CONFIG
-  NODE_ENV: Joi.string().required(),
-  SERVER_HOST: Joi.string().required(),
-  FRONTEND_HOST: Joi.string().required(),
-  PORT: Joi.number().required(),
-  ALLOWED_ORIGINS: Joi.string().required(),
+export type ArchesConfig = z.infer<typeof archesConfigSchema>
 
-  // DATABASE CONFIG
-  DATABASE_URL: Joi.string().required(),
+const stringToBoolean = z.preprocess((val) => {
+  if (typeof val === 'string') {
+    if (val.toLowerCase() === 'true') return true
+    if (val.toLowerCase() === 'false') return false
+  }
+  return val
+}, z.boolean())
 
-  // EMAIL CONFIG
-  FEATURE_EMAIL: Joi.boolean().required(),
-  EMAIL_USER: Joi.when('FEATURE_EMAIL', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.string().required()
-  }),
-  EMAIL_PASSWORD: Joi.when('FEATURE_EMAIL', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.string().required()
-  }),
-  EMAIL_SERVICE: Joi.when('FEATURE_EMAIL', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.string().required()
-  }),
-
-  // EMBEDDING CONFIG
-  EMBEDDING_TYPE: Joi.string().valid('openai', 'ollama').required(),
-
-  // JWT CONFIG
-  JWT_API_TOKEN_EXPIRATION_TIME: Joi.string().required(),
-  JWT_API_TOKEN_SECRET: Joi.string().required(),
-
-  // BILLING CONFIG
-  FEATURE_BILLING: Joi.boolean().required(),
-  STRIPE_PRIVATE_API_KEY: Joi.when('FEATURE_BILLING', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.string().required()
-  }),
-  STRIPE_WEBHOOK_SECRET: Joi.when('FEATURE_BILLING', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.string().required()
-  }),
-
-  // LLM CONFIG
-  LLM_TYPE: Joi.string().valid('openai', 'ollama').required(),
-  LLM_ENDPOINT: Joi.string().when('LLM_TYPE', {
-    is: 'ollama',
-    otherwise: Joi.string().when('EMBEDDING_TYPE', {
-      is: 'ollama',
-      otherwise: Joi.optional(),
-      then: Joi.required()
+export const archesConfigSchema = z.object({
+  server: z.object({
+    host: z.string(),
+    cors: z.object({
+      origins: z.string()
     }),
-    then: Joi.required()
-  }),
-  LLM_API_KEY: Joi.string().when('LLM_TYPE', {
-    is: 'openai',
-    otherwise: Joi.string().when('EMBEDDING_TYPE', {
-      is: 'openai',
-      otherwise: Joi.optional(),
-      then: Joi.required()
-    }),
-    then: Joi.required()
+    swagger: z.object({
+      enabled: stringToBoolean
+    })
   }),
 
-  // STORAGE TYPE
-  STORAGE_TYPE: Joi.string().valid('google-cloud', 'local', 'minio').required(),
-  MINIO_ENDPOINT: Joi.string().when('STORAGE_TYPE', {
-    is: 'minio',
-    otherwise: Joi.optional(),
-    then: Joi.required()
-  }),
-  MINIO_ACCESS_KEY: Joi.string().when('STORAGE_TYPE', {
-    is: 'minio',
-    otherwise: Joi.optional(),
-    then: Joi.required()
-  }),
-  MINIO_SECRET_KEY: Joi.string().when('STORAGE_TYPE', {
-    is: 'minio',
-    otherwise: Joi.optional(),
-    then: Joi.required()
-  }),
-  MINIO_BUCKET: Joi.string().when('STORAGE_TYPE', {
-    is: 'minio',
-    otherwise: Joi.optional(),
-    then: Joi.required()
+  frontend: z.object({
+    host: z.string()
   }),
 
-  // REDIS CONFIG
-  REDIS_AUTH: Joi.string().required(),
-  REDIS_CA_CERT_PATH: Joi.string().optional(),
-  REDIS_HOST: Joi.string().required(),
-  REDIS_PORT: Joi.number().required(),
-
-  // SESSION CONFIG
-  SESSION_SECRET: Joi.string().required(),
-
-  // LOGGING CONFIG
-  LOGGING_LEVEL: Joi.string()
-    .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent')
-    .required(),
-  LOKI_HOST: Joi.string().optional(),
-
-  // SCRAPER CONFIG
-  FEATURE_SCRAPER: Joi.boolean().required(),
-  SCRAPER_ENDPOINT: Joi.string().when('FEATURE_SCRAPER', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.required()
+  tls: z.object({
+    enabled: stringToBoolean
   }),
 
-  // UNSTRUCTURED CONFIG
-  FEATURE_UNSTRUCTURED: Joi.boolean().required(),
-  UNSTRUCTURED_ENDPOINT: Joi.string().when('FEATURE_UNSTRUCTURED', {
-    is: true,
-    otherwise: Joi.string().forbidden(),
-    then: Joi.required()
-  })
+  database: z.object({
+    endpoint: z.string()
+  }),
+
+  email: z
+    .object({
+      enabled: stringToBoolean,
+      user: z.string().optional(),
+      password: z.string().optional(),
+      service: z.string().optional()
+    })
+    .refine(
+      (data) => {
+        if (data.enabled) {
+          return !!data.user && !!data.password && !!data.service
+        }
+        return true
+      },
+      {
+        message:
+          'Email user, password, and service are required when email.enabled is true.',
+        path: ['email.user', 'email.password', 'email.service'] // Specify paths for better error reporting
+      }
+    ),
+
+  embedding: z.object({
+    type: z.enum(['openai', 'ollama'])
+  }),
+
+  jwt: z.object({
+    expiration: z.string(),
+    secret: z.string()
+  }),
+
+  billing: z
+    .object({
+      enabled: stringToBoolean,
+      stripe: z
+        .object({
+          whsec: z.string(),
+          token: z.string()
+        })
+        .optional()
+    })
+    .refine(
+      (data) => {
+        if (data.enabled) {
+          return !!data.stripe?.token && !!data.stripe?.whsec
+        }
+        return true
+      },
+      {
+        message:
+          'Stripe private API key and webhook secret are required when billing.enabled is true.',
+        path: ['billing.stripe.whsec', 'billing.stripe.token']
+      }
+    ),
+
+  llm: z
+    .object({
+      type: z.enum(['openai', 'ollama']),
+      endpoint: z.string().optional(),
+      token: z.string().optional()
+    })
+    .refine(
+      (data) => {
+        if (data.type === 'ollama') {
+          return !!data.endpoint
+        }
+        if (data.type === 'openai') {
+          return !!data.token
+        }
+        return true
+      },
+      {
+        message:
+          'llm.endpoint is required for ollama, and llm.token is required for openai.',
+        path: ['llm.endpoint', 'llm.token']
+      }
+    ),
+
+  storage: z
+    .object({
+      type: z.enum(['google-cloud', 'local', 'minio']),
+      endpoint: z.string().optional(),
+      accesskey: z.string().optional(),
+      secretkey: z.string().optional(),
+      bucket: z.string().optional()
+    })
+    .refine(
+      (data) => {
+        if (data.type === 'minio') {
+          return (
+            !!data.endpoint &&
+            !!data.accesskey &&
+            !!data.secretkey &&
+            !!data.bucket
+          )
+        }
+        return true
+      },
+      {
+        message:
+          'Minio host, access key, secret key, and bucket are required when storage.type is minio.',
+        path: [
+          'storage.endpoint',
+          'storage.accesskey',
+          'storage.secretkey',
+          'storage.bucket'
+        ]
+      }
+    ),
+
+  redis: z.object({
+    auth: z.string(),
+    ca: z.string().optional(),
+    host: z.string(),
+    port: z.coerce.number()
+  }),
+
+  session: z.object({
+    secret: z.string()
+  }),
+
+  logging: z.object({
+    level: z.enum([
+      'fatal',
+      'error',
+      'warn',
+      'info',
+      'debug',
+      'trace',
+      'silent'
+    ]),
+    loki: z
+      .object({
+        enabled: stringToBoolean,
+        host: z.string()
+      })
+      .optional(),
+    gcpfix: stringToBoolean.optional().default(false)
+  }),
+
+  scraper: z
+    .object({
+      enabled: stringToBoolean,
+      endpoint: z.string().optional()
+    })
+    .refine(
+      (data) => {
+        if (data.enabled) {
+          return !!data.endpoint
+        }
+        return true
+      },
+      {
+        message: 'scraper.endpoint is required when scraper.enabled is true.',
+        path: ['scraper.enabled']
+      }
+    ),
+
+  unstructured: z
+    .object({
+      enabled: stringToBoolean,
+      endpoint: z.string().optional()
+    })
+    .refine(
+      (data) => {
+        if (data.enabled) {
+          return !!data.endpoint
+        }
+        return true
+      },
+      {
+        message:
+          'unstructured.endpoint is required when unstructured.enabled is true.',
+        path: ['unstructured.endpoint']
+      }
+    )
 })

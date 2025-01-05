@@ -7,16 +7,16 @@ import {
 } from '@nestjs/common'
 import { chromium, Browser } from 'playwright-core'
 import * as mime from 'mime-types'
-import { ConfigService } from '@nestjs/config'
 import sharp from 'sharp'
 import gm from 'gm'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class ScraperService implements OnModuleInit, OnModuleDestroy {
   private logger = new Logger(ScraperService.name)
   private browser: Browser
 
-  constructor(readonly configService: ConfigService) {}
+  constructor(readonly configService: ArchesConfigService) {}
 
   async onModuleInit() {
     await this.initializeBrowser()
@@ -27,7 +27,7 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async initializeBrowser() {
-    const scraperEndpoint = this.configService.get<string>('SCRAPER_ENDPOINT')!
+    const scraperEndpoint = this.configService.get('scraper.endpoint')!
     this.browser = await chromium.connect(scraperEndpoint)
     this.logger.log('Connected to remote browser service at ' + scraperEndpoint)
   }

@@ -2,9 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./arches-api-deployment.yaml
-  - ./arches-api-service.yaml
-  - ./arches-api-rbac.yaml
-  - ./arches-api-service-account.yaml
-  - ./arches-api-ingress.yaml
-  - ./arches-api-upgrade-job.yaml
+  - ./api-deployment.yaml
+  - ./api-service.yaml
+  - ./api-rbac.yaml
+  - ./api-upgrade-job.yaml
+  # - ./api-hpa.yaml

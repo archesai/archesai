@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios'
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq'
 import { Inject, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { Job } from 'bullmq'
 
 import { ContentService } from '../content/content.service'
@@ -16,6 +15,7 @@ import { transformTextToEmbeddings } from './transformers/text-to-embeddings.tra
 import { transformTextToImage } from './transformers/text-to-image.transformer'
 import { transformTextToSpeech } from './transformers/text-to-speech.transformer'
 import { transformTextToText } from './transformers/text-to-text.transformer'
+import { ArchesConfigService } from '../config/config.service'
 
 export type RunJob = Job<ContentEntity[], ContentEntity[], string>
 
@@ -31,7 +31,7 @@ export class RunProcessor extends WorkerHost {
     private llmService: LLMService,
     private speechService: SpeechService,
     private httpService: HttpService,
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private runpodService: RunpodService
   ) {
     super()

@@ -1,12 +1,11 @@
 import { RedisIoAdapter } from '@/src/common/adapters/redis-io.adapter'
 import { INestApplication } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { Test, TestingModule } from '@nestjs/testing'
 import 'tsconfig-paths/register'
 import { RedisStore } from 'connect-redis'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
-import { readFileSync } from 'fs-extra'
+import { readFileSync } from 'fs'
 import helmet from 'helmet'
 import { Logger } from 'nestjs-pino'
 import passport from 'passport'
@@ -19,36 +18,21 @@ import { OrganizationEntity } from '../src/organizations/entities/organization.e
 import { UserEntity } from '../src/users/entities/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { AppModule } from '../src/app.module' // This enables path aliasing based on tsconfig.json
-import { createMock } from '@golevelup/ts-jest'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-    providers: [
-      {
-        provide: ConfigService,
-        useValue: createMock<ConfigService>()
-      }
-    ]
+    imports: [AppModule]
   }).compile()
   const app = moduleFixture.createNestApplication()
 
-  const configService = app.get(ConfigService)
-  jest.spyOn(configService, 'get').mockImplementation((key: string) => {
-    if (key === 'FEATURE_EMAIL') {
-      return 'true'
-    } else {
-      return process.env[key]
-    }
-  })
+  const configService = app.get(ArchesConfigService)
 
   //  Setup Logger
   app.useLogger(app.get(Logger))
 
   // CORS Configuration
-  const allowedOrigins = configService
-    .get<string>('ALLOWED_ORIGINS')!
-    .split(',')
+  const allowedOrigins = configService.get('server.cors.origins').split(',')
   app.enableCors({
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
@@ -69,17 +53,17 @@ export const createApp = async () => {
   app.use(helmet())
 
   // Session Management
-  const sessionSecret = configService.get<string>('SESSION_SECRET')
+  const sessionSecret = configService.get('session.secret')
   if (!sessionSecret) {
     throw new Error('SESSION_SECRET is not defined')
   }
   const redisClient = createClient({
-    password: configService.get('REDIS_AUTH'),
-    url: `redis://${configService.get('REDIS_HOST')}:${configService.get('REDIS_PORT')}`,
-    ...(configService.get('REDIS_CA_CERT_PATH')
+    password: configService.get('redis.auth'),
+    url: `redis://${configService.get('redis.host')}:${configService.get('redis.port')}`,
+    ...(configService.get('redis.ca')
       ? {
           socket: {
-            ca: readFileSync(configService.get('REDIS_CA_CERT_PATH')!),
+            ca: readFileSync(configService.get('redis.ca')!),
             rejectUnauthorized: false,
             tls: true
           }
@@ -101,7 +85,7 @@ export const createApp = async () => {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax',
-        secure: configService.get<string>('NODE_ENV') === 'production'
+        secure: configService.get('tls.enabled')
       },
       resave: false,
       saveUninitialized: false,

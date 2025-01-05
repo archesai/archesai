@@ -1,12 +1,9 @@
-// src/email-change/email-change.service.ts
-
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   Logger
 } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { ARTokenType } from '@prisma/client'
 
 import { EmailService } from '../../email/email.service'
@@ -16,6 +13,7 @@ import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
 import { EmailRequestDto } from '../dto/email-request.dto'
 import { ARTokensService } from './ar-tokens.service' // Import TokenService
 import { AuthService } from './auth.service'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class EmailChangeService {
@@ -24,7 +22,7 @@ export class EmailChangeService {
   constructor(
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService,
+    private readonly configService: ArchesConfigService,
     private readonly arTokensService: ARTokensService,
     private readonly authService: AuthService
   ) {}
@@ -67,7 +65,7 @@ export class EmailChangeService {
     )
 
     // Create an email change confirmation link containing the token
-    const changeEmailLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=email-change&token=${token}`
+    const changeEmailLink = `${this.configService.get('frontend.host')}/confirm?type=email-change&token=${token}`
 
     // Generate the HTML content for the email
     const htmlContent = getEmailChangeConfirmationHtml(

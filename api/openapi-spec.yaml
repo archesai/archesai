@@ -2291,7 +2291,7 @@ info:
   contact: {}
 tags: []
 servers:
-  - url: https://api.archesai.test
+  - url: https://api.archesai.dev
 components:
   securitySchemes:
     bearer:

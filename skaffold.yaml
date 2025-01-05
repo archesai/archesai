@@ -8,7 +8,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - 'deploy/kubernetes/overlays/stage-gcp'
+          - deploy/kubernetes/overlays/stage-gcp
   - name: production
     deploy:
       statusCheckDeadlineSeconds: 300
@@ -16,55 +16,67 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - 'deploy/kubernetes/overlays/production-gcp'
+          - deploy/kubernetes/overlays/production-gcp
   - name: dev
     build:
       local:
-        push: false
+        push: true
         useBuildkit: true
         concurrency: 0
       artifacts:
-        - image: arches-api
-          context: ./
+        - image: api
+          context: .
           docker:
             target: development
             dockerfile: ./api/Dockerfile
           sync:
             manual:
-              - src: '**/*'
+              - src: 'api/**/*'
                 dest: .
-        - image: arches-ui
-          context: ./
+        - image: ui
+          context: .
           docker:
             target: development
             dockerfile: ./ui/Dockerfile
           sync:
             manual:
-              - src: '**/*'
+              - src: 'ui/**/*'
                 dest: .
+      # tagPolicy:
+      #   inputDigest: {}
+
     deploy:
       statusCheckDeadlineSeconds: 300
       tolerateFailuresUntilDeadline: true
     manifests:
       kustomize:
         paths:
-          - 'deploy/kubernetes/overlays/development'
+          - deploy/kubernetes/overlays/development
     customActions:
+      - name: migrate
+        executionMode:
+          kubernetesCluster:
+            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"migrate"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"migrate","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}],"env":[{"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
+        containers:
+          - image: api
+            name: migrate
+            command: ['pnpm']
+            args: ['--filter', 'api', 'migrations:prod']
       - name: seed
         executionMode:
           kubernetesCluster:
-            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"arches-api-seed"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"arches-api-seed","image":"arches-api:dev","envFrom":[{"secretRef":{"name":"arches-api-config-secret"}}]}]}}}}'
+            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"seed"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"seed","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}], "env":[{"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
         containers:
-          - image: arches-api
-            name: arches-api-seed
+          - image: api
+            name: seed
             command: ['pnpm']
             args: ['--filter', 'api', 'db:seed']
       - name: test-e2e
         executionMode:
           kubernetesCluster:
-            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"arches-api-test-e2e"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"arches-api-test-e2e","image":"arches-api:dev","envFrom":[{"secretRef":{"name":"arches-api-config-secret"}}],"env":[{"name":"LOGGING_LEVEL","value":"silent"}]}]}}}}'
+            overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"test-e2e"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"test-e2e","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}],"env":[{"name":"ARCHES.LOGGING.LEVEL","value":"silent"}, {"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
         containers:
-          - image: arches-api
-            name: arches-api-test-e2e
+          - image: api
+            name: test-e2e
             command: ['pnpm']
             args: ['--filter', 'api', 'test:e2e']

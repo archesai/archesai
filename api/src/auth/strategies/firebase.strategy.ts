@@ -1,12 +1,12 @@
 import { UserEntity } from '@/src/users/entities/user.entity'
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthProviderType } from '@prisma/client'
 import admin from 'firebase-admin'
 import { ExtractJwt, Strategy } from 'passport-firebase-jwt'
 
 import { UsersService } from '../../users/users.service'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 export const firebaseConfig = {
   auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
@@ -44,23 +44,18 @@ export class FirebaseStrategy extends PassportStrategy(
   private readonly logger = new Logger(FirebaseStrategy.name)
 
   constructor(
-    private configService: ConfigService,
+    private configService: ArchesConfigService,
     private usersService: UsersService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     })
 
-    const useLocalIdentityToolkit =
-      this.configService.get('NODE_ENV') !== 'production'
-
     if (!admin.apps.length) {
       this.logger.log('Initializing Firebase Admin SDK')
       admin.initializeApp({
         credential: admin.credential.cert(firebase_params),
-        projectId: useLocalIdentityToolkit
-          ? 'filechat-io'
-          : firebase_params.projectId
+        projectId: 'filechat-io'
       })
     }
   }

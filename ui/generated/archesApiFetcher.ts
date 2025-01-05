@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import { ArchesApiContext } from './archesApiContext'
 
-export const baseUrl = process.env.NEXT_PUBLIC_API_URL
+export const baseUrl = `http${process.env.NEXT_PUBLIC_TLS_ENABLED === 'true' ? 's' : ''}://${process.env.NEXT_PUBLIC_SERVER_HOST}`
 
 export type ArchesApiFetcherOptions<
   TBody,

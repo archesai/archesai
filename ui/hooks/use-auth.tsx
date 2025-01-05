@@ -17,6 +17,7 @@ export const useAuth = () => {
   const { toast } = useToast()
 
   const logout = useCallback(async () => {
+    console.log('baseUrl', baseUrl)
     const response = await fetch(baseUrl + '/auth/logout', {
       credentials: 'include',
       method: 'POST',

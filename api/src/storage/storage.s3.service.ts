@@ -7,12 +7,13 @@ import {
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3'
-import { NodeHttpHandler } from '@smithy/node-http-handler'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import {
   ConflictException,
   Injectable,
-  NotFoundException
+  Logger,
+  NotFoundException,
+  OnModuleInit // <-- Import OnModuleInit
 } from '@nestjs/common'
 import axios from 'axios'
 import * as fs from 'fs'
@@ -21,37 +22,38 @@ import { Readable } from 'stream'
 
 import { StorageItemDto } from './dto/storage-item.dto'
 import { StorageService } from './storage.service'
-import { Agent } from 'https'
-import { ConfigService } from '@nestjs/config'
 import { v4 } from 'uuid'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
-export class S3StorageProvider implements StorageService {
+export class S3StorageProvider implements StorageService, OnModuleInit {
+  private readonly logger = new Logger(S3StorageProvider.name)
+
   private bucketName: string
   private expirationTime = 60 * 60 * 1000 // 1 hour in milliseconds
   private s3Client: S3Client
 
-  constructor(configService: ConfigService) {
-    const agent = new Agent({
-      rejectUnauthorized: false
-    })
-    this.bucketName = configService.get<string>('MINIO_BUCKET') || ''
+  constructor(private readonly configService: ArchesConfigService) {
+    this.bucketName = this.configService.get('storage.bucket')!
     this.s3Client = new S3Client({
       credentials: {
-        accessKeyId: configService.get<string>('MINIO_ACCESS_KEY') || '',
-        secretAccessKey: configService.get<string>('MINIO_SECRET_KEY') || ''
+        accessKeyId: this.configService.get('storage.accesskey')!,
+        secretAccessKey: this.configService.get('storage.secretkey')!
       },
-      endpoint: configService.get<string>('MINIO_ENDPOINT') || '',
-      forcePathStyle: true, // Required for MinIO
-      region: 'us-east-1',
-      requestHandler: new NodeHttpHandler({
-        httpAgent: agent,
-        httpsAgent: agent
-      })
-    })
 
-    // Ensure the bucket exists
-    this.createBucketIfNotExists()
+      endpoint: this.configService.get('storage.endpoint'),
+      forcePathStyle: true, // Required for MinIO
+      region: 'us-east-1'
+    })
+  }
+
+  /**
+   * onModuleInit will be called by NestJS after the module's providers
+   * have been instantiated. You can create the bucket here and handle
+   * errors gracefully, so that your app doesn't crash.
+   */
+  async onModuleInit() {
+    await this.createBucketIfNotExists()
   }
 
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {
@@ -195,7 +197,7 @@ export class S3StorageProvider implements StorageService {
     }
 
     const signedUrl = await getSignedUrl(this.s3Client, command, {
-      expiresIn: this.expirationTime / 1000 // Convert milliseconds to seconds
+      expiresIn: this.expirationTime / 1000 // Convert ms to seconds
     })
 
     return signedUrl
@@ -218,14 +220,14 @@ export class S3StorageProvider implements StorageService {
 
     if (result.CommonPrefixes) {
       for (const commonPrefix of result.CommonPrefixes) {
-        const prefix = commonPrefix.Prefix || ''
+        const subPrefix = commonPrefix.Prefix || ''
         items.push(
           new StorageItemDto({
             createdAt: new Date(),
             updatedAt: new Date(),
-            id: prefix,
+            id: subPrefix,
             isDir: true,
-            name: path.basename(prefix.replace(/\/$/, '')),
+            name: path.basename(subPrefix.replace(/\/$/, '')),
             size: 0
           })
         )
@@ -314,15 +316,24 @@ export class S3StorageProvider implements StorageService {
     return readUrl
   }
 
+  /**
+   * Attempt to create the bucket if it doesn't exist.
+   * We'll ignore the "BucketAlreadyOwnedByYou" error so it doesn't crash the app.
+   */
   private async createBucketIfNotExists() {
     try {
       await this.s3Client.send(
         new CreateBucketCommand({ Bucket: this.bucketName })
       )
+      this.logger.debug(
+        `Bucket '${this.bucketName}' created or already exists.`
+      )
     } catch (error: any) {
       if (error.name !== 'BucketAlreadyOwnedByYou') {
         throw error
       }
+      // If it's already owned by you, it's safe to ignore.
+      this.logger.debug(`Bucket '${this.bucketName}' already owned by you.`)
     }
   }
 

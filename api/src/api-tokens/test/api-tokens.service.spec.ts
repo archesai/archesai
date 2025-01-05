@@ -1,5 +1,4 @@
 import { createRandomApiToken } from '@/prisma/factories/api-token.factory'
-import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { Test, TestingModule } from '@nestjs/testing'
 import { v4 as uuidv4 } from 'uuid'
@@ -9,6 +8,7 @@ import { ApiTokenRepository } from '../api-token.repository'
 import { ApiTokensService } from '../api-tokens.service'
 import { CreateApiTokenDto } from '../dto/create-api-token.dto'
 import { RoleTypeEnum } from '../entities/api-token.entity'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 jest.mock('uuid', () => ({
   v4: jest.fn()
@@ -17,7 +17,7 @@ jest.mock('uuid', () => ({
 describe('ApiTokensService', () => {
   let service: ApiTokensService
   let apiTokenRepository: ApiTokenRepository
-  let configService: ConfigService
+  let configService: ArchesConfigService
   let jwtService: JwtService
   let websocketsService: WebsocketsService
 
@@ -32,7 +32,7 @@ describe('ApiTokensService', () => {
           }
         },
         {
-          provide: ConfigService,
+          provide: ArchesConfigService,
           useValue: {
             get: jest.fn()
           }
@@ -57,7 +57,7 @@ describe('ApiTokensService', () => {
 
     service = module.get<ApiTokensService>(ApiTokensService)
     apiTokenRepository = module.get<ApiTokenRepository>(ApiTokenRepository)
-    configService = module.get<ConfigService>(ConfigService)
+    configService = module.get<ArchesConfigService>(ArchesConfigService)
     jwtService = module.get<JwtService>(JwtService)
     websocketsService = module.get<WebsocketsService>(WebsocketsService)
   })
@@ -81,8 +81,8 @@ describe('ApiTokensService', () => {
 
       ;(uuidv4 as jest.Mock).mockReturnValue(mockedApiToken.id)
       ;(configService.get as jest.Mock).mockImplementation((key: string) => {
-        if (key === 'JWT_API_TOKEN_EXPIRATION_TIME') return '3600'
-        if (key === 'JWT_API_TOKEN_SECRET') return 'secret'
+        if (key === 'jwt.expiration') return '3600'
+        if (key === 'jwt.secret') return 'secret'
       })
       ;(jwtService.sign as jest.Mock).mockReturnValue('token')
       ;(apiTokenRepository.create as jest.Mock).mockResolvedValue(
@@ -95,10 +95,8 @@ describe('ApiTokensService', () => {
       })
       expect(result.orgname).toEqual(orgname)
       expect(uuidv4).toHaveBeenCalled()
-      expect(configService.get).toHaveBeenCalledWith(
-        'JWT_API_TOKEN_EXPIRATION_TIME'
-      )
-      expect(configService.get).toHaveBeenCalledWith('JWT_API_TOKEN_SECRET')
+      expect(configService.get).toHaveBeenCalledWith('jwt.expiration')
+      expect(configService.get).toHaveBeenCalledWith('jwt.secret')
       expect(jwtService.sign).toHaveBeenCalledWith(
         {
           domains: createTokenDto.domains,
@@ -117,7 +115,7 @@ describe('ApiTokensService', () => {
         ...overrides,
         ...createTokenDto
       })
-      expect(websocketsService.socket.emit).toHaveBeenCalledWith('update', {
+      expect(websocketsService.socket?.emit).toHaveBeenCalledWith('update', {
         queryKey: ['organizations', result.orgname, 'api-tokens']
       })
       expect(result).toEqual(

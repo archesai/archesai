@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - playwright-deployment.yaml
+  - playwright-service.yaml
+
+patches:
+  - target:
+      name: archesai-config-secret
+    patch: |-
+      - op: add
+        path: /stringData/ARCHES.SCRAPER.ENABLED
+        value: 'true'
+      - op: add
+        path: /stringData/ARCHES.SCRAPER.ENDPOINT
+        value: http://playwright:3000

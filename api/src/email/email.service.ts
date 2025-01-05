@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { createTransport } from 'nodemailer'
-import * as Mail from 'nodemailer/lib/mailer'
+import Mail from 'nodemailer/lib/mailer'
+import { ArchesConfigService } from '../config/config.service'
 
 @Injectable()
 export class EmailService {
   private nodemailerTransport: Mail
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ArchesConfigService) {
     this.nodemailerTransport = createTransport({
       auth: {
-        pass: this.configService.get('EMAIL_PASSWORD'),
-        user: this.configService.get('EMAIL_USER')
+        pass: this.configService.get('email.password'),
+        user: this.configService.get('email.user')
       },
-      service: this.configService.get('EMAIL_SERVICE')
-    }) as any // FIXME
+      service: this.configService.get('email.service')
+    })
   }
 
   async sendMail(options: Mail.Options) {

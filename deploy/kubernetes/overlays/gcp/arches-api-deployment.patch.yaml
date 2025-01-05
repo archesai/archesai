@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: arches-api
+  name: api
 spec:
   template:
     spec:
       containers:
-        - name: arches-api
+        - name: api
           env:
             - name: REDIS_CA_CERT_PATH
               value: /usr/src/app/server-ca.pem
           volumeMounts:
             - mountPath: /usr/src/app/server-ca.pem
-              name: arches-redis-ca-cert
+              name: redis-ca-cert
               subPath: redis-ca.pem
         - name: cloud-sql-proxy
           image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
           args:
-            - "--structured-logs"
-            - "--port=5432"
-            - "archesai:us-east1:arches-postgres"
+            - '--structured-logs'
+            - '--port=5432'
+            - 'archesai:us-east1:arches-postgres'
           securityContext:
             runAsNonRoot: true
           resources:
             requests:
-              memory: "100Mi"
-              cpu: "100m"
+              memory: '100Mi'
+              cpu: '100m'
             limits:
-              memory: "200Mi"
-              cpu: "200m"
+              memory: '200Mi'
+              cpu: '200m'
       volumes:
-        - name: arches-redis-ca-cert
+        - name: redis-ca-cert
           secret:
-            secretName: arches-redis-ca-cert
+            secretName: redis-ca-cert

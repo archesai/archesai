@@ -64,7 +64,7 @@ export default function LoginPage() {
       <div className='flex flex-col gap-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Login</h1>
         <p className='text-muted-foreground text-sm'>
-          Enter your email and password to login to your account
+          Enter your emails and password to login to your account
         </p>
       </div>
       <div className='flex flex-col gap-2'>

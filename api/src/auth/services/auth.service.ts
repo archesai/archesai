@@ -1,5 +1,4 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { AuthProviderType } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
@@ -9,6 +8,7 @@ import { UserEntity } from '../../users/entities/user.entity'
 import { UsersService } from '../../users/users.service'
 import { RegisterDto } from '../dto/register.dto'
 import { TokenDto } from '../dto/token.dto'
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     protected jwtService: JwtService,
     protected usersService: UsersService,
-    protected configService: ConfigService
+    protected configService: ArchesConfigService
   ) {}
 
   async login(user: UserEntity) {
@@ -69,7 +69,7 @@ export class AuthService {
       Math.random().toString(36).substring(2, 6)
     const user = await this.usersService.create({
       email: registerDto.email,
-      emailVerified: this.configService.get('FEATURE_EMAIL') === 'false',
+      emailVerified: !this.configService.get('email.enabled'),
       password: hashedPassword,
       photoUrl: '',
       username: orgname

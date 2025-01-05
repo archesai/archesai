@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { ARTokenType } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
 
@@ -11,6 +10,7 @@ import { ConfirmationTokenWithNewPasswordDto } from '../dto/confirmation-token-w
 import { EmailRequestDto } from '../dto/email-request.dto'
 import { ARTokensService } from './ar-tokens.service'
 import { AuthService } from './auth.service' // Import TokenService
+import { ArchesConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class PasswordResetService {
@@ -19,7 +19,7 @@ export class PasswordResetService {
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
     private readonly arTokensService: ARTokensService,
-    private readonly configService: ConfigService
+    private readonly configService: ArchesConfigService
   ) {}
 
   async confirm(
@@ -60,7 +60,7 @@ export class PasswordResetService {
       1
     )
 
-    const resetLink = `${this.configService.get('FRONTEND_HOST')}/confirm?type=password-reset&token=${token}`
+    const resetLink = `${this.configService.get('frontend.host')}/confirm?type=password-reset&token=${token}`
 
     const htmlContent = getPasswordResetHtml(resetLink)
     await this.emailService.sendMail({

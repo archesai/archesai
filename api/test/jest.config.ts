@@ -9,14 +9,13 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1'
   },
-  preset: 'ts-jest',
   rootDir: '..',
   setupFilesAfterEnv: ['<rootDir>/test/jest.setup.ts'],
   testEnvironment: 'node',
   testRegex: '\\.(e2e|integration)-spec\\.ts$',
   testTimeout: 120000,
   transform: {
-    '^.+\\.(t|j)s?$': '@swc/jest'
+    '^.+\\.(t|j)s?$': 'ts-jest'
   }
 }
 
