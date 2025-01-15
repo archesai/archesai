@@ -78,7 +78,6 @@ generate:
 	cd ui && npm run gen
 	$(MAKE) format
 	
-
 test:
 	pnpm test
 

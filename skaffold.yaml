@@ -25,7 +25,45 @@ customActions:
   - name: migrate
     executionMode:
       kubernetesCluster:
-        overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"migrate"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"migrate","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}],"env":[{"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
+        overrides: |
+          {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+              "name": "migrate"
+            },
+            "spec": {
+              "template": {
+                "spec": {
+                  "restartPolicy": "Never",
+                  "containers": [
+                    {
+                      "name": "migrate",
+                      "image": "api",
+                      "envFrom": [
+                        {
+                          "secretRef": {
+                            "name": "archesai-config-secret"
+                          }
+                        }
+                      ],
+                      "env": [
+                        {
+                          "name": "DATABASE_URL",
+                          "valueFrom": {
+                            "secretKeyRef": {
+                              "name": "archesai-config-secret",
+                              "key": "ARCHES.DATABASE.ENDPOINT"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
     containers:
       - image: api
         name: migrate
@@ -34,7 +72,45 @@ customActions:
   - name: seed
     executionMode:
       kubernetesCluster:
-        overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"seed"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"seed","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}], "env":[{"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
+        overrides: |
+          {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+              "name": "seed"
+            },
+            "spec": {
+              "template": {
+                "spec": {
+                  "restartPolicy": "Never",
+                  "containers": [
+                    {
+                      "name": "seed",
+                      "image": "api",
+                      "envFrom": [
+                        {
+                          "secretRef": {
+                            "name": "archesai-config-secret"
+                          }
+                        }
+                      ],
+                      "env": [
+                        {
+                          "name": "DATABASE_URL",
+                          "valueFrom": {
+                            "secretKeyRef": {
+                              "name": "archesai-config-secret",
+                              "key": "ARCHES.DATABASE.ENDPOINT"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
     containers:
       - image: api
         name: seed
@@ -43,7 +119,49 @@ customActions:
   - name: test-e2e
     executionMode:
       kubernetesCluster:
-        overrides: '{"apiVersion":"batch/v1","kind":"Job","metadata":{"name":"test-e2e"},"spec":{"template":{"spec":{"restartPolicy":"Never","containers":[{"name":"test-e2e","image":"api","envFrom":[{"secretRef":{"name":"archesai-config-secret"}}],"env":[{"name":"ARCHES.LOGGING.LEVEL","value":"silent"}, {"name":"DATABASE_URL","valueFrom": {"secretKeyRef": {"name": "archesai-config-secret", "key": "ARCHES.DATABASE.ENDPOINT"}}}]}]}}}}'
+        overrides: |
+          {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+              "name": "test-e2e"
+            },
+            "spec": {
+              "template": {
+                "spec": {
+                  "restartPolicy": "Never",
+                  "containers": [
+                    {
+                      "name": "test-e2e",
+                      "image": "api",
+                      "envFrom": [
+                        {
+                          "secretRef": {
+                            "name": "archesai-config-secret"
+                          }
+                        }
+                      ],
+                      "env": [
+                        {
+                          "name": "ARCHES.LOGGING.LEVEL",
+                          "value": "silent"
+                        },
+                        {
+                          "name": "DATABASE_URL",
+                          "valueFrom": {
+                            "secretKeyRef": {
+                              "name": "archesai-config-secret",
+                              "key": "ARCHES.DATABASE.ENDPOINT"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
     containers:
       - image: api
         name: test-e2e
