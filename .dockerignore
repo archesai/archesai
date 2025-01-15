@@ -7,7 +7,6 @@
 **/.gitignore
 **/.git
 **/.prettierrc
-**/.swcrc
 **/npm-debug.log
 **/.next
 **/deploy
