@@ -68,7 +68,7 @@ export class ConfigService {
   }
 
   private loadYamlConfig(): Record<string, any> {
-    const configDir = process.env['ARCHES.CONFDIR'] || '/etc/archesai'
+    const configDir = process.env['ARCHES_CONFDIR'] || process.cwd()
     const baseConfigPath = join(configDir, 'config.yaml')
 
     let baseConfig: Record<string, any> = {}
@@ -104,8 +104,8 @@ export class ConfigService {
   private loadEnvConfig(): Record<string, any> {
     const envConfig: Record<string, any> = {}
     for (const [key, value] of Object.entries(process.env)) {
-      if (key.startsWith('ARCHES.')) {
-        const keys = key.replace('ARCHES.', '').toLowerCase().split('.')
+      if (key.startsWith('ARCHES_')) {
+        const keys = key.replace('ARCHES_', '').toLowerCase().split('_')
         let current = envConfig
         keys.forEach((k, index) => {
           if (index === keys.length - 1) {

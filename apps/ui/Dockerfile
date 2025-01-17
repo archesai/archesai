@@ -1,52 +1,31 @@
-###################
-# BASE STAGE
-###################
 FROM node:20-alpine3.19 AS base
 
-# Disable Next.js telemetry
-ENV NEXT_TELEMETRY_DISABLED=1
+# API ONLY INVISIBLE
 
-# Install pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack install --global pnpm@9.15.4
-ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN npm install -g pnpm@9.15.4
 
-# Set working directory
-WORKDIR /arches
+WORKDIR /archesai
+ENV ARCHES_CONFIG_ROOT=/archesai/config
 
-###################
-# DEPENDENCIES STAGE
-###################
-FROM base AS deps
-COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+FROM base AS dependencies
+COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
 COPY --chown=node:node ./apps/ui/package.json ./apps/ui/package.json
+# API ONLY INVISIBLE
 RUN pnpm install --filter ui --frozen-lockfile
-COPY --chown=node:node tsconfig.json ./
 
-###################
-# DEVELOPMENT STAGE
-###################
-FROM deps AS development
+FROM dependencies AS development
 COPY --chown=node:node ./apps/ui ./apps/ui
 USER node
-CMD ["pnpm", "--filter", "ui", "run", "dev"]
+CMD ["pnpm", "--filter", "ui", "run", "start:dev"]
 
-###################
-# BUILD STAGE
-###################
-FROM deps AS build
+FROM dependencies AS build
 COPY --chown=node:node ./apps/ui ./apps/ui
 RUN pnpm run --filter ui build
 RUN pnpm deploy --filter ui --prod /prod
 
-###################
-# PRODUCTION STAGE
-###################
 FROM base AS production
-ENV NODE_ENV=production
-RUN mkdir .next
-RUN chown node:node .next
 COPY --from=build --chown=node:node /prod .
 USER node
 CMD ["npm", "start"]

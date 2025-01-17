@@ -21,11 +21,11 @@ describe('ConfigModule', () => {
   let configService: ConfigService
 
   beforeEach(async () => {
-    process.env['ARCHES.STORAGE.TYPE'] = 'minio'
-    process.env['ARCHES.STORAGE.ENDPOINT'] = 'http://localhost:9000'
-    process.env['ARCHES.BILLING.ENABLED'] = 'true'
-    process.env['ARCHES.REDIS.PORT'] = '6379'
-    process.env['ARCHES.CONFIG.VALIDATE'] = 'true'
+    process.env['ARCHES_STORAGE_TYPE'] = 'minio'
+    process.env['ARCHES_STORAGE_ENDPOINT'] = 'http://localhost:9000'
+    process.env['ARCHES_BILLING_ENABLED'] = 'true'
+    process.env['ARCHES_REDIS_PORT'] = '6379'
+    process.env['ARCHES_CONFIG_VALIDATE'] = 'true'
 
     module = await Test.createTestingModule({
       providers: [ConfigService],
