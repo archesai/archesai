@@ -10,6 +10,8 @@ import * as path from 'path'
 import { StorageItemDto } from '../dto/storage-item.dto'
 import { IStorageService } from '../interfaces/storage-provider.interface'
 import { v4 } from 'uuid'
+import { RunStatusEnum } from '@/src/runs/entities/run.entity'
+import { HealthDto } from '@/src/health/dto/health.dto'
 
 const archesaiSa = {
   auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
@@ -62,6 +64,13 @@ export class GoogleCloudStorageService implements IStorageService {
       .bucket(this.bucketName)
       .file(this.getFilePath(orgname, dirPath) + '/')
       .save('')
+  }
+
+  public getHealth(): HealthDto {
+    return {
+      status: RunStatusEnum.ERROR,
+      error: 'Not implemented'
+    }
   }
 
   async delete(orgname: string, filePath: string): Promise<void> {

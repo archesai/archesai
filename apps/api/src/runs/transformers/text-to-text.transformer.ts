@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common'
 import { retry } from '../../common/retry'
 import { ContentService } from '../../content/content.service'
 import { ContentEntity } from '../../content/entities/content.entity'
-import { LLMService } from '../../llm/llm.service'
+import { LlmService } from '../../llm/llm.service'
 import { IToolRunProcess } from '../interfaces/tool-run-processor.interface'
 
 export const transformTextToText: IToolRunProcess = async (
@@ -11,7 +11,7 @@ export const transformTextToText: IToolRunProcess = async (
   runInput: ContentEntity[],
   logger: Logger,
   contentService: ContentService,
-  llmService: LLMService
+  llmService: LlmService
 ): Promise<ContentEntity[]> => {
   logger.log(`Summarizing content for run ${runId}`)
   const start = Date.now()

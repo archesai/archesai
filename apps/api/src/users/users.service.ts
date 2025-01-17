@@ -79,16 +79,19 @@ export class UsersService extends BaseService<
     )
   }
 
-  async syncAuthProvider(
-    email: string,
+  async linkAuthProvider(
+    id: string,
     provider: AuthProviderType,
     providerId: string
   ): Promise<UserEntity> {
-    const user = await this.userRepository.findOneByEmail(email)
-    // if it does not have this provider, add it
+    const user = await this.userRepository.findOne(id)
     if (!user.authProviders.some((p) => p.provider === provider)) {
       return this.toEntity(
-        await this.userRepository.addAuthProvider(email, provider, providerId)
+        await this.userRepository.linkAuthProvider(
+          user.id,
+          provider,
+          providerId
+        )
       )
     }
     const userEntity = this.toEntity(user)

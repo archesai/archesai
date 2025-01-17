@@ -19,7 +19,8 @@ const config: Config = {
   testTimeout: 120000,
   transform: {
     '^.+\\.(t|j)s?$': ['@swc/jest', swcConfig]
-  }
+  },
+  forceExit: true
 }
 
 export default config

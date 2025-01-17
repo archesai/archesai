@@ -1,4 +1,5 @@
 import { StorageItemDto } from '../dto/storage-item.dto'
+import { HealthDto } from '@/src/health/dto/health.dto'
 
 export const STORAGE_SERVICE = 'STORAGE_SERVICE'
 
@@ -23,4 +24,5 @@ export interface IStorageService {
     file: Express.Multer.File
   ): Promise<string>
   uploadFromUrl(orgname: string, path: string, url: string): Promise<string>
+  getHealth(): HealthDto
 }

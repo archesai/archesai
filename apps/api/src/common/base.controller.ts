@@ -1,4 +1,4 @@
-import { Type, UsePipes } from '@nestjs/common'
+import { Logger, Type, UsePipes } from '@nestjs/common'
 import { Body, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
 
@@ -22,6 +22,8 @@ export function BaseController<
   itemType: string = EntityClass.name.replace('Entity', '').toLowerCase()
 ) {
   class BaseController {
+    readonly logger = new Logger(this.constructor.name)
+    readonly itemType = itemType
     constructor(public readonly service: Service) {}
 
     @ApiBody({ type: CreateDtoClass })
@@ -38,6 +40,11 @@ export function BaseController<
       @Body() createDto: CreateDto,
       @CurrentUser() currentUserDto?: UserEntity
     ): Promise<Entity> {
+      this.logger.debug(`creating ${itemType}`, {
+        orgname,
+        createDto,
+        currentUserDto
+      })
       return this.service.create({
         ...createDto,
         orgname,
@@ -53,6 +60,10 @@ export function BaseController<
       @Param('orgname') orgname: string,
       @Query() searchQueryDto: SearchQueryDto
     ): Promise<PaginatedDto<Entity>> {
+      this.logger.debug(`fetching all ${itemType}`, {
+        orgname,
+        searchQueryDto
+      })
       return this.service.findAll({
         ...searchQueryDto,
         filters: [
@@ -78,6 +89,10 @@ export function BaseController<
       @Param('orgname') orgname: string,
       @Param('id') id: string
     ): Promise<Entity> {
+      this.logger.debug(`fetching single ${itemType}`, {
+        orgname,
+        id
+      })
       return this.service.findOne(id)
     }
 
@@ -92,6 +107,10 @@ export function BaseController<
       @Param('orgname') orgname: string,
       @Param('id') id: string
     ): Promise<Entity> {
+      this.logger.debug(`deleting single ${itemType}`, {
+        orgname,
+        id
+      })
       return this.service.remove(id)
     }
 
@@ -113,6 +132,11 @@ export function BaseController<
       @Param('id') id: string,
       @Body() updateDto: UpdateDto
     ): Promise<Entity> {
+      this.logger.debug(`updating ${itemType}`, {
+        orgname,
+        id,
+        updateDto
+      })
       return this.service.update(id, updateDto)
     }
   }

@@ -8,7 +8,7 @@ import { ApiTokenRepository } from '../api-token.repository'
 import { ApiTokensService } from '../api-tokens.service'
 import { CreateApiTokenDto } from '../dto/create-api-token.dto'
 import { RoleTypeEnum } from '../entities/api-token.entity'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 jest.mock('uuid', () => ({
   v4: jest.fn()
@@ -17,7 +17,7 @@ jest.mock('uuid', () => ({
 describe('ApiTokensService', () => {
   let service: ApiTokensService
   let apiTokenRepository: ApiTokenRepository
-  let configService: ArchesConfigService
+  let configService: ConfigService
   let jwtService: JwtService
   let websocketsService: WebsocketsService
 
@@ -32,7 +32,7 @@ describe('ApiTokensService', () => {
           }
         },
         {
-          provide: ArchesConfigService,
+          provide: ConfigService,
           useValue: {
             get: jest.fn()
           }
@@ -57,7 +57,7 @@ describe('ApiTokensService', () => {
 
     service = module.get<ApiTokensService>(ApiTokensService)
     apiTokenRepository = module.get<ApiTokenRepository>(ApiTokenRepository)
-    configService = module.get<ArchesConfigService>(ArchesConfigService)
+    configService = module.get<ConfigService>(ConfigService)
     jwtService = module.get<JwtService>(JwtService)
     websocketsService = module.get<WebsocketsService>(WebsocketsService)
   })

@@ -4,15 +4,21 @@ kind: Kustomization
 secretGenerator:
   - name: redis-ca-cert
     files:
-      - './redis-ca.pem'
+      - ./redis-ca.pem
+
+images:
+  - name: api
+    newName: us-east4-docker.pkg.dev/archesai/images/api
+  - name: ui
+    newName: us-east4-docker.pkg.dev/archesai/images/ui
 
 resources:
-  - '../../base'
-  - './managedcertificate.yaml'
+  - ../../base
+  - managedcertificate.yaml
 
 patches:
-  - path: './api-deployment.patch.yaml'
-  - path: './api-upgrade-job.patch.yaml'
+  - path: api-deployment.patch.yaml
+  - path: migrations-job-job.patch.yaml
 
   - target:
       version: v1

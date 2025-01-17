@@ -9,14 +9,16 @@ import {
 import { Server, Socket } from 'socket.io'
 
 import { AuthService } from '../auth/services/auth.service'
-import { UsersService } from '../users/users.service'
 import { WebsocketsService } from './websockets.service'
+import { ConfigService } from '@/src/config/config.service'
+
+const configService = new ConfigService()
 
 @WebSocketGateway({
   connectTimeout: 10000,
   cors: {
     credentials: true,
-    origin: [process.env['ARCHES.FRONTEND.HOST']]
+    origin: [configService.get('frontend.host')]
   },
   transports: ['websocket']
 })
@@ -26,11 +28,10 @@ export class WebsocketsGateway
   @WebSocketServer()
   server: Server
 
-  private readonly logger: Logger = new Logger(WebSocketGateway.name)
+  private readonly logger = new Logger(WebSocketGateway.name)
 
   constructor(
     private readonly authService: AuthService,
-    private readonly usersService: UsersService,
     private readonly websocketsService: WebsocketsService
   ) {}
 
@@ -44,23 +45,32 @@ export class WebsocketsGateway
   async handleConnection(socket: Socket) {
     try {
       const token = await this.getTokenFromSocket(socket)
-      const { sub: id } = await this.authService.verifyToken(token)
-      const user = await this.usersService.findOne(id)
+      const user = await this.authService.verifyToken(token)
 
       socket.join(user.defaultOrgname)
       socket.data.username = user.username
       this.logger.log(
-        `Connected ${user.username} to room ${user.defaultOrgname}`
+        {
+          socketId: socket.id,
+          username: user.username,
+          room: user.defaultOrgname
+        },
+        `websocket connection successful`
       )
     } catch (error) {
-      this.logger.error(error)
+      this.logger.error(error, `websocket connection error`)
       socket.disconnect()
     }
   }
 
   async handleDisconnect(socket: Socket) {
     this.logger.log(
-      `Disconnected ${socket.data.username} from ${Array.from(socket.rooms).toString()}`
+      {
+        socketId: socket.id,
+        username: socket.data.username,
+        rooms: socket.rooms
+      },
+      `websocket disconnected`
     )
   }
 

@@ -1,5 +1,5 @@
 import { InjectFlowProducer, InjectQueue } from '@nestjs/bullmq'
-import { BadRequestException, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { RunStatus } from '@prisma/client'
 import { FlowProducer, Queue } from 'bullmq'
 
@@ -20,7 +20,6 @@ export class RunsService extends BaseService<
   RunModel,
   RunRepository
 > {
-  private logger = new Logger(RunsService.name)
   constructor(
     private runRepository: RunRepository,
     private websocketsService: WebsocketsService,

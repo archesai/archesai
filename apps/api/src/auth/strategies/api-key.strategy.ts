@@ -7,14 +7,14 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { ApiTokensService } from '../../api-tokens/api-tokens.service'
 import { UsersService } from '../../users/users.service'
 import { OperatorEnum } from '@/src/common/dto/search-query.dto'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(Strategy, 'api-key-auth') {
-  private readonly logger: Logger = new Logger(ApiKeyStrategy.name)
+  private readonly logger = new Logger(ApiKeyStrategy.name)
 
   constructor(
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private usersService: UsersService,
     private apiTokensService: ApiTokensService
   ) {

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 
 import { BaseService } from '../common/base.service'
 import { WebsocketsService } from '../websockets/websockets.service'
@@ -17,8 +17,6 @@ export class ContentService extends BaseService<
   ContentModel,
   ContentRepository
 > {
-  private readonly logger = new Logger(ContentService.name)
-
   constructor(
     @Inject(STORAGE_SERVICE)
     private storageService: IStorageService,

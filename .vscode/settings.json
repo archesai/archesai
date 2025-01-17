@@ -6,7 +6,6 @@
     "**/.swc": true,
     "**/dist": true,
     "**/node_modules": true,
-    "**/tmp": true,
     "build.json": true
   },
   "jest.jestCommandLine": "npm run test --",
@@ -15,9 +14,11 @@
     "runAllTestsOnStartup": false,
     "type": "on-demand"
   },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
   "yaml.schemas": {
-    "https://raw.githubusercontent.com/k3d-io/k3d/refs/heads/main/pkg/config/v1alpha5/schema.json": [
-      "k3d-config.yaml"
-    ]
+    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta12.json": [
+      "file:///home/jonathan/Projects/archesai/skaffold.yaml"
+    ],
+    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/k3d-config.yaml"
   }
 }

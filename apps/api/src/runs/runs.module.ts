@@ -3,7 +3,7 @@ import { BullModule } from '@nestjs/bullmq'
 import { forwardRef, Module } from '@nestjs/common'
 
 import { ContentModule } from '../content/content.module'
-import { LLMModule } from '../llm/llm.module'
+import { LlmModule } from '../llm/llm.module'
 import { PipelinesModule } from '../pipelines/pipelines.module'
 import { PrismaModule } from '../prisma/prisma.module'
 import { RunpodModule } from '../runpod/runpod.module'
@@ -22,7 +22,7 @@ import { RunsService } from './runs.service'
     PrismaModule,
     StorageModule.forRoot(),
     ContentModule,
-    LLMModule,
+    LlmModule,
     BullModule.registerQueue({
       name: 'run'
     }),

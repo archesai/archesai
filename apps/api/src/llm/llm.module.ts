@@ -1,11 +1,11 @@
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 
-import { LLMService } from './llm.service'
+import { LlmService } from './llm.service'
 
 @Module({
-  exports: [LLMService],
+  exports: [LlmService],
   imports: [HttpModule],
-  providers: [LLMService]
+  providers: [LlmService]
 })
-export class LLMModule {}
+export class LlmModule {}

@@ -19,7 +19,7 @@ spec:
           args:
             - >
               kubectl --namespace $(POD_NAMESPACE) wait
-              --for=condition=complete job/api-upgrade --timeout=300s
+              --for=condition=complete job/migrations --timeout=300s
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -27,26 +27,16 @@ spec:
                   fieldPath: metadata.namespace
       containers:
         - name: api
+          image: api
           imagePullPolicy: IfNotPresent
-          envFrom:
-            - secretRef:
-                name: archesai-config-secret
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: archesai-config-secret
-                  key: ARCHES.DATABASE.ENDPOINT
-
-          # volumeMounts:
-          #   - name: archesai-config-secret
-          #     mountPath: /etc/archesai
-          # subPath: config.yaml
-          # - name: config-dropins-volume
-          #   mountPath: /etc/archesai/config.yaml.d/
-          image: us-east4-docker.pkg.dev/archesai/images/api
           ports:
             - containerPort: 3001
+          envFrom:
+            - secretRef:
+                name: archesai-config-env
+          volumeMounts:
+            - name: archesai-config-volume
+              mountPath: /arches/conf/config.yaml.d
           resources:
             requests:
               memory: '1Gi'
@@ -54,34 +44,17 @@ spec:
             limits:
               memory: '2Gi'
               cpu: '1'
-          readinessProbe: # define readiness probe
+          readinessProbe:
             httpGet:
               path: /health
               port: 3001
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          livenessProbe: # define liveness probe
+          livenessProbe:
             httpGet:
               path: /health
               port: 3001
-            initialDelaySeconds: 10
-            periodSeconds: 20
-
       hostname: api
       serviceAccountName: api-service-account
-
-      # volumes:
-      #   - name: archesai-config-secret
-      #     secret:
-      #       secretName: archesai-config-secret
-      #       items:
-      #         - key: config.yaml
-      #           path: config.yaml
-
-      # # Volume for override.yaml
-      # - name: config-dropins-volume
-      #   secret:
-      #     secretName: archesai-config-secret
-      #     items:
-      #       - key: override.yaml
-      #         path: override.yaml
+      volumes:
+        - name: archesai-config-volume
+          secret:
+            secretName: archesai-config-volume

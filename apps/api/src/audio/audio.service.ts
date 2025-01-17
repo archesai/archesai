@@ -20,7 +20,7 @@ import {
 
 @Injectable()
 export class AudioService {
-  private readonly logger: Logger = new Logger(AudioService.name)
+  private readonly logger = new Logger(AudioService.name)
 
   constructor(
     @Inject(STORAGE_SERVICE) private storageService: IStorageService,

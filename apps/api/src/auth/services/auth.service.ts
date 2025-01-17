@@ -7,17 +7,17 @@ import { Response } from 'express'
 import { UserEntity } from '../../users/entities/user.entity'
 import { UsersService } from '../../users/users.service'
 import { RegisterDto } from '../dto/register.dto'
-import { TokenDto } from '../dto/token.dto'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { CookiesDto } from '../dto/token.dto'
+import { ConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class AuthService {
-  private readonly logger: Logger = new Logger(AuthService.name)
+  private readonly logger = new Logger(AuthService.name)
 
   constructor(
     protected jwtService: JwtService,
     protected usersService: UsersService,
-    protected configService: ArchesConfigService
+    protected configService: ConfigService
   ) {}
 
   async login(user: UserEntity) {
@@ -34,8 +34,7 @@ export class AuthService {
     }
   }
 
-  // Refresh Access Token using Refresh Token
-  async refreshAccessToken(refreshToken: string) {
+  async refreshAccessToken(refreshToken: string): Promise<CookiesDto> {
     this.logger.debug('Refreshing access token using refresh token')
     const payload = this.jwtService.verify(refreshToken, {
       // secret: this.configService.get("JWT_REFRESH_SECRET"),
@@ -60,7 +59,7 @@ export class AuthService {
     }
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<UserEntity> {
     this.logger.debug('Registering user: ' + registerDto.email)
     const hashedPassword = await bcrypt.hash(registerDto.password, 10)
     const orgname =
@@ -74,8 +73,8 @@ export class AuthService {
       photoUrl: '',
       username: orgname
     })
-    return this.usersService.syncAuthProvider(
-      user.email,
+    return this.usersService.linkAuthProvider(
+      user.id,
       AuthProviderType.LOCAL,
       user.email
     )
@@ -86,14 +85,14 @@ export class AuthService {
     res.clearCookie('archesai.refreshToken')
   }
 
-  async setCookies(res: Response, tokenDto: TokenDto) {
-    res.cookie('archesai.accessToken', tokenDto.accessToken, {
+  async setCookies(res: Response, authTokens: CookiesDto): Promise<void> {
+    res.cookie('archesai.accessToken', authTokens.accessToken, {
       httpOnly: true,
       maxAge: 15 * 60 * 1000, // 15 minutes for access token
       sameSite: 'none',
       secure: true
     })
-    res.cookie('archesai.refreshToken', tokenDto.refreshToken, {
+    res.cookie('archesai.refreshToken', authTokens.refreshToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
       sameSite: 'none',
@@ -102,30 +101,34 @@ export class AuthService {
     })
   }
 
-  async verifyToken(token: string) {
-    this.logger.debug('Verifying jwt token: ' + token)
-    return this.jwtService.verify(token)
+  async getUserFromAccessToken(accessToken: string): Promise<UserEntity> {
+    const payload = this.jwtService.verify(accessToken)
+    return this.usersService.findOne(payload.sub)
   }
 
-  // Generate Access Token
-  private generateAccessToken(userId: string) {
-    this.logger.debug('Generating access token for user: ' + userId)
+  async verifyToken(token: string): Promise<UserEntity> {
+    this.logger.debug('Verifying jwt token: ' + token)
+    const { sub: id } = this.jwtService.verify(token)
+    return this.usersService.findOne(id)
+  }
+
+  private generateAccessToken(id: string): string {
+    this.logger.debug('Generating access token for user: ' + id)
     return this.jwtService.sign(
-      { sub: userId },
+      { sub: id },
       {
-        expiresIn: '15m' // Set access token expiration to 15 minutes
+        expiresIn: '15m'
       }
     )
   }
 
-  // Generate Refresh Token
-  private generateRefreshToken(userId: string) {
-    this.logger.debug('Generating refresh token for user: ' + userId)
+  private generateRefreshToken(id: string): string {
+    this.logger.debug('Generating refresh token for user: ' + id)
     return this.jwtService.sign(
-      { sub: userId },
+      { sub: id },
       {
-        expiresIn: '7d' // Set refresh token expiration to 7 days
-        // secret: this.configService.get("JWT_REFRESH_SECRET"), // Use a different secret for refresh tokens
+        expiresIn: '7d',
+        secret: this.configService.get('jwt.secret') // FIXME Use a different secret for refresh tokens
       }
     )
   }

@@ -1,0 +1,3 @@
+unstructured:
+  enabled: true
+  endpoint: http://unstructured:8000

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: api-upgrade
+  name: migrations
 spec:
   template:
     spec:
@@ -23,7 +23,7 @@ spec:
             limits:
               memory: '200Mi'
               cpu: '200m'
-        - name: api-upgrade
+        - name: migrations
           args:
             - |
               until wget --spider --tries=1 --timeout=5 http://localhost:9091 2>&1 | grep -q '404 Not Found'; do

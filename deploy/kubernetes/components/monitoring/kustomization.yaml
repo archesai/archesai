@@ -7,23 +7,21 @@ resources:
   - grafana-deployment.yaml
   - grafana-service.yaml
 
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - monitoring-config.yaml
+
 patches:
   - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.LOGGING.LOKI.ENABLED
-        value: 'true'
-      - op: add
-        path: /stringData/ARCHES.LOGGING.LOKI.HOST
-        value: http://loki:3100
-  - target:
+      kind: Ingress
       name: archesai-ingress
-    patch: |-
+    patch: |
       - op: add
         path: /spec/rules/0
         value:
-          host: grafana.mydomain
+          host: grafana.localhost
           http:
             paths:
               - pathType: Prefix

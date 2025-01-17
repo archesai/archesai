@@ -12,21 +12,21 @@ spec:
         component: ui
     spec:
       containers:
-        - image: us-east4-docker.pkg.dev/archesai/images/ui
+        - image: ui
           imagePullPolicy: IfNotPresent
           name: ui
           ports:
             - containerPort: 3000
           env:
-            - name: NEXT_PUBLIC_SERVER_HOST
+            - name: NEXT_PUBLIC_ARCHES.SERVER.HOST
               valueFrom:
                 secretKeyRef:
-                  name: archesai-config-secret
+                  name: archesai-config-env
                   key: ARCHES.SERVER.HOST
-            - name: NEXT_PUBLIC_TLS_ENABLED
+            - name: NEXT_PUBLIC_ARCHES.TLS.ENABLED
               valueFrom:
                 secretKeyRef:
-                  name: archesai-config-secret
+                  name: archesai-config-env
                   key: ARCHES.TLS.ENABLED
           resources:
             requests:

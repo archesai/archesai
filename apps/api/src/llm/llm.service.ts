@@ -1,23 +1,64 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { Logger } from '@nestjs/common'
 import OpenAI from 'openai'
 import { ChatCompletionCreateParamsStreaming } from 'openai/resources'
 
 import { CreateChatCompletionDto } from './dto/create-chat-completion.dto'
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
+import { HealthDto } from '@/src/health/dto/health.dto'
+import { RunStatusEnum } from '@/src/runs/entities/run.entity'
 
 @Injectable()
-export class LLMService {
-  public openai: OpenAI
+export class LlmService implements OnModuleInit {
+  private readonly logger = new Logger(LlmService.name)
+  private openai: OpenAI
+  private health: HealthDto = {
+    status: RunStatusEnum.QUEUED
+  }
 
-  private readonly logger: Logger = new Logger(LLMService.name)
+  constructor(private configService: ConfigService) {}
 
-  constructor(private configService: ArchesConfigService) {
-    this.openai = new OpenAI({
-      apiKey: this.configService.get('llm.token'),
-      baseURL: this.configService.get('llm.endpoint'),
-      organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
+  async onModuleInit() {
+    try {
+      this.logger.log('initializing llm service')
+      this.health.status = RunStatusEnum.PROCESSING
+      this.openai = new OpenAI({
+        apiKey: this.configService.get('llm.token'),
+        baseURL: this.configService.get('llm.endpoint'),
+        organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
+      })
+      this.logger.log('initialized llm service')
+      this.health.status = RunStatusEnum.COMPLETE
+    } catch (err) {
+      this.logger.error(err)
+      this.health.status = RunStatusEnum.ERROR
+      this.health.error = err
+    }
+  }
+
+  public getHealth(): { status: RunStatusEnum; error?: any } {
+    return this.health
+  }
+
+  async createEmbeddings(texts: string[]) {
+    const start = Date.now()
+    const { data, usage } = await this.openai.embeddings.create({
+      input: texts,
+      model:
+        this.configService.get('llm.type') == 'openai'
+          ? 'text-embedding-ada-002'
+          : 'mxbai-embed-large'
     })
+    const response = data.map((d) => {
+      return {
+        embedding: d.embedding,
+        tokens: Math.ceil(usage.total_tokens / texts.length)
+      }
+    })
+    this.logger.debug(
+      `Embedded ${texts.length} texts with ${usage.total_tokens} in ${(Date.now() - start) / 1000}s`
+    )
+    return response
   }
 
   async createChatCompletion(

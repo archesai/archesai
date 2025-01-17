@@ -1,3 +1,4 @@
+import { ConfigService } from '@/src/config/config.service'
 import {
   ArgumentsHost,
   BadRequestException,
@@ -18,7 +19,7 @@ export interface ExtendedError<T = any> extends Error {
 }
 @Catch()
 export class ExceptionsFilter implements ExceptionFilter {
-  private readonly logger: Logger = new Logger(ExceptionsFilter.name)
+  private readonly logger = new Logger(ExceptionsFilter.name)
 
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
@@ -53,12 +54,16 @@ export class ExceptionsFilter implements ExceptionFilter {
     // Log the error with additional details
     this.logError(request, exception, statusCode)
 
+    // Get loggineg level from environment
+    const configService = new ConfigService()
+    const logLevel = configService.get('logging.level')
+
     // Prepare the error response
     const errorResponse = {
       statusCode,
       message,
       // Include stack and cause only in development
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(logLevel === 'trace' && {
         stack: exception?.stack,
         cause: exception?.cause
       })
@@ -76,16 +81,14 @@ export class ExceptionsFilter implements ExceptionFilter {
       message: error.message,
       ...(statusCode >= 500 && { stack: error.stack }),
       ...(statusCode >= 500 && error.cause && { cause: error.cause })
-      // Optionally include correlation ID or other context
-      // correlationId: request.headers['x-correlation-id'] || 'N/A',
     }
 
     if (statusCode >= 500) {
-      this.logger.error(logPayload)
+      this.logger.error(logPayload, `server error`)
     } else if (statusCode >= 400) {
-      this.logger.warn(logPayload)
+      this.logger.warn(logPayload, `client error`)
     } else {
-      this.logger.log(logPayload)
+      this.logger.log(logPayload, `unknown error`)
     }
   }
 

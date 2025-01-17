@@ -85,11 +85,10 @@ describe('WebsocketsGateway', () => {
         sub: 'userId'
       })
       ;(usersService.findOne as jest.Mock).mockResolvedValue(user)
-
+      ;(socket.join as jest.Mock).mockReturnValue(socket)
       await gateway.handleConnection(socket)
 
       expect(authService.verifyToken).toHaveBeenCalledWith('validToken')
-      expect(usersService.findOne).toHaveBeenCalledWith('userId')
       expect(socket.join).toHaveBeenCalledWith('testOrg')
     })
 

@@ -4,7 +4,7 @@
   "scripts": {
     "build": "next build",
     "start": "next start",
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "lint": "next lint --dir .",
     "tsc": "tsc --noEmit --pretty",
     "test": "jest --color",

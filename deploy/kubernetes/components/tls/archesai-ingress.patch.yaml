@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: archesai-ingress
+  annotations:
+    cert-manager.io/issuer: letsencrypt-staging
+    cert-manager.io/private-key-algorithm: ECDSA
+spec:
+  tls:
+    - hosts:
+        - '*.localhost'
+      secretName: archesai-tls

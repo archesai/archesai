@@ -5,10 +5,8 @@ resources:
   - postgres-deployment.yaml
   - postgres-service.yaml
 
-patches:
-  - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.DATABASE.ENDPOINT
-        value: postgresql://admin:admin@postgres:5432/nestjs?schema=public
+secretGenerator:
+  - name: archesai-config-env
+    behavior: merge
+    literals:
+      - ARCHES.DATABASE.URL=postgresql://admin:admin@postgres:5432/nestjs?schema=public

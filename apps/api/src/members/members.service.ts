@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 
 import { BaseService } from '../common/base.service'
 import { WebsocketsService } from '../websockets/websockets.service'
@@ -12,7 +12,6 @@ export class MembersService extends BaseService<
   MemberModel,
   MemberRepository
 > {
-  private readonly logger = new Logger(MembersService.name)
   constructor(
     private usersService: UsersService,
     private memberRepository: MemberRepository,
@@ -46,7 +45,12 @@ export class MembersService extends BaseService<
 
   async join(orgname: string, inviteEmail: string, username: string) {
     this.logger.log(
-      `Accepting member ${inviteEmail} to organization ${orgname}`
+      {
+        orgname,
+        inviteEmail,
+        username
+      },
+      `attempting join`
     )
     return this.toEntity(
       await this.memberRepository.join(orgname, inviteEmail, username)

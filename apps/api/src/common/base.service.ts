@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common'
 import { BaseRepository, IPrismaDelegate } from './base.repository'
 import { PaginatedDto } from './dto/paginated.dto'
 import { SearchQueryDto } from './dto/search-query.dto'
@@ -7,9 +8,13 @@ export abstract class BaseService<
   TModel,
   TRepo extends BaseRepository<IPrismaDelegate<TModel>, any, TModel>
 > {
+  readonly logger = new Logger(this.constructor.name)
   constructor(protected readonly repository: TRepo) {}
 
   async create(data: Partial<TDto>): Promise<TDto> {
+    this.logger.debug(`create`, {
+      data
+    })
     const model = await this.repository.create(data)
     const entity = this.toEntity(model)
     this.emitMutationEvent(entity)
@@ -17,6 +22,9 @@ export abstract class BaseService<
   }
 
   async findAll(queryDto: SearchQueryDto): Promise<PaginatedDto<TDto>> {
+    this.logger.debug(`findAll`, {
+      queryDto
+    })
     const { count, results } = await this.repository.findAll(queryDto)
     const entities = results.map((result) => this.toEntity(result))
     const paginatedEntity = new PaginatedDto<TDto>({
@@ -32,12 +40,18 @@ export abstract class BaseService<
   }
 
   async findOne(id: string): Promise<TDto> {
+    this.logger.debug(`findOne`, {
+      id
+    })
     const model = await this.repository.findOne(id)
     const entity = this.toEntity(model)
     return entity
   }
 
   async remove(id: string): Promise<TDto> {
+    this.logger.debug('remove', {
+      id
+    })
     const deletedModel = await this.repository.remove(id)
     const deletedEntity = this.toEntity(deletedModel)
     this.emitMutationEvent(deletedEntity)
@@ -45,6 +59,10 @@ export abstract class BaseService<
   }
 
   async update(id: string, data: Partial<TDto>): Promise<TDto> {
+    this.logger.debug('update', {
+      id,
+      data
+    })
     const updated = await this.repository.update(id, data)
     const entity = this.toEntity(updated)
     this.emitMutationEvent(entity)

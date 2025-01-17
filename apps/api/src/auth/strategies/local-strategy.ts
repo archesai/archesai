@@ -9,7 +9,7 @@ import { UsersService } from '../../users/users.service'
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  private readonly logger: Logger = new Logger(LocalStrategy.name)
+  private readonly logger = new Logger(LocalStrategy.name)
 
   constructor(private usersService: UsersService) {
     super({ usernameField: 'email' })

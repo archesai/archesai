@@ -7,7 +7,7 @@ import { WebsocketsService } from '../websockets/websockets.service'
 import { ApiTokenRepository } from './api-token.repository'
 import { CreateApiTokenDto } from './dto/create-api-token.dto'
 import { ApiTokenEntity, ApiTokenModel } from './entities/api-token.entity'
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
 
 @Injectable()
 export class ApiTokensService extends BaseService<
@@ -17,7 +17,7 @@ export class ApiTokensService extends BaseService<
 > {
   constructor(
     private apiTokenRepository: ApiTokenRepository,
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private jwtService: JwtService,
     private websocketsService: WebsocketsService
   ) {

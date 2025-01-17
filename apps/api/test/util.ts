@@ -13,12 +13,12 @@ import { createClient } from 'redis'
 import request from 'supertest'
 
 import { RegisterDto } from '../src/auth/dto/register.dto'
-import { TokenDto } from '../src/auth/dto/token.dto'
+import { CookiesDto } from '../src/auth/dto/token.dto'
 import { OrganizationEntity } from '../src/organizations/entities/organization.entity'
 import { UserEntity } from '../src/users/entities/user.entity'
 import { UsersService } from '../src/users/users.service'
 import { AppModule } from '../src/app.module' // This enables path aliasing based on tsconfig.json
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 export const createApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -26,7 +26,7 @@ export const createApp = async () => {
   }).compile()
   const app = moduleFixture.createNestApplication()
 
-  const configService = app.get(ArchesConfigService)
+  const configService = app.get(ConfigService)
 
   //  Setup Logger
   app.useLogger(app.get(Logger))
@@ -117,7 +117,7 @@ export function sleep(ms: number) {
 export const registerUser = async (
   app: INestApplication,
   registerDto: RegisterDto
-): Promise<TokenDto> => {
+): Promise<CookiesDto> => {
   const res = await request(app.getHttpServer())
     .post('/auth/register')
     .send(registerDto)
@@ -169,151 +169,4 @@ export const deactivateUser = async (
     .post('/user/deactivate')
     .set('Authorization', `Bearer ${accessToken}`)
   expect(res.status).toBe(201)
-}
-
-export function testBaseControllerEndpoints(
-  getApp: () => INestApplication,
-  baseRoute: string,
-  accessToken: string,
-  testData: {
-    createCases: Array<{
-      dto: any
-      expectedResponse: any
-      expectedStatus: number
-      name: string
-    }>
-    findAllCases: Array<{
-      expectedResponse: any
-      expectedStatus: number
-      name: string
-    }>
-    findOneCases: Array<{
-      expectedResponse: any
-      expectedStatus: number
-      id: string
-      name: string
-    }>
-    removeCases: Array<{
-      expectedResponse: any
-      expectedStatus: number
-      id: string
-      name: string
-    }>
-    updateCases: Array<{
-      dto: any
-      expectedResponse: any
-      expectedStatus: number
-      id: string
-      name: string
-    }>
-  }
-) {
-  describe('Base Controller Endpoints', () => {
-    describe('POST ' + baseRoute, () => {
-      testData.createCases.forEach((testCase) => {
-        it(testCase.name, async () => {
-          const app = getApp() // Get the app instance when the test runs
-          await request(app.getHttpServer())
-            .post(baseRoute)
-            .set(
-              'Authorization',
-              `${accessToken ? `Bearer ${accessToken}` : ''}`
-            )
-            .send(testCase.dto)
-            .expect(testCase.expectedStatus)
-            .expect((res) => {
-              expect(res.body).toEqual(testCase.expectedResponse)
-            })
-            .expect((res) => {
-              expect(res).toSatisfyApiSpec()
-            })
-        })
-      })
-    })
-
-    describe('GET ' + baseRoute, () => {
-      testData.findAllCases.forEach((testCase) => {
-        it(testCase.name, async () => {
-          const app = getApp() // Get the app instance when the test runs
-          await request(app.getHttpServer())
-            .get(baseRoute)
-            .set(
-              'Authorization',
-              `${accessToken ? `Bearer ${accessToken}` : ''}`
-            )
-            .expect(testCase.expectedStatus)
-            .expect((res) => {
-              expect(res.body).toEqual(testCase.expectedResponse)
-            })
-            .expect((res) => {
-              expect(res).toSatisfyApiSpec()
-            })
-        })
-      })
-    })
-
-    describe('GET ' + baseRoute + '/:id', () => {
-      testData.findOneCases.forEach((testCase) => {
-        it(testCase.name, async () => {
-          const app = getApp() // Get the app instance when the test runs
-          await request(app.getHttpServer())
-            .get(`${baseRoute}/${testCase.id}`)
-            .set(
-              'Authorization',
-              `${accessToken ? `Bearer ${accessToken}` : ''}`
-            )
-            .expect(testCase.expectedStatus)
-            .expect((res) => {
-              expect(res.body).toEqual(testCase.expectedResponse)
-            })
-            .expect((res) => {
-              expect(res).toSatisfyApiSpec()
-            })
-        })
-      })
-    })
-
-    describe('PUT ' + baseRoute + '/:id', () => {
-      testData.updateCases.forEach((testCase) => {
-        it(testCase.name, async () => {
-          const app = getApp() // Get the app instance when the test runs
-          await request(app.getHttpServer())
-            .put(`${baseRoute}/${testCase.id}`)
-            .set(
-              'Authorization',
-              `${accessToken ? `Bearer ${accessToken}` : ''}`
-            )
-            .send(testCase.dto)
-            .expect(testCase.expectedStatus)
-            .expect((res) => {
-              expect(res.body).toEqual(testCase.expectedResponse)
-            })
-            .expect((res) => {
-              expect(res).toSatisfyApiSpec()
-            })
-        })
-      })
-    })
-
-    describe('DELETE ' + baseRoute + '/:id', () => {
-      testData.removeCases.forEach((testCase) => {
-        it(testCase.name, async () => {
-          const app = getApp() // Get the app instance when the test runs
-          await request(app.getHttpServer())
-            .delete(`${baseRoute}/${testCase.id}`)
-            .set(
-              'Authorization',
-              `${accessToken ? `Bearer ${accessToken}` : ''}`
-            )
-            .expect(testCase.expectedStatus)
-            .expect((res) => {
-              expect(res.body).toEqual(testCase.expectedResponse)
-            })
-            .expect((res) => {
-              expect(res).toSatisfyApiSpec()
-            })
-        })
-      })
-    })
-  })
 }

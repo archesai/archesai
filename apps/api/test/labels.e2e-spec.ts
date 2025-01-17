@@ -18,11 +18,8 @@ describe('Labels', () => {
   beforeAll(async () => {
     app = await createApp()
     await app.init()
-
     accessToken = (await registerUser(app, credentials)).accessToken
-
     const usersService = app.get<UsersService>(UsersService)
-
     const user = await getUser(app, accessToken)
     orgname = user.defaultOrgname
     await usersService.setEmailVerified(user.id)
@@ -39,6 +36,9 @@ describe('Labels', () => {
         name: 'label-name'
       })
       .set('Authorization', `Bearer ${accessToken}`)
+    expect(labelRes).toMatchObject({
+      status: 201
+    })
     expect(labelRes.status).toBe(201)
     expect(labelRes).toSatisfyApiSpec()
     labelId = labelRes.body.id

@@ -9,7 +9,7 @@ import {
   STORAGE_SERVICE
 } from './interfaces/storage-provider.interface'
 
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
 
 @Module({})
 export class StorageModule {
@@ -20,9 +20,9 @@ export class StorageModule {
       module: StorageModule,
       providers: [
         {
-          inject: [ArchesConfigService],
+          inject: [ConfigService],
           provide: STORAGE_SERVICE,
-          useFactory: (configService: ArchesConfigService): IStorageService => {
+          useFactory: (configService: ConfigService): IStorageService => {
             const storageType = configService.get('storage.type')
             switch (storageType) {
               case 'google-cloud':

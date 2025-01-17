@@ -6,35 +6,25 @@ resources:
   - minio-service.yaml
   - minio-persistentvolumeclaim.yaml
 
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - storage-config.yaml
+  - name: archesai-config-env
+    behavior: merge
+    literals:
+      - ARCHES.STORAGE.DASHBOARD=https://storaged.localhost
+
 patches:
   - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.STORAGE.TYPE
-        value: minio
-      - op: add
-        path: /stringData/ARCHES.STORAGE.ACCESSKEY
-        value: minioadmin
-      - op: add
-        path: /stringData/ARCHES.STORAGE.SECRETKEY
-        value: minioadmin
-      - op: add
-        path: /stringData/ARCHES.STORAGE.ENDPOINT
-        value: https://storage.mydomain
-      - op: add
-        path: /stringData/ARCHES.STORAGE.DASHBOARD
-        value: https://storaged.mydomain
-      - op: add
-        path: /stringData/ARCHES.STORAGE.BUCKET
-        value: archesai
-  - target:
+      kind: Ingress
       name: archesai-ingress
-    patch: |-
+    patch: |
       - op: add
-        path: /spec/rules/-
+        path: /spec/rules/0
         value:
-          host: storaged.mydomain
+          host: storaged.localhost
           http:
             paths:
               - pathType: Prefix
@@ -45,9 +35,9 @@ patches:
                     port:
                       number: 9001
       - op: add
-        path: /spec/rules/-
+        path: /spec/rules/0
         value:
-          host: storage.mydomain
+          host: storagehost
           http:
             paths:
               - pathType: Prefix

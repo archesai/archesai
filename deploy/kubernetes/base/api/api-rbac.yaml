@@ -8,7 +8,7 @@ rules:
     resources:
       - jobs
     resourceNames:
-      - api-upgrade
+      - migrations
     verbs:
       - get
       - list

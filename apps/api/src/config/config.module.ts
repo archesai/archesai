@@ -1,21 +1,11 @@
 import { Global, Module } from '@nestjs/common'
-import { ArchesConfigService } from './config.service'
-import { loadConfiguration } from './configuration'
-import { ConfigModule } from '@nestjs/config'
-import { archesConfigSchema } from './schema'
+import { ConfigService } from './config.service'
 import { ConfigController } from './config.controller'
 
 @Global()
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      ignoreEnvFile: true,
-      ignoreEnvVars: true,
-      load: [() => loadConfiguration(archesConfigSchema)]
-    })
-  ],
-  providers: [ArchesConfigService],
-  exports: [ArchesConfigService],
+  providers: [ConfigService],
+  exports: [ConfigService],
   controllers: [ConfigController]
 })
-export class ArchesConfigModule {}
+export class ConfigModule {}

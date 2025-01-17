@@ -13,7 +13,7 @@ import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
 import { EmailRequestDto } from '../dto/email-request.dto'
 import { ARTokensService } from './ar-tokens.service' // Import TokenService
 import { AuthService } from './auth.service'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class EmailChangeService {
@@ -22,7 +22,7 @@ export class EmailChangeService {
   constructor(
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
-    private readonly configService: ArchesConfigService,
+    private readonly configService: ConfigService,
     private readonly arTokensService: ARTokensService,
     private readonly authService: AuthService
   ) {}

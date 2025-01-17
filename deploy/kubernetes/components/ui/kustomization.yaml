@@ -5,20 +5,25 @@ resources:
   - ui-deployment.yaml
   - ui-service.yaml
 
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - ui-config.yaml
+  - name: archesai-config-env
+    behavior: merge
+    literals:
+      - ARCHES.SERVER.HOST=platform.localhost
+
 patches:
   - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.FRONTEND.HOST
-        value: platform.mydomain
-  - target:
+      kind: Ingress
       name: archesai-ingress
-    patch: |-
+    patch: |
       - op: add
         path: /spec/rules/0
         value:
-          host: platform.mydomain
+          host: platform.localhost
           http:
             paths:
               - pathType: Prefix

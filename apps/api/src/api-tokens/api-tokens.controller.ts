@@ -1,16 +1,17 @@
 import { Body, Controller, Param, Post } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { CurrentUser } from '../auth/decorators/current-user.decorator'
-import { BaseController } from '../common/base.controller'
-import { UserEntity } from '../users/entities/user.entity'
-import { ApiTokensService } from './api-tokens.service'
-import { CreateApiTokenDto } from './dto/create-api-token.dto'
-import { UpdateApiTokenDto } from './dto/update-api-token.dto'
-import { ApiTokenEntity } from './entities/api-token.entity'
+import { CurrentUser } from '@/src/auth/decorators/current-user.decorator'
+import { BaseController } from '@/src/common/base.controller'
+import { UserEntity } from '@/src/users/entities/user.entity'
+import { ApiTokensService } from '@/src/api-tokens/api-tokens.service'
+import { CreateApiTokenDto } from '@/src/api-tokens/dto/create-api-token.dto'
+import { UpdateApiTokenDto } from '@/src/api-tokens/dto/update-api-token.dto'
+import { ApiTokenEntity } from '@/src/api-tokens/entities/api-token.entity'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags(`API Tokens`)
+@Authenticated()
 @Controller('/organizations/:orgname/api-tokens')
 export class ApiTokensController extends BaseController<
   ApiTokenEntity,
@@ -32,6 +33,11 @@ export class ApiTokensController extends BaseController<
     @Body() createTokenDto: CreateApiTokenDto,
     @CurrentUser() currentUserDto: UserEntity
   ) {
+    this.logger.debug(`creating ${this.itemType}`, {
+      orgname,
+      createTokenDto,
+      currentUserDto
+    })
     return this.apiTokensService.create({
       ...createTokenDto,
       username: currentUserDto.username,

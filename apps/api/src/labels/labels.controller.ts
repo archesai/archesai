@@ -1,13 +1,14 @@
 import { Controller } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { BaseController } from '../common/base.controller'
-import { CreateLabelDto } from './dto/create-label.dto'
-import { UpdateLabelDto } from './dto/update-label.dto'
-import { LabelEntity } from './entities/label.entity'
-import { LabelsService } from './labels.service'
+import { BaseController } from '@/src/common/base.controller'
+import { CreateLabelDto } from '@/src/labels/dto/create-label.dto'
+import { UpdateLabelDto } from '@/src/labels/dto/update-label.dto'
+import { LabelEntity } from '@/src/labels/entities/label.entity'
+import { LabelsService } from '@/src/labels/labels.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
+@Authenticated()
 @ApiTags('Labels')
 @Controller('/organizations/:orgname/labels')
 export class LabelsController extends BaseController<

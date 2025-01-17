@@ -2,8 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./api-deployment.yaml
-  - ./api-service.yaml
-  - ./api-rbac.yaml
-  - ./api-upgrade-job.yaml
-  # - ./api-hpa.yaml
+  - api-deployment.yaml
+  - api-service.yaml
+  - api-rbac.yaml

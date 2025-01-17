@@ -13,7 +13,6 @@ export class CustomValidationPipe extends ValidationPipe {
       },
       whitelist: true,
       skipMissingProperties: false,
-      enableDebugMessages: true,
       stopAtFirstError: true,
       exceptionFactory: (errors) => {
         const messages = errors

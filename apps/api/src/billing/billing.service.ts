@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import Stripe from 'stripe'
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
 
 @Injectable()
 export class BillingService {
   private stripe: Stripe
-  constructor(private configService: ArchesConfigService) {
+  constructor(private configService: ConfigService) {
     this.stripe = new Stripe(
       this.configService.get('billing.stripe.token') || 'n/a',
       {

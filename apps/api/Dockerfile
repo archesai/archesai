@@ -9,7 +9,8 @@ RUN apk update && apk add --no-cache ffmpeg imagemagick graphicsmagick ghostscri
 # Install pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack install --global pnpm@9.15.4
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 # Set working directory
 WORKDIR /arches
@@ -20,7 +21,7 @@ WORKDIR /arches
 FROM base AS deps
 COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY --chown=node:node ./apps/api/package.json ./apps/api/package.json
-COPY --chown=node:node ./apps/api/prisma ./apps/api/prisma
+COPY --chown=node:node ./apps/api/prisma/schema.prisma ./apps/api/prisma/migrations ./apps/api/prisma/
 RUN pnpm install --filter api --frozen-lockfile
 COPY --chown=node:node tsconfig.json ./
 
@@ -29,7 +30,11 @@ COPY --chown=node:node tsconfig.json ./
 ###################
 FROM deps AS development
 COPY --chown=node:node ./apps/api ./apps/api
+
+ENV ARCHES.CONFDIR=/arches/conf
+RUN mkdir $(ARCHES.CONFDIR)/config.yaml.d
 USER node
+
 CMD ["pnpm", "--filter", "api", "run", "start:dev"]
 
 ###################

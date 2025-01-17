@@ -9,14 +9,14 @@ import { chromium, Browser } from 'playwright-core'
 import * as mime from 'mime-types'
 import sharp from 'sharp'
 import gm from 'gm'
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
 
 @Injectable()
 export class ScraperService implements OnModuleInit, OnModuleDestroy {
-  private logger = new Logger(ScraperService.name)
+  private readonly logger = new Logger(ScraperService.name)
   private browser: Browser
 
-  constructor(readonly configService: ArchesConfigService) {}
+  constructor(readonly configService: ConfigService) {}
 
   async onModuleInit() {
     await this.initializeBrowser()
@@ -29,18 +29,23 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
   private async initializeBrowser() {
     const scraperEndpoint = this.configService.get('scraper.endpoint')!
     this.browser = await chromium.connect(scraperEndpoint)
-    this.logger.log('Connected to remote browser service at ' + scraperEndpoint)
+    this.logger.log(
+      {
+        scraperEndpoint
+      },
+      'browser connection open'
+    )
   }
 
   private async closeBrowser() {
     if (this.browser) {
       await this.browser.close()
-      this.logger.log('Browser connection closed')
+      this.logger.log('browser connection closed')
     }
   }
 
   async takeScreenshot(url: string): Promise<Buffer> {
-    this.logger.debug('Taking screenshot of ' + url)
+    this.logger.debug({ url }, 'taking screenshot')
     const context = await this.browser.newContext({
       viewport: { width: 1920, height: 1080 } // Optional: Set a consistent viewport size
     })
@@ -51,12 +56,12 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
       fullPage: true
     })
     await context.close()
-    this.logger.debug('Screenshot taken')
+    this.logger.debug({ url }, 'screenshot taken')
     return screenshot
   }
 
   async detectMimeType(url: string): Promise<string> {
-    this.logger.debug('Detecting MIME type of ' + url)
+    this.logger.debug({ url }, 'detecting mime type')
     let mimeType: string
     try {
       const response = await fetch(url, { method: 'HEAD' })
@@ -64,22 +69,20 @@ export class ScraperService implements OnModuleInit, OnModuleDestroy {
       if (mimeType) {
         return mimeType
       }
-      this.logger.warn(
-        'Failed to detect MIME type from content-type header. Attempting to parse from URL path...'
-      )
+      this.logger.warn('failed to detect mime type from content-type header')
       const urlObj = new URL(url)
       const pathname = urlObj.pathname
       const fileName = pathname.split('/').pop()
       if (!fileName) {
-        throw new BadRequestException('Failed to detect MIME type')
+        throw new BadRequestException('failed to detect mime type')
       }
       mimeType = mime.lookup(fileName) || ''
       if (mimeType === '') {
-        throw new BadRequestException('Failed to detect MIME type')
+        throw new BadRequestException('failed to detect mime type')
       }
     } catch (error) {
       throw new BadRequestException({
-        message: 'Failed to detect MIME type',
+        message: 'failed to detect mime type',
         cause: error
       })
     }

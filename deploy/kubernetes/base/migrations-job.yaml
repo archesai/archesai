@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrations
+          image: api
+          command: ['pnpm']
+          args: ['--filter', 'api', 'migrations:prod']
+          envFrom:
+            - secretRef:
+                name: archesai-config-env

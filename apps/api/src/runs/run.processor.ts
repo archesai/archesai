@@ -5,7 +5,7 @@ import { Job } from 'bullmq'
 
 import { ContentService } from '@/src/content/content.service'
 import { ContentEntity } from '@/src/content/entities/content.entity'
-import { LLMService } from '@/src/llm/llm.service'
+import { LlmService } from '@/src/llm/llm.service'
 import { RunpodService } from '@/src/runpod/runpod.service'
 import { SpeechService } from '@/src/speech/speech.service'
 import { RunsService } from './runs.service'
@@ -14,7 +14,7 @@ import { transformTextToEmbeddings } from './transformers/text-to-embeddings.tra
 import { transformTextToImage } from './transformers/text-to-image.transformer'
 import { transformTextToSpeech } from './transformers/text-to-speech.transformer'
 import { transformTextToText } from './transformers/text-to-text.transformer'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 import {
   IStorageService,
   STORAGE_SERVICE
@@ -24,17 +24,17 @@ export type RunJob = Job<ContentEntity[], ContentEntity[], string>
 
 @Processor('run')
 export class RunProcessor extends WorkerHost {
-  private readonly logger: Logger = new Logger(RunProcessor.name)
+  private readonly logger = new Logger(RunProcessor.name)
 
   constructor(
     private runsService: RunsService,
     @Inject(STORAGE_SERVICE)
     private storageService: IStorageService,
     private contentService: ContentService,
-    private llmService: LLMService,
+    private llmService: LlmService,
     private speechService: SpeechService,
     private httpService: HttpService,
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private runpodService: RunpodService
   ) {
     super()
@@ -42,19 +42,25 @@ export class RunProcessor extends WorkerHost {
 
   @OnWorkerEvent('active')
   async onActive(job: RunJob) {
-    this.logger.log(`Processing job ${job.id} with toolBase ${job.name}`)
+    this.logger.log(job, `processing`)
     await this.runsService.setStatus(job.id!.toString(), 'PROCESSING')
   }
 
   @OnWorkerEvent('completed')
   async onCompleted(job: RunJob) {
-    this.logger.log(`Completed job ${job.id}`)
+    this.logger.log(job, `completed`)
     await this.runsService.setStatus(job.id!.toString(), 'COMPLETE')
   }
 
   @OnWorkerEvent('error')
   async onError(job: RunJob, error: any) {
-    this.logger.error(`Error running job ${job.id}: ${error.message}`)
+    this.logger.error(
+      {
+        job,
+        error
+      },
+      `error`
+    )
     try {
       await this.runsService.setStatus(job.id!.toString(), 'ERROR')
       await this.runsService.setRunError(job.id!.toString(), error?.message)
@@ -129,7 +135,7 @@ export class RunProcessor extends WorkerHost {
         throw new Error(`Unknown toolId ${job.name}`)
     }
 
-    this.logger.log(`Adding run output contents to run ${job.id!}`)
+    this.logger.log(job, `adding run output`)
     await this.runsService.setInputsOrOutputs(
       job.id!.toString(),
       'outputs',

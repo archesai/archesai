@@ -1,14 +1,15 @@
 import { Controller } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { BaseController } from '../common/base.controller'
-import { CreatePipelineDto } from './dto/create-pipeline.dto'
-import { UpdatePipelineDto } from './dto/update-pipeline.dto'
-import { PipelineEntity } from './entities/pipeline.entity'
-import { PipelinesService } from './pipelines.service'
+import { BaseController } from '@/src/common/base.controller'
+import { CreatePipelineDto } from '@/src/pipelines/dto/create-pipeline.dto'
+import { UpdatePipelineDto } from '@/src/pipelines/dto/update-pipeline.dto'
+import { PipelineEntity } from '@/src/pipelines/entities/pipeline.entity'
+import { PipelinesService } from '@/src/pipelines/pipelines.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags('Pipelines')
+@Authenticated()
 @Controller('/organizations/:orgname/pipelines')
 export class PipelinesController extends BaseController<
   PipelineEntity,

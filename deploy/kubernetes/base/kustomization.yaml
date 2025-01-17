@@ -2,6 +2,26 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ./api
-  - ./archesai-config-secret.yaml
-  - ./archesai-ingress.yaml
+  - archesai-ingress.yaml
+  - migrations-job.yaml
+  - api
+
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: create
+    files:
+      - config.yaml
+    options:
+      disableNameSuffixHash: true
+  - name: archesai-config-env
+    behavior: create
+    options:
+      disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: archesai-config-ingress
+    behavior: create
+    literals:
+      - ARCHES.DOMAIN=localhost
+    options:
+      disableNameSuffixHash: true

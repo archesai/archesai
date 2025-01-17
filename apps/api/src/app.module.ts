@@ -1,63 +1,86 @@
 import { HttpModule } from '@nestjs/axios'
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { APP_GUARD } from '@nestjs/core'
 import { JwtModule } from '@nestjs/jwt'
 import { MulterModule } from '@nestjs/platform-express'
 import { ScheduleModule } from '@nestjs/schedule'
 import { readFileSync } from 'fs'
+
+import { ApiTokensModule } from '@/src/api-tokens/api-tokens.module'
+import { AudioModule } from '@/src/audio/audio.module'
+import { AuthModule } from '@/src/auth/auth.module'
+import { DeactivatedGuard } from '@/src/auth/guards/deactivated.guard'
+import { MembershipGuard } from '@/src/auth/guards/membership.guard'
+import { BillingModule } from '@/src/billing/billing.module'
+import { CommonModule } from '@/src/common/common.module'
+import { ContentModule } from '@/src/content/content.module'
+import { EmailModule } from '@/src/email/email.module'
+import { LabelsModule } from '@/src/labels/labels.module'
+import { LlmModule } from '@/src/llm/llm.module'
+import { MembersModule } from '@/src/members/members.module'
+import { OrganizationsModule } from '@/src/organizations/organizations.module'
+import { PipelinesModule } from '@/src/pipelines/pipelines.module'
+import { PrismaModule } from '@/src/prisma/prisma.module'
+import { RunpodModule } from '@/src/runpod/runpod.module'
+import { RunsModule } from '@/src/runs/runs.module'
+import { SpeechModule } from '@/src/speech/speech.module'
+import { StorageModule } from '@/src/storage/storage.module'
+import { ToolsModule } from '@/src/tools/tools.module'
+import { UsersModule } from '@/src/users/users.module'
+import { WebsocketsModule } from '@/src/websockets/websockets.module'
+import { ConfigModule } from '@/src/config/config.module'
+import { ApiTokenRestrictedDomainGuard } from '@/src/auth/guards/api-token-restricted-domain.guard'
+import { HealthModule } from '@/src/health/health.module'
+import { ScraperModule } from '@/src/scraper/scraper.module'
+import { ConfigService } from '@/src/config/config.service'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 import { LoggerErrorInterceptor, LoggerModule, Params } from 'nestjs-pino'
 
-import { ApiTokensModule } from './api-tokens/api-tokens.module'
-import { AudioModule } from './audio/audio.module'
-import { AuthModule } from './auth/auth.module'
-import { AppAuthGuard } from './auth/guards/app-auth.guard'
-import { DeactivatedGuard } from './auth/guards/deactivated.guard'
-import { MembershipGuard } from './auth/guards/organization-role.guard'
-import { BillingModule } from './billing/billing.module'
-import { CommonModule } from './common/common.module'
-import { ContentModule } from './content/content.module'
-import { EmailModule } from './email/email.module'
-import { EmbeddingsModule } from './embeddings/embeddings.module'
-import { LabelsModule } from './labels/labels.module'
-import { LLMModule } from './llm/llm.module'
-import { MembersModule } from './members/members.module'
-import { OrganizationsModule } from './organizations/organizations.module'
-import { PipelinesModule } from './pipelines/pipelines.module'
-import { PrismaModule } from './prisma/prisma.module'
-import { RunpodModule } from './runpod/runpod.module'
-import { RunsModule } from './runs/runs.module'
-import { SpeechModule } from './speech/speech.module'
-import { StorageModule } from './storage/storage.module'
-import { ToolsModule } from './tools/tools.module'
-import { UsersModule } from './users/users.module'
-import { WebsocketsGateway } from './websockets/websockets.gateway'
-import { WebsocketsModule } from './websockets/websockets.module'
-import { ArchesConfigModule } from './config/config.module'
-import { ApiTokenRestrictedDomainGuard } from './auth/guards/api-token-restricted-domain.guard'
-import { HealthModule } from './health/health.module'
-import { ScraperModule } from './scraper/scraper.module'
-import { ArchesConfigService } from './config/config.service'
-
 @Module({
-  controllers: [],
   imports: [
-    CommonModule,
-    PipelinesModule,
     LoggerModule.forRootAsync({
-      imports: [ArchesConfigModule],
-      inject: [ArchesConfigService],
-      useFactory: (configService: ArchesConfigService) => {
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const targets = []
+        if (configService.get('monitoring.loki.enabled')) {
+          targets.push({
+            options: {
+              host: configService.get('monitoring.loki.host'),
+              json: true,
+              labels: {
+                app: 'archesai',
+                environment: 'production'
+              }
+            },
+            target: 'pino-loki'
+          })
+        }
+        targets.push({
+          options: {
+            singleLine: true,
+            colorize: true
+          },
+          target: 'pino-pretty'
+        })
+
         const loggerConfig: Params = {
           pinoHttp: {
-            customProps: (req: any, res) => ({
+            customProps: (req: any) => ({
               context: 'HTTP',
-              origin: req?.headers?.origin,
-              params: req?.params,
-              path: req?.path?.split('?')[0],
-              query: req?.query,
-              statusCode: res?.statusCode
+              origin: req?.headers?.origin
             }),
+            messageKey: 'message',
+            customErrorMessage() {
+              return 'http request error'
+            },
+            customReceivedMessage() {
+              return 'http request received'
+            },
+            customSuccessMessage() {
+              return 'http request successful'
+            },
             formatters: configService.get('logging.gcpfix')
               ? {
                   level(label: string) {
@@ -70,46 +93,23 @@ import { ArchesConfigService } from './config/config.service'
               paths: ['req', 'res'],
               remove: true
             },
-            transport: {
-              targets: [
-                ...(configService.get('logging.loki.enabled')
-                  ? [
-                      {
-                        options: {
-                          host: configService.get('logging.loki.host'),
-                          json: true,
-                          labels: {
-                            app: 'archesai',
-                            environment: 'production'
-                          }
-                        },
-                        target: 'pino-loki'
-                      }
-                    ]
-                  : []),
-                {
-                  options: {
-                    colorize: true,
-                    singleLine: true
-                  },
-                  target: 'pino-pretty'
-                }
-              ]
-            }
+            transport: targets.length > 0 ? { targets } : undefined
           }
         }
         return loggerConfig
       }
     }),
+    ConfigModule,
+    CommonModule,
+    PipelinesModule,
     AuthModule,
     UsersModule,
     OrganizationsModule,
     MembersModule,
-    ArchesConfigModule,
     BullModule.forRootAsync({
-      imports: [ArchesConfigModule],
-      inject: [ArchesConfigService],
-      useFactory: async (configService: ArchesConfigService) => ({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
         connection: {
           host: configService.get('redis.host'),
           password: configService.get('redis.auth'),
@@ -130,8 +130,7 @@ import { ArchesConfigService } from './config/config.service'
     EmailModule,
     MulterModule,
     ApiTokensModule,
-    EmbeddingsModule,
-    LLMModule,
+    LlmModule,
     LabelsModule,
     StorageModule.forRoot(),
     WebsocketsModule,
@@ -146,11 +145,6 @@ import { ArchesConfigService } from './config/config.service'
     ScraperModule
   ],
   providers: [
-    WebsocketsGateway,
-    {
-      provide: APP_GUARD,
-      useClass: AppAuthGuard
-    },
     {
       provide: APP_GUARD,
       useClass: DeactivatedGuard

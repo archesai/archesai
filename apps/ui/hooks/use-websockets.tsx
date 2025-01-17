@@ -16,10 +16,7 @@ export const useWebsockets = ({
   useEffect(() => {
     if (accessToken) {
       const websocket = io(
-        process.env.NEXT_PUBLIC_SERVER_HOST!.replace(
-          `http${process.env.NEXT_PUBLIC_TLS_ENABLED === 'true' ? 's' : ''}://`,
-          `ws${process.env.NEXT_PUBLIC_TLS_ENABLED === 'true' ? 's' : ''}://`
-        ),
+        `ws${process.env['NEXT_PUBLIC_ARCHES.TLS.ENABLED'] ? 's' : ''}://${process.env['NEXT_PUBLIC_ARCHES.SERVER.HOST']}`,
         {
           auth: {
             token: overrideToken || accessToken

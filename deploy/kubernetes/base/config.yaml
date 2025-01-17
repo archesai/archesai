@@ -1,0 +1,27 @@
+server:
+  host: api.localhost
+  cors:
+    origins: '*'
+  docs:
+    enabled: false
+email:
+  enabled: false
+billing:
+  enabled: false
+embedding:
+  type: openai
+jwt:
+  expiration: '31536000'
+  secret: asdfasdf
+llm:
+  type: openai
+  token: open-ai-key
+session:
+  secret: secret
+logging:
+  level: info
+  pretty: false
+unstructured:
+  enabled: false
+config:
+  validate: true

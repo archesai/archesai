@@ -19,8 +19,8 @@ export class UserRepository extends BaseRepository<
     super(prisma.user, USER_INCLUDE)
   }
 
-  async addAuthProvider(
-    email: string,
+  async linkAuthProvider(
+    id: string,
     provider: AuthProviderType,
     providerId: string
   ) {
@@ -34,7 +34,7 @@ export class UserRepository extends BaseRepository<
         }
       },
       include: USER_INCLUDE,
-      where: { email }
+      where: { id }
     })
   }
 

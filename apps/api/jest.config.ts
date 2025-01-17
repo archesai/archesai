@@ -36,7 +36,9 @@ const config: Config = {
   // A map from regular expressions to paths to transformers
   transform: {
     '^.+\\.(t|j)s?$': '@swc/jest'
-  }
+  },
+  verbose: true,
+  silent: false
 }
 
 export default config

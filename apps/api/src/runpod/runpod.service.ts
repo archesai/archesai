@@ -9,7 +9,7 @@ import { RunsService } from '../runs/runs.service'
 
 @Injectable()
 export class RunpodService {
-  private readonly logger: Logger = new Logger(RunpodService.name)
+  private readonly logger = new Logger(RunpodService.name)
 
   constructor(
     private readonly httpService: HttpService,

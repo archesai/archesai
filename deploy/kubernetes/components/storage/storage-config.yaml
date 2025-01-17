@@ -1,0 +1,7 @@
+storage:
+  type: minio
+  accessKey: minioadmin
+  secretKey: minioadmin
+  endpoint: https://storage.localhost
+  dashboard: https://storaged.localhost
+  bucket: archesai

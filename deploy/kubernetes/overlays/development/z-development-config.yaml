@@ -1,0 +1,13 @@
+server:
+  host: api.archesai.dev
+docs:
+  enabled: true
+logging:
+  pretty: true
+frontend:
+  host: platform.archesai.dev
+storage:
+  endpoint: https://storage.archesai.dev
+  dashboard: https://storaged.archesai.dev
+config:
+  validate: true

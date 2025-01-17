@@ -5,19 +5,14 @@ import * as bcrypt from 'bcryptjs'
 
 import { AppModule } from '../src/app.module'
 import { UsersService } from '../src/users/users.service'
-import { Logger } from '@nestjs/common'
 import { resetDatabase } from './util'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  const logger = new Logger('SeedProcess')
-
   await resetDatabase()
 
-  const app = await NestFactory.createApplicationContext(AppModule, {
-    logger
-  })
+  const app = await NestFactory.createApplicationContext(AppModule)
   const usersService = app.get(UsersService)
   const hashedPassword = await bcrypt.hash('password', 10)
   const user = await usersService.create({
@@ -101,8 +96,6 @@ async function main() {
   }
 
   await app.close()
-
-  logger.log('Seeding complete')
 }
 
 ;(async () => {

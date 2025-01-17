@@ -49,7 +49,7 @@ describe('UsersService', () => {
     })
   })
 
-  describe('syncAuthProvider', () => {
+  describe('linkAuthProvider', () => {
     it('should add auth provider if not exists', async () => {
       const email = 'test@test.com'
       const provider = AuthProviderType.LOCAL
@@ -58,7 +58,7 @@ describe('UsersService', () => {
       const mockedUser = createRandomUser()
 
       mockedUserRepository.findOneByEmail.mockResolvedValue(mockedUser)
-      mockedUserRepository.addAuthProvider.mockResolvedValue({
+      mockedUserRepository.linkAuthProvider.mockResolvedValue({
         ...mockedUser,
         authProviders: [
           {
@@ -71,9 +71,9 @@ describe('UsersService', () => {
         ]
       })
 
-      await service.syncAuthProvider(email, provider, providerId)
+      await service.linkAuthProvider(email, provider, providerId)
 
-      expect(mockedUserRepository.addAuthProvider).toHaveBeenCalledWith(
+      expect(mockedUserRepository.linkAuthProvider).toHaveBeenCalledWith(
         email,
         provider,
         providerId

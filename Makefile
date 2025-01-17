@@ -11,9 +11,11 @@ MAKEFLAGS += -j4
 TEST_FILE ?= ""
 SUBDIR ?= .
 
+
+
 # Run the application : TEMP this are removed  --cleanup=false \ --default-repo=registry.localhost:5000
 dev:
-	skaffold dev --profile dev 
+	SKAFFOLD_LABEL=skaffold.dev/run-id=static  skaffold dev --profile dev
 
 # Run the application : TEMP this are removed  --cleanup=false \ --default-repo=registry.localhost:5000
 start:
@@ -21,7 +23,7 @@ start:
 
 # Run the application
 stop:
-	skaffold delete
+	skaffold delete --profile dev
 
 # Install Dependencies
 install:
@@ -64,12 +66,12 @@ k3d-stop:
 
 # Migrate the database
 migrate:
-	skaffold build --file-output=build.json --profile dev --quiet
+	skaffold build --file-output=build.json --profile dev
 	skaffold exec migrate --build-artifacts=build.json --profile dev
 
 # Seed the database
 seed:
-	skaffold build --file-output=build.json --profile dev --quiet
+	skaffold build --file-output=build.json --profile dev
 	skaffold exec seed --build-artifacts=build.json --profile dev
 
 # Generate OpenAPI Spec and UI
@@ -82,5 +84,5 @@ test:
 	pnpm test
 
 test-e2e:
-	skaffold build --file-output=build.json --profile dev --quiet
+	skaffold build --file-output=build.json --profile dev
 	skaffold exec test-e2e --build-artifacts=build.json --profile dev

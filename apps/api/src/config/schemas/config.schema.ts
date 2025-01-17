@@ -16,9 +16,13 @@ export const archesConfigSchema = z.object({
     cors: z.object({
       origins: z.string()
     }),
-    swagger: z.object({
+    docs: z.object({
       enabled: stringToBoolean
     })
+  }),
+
+  config: z.object({
+    validate: stringToBoolean
   }),
 
   frontend: z.object({
@@ -30,7 +34,7 @@ export const archesConfigSchema = z.object({
   }),
 
   database: z.object({
-    endpoint: z.string()
+    url: z.string()
   }),
 
   email: z
@@ -153,6 +157,16 @@ export const archesConfigSchema = z.object({
     secret: z.string()
   }),
 
+  monitoring: z.object({
+    enabled: stringToBoolean,
+    loki: z
+      .object({
+        enabled: stringToBoolean,
+        host: z.string()
+      })
+      .optional()
+  }),
+
   logging: z.object({
     level: z.enum([
       'fatal',
@@ -163,12 +177,7 @@ export const archesConfigSchema = z.object({
       'trace',
       'silent'
     ]),
-    loki: z
-      .object({
-        enabled: stringToBoolean,
-        host: z.string()
-      })
-      .optional(),
+    pretty: stringToBoolean,
     gcpfix: stringToBoolean.optional().default(false)
   }),
 

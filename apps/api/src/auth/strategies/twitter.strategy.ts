@@ -21,7 +21,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
     token: string,
     tokenSecret: string,
     profile: Profile,
-    cb: any
+    cb: (err: any, user: UserEntity | boolean) => void
   ) {
     try {
       const twitterId = profile.id
@@ -35,19 +35,20 @@ export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
         user = await this.usersService.findOneByEmail(email)
       } catch {
         user = await this.usersService.create({
-          email: email,
+          email,
           emailVerified: true,
           photoUrl: profile.photos?.[0]?.value || '',
           username
         }) // FIXME unsafe
-      } finally {
-        user = await this.usersService.syncAuthProvider(
-          email,
+      }
+      return cb(
+        null,
+        await this.usersService.linkAuthProvider(
+          user.id,
           AuthProviderType.TWITTER,
           twitterId
         )
-      }
-      return cb(null, user)
+      )
     } catch (err) {
       return cb(err, false)
     }

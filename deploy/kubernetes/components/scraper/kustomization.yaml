@@ -5,13 +5,8 @@ resources:
   - playwright-deployment.yaml
   - playwright-service.yaml
 
-patches:
-  - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.SCRAPER.ENABLED
-        value: 'true'
-      - op: add
-        path: /stringData/ARCHES.SCRAPER.ENDPOINT
-        value: http://playwright:3000
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - scraper-config.yaml

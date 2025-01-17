@@ -5,16 +5,8 @@ resources:
   - redis-deployment.yaml
   - redis-service.yaml
 
-patches:
-  - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.REDIS.AUTH
-        value: PASSWORD
-      - op: add
-        path: /stringData/ARCHES.REDIS.HOST
-        value: redis
-      - op: add
-        path: /stringData/ARCHES.REDIS.PORT
-        value: '6379'
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - redis-config.yaml

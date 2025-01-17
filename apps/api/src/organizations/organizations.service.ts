@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ForbiddenException } from '@nestjs/common'
 import { PlanType } from '@prisma/client'
 
@@ -15,7 +15,7 @@ import {
 import { OrganizationRepository } from './organization.repository'
 import { RoleTypeEnum } from '../members/entities/member.entity'
 import { UserEntity } from '../users/entities/user.entity'
-import { ArchesConfigService } from '../config/config.service'
+import { ConfigService } from '../config/config.service'
 
 @Injectable()
 export class OrganizationsService extends BaseService<
@@ -23,11 +23,9 @@ export class OrganizationsService extends BaseService<
   OrganizationModel,
   OrganizationRepository
 > {
-  private readonly logger = new Logger(OrganizationsService.name)
   constructor(
-    @Inject(forwardRef(() => BillingService))
     private billingService: BillingService,
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private organizationRepository: OrganizationRepository,
     private toolsService: ToolsService,
     private pipelinesService: PipelinesService,

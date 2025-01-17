@@ -5,35 +5,33 @@ import { Request } from 'express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 
 import { UsersService } from '../../users/users.service'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  private readonly logger: Logger = new Logger(JwtStrategy.name)
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private readonly logger = new Logger(JwtStrategy.name)
 
   constructor(
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private usersService: UsersService
   ) {
     super({
-      ignoreExpiration: false,
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          // Check for token in the Authorization header
-          const authToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request)
-          this.logger.debug(`authToken: ${authToken}`)
-          if (authToken) {
-            return authToken
+          const bearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request)
+          if (bearerToken) {
+            this.logger.debug(
+              `Access Token Extracted From Header: ${bearerToken}`
+            )
+            return bearerToken
           }
-
-          // Check for token in the signed cookie named 'auth_token'
           const cookieToken = request.cookies?.['archesai.accessToken']
-          this.logger.debug(`cookieToken: ${cookieToken}`)
+          this.logger.debug(
+            `Access Token Extracted From Cookies: ${cookieToken}`
+          )
           if (cookieToken) {
             return cookieToken
           }
-
-          return null
         }
       ]),
       secretOrKey: configService.get('jwt.secret')

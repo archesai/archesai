@@ -1,13 +1,14 @@
 import { Controller } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { BaseController } from '../common/base.controller'
-import { CreateRunDto } from './dto/create-run.dto'
-import { RunEntity } from './entities/run.entity'
-import { RunsService } from './runs.service'
+import { BaseController } from '@/src/common/base.controller'
+import { CreateRunDto } from '@/src/runs/dto/create-run.dto'
+import { RunEntity } from '@/src/runs/entities/run.entity'
+import { RunsService } from '@/src/runs/runs.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags('Runs')
+@Authenticated()
 @Controller('/organizations/:orgname/runs')
 export class RunsController extends BaseController<
   RunEntity,

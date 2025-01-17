@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer'
 import { IsString } from 'class-validator'
 
-export class TokenDto {
+export class CookiesDto {
   /**
    * The authorization token that can be used to access Arches AI
    * @example 'supersecretauthorizationtoken'

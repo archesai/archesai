@@ -1,4 +1,4 @@
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 import { Logger } from '@nestjs/common'
 import { IoAdapter } from '@nestjs/platform-socket.io'
 import { createAdapter } from '@socket.io/redis-adapter'
@@ -9,10 +9,10 @@ import { ServerOptions } from 'socket.io'
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>
 
-  private readonly logger: Logger = new Logger(RedisIoAdapter.name)
+  private readonly logger = new Logger(RedisIoAdapter.name)
   constructor(
     app: any,
-    private readonly configService: ArchesConfigService
+    private readonly configService: ConfigService
   ) {
     super(app)
   }

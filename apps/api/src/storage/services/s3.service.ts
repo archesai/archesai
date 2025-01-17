@@ -23,7 +23,9 @@ import { Readable } from 'stream'
 import { StorageItemDto } from '../dto/storage-item.dto'
 import { IStorageService } from '../interfaces/storage-provider.interface'
 import { v4 } from 'uuid'
-import { ArchesConfigService } from '../../config/config.service'
+import { ConfigService } from '../../config/config.service'
+import { HealthDto } from '@/src/health/dto/health.dto'
+import { RunStatusEnum } from '@/src/runs/entities/run.entity'
 
 @Injectable()
 export class S3StorageProvider implements IStorageService, OnModuleInit {
@@ -32,8 +34,11 @@ export class S3StorageProvider implements IStorageService, OnModuleInit {
   private bucketName: string
   private expirationTime = 60 * 60 * 1000 // 1 hour in milliseconds
   private s3Client: S3Client
+  private health: HealthDto = {
+    status: RunStatusEnum.QUEUED
+  }
 
-  constructor(private readonly configService: ArchesConfigService) {
+  constructor(private readonly configService: ConfigService) {
     this.bucketName = this.configService.get('storage.bucket')!
     this.s3Client = new S3Client({
       credentials: {
@@ -53,7 +58,21 @@ export class S3StorageProvider implements IStorageService, OnModuleInit {
    * errors gracefully, so that your app doesn't crash.
    */
   async onModuleInit() {
-    await this.createBucketIfNotExists()
+    try {
+      this.logger.log('initializing s3 service')
+      this.health.status = RunStatusEnum.PROCESSING
+      await this.createBucketIfNotExists()
+      this.logger.log('initialized s3 service')
+      this.health.status = RunStatusEnum.COMPLETE
+    } catch (err) {
+      this.logger.error(err)
+      this.health.status = RunStatusEnum.ERROR
+      this.health.error = err
+    }
+  }
+
+  public getHealth(): HealthDto {
+    return this.health
   }
 
   async checkFileExists(orgname: string, filePath: string): Promise<boolean> {

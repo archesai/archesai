@@ -1,9 +1,10 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common'
+import { ClassSerializerInterceptor, Global, Module } from '@nestjs/common'
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, Reflector } from '@nestjs/core'
 
 import { ExceptionsFilter } from './filters/exceptions.filter'
 import { CustomValidationPipe } from './pipes/custom-validation.pipe'
 
+@Global()
 @Module({
   providers: [
     {

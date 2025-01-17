@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { CurrentUser } from '../auth/decorators/current-user.decorator'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { UserEntity } from './entities/user.entity'
-import { UsersService } from './users.service'
+import { CurrentUser } from '@/src/auth/decorators/current-user.decorator'
+import { UpdateUserDto } from '@/src/users/dto/update-user.dto'
+import { UserEntity } from '@/src/users/entities/user.entity'
+import { UsersService } from '@/src/users/users.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags('User')
+@Authenticated()
 @Controller('/user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

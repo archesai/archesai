@@ -9,50 +9,44 @@ import { Logger } from 'nestjs-pino'
 import passport from 'passport'
 import { createClient } from 'redis'
 
-import { AppModule } from './app.module'
-import { RedisIoAdapter } from './common/adapters/redis-io.adapter'
-import { AggregateFieldResult, Metadata } from './common/dto/paginated.dto'
-import { FieldAggregate, FieldFilter } from './common/dto/search-query.dto'
-import { ArchesConfigService } from './config/config.service'
+import { AppModule } from '@/src/app.module'
+import { RedisIoAdapter } from '@/src/common/adapters/redis-io.adapter'
+import { AggregateFieldResult, Metadata } from '@/src/common/dto/paginated.dto'
+import { FieldAggregate, FieldFilter } from '@/src/common/dto/search-query.dto'
+import { ConfigService } from '@/src/config/config.service'
+import { apiReference } from '@scalar/nestjs-api-reference'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
     rawBody: true
   })
-  const configService = app.get(ArchesConfigService)
+  const configService = app.get(ConfigService)
 
-  // Swagger Setup
-  if (configService.get('server.swagger.enabled')) {
+  // Docs Setup
+  if (configService.get('server.docs.enabled')) {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('Arches AI API')
       .setDescription('The Arches AI API')
       .setVersion('v1')
       .addBearerAuth()
+      .addCookieAuth()
       .addServer(
         `${configService.get('tls.enabled') ? 'https://' : 'http://'}${configService.get('server.host')}`!
       )
       .build()
-    const documentFactory = () =>
-      SwaggerModule.createDocument(app, swaggerConfig, {
-        extraModels: [
-          FieldFilter,
-          FieldAggregate,
-          AggregateFieldResult,
-          Metadata
-        ]
-        // operationIdFactory: (controllerKey: string, methodKey: string) => methodKey
-      })
-
-    SwaggerModule.setup('swagger', app, documentFactory, {
-      customCss: '.swagger-ui .topbar { display: none }',
-      jsonDocumentUrl: 'swagger/json',
-      swaggerOptions: {
-        persistAuthorization: true,
-        tagsSorter: 'alpha'
-      },
-      yamlDocumentUrl: 'swagger/yaml'
+    const document = SwaggerModule.createDocument(app, swaggerConfig, {
+      extraModels: [FieldFilter, FieldAggregate, AggregateFieldResult, Metadata]
     })
+    app.use(
+      '/docs',
+      apiReference({
+        spec: {
+          content: document
+        },
+        theme: 'purple'
+      })
+    )
   }
 
   //  Setup Logger
@@ -136,4 +130,5 @@ async function bootstrap() {
   // Start listening for requests
   await app.listen(3001)
 }
+
 bootstrap()

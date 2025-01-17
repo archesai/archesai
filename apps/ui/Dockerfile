@@ -9,7 +9,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Install pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack install --global pnpm@9.15.4
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 # Set working directory
 WORKDIR /arches

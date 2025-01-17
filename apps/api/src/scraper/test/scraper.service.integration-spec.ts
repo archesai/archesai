@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common'
 import { ScraperService } from '../scraper.service'
 import fs from 'fs'
 import path from 'path'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 describe('ScraperService - Integration Tests', () => {
   let service: ScraperService
@@ -13,7 +13,7 @@ describe('ScraperService - Integration Tests', () => {
       providers: [
         ScraperService,
         {
-          provide: ArchesConfigService,
+          provide: ConfigService,
           useValue: {
             get: jest.fn().mockReturnValue('http://playwright:3000')
           }

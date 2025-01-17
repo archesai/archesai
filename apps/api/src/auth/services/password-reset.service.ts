@@ -10,7 +10,7 @@ import { ConfirmationTokenWithNewPasswordDto } from '../dto/confirmation-token-w
 import { EmailRequestDto } from '../dto/email-request.dto'
 import { ARTokensService } from './ar-tokens.service'
 import { AuthService } from './auth.service' // Import TokenService
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 @Injectable()
 export class PasswordResetService {
@@ -19,7 +19,7 @@ export class PasswordResetService {
     private readonly emailService: EmailService,
     private readonly authService: AuthService,
     private readonly arTokensService: ARTokensService,
-    private readonly configService: ArchesConfigService
+    private readonly configService: ConfigService
   ) {}
 
   async confirm(

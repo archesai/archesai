@@ -1,14 +1,15 @@
 import { Controller } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { ApiTags } from '@nestjs/swagger'
 
-import { BaseController } from '../common/base.controller'
-import { CreateToolDto } from './dto/create-tool.dto'
-import { UpdateToolDto } from './dto/update-tool.dto'
-import { ToolEntity } from './entities/tool.entity'
-import { ToolsService } from './tools.service'
+import { BaseController } from '@/src/common/base.controller'
+import { CreateToolDto } from '@/src/tools/dto/create-tool.dto'
+import { UpdateToolDto } from '@/src/tools/dto/update-tool.dto'
+import { ToolEntity } from '@/src/tools/entities/tool.entity'
+import { ToolsService } from '@/src/tools/tools.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags('Tools')
+@Authenticated()
 @Controller('/organizations/:orgname/tools')
 export class ToolsController extends BaseController<
   ToolEntity,

@@ -1,16 +1,14 @@
-import { Controller, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth } from '@nestjs/swagger'
+import { Controller } from '@nestjs/common'
 
-import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard'
-import { BaseController } from '../common/base.controller'
-import { ContentService } from './content.service'
-import { CreateContentDto } from './dto/create-content.dto'
-import { UpdateContentDto } from './dto/update-content.dto'
-import { ContentEntity } from './entities/content.entity'
+import { BaseController } from '@/src/common/base.controller'
+import { ContentService } from '@/src/content/content.service'
+import { CreateContentDto } from '@/src/content/dto/create-content.dto'
+import { UpdateContentDto } from '@/src/content/dto/update-content.dto'
+import { ContentEntity } from '@/src/content/entities/content.entity'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
-@Controller('/organizations/:orgname/content')
-@UseGuards(EmailVerifiedGuard)
+@Authenticated()
+@Controller('organizations/:orgname/content')
 export class ContentController extends BaseController<
   ContentEntity,
   CreateContentDto,

@@ -4,5 +4,5 @@ metadata:
   name: archesai-managed-certificate
 spec:
   domains:
-    - api.mydomain
-    - platform.mydomain
+    - api.localhost
+    - platform.localhost

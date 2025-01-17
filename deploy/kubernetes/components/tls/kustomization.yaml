@@ -1,27 +1,44 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
-resources:
-  - archesai-tls-issuer.yaml
+# helmCharts:
+#   - name: cert-manager
+#     repo: https://charts.jetstack.io
+#     namespace: cert-manager
+#     version: v1.16.2
+#     includeCRDs: true
+
+# crds:
+#   - https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.crds.yaml
+
+# resources:
+# - https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+# - archesai-tls-issuer.yaml
+
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - tls-config.yaml
+  - name: archesai-config-env
+    behavior: merge
+    literals:
+      - ARCHES.TLS.ENABLED=true
 
 patches:
-  - target:
-      name: archesai-ingress
-    patch: |-
-      - op: replace
-        path: /spec/tls
-        value:
-          - hosts:
-              - '*.mydomain'
-            secretName: archesai-tls
-      - op: add
-        path: /metadata/annotations
-        value:
-          cert-manager.io/issuer: letsencrypt-staging
-          cert-manager.io/private-key-algorithm: ECDSA
-  - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.TLS.ENABLED
-        value: 'true'
+  - path: archesai-ingress.patch.yaml
+
+replacements:
+  - source:
+      name: archesai-config-ingress
+      kind: ConfigMap
+      fieldPath: data.[ARCHES.DOMAIN]
+    targets:
+      - select:
+          name: archesai-ingress
+        fieldPaths:
+          - spec.rules.*.host
+          - spec.tls.*.hosts.*
+        options:
+          delimiter: .
+          index: 1

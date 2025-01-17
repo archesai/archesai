@@ -7,17 +7,16 @@ import {
   Patch,
   Post
 } from '@nestjs/common'
-import { ApiBearerAuth } from '@nestjs/swagger'
 
-import { CurrentUser } from '../auth/decorators/current-user.decorator'
-import { UserEntity } from '../users/entities/user.entity'
-import { CreateOrganizationDto } from './dto/create-organization.dto'
-import { UpdateOrganizationDto } from './dto/update-organization.dto'
-import { OrganizationEntity } from './entities/organization.entity'
-import { OrganizationsService } from './organizations.service'
-import { Roles } from '../auth/decorators/roles.decorator'
+import { CurrentUser } from '@/src/auth/decorators/current-user.decorator'
+import { UserEntity } from '@/src/users/entities/user.entity'
+import { CreateOrganizationDto } from '@/src/organizations/dto/create-organization.dto'
+import { UpdateOrganizationDto } from '@/src/organizations/dto/update-organization.dto'
+import { OrganizationEntity } from '@/src/organizations/entities/organization.entity'
+import { OrganizationsService } from '@/src/organizations/organizations.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
+import { RoleTypeEnum } from '../members/entities/member.entity'
 
-@ApiBearerAuth()
 @Controller('/organizations')
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
@@ -28,6 +27,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
+  @Authenticated([RoleTypeEnum.USER])
   @Post()
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
@@ -47,7 +47,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
-  @Roles('ADMIN')
+  @Authenticated([RoleTypeEnum.ADMIN])
   @Delete(':orgname')
   async delete(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
@@ -59,6 +59,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
+  @Authenticated([RoleTypeEnum.USER])
   @Get(':orgname')
   async findOne(@Param('orgname') orgname: string) {
     const organization = await this.organizationsService.findByOrgname(orgname)
@@ -73,7 +74,7 @@ export class OrganizationsController {
    * @throws {401} UnauthorizedException
    * @throws {404} NotFoundException
    */
-  @Roles('ADMIN')
+  @Authenticated([RoleTypeEnum.ADMIN])
   @Patch(':orgname')
   async update(
     @Param('orgname') orgname: string,

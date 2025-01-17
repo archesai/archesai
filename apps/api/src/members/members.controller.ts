@@ -1,17 +1,17 @@
-import { Controller, Param, Post, UseGuards } from '@nestjs/common'
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { Controller, Param, Post } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 
-import { CurrentUser } from '../auth/decorators/current-user.decorator'
-import { BaseController } from '../common/base.controller'
-import { UserEntity } from '../users/entities/user.entity'
-import { CreateMemberDto } from './dto/create-member.dto'
-import { UpdateMemberDto } from './dto/update-member.dto'
-import { MemberEntity } from './entities/member.entity'
-import { MembersService } from './members.service'
-import { EmailVerifiedGuard } from '../auth/guards/email-verified.guard'
+import { CurrentUser } from '@/src/auth/decorators/current-user.decorator'
+import { BaseController } from '@/src/common/base.controller'
+import { UserEntity } from '@/src/users/entities/user.entity'
+import { CreateMemberDto } from '@/src/members/dto/create-member.dto'
+import { UpdateMemberDto } from '@/src/members/dto/update-member.dto'
+import { MemberEntity } from '@/src/members/entities/member.entity'
+import { MembersService } from '@/src/members/members.service'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
 
-@ApiBearerAuth()
 @ApiTags(`Members`)
+@Authenticated()
 @Controller('/organizations/:orgname/members')
 export class MembersController extends BaseController<
   MemberEntity,
@@ -30,7 +30,6 @@ export class MembersController extends BaseController<
    * @throws {403} Email not verified
    * @throws {404} Not Found
    */
-  @UseGuards(EmailVerifiedGuard)
   @Post('join')
   async join(
     @Param('orgname') orgname: string,

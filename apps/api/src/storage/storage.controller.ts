@@ -1,26 +1,21 @@
 import { Body, Controller, Delete, Get, Inject, Query } from '@nestjs/common'
 import { Param, Post } from '@nestjs/common'
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags
-} from '@nestjs/swagger'
-
-import { Roles } from '../auth/decorators/roles.decorator'
-import { PathDto } from './dto/path.dto'
-import { ReadUrlDto } from './dto/read-url.dto'
-import { StorageItemDto } from './dto/storage-item.dto'
-import { WriteUrlDto } from './dto/write-url.dto'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { PathDto } from '@/src/storage/dto/path.dto'
+import { ReadUrlDto } from '@/src/storage/dto/read-url.dto'
+import { StorageItemDto } from '@/src/storage/dto/storage-item.dto'
+import { WriteUrlDto } from '@/src/storage/dto/write-url.dto'
 import {
   IStorageService,
   STORAGE_SERVICE
-} from './interfaces/storage-provider.interface'
+} from '@/src/storage/interfaces/storage-provider.interface'
+import { Authenticated } from '@/src/auth/decorators/authenticated.decorator'
+import { RoleTypeEnum } from '@/src/members/entities/member.entity'
 
-@ApiBearerAuth()
+@Authenticated()
 @ApiTags('Storage')
 @Controller('/organizations/:orgname/storage')
-@Roles('ADMIN')
+@Authenticated([RoleTypeEnum.ADMIN])
 export class StorageController {
   constructor(
     @Inject(STORAGE_SERVICE) private readonly storageService: IStorageService

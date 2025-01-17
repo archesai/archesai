@@ -1,9 +1,7 @@
 import { createRandomApiToken } from '@/prisma/factories/api-token.factory'
-import { createRandomUser } from '@/prisma/factories/user.factory'
 import { CommonModule } from '@/src/common/common.module'
 import { createMock, DeepMocked } from '@golevelup/ts-jest'
-import { INestApplication } from '@nestjs/common'
-import { APP_GUARD } from '@nestjs/core'
+import { INestApplication, Logger } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import request from 'supertest'
 
@@ -11,43 +9,46 @@ import { ApiTokensController } from '../api-tokens.controller'
 import { ApiTokensService } from '../api-tokens.service'
 import { CreateApiTokenDto } from '../dto/create-api-token.dto'
 import { RoleTypeEnum } from '../entities/api-token.entity'
+import { AuthenticatedGuard } from '@/src/auth/guards/authenticated.guard'
+import { createRandomUser } from '@/prisma/factories/user.factory'
+import { ConfigModule } from '@/src/config/config.module'
 
 describe('ApiTokensController', () => {
   let app: INestApplication
   let mockedApiTokensService: DeepMocked<ApiTokensService>
+  let orgname: string
+  let username: string
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [ApiTokensController],
-      imports: [CommonModule],
+      imports: [CommonModule, ConfigModule],
       providers: [
         {
-          provide: APP_GUARD,
-          useValue: createMock({
-            canActivate: jest.fn().mockImplementation((context) => {
-              const request = context.switchToHttp().getRequest()
-              request.user = createRandomUser({ username: 'testUser' })
-              return true
-            })
-          })
-        },
-        {
           provide: ApiTokensService,
-          useValue: createMock<ApiTokensService>({
-            create: jest.fn(),
-            findAll: jest.fn(),
-            findOne: jest.fn(),
-            remove: jest.fn(),
-            update: jest.fn()
-          })
+          useValue: createMock<ApiTokensService>()
         }
       ]
-    }).compile()
-
+    })
+      .overrideGuard(AuthenticatedGuard)
+      .useValue({
+        canActivate(ctx) {
+          const request = ctx.switchToHttp().getRequest()
+          request.user = mockUserEntity
+          return true
+        }
+      } as AuthenticatedGuard)
+      .compile()
     app = moduleRef.createNestApplication()
+    app.useLogger(app.get(Logger))
+
     await app.init()
 
     mockedApiTokensService = moduleRef.get(ApiTokensService)
+
+    const mockUserEntity = createRandomUser()
+    orgname = mockUserEntity.defaultOrgname
+    username = mockUserEntity.username
   })
 
   afterAll(async () => {
@@ -60,7 +61,6 @@ describe('ApiTokensController', () => {
   })
 
   it('POST /organizations/:orgname/api-tokens should call service.create', async () => {
-    const orgname = 'testOrg'
     const createApiTokenDto: CreateApiTokenDto = {
       domains: '*',
       name: 'testToken',
@@ -85,12 +85,11 @@ describe('ApiTokensController', () => {
       name: 'testToken',
       role: RoleTypeEnum.ADMIN,
       orgname,
-      username: 'testUser'
+      username
     })
   })
 
   it('GET /organizations/:orgname/api-tokens should call service.findAll', async () => {
-    const orgname = 'testOrg'
     const mockedApiToken = createRandomApiToken()
     const mockedPaginatedApiTokens = {
       aggregates: [],
@@ -118,31 +117,25 @@ describe('ApiTokensController', () => {
         }
       ]
     })
-    expect(mockedApiTokensService.findAll).toHaveBeenCalledWith(
-      {
-        aggregates: [],
-        endDate: undefined,
-        filters: [
-          {
-            field: 'orgname',
-            operator: 'equals',
-            value: orgname
-          }
-        ],
-        limit: 10,
-        offset: 0,
-        sortBy: 'createdAt',
-        sortDirection: 'desc',
-        startDate: undefined
-      }
-      // {
-      //   orgname
-      // }
-    )
+    expect(mockedApiTokensService.findAll).toHaveBeenCalledWith({
+      aggregates: [],
+      endDate: undefined,
+      filters: [
+        {
+          field: 'orgname',
+          operator: 'equals',
+          value: orgname
+        }
+      ],
+      limit: 10,
+      offset: 0,
+      sortBy: 'createdAt',
+      sortDirection: 'desc',
+      startDate: undefined
+    })
   })
 
   it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
-    const orgname = 'testOrg'
     const mockedApiToken = createRandomApiToken()
     mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
 
@@ -160,7 +153,6 @@ describe('ApiTokensController', () => {
   })
 
   it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
-    const orgname = 'testOrg'
     const mockedApiToken = createRandomApiToken()
     mockedApiTokensService.update.mockResolvedValue(mockedApiToken)
 
@@ -182,7 +174,7 @@ describe('ApiTokensController', () => {
 
   it('DELETE /organizations/:orgname/api-tokens/:id should call service.remove', async () => {
     const response = await request(app.getHttpServer())
-      .delete('/organizations/testOrg/api-tokens/1')
+      .delete(`/organizations/${orgname}/api-tokens/1`)
       .set('Authorization', 'Bearer token')
 
     expect(response.status).toBe(200)

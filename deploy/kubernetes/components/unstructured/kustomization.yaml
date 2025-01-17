@@ -6,13 +6,8 @@ resources:
   - unstructured-service.yaml
   # - unstructured-hpa.yaml
 
-patches:
-  - target:
-      name: archesai-config-secret
-    patch: |-
-      - op: add
-        path: /stringData/ARCHES.UNSTRUCTURED.ENABLED
-        value: 'true'
-      - op: add
-        path: /stringData/ARCHES.UNSTRUCTURED.ENDPOINT
-        value: http://unstructured:8000
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - unstructured-config.yaml

@@ -6,7 +6,7 @@ import admin from 'firebase-admin'
 import { ExtractJwt, Strategy } from 'passport-firebase-jwt'
 
 import { UsersService } from '../../users/users.service'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { ConfigService } from '@/src/config/config.service'
 
 export const firebaseConfig = {
   auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
@@ -44,7 +44,7 @@ export class FirebaseStrategy extends PassportStrategy(
   private readonly logger = new Logger(FirebaseStrategy.name)
 
   constructor(
-    private configService: ArchesConfigService,
+    private configService: ConfigService,
     private usersService: UsersService
   ) {
     super({
@@ -66,11 +66,10 @@ export class FirebaseStrategy extends PassportStrategy(
     if (!decodedToken.email) {
       throw new UnauthorizedException('Token does not contain email')
     }
-
     try {
-      await this.usersService.findOneByEmail(decodedToken.email)
-      return this.usersService.syncAuthProvider(
-        decodedToken.email,
+      const user = await this.usersService.findOneByEmail(decodedToken.email)
+      return this.usersService.linkAuthProvider(
+        user.id,
         AuthProviderType.FIREBASE,
         decodedToken.uid
       )
@@ -80,14 +79,14 @@ export class FirebaseStrategy extends PassportStrategy(
         decodedToken.email.split('@')[0] +
         '-' +
         Math.random().toString(36).substring(2, 6)
-      await this.usersService.create({
+      const user = await this.usersService.create({
         email: decodedToken.email,
         emailVerified: true,
         photoUrl: decodedToken.picture || '',
         username
       })
-      return this.usersService.syncAuthProvider(
-        decodedToken.email,
+      return this.usersService.linkAuthProvider(
+        user.id,
         AuthProviderType.FIREBASE,
         decodedToken.uid
       )

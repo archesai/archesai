@@ -1,25 +1,28 @@
 import { Injectable } from '@nestjs/common'
 import { ARTokenType } from '@prisma/client'
 
-import { EmailService } from '../../email/email.service'
-import { getEmailVerificationHtml } from '../../email/templates'
-import { UsersService } from '../../users/users.service'
-import { ConfirmationTokenDto } from '../dto/confirmation-token.dto'
-import { ARTokensService } from './ar-tokens.service'
-import { AuthService } from './auth.service'
-import { ArchesConfigService } from '@/src/config/config.service'
+import { EmailService } from '@/src/email/email.service'
+import { getEmailVerificationHtml } from '@/src/email/templates'
+import { UsersService } from '@/src/users/users.service'
+import { ConfirmationTokenDto } from '@/src/auth/dto/confirmation-token.dto'
+import { ARTokensService } from '@/src/auth/services/ar-tokens.service'
+import { AuthService } from '@/src/auth/services/auth.service'
+import { ConfigService } from '@/src/config/config.service'
+import { CookiesDto } from '@/src/auth/dto/token.dto'
 
 @Injectable()
 export class EmailVerificationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly emailService: EmailService,
-    private readonly configService: ArchesConfigService,
+    private readonly configService: ConfigService,
     private readonly authService: AuthService,
     private readonly arTokensService: ARTokensService
   ) {}
 
-  async confirm(confirmationTokenDto: ConfirmationTokenDto) {
+  async confirm(
+    confirmationTokenDto: ConfirmationTokenDto
+  ): Promise<CookiesDto> {
     const { userId } = await this.arTokensService.verifyToken(
       ARTokenType.EMAIL_VERIFICATION,
       confirmationTokenDto.token

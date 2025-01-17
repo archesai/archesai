@@ -19,7 +19,12 @@ export const retry = async <T>(
           1
         )
         logger.warn(
-          `Retrying after ${delayInSeconds} seconds due to error: ${err}`
+          {
+            attempt,
+            maxAttempts,
+            err
+          },
+          `retrying`
         )
         return await delay(() => execute(nextAttempt), delayInSeconds * 1000)
       } else {

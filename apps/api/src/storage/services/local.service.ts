@@ -10,6 +10,8 @@ import * as path from 'path'
 
 import { StorageItemDto } from '../dto/storage-item.dto'
 import { IStorageService } from '../interfaces/storage-provider.interface'
+import { RunStatusEnum } from '@/src/runs/entities/run.entity'
+import { HealthDto } from '@/src/health/dto/health.dto'
 
 @Injectable()
 export class LocalStorageService implements IStorageService {
@@ -28,6 +30,13 @@ export class LocalStorageService implements IStorageService {
       return true
     } catch {
       return false
+    }
+  }
+
+  public getHealth(): HealthDto {
+    return {
+      status: RunStatusEnum.ERROR,
+      error: 'Not implemented'
     }
   }
 

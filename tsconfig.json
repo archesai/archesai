@@ -13,5 +13,8 @@
     "strict": true, // both,
     "target": "es2022", // both
     "types": ["node"] // both
+  },
+  "ts-node": {
+    "swc": true
   }
 }
