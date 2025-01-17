@@ -22,11 +22,11 @@ registries:
     name: registry.localhost
     host: '0.0.0.0'
     hostPort: '5000'
-  config: |
-    mirrors:
-      'localhost:5000':
-        endpoint:
-          - http://registry.localhost:5000
+  # config: |
+  #   mirrors:
+  #     'localhost:5000':
+  #       endpoint:
+  #         - http://registry.localhost:5000
 hostAliases:
   - ip: '172.18.0.1' # The IP of your host as seen inside the k3d containers
     hostnames:

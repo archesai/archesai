@@ -23,7 +23,7 @@ secretGenerator:
   - name: archesai-config-env
     behavior: merge
     literals:
-      - ARCHES.TLS.ENABLED=true
+      - ARCHES_TLS_ENABLED=true
 
 patches:
   - path: archesai-ingress.patch.yaml
@@ -32,7 +32,7 @@ replacements:
   - source:
       name: archesai-config-ingress
       kind: ConfigMap
-      fieldPath: data.[ARCHES.DOMAIN]
+      fieldPath: data.ARCHES_DOMAIN
     targets:
       - select:
           name: archesai-ingress

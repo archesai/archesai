@@ -22,6 +22,6 @@ configMapGenerator:
   - name: archesai-config-ingress
     behavior: create
     literals:
-      - ARCHES.DOMAIN=localhost
+      - ARCHES_DOMAIN=localhost
     options:
       disableNameSuffixHash: true

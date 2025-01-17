@@ -18,16 +18,16 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: NEXT_PUBLIC_ARCHES.SERVER.HOST
+            - name: NEXT_PUBLIC_ARCHES_SERVER_HOST
               valueFrom:
                 secretKeyRef:
                   name: archesai-config-env
-                  key: ARCHES.SERVER.HOST
-            - name: NEXT_PUBLIC_ARCHES.TLS.ENABLED
+                  key: ARCHES_SERVER_HOST
+            - name: NEXT_PUBLIC_ARCHES_TLS_ENABLED
               valueFrom:
                 secretKeyRef:
                   name: archesai-config-env
-                  key: ARCHES.TLS.ENABLED
+                  key: ARCHES_TLS_ENABLED
           resources:
             requests:
               memory: '1Gi'

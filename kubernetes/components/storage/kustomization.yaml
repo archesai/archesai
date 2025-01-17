@@ -2,18 +2,19 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 resources:
-  - ui-deployment.yaml
-  - ui-service.yaml
+  - minio-deployment.yaml
+  - minio-service.yaml
+  - minio-persistentvolumeclaim.yaml
 
 secretGenerator:
   - name: archesai-config-volume
     behavior: merge
     files:
-      - ui-config.yaml
+      - storage-config.yaml
   - name: archesai-config-env
     behavior: merge
     literals:
-      - ARCHES.SERVER.HOST=platform.localhost
+      - ARCHES_STORAGE_DASHBOARD=https://storaged.localhost
 
 patches:
   - target:
@@ -23,13 +24,26 @@ patches:
       - op: add
         path: /spec/rules/0
         value:
-          host: platform.localhost
+          host: storaged.localhost
           http:
             paths:
               - pathType: Prefix
                 path: '/'
                 backend:
                   service:
-                    name: ui
+                    name: minio
+                    port:
+                      number: 9001
+      - op: add
+        path: /spec/rules/0
+        value:
+          host: storagehost
+          http:
+            paths:
+              - pathType: Prefix
+                path: '/'
+                backend:
+                  service:
+                    name: minio
                     port:
                       number: 443

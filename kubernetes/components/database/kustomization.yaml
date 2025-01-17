@@ -9,4 +9,4 @@ secretGenerator:
   - name: archesai-config-env
     behavior: merge
     literals:
-      - ARCHES.DATABASE.URL=postgresql://admin:admin@postgres:5432/nestjs?schema=public
+      - ARCHES_DATABASE_URL=postgresql://admin:admin@postgres:5432/nestjs?schema=public

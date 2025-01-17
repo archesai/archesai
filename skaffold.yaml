@@ -21,7 +21,7 @@ build:
 manifests:
   kustomize:
     paths:
-      - deploy/kubernetes/base
+      - kubernetes/base
 deploy:
   statusCheckDeadlineSeconds: 300
   tolerateFailuresUntilDeadline: true
@@ -53,11 +53,11 @@ customActions:
                       ],
                       "env": [
                         {
-                          "name": "ARCHES.DATABASE.URL",
+                          "name": "ARCHES_DATABASE_URL",
                           "valueFrom": {
                             "secretKeyRef": {
                               "name": "archesai-config-env",
-                              "key": "ARCHES.DATABASE.URL"
+                              "key": "ARCHES_DATABASE_URL"
                             }
                           }
                         }
@@ -100,11 +100,11 @@ customActions:
                       ],
                       "env": [
                         {
-                          "name": "ARCHES.DATABASE.URL",
+                          "name": "ARCHES_DATABASE_URL",
                           "valueFrom": {
                             "secretKeyRef": {
                               "name": "archesai-config-env",
-                              "key": "ARCHES.DATABASE.URL"
+                              "key": "ARCHES_DATABASE_URL"
                             }
                           }
                         }
@@ -147,7 +147,7 @@ customActions:
                       ],
                       "env": [
                         {
-                          "name": "ARCHES.LOGGING.LEVEL",
+                          "name": "ARCHES_LOGGING_LEVEL",
                           "value": "silent"
                         },
                         {
@@ -155,11 +155,11 @@ customActions:
                           "value": "crud-test"
                         },
                         {
-                          "name": "ARCHES.DATABASE.URL",
+                          "name": "ARCHES_DATABASE_URL",
                           "valueFrom": {
                             "secretKeyRef": {
                               "name": "archesai-config-env",
-                              "key": "ARCHES.DATABASE.URL"
+                              "key": "ARCHES_DATABASE_URL"
                             }
                           }
                         }
@@ -180,19 +180,19 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - deploy/kubernetes/overlays/stage-gcp
+          - kubernetes/overlays/stage-gcp
   - name: production
     manifests:
       kustomize:
         paths:
-          - deploy/kubernetes/overlays/production-gcp
+          - kubernetes/overlays/production-gcp
   - name: dev
     manifests:
       kustomize:
         buildArgs:
           - '--enable-helm'
         paths:
-          - deploy/kubernetes/overlays/development
+          - kubernetes/overlays/development
     build:
       local:
         push: true

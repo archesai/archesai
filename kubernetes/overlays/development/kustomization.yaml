@@ -19,12 +19,17 @@ secretGenerator:
     behavior: merge
     files:
       - z-development-config.yaml
+  - name: archesai-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=./certs/fullchain.pem
+      - tls.key=./certs/privkey.pem
 
 configMapGenerator:
   - name: archesai-config-ingress
     behavior: merge
     literals:
-      - ARCHES.DOMAIN=archesai.dev
+      - ARCHES_DOMAIN=archesai.dev
     options:
       disableNameSuffixHash: true
 

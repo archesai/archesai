@@ -31,7 +31,7 @@ spec:
             - name: MINIO_BROWSER_REDIRECT_URL
               valueFrom:
                 secretKeyRef:
-                  key: ARCHES.STORAGE.DASHBOARD
+                  key: ARCHES_STORAGE_DASHBOARD
                   name: archesai-config-env
           livenessProbe:
             exec:
