@@ -1,0 +1,22 @@
+packages:
+  - apps/*
+  - packages/*
+  - e2e/*
+  - tooling/*
+autoInstallPeers: false
+color: always
+disallowWorkspaceCycles: true
+engineStrict: true
+ignoredBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - unrs-resolver
+loglevel: warn
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - esbuild
+  - msgpackr-extract
+  - sharp
+packageManagerStrictVersion: true
+strictDepBuilds: true
+strictPeerDependencies: true
+useNodeVersion: 23.9.0

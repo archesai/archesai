@@ -1,0 +1,36 @@
+{
+  "name": "@archesai/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#app/*": "./dist/app/*.js",
+    "#utils/*": "./dist/utils/*.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base tsx --watch src/main.ts",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "start": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node dist/main.js",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@archesai/ai": "workspace:*",
+    "@archesai/auth": "workspace:*",
+    "@archesai/billing": "workspace:*",
+    "@archesai/core": "workspace:*",
+    "@archesai/drizzle": "workspace:*",
+    "@archesai/organizations": "workspace:*",
+    "@archesai/storage": "workspace:*",
+    "@archesai/workflows": "workspace:*",
+    "@fastify/helmet": "^13.0.1",
+    "@nestjs/common": "^11.1.1",
+    "@nestjs/core": "^11.1.1",
+    "@nestjs/platform-fastify": "^11.1.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "tslib": "^2.8.1"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "@archesai/drizzle",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./dist/*.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "db:generate": "drizzle-kit generate",
+    "db:inspect": "drizzle-kit inspect",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:reset": "pnpm dlx tsx ./src/reset.ts",
+    "db:seed": "pnpm dlx tsx ./src/seed.ts",
+    "db:studio": "drizzle-kit studio",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@archesai/core": "workspace:*",
+    "@archesai/domain": "workspace:*",
+    "@libsql/client": "^0.15.6",
+    "drizzle-orm": "^0.43.1",
+    "drizzle-seed": "^0.3.1",
+    "pg": "^8.16.0",
+    "tslib": "^2.8.1"
+  }
+}

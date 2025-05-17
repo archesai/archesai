@@ -1,0 +1,35 @@
+{
+  "eslint.runtime": "node",
+  "eslint.workingDirectories": [
+    {
+      "pattern": "packages/*/"
+    },
+    {
+      "pattern": "apps/*/"
+    },
+    {
+      "pattern": "e2e/*/"
+    },
+    {
+      "pattern": "tooling/*/"
+    }
+  ],
+  "files.exclude": {
+    "**/*.tsbuildinfo": false,
+    "**/.cache": false,
+    "**/.next": false,
+    "**/dist": false,
+    "**/next-env.d.ts": false,
+    "**/node_modules": false
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "tailwindCSS.experimental.configFile": "./tooling/tailwind/src/web.ts",
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "next/router.d.ts",
+    "next/dist/client/router.d.ts"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

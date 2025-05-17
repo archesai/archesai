@@ -1,0 +1,93 @@
+'use client'
+
+import type { Table } from '@tanstack/react-table'
+
+import * as React from 'react'
+import { Check, ChevronsUpDown, Settings2 } from 'lucide-react'
+
+import type { BaseEntity } from '@archesai/domain'
+
+import { Button } from '#components/shadcn/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '#components/shadcn/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '#components/shadcn/popover'
+import { cn, toSentenceCase } from '#lib/utils'
+
+interface DataTableViewOptionsProps<TEntity extends BaseEntity> {
+  table: Table<TEntity>
+}
+
+export function DataTableViewOptions<TEntity extends BaseEntity>({
+  table
+}: DataTableViewOptionsProps<TEntity>) {
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
+  return (
+    <Popover modal>
+      <PopoverTrigger asChild>
+        <Button
+          aria-label='Toggle columns'
+          className='ml-auto hidden h-8 gap-2 text-sm font-normal lg:flex'
+          ref={triggerRef}
+          role='combobox'
+          size='sm'
+          variant='outline'
+        >
+          <Settings2 className='size-4' />
+          View
+          <ChevronsUpDown className='ml-auto size-4 shrink-0 opacity-50' />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align='end'
+        className='w-44 p-0'
+        onCloseAutoFocus={() => triggerRef.current?.focus()}
+      >
+        <Command>
+          <CommandInput placeholder='Search columns...' />
+          <CommandList>
+            <CommandEmpty>No columns found.</CommandEmpty>
+            <CommandGroup>
+              {table
+                .getAllColumns()
+                .filter(
+                  (column) =>
+                    typeof column.accessorFn !== 'undefined' &&
+                    column.getCanHide()
+                )
+                .map((column) => {
+                  return (
+                    <CommandItem
+                      key={column.id}
+                      onSelect={() => {
+                        column.toggleVisibility(!column.getIsVisible())
+                      }}
+                    >
+                      <span className='truncate'>
+                        {toSentenceCase(column.id)}
+                      </span>
+                      <Check
+                        className={cn(
+                          'ml-auto size-4 shrink-0',
+                          column.getIsVisible() ? 'opacity-100' : 'opacity-0'
+                        )}
+                      />
+                    </CommandItem>
+                  )
+                })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}

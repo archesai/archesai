@@ -1,0 +1,40 @@
+{
+  "extends": "../../tooling/typescript/src/base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../packages/workflows"
+    },
+    {
+      "path": "../../packages/storage"
+    },
+    {
+      "path": "../../packages/organizations"
+    },
+    {
+      "path": "../../packages/drizzle"
+    },
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/billing"
+    },
+    {
+      "path": "../../packages/auth"
+    },
+    {
+      "path": "../../packages/ai"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

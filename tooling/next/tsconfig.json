@@ -1,0 +1,10 @@
+{
+  "extends": "../../tooling/typescript/src/base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

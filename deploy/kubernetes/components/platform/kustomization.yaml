@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - platform-deployment.yaml
+  - platform-service.yaml
+
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - platform-config.yaml
+  - name: archesai-config-env
+    behavior: merge
+    literals:
+      - ARCHES_SERVER_HOST=platform.localhost
+
+patches:
+  - target:
+      kind: Ingress
+      name: archesai-ingress
+    patch: |
+      - op: add
+        path: /spec/rules/0
+        value:
+          host: platform.localhost
+          http:
+            paths:
+              - pathType: Prefix
+                path: '/'
+                backend:
+                  service:
+                    name: platform
+                    port:
+                      number: 443

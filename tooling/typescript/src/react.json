@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  },
+  "exclude": [
+    "${configDir}/src/**/*.spec.ts",
+    "${configDir}/src/**/*.spec.tsx"
+  ],
+  "include": ["${configDir}/src"]
+}

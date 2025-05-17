@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      component: grafana
+  template:
+    metadata:
+      labels:
+        component: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana@sha256:d8ea37798ccc41061a62ab080f2676dda6bf7815558499f901bdb0f533a456fb
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_PATHS_PROVISIONING
+              value: /etc/grafana/provisioning
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: 'true'
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+          command:
+            - sh
+            - -euc
+            - |
+              mkdir -p /etc/grafana/provisioning/datasources
+              cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+              apiVersion: 1
+              datasources:
+              - name: Loki
+                type: loki
+                access: proxy 
+                orgId: 1
+                url: http://loki:3100
+                basicAuth: false
+                isDefault: true
+                version: 1
+                editable: false
+              EOF
+              /run.sh
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '256Mi'
+              cpu: '200m'

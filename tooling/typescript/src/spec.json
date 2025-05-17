@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  },
+  "exclude": ["${configDir}/node_modules", "${configDir}/dist"],
+  "include": ["${configDir}/src/**/*.spec.ts", "${configDir}/src/**/*.spec.tsx"]
+}

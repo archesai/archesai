@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations
+spec:
+  template:
+    spec:
+      serviceAccountName: cloud-sql-service-account
+      containers:
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
+          args:
+            - '--structured-logs'
+            - '--port=5432'
+            - '--quitquitquit'
+            - 'archesai:us-east1:arches-postgres'
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            requests:
+              memory: '100Mi'
+              cpu: '100m'
+            limits:
+              memory: '200Mi'
+              cpu: '200m'
+        - name: migrations
+          args:
+            - |
+              until wget --spider --tries=1 --timeout=5 http://localhost:9091 2>&1 | grep -q '404 Not Found'; do
+                echo "Waiting for Cloud SQL Proxy to be live..."
+                sleep 5
+              done
+              echo "Cloud SQL Proxy is live. Proceeding with database migration..."
+              set -e
+              echo "Doing database migration..."
+              pnpm prisma migrate deploy --schema /app/prisma/schema.prisma;
+              echo "Database migration done.";
+              wget --post-data='' http://localhost:9091/quitquitquit;
+              echo "Sent quitquitquit signal."

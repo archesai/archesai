@@ -1,0 +1,80 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+build:
+  local:
+    push: true
+    useBuildkit: true
+    concurrency: 0
+  tagPolicy:
+    gitCommit:
+      ignoreChanges: true
+      variant: AbbrevCommitSha
+  artifacts:
+    - image: api
+      context: .
+      docker:
+        dockerfile: ./apps/api/Dockerfile
+    - image: platform
+      context: .
+      docker:
+        dockerfile: ./apps/platform/Dockerfile
+manifests:
+  kustomize:
+    paths:
+      - kubernetes/base
+deploy:
+  statusCheckDeadlineSeconds: 300
+  tolerateFailuresUntilDeadline: true
+customActions:
+  - name: migrate
+    executionMode:
+      kubernetesCluster: {}
+    containers:
+      - image: api
+        name: migrate
+        command: ['pnpm']
+        args: ['--filter', 'api', 'migrations:prod']
+  - name: seed
+    executionMode:
+      kubernetesCluster: {}
+    containers:
+      - image: api
+        name: seed
+        command: ['pnpm']
+        args: ['--filter', 'api', 'db:seed']
+  - name: test-e2e
+    executionMode:
+      kubernetesCluster: {}
+    containers:
+      - image: api
+        name: test-e2e
+        command: ['pnpm']
+        args: ['--filter', 'api', 'test:e2e']
+profiles:
+  - name: dev
+    manifests:
+      kustomize:
+        buildArgs:
+          - '--enable-helm'
+        paths:
+          - kubernetes/overlays/development
+    build:
+      artifacts:
+        - image: api
+          context: .
+          docker:
+            target: development
+            dockerfile: ./apps/api/Dockerfile
+          sync:
+            manual:
+              - src: 'apps/api/**/*'
+                dest: .
+        - image: platform
+          context: .
+          docker:
+            target: development
+            dockerfile: ./apps/platform/Dockerfile
+          sync:
+            manual:
+              - src: 'apps/platform/**/*'
+                dest: .

@@ -1,0 +1,31 @@
+FROM node:22-alpine3.19 AS base
+
+RUN apk update && apk add --no-cache ffmpeg imagemagick graphicsmagick ghostscript
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN npm install -g pnpm@9.15.4
+
+WORKDIR /archesai
+ENV ARCHES_CONFIG_ROOT=/archesai/config
+
+FROM base AS dependencies
+COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
+COPY --chown=node:node ./apps/api/package.json ./apps/api/package.json
+COPY --chown=node:node ./apps/api/prisma/schema.prisma ./apps/api/prisma/migrations ./apps/api/prisma/
+RUN pnpm install --filter api --frozen-lockfile
+
+FROM dependencies AS development
+COPY --chown=node:node ./apps/api ./apps/api
+USER node
+CMD ["pnpm", "--filter", "api", "run", "dev"]
+
+FROM dependencies AS build
+COPY --chown=node:node ./apps/api ./apps/api
+RUN pnpm run --filter api build
+RUN pnpm deploy --filter api --prod /prod
+
+FROM base AS production
+COPY --from=build --chown=node:node /prod .
+USER node
+CMD ["node", "dist/main"]

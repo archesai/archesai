@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "extends": "../../tooling/typescript/src/base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../tooling/tailwind"
+    },
+    {
+      "path": "../../packages/ui"
+    },
+    {
+      "path": "../../packages/domain"
+    },
+    {
+      "path": "../../packages/client"
+    },
+    {
+      "path": "../../tooling/next"
+    },
+    {
+      "path": "../../tooling/jest"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

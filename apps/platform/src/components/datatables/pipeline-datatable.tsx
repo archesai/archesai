@@ -1,0 +1,84 @@
+'use client'
+
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { format } from 'date-fns'
+import { Workflow } from 'lucide-react'
+
+import type { PipelineEntity } from '@archesai/domain'
+
+import { deletePipeline, useFindManyPipelines } from '@archesai/client'
+import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import { DataTable } from '@archesai/ui/components/datatable/data-table'
+import { Badge } from '@archesai/ui/components/shadcn/badge'
+
+export default function PipelineDataTable() {
+  const router = useRouter()
+
+  return (
+    <DataTable<PipelineEntity>
+      columns={[
+        {
+          accessorKey: 'name',
+          cell: ({ row }) => {
+            return (
+              <div className='flex gap-2'>
+                <Link
+                  className='text-primary max-w-[200px] shrink truncate font-medium'
+                  href={`/pipelines/single?pipelineId=${row.original.id}`}
+                >
+                  {row.original.name}
+                </Link>
+              </div>
+            )
+          }
+        },
+        {
+          accessorKey: 'description',
+          cell: ({ row }) => {
+            return (
+              <span>
+                {(row.original.description || 'No Description').toString()}
+              </span>
+            )
+          },
+          enableHiding: false
+        },
+        {
+          accessorKey: 'Inputs',
+          cell: ({ row }) => {
+            return (
+              <div className='flex gap-1'>
+                {row.original.steps.map((step, i) => {
+                  return <Badge key={i}>{step.tool.name}</Badge>
+                })}
+              </div>
+            )
+          },
+          enableHiding: false,
+          enableSorting: false
+        },
+        {
+          accessorKey: 'createdAt',
+          cell: ({ row }) => {
+            return (
+              <span className='font-light'>
+                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
+              </span>
+            )
+          }
+        }
+      ]}
+      defaultView='table'
+      deleteItem={async (id) => {
+        await deletePipeline(id)
+      }}
+      entityType={PIPELINE_ENTITY_KEY}
+      handleSelect={(pipeline) => {
+        router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
+      }}
+      icon={<Workflow />}
+      useFindMany={useFindManyPipelines}
+    />
+  )
+}

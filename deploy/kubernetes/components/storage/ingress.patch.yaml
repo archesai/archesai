@@ -1,0 +1,26 @@
+- op: add
+  path: /spec/rules/0
+  value:
+    host: storaged.localhost
+    http:
+      paths:
+        - pathType: Prefix
+          path: '/'
+          backend:
+            service:
+              name: minio
+              port:
+                number: 9001
+- op: add
+  path: /spec/rules/0
+  value:
+    host: storage.localhost
+    http:
+      paths:
+        - pathType: Prefix
+          path: '/'
+          backend:
+            service:
+              name: minio
+              port:
+                number: 443

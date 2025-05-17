@@ -1,0 +1,44 @@
+{
+  "name": "@archesai/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./dist/*.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@archesai/core": "workspace:*",
+    "@archesai/domain": "workspace:*",
+    "@archesai/organizations": "workspace:*",
+    "@faker-js/faker": "^9.8.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/passport": "^3.0.2",
+    "@fastify/session": "^11.1.0",
+    "@sinclair/typebox": "^0.34.33",
+    "fastify": "^5.3.3",
+    "jsonwebtoken": "^9.0.2",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
+    "redis": "^5.0.1",
+    "tslib": "^2.8.1"
+  }
+}

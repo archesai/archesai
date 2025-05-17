@@ -1,0 +1,40 @@
+import type { WebsocketsService } from '@archesai/core'
+import type { InvitationEntity, UserEntity } from '@archesai/domain'
+
+import { BaseService } from '@archesai/core'
+import { INVITATION_ENTITY_KEY } from '@archesai/domain'
+
+import type { InvitationRepository } from '#invitations/invitation.repository'
+
+/**
+ * Service for handling invitations.
+ */
+export class InvitationsService extends BaseService<InvitationEntity> {
+  private readonly invitationRepository: InvitationRepository
+  private readonly websocketsService: WebsocketsService
+
+  constructor(
+    invitationRepository: InvitationRepository,
+    websocketsService: WebsocketsService
+  ) {
+    super(invitationRepository)
+    this.invitationRepository = invitationRepository
+    this.websocketsService = websocketsService
+  }
+
+  public async accept(id: string, user: UserEntity): Promise<InvitationEntity> {
+    const invitation = await this.invitationRepository.findOne(id)
+    if (invitation.email !== user.email) {
+      throw new Error('Bad Request: Invitation email does not match user email')
+    }
+    return this.invitationRepository.update(invitation.id, {
+      accepted: true
+    })
+  }
+
+  protected emitMutationEvent(entity: InvitationEntity): void {
+    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
+      queryKey: ['organizations', entity.orgname, INVITATION_ENTITY_KEY]
+    })
+  }
+}

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unstructured
+spec:
+  selector:
+    matchLabels:
+      component: unstructured
+  template:
+    metadata:
+      labels:
+        component: unstructured
+    spec:
+      containers:
+        - image: downloads.unstructured.io/unstructured-io/unstructured-api:0.0.82
+          name: unstructured
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+            limits:
+              memory: '2Gi'
+              cpu: '1'

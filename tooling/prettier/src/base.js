@@ -1,0 +1,64 @@
+import { fileURLToPath } from 'node:url'
+
+/** @typedef {import("prettier").Config} PrettierConfig */
+/** @typedef {import("prettier-plugin-tailwindcss").PluginOptions} TailwindConfig */
+/** @typedef {import("@ianvs/prettier-plugin-sort-imports").PluginConfig} SortImportsConfig */
+/** @typedef {import("prettier-plugin-sort-json").SortJsonOptions} SortJsonOptions */
+
+/** @type { PrettierConfig | SortImportsConfig | TailwindConfig | SortJsonOptions} */
+export default {
+  arrowParens: 'always',
+  importOrder: [
+    '<TYPES>',
+    '',
+    '^(react/(.*)$)|^(react$)|^(react-native(.*)$)',
+    '^(next/(.*)$)|^(next$)',
+    '^(expo(.*)$)|^(expo$)',
+    '<THIRD_PARTY_MODULES>',
+    '',
+    '<TYPES>^@archesai',
+    '',
+    '^@archesai/(.*)$',
+    '',
+    '<TYPES>^[.|..|~|#]',
+    '',
+    '^#',
+    '^~/',
+    '^[../]',
+    '^[./]'
+  ],
+  importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
+  importOrderTypeScriptVersion: '5.8.2',
+  jsonRecursiveSort: true,
+  jsxSingleQuote: true,
+  overrides: [
+    {
+      files: '*.json.hbs',
+      options: {
+        parser: 'json'
+      }
+    },
+    {
+      files: '*.js.hbs',
+      options: {
+        parser: 'babel'
+      }
+    }
+  ],
+  plugins: [
+    '@ianvs/prettier-plugin-sort-imports',
+    'prettier-plugin-sort-json',
+    'prettier-plugin-tailwindcss',
+    'prettier-plugin-packagejson'
+  ],
+  printWidth: 80,
+  semi: false,
+  singleAttributePerLine: true,
+  singleQuote: true,
+  tabWidth: 2,
+  tailwindConfig: fileURLToPath(
+    new URL('../../tailwind/src/web.ts', import.meta.url)
+  ),
+  tailwindFunctions: ['cn', 'cva'],
+  trailingComma: 'none'
+}

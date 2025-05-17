@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "types": ["node", "multer"]
+  },
+  "exclude": [
+    "${configDir}/src/**/*.spec.ts",
+    "${configDir}/src/**/*.spec.tsx"
+  ],
+  "include": ["${configDir}/src"]
+}

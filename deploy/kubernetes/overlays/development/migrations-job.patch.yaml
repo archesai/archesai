@@ -1,0 +1,6 @@
+- op: replace
+  path: /spec/template/spec/restartPolicy
+  value: OnFailure
+- op: add
+  path: /spec/ttlSecondsAfterFinished
+  value: 10

@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "../../tooling/typescript/src/base.json",
+    "../../tooling/typescript/src/lib.json"
+  ],
+  "references": [
+    {
+      "path": "../domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../storage/tsconfig.lib.json"
+    },
+    {
+      "path": "../ai/tsconfig.lib.json"
+    },
+    {
+      "path": "../core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../tooling/eslint/tsconfig.lib.json"
+    }
+  ]
+}

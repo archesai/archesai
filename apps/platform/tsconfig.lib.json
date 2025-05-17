@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "noEmit": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "rootDir": "."
+  },
+  "extends": [
+    "../../tooling/typescript/src/base.json",
+    "../../tooling/typescript/src/react.json"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../../tooling/tailwind/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/client/tsconfig.lib.json"
+    },
+    {
+      "path": "../../tooling/next/tsconfig.lib.json"
+    },
+    {
+      "path": "../../tooling/jest/tsconfig.lib.json"
+    },
+    {
+      "path": "../../tooling/eslint/tsconfig.lib.json"
+    }
+  ]
+}

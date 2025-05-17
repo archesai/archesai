@@ -1,0 +1,28 @@
+{
+  "extends": "../../tooling/typescript/src/base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../tooling/tailwind"
+    },
+    {
+      "path": "../domain"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../client"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

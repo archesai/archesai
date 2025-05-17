@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - unstructured-deployment.yaml
+  - unstructured-service.yaml
+
+secretGenerator:
+  - name: archesai-config-volume
+    behavior: merge
+    files:
+      - unstructured-config.yaml

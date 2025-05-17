@@ -1,0 +1,125 @@
+{
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": [
+      "default",
+      "!{projectRoot}/eslint.config.ts",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.ts",
+      "!{projectRoot}/**/?(*.)+(spec|e2e-spec).[jt]s?(x)",
+      "!{projectRoot}/**/?(*.)+(config).[jt]s?(x)"
+    ]
+  },
+  "plugins": [
+    {
+      "options": {
+        "build": {
+          "buildDepsName": "build-deps",
+          "configName": "tsconfig.lib.json",
+          "targetName": "build",
+          "watchDepsName": "watch-deps"
+        },
+        "typecheck": {
+          "targetName": "typecheck"
+        }
+      },
+      "plugin": "@nx/js/typescript"
+    },
+    {
+      "exclude": ["e2e/**/*"],
+      "options": {
+        "targetName": "test"
+      },
+      "plugin": "@nx/jest/plugin"
+    }
+  ],
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts"
+        }
+      ],
+      "options": {
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/*.tsbuildinfo"],
+      "syncGenerators": ["@nx/js:typescript-sync"]
+    },
+    "generate": {
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
+    "lint": {
+      "cache": true,
+      "configurations": {
+        "config": {
+          "command": "pnpm dlx @eslint/config-inspector@latest"
+        },
+        "default": {
+          "command": "eslint ."
+        },
+        "performance": {
+          "command": "TIMING=1 eslint ."
+        }
+      },
+      "defaultConfiguration": "default",
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^default"],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "{projectRoot}"
+      }
+    },
+    "test": {
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      },
+      "dependsOn": ["^build"],
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "{projectRoot}/test/jest.config.ts",
+        "passWithNoTests": true,
+        "showConfig": true
+      },
+      "outputs": ["{projectRoot}/test/coverage"]
+    },
+    "typecheck": {
+      "cache": true,
+      "configurations": {
+        "config": {
+          "command": "tsc --showConfig"
+        }
+      },
+      "dependsOn": ["^typecheck"],
+      "executor": "nx:run-commands",
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts"
+        }
+      ],
+
+      "options": {
+        "command": "tsc --build --emitDeclarationOnly",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/*.tsbuildinfo"],
+      "syncGenerators": ["@nx/js:typescript-sync"]
+    }
+  }
+}

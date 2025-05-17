@@ -1,0 +1,21 @@
+{
+  "name": "@archesai/eslint",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    "./base": "./src/base.ts",
+    "./jest": "./src/jest.ts",
+    "./next": "./src/next.ts",
+    "./react": "./src/react.ts",
+    "./tailwind": "./src/tailwind.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  }
+}

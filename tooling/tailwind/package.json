@@ -1,0 +1,22 @@
+{
+  "name": "@archesai/tailwind",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*.ts"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./native": "./src/native.ts",
+    "./web": "./src/web.ts",
+    "./postcss": "./src/postcss.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  }
+}

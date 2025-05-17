@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform
+spec:
+  selector:
+    matchLabels:
+      component: platform
+  template:
+    metadata:
+      labels:
+        component: platform
+    spec:
+      containers:
+        - image: platform
+          imagePullPolicy: IfNotPresent
+          name: platform
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_ARCHES_SERVER_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-config-env
+                  key: ARCHES_SERVER_HOST
+            - name: NEXT_PUBLIC_ARCHES_TLS_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-config-tls
+                  key: ARCHES_TLS_ENABLED
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+            limits:
+              memory: '2Gi'
+              cpu: '1'

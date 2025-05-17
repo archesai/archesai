@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "../../tooling/typescript/src/base.json",
+    "../../tooling/typescript/src/spec.json"
+  ],
+  "references": [
+    {
+      "path": "../../tooling/jest"
+    },
+    {
+      "path": "../../tooling/eslint"
+    }
+  ]
+}

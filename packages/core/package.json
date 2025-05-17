@@ -1,0 +1,45 @@
+{
+  "name": "@archesai/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./dist/*.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@archesai/domain": "workspace:*",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/deepmerge": "^3.1.0",
+    "@fastify/swagger": "^9.5.1",
+    "@fastify/type-provider-typebox": "^5.1.0",
+    "@scalar/fastify-api-reference": "^1.28.34",
+    "@sinclair/typebox": "^0.34.33",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "fastify": "^5.3.3",
+    "nodemailer": "^7.0.3",
+    "pino": "^9.6.0",
+    "redis": "^5.0.1",
+    "reflect-metadata": "^0.2.2",
+    "socket.io": "^4.8.1",
+    "tslib": "^2.8.1",
+    "yaml": "^2.8.0"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "compileOnSave": false,
+  "extends": "./tooling/typescript/src/base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/platform"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./e2e/platform-e2e"
+    },
+    {
+      "path": "./e2e/api-e2e"
+    },
+    {
+      "path": "./packages/domain"
+    },
+    {
+      "path": "./packages/client"
+    },
+    {
+      "path": "./packages/organizations"
+    },
+    {
+      "path": "./packages/workflows"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/auth"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/ai"
+    },
+    {
+      "path": "./tooling/prettier"
+    },
+    {
+      "path": "./tooling/tailwind"
+    },
+    {
+      "path": "./tooling/eslint"
+    },
+    {
+      "path": "./tooling/jest"
+    },
+    {
+      "path": "./packages/drizzle"
+    },
+    {
+      "path": "./packages/billing"
+    },
+    {
+      "path": "./tooling/next"
+    },
+    {
+      "path": "./tooling/swc"
+    }
+  ]
+}

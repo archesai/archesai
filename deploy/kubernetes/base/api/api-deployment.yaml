@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      hostname: api
+      containers:
+        - name: api
+          image: api
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: archesai-config-database
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: archesai-config-base
+              mountPath: /archesai/conf/config.yaml
+              subPath: config.yaml
+              readOnly: true
+            - name: archesai-config-volume
+              mountPath: /archesai/conf/config.yaml.d
+              readOnly: true
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '0.5'
+            limits:
+              memory: '2Gi'
+              cpu: '1'
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+      volumes:
+        - name: archesai-config-base
+          secret:
+            secretName: archesai-config-base
+        - name: archesai-config-volume
+          secret:
+            secretName: archesai-config-volume
