@@ -77,6 +77,7 @@ export class RedisIoAdapter {
         ? {
             socket: {
               ca: readFileSync(redisCa),
+              host: redisHost,
               rejectUnauthorized: false,
               tls: true
             }

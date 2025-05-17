@@ -18,8 +18,8 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "build": "tsc --build",
+    "clean": "rm -rf .cache .turbo .next dist node_modules",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
     "db:migrate": "drizzle-kit migrate",

@@ -8,8 +8,8 @@
     "#utils/*": "./dist/utils/*.js"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "build": "tsc --build",
+    "clean": "rm -rf .cache .turbo .next dist node_modules",
     "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base tsx --watch src/main.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",

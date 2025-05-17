@@ -216,7 +216,19 @@ export class RedisStore implements SessionStore {
       get: (key) => client.get(key),
       mget: (keys) => client.mGet(keys),
       scanIterator: (match, count) => {
-        return client.scanIterator({ COUNT: count, MATCH: match })
+        const iterator = client.scanIterator({
+          COUNT: count,
+          MATCH: match
+        }) as AsyncIterable<string[]>
+        // Flatten the arrays yielded by the underlying iterator
+        async function* flatten() {
+          for await (const arr of iterator) {
+            for (const key of arr) {
+              yield key
+            }
+          }
+        }
+        return flatten()
       },
       set: (key, val, ttl) => {
         if (ttl) {

@@ -45,6 +45,7 @@ export class SessionsService {
             ? {
                 socket: {
                   ca: readFileSync(this.configService.get('redis.ca')!),
+                  host: this.configService.get('redis.host'),
                   rejectUnauthorized: false,
                   tls: true
                 }

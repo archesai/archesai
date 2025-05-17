@@ -7,16 +7,15 @@ autoInstallPeers: false
 color: always
 disallowWorkspaceCycles: true
 engineStrict: true
-ignoredBuiltDependencies:
-  - '@tailwindcss/oxide'
-  - unrs-resolver
 loglevel: warn
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@tailwindcss/oxide'
   - esbuild
   - msgpackr-extract
   - sharp
+  - unrs-resolver
 packageManagerStrictVersion: true
 strictDepBuilds: true
 strictPeerDependencies: true
-useNodeVersion: 23.9.0
+useNodeVersion: 23.11.0

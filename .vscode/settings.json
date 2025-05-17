@@ -15,12 +15,13 @@
     }
   ],
   "files.exclude": {
-    "**/*.tsbuildinfo": false,
-    "**/.cache": false,
-    "**/.next": false,
-    "**/dist": false,
-    "**/next-env.d.ts": false,
-    "**/node_modules": false
+    "**/*.tsbuildinfo": true,
+    "**/.cache": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/dist": true,
+    "**/next-env.d.ts": true,
+    "**/node_modules": true
   },
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],

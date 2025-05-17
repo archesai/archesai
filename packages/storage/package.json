@@ -18,8 +18,8 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "build": "tsc --build",
+    "clean": "rm -rf .cache .turbo .next dist node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -27,8 +27,8 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@aws-sdk/client-s3": "^3.810.0",
-    "@aws-sdk/s3-request-presigner": "^3.810.0",
+    "@aws-sdk/client-s3": "^3.812.0",
+    "@aws-sdk/s3-request-presigner": "^3.812.0",
     "@google-cloud/storage": "^7.16.0",
     "@sinclair/typebox": "^0.34.33",
     "tslib": "^2.8.1"

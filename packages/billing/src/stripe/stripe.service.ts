@@ -10,7 +10,7 @@ export class StripeService {
 
   constructor(configService: ConfigService) {
     this.stripe = new Stripe(configService.get('billing.stripe.token'), {
-      apiVersion: '2025-03-31.basil'
+      apiVersion: '2025-04-30.basil'
     })
   }
 

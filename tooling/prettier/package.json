@@ -8,10 +8,9 @@
     "./base": "./src/base.js"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "git clean -xdf .cache .turbo .next dist node_modules",
+    "build": "tsc --build",
+    "clean": "rm -rf .cache .turbo .next dist node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   }
 }
