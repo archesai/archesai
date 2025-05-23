@@ -19,7 +19,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "clean": "rm -rf .cache .turbo .next dist node_modules",
+    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -38,7 +38,7 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
-    "redis": "^5.0.1",
+    "redis": "^5.1.0",
     "tslib": "^2.8.1"
   }
 }

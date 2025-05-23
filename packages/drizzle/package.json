@@ -19,7 +19,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc --build",
-    "clean": "rm -rf .cache .turbo .next dist node_modules",
+    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
     "db:migrate": "drizzle-kit migrate",
@@ -34,7 +34,7 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@libsql/client": "^0.15.6",
+    "@libsql/client": "^0.15.7",
     "drizzle-orm": "^0.43.1",
     "drizzle-seed": "^0.3.1",
     "pg": "^8.16.0",

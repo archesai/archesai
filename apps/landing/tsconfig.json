@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "extends": "../../tooling/typescript/src/base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../tooling/tailwind"
+    },
+    {
+      "path": "../../packages/ui"
+    },
+    {
+      "path": "../../packages/domain"
+    },
+    {
+      "path": "../../tooling/next"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

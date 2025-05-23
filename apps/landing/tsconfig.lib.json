@@ -31,13 +31,7 @@
       "path": "../../packages/domain/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/client/tsconfig.lib.json"
-    },
-    {
       "path": "../../tooling/next/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/jest/tsconfig.lib.json"
     },
     {
       "path": "../../tooling/eslint/tsconfig.lib.json"

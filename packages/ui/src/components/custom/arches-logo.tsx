@@ -1,5 +1,3 @@
-import { Link } from '@radix-ui/react-navigation-menu'
-
 export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
   const content =
     size === 'sm' ? (
@@ -13,7 +11,7 @@ export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
       </div>
     )
 
-  return <Link href='/'>{content}</Link>
+  return content
 }
 
 const LargeLogo = ({ scale }: { scale: number }) => {

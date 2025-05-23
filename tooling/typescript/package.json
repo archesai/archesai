@@ -8,7 +8,7 @@
     "./configs": "./src/*.json"
   },
   "scripts": {
-    "clean": "rm -rf .cache .turbo .next dist node_modules",
+    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore"
   }
 }

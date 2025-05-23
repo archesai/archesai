@@ -2,9 +2,12 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": [".cache/*.tsbuildinfo", "dist/**"]
     },
     "clean": {
       "cache": false
@@ -15,19 +18,20 @@
       "persistent": false
     },
     "format": {
-      "dependsOn": ["^format"],
-      "outputs": [".cache/prettier.json"]
+      "outputs": [".cache/.prettiercache"],
+      "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": [".cache/.eslintcache"]
     },
     "start": {
       "cache": false,
       "persistent": false
     },
     "typecheck": {
-      "dependsOn": ["^build"],
-      "outputs": ["*.tsbuildinfo"]
+      "dependsOn": ["^topo", "^build"],
+      "outputs": [".cache/*.tsbuildinfo"]
     }
   }
 }
