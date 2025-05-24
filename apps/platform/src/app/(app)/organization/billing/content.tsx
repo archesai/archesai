@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
 
 import {
   useCancelSubscription,
@@ -10,6 +9,7 @@ import {
   useGetPlans,
   useUpdateSubscription
 } from '@archesai/client'
+import { Loader2 } from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
   Card,

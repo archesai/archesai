@@ -19,7 +19,6 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/ui": "workspace:*",
-    "lucide-react": "catalog:",
     "next": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19"

@@ -1,3 +1,8 @@
+import type {
+  RouteIcon,
+  SiteRoute
+} from '@archesai/ui/lib/site-config.interface'
+
 import {
   BookOpen,
   Building2,
@@ -18,12 +23,7 @@ import {
   Users,
   Volume2,
   Workflow
-} from 'lucide-react'
-
-import type {
-  RouteIcon,
-  SiteRoute
-} from '@archesai/ui/lib/site-config.interface'
+} from '@archesai/ui/components/custom/icons'
 
 export const siteRoutes: SiteRoute[] = [
   {

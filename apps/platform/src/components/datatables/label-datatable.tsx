@@ -1,12 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ListMinus } from 'lucide-react'
 
 import type { LabelEntity } from '@archesai/domain'
 
 import { deleteLabel, useFindManyLabels } from '@archesai/client'
 import { LABEL_ENTITY_KEY } from '@archesai/domain'
+import { ListMinus } from '@archesai/ui/components/custom/icons'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 

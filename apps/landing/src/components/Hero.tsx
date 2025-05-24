@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { Github } from 'lucide-react'
 
+import { Github } from '@archesai/ui/components/custom/icons'
 import { Button, buttonVariants } from '@archesai/ui/components/shadcn/button'
 
 export const Hero = () => {

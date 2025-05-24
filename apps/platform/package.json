@@ -27,7 +27,6 @@
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@xyflow/react": "^12.6.4",
-    "lucide-react": "catalog:",
     "next": "catalog:",
     "nuqs": "^2.4.3",
     "react": "catalog:react19",

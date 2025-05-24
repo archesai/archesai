@@ -1,10 +1,9 @@
 'use client'
 
-import { CheckIcon, User, XIcon } from 'lucide-react'
-
 import type { MemberEntity } from '@archesai/domain'
 
 import { deleteMember, useFindManyMembers } from '@archesai/client'
+import { CheckIcon, User, XIcon } from '@archesai/ui/components/custom/icons'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 

@@ -1,12 +1,12 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { User } from 'lucide-react'
 
 import type { ApiTokenEntity } from '@archesai/domain'
 
 import { useFindManyApiTokens } from '@archesai/client'
 import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { User } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'

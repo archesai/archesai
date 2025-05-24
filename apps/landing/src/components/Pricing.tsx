@@ -1,8 +1,8 @@
-// import { Check } from 'lucide-react'
-
 // import { getPlans } from '@archesai/client'
 // import { Badge } from '@archesai/ui/components/shadcn/badge'
 // import { Button } from '@archesai/ui/components/shadcn/button'
+// import { Check } from '@archesai/ui/components/custom/icons'
+
 // import {
 //   Card,
 //   CardContent,

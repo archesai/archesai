@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { GithubIcon, Menu } from 'lucide-react'
 
 import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
+import { Github, Menu } from '@archesai/ui/components/custom/icons'
 import { Button, buttonVariants } from '@archesai/ui/components/shadcn/button'
 import {
   NavigationMenu,
@@ -103,7 +103,7 @@ export const Navbar = () => {
                       rel='noreferrer noopener'
                       target='_blank'
                     >
-                      <GithubIcon className='mr-2 h-5 w-5' />
+                      <Github className='mr-2 h-5 w-5' />
                       Github
                     </a>
                   </nav>

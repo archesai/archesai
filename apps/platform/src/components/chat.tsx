@@ -3,9 +3,9 @@
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { useEffect, useRef, useState } from 'react'
-import { RefreshCcw } from 'lucide-react'
 
 import { createLabel, createRun, useFindManyContents } from '@archesai/client'
+import { RefreshCcw } from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { ScrollArea } from '@archesai/ui/components/shadcn/scroll-area'
 import { toast } from '@archesai/ui/components/shadcn/sonner'

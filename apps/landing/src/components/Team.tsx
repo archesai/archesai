@@ -1,6 +1,10 @@
 import Image from 'next/image'
-import { Facebook, Instagram, Linkedin } from 'lucide-react'
 
+import {
+  Facebook,
+  Instagram,
+  Linkedin
+} from '@archesai/ui/components/custom/icons'
 import { buttonVariants } from '@archesai/ui/components/shadcn/button'
 import {
   Card,

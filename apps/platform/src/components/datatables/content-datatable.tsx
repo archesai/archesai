@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { File, ScanSearch } from 'lucide-react'
 
 import type { ContentEntity } from '@archesai/domain'
 
@@ -12,6 +11,7 @@ import { useFindManyContents } from '@archesai/client'
 import { CONTENT_ENTITY_KEY } from '@archesai/domain'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { ContentViewer } from '@archesai/ui/components/custom/content-viewer'
+import { File, ScanSearch } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import {

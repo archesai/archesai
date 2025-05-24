@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PackageCheck, Workflow } from 'lucide-react'
 
 import type { RunEntity } from '@archesai/domain'
 
 import { deleteRun, useFindManyRuns } from '@archesai/client'
 import { RUN_ENTITY_KEY } from '@archesai/domain'
+import { PackageCheck, Workflow } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'

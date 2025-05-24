@@ -1,12 +1,14 @@
 'use client'
 
-import { LoaderIcon, LoaderPinwheel } from 'lucide-react'
-
 import {
   useDeleteUser,
   useGetOneUser,
   useRequestPasswordReset
 } from '@archesai/client'
+import {
+  LoaderIcon,
+  LoaderPinwheel
+} from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
   Card,

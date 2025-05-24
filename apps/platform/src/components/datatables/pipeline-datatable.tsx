@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Workflow } from 'lucide-react'
 
 import type { PipelineEntity } from '@archesai/domain'
 
 import { deletePipeline, useFindManyPipelines } from '@archesai/client'
 import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import { Workflow } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'

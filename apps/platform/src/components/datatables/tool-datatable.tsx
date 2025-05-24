@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PackageCheck } from 'lucide-react'
 
 import type { ToolEntity } from '@archesai/domain'
 
 import { deleteTool, useFindManyTools } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/domain'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
+import { PackageCheck } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
