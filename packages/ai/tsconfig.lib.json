@@ -5,7 +5,7 @@
   ],
   "references": [
     {
-      "path": "../core/tsconfig.lib.json"
+      "path": "../../packages/core/tsconfig.lib.json"
     },
     {
       "path": "../../tooling/eslint/tsconfig.lib.json"

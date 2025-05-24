@@ -7,22 +7,19 @@
   "include": [],
   "references": [
     {
-      "path": "../../tooling/tailwind"
+      "path": "./tsconfig.lib.json"
     },
     {
       "path": "../../packages/ui"
     },
     {
-      "path": "../../packages/domain"
+      "path": "../../tooling/eslint"
     },
     {
       "path": "../../tooling/next"
     },
     {
-      "path": "../../tooling/eslint"
-    },
-    {
-      "path": "./tsconfig.lib.json"
+      "path": "../../tooling/tailwind"
     }
   ]
 }

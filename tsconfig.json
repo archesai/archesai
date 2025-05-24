@@ -7,46 +7,49 @@
       "path": "./apps/api"
     },
     {
+      "path": "./apps/landing"
+    },
+    {
       "path": "./apps/platform"
-    },
-    {
-      "path": "./packages/ui"
-    },
-    {
-      "path": "./e2e/platform-e2e"
     },
     {
       "path": "./e2e/api-e2e"
     },
     {
-      "path": "./packages/domain"
-    },
-    {
-      "path": "./packages/client"
-    },
-    {
-      "path": "./packages/organizations"
-    },
-    {
-      "path": "./packages/workflows"
-    },
-    {
-      "path": "./packages/storage"
-    },
-    {
-      "path": "./packages/auth"
-    },
-    {
-      "path": "./packages/core"
+      "path": "./e2e/platform-e2e"
     },
     {
       "path": "./packages/ai"
     },
     {
-      "path": "./tooling/prettier"
+      "path": "./packages/auth"
     },
     {
-      "path": "./tooling/tailwind"
+      "path": "./packages/billing"
+    },
+    {
+      "path": "./packages/client"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/domain"
+    },
+    {
+      "path": "./packages/drizzle"
+    },
+    {
+      "path": "./packages/organizations"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./packages/workflows"
     },
     {
       "path": "./tooling/eslint"
@@ -55,16 +58,16 @@
       "path": "./tooling/jest"
     },
     {
-      "path": "./packages/drizzle"
-    },
-    {
-      "path": "./packages/billing"
-    },
-    {
       "path": "./tooling/next"
     },
     {
+      "path": "./tooling/prettier"
+    },
+    {
       "path": "./tooling/swc"
+    },
+    {
+      "path": "./tooling/tailwind"
     }
   ]
 }

@@ -4,25 +4,25 @@
   "include": [],
   "references": [
     {
-      "path": "../../tooling/tailwind"
+      "path": "./tsconfig.lib.json"
     },
     {
-      "path": "../domain"
+      "path": "./tsconfig.spec.json"
     },
     {
-      "path": "../core"
+      "path": "../../packages/client"
     },
     {
-      "path": "../client"
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/domain"
     },
     {
       "path": "../../tooling/eslint"
     },
     {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
+      "path": "../../tooling/tailwind"
     }
   ]
 }

@@ -4,10 +4,10 @@
   "include": [],
   "references": [
     {
-      "path": "../../tooling/eslint"
+      "path": "./tsconfig.lib.json"
     },
     {
-      "path": "./tsconfig.lib.json"
+      "path": "../../tooling/eslint"
     }
   ]
 }

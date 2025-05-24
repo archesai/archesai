@@ -4,37 +4,37 @@
   "include": [],
   "references": [
     {
-      "path": "../../packages/workflows"
+      "path": "./tsconfig.lib.json"
     },
     {
-      "path": "../../packages/storage"
-    },
-    {
-      "path": "../../packages/organizations"
-    },
-    {
-      "path": "../../packages/drizzle"
-    },
-    {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/billing"
-    },
-    {
-      "path": "../../packages/auth"
+      "path": "./tsconfig.spec.json"
     },
     {
       "path": "../../packages/ai"
     },
     {
+      "path": "../../packages/auth"
+    },
+    {
+      "path": "../../packages/billing"
+    },
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/drizzle"
+    },
+    {
+      "path": "../../packages/organizations"
+    },
+    {
+      "path": "../../packages/storage"
+    },
+    {
+      "path": "../../packages/workflows"
+    },
+    {
       "path": "../../tooling/eslint"
-    },
-    {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
     }
   ]
 }

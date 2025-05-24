@@ -4,16 +4,16 @@
   "include": [],
   "references": [
     {
-      "path": "../domain"
-    },
-    {
-      "path": "../../tooling/eslint"
-    },
-    {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "../../packages/domain"
+    },
+    {
+      "path": "../../tooling/eslint"
     }
   ]
 }

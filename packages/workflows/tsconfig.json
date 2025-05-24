@@ -4,25 +4,25 @@
   "include": [],
   "references": [
     {
-      "path": "../domain"
-    },
-    {
-      "path": "../storage"
-    },
-    {
-      "path": "../ai"
-    },
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../../tooling/eslint"
-    },
-    {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "../../packages/ai"
+    },
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/domain"
+    },
+    {
+      "path": "../../packages/storage"
+    },
+    {
+      "path": "../../tooling/eslint"
     }
   ]
 }

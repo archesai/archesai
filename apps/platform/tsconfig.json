@@ -7,31 +7,31 @@
   "include": [],
   "references": [
     {
-      "path": "../../tooling/tailwind"
+      "path": "./tsconfig.lib.json"
     },
     {
-      "path": "../../packages/ui"
-    },
-    {
-      "path": "../../packages/domain"
+      "path": "./tsconfig.spec.json"
     },
     {
       "path": "../../packages/client"
     },
     {
-      "path": "../../tooling/next"
+      "path": "../../packages/domain"
     },
     {
-      "path": "../../tooling/jest"
+      "path": "../../packages/ui"
     },
     {
       "path": "../../tooling/eslint"
     },
     {
-      "path": "./tsconfig.lib.json"
+      "path": "../../tooling/jest"
     },
     {
-      "path": "./tsconfig.spec.json"
+      "path": "../../tooling/next"
+    },
+    {
+      "path": "../../tooling/tailwind"
     }
   ]
 }
