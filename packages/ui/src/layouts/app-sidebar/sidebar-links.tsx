@@ -3,7 +3,7 @@
 import { Link } from '@radix-ui/react-navigation-menu'
 import { ChevronRight } from 'lucide-react'
 
-import type { SiteRoute } from '#lib/site-config.interface'
+import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
 import {
   Collapsible,
@@ -22,13 +22,7 @@ import {
 } from '#components/shadcn/sidebar'
 import { cn } from '#lib/utils'
 
-export function SidebarLinks({
-  pathname,
-  siteRoutes
-}: {
-  pathname: string
-  siteRoutes: SiteRoute[]
-}) {
+export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
 
   return (

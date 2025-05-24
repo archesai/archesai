@@ -1,3 +1,7 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+
 import { Authenticated } from '@archesai/ui/components/custom/authenticated'
 import {
   SidebarInset,
@@ -13,16 +17,23 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const pathname = usePathname()
   return (
     <>
       <Authenticated />
       <SidebarProvider>
         {/* This is the sidebar that is displayed on the left side of the screen. */}
-        <AppSidebar />
+        <AppSidebar
+          pathname={pathname}
+          siteRoutes={siteRoutes}
+        />
         {/* This is the main content area. */}
         <SidebarInset>
           <main className='flex h-svh flex-col'>
-            <PageHeader siteRoutes={siteRoutes} />
+            <PageHeader
+              pathname={pathname}
+              siteRoutes={siteRoutes}
+            />
             <div className='container flex-1 overflow-auto p-4'>{children}</div>
           </main>
         </SidebarInset>

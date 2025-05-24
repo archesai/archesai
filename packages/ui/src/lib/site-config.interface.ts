@@ -1,12 +1,10 @@
-import type { Workflow } from 'lucide-react'
-
-export type RouteIcon = typeof Workflow
+import type { LucideIcon } from 'lucide-react'
 
 export interface SiteRoute {
   children?: SiteRoute[]
   description?: string
   href: string
-  Icon: RouteIcon
+  Icon: LucideIcon
   section: string
   showInTabs?: boolean
   title: string

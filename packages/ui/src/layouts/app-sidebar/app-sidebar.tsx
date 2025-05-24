@@ -1,7 +1,9 @@
-import { getOneUser } from '@archesai/client'
+'use client'
+
+import { useGetOneUser } from '@archesai/client'
 import { UserEntity } from '@archesai/domain'
 
-import type { SiteRoute } from '#lib/site-config.interface'
+import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
 import { UserButton } from '#components/custom/user-button'
 import {
@@ -15,17 +17,16 @@ import { OrganizationButton } from '#layouts/app-sidebar/organization-button'
 import { SidebarLinks } from '#layouts/app-sidebar/sidebar-links'
 import { CreditQuota } from './credit-usage'
 
-export async function AppSidebar({
-  siteRoutes = [],
+export function AppSidebar({
+  pathname,
+  siteRoutes,
   ...props
-}: React.ComponentProps<typeof Sidebar> & {
-  siteRoutes?: SiteRoute[]
-}) {
-  const pathname = window.location.pathname
-  const { data: user, status } = await getOneUser('me')
-  if (status !== 200) {
+}: PageHeaderProps & React.ComponentProps<typeof Sidebar>) {
+  const { data: user, status } = useGetOneUser('me')
+  if (status !== 'success' || user.status !== 200) {
     return null
   }
+
   return (
     <Sidebar
       collapsible='icon'
@@ -35,8 +36,8 @@ export async function AppSidebar({
         <OrganizationButton
           user={
             new UserEntity({
-              ...user.data,
-              ...user.data.attributes
+              ...user.data.data,
+              ...user.data.data.attributes
             })
           }
         />

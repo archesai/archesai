@@ -1,6 +1,6 @@
 'use client'
 
-import type { ParenthesesIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import { useCallback, useMemo, useState } from 'react'
 import { CheckSquareIcon, PlusSquareIcon, SortAsc } from 'lucide-react'
@@ -41,7 +41,7 @@ interface DataSelectorProps<
   findManyParams: TFindAllPathParams
   getItemDetails?: (item: TItem) => React.ReactNode
   //   iconMap?: { [key: string]: IconType };
-  icons?: { color: string; Icon: typeof ParenthesesIcon; name: string }[]
+  icons?: { color: string; Icon: LucideIcon; name: string }[]
   isMultiSelect?: boolean
   itemType: string
   orgname?: string

@@ -15,29 +15,30 @@ import { TitleAndDescription } from '#layouts/page-header/title-and-description'
 import { cn } from '#lib/utils'
 
 export interface PageHeaderProps {
+  pathname: string
   siteRoutes: SiteRoute[]
 }
 
-export const PageHeader = ({ siteRoutes }: PageHeaderProps) => {
-  const pathname = window.location.pathname
+export const PageHeader = ({ pathname, siteRoutes }: PageHeaderProps) => {
   const { toggleSidebar } = useSidebar()
 
-  // combine all the routes from siteRoutes
-  const routes = siteRoutes
+  // find the current route
+  const currentRoute = siteRoutes
     .map((route) => [route, ...(route.children ?? [])])
     .flat()
+    .find((route) => pathname === route.href)
+  if (!currentRoute) {
+    return null
+  }
 
-  // find the current route
-  const currentRoute = routes.find((route) => pathname === route.href)
-  // get the title and description from the current route
-  const title = currentRoute?.title
-  const description = currentRoute?.description
-  const Icon = currentRoute?.Icon
-
-  const currentTabs = siteRoutes
+  // Tabination
+  const tabs = siteRoutes
     .find((route) => pathname.startsWith(route.href))
     ?.children?.filter((tab) => tab.showInTabs)
-  const activeTab = currentTabs?.find((tab) => pathname === tab.href)?.href
+  if (!tabs || tabs.length === 0) {
+    return <div className='border-b' />
+  }
+  const activeTab = tabs.find((tab) => pathname === tab.href)?.href
   if (!activeTab) {
     return null
   }
@@ -67,40 +68,32 @@ export const PageHeader = ({ siteRoutes }: PageHeaderProps) => {
         </div>
       </header>
 
-      {currentTabs.length === 0 ? (
-        <div className='border-b' />
-      ) : (
-        <Tabs value={activeTab}>
-          <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>
-            {currentTabs.map((tab) => {
-              const isActive = tab.href === activeTab
-              return (
-                <TabsTrigger
-                  className={cn(
-                    `relative h-8 font-normal shadow-none transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:bg-sidebar data-[state=active]:text-sidebar-foreground [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
-                    isActive
-                      ? 'text-sidebar-foreground [&::after]:w-full'
-                      : 'text-muted-foreground [&::after]:w-0'
-                  )}
-                  key={tab.href}
-                  onClick={() => {
-                    window.location.href = tab.href
-                  }}
-                  value={tab.href}
-                >
-                  {tab.title}
-                </TabsTrigger>
-              )
-            })}
-          </TabsList>
-        </Tabs>
-      )}
+      <Tabs value={activeTab}>
+        <TabsList className='h-8 w-full items-end justify-start rounded-none border-b bg-sidebar'>
+          {tabs.map((tab) => {
+            const isActive = tab.href === activeTab
+            return (
+              <TabsTrigger
+                className={cn(
+                  `relative h-8 font-normal shadow-none transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:bg-sidebar data-[state=active]:text-sidebar-foreground [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
+                  isActive
+                    ? 'text-sidebar-foreground [&::after]:w-full'
+                    : 'text-muted-foreground [&::after]:w-0'
+                )}
+                key={tab.href}
+                onClick={() => {
+                  window.location.href = tab.href
+                }}
+                value={tab.href}
+              >
+                {tab.title}
+              </TabsTrigger>
+            )
+          })}
+        </TabsList>
+      </Tabs>
 
-      <TitleAndDescription
-        description={description}
-        icon={Icon}
-        title={title}
-      />
+      <TitleAndDescription siteRoute={currentRoute} />
     </>
   )
 }

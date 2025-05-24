@@ -1,7 +1,4 @@
-import type {
-  RouteIcon,
-  SiteRoute
-} from '@archesai/ui/lib/site-config.interface'
+import type { SiteRoute } from '@archesai/ui/lib/site-config.interface'
 
 import {
   BookOpen,
@@ -161,13 +158,20 @@ export const siteRoutes: SiteRoute[] = [
   }
 ]
 
-export const toolBaseIcons = {
+export const toolBaseIcons: Record<
+  | 'create-embeddings'
+  | 'extract-text'
+  | 'summarize'
+  | 'text-to-image'
+  | 'text-to-speech',
+  SiteRoute['Icon']
+> = {
   'create-embeddings': Cpu,
   'extract-text': FileText,
   summarize: BookOpen,
   'text-to-image': Image,
   'text-to-speech': Volume2
-} satisfies Record<string, RouteIcon>
+}
 
 export const siteMetadata = {
   description:
