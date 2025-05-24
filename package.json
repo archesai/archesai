@@ -10,14 +10,12 @@
     "dev": "turbo watch dev --continue",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
-    "preinstall": "pnpm only-allow pnpm",
-    "postinstall": "pnpm lint:ws",
+    "preinstall": "only-allow pnpm",
+    "postinstall": "sherif",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
     "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-    "lint:ws": "pnpm dlx sherif@latest",
     "prepare": "husky",
-    "typecheck": "turbo run typecheck",
-    "validate": "turbo typecheck build lint"
+    "typecheck": "turbo run typecheck"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json,css,md,yaml}": [

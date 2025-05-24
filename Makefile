@@ -40,10 +40,6 @@ format-check:
 typecheck:
 	pnpm typecheck
 
-# Run valiation
-validate:
-	pnpm validate
-	
 # K8S Cluster Commands
 cluster-start:
 	k3d cluster create tower --config ./deploy/development/cluster-config.yaml
