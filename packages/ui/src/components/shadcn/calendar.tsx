@@ -94,7 +94,7 @@ function Calendar({
   )
   const _weekdaysClassName = cn('flex flex-row', props.weekdaysClassName)
   const _weekdayClassName = cn(
-    'text-muted-foreground w-8 text-sm font-normal',
+    'w-8 text-sm font-normal text-muted-foreground',
     props.weekdayClassName
   )
   const _monthClassName = cn('w-full', props.monthClassName)
@@ -146,7 +146,7 @@ function Calendar({
     props.rangeEndClassName
   )
   const _rangeMiddleClassName = cn(
-    'bg-accent !text-foreground [&>button]:!text-foreground [&>button]:hover:!text-foreground [&>button]:bg-transparent [&>button]:hover:bg-transparent',
+    'bg-accent !text-foreground [&>button]:bg-transparent [&>button]:!text-foreground [&>button]:hover:bg-transparent [&>button]:hover:!text-foreground',
     props.rangeMiddleClassName
   )
   const _selectedClassName = cn(
@@ -158,7 +158,7 @@ function Calendar({
     props.todayClassName
   )
   const _outsideClassName = cn(
-    'day-outside text-muted-foreground aria-selected:bg-accent/50 aria-selected:text-muted-foreground opacity-50 aria-selected:opacity-30',
+    'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
     props.outsideClassName
   )
   const _disabledClassName = cn(
@@ -492,9 +492,9 @@ function YearGrid({
             <Button
               key={i}
               className={cn(
-                'text-foreground h-7 w-full text-sm font-normal',
+                'h-7 w-full text-sm font-normal text-foreground',
                 displayYears.from + i === new Date().getFullYear() &&
-                  'bg-accent text-accent-foreground font-medium'
+                  'bg-accent font-medium text-accent-foreground'
               )}
               variant='ghost'
               onClick={() => {

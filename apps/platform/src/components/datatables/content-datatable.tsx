@@ -53,7 +53,7 @@ export default function ContentDataTable({
           accessorKey: 'value',
           cell: ({ row }) => {
             return (
-              <div className='truncate text-wrap text-base md:text-sm'>
+              <div className='truncate text-base text-wrap md:text-sm'>
                 {row.original.text ?? (
                   <HoverCard openDelay={200}>
                     <Link href={`/content/single?contentId=${row.original.id}`}>
@@ -83,7 +83,7 @@ export default function ContentDataTable({
           cell: ({ row }) => {
             return row.original.parentId ? (
               <Link
-                className='max-w-lg truncate text-wrap text-base md:text-sm'
+                className='max-w-lg truncate text-base text-wrap md:text-sm'
                 href={`/content/single?contentId=${row.original.parentId}`}
               >
                 {row.original.parentId}
@@ -99,7 +99,7 @@ export default function ContentDataTable({
           cell: ({ row }) => {
             return row.original.producerId ? (
               <Link
-                className='max-w-lg truncate text-wrap text-base md:text-sm'
+                className='max-w-lg truncate text-base text-wrap md:text-sm'
                 href={`/playground?selectedRunId=${row.original.producerId}`}
               >
                 {row.original.producerId}

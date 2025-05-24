@@ -31,7 +31,7 @@ export function DataTableColumnHeader<TData, TValue>({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className='data-[state=open]:bg-muted -ml-3 h-8'
+          className='-ml-3 h-8 data-[state=open]:bg-muted'
           size='sm'
           variant='ghost'
         >
@@ -52,7 +52,7 @@ export function DataTableColumnHeader<TData, TValue>({
             column.toggleSorting(false)
           }}
         >
-          <ArrowUp className='text-muted-foreground/70 h-4 w-4' />
+          <ArrowUp className='h-4 w-4 text-muted-foreground/70' />
           <span>Asc</span>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -61,7 +61,7 @@ export function DataTableColumnHeader<TData, TValue>({
             column.toggleSorting(true)
           }}
         >
-          <ArrowDown className='text-muted-foreground/70 h-4 w-4' />
+          <ArrowDown className='h-4 w-4 text-muted-foreground/70' />
           <span>Desc</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -71,7 +71,7 @@ export function DataTableColumnHeader<TData, TValue>({
             column.toggleVisibility(false)
           }}
         >
-          <ArrowsUpFromLine className='text-muted-foreground/70 h-4 w-4' />
+          <ArrowsUpFromLine className='h-4 w-4 text-muted-foreground/70' />
           <span>Hide</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

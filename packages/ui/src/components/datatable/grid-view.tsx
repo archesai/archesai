@@ -55,9 +55,9 @@ export function GridView<TEntity extends BaseEntity>({
         const isItemSelected = selectedItems.includes(item.id)
         return (
           <Card
-            className={`shadow-xs hover:bg-muted relative flex aspect-auto h-64 flex-col transition-all ${
+            className={`relative flex aspect-auto h-64 flex-col shadow-xs transition-all hover:bg-muted ${
               isItemSelected ? 'ring-1 ring-blue-500' : ''
-            } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:top-0 after:left-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={item.id}
           >
             {/* Top Content */}
@@ -96,14 +96,14 @@ export function GridView<TEntity extends BaseEntity>({
                     }}
                   />
                 )}
-                <span className='overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight'>
+                <span className='overflow-hidden text-base leading-tight text-ellipsis whitespace-nowrap'>
                   {item.name}
                 </span>
               </div>
               <div className='flex shrink-0 items-center gap-2'>
                 {!readonly && getEditFormFromItem && (
                   <FilePenLine
-                    className='text-primary h-5 w-5 cursor-pointer'
+                    className='h-5 w-5 cursor-pointer text-primary'
                     onClick={() => {
                       setFinalForm(getEditFormFromItem(item))
                       setFormOpen(true)

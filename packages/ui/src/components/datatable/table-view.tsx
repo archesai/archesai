@@ -38,7 +38,7 @@ export function TableView<TEntity extends BaseEntity>({
   table
 }: TableViewProps<TEntity>) {
   return (
-    <div className='shadow-xs rounded-lg border'>
+    <div className='rounded-lg border shadow-xs'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -69,7 +69,7 @@ export function TableView<TEntity extends BaseEntity>({
               {Array.from({ length: 10 }).map((_, index) => (
                 <TableRow
                   className={
-                    'hover:bg-muted transition-all' +
+                    'transition-all hover:bg-muted' +
                     (index % 2 ? ' bg-background/40' : ' ')
                   }
                   key={index}
@@ -92,7 +92,7 @@ export function TableView<TEntity extends BaseEntity>({
             table.getRowModel().rows.map((row, index: number) => (
               <TableRow
                 className={
-                  'hover:bg-muted transition-all' +
+                  'transition-all hover:bg-muted' +
                   (index % 2 ? ' bg-background/40' : ' ')
                 }
                 data-state={row.getIsSelected() && 'selected'}

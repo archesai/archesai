@@ -196,7 +196,7 @@ export function DataTable<TEntity extends BaseEntity>(
                     <DropdownMenuTrigger asChild>
                       <Button
                         aria-label='Expand row options'
-                        className='data-[state=open]:bg-muted flex h-8 w-8 p-0'
+                        className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
                         variant='ghost'
                       >
                         <MoreHorizontal className='h-5 w-5' />

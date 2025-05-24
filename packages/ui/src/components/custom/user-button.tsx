@@ -86,7 +86,7 @@ export function UserButton({
                   src={user.attributes.image ?? ''}
                 />
                 <AvatarFallback className='rounded-xl'>
-                  <Skeleton className='bg-sidebar-accent h-9 w-9' />
+                  <Skeleton className='h-9 w-9 bg-sidebar-accent' />
                 </AvatarFallback>
               </Avatar>
               {size !== 'sm' && (

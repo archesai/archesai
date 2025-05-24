@@ -106,13 +106,13 @@ export const Team = () => {
       id='team'
     >
       <h2 className='text-3xl font-bold md:text-4xl'>
-        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
+        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
           Our Dedicated{' '}
         </span>
         Crew
       </h2>
 
-      <p className='text-muted-foreground mb-10 mt-4 text-xl'>
+      <p className='mt-4 mb-10 text-xl text-muted-foreground'>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
         dolor pariatur sit!
       </p>
@@ -121,7 +121,7 @@ export const Team = () => {
         {teamList.map(
           ({ imageUrl, name, position, socialNetworks }: TeamProps) => (
             <Card
-              className='bg-muted/50 relative mt-8 flex flex-col items-center justify-center'
+              className='relative mt-8 flex flex-col items-center justify-center bg-muted/50'
               key={name}
             >
               <CardHeader className='mt-8 flex items-center justify-center pb-2'>

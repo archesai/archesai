@@ -175,13 +175,13 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           onClick={removeField}
           variant='ghost'
         >
-          <Trash className='text-destructive h-4 w-4' />
+          <Trash className='h-4 w-4 text-destructive' />
         </Button>
       </div>
 
       {/* Additional constraints based on type */}
       {field.fieldType === 'object' && (
-        <div className='ml-4 mt-4'>
+        <div className='mt-4 ml-4'>
           <Label>Sub Item Fields</Label>
           <FieldList
             fields={field.subFields ?? []}
@@ -196,7 +196,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       )}
 
       {field.fieldType === 'array' && (
-        <div className='ml-4 mt-4'>
+        <div className='mt-4 ml-4'>
           <Label>List Item Type</Label>
           <Select
             onValueChange={(value) => {

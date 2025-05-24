@@ -6,6 +6,7 @@
   "imports": {
     "#*": "./dist/*.js"
   },
+  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*"
   },

@@ -17,6 +17,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@eslint/compat": "^1.2.9",
     "@eslint/js": "^9.27.0",

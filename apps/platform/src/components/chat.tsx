@@ -116,7 +116,7 @@ export default function Chat() {
   return (
     <div className='relative flex h-full gap-6'>
       {/* Refresh Button */}
-      <div className='absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex'>
+      <div className='absolute top-0 left-0 z-10 hidden flex-col gap-2 bg-transparent md:flex'>
         <Button
           className='text-muted-foreground hover:text-primary'
           onClick={() => {
@@ -212,7 +212,7 @@ export default function Chat() {
         >
           <div className='flex items-center gap-2'>
             <Textarea
-              className='text-md bg-muted/50 max-h-40 flex-1 resize-none rounded-lg text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
+              className='text-md max-h-40 flex-1 resize-none rounded-lg bg-muted/50 text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
               onChange={handleChange}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement

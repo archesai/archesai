@@ -71,14 +71,14 @@ export const Testimonials = () => {
     >
       <h2 className='text-3xl font-bold md:text-4xl'>
         Discover Why
-        <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
+        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
           {' '}
           People Love{' '}
         </span>
         This Landing Page
       </h2>
 
-      <p className='text-muted-foreground pb-8 pt-4 text-xl'>
+      <p className='pt-4 pb-8 text-xl text-muted-foreground'>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non unde error
         facere hic reiciendis illo
       </p>

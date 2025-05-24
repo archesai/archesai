@@ -63,12 +63,12 @@ export const DeleteItems = <TEntity extends BaseEntity>({
       <DialogTrigger asChild>
         {variant === 'sm' ? (
           <div
-            className='text-destructive cursor-pointer'
+            className='cursor-pointer text-destructive'
             onClick={() => {
               setOpenConfirmDelete(true)
             }}
           >
-            <Trash className='text-destructive h-5 w-5' />
+            <Trash className='h-5 w-5 text-destructive' />
           </div>
         ) : variant === 'md' ? (
           <div

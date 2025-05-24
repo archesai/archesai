@@ -32,7 +32,7 @@ export const StatusTypeEnumButton = ({
       case 'PROCESSING':
         return (
           <div className='flex items-center gap-2'>
-            <Loader2Icon className='text-primary animate-spin' />
+            <Loader2Icon className='animate-spin text-primary' />
             <span>{(run.progress * 100).toFixed(0)}%</span>
           </div>
         )
@@ -55,7 +55,7 @@ export const StatusTypeEnumButton = ({
           size='sm'
           variant='outline'
         >
-          <div className='flex flex-1 items-center justify-start gap-1 overflow-hidden truncate'>
+          <div className='flex flex-1 items-center justify-start gap-1 truncate overflow-hidden'>
             {/* {Icon && <Icon className='text-blue-700' />} */}
           </div>
           <div className='ml-2 shrink-0'>{renderIcon()}</div>

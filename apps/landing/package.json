@@ -16,6 +16,7 @@
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/ui": "workspace:*",
     "lucide-react": "catalog:",

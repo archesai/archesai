@@ -25,6 +25,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@tanstack/react-query": "catalog:",
     "tslib": "catalog:"

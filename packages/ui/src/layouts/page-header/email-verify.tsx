@@ -36,7 +36,7 @@ export function VerifyEmailAlert({ user }: VerifyEmailAlertProps) {
         className='h-5 w-5'
         color='white'
       />
-      <AlertTitle className='text-primary-foreground flex items-center font-normal'>
+      <AlertTitle className='flex items-center font-normal text-primary-foreground'>
         <span className='flex gap-1'>
           Please
           <div

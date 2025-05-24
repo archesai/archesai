@@ -16,6 +16,7 @@
     "start": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node dist/main.js",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/ai": "workspace:*",
     "@archesai/auth": "workspace:*",

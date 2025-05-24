@@ -53,7 +53,7 @@ export const Navbar = () => {
       className={`sticky top-0 z-40 w-full ${
         isTop
           ? 'bg-transparent'
-          : 'shadow-xs dark:bg-background border-b bg-white transition-all'
+          : 'border-b bg-white shadow-xs transition-all dark:bg-background'
       }`}
     >
       <NavigationMenu>

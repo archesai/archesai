@@ -17,11 +17,11 @@ export const Newsletter = () => {
       <div className='container py-24 sm:py-32'>
         <h3 className='text-center text-4xl font-bold md:text-5xl'>
           Join Our Daily{' '}
-          <span className='from-primary/60 to-primary bg-gradient-to-b bg-clip-text text-transparent'>
+          <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
             Newsletter
           </span>
         </h3>
-        <p className='text-muted-foreground mb-8 mt-4 text-center text-xl'>
+        <p className='mt-4 mb-8 text-center text-xl text-muted-foreground'>
           Lorem ipsum dolor sit amet consectetur.
         </p>
 

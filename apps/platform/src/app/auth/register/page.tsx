@@ -51,7 +51,7 @@ export default function RegisterPage() {
     <div className='flex flex-col gap-2'>
       <div className='flex flex-col gap-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Register</h1>
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-sm text-muted-foreground'>
           Create your account by entering your email and password
         </p>
       </div>

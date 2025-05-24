@@ -32,7 +32,7 @@ export const Statistics = () => {
             key={description}
           >
             <h2 className='text-3xl font-bold sm:text-4xl'>{quantity}</h2>
-            <p className='text-muted-foreground text-xl'>{description}</p>
+            <p className='text-xl text-muted-foreground'>{description}</p>
           </div>
         ))}
       </div>

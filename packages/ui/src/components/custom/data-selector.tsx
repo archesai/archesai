@@ -265,7 +265,7 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
           <div className='flex flex-wrap gap-2'>
             {selectedData.map((item) => (
               <span
-                className='rounded-xs inline-flex items-center bg-blue-100 px-2 py-1 text-sm text-blue-700'
+                className='inline-flex items-center rounded-xs bg-blue-100 px-2 py-1 text-sm text-blue-700'
                 key={item.id}
               >
                 {item.name}

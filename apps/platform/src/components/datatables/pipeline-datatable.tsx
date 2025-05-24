@@ -24,7 +24,7 @@ export default function PipelineDataTable() {
             return (
               <div className='flex gap-2'>
                 <Link
-                  className='text-primary max-w-[200px] shrink truncate font-medium'
+                  className='max-w-[200px] shrink truncate font-medium text-primary'
                   href={`/pipelines/single?pipelineId=${row.original.id}`}
                 >
                   {row.original.name}

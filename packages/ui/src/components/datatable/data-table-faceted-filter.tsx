@@ -116,7 +116,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        'rounded-xs border-primary flex h-5 w-5 items-center justify-center border',
+                        'flex h-5 w-5 items-center justify-center rounded-xs border border-primary',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible'
@@ -125,7 +125,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <CheckSquare className={cn('h-5 w-5')} />
                     </div>
                     {option.icon && (
-                      <option.icon className='text-muted-foreground h-5 w-5' />
+                      <option.icon className='h-5 w-5 text-muted-foreground' />
                     )}
                     <span>{option.label}</span>
                     {facets.get(option.value) && (

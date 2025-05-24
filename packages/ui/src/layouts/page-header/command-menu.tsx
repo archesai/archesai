@@ -62,7 +62,7 @@ export function CommandMenu({
     <div>
       <Button
         className={cn(
-          'border-sidebar-border bg-sidebar text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-8 w-full justify-between gap-2 rounded-lg text-base font-normal md:text-sm'
+          'h-8 w-full justify-between gap-2 rounded-lg border-sidebar-border bg-sidebar text-base font-normal text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:text-sm'
         )}
         onClick={() => {
           setOpen(true)
@@ -75,7 +75,7 @@ export function CommandMenu({
         </span>
         <span className='inline-flex sm:hidden'>Search...</span>
 
-        <kbd className='rounded-xs border-sidebar-accent bg-sidebar-accent pointer-events-none flex h-5 select-none items-center gap-1 border p-2 font-mono text-[10px] font-medium'>
+        <kbd className='pointer-events-none flex h-5 items-center gap-1 rounded-xs border border-sidebar-accent bg-sidebar-accent p-2 font-mono text-[10px] font-medium select-none'>
           <span className='text-xs'>⌘</span>
           <span>K</span>
         </kbd>

@@ -78,7 +78,7 @@ export async function OrganizationButton({
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               size='lg'
             >
-              <div className='border-sidebar-accent text-sidebar-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg border-sidebar-accent text-sidebar-foreground'>
                 <div className='-mt-0.5'>
                   <ArchesLogo
                     scale={0.1}
@@ -89,14 +89,14 @@ export async function OrganizationButton({
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
                   {!organization ? (
-                    <Skeleton className='bg-sidebar-accent m-1 h-2' />
+                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
                   ) : (
                     organization.orgname
                   )}
                 </span>
                 <span className='truncate text-xs capitalize'>
                   {!organization ? (
-                    <Skeleton className='bg-sidebar-accent m-1 h-2' />
+                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
                   ) : (
                     organization.plan + ' Plan'
                   )}
@@ -111,7 +111,7 @@ export async function OrganizationButton({
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
-            <DropdownMenuLabel className='text-muted-foreground text-xs'>
+            <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
             {memberships.data.map((membership) => (
@@ -129,10 +129,10 @@ export async function OrganizationButton({
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem className='gap-2 p-2'>
-              <div className='bg-background flex size-6 items-center justify-center rounded-md border'>
+              <div className='flex size-6 items-center justify-center rounded-md border bg-background'>
                 <Plus className='size-4' />
               </div>
-              <div className='text-muted-foreground font-medium'>
+              <div className='font-medium text-muted-foreground'>
                 New Organization
               </div>
             </DropdownMenuItem>

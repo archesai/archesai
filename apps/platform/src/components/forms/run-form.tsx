@@ -80,10 +80,10 @@ export function RunForm({ runId }: { runId?: string }) {
           getItemDetails={(tool) => {
             return (
               <div className='grid gap-2'>
-                <h4 className='flex items-center gap-1 font-medium leading-none'>
+                <h4 className='flex items-center gap-1 leading-none font-medium'>
                   {tool.name}
                 </h4>
-                <div className='text-muted-foreground text-sm'>
+                <div className='text-sm text-muted-foreground'>
                   {tool.description}
                 </div>
               </div>

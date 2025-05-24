@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "prettier": "@archesai/prettier/base",
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@playwright/test": "^1.52.0",

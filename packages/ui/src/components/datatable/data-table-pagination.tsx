@@ -33,7 +33,7 @@ export function DataTablePagination<TEntity extends BaseEntity>({
   return (
     <div className='flex items-center justify-between'>
       {/* Display the number of items found and selected on left side*/}
-      <div className='text-muted-foreground hidden text-sm sm:block'>
+      <div className='hidden text-sm text-muted-foreground sm:block'>
         {response.meta.total_records} found - {selectedItems.length || 0} of{' '}
         {Math.min(pageSize, response.data.length) || 0} item(s) selected.
       </div>

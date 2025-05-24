@@ -164,8 +164,8 @@ export default function ImportCard({
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <CloudUpload className='text-muted-foreground h-5 w-5' />
-        <p className='text-muted-foreground text-sm'>
+        <CloudUpload className='h-5 w-5 text-muted-foreground' />
+        <p className='text-sm text-muted-foreground'>
           Drag and drop files here, or click to select files
         </p>
 
@@ -184,22 +184,22 @@ export default function ImportCard({
           <ul className='flex max-h-52 grow flex-col gap-2 overflow-y-scroll'>
             {selectedFiles.map((file, idx) => (
               <li
-                className='rounded-xs bg-muted/50 flex items-center justify-between border p-2'
+                className='flex items-center justify-between rounded-xs border bg-muted/50 p-2'
                 key={idx}
               >
-                <span className='text-foreground flex w-4/5 items-center gap-2 truncate'>
+                <span className='flex w-4/5 items-center gap-2 truncate text-foreground'>
                   <span>{file.name}</span>
                   <Badge>{file.type}</Badge>
                 </span>
                 <Badge
-                  className='text-primary text-nowrap'
+                  className='text-nowrap text-primary'
                   variant='outline'
                 >
                   {`${(file.size / 1024).toFixed(2)} KB`}
                 </Badge>
                 <button
                   aria-label={`Remove ${file.name}`}
-                  className='focus:outline-hidden text-red-500 hover:text-red-700'
+                  className='text-red-500 hover:text-red-700 focus:outline-hidden'
                   onClick={() => {
                     removeFile(idx)
                   }}

@@ -29,7 +29,7 @@ export const ScrollButton = () => {
     <>
       {showTopBtn && (
         <Button
-          className='fixed bottom-4 right-4 opacity-90 shadow-md'
+          className='fixed right-4 bottom-4 opacity-90 shadow-md'
           onClick={goToTop}
           size='icon'
         >
