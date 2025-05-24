@@ -27,8 +27,8 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
+    "@elevenlabs/elevenlabs-js": "^2.1.0",
     "@sinclair/typebox": "catalog:",
-    "elevenlabs": "^1.59.0",
     "fluent-ffmpeg": "^2.1.3",
     "openai": "^4.103.0",
     "playwright-core": "^1.52.0",

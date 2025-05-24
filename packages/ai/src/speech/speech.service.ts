@@ -1,4 +1,4 @@
-import { ElevenLabs, ElevenLabsClient } from 'elevenlabs'
+import { ElevenLabs, ElevenLabsClient } from '@elevenlabs/elevenlabs-js'
 
 import type { ConfigService } from '@archesai/core'
 
@@ -27,10 +27,10 @@ export class SpeechService {
     const res = await this.elevenLabs.textToSpeech.convert(
       'pMsXgVXv3BLzUgSXRplE',
       {
-        output_format: ElevenLabs.OutputFormat.Mp32205032,
+        outputFormat: ElevenLabs.OutputFormat.Mp32205032,
         text: text,
-        voice_settings: {
-          similarity_boost: 0.3,
+        voiceSettings: {
+          similarityBoost: 0.3,
           stability: 0.1,
           style: 0.2
         }

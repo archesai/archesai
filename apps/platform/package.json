@@ -41,6 +41,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
+    "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }

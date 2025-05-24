@@ -3,14 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "imports": {
-    "#*": "./src/*.ts"
-  },
   "exports": {
     "./package.json": "./package.json",
-    "./native": "./src/native.ts",
-    "./web": "./src/web.ts",
-    "./postcss": "./src/postcss.ts"
+    "./postcss": "./dist/postcss.js"
   },
   "scripts": {
     "build": "tsc --build",
@@ -22,7 +17,6 @@
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }

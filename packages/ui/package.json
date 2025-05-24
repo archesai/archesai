@@ -90,7 +90,7 @@
     "@archesai/jest": "workspace:*",
     "@archesai/tailwind": "workspace:*",
     "@archesai/typescript": "workspace:*",
-    "@tailwindcss/postcss": "catalog:",
+    "@tailwindcss/cli": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
