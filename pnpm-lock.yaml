@@ -54,9 +54,6 @@ catalogs:
     jest-openapi:
       specifier: ^0.14.2
       version: 0.14.2
-    lucide-react:
-      specifier: ^0.511.0
-      version: 0.511.0
     next:
       specifier: ^15.3.2
       version: 15.3.2
@@ -207,9 +204,6 @@ importers:
       '@archesai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.511.0(react@19.1.0)
       next:
         specifier: 'catalog:'
         version: 15.3.2(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -271,9 +265,6 @@ importers:
       '@xyflow/react':
         specifier: ^12.6.4
         version: 12.6.4(@types/react@19.1.5)(immer@9.0.21)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.511.0(react@19.1.0)
       next:
         specifier: 'catalog:'
         version: 15.3.2(@playwright/test@1.52.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1111,6 +1102,9 @@ importers:
       prettier-plugin-packagejson:
         specifier: ^2.5.14
         version: 2.5.14(prettier@3.5.3)
+      prettier-plugin-sh:
+        specifier: ^0.17.4
+        version: 0.17.4(prettier@3.5.3)
       prettier-plugin-sort-json:
         specifier: ^4.1.1
         version: 4.1.1(prettier@3.5.3)
@@ -4331,6 +4325,13 @@ packages:
     engines: { node: '>= 18' }
     peerDependencies:
       '@redis/client': ^5.1.0
+
+  '@reteps/dockerfmt@0.3.6':
+    resolution:
+      {
+        integrity: sha512-Tb5wIMvBf/nLejTQ61krK644/CEMB/cpiaIFXqGApfGqO3GwcR3qnI0DbmkFVCl2OyEp8LnLX3EkucoL0+tbFg==
+      }
+    engines: { node: ^v12.20.0 || ^14.13.0 || >=16.0.0 }
 
   '@rtsao/scc@1.1.0':
     resolution:
@@ -10721,6 +10722,15 @@ packages:
       prettier:
         optional: true
 
+  prettier-plugin-sh@0.17.4:
+    resolution:
+      {
+        integrity: sha512-aAVKXZ7GTEMZdZsIPSwMwddwPvt2ibMbRGd4OJAP0G7QoeYZV+mPNg2Oln3R53sZ4PVjeAA7Xzi/PuI0QlHHfQ==
+      }
+    engines: { node: '>=16.0.0' }
+    peerDependencies:
+      prettier: ^3.0.3
+
   prettier-plugin-sort-json@4.1.1:
     resolution:
       {
@@ -11353,6 +11363,13 @@ packages:
         integrity: sha512-RJRdvCo6IAnPdsvP/7m6bsQqNnn1FCBX5ZNtFL98MmFF/4xAIJTIg1YbHW5DC2W5SKZanrC6i4HsJqlajw/dZw==
       }
     engines: { node: '>= 0.4' }
+
+  sh-syntax@0.5.8:
+    resolution:
+      {
+        integrity: sha512-JfVoxf4FxQI5qpsPbkHhZo+n6N9YMJobyl4oGEUBb/31oQYlgTjkXQD8PBiafS2UbWoxrTO0Z5PJUBXEPAG1Zw==
+      }
+    engines: { node: '>=16.0.0' }
 
   sharp@0.34.2:
     resolution:
@@ -15243,6 +15260,8 @@ snapshots:
   '@redis/time-series@5.1.0(@redis/client@5.1.0)':
     dependencies:
       '@redis/client': 5.1.0
+
+  '@reteps/dockerfmt@0.3.6': {}
 
   '@rtsao/scc@1.1.0': {}
 
@@ -19631,6 +19650,12 @@ snapshots:
     optionalDependencies:
       prettier: 3.5.3
 
+  prettier-plugin-sh@0.17.4(prettier@3.5.3):
+    dependencies:
+      '@reteps/dockerfmt': 0.3.6
+      prettier: 3.5.3
+      sh-syntax: 0.5.8
+
   prettier-plugin-sort-json@4.1.1(prettier@3.5.3):
     dependencies:
       prettier: 3.5.3
@@ -19964,6 +19989,10 @@ snapshots:
       dunder-proto: 1.0.1
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
+
+  sh-syntax@0.5.8:
+    dependencies:
+      tslib: 2.8.1
 
   sharp@0.34.2:
     dependencies:

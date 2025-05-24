@@ -47,7 +47,8 @@ export default {
     '@ianvs/prettier-plugin-sort-imports',
     'prettier-plugin-sort-json',
     'prettier-plugin-tailwindcss',
-    'prettier-plugin-packagejson'
+    'prettier-plugin-packagejson',
+    'prettier-plugin-sh'
   ],
   printWidth: 80,
   semi: false,
