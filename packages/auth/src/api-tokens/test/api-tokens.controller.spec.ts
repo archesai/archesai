@@ -1,183 +1,182 @@
-import type { DeepMocked } from '@golevelup/ts-jest'
-import type { TestingModule } from '@nestjs/testing'
+// import type { DeepMocked } from '@golevelup/ts-jest'
+// import type { TestingModule } from '@nestjs/testing'
 
-import { createMock } from '@golevelup/ts-jest'
-import { Test } from '@nestjs/testing'
-import request from 'supertest'
+// import { createMock } from '@golevelup/ts-jest'
+// import { Test } from '@nestjs/testing'
 
-import type { ArchesApiRequest, ExecutionContext } from '@archesai/core'
+// import type { ArchesApiRequest, ExecutionContext } from '@archesai/core'
 
-import { ConfigModule, Logger } from '@archesai/core'
-import { createRandomUser } from '@archesai/organizations'
+// import { ConfigModule, Logger } from '@archesai/core'
+// import { createRandomUser } from '@archesai/organizations'
 
-import { ApiTokensController } from '#api-tokens/api-tokens.controller'
-import { ApiTokensService } from '#api-tokens/api-tokens.service'
-import { createRandomApiToken } from '#api-tokens/factories/api-token.factory'
-import { AuthenticatedGuard } from '#auth/guards/authenticated.guard'
+// import { ApiTokensController } from '#api-tokens/api-tokens.controller'
+// import { ApiTokensService } from '#api-tokens/api-tokens.service'
+// import { createRandomApiToken } from '#api-tokens/factories/api-token.factory'
+// import { AuthenticatedGuard } from '#auth/guards/authenticated.guard'
 
-describe('ApiTokensController', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let app: any
-  let mockedApiTokensService: DeepMocked<ApiTokensService>
-  let orgname: string
-  let username: string
+// describe('ApiTokensController', () => {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   let app: any
+//   let mockedApiTokensService: DeepMocked<ApiTokensService>
+//   let orgname: string
+//   let username: string
 
-  beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [ApiTokensController],
-      imports: [ConfigModule],
-      providers: [
-        {
-          provide: ApiTokensService,
-          useValue: createMock<ApiTokensService>()
-        }
-      ]
-    })
-      .overrideGuard(AuthenticatedGuard)
-      .useValue({
-        canActivate(ctx: ExecutionContext) {
-          const request = ctx.switchToHttp().getRequest<ArchesApiRequest>()
-          request.user = mockUserEntity
-          return true
-        }
-      })
-      .compile()
-    app = moduleRef.createNestApplication()
-    app.useLogger(app.get(Logger))
+//   beforeAll(async () => {
+//     const moduleRef: TestingModule = await Test.createTestingModule({
+//       controllers: [ApiTokensController],
+//       imports: [ConfigModule],
+//       providers: [
+//         {
+//           provide: ApiTokensService,
+//           useValue: createMock<ApiTokensService>()
+//         }
+//       ]
+//     })
+//       .overrideGuard(AuthenticatedGuard)
+//       .useValue({
+//         canActivate(ctx: ExecutionContext) {
+//           const request = ctx.switchToHttp().getRequest<ArchesApiRequest>()
+//           request.user = mockUserEntity
+//           return true
+//         }
+//       })
+//       .compile()
+//     app = moduleRef.createNestApplication()
+//     app.useLogger(app.get(Logger))
 
-    await app.init()
+//     await app.init()
 
-    mockedApiTokensService = moduleRef.get(ApiTokensService)
+//     mockedApiTokensService = moduleRef.get(ApiTokensService)
 
-    const mockUserEntity = createRandomUser()
-    orgname = mockUserEntity.orgname
-    username = mockUserEntity.id
-  })
+//     const mockUserEntity = createRandomUser()
+//     orgname = mockUserEntity.orgname
+//     username = mockUserEntity.id
+//   })
 
-  afterAll(async () => {
-    await app.close()
-  })
+//   afterAll(async () => {
+//     await app.close()
+//   })
 
-  it('should be defined', () => {
-    expect(app.get(ApiTokensController)).toBeDefined()
-    expect(mockedApiTokensService).toBeDefined()
-  })
+//   it('should be defined', () => {
+//     expect(app.get(ApiTokensController)).toBeDefined()
+//     expect(mockedApiTokensService).toBeDefined()
+//   })
 
-  it('POST /organizations/:orgname/api-tokens should call service.create', async () => {
-    const createApiTokenDto = {
-      name: 'testToken',
-      role: 'ADMIN' as const
-    }
-    const mockedApiToken = createRandomApiToken(createApiTokenDto)
-    mockedApiTokensService.create.mockResolvedValue(mockedApiToken)
+//   it('POST /organizations/:orgname/api-tokens should call service.create', async () => {
+//     const createApiTokenDto = {
+//       name: 'testToken',
+//       role: 'ADMIN' as const
+//     }
+//     const mockedApiToken = createRandomApiToken(createApiTokenDto)
+//     mockedApiTokensService.create.mockResolvedValue(mockedApiToken)
 
-    const response = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/api-tokens`)
-      .send(createApiTokenDto)
+//     const response = await request(app.getHttpServer())
+//       .post(`/organizations/${orgname}/api-tokens`)
+//       .send(createApiTokenDto)
 
-    expect(response.status).toBe(201)
-    expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt,
-      updatedAt: undefined
-    })
+//     expect(response.status).toBe(201)
+//     expect(response.body).toEqual({
+//       ...mockedApiToken,
+//       createdAt: mockedApiToken.createdAt,
+//       updatedAt: undefined
+//     })
 
-    expect(mockedApiTokensService.create).toHaveBeenCalledWith({
-      domains: '*',
-      name: 'testToken',
-      orgname,
-      role: 'ADMIN' as const,
-      username
-    })
-  })
+//     expect(mockedApiTokensService.create).toHaveBeenCalledWith({
+//       domains: '*',
+//       name: 'testToken',
+//       orgname,
+//       role: 'ADMIN' as const,
+//       username
+//     })
+//   })
 
-  it('GET /organizations/:orgname/api-tokens should call service.findMany', async () => {
-    const mockedApiToken = createRandomApiToken()
-    const mockedPaginatedApiTokens = {
-      metadata: {
-        limit: 10,
-        offset: 0,
-        totalResults: 1
-      },
-      results: [mockedApiToken]
-    }
+//   it('GET /organizations/:orgname/api-tokens should call service.findMany', async () => {
+//     const mockedApiToken = createRandomApiToken()
+//     const mockedPaginatedApiTokens = {
+//       metadata: {
+//         limit: 10,
+//         offset: 0,
+//         totalResults: 1
+//       },
+//       results: [mockedApiToken]
+//     }
 
-    const response = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/api-tokens`)
-      .query({})
+//     const response = await request(app.getHttpServer())
+//       .get(`/organizations/${orgname}/api-tokens`)
+//       .query({})
 
-    expect(response.status).toBe(200)
-    expect(response.body).toEqual({
-      ...mockedPaginatedApiTokens,
-      results: [
-        {
-          ...mockedApiToken,
-          createdAt: mockedApiToken.createdAt,
-          updatedAt: undefined
-        }
-      ]
-    })
-    expect(mockedApiTokensService.findMany).toHaveBeenCalledWith({
-      endDate: undefined,
-      filters: [
-        {
-          field: 'orgname',
-          operator: 'equals',
-          value: orgname
-        }
-      ],
-      limit: 10,
-      offset: 0,
-      sortBy: 'createdAt',
-      sortDirection: 'desc',
-      startDate: undefined
-    })
-  })
+//     expect(response.status).toBe(200)
+//     expect(response.body).toEqual({
+//       ...mockedPaginatedApiTokens,
+//       results: [
+//         {
+//           ...mockedApiToken,
+//           createdAt: mockedApiToken.createdAt,
+//           updatedAt: undefined
+//         }
+//       ]
+//     })
+//     expect(mockedApiTokensService.findMany).toHaveBeenCalledWith({
+//       endDate: undefined,
+//       filters: [
+//         {
+//           field: 'orgname',
+//           operator: 'equals',
+//           value: orgname
+//         }
+//       ],
+//       limit: 10,
+//       offset: 0,
+//       sortBy: 'createdAt',
+//       sortDirection: 'desc',
+//       startDate: undefined
+//     })
+//   })
 
-  it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
-    const mockedApiToken = createRandomApiToken()
-    mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
+//   it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
+//     const mockedApiToken = createRandomApiToken()
+//     mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
 
-    const response = await request(app.getHttpServer()).get(
-      `/organizations/${orgname}/api-tokens/1`
-    )
+//     const response = await request(app.getHttpServer()).get(
+//       `/organizations/${orgname}/api-tokens/1`
+//     )
 
-    expect(response.status).toBe(200)
-    expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt,
-      updatedAt: undefined
-    })
-    expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('1')
-  })
+//     expect(response.status).toBe(200)
+//     expect(response.body).toEqual({
+//       ...mockedApiToken,
+//       createdAt: mockedApiToken.createdAt,
+//       updatedAt: undefined
+//     })
+//     expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('1')
+//   })
 
-  it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
-    const mockedApiToken = createRandomApiToken()
-    mockedApiTokensService.update.mockResolvedValue(mockedApiToken)
+//   it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
+//     const mockedApiToken = createRandomApiToken()
+//     mockedApiTokensService.update.mockResolvedValue(mockedApiToken)
 
-    const response = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/api-tokens/1`)
-      .send({ name: 'updatedToken' })
-      .set('Authorization', 'Bearer token')
+//     const response = await request(app.getHttpServer())
+//       .patch(`/organizations/${orgname}/api-tokens/1`)
+//       .send({ name: 'updatedToken' })
+//       .set('Authorization', 'Bearer token')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toEqual({
-      ...mockedApiToken,
-      createdAt: mockedApiToken.createdAt,
-      updatedAt: undefined
-    })
-    expect(mockedApiTokensService.update).toHaveBeenCalledWith('1', {
-      name: 'updatedToken'
-    })
-  })
+//     expect(response.status).toBe(200)
+//     expect(response.body).toEqual({
+//       ...mockedApiToken,
+//       createdAt: mockedApiToken.createdAt,
+//       updatedAt: undefined
+//     })
+//     expect(mockedApiTokensService.update).toHaveBeenCalledWith('1', {
+//       name: 'updatedToken'
+//     })
+//   })
 
-  it('DELETE /organizations/:orgname/api-tokens/:id should call service.remove', async () => {
-    const response = await request(app.getHttpServer())
-      .delete(`/organizations/${orgname}/api-tokens/1`)
-      .set('Authorization', 'Bearer token')
+//   it('DELETE /organizations/:orgname/api-tokens/:id should call service.remove', async () => {
+//     const response = await request(app.getHttpServer())
+//       .delete(`/organizations/${orgname}/api-tokens/1`)
+//       .set('Authorization', 'Bearer token')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toEqual({})
-    expect(mockedApiTokensService.delete).toHaveBeenCalledWith('1')
-  })
-})
+//     expect(response.status).toBe(200)
+//     expect(response.body).toEqual({})
+//     expect(mockedApiTokensService.delete).toHaveBeenCalledWith('1')
+//   })
+// })

@@ -38,7 +38,7 @@ export function TableView<TEntity extends BaseEntity>({
   table
 }: TableViewProps<TEntity>) {
   return (
-    <div className='rounded-lg border shadow-xs'>
+    <div className='shadow-xs rounded-lg border'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

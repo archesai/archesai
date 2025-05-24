@@ -112,7 +112,7 @@ export const Team = () => {
         Crew
       </h2>
 
-      <p className='text-muted-foreground mt-4 mb-10 text-xl'>
+      <p className='text-muted-foreground mb-10 mt-4 text-xl'>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
         dolor pariatur sit!
       </p>

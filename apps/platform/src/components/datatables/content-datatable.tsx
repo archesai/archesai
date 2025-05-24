@@ -4,7 +4,6 @@ import { Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
 import { File, ScanSearch } from 'lucide-react'
 
 import type { ContentEntity } from '@archesai/domain'
@@ -13,6 +12,7 @@ import { useFindManyContents } from '@archesai/client'
 import { CONTENT_ENTITY_KEY } from '@archesai/domain'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { ContentViewer } from '@archesai/ui/components/custom/content-viewer'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import {
   HoverCard,
@@ -53,7 +53,7 @@ export default function ContentDataTable({
           accessorKey: 'value',
           cell: ({ row }) => {
             return (
-              <div className='truncate text-base text-wrap md:text-sm'>
+              <div className='truncate text-wrap text-base md:text-sm'>
                 {row.original.text ?? (
                   <HoverCard openDelay={200}>
                     <Link href={`/content/single?contentId=${row.original.id}`}>
@@ -83,7 +83,7 @@ export default function ContentDataTable({
           cell: ({ row }) => {
             return row.original.parentId ? (
               <Link
-                className='max-w-lg truncate text-base text-wrap md:text-sm'
+                className='max-w-lg truncate text-wrap text-base md:text-sm'
                 href={`/content/single?contentId=${row.original.parentId}`}
               >
                 {row.original.parentId}
@@ -99,7 +99,7 @@ export default function ContentDataTable({
           cell: ({ row }) => {
             return row.original.producerId ? (
               <Link
-                className='max-w-lg truncate text-base text-wrap md:text-sm'
+                className='max-w-lg truncate text-wrap text-base md:text-sm'
                 href={`/playground?selectedRunId=${row.original.producerId}`}
               >
                 {row.original.producerId}
@@ -135,11 +135,7 @@ export default function ContentDataTable({
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
-              </span>
-            )
+            return <Timestamp date={row.original.createdAt} />
           }
         }
       ]}

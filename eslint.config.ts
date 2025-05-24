@@ -1,5 +1,3 @@
-import type { ConfigArray } from 'typescript-eslint'
-
 import base from '@archesai/eslint/base'
 
 export default [
@@ -7,4 +5,4 @@ export default [
   {
     ignores: ['apps/**', 'packages/**', 'tooling/**', 'e2e/**']
   }
-] satisfies ConfigArray
+]

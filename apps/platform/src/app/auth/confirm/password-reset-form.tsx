@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { Type } from '@sinclair/typebox'
 import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 import {
   confirmEmailChange,
@@ -23,6 +22,7 @@ import {
   FormMessage
 } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
+import { toast } from '@archesai/ui/components/shadcn/sonner'
 
 // Define allowed action types
 type ActionType = 'email-change' | 'email-verification' | 'password-reset'

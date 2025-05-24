@@ -1,7 +1,6 @@
 'use client'
 
 import { LoaderIcon, LoaderPinwheel } from 'lucide-react'
-import { toast } from 'sonner'
 
 import {
   useDeleteUser,
@@ -16,6 +15,7 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 import { Separator } from '@archesai/ui/components/shadcn/separator'
+import { toast } from '@archesai/ui/components/shadcn/sonner'
 
 export default function ProfileSecuritySettingsPage() {
   const { data: userResponse } = useGetOneUser('me')

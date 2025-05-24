@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
 import { PackageCheck } from 'lucide-react'
 
 import type { ToolEntity } from '@archesai/domain'
@@ -10,6 +9,7 @@ import type { ToolEntity } from '@archesai/domain'
 import { deleteTool, useFindManyTools } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/domain'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
 export default function ToolDataTable() {
@@ -69,11 +69,7 @@ export default function ToolDataTable() {
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
-              </span>
-            )
+            return <Timestamp date={row.original.createdAt} />
           }
         }
       ]}

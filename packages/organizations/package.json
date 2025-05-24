@@ -28,7 +28,16 @@
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
     "@faker-js/faker": "^9.8.0",
-    "@sinclair/typebox": "^0.34.33",
-    "tslib": "^2.8.1"
+    "@sinclair/typebox": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@golevelup/ts-jest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@types/jest": "catalog:",
+    "@types/node": "catalog:",
+    "jest": "catalog:",
+    "typescript": "catalog:"
   }
 }

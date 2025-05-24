@@ -5,9 +5,6 @@
   ],
   "references": [
     {
-      "path": "../../tooling/jest"
-    },
-    {
       "path": "../../tooling/eslint"
     }
   ]

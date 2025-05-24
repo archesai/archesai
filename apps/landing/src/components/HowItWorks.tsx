@@ -55,7 +55,7 @@ export const HowItWorks = () => {
         </span>
         Step-by-Step Guide
       </h2>
-      <p className='text-muted-foreground mx-auto mt-4 mb-8 text-xl md:w-3/4'>
+      <p className='text-muted-foreground mx-auto mb-8 mt-4 text-xl md:w-3/4'>
         Discover how Arches AI empowers your business with advanced AI
         solutions. Here’s a simple guide on how to get started.
       </p>

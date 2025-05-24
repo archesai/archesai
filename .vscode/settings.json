@@ -1,5 +1,4 @@
 {
-  "eslint.runtime": "node",
   "eslint.workingDirectories": [
     {
       "pattern": "packages/*/"
@@ -14,23 +13,25 @@
       "pattern": "tooling/*/"
     }
   ],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
   "files.exclude": {
-    "**/*.tsbuildinfo": true,
-    "**/.cache": true,
-    "**/.next": true,
-    "**/.turbo": true,
-    "**/dist": true,
-    "**/next-env.d.ts": true,
-    "**/node_modules": true
+    "**/*.tsbuildinfo": false,
+    "**/.cache": false,
+    "**/.next": false,
+    "**/.turbo": false,
+    "**/dist": false,
+    "**/next-env.d.ts": false,
+    "**/node_modules": false
   },
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ],
-  "tailwindCSS.experimental.configFile": "./tooling/tailwind/src/web.ts",
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "next/router.d.ts",
-    "next/dist/client/router.d.ts"
-  ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  ]
+  // "tailwindCSS.experimental.configFile": "./tooling/tailwind/src/web.ts"
+  // "typescript.preferences.autoImportFileExcludePatterns": [
+  //   "next/router.d.ts",
+  //   "next/dist/client/router.d.ts"
+  // ]
 }

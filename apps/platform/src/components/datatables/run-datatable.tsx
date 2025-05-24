@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
 import { PackageCheck, Workflow } from 'lucide-react'
 
 import type { RunEntity } from '@archesai/domain'
@@ -10,6 +9,7 @@ import type { RunEntity } from '@archesai/domain'
 import { deleteRun, useFindManyRuns } from '@archesai/client'
 import { RUN_ENTITY_KEY } from '@archesai/domain'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Button } from '@archesai/ui/components/shadcn/button'
 
@@ -70,16 +70,15 @@ export default function RunDataTable() {
         {
           accessorKey: 'duration',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {row.original.startedAt && row.original.completedAt
-                  ? format(
-                      new Date(row.original.completedAt).getTime() -
-                        new Date(row.original.startedAt).getTime(),
-                      'mm:ss'
-                    )
-                  : 'N/A'}
-              </span>
+            return row.original.startedAt && row.original.completedAt ? (
+              <Timestamp
+                date={new Date(
+                  new Date(row.original.completedAt).getTime() -
+                    new Date(row.original.startedAt).getTime()
+                ).toISOString()}
+              />
+            ) : (
+              'N/A'
             )
           },
           enableHiding: false,
@@ -88,24 +87,20 @@ export default function RunDataTable() {
         {
           accessorKey: 'startedAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {row.original.startedAt
-                  ? format(new Date(row.original.startedAt), 'M/d/yy h:mm a')
-                  : 'N/A'}
-              </span>
+            return row.original.startedAt ? (
+              <Timestamp date={row.original.startedAt} />
+            ) : (
+              'N/A'
             )
           }
         },
         {
           accessorKey: 'completedAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {row.original.completedAt
-                  ? format(new Date(row.original.completedAt), 'M/d/yy h:mm a')
-                  : 'N/A'}
-              </span>
+            return row.original.completedAt ? (
+              <Timestamp date={row.original.completedAt} />
+            ) : (
+              'N/A'
             )
           }
         }

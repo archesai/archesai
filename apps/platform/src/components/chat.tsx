@@ -4,11 +4,11 @@ import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { useEffect, useRef, useState } from 'react'
 import { RefreshCcw } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { createLabel, createRun, useFindManyContents } from '@archesai/client'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { ScrollArea } from '@archesai/ui/components/shadcn/scroll-area'
+import { toast } from '@archesai/ui/components/shadcn/sonner'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 import { useAuth } from '@archesai/ui/hooks/use-auth'
 import { cn } from '@archesai/ui/lib/utils'
@@ -116,7 +116,7 @@ export default function Chat() {
   return (
     <div className='relative flex h-full gap-6'>
       {/* Refresh Button */}
-      <div className='absolute top-0 left-0 z-10 hidden flex-col gap-2 bg-transparent md:flex'>
+      <div className='absolute left-0 top-0 z-10 hidden flex-col gap-2 bg-transparent md:flex'>
         <Button
           className='text-muted-foreground hover:text-primary'
           onClick={() => {

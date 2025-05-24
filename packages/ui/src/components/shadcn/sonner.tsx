@@ -3,7 +3,7 @@
 import type { ToasterProps } from 'sonner'
 
 import { useTheme } from 'next-themes'
-import { Toaster as Sonner } from 'sonner'
+import { Toaster as Sonner, toast } from 'sonner'
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
@@ -24,4 +24,4 @@ const Toaster = ({ ...props }: ToasterProps) => {
   )
 }
 
-export { Toaster }
+export { Toaster, toast }

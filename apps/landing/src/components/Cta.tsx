@@ -16,7 +16,7 @@ export const Cta = () => {
             </span>
             In One Interface
           </h2>
-          <p className='text-muted-foreground mt-4 mb-8 text-xl lg:mb-0'>
+          <p className='text-muted-foreground mb-8 mt-4 text-xl lg:mb-0'>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque,
             beatae. Ipsa tempore ipsum iste quibusdam illum ducimus eos. Quasi,
             sed!

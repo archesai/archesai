@@ -30,7 +30,12 @@
     "@aws-sdk/client-s3": "^3.816.0",
     "@aws-sdk/s3-request-presigner": "^3.816.0",
     "@google-cloud/storage": "^7.16.0",
-    "@sinclair/typebox": "^0.34.33",
-    "tslib": "^2.8.1"
+    "@sinclair/typebox": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
   }
 }

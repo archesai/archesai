@@ -18,10 +18,20 @@
   },
   "dependencies": {
     "@archesai/ui": "workspace:*",
-    "geist": "^1.4.2",
-    "lucide-react": "^0.511.0",
-    "next": "^15.3.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "lucide-react": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@archesai/next": "workspace:*",
+    "@archesai/tailwind": "workspace:*",
+    "@archesai/typescript": "workspace:*",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
   }
 }

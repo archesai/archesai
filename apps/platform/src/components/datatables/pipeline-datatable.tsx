@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
 import { Workflow } from 'lucide-react'
 
 import type { PipelineEntity } from '@archesai/domain'
 
 import { deletePipeline, useFindManyPipelines } from '@archesai/client'
 import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
@@ -61,11 +61,7 @@ export default function PipelineDataTable() {
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
-              </span>
-            )
+            return <Timestamp date={row.original.createdAt} />
           }
         }
       ]}

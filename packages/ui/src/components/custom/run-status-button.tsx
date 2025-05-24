@@ -55,7 +55,7 @@ export const StatusTypeEnumButton = ({
           size='sm'
           variant='outline'
         >
-          <div className='flex flex-1 items-center justify-start gap-1 truncate overflow-hidden'>
+          <div className='flex flex-1 items-center justify-start gap-1 overflow-hidden truncate'>
             {/* {Icon && <Icon className='text-blue-700' />} */}
           </div>
           <div className='ml-2 shrink-0'>{renderIcon()}</div>

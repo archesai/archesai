@@ -184,7 +184,7 @@ export default function ImportCard({
           <ul className='flex max-h-52 grow flex-col gap-2 overflow-y-scroll'>
             {selectedFiles.map((file, idx) => (
               <li
-                className='bg-muted/50 flex items-center justify-between rounded-xs border p-2'
+                className='rounded-xs bg-muted/50 flex items-center justify-between border p-2'
                 key={idx}
               >
                 <span className='text-foreground flex w-4/5 items-center gap-2 truncate'>
@@ -199,7 +199,7 @@ export default function ImportCard({
                 </Badge>
                 <button
                   aria-label={`Remove ${file.name}`}
-                  className='text-red-500 hover:text-red-700 focus:outline-hidden'
+                  className='focus:outline-hidden text-red-500 hover:text-red-700'
                   onClick={() => {
                     removeFile(idx)
                   }}

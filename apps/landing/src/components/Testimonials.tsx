@@ -78,7 +78,7 @@ export const Testimonials = () => {
         This Landing Page
       </h2>
 
-      <p className='text-muted-foreground pt-4 pb-8 text-xl'>
+      <p className='text-muted-foreground pb-8 pt-4 text-xl'>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non unde error
         facere hic reiciendis illo
       </p>

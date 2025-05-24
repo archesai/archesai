@@ -75,7 +75,7 @@ export function CommandMenu({
         </span>
         <span className='inline-flex sm:hidden'>Search...</span>
 
-        <kbd className='border-sidebar-accent bg-sidebar-accent pointer-events-none flex h-5 items-center gap-1 rounded-xs border p-2 font-mono text-[10px] font-medium select-none'>
+        <kbd className='rounded-xs border-sidebar-accent bg-sidebar-accent pointer-events-none flex h-5 select-none items-center gap-1 border p-2 font-mono text-[10px] font-medium'>
           <span className='text-xs'>⌘</span>
           <span>K</span>
         </kbd>

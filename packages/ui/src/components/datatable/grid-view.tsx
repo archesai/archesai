@@ -55,9 +55,9 @@ export function GridView<TEntity extends BaseEntity>({
         const isItemSelected = selectedItems.includes(item.id)
         return (
           <Card
-            className={`hover:bg-muted relative flex aspect-auto h-64 flex-col shadow-xs transition-all ${
+            className={`shadow-xs hover:bg-muted relative flex aspect-auto h-64 flex-col transition-all ${
               isItemSelected ? 'ring-1 ring-blue-500' : ''
-            } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:top-0 after:left-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
+            } after:border-radius-inherit overflow-visible after:pointer-events-none after:absolute after:left-0 after:top-0 after:z-10 after:h-full after:w-full after:transition-shadow after:content-['']`}
             key={item.id}
           >
             {/* Top Content */}
@@ -96,7 +96,7 @@ export function GridView<TEntity extends BaseEntity>({
                     }}
                   />
                 )}
-                <span className='overflow-hidden text-base leading-tight text-ellipsis whitespace-nowrap'>
+                <span className='overflow-hidden text-ellipsis whitespace-nowrap text-base leading-tight'>
                   {item.name}
                 </span>
               </div>

@@ -1,9 +1,9 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { format } from 'date-fns'
 
 import { useGetOneContent } from '@archesai/client'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
@@ -84,7 +84,7 @@ export const ContentDetailsBody = () => {
         <Badge>{contentData.attributes.mimeType}</Badge>
         {contentData.attributes.createdAt && (
           <Badge>
-            {format(new Date(contentData.attributes.createdAt), 'PPP')}
+            <Timestamp date={contentData.attributes.createdAt} />
           </Badge>
         )}
       </div>

@@ -12,5 +12,11 @@
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@types/node": "catalog:",
+    "next": "catalog:",
+    "typescript": "catalog:"
   }
 }

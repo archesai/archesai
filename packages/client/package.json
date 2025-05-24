@@ -26,7 +26,14 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.76.2",
-    "tslib": "^2.8.1"
+    "@tanstack/react-query": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@ibm-cloud/openapi-ruleset": "^1.31.1",
+    "@types/node": "catalog:",
+    "orval": "^7.9.0",
+    "typescript": "catalog:"
   }
 }

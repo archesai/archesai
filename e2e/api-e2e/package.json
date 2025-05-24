@@ -8,5 +8,15 @@
   },
   "dependencies": {
     "@archesai/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@types/jest": "catalog:",
+    "@types/node": "catalog:",
+    "@types/supertest": "catalog:",
+    "jest": "catalog:",
+    "jest-openapi": "catalog:",
+    "supertest": "catalog:",
+    "typescript": "catalog:"
   }
 }

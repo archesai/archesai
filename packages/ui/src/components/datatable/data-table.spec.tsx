@@ -1,9 +1,7 @@
 // import type { AccessorKeyColumnDef } from '@tanstack/react-table'
 
-// import { render, screen } from '@testing-library/react'
-// import userEvent from '@testing-library/user-event'
-
-// import '@testing-library/jest-dom'
+// import { render, screen } from '@testing-library/react' // FIXME (these are uninstalled)
+// import userEvent from '@archesai/jest/user-event' // FIXME (these are uninstalled)
 
 // import type { BaseEntity } from '@archesai/domain'
 // import * as hooks from '#hooks/use-select-items' // Import hooks module for spying

@@ -50,7 +50,7 @@ export const Services = () => {
             Services
           </h2>
 
-          <p className='text-muted-foreground mt-4 mb-8 text-xl'>
+          <p className='text-muted-foreground mb-8 mt-4 text-xl'>
             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
             dolor.
           </p>

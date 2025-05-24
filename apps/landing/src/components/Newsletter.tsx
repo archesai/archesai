@@ -21,7 +21,7 @@ export const Newsletter = () => {
             Newsletter
           </span>
         </h3>
-        <p className='text-muted-foreground mt-4 mb-8 text-center text-xl'>
+        <p className='text-muted-foreground mb-8 mt-4 text-center text-xl'>
           Lorem ipsum dolor sit amet consectetur.
         </p>
 

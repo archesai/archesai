@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
 
 import {
   useCancelSubscription,
@@ -19,6 +18,7 @@ import {
   CardHeader,
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
+import { toast } from '@archesai/ui/components/shadcn/sonner'
 import {
   Table,
   TableBody,

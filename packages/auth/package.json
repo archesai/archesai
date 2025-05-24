@@ -32,13 +32,27 @@
     "@fastify/cookie": "^11.0.2",
     "@fastify/passport": "^3.0.2",
     "@fastify/session": "^11.1.0",
-    "@sinclair/typebox": "^0.34.33",
+    "@sinclair/typebox": "catalog:",
     "fastify": "^5.3.3",
     "jsonwebtoken": "^9.0.2",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
     "redis": "^5.1.0",
-    "tslib": "^2.8.1"
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@golevelup/ts-jest": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@types/jest": "catalog:",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "catalog:",
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
+    "@types/passport-twitter": "^1.0.40",
+    "jest": "catalog:",
+    "typescript": "catalog:"
   }
 }

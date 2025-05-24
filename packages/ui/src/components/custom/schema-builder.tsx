@@ -181,7 +181,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
       {/* Additional constraints based on type */}
       {field.fieldType === 'object' && (
-        <div className='mt-4 ml-4'>
+        <div className='ml-4 mt-4'>
           <Label>Sub Item Fields</Label>
           <FieldList
             fields={field.subFields ?? []}
@@ -196,7 +196,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       )}
 
       {field.fieldType === 'array' && (
-        <div className='mt-4 ml-4'>
+        <div className='ml-4 mt-4'>
           <Label>List Item Type</Label>
           <Select
             onValueChange={(value) => {

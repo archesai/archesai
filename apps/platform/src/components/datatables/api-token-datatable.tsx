@@ -1,13 +1,13 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { format } from 'date-fns'
 import { User } from 'lucide-react'
 
 import type { ApiTokenEntity } from '@archesai/domain'
 
 import { useFindManyApiTokens } from '@archesai/client'
 import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
@@ -49,11 +49,7 @@ export default function ApiTokenDataTable() {
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className='font-light'>
-                {format(new Date(row.original.createdAt), 'M/d/yy h:mm a')}
-              </span>
-            )
+            return <Timestamp date={row.original.createdAt} />
           }
         }
       ]}

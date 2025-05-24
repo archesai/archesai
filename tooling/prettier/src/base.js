@@ -1,5 +1,3 @@
-import { fileURLToPath } from 'node:url'
-
 /** @typedef {import("prettier").Config} PrettierConfig */
 /** @typedef {import("prettier-plugin-tailwindcss").PluginOptions} TailwindConfig */
 /** @typedef {import("@ianvs/prettier-plugin-sort-imports").PluginConfig} SortImportsConfig */
@@ -28,7 +26,7 @@ export default {
     '^[./]'
   ],
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
-  importOrderTypeScriptVersion: '5.8.2',
+  importOrderTypeScriptVersion: '5.8.3',
   jsonRecursiveSort: true,
   jsxSingleQuote: true,
   overrides: [
@@ -56,9 +54,7 @@ export default {
   singleAttributePerLine: true,
   singleQuote: true,
   tabWidth: 2,
-  tailwindConfig: fileURLToPath(
-    new URL('../../tailwind/src/web.ts', import.meta.url)
-  ),
+  tailwindStylesheet: './src/styles/globals.css',
   tailwindFunctions: ['cn', 'cva'],
   trailingComma: 'none'
 }

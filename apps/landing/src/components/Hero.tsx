@@ -5,7 +5,7 @@ import { Button, buttonVariants } from '@archesai/ui/components/shadcn/button'
 
 export const Hero = () => {
   return (
-    <section className='z-10 container mt-10 grid h-svh max-w-4xl place-items-center gap-10 py-20 md:py-32'>
+    <section className='container z-10 mt-10 grid h-svh max-w-4xl place-items-center gap-10 py-20 md:py-32'>
       <div className='z-10 space-y-6 text-center'>
         <main className='text-5xl font-bold md:text-5xl'>
           Elevate Your Business with AI-Driven Solutions
@@ -16,7 +16,7 @@ export const Hero = () => {
           integrate seamlessly using our API or no-code widgets.
         </p>
 
-        <div className='space-y-4 md:space-y-0 md:space-x-4'>
+        <div className='space-y-4 md:space-x-4 md:space-y-0'>
           <Button className='w-full md:w-1/3'>
             <Link href='/playground'>Get Started</Link>
           </Button>
