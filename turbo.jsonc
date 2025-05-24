@@ -1,13 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "concurrency": "100%",
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".cache/*.tsbuildinfo", "dist/**"]
+      "outputs": [
+        ".cache/*.tsbuildinfo",
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "next-env.d.ts"
+      ]
     },
     "clean": {
       "cache": false
@@ -15,7 +22,7 @@
     "dev": {
       "dependsOn": ["^dev"],
       "cache": false,
-      "persistent": false
+      "persistent": true
     },
     "format": {
       "outputs": [".cache/.prettiercache"],
@@ -26,8 +33,9 @@
       "outputs": [".cache/.eslintcache"]
     },
     "start": {
+      "dependsOn": ["^build", "build"],
       "cache": false,
-      "persistent": false
+      "persistent": true
     },
     "typecheck": {
       "dependsOn": ["^topo", "^build"],
