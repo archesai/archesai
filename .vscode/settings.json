@@ -13,9 +13,6 @@
       "pattern": "tooling/*/"
     }
   ],
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
   "files.exclude": {
     "**/*.tsbuildinfo": true,
     "**/.cache": true,
@@ -25,11 +22,7 @@
     "**/next-env.d.ts": true,
     "**/node_modules": true
   },
-  "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
-  // "tailwindCSS.experimental.configFile": "./tooling/tailwind/src/web.ts"
+  "typescript.tsdk": "node_modules/typescript/lib"
   // "typescript.preferences.autoImportFileExcludePatterns": [
   //   "next/router.d.ts",
   //   "next/dist/client/router.d.ts"

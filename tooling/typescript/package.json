@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./configs": "./src/*.json"
+    "./*": "./src/*.json"
   },
   "scripts": {
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",

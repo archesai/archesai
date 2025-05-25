@@ -2,34 +2,25 @@
   "name": "@archesai/ui",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "type": "module",
   "imports": {
-    "#atoms/*": "./src/atoms/*.ts",
-    "#components/*": "./src/components/*.tsx",
-    "#hooks/*": "./src/hooks/*.tsx",
-    "#lib/*": "./src/lib/*.ts",
-    "#providers/*": "./src/providers/*.tsx",
-    "#layouts/*": "./src/layouts/*.tsx",
-    "#globals.css": "./src/styles/globals.css",
-    "#postcss.config": "./postcss.config.ts"
+    "#globals.css": "./dist/styles/globals.css",
+    "#*": "./dist/*.js"
   },
   "exports": {
     "./package.json": "./package.json",
-    "./atoms/*": "./src/atoms/*.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.tsx",
-    "./lib/*": "./src/lib/*.ts",
-    "./providers/*": "./src/providers/*.tsx",
-    "./layouts/*": "./src/layouts/*.tsx",
-    "./globals.css": "./src/styles/globals.css",
-    "./postcss.config": "./postcss.config.ts"
+    "./globals.css": "./dist/styles/globals.css",
+    "./*": "./dist/*.js"
   },
   "scripts": {
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {

@@ -22,7 +22,7 @@
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {

@@ -50,7 +50,6 @@ onlyBuiltDependencies:
   - esbuild
   - msgpackr-extract
   - sharp
-  - unrs-resolver
 packageManagerStrictVersion: true
 publicHoistPattern:
   - '*prettier*'

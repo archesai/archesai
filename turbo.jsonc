@@ -3,9 +3,6 @@
   "ui": "tui",
   "concurrency": "100%",
   "tasks": {
-    "topo": {
-      "dependsOn": ["^topo"]
-    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
@@ -19,8 +16,10 @@
     "clean": {
       "cache": false
     },
+    "//#clean": {
+      "cache": false
+    },
     "dev": {
-      "dependsOn": ["^dev"],
       "cache": false,
       "persistent": true
     },
@@ -29,16 +28,15 @@
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^topo", "^build"],
+      "dependsOn": ["^lint"],
       "outputs": [".cache/.eslintcache"]
     },
     "start": {
       "dependsOn": ["^build", "build"],
-      "cache": false,
       "persistent": true
     },
     "typecheck": {
-      "dependsOn": ["^topo", "^build"],
+      "dependsOn": ["^typecheck"],
       "outputs": [".cache/*.tsbuildinfo"]
     }
   }

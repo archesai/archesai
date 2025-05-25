@@ -16,7 +16,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "next start --hostname 0.0.0.0",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {

@@ -25,6 +25,7 @@ export default {
     '^[../]',
     '^[./]'
   ],
+  experimentalTernaries: true,
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderTypeScriptVersion: '5.8.3',
   jsonRecursiveSort: true,

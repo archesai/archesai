@@ -23,7 +23,7 @@
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "orval",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
