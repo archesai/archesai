@@ -18,7 +18,7 @@ const base: ConfigArray = tseslint.config(
     ...includeIgnoreFile(path.join(import.meta.dirname, '../../../.gitignore'))
   },
   {
-    ignores: ['*.config.ts'],
+    ignores: ['*.config.ts', '*.config.js'],
     name: 'ignore config files'
   },
   {
@@ -131,14 +131,14 @@ const base: ConfigArray = tseslint.config(
       'import/no-named-as-default-member': 'off',
       'import/no-relative-packages': 'error',
       'import/no-unresolved': 'off',
-      ...(process.env.CI === 'true'
-        ? {}
-        : {
-            'import/no-cycle': 'off',
-            'import/no-deprecated': 'off',
-            'import/no-named-as-default': 'off',
-            'import/no-unused-modules': 'off'
-          })
+      ...(process.env.CI === 'true' ?
+        {}
+      : {
+          'import/no-cycle': 'off',
+          'import/no-deprecated': 'off',
+          'import/no-named-as-default': 'off',
+          'import/no-unused-modules': 'off'
+        })
       // import/no-extraneous-dependencies https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md
     },
     settings: {

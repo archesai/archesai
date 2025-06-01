@@ -35,8 +35,8 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@libsql/client": "^0.15.7",
-    "drizzle-orm": "^0.43.1",
+    "@libsql/client": "^0.15.8",
+    "drizzle-orm": "^0.44.1",
     "drizzle-seed": "^0.3.1",
     "pg": "^8.16.0",
     "tslib": "catalog:"

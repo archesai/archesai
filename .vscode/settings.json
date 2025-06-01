@@ -14,13 +14,13 @@
     }
   ],
   "files.exclude": {
-    "**/*.tsbuildinfo": true,
-    "**/.cache": true,
-    "**/.next": true,
-    "**/.turbo": true,
-    "**/dist": true,
-    "**/next-env.d.ts": true,
-    "**/node_modules": true
+    "**/*.tsbuildinfo": false,
+    "**/.cache": false,
+    "**/.next": false,
+    "**/.turbo": false,
+    "**/dist": false,
+    "**/next-env.d.ts": false,
+    "**/node_modules": false
   },
   "typescript.tsdk": "node_modules/typescript/lib"
   // "typescript.preferences.autoImportFileExcludePatterns": [

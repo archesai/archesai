@@ -29,7 +29,7 @@
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
     "@sinclair/typebox": "catalog:",
-    "stripe": "^18.1.1",
+    "stripe": "^18.2.0",
     "tslib": "catalog:"
   },
   "devDependencies": {

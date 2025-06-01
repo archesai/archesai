@@ -31,7 +31,7 @@
     "@archesai/domain": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@sinclair/typebox": "catalog:",
-    "bullmq": "^5.53.0",
+    "bullmq": "^5.53.1",
     "tslib": "catalog:"
   },
   "devDependencies": {

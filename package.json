@@ -35,11 +35,11 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "husky": "^9.1.7",
-    "lint-staged": "^16.0.0",
+    "lint-staged": "^16.1.0",
     "only-allow": "^1.2.1",
     "prettier": "catalog:",
     "sherif": "^1.5.0",
-    "turbo": "^2.5.3",
+    "turbo": "^2.5.4",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@10.11.0",
