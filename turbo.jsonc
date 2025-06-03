@@ -9,8 +9,7 @@
         ".cache/*.tsbuildinfo",
         "dist/**",
         ".next/**",
-        "!.next/cache/**",
-        "next-env.d.ts"
+        "!.next/cache/**"
       ]
     },
     "clean": {
@@ -32,8 +31,9 @@
       "outputs": [".cache/.eslintcache"]
     },
     "start": {
-      "dependsOn": ["^build", "build"],
-      "persistent": true
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["build"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
