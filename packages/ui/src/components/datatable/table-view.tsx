@@ -52,19 +52,19 @@ export function TableView<TEntity extends BaseEntity>({
                   colSpan={header.colSpan}
                   key={header.id}
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                  {header.isPlaceholder ? null : (
+                    flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )
+                  )}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
         <TableBody>
-          {!isFetched ? (
+          {!isFetched ?
             <>
               {Array.from({ length: 10 }).map((_, index) => (
                 <TableRow
@@ -88,7 +88,7 @@ export function TableView<TEntity extends BaseEntity>({
                 </TableRow>
               ))}
             </>
-          ) : table.getRowModel().rows.length ? (
+          : table.getRowModel().rows.length ?
             table.getRowModel().rows.map((row, index: number) => (
               <TableRow
                 className={
@@ -108,8 +108,7 @@ export function TableView<TEntity extends BaseEntity>({
                 ))}
               </TableRow>
             ))
-          ) : (
-            <TableRow>
+          : <TableRow>
               <TableCell
                 className='h-24 text-center'
                 colSpan={columns.length + 2}
@@ -117,7 +116,7 @@ export function TableView<TEntity extends BaseEntity>({
                 No {entityType}s found
               </TableCell>
             </TableRow>
-          )}
+          }
         </TableBody>
       </Table>
     </div>

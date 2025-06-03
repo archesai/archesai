@@ -73,16 +73,16 @@ export class RedisIoAdapter {
     const pubClient = createClient({
       ...(redisAuth ? { password: redisAuth } : {}),
       url: `redis://${redisHost}:${redisPort}`,
-      ...(redisCa
-        ? {
-            socket: {
-              ca: readFileSync(redisCa),
-              host: redisHost,
-              rejectUnauthorized: false,
-              tls: true
-            }
+      ...(redisCa ?
+        {
+          socket: {
+            ca: readFileSync(redisCa),
+            host: redisHost,
+            rejectUnauthorized: false,
+            tls: true
           }
-        : {})
+        }
+      : {})
     })
     const subClient = pubClient.duplicate()
     await Promise.all([

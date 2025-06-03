@@ -19,9 +19,9 @@ export class OrganizationRepository extends BaseRepository<OrganizationEntity> {
     const model = await this.update(ORGANIZATION_ENTITY_KEY, {
       billingEmail: organization.billingEmail,
       credits:
-        numCredits < 0
-          ? organization.credits + numCredits
-          : organization.credits - -1 * numCredits
+        numCredits < 0 ?
+          organization.credits + numCredits
+        : organization.credits - -1 * numCredits
     })
     return this.toEntity(model)
   }

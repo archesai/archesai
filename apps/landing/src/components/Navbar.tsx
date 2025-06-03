@@ -51,9 +51,9 @@ export const Navbar = () => {
   return (
     <header
       className={`sticky top-0 z-40 w-full ${
-        isTop
-          ? 'bg-transparent'
-          : 'border-b bg-white shadow-xs transition-all dark:bg-background'
+        isTop ? 'bg-transparent' : (
+          'border-b bg-white shadow-xs transition-all dark:bg-background'
+        )
       }`}
     >
       <NavigationMenu>

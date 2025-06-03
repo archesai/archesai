@@ -81,32 +81,28 @@ export default function ContentDataTable({
         {
           accessorKey: 'parent',
           cell: ({ row }) => {
-            return row.original.parentId ? (
-              <Link
-                className='max-w-lg truncate text-base text-wrap md:text-sm'
-                href={`/content/single?contentId=${row.original.parentId}`}
-              >
-                {row.original.parentId}
-              </Link>
-            ) : (
-              <div className='text-muted-foreground'>None</div>
-            )
+            return row.original.parentId ?
+                <Link
+                  className='max-w-lg truncate text-base text-wrap md:text-sm'
+                  href={`/content/single?contentId=${row.original.parentId}`}
+                >
+                  {row.original.parentId}
+                </Link>
+              : <div className='text-muted-foreground'>None</div>
           },
           enableSorting: false
         },
         {
           accessorKey: 'producer',
           cell: ({ row }) => {
-            return row.original.producerId ? (
-              <Link
-                className='max-w-lg truncate text-base text-wrap md:text-sm'
-                href={`/playground?selectedRunId=${row.original.producerId}`}
-              >
-                {row.original.producerId}
-              </Link>
-            ) : (
-              <div className='text-muted-foreground'>None</div>
-            )
+            return row.original.producerId ?
+                <Link
+                  className='max-w-lg truncate text-base text-wrap md:text-sm'
+                  href={`/playground?selectedRunId=${row.original.producerId}`}
+                >
+                  {row.original.producerId}
+                </Link>
+              : <div className='text-muted-foreground'>None</div>
           },
           enableSorting: false
         },

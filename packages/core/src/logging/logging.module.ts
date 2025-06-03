@@ -42,16 +42,16 @@ export const LoggingModuleDefinition: ModuleMetadata = {
         const loggerConfig: pino.LoggerOptions = {
           level: configService.get('logging.level'),
           messageKey: 'message',
-          ...(configService.get('logging.gcpfix')
-            ? {
-                formatters: {
-                  level: (label: string) => ({
-                    level: label,
-                    severity: label.toUpperCase()
-                  })
-                }
+          ...(configService.get('logging.gcpfix') ?
+            {
+              formatters: {
+                level: (label: string) => ({
+                  level: label,
+                  severity: label.toUpperCase()
+                })
               }
-            : {}),
+            }
+          : {}),
           transport: {
             targets
           }

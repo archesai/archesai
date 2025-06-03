@@ -1,2 +1,2 @@
 @import 'tailwindcss';
-@import '@archesai/ui/globals.css';
+@import '../../../../packages/ui/src/styles/globals.css';

@@ -9,27 +9,23 @@ import hooksPlugin from 'eslint-plugin-react-hooks'
 const react: ConfigArray = [
   {
     files: ['**/*.ts', '**/*.tsx'],
+    name: 'react-version',
+    settings: { react: { version: 'detect' } }
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    ...hooksPlugin.configs['recommended-latest']
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       globals: {
         React: 'writable'
-      },
-      parserOptions: {
-        ...reactPlugin.configs.flat.recommended?.languageOptions.parserOptions,
-        ...reactPlugin.configs.flat['jsx-runtime']?.languageOptions
-          .parserOptions
       }
     },
     name: 'react',
-    plugins: {
-      react: reactPlugin,
-      'react-hooks': hooksPlugin
-    },
-    settings: { react: { version: 'detect' } },
-    rules: {
-      ...reactPlugin.configs.flat.recommended?.rules,
-      ...reactPlugin.configs.flat['jsx-runtime']?.rules,
-      ...hooksPlugin.configs.recommended.rules
-    }
+    ...reactPlugin.configs.flat.recommended,
+    ...reactPlugin.configs.flat['jsx-runtime']
   }
 ]
 

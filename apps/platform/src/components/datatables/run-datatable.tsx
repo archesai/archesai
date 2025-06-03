@@ -43,11 +43,9 @@ export default function RunDataTable() {
                 size='sm'
                 variant={'outline'}
               >
-                {row.original.runType === 'PIPELINE_RUN' ? (
+                {row.original.runType === 'PIPELINE_RUN' ?
                   <Workflow className='h-5 w-5' />
-                ) : (
-                  <PackageCheck className='h-5 w-5' />
-                )}
+                : <PackageCheck className='h-5 w-5' />}
               </Button>
             )
           },
@@ -70,16 +68,14 @@ export default function RunDataTable() {
         {
           accessorKey: 'duration',
           cell: ({ row }) => {
-            return row.original.startedAt && row.original.completedAt ? (
-              <Timestamp
-                date={new Date(
-                  new Date(row.original.completedAt).getTime() -
-                    new Date(row.original.startedAt).getTime()
-                ).toISOString()}
-              />
-            ) : (
-              'N/A'
-            )
+            return row.original.startedAt && row.original.completedAt ?
+                <Timestamp
+                  date={new Date(
+                    new Date(row.original.completedAt).getTime() -
+                      new Date(row.original.startedAt).getTime()
+                  ).toISOString()}
+                />
+              : 'N/A'
           },
           enableHiding: false,
           enableSorting: false
@@ -87,21 +83,17 @@ export default function RunDataTable() {
         {
           accessorKey: 'startedAt',
           cell: ({ row }) => {
-            return row.original.startedAt ? (
-              <Timestamp date={row.original.startedAt} />
-            ) : (
-              'N/A'
-            )
+            return row.original.startedAt ?
+                <Timestamp date={row.original.startedAt} />
+              : 'N/A'
           }
         },
         {
           accessorKey: 'completedAt',
           cell: ({ row }) => {
-            return row.original.completedAt ? (
-              <Timestamp date={row.original.completedAt} />
-            ) : (
-              'N/A'
-            )
+            return row.original.completedAt ?
+                <Timestamp date={row.original.completedAt} />
+              : 'N/A'
           }
         }
       ]}

@@ -61,7 +61,7 @@ export const DeleteItems = <TEntity extends BaseEntity>({
         <DialogDescription />
       </div>
       <DialogTrigger asChild>
-        {variant === 'sm' ? (
+        {variant === 'sm' ?
           <div
             className='cursor-pointer text-destructive'
             onClick={() => {
@@ -70,7 +70,7 @@ export const DeleteItems = <TEntity extends BaseEntity>({
           >
             <Trash className='h-5 w-5 text-destructive' />
           </div>
-        ) : variant === 'md' ? (
+        : variant === 'md' ?
           <div
             className='w-full'
             onClick={() => {
@@ -79,8 +79,7 @@ export const DeleteItems = <TEntity extends BaseEntity>({
           >
             {t('Delete')}
           </div>
-        ) : (
-          <Button
+        : <Button
             className='h-8'
             onClick={() => {
               setOpenConfirmDelete(true)
@@ -89,7 +88,7 @@ export const DeleteItems = <TEntity extends BaseEntity>({
           >
             {t('Delete')}
           </Button>
-        )}
+        }
       </DialogTrigger>
 
       <DialogContent className='gap-0 p-0'>

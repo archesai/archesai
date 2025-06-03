@@ -32,9 +32,9 @@ export class RunProcessor {
           host: configService.get('redis.host'),
           password: configService.get('redis.auth')!,
           port: configService.get('redis.port'),
-          ...(configService.get('redis.ca')
-            ? { tls: { ca: readFileSync(configService.get('redis.ca')!) } }
-            : {})
+          ...(configService.get('redis.ca') ?
+            { tls: { ca: readFileSync(configService.get('redis.ca')!) } }
+          : {})
         }
       }
     )

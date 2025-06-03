@@ -25,18 +25,18 @@ export class CheckoutSessionsService {
       ...(isOneTime ? { allow_promotion_codes: true } : {}),
       cancel_url: `${this.configService.get('platform.host')}/organization/billing`,
       customer: customerId,
-      ...(isOneTime
-        ? {
-            invoice_creation: { enabled: true }
-          }
-        : {}),
+      ...(isOneTime ?
+        {
+          invoice_creation: { enabled: true }
+        }
+      : {}),
 
       line_items: [
         {
           ...lineItem,
-          ...(isOneTime
-            ? { adjustable_quantity: { enabled: true, minimum: 1 } }
-            : {})
+          ...(isOneTime ?
+            { adjustable_quantity: { enabled: true, minimum: 1 } }
+          : {})
         }
       ],
       mode: isOneTime ? 'payment' : 'subscription',

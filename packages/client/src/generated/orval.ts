@@ -391,11 +391,14 @@ export const getCreateFileMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createFile']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -468,8 +471,8 @@ export const getFindManyFilesUrl = (params?: FindManyFilesParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/files?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/files?${stringifiedParams}`
     : `http://0.0.0.0:3001/files`
 }
 
@@ -684,11 +687,14 @@ export const getDeleteFileMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteFile']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -979,11 +985,14 @@ export const getUpdateFileMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateFile']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -1088,11 +1097,14 @@ export const getCreatePipelineMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createPipeline']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -1165,8 +1177,8 @@ export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/pipelines?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/pipelines?${stringifiedParams}`
     : `http://0.0.0.0:3001/pipelines`
 }
 
@@ -1407,11 +1419,14 @@ export const getDeletePipelineMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deletePipeline']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -1705,11 +1720,14 @@ export const getUpdatePipelineMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updatePipeline']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -1817,11 +1835,14 @@ export const getCreateToolMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createTool']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -1894,8 +1915,8 @@ export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/tools?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/tools?${stringifiedParams}`
     : `http://0.0.0.0:3001/tools`
 }
 
@@ -2110,11 +2131,14 @@ export const getDeleteToolMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteTool']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -2405,11 +2429,14 @@ export const getUpdateToolMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateTool']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -2514,11 +2541,14 @@ export const getCreateContentMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createContent']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -2591,8 +2621,8 @@ export const getFindManyContentsUrl = (params?: FindManyContentsParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/contents?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/contents?${stringifiedParams}`
     : `http://0.0.0.0:3001/contents`
 }
 
@@ -2829,11 +2859,14 @@ export const getDeleteContentMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteContent']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3124,11 +3157,14 @@ export const getUpdateContentMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateContent']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3229,11 +3265,14 @@ export const getCreateRunMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createRun']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3306,8 +3345,8 @@ export const getFindManyRunsUrl = (params?: FindManyRunsParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/runs?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/runs?${stringifiedParams}`
     : `http://0.0.0.0:3001/runs`
 }
 
@@ -3517,11 +3556,14 @@ export const getDeleteRunMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteRun']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3802,11 +3844,14 @@ export const getUpdateRunMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateRun']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3911,11 +3956,14 @@ export const getCreateLabelMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createLabel']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -3988,8 +4036,8 @@ export const getFindManyLabelsUrl = (params?: FindManyLabelsParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/labels?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/labels?${stringifiedParams}`
     : `http://0.0.0.0:3001/labels`
 }
 
@@ -4204,11 +4252,14 @@ export const getDeleteLabelMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteLabel']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -4499,11 +4550,14 @@ export const getUpdateLabelMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateLabel']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -4608,11 +4662,14 @@ export const getCreateOrganizationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createOrganization']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -4689,8 +4746,8 @@ export const getFindManyOrganizationsUrl = (
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/organizations?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/organizations?${stringifiedParams}`
     : `http://0.0.0.0:3001/organizations`
 }
 
@@ -4704,9 +4761,8 @@ export const findManyOrganizations = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: findManyOrganizationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: findManyOrganizationsResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -4936,11 +4992,14 @@ export const getDeleteOrganizationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteOrganization']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -5255,11 +5314,14 @@ export const getUpdateOrganizationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateOrganization']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -5367,11 +5429,14 @@ export const getCreateUserMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createUser']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -5444,8 +5509,8 @@ export const getFindManyUsersUrl = (params?: FindManyUsersParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/users?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/users?${stringifiedParams}`
     : `http://0.0.0.0:3001/users`
 }
 
@@ -5660,11 +5725,14 @@ export const getDeleteUserMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteUser']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -5955,11 +6023,14 @@ export const getUpdateUserMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateUser']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -6064,11 +6135,14 @@ export const getCreateMemberMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createMember']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -6141,8 +6215,8 @@ export const getFindManyMembersUrl = (params?: FindManyMembersParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/members?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/members?${stringifiedParams}`
     : `http://0.0.0.0:3001/members`
 }
 
@@ -6377,11 +6451,14 @@ export const getDeleteMemberMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteMember']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -6672,11 +6749,14 @@ export const getUpdateMemberMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateMember']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -6781,11 +6861,14 @@ export const getCreateInvitationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createInvitation']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -6862,8 +6945,8 @@ export const getFindManyInvitationsUrl = (
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/invitations?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/invitations?${stringifiedParams}`
     : `http://0.0.0.0:3001/invitations`
 }
 
@@ -7107,11 +7190,14 @@ export const getDeleteInvitationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteInvitation']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7426,11 +7512,14 @@ export const getUpdateInvitationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateInvitation']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7555,11 +7644,14 @@ export const getAcceptInvitationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['acceptInvitation']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7667,11 +7759,14 @@ export const getStripeCallbackMutationOptions = <
   TContext
 > => {
   const mutationKey = ['stripeCallback']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7749,9 +7844,8 @@ export const createCheckoutSession = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: createCheckoutSessionResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: createCheckoutSessionResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -7778,11 +7872,14 @@ export const getCreateCheckoutSessionMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createCheckoutSession']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7887,11 +7984,14 @@ export const getDeletePaymentMethodMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deletePaymentMethod']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -7969,9 +8069,8 @@ export const findOnePaymentMethod = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: findOnePaymentMethodResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: findOnePaymentMethodResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -8164,9 +8263,8 @@ export const findManyPaymentMethods = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: findManyPaymentMethodsResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: findManyPaymentMethodsResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -8529,11 +8627,14 @@ export const getCreatePortalMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createPortal']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -8636,11 +8737,14 @@ export const getCancelSubscriptionMutationOptions = <
   TContext
 > => {
   const mutationKey = ['cancelSubscription']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -8746,11 +8850,14 @@ export const getUpdateSubscriptionMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateSubscription']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -8855,11 +8962,14 @@ export const getCreateApiTokenMutationOptions = <
   TContext
 > => {
   const mutationKey = ['createApiToken']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -8932,8 +9042,8 @@ export const getFindManyApiTokensUrl = (params?: FindManyApiTokensParams) => {
 
   const stringifiedParams = normalizedParams.toString()
 
-  return stringifiedParams.length > 0
-    ? `http://0.0.0.0:3001/api-tokens?${stringifiedParams}`
+  return stringifiedParams.length > 0 ?
+      `http://0.0.0.0:3001/api-tokens?${stringifiedParams}`
     : `http://0.0.0.0:3001/api-tokens`
 }
 
@@ -9177,11 +9287,14 @@ export const getDeleteApiTokenMutationOptions = <
   TContext
 > => {
   const mutationKey = ['deleteApiToken']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -9475,11 +9588,14 @@ export const getUpdateApiTokenMutationOptions = <
   TContext
 > => {
   const mutationKey = ['updateApiToken']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -9590,11 +9706,14 @@ export const getRegisterMutationOptions = <
   TContext
 > => {
   const mutationKey = ['register']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -9700,11 +9819,14 @@ export const getLoginMutationOptions = <
   TContext
 > => {
   const mutationKey = ['login']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -9805,11 +9927,14 @@ export const getLogoutMutationOptions = <
   TContext
 > => {
   const mutationKey = ['logout']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -9910,11 +10035,14 @@ export const getRefreshMutationOptions = <
   TContext
 > => {
   const mutationKey = ['refresh']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10010,11 +10138,14 @@ export const getFirebaseMutationOptions = <
   TContext
 > => {
   const mutationKey = ['firebase']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10432,9 +10563,8 @@ export const confirmPasswordReset = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: confirmPasswordResetResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: confirmPasswordResetResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -10461,11 +10591,14 @@ export const getConfirmPasswordResetMutationOptions = <
   TContext
 > => {
   const mutationKey = ['confirmPasswordReset']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10550,9 +10683,8 @@ export const requestPasswordReset = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: requestPasswordResetResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: requestPasswordResetResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -10579,11 +10711,14 @@ export const getRequestPasswordResetMutationOptions = <
   TContext
 > => {
   const mutationKey = ['requestPasswordReset']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10701,11 +10836,14 @@ export const getConfirmEmailChangeMutationOptions = <
   TContext
 > => {
   const mutationKey = ['confirmEmailChange']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10815,11 +10953,14 @@ export const getRequestEmailChangeMutationOptions = <
   TContext
 > => {
   const mutationKey = ['requestEmailChange']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -10911,9 +11052,8 @@ export const confirmEmailVerification = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: confirmEmailVerificationResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: confirmEmailVerificationResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -10940,11 +11080,14 @@ export const getConfirmEmailVerificationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['confirmEmailVerification']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 
@@ -11026,9 +11169,8 @@ export const requestEmailVerification = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: requestEmailVerificationResponse['data'] = body
-    ? JSON.parse(body)
-    : {}
+  const data: requestEmailVerificationResponse['data'] =
+    body ? JSON.parse(body) : {}
 
   return {
     data,
@@ -11055,11 +11197,14 @@ export const getRequestEmailVerificationMutationOptions = <
   TContext
 > => {
   const mutationKey = ['requestEmailVerification']
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      'mutationKey' in options.mutation &&
-      options.mutation.mutationKey
-      ? options
+  const { mutation: mutationOptions, fetch: fetchOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, fetch: undefined }
 

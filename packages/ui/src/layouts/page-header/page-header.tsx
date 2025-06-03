@@ -76,9 +76,9 @@ export const PageHeader = ({ pathname, siteRoutes }: PageHeaderProps) => {
               <TabsTrigger
                 className={cn(
                   `relative h-8 font-normal shadow-none transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground data-[state=active]:bg-sidebar data-[state=active]:text-sidebar-foreground [&::after]:absolute [&::after]:bottom-0 [&::after]:left-0 [&::after]:h-0.5 [&::after]:bg-blue-600 [&::after]:transition-all [&::after]:content-['']`,
-                  isActive
-                    ? 'text-sidebar-foreground [&::after]:w-full'
-                    : 'text-muted-foreground [&::after]:w-0'
+                  isActive ?
+                    'text-sidebar-foreground [&::after]:w-full'
+                  : 'text-muted-foreground [&::after]:w-0'
                 )}
                 key={tab.href}
                 onClick={() => {

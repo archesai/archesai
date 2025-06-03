@@ -23,51 +23,49 @@ export default function Playground() {
   const hasInputs = false
   const hasOutputs = false
 
-  return selectedTool ? (
-    <div className='flex h-full min-h-0 gap-3'>
-      <div
-        className={cn(
-          'flex w-2/3 flex-1 flex-col gap-4 overflow-auto',
-          !hasInputs ? 'hidden' : ''
-        )}
-      >
-        {hasInputs ? (
-          <div
-            className={cn(
-              'overflow-auto transition-all',
-              hasOutputs ? 'h-1/2' : 'h-full'
-            )}
-          >
-            <ContentDataTable readonly />
-          </div>
-        ) : null}
+  return selectedTool ?
+      <div className='flex h-full min-h-0 gap-3'>
+        <div
+          className={cn(
+            'flex w-2/3 flex-1 flex-col gap-4 overflow-auto',
+            !hasInputs ? 'hidden' : ''
+          )}
+        >
+          {hasInputs ?
+            <div
+              className={cn(
+                'overflow-auto transition-all',
+                hasOutputs ? 'h-1/2' : 'h-full'
+              )}
+            >
+              <ContentDataTable readonly />
+            </div>
+          : null}
 
-        {hasOutputs ? (
-          <div className='h-1/2 overflow-auto'>
-            <ContentDataTable readonly />
-          </div>
-        ) : null}
-      </div>
+          {hasOutputs ?
+            <div className='h-1/2 overflow-auto'>
+              <ContentDataTable readonly />
+            </div>
+          : null}
+        </div>
 
-      <div
-        className={cn(
-          'flex flex-col gap-1 transition-all',
-          !hasInputs ? 'h-auto max-h-0 w-full items-center' : 'w-1/3 gap-3'
-        )}
-      >
-        {selectedRunId && run && (
-          <StatusTypeEnumButton
-            run={{
-              ...run.attributes,
-              id: run.id,
-              type: run.type
-            }}
-          />
-        )}
-        <RunForm />
+        <div
+          className={cn(
+            'flex flex-col gap-1 transition-all',
+            !hasInputs ? 'h-auto max-h-0 w-full items-center' : 'w-1/3 gap-3'
+          )}
+        >
+          {selectedRunId && run && (
+            <StatusTypeEnumButton
+              run={{
+                ...run.attributes,
+                id: run.id,
+                type: run.type
+              }}
+            />
+          )}
+          <RunForm />
+        </div>
       </div>
-    </div>
-  ) : (
-    <ToolCards />
-  )
+    : <ToolCards />
 }

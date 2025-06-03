@@ -216,17 +216,16 @@ export default function ImportCard({
             size='sm'
             variant={'secondary'}
           >
-            {uploading ? (
+            {uploading ?
               <div className='flex gap-2'>
                 <Loader2 className='h-5 w-5 animate-spin text-white' />
                 <span>Uploading...</span>
               </div>
-            ) : (
-              <div className='flex gap-2'>
+            : <div className='flex gap-2'>
                 <Upload className='h-5 w-5' />
                 <span>Upload</span>
               </div>
-            )}
+            }
           </Button>
 
           {uploading && (

@@ -53,9 +53,9 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     if (organization.plan != 'PREMIUM' && organization.credits <= numCredits) {
       throw new ForbiddenException(
         'Sorry, you do not have enough credits. Please purchase more credits to continue' +
-          (organization.credits < numCredits
-            ? ` (estimated cost: ${numCredits.toString()})`
-            : '')
+          (organization.credits < numCredits ?
+            ` (estimated cost: ${numCredits.toString()})`
+          : '')
       )
     }
   }

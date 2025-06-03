@@ -129,41 +129,41 @@ export function GenericForm<
           className='flex flex-1 flex-col'
           noValidate
           onSubmit={form.handleSubmit(
-            isUpdateForm
-              ? (data) => {
-                  onSubmitUpdate(data as UpdateDto, {
-                    onError: (error: Error) => {
-                      toast('`Update failed`', {
-                        description: error.message
-                      })
-                    },
-                    onSuccess: () => {
-                      toast(`Update successful`, {
-                        description: `Your ${entityKey} has been updated`
-                      })
-                    }
-                  })
-                }
-              : onSubmitCreate
-                ? (data) => {
-                    onSubmitCreate(data as CreateDto, {
-                      onError: (error: Error) => {
-                        toast(`Create failed`, {
-                          description: error.message
-                        })
-                      },
-                      onSuccess: () => {
-                        toast(`Creation successful`, {
-                          description: `Your ${entityKey} has been created`
-                        })
-                      }
+            isUpdateForm ?
+              (data) => {
+                onSubmitUpdate(data as UpdateDto, {
+                  onError: (error: Error) => {
+                    toast('`Update failed`', {
+                      description: error.message
+                    })
+                  },
+                  onSuccess: () => {
+                    toast(`Update successful`, {
+                      description: `Your ${entityKey} has been updated`
                     })
                   }
-                : () => {
-                    toast(`Error`, {
-                      description: `No submit function provided`
+                })
+              }
+            : onSubmitCreate ?
+              (data) => {
+                onSubmitCreate(data as CreateDto, {
+                  onError: (error: Error) => {
+                    toast(`Create failed`, {
+                      description: error.message
+                    })
+                  },
+                  onSuccess: () => {
+                    toast(`Creation successful`, {
+                      description: `Your ${entityKey} has been created`
                     })
                   }
+                })
+              }
+            : () => {
+                toast(`Error`, {
+                  description: `No submit function provided`
+                })
+              }
           )}
         >
           <CardContent className='flex flex-1 flex-col gap-4 p-4'>
@@ -179,17 +179,17 @@ export function GenericForm<
                       <FormItem className='col-span-1 flex flex-col'>
                         <FormLabel>{fieldConfig.label}</FormLabel>
                         <FormControl>
-                          {fieldConfig.renderControl ? (
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-                            fieldConfig.renderControl(field.value as any)
-                          ) : (
-                            // <fieldConfig.component
-                            //   {...field}
-                            //   {...fieldConfig.props}
-                            //   value={field.value}
-                            // /> // FIXME
-                            <></>
-                          )}
+                          {
+                            fieldConfig.renderControl ?
+                              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+                              fieldConfig.renderControl(field.value as any)
+                              // <fieldConfig.component
+                              //   {...field}
+                              //   {...fieldConfig.props}
+                              //   value={field.value}
+                              // /> // FIXME
+                            : <></>
+                          }
                         </FormControl>
                         {!fieldState.error?.message && (
                           <FormDescription>

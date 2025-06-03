@@ -9,9 +9,8 @@ export const useSearchQuery = () => {
 
   // Sorting
   const sortField = searchQuery?.sort?.replace(/^-/, '') ?? 'createdAt'
-  const sortDirection: SortDirection = searchQuery?.sort?.startsWith('-')
-    ? 'desc'
-    : 'asc'
+  const sortDirection: SortDirection =
+    searchQuery?.sort?.startsWith('-') ? 'desc' : 'asc'
 
   const updateSort = (field: string, direction: SortDirection) => {
     setSearchQuery((prev) => ({

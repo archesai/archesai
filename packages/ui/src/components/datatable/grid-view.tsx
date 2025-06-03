@@ -73,13 +73,12 @@ export function GridView<TEntity extends BaseEntity>({
                 setHover(-1)
               }}
             >
-              {grid ? (
+              {grid ?
                 grid(item)
-              ) : (
-                <div className='flex h-full w-full items-center justify-center'>
+              : <div className='flex h-full w-full items-center justify-center'>
                   {icon}
                 </div>
-              )}
+              }
             </div>
             <hr />
 
@@ -110,13 +109,13 @@ export function GridView<TEntity extends BaseEntity>({
                     }}
                   />
                 )}
-                {!readonly && deleteItem ? (
+                {!readonly && deleteItem ?
                   <DeleteItems
                     deleteItem={deleteItem}
                     entityType={entityType}
                     items={[item]}
                   />
-                ) : null}
+                : null}
               </div>
             </div>
             {gridHover && hover === i && gridHover(item)}

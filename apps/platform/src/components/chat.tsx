@@ -35,7 +35,7 @@ export default function Chat() {
         block: 'end'
       })
     }
-  }, [messages])
+  }, [])
 
   const handleSend = async () => {
     if (!message.trim()) return // Prevent sending empty messages
@@ -153,12 +153,11 @@ export default function Chat() {
                     {/* <Avatar>
                         <ArchesLogo scale={0.124} size="sm" />
                       </Avatar> */}
-                    {msg.id === 'pending' ? (
+                    {msg.id === 'pending' ?
                       <div className='flex items-center justify-center'>
                         <div className='pulse h-5 w-5 rounded-full bg-black'></div>
                       </div>
-                    ) : (
-                      <div className='rounded-lg py-2'>
+                    : <div className='rounded-lg py-2'>
                         {msg.attributes
                           .text!.replaceAll(' -', '\n-')
                           .split(/(```[\s\S]*?```)/g)
@@ -195,7 +194,7 @@ export default function Chat() {
                             return <span key={index}>{replaced}</span>
                           })}
                       </div>
-                    )}
+                    }
                   </div>
                 </div>
               ))}

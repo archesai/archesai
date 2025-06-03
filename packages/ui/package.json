@@ -16,9 +16,11 @@
     "./*": "./dist/*.js"
   },
   "scripts": {
-    "build": "tsc --build",
-    "build:styles": "tailwindcss -i ./src/styles/globals.css -o ./dist/styles/globals.css --minify",
+    "build:components": "tsc --build",
+    "build:styles": "tailwindcss -i ./src/styles/globals.css -o ./dist/styles/globals.css",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "dev:components": "tsc --build --watch",
+    "dev:styles": "tailwindcss -i ./src/styles/globals.css -o ./dist/styles/globals.css --watch",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"

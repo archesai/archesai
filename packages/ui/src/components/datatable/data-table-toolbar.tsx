@@ -84,7 +84,7 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       <DatePickerWithRange />
       <ViewToggle />
       <DataTableViewOptions table={table} />
-      {createForm && !readonly ? (
+      {createForm && !readonly ?
         <Button
           className='text-sm font-normal capitalize'
           onClick={() => {
@@ -95,7 +95,7 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
         >
           Create {entityType.toLowerCase()}
         </Button>
-      ) : null}
+      : null}
     </div>
   )
 }
@@ -106,9 +106,9 @@ export function ViewToggle() {
     <div className='hidden h-8 gap-2 md:flex'>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === 'table'
-            ? 'bg-secondary text-primary'
-            : 'bg-transparent text-muted-foreground'
+          view === 'table' ?
+            'bg-secondary text-primary'
+          : 'bg-transparent text-muted-foreground'
         }`}
         onClick={() => {
           setView('table')
@@ -120,9 +120,9 @@ export function ViewToggle() {
       </Button>
       <Button
         className={`flex h-full items-center justify-center transition-colors ${
-          view === 'grid'
-            ? 'bg-secondary text-primary'
-            : 'bg-transparent text-muted-foreground'
+          view === 'grid' ?
+            'bg-secondary text-primary'
+          : 'bg-transparent text-muted-foreground'
         }`}
         onClick={() => {
           setView('grid')

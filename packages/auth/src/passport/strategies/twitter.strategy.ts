@@ -73,9 +73,9 @@ export class TwitterStrategy extends PassportTwitterStrategy {
             emailVerified: new Date().toISOString(),
             name: profile.displayName,
             orgname: username,
-            ...(profile.photos && profile.photos.length > 0
-              ? { image: profile.photos[0]!.value }
-              : {})
+            ...(profile.photos && profile.photos.length > 0 ?
+              { image: profile.photos[0]!.value }
+            : {})
           })
         )
         if (createUserError) {

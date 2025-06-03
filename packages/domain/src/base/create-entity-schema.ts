@@ -13,11 +13,11 @@ export const createEntitySchema = (
       id: Type.String({
         description: `The ${entityKey} id`
       }),
-      ...(relationshipsSchema
-        ? {
-            relationships: relationshipsSchema
-          }
-        : {}),
+      ...(relationshipsSchema ?
+        {
+          relationships: relationshipsSchema
+        }
+      : {}),
       type: Type.Literal(entityKey)
     },
     {

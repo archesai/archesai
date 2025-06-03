@@ -83,11 +83,10 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
   const handleSelect = useCallback(
     (item: TItem) => {
       if (isMultiSelect) {
-        const selectedArray = Array.isArray(selectedData)
-          ? selectedData
-          : selectedData
-            ? [selectedData]
-            : []
+        const selectedArray =
+          Array.isArray(selectedData) ? selectedData
+          : selectedData ? [selectedData]
+          : []
         const isSelected = selectedArray.some((i) => i.id === item.id)
         if (isSelected) {
           setSelectedData(selectedArray.filter((i) => i.id !== item.id))
@@ -133,20 +132,19 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
               <div
                 className={cn(
                   'flex flex-wrap gap-2',
-                  (Array.isArray(selectedData) && selectedData.length > 0) ||
-                    !isMultiSelect
-                    ? ''
-                    : 'text-muted-foreground'
+                  (
+                    (Array.isArray(selectedData) && selectedData.length > 0) ||
+                      !isMultiSelect
+                  ) ?
+                    ''
+                  : 'text-muted-foreground'
                 )}
               >
-                {isMultiSelect ? (
-                  Array.isArray(selectedData) && selectedData.length > 0 ? (
+                {isMultiSelect ?
+                  Array.isArray(selectedData) && selectedData.length > 0 ?
                     selectedData.length.toString() + ' selected'
-                  ) : (
-                    'Select ' + itemType.toLowerCase() + 's...'
-                  )
-                ) : (
-                  <div className='flex items-center gap-1'>
+                  : 'Select ' + itemType.toLowerCase() + 's...'
+                : <div className='flex items-center gap-1'>
                     {icons
                       ?.filter((x) => x.name === (selectedData as TItem).name)
                       .map((x, i) => {
@@ -159,23 +157,21 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
                             )}
                             key={i}
                             style={{
-                              ...(iconColor.startsWith('#')
-                                ? { color: iconColor }
-                                : {})
+                              ...(iconColor.startsWith('#') ?
+                                { color: iconColor }
+                              : {})
                             }}
                           />
                         )
                       })}
                     {(selectedData as TItem).name}
                   </div>
-                )}
+                }
               </div>
             </div>
-            {isMultiSelect ? (
+            {isMultiSelect ?
               <PlusSquareIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-            ) : (
-              <SortAsc className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-            )}
+            : <SortAsc className='ml-2 h-4 w-4 shrink-0 opacity-50' />}
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-[300px] p-0'>
@@ -225,9 +221,9 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
                             )}
                             key={i}
                             style={{
-                              ...(iconColor.startsWith('#')
-                                ? { color: iconColor }
-                                : {})
+                              ...(iconColor.startsWith('#') ?
+                                { color: iconColor }
+                              : {})
                             }}
                           />
                         )

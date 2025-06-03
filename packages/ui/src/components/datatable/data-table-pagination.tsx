@@ -75,9 +75,13 @@ export function DataTablePagination<TEntity extends BaseEntity>({
         {/* Pagination controls */}
         <div className='flex items-center justify-center text-sm font-medium'>
           Page {pageNumber + 1} of{' '}
-          {isNaN(Math.max(Math.ceil(response.meta.total_records / pageSize), 1))
-            ? 1
-            : Math.max(Math.ceil(response.meta.total_records / pageSize), 1)}
+          {(
+            isNaN(
+              Math.max(Math.ceil(response.meta.total_records / pageSize), 1)
+            )
+          ) ?
+            1
+          : Math.max(Math.ceil(response.meta.total_records / pageSize), 1)}
         </div>
         {/* Previous and Next page buttons */}
         <div className='flex items-center gap-2'>

@@ -35,21 +35,17 @@ export const CreditQuota = ({ organization }: CreditQuotaProps) => {
           <div className='inter flex justify-between'>
             <div>Total</div>
             <div className='tabular-nums'>
-              {organization ? (
+              {organization ?
                 organization.credits
-              ) : (
-                <Skeleton className='h-2 w-20 bg-slate-600' />
-              )}
+              : <Skeleton className='h-2 w-20 bg-slate-600' />}
             </div>
           </div>
           <div className='inter flex justify-between'>
             <div>Remaining</div>
             <div className='tabular-nums'>
-              {organization ? (
+              {organization ?
                 organization.credits
-              ) : (
-                <Skeleton className='h-2 w-20 bg-slate-600' />
-              )}
+              : <Skeleton className='h-2 w-20 bg-slate-600' />}
             </div>
           </div>
         </div>

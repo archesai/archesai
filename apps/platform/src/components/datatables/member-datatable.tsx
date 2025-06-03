@@ -37,11 +37,9 @@ export default function MemberDataTable() {
           cell: ({ row }) => {
             return (
               <span className='max-w-[500px] truncate font-medium'>
-                {row.original.createdAt ? (
+                {row.original.createdAt ?
                   <CheckIcon className='text-primary' />
-                ) : (
-                  <XIcon className='text-red-950' />
-                )}
+                : <XIcon className='text-red-950' />}
               </span>
             )
           }

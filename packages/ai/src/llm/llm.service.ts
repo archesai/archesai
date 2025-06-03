@@ -68,9 +68,9 @@ export class LlmService implements HealthCheck {
     const { data, usage } = await this.openai.embeddings.create({
       input: texts,
       model:
-        this.configService.get('llm.type') == 'openai'
-          ? 'text-embedding-ada-002'
-          : 'mxbai-embed-large'
+        this.configService.get('llm.type') == 'openai' ?
+          'text-embedding-ada-002'
+        : 'mxbai-embed-large'
     })
     const response = data.map((d) => {
       return {
@@ -125,9 +125,9 @@ export class LlmService implements HealthCheck {
       frequency_penalty: 0,
       max_tokens: 80,
       model:
-        this.configService.get('llm.type') == 'openai'
-          ? 'gpt-3.5-turbo-instruct'
-          : 'llama3.1',
+        this.configService.get('llm.type') == 'openai' ?
+          'gpt-3.5-turbo-instruct'
+        : 'llama3.1',
       presence_penalty: 0,
       prompt: `Write a very short one to two sentance summary describing what this document is based on a part of its content. It could be a book, a legal document, a textbook, a newspaper, a bank statement, or another document like this.\n\nContent:\n${text}\n\n---\n\nSummary:`,
       temperature: 0.3,

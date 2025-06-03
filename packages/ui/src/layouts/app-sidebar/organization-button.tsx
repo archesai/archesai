@@ -88,18 +88,14 @@ export async function OrganizationButton({
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
                 <span className='truncate font-semibold'>
-                  {!organization ? (
+                  {!organization ?
                     <Skeleton className='m-1 h-2 bg-sidebar-accent' />
-                  ) : (
-                    organization.orgname
-                  )}
+                  : organization.orgname}
                 </span>
                 <span className='truncate text-xs capitalize'>
-                  {!organization ? (
+                  {!organization ?
                     <Skeleton className='m-1 h-2 bg-sidebar-accent' />
-                  ) : (
-                    organization.plan + ' Plan'
-                  )}
+                  : organization.plan + ' Plan'}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />

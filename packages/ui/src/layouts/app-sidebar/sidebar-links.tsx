@@ -45,17 +45,17 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                         <Link href={rootRoute.href}>
                           <SidebarMenuButton
                             className={
-                              pathname === rootRoute.href
-                                ? 'bg-sidebar-accent'
-                                : ''
+                              pathname === rootRoute.href ?
+                                'bg-sidebar-accent'
+                              : ''
                             }
                             tooltip={rootRoute.title}
                           >
                             <rootRoute.Icon
                               className={cn(
-                                pathname == rootRoute.href
-                                  ? 'text-sidebar-foreground'
-                                  : ''
+                                pathname == rootRoute.href ?
+                                  'text-sidebar-foreground'
+                                : ''
                               )}
                             />
 
@@ -78,9 +78,9 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                           <SidebarMenuButton tooltip={rootRoute.title}>
                             <rootRoute.Icon
                               className={cn(
-                                pathname == rootRoute.href
-                                  ? 'text-sidebar-foreground'
-                                  : ''
+                                pathname == rootRoute.href ?
+                                  'text-sidebar-foreground'
+                                : ''
                               )}
                             />
                             <span>{rootRoute.title}</span>
@@ -94,9 +94,9 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                                 <SidebarMenuSubButton
                                   asChild
                                   className={
-                                    pathname === route.href
-                                      ? 'bg-sidebar-accent'
-                                      : ''
+                                    pathname === route.href ?
+                                      'bg-sidebar-accent'
+                                    : ''
                                   }
                                 >
                                   <Link href={route.href}>

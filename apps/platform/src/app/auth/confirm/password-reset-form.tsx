@@ -202,17 +202,17 @@ export const ConfirmationForm = ({
           disabled={form.formState.isSubmitting}
           type='submit'
         >
-          {form.formState.isSubmitting
-            ? 'Resetting Password...'
-            : 'Reset Password'}
+          {form.formState.isSubmitting ?
+            'Resetting Password...'
+          : 'Reset Password'}
         </Button>
       </form>
       <p className='text-sm text-muted-foreground'>
-        {form.formState.errors.root
-          ? ''
-          : type === 'password-reset'
-            ? 'Please follow the instructions below.'
-            : 'Verifying...'}
+        {form.formState.errors.root ?
+          ''
+        : type === 'password-reset' ?
+          'Please follow the instructions below.'
+        : 'Verifying...'}
       </p>
     </Form>
   )

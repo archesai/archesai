@@ -126,9 +126,9 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
         )
       }}
       title={
-        !apiTokenId
-          ? 'Create API Token'
-          : `Update API Token: ${apiToken.attributes.name}`
+        !apiTokenId ? 'Create API Token' : (
+          `Update API Token: ${apiToken.attributes.name}`
+        )
       }
     />
   )

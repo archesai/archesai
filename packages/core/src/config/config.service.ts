@@ -23,9 +23,9 @@ export class ConfigService implements HealthCheck {
       .split('.')
       .reduce<unknown>(
         (acc, key) =>
-          acc && typeof acc === 'object'
-            ? (acc as Record<string, unknown>)[key]
-            : undefined,
+          acc && typeof acc === 'object' ?
+            (acc as Record<string, unknown>)[key]
+          : undefined,
         this.config
       ) as LeafTypes<ArchesConfig, Path>
   }

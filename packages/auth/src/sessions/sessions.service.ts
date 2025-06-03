@@ -41,16 +41,16 @@ export class SessionsService {
         const redisClient: RedisClientType = createClient({
           password: this.configService.get('redis.auth')!,
           url: `redis://${this.configService.get('redis.host')}:${this.configService.get('redis.port').toString()}`,
-          ...(this.configService.get('redis.ca')
-            ? {
-                socket: {
-                  ca: readFileSync(this.configService.get('redis.ca')!),
-                  host: this.configService.get('redis.host'),
-                  rejectUnauthorized: false,
-                  tls: true
-                }
+          ...(this.configService.get('redis.ca') ?
+            {
+              socket: {
+                ca: readFileSync(this.configService.get('redis.ca')!),
+                host: this.configService.get('redis.host'),
+                rejectUnauthorized: false,
+                tls: true
               }
-            : {})
+            }
+          : {})
         })
 
         redisClient.on('error', (error: unknown) => {
@@ -79,11 +79,11 @@ export class SessionsService {
           secure: this.configService.get('tls.enabled') // Set to true if using HTTPS in production
         },
         secret: this.configService.get('session.secret'),
-        ...(redisStore
-          ? {
-              store: redisStore
-            }
-          : {}),
+        ...(redisStore ?
+          {
+            store: redisStore
+          }
+        : {}),
         saveUninitialized: false // Do not save session if unmodified
       } satisfies FastifySessionOptions)
 

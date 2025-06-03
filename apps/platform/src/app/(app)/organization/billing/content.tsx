@@ -84,7 +84,7 @@ export default function BillingPageContent() {
         </CardHeader>
         <CardContent>
           <>
-            {plans && plans.length > 0 ? (
+            {plans && plans.length > 0 ?
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -103,18 +103,20 @@ export default function BillingPageContent() {
                         {plan.attributes.description ?? '-'}
                       </TableCell>
                       <TableCell>
-                        {plan.attributes.unitAmount
-                          ? `$${(plan.attributes.unitAmount / 100).toFixed(2)} ${plan.attributes.currency.toUpperCase()}`
-                          : 'Free'}
+                        {plan.attributes.unitAmount ?
+                          `$${(plan.attributes.unitAmount / 100).toFixed(2)} ${plan.attributes.currency.toUpperCase()}`
+                        : 'Free'}
                       </TableCell>
                       <TableCell>
-                        {plan.attributes.recurring
-                          ? `${plan.attributes.recurring.interval_count.toString()} ${plan.attributes.recurring.interval}(s)`
-                          : 'One-time'}
+                        {plan.attributes.recurring ?
+                          `${plan.attributes.recurring.interval_count.toString()} ${plan.attributes.recurring.interval}(s)`
+                        : 'One-time'}
                       </TableCell>
                       <TableCell>
-                        {organization.attributes.plan ===
-                        plan.attributes.metadata.key ? (
+                        {(
+                          organization.attributes.plan ===
+                          plan.attributes.metadata.key
+                        ) ?
                           <Button
                             className='flex gap-2'
                             disabled={
@@ -139,7 +141,7 @@ export default function BillingPageContent() {
                               )}
                             <span>Cancel Plan</span>
                           </Button>
-                        ) : organization.attributes.plan === 'FREE' ? (
+                        : organization.attributes.plan === 'FREE' ?
                           <Button
                             className='flex gap-2'
                             disabled={
@@ -162,8 +164,7 @@ export default function BillingPageContent() {
                               )}
                             <span>Subscribe</span>
                           </Button>
-                        ) : (
-                          <Button
+                        : <Button
                             className='flex gap-2'
                             disabled={
                               clickedButtonIndex === plans.indexOf(plan) &&
@@ -202,15 +203,13 @@ export default function BillingPageContent() {
                               )}
                             <span>Subscribe</span>
                           </Button>
-                        )}
+                        }
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            ) : (
-              <p>No plans available.</p>
-            )}
+            : <p>No plans available.</p>}
           </>
         </CardContent>
       </Card>

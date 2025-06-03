@@ -62,15 +62,14 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className='hidden gap-1 lg:flex'>
-                {selectedValues.size > 2 ? (
+                {selectedValues.size > 2 ?
                   <Badge
                     className='rounded-xs font-normal'
                     variant='secondary'
                   >
                     {selectedValues.size} selected
                   </Badge>
-                ) : (
-                  options
+                : options
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
@@ -81,7 +80,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         {option.label}
                       </Badge>
                     ))
-                )}
+                }
               </div>
             </>
           )}
@@ -117,9 +116,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                     <div
                       className={cn(
                         'flex h-5 w-5 items-center justify-center rounded-xs border border-primary',
-                        isSelected
-                          ? 'bg-primary text-primary-foreground'
-                          : 'opacity-50 [&_svg]:invisible'
+                        isSelected ?
+                          'bg-primary text-primary-foreground'
+                        : 'opacity-50 [&_svg]:invisible'
                       )}
                     >
                       <CheckSquare className={cn('h-5 w-5')} />

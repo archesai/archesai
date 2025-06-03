@@ -1,18 +1,4 @@
 {
-  "eslint.workingDirectories": [
-    {
-      "pattern": "packages/*/"
-    },
-    {
-      "pattern": "apps/*/"
-    },
-    {
-      "pattern": "e2e/*/"
-    },
-    {
-      "pattern": "tooling/*/"
-    }
-  ],
   "files.exclude": {
     "**/*.tsbuildinfo": false,
     "**/.cache": false,
@@ -22,9 +8,15 @@
     "**/next-env.d.ts": false,
     "**/node_modules": false
   },
+  "tailwindCSS.experimental.configFile": {
+    "./apps/landing/src/styles/globals.css": "./apps/landing/**",
+    "./apps/platform/src/styles/globals.css": "./apps/platform/**",
+    "./packages/ui/src/styles/globals.css": "./packages/ui/**"
+  },
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    // "zod/dist/types/index.d.ts", // Force auto-imports to v4
+    "next/router.d.ts",
+    "next/dist/client/router.d.ts"
+  ],
   "typescript.tsdk": "node_modules/typescript/lib"
-  // "typescript.preferences.autoImportFileExcludePatterns": [
-  //   "next/router.d.ts",
-  //   "next/dist/client/router.d.ts"
-  // ]
 }

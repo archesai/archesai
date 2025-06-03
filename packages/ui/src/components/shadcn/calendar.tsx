@@ -350,11 +350,11 @@ function Nav({
         tabIndex={isPreviousDisabled ? undefined : -1}
         disabled={isPreviousDisabled}
         aria-label={
-          navView === 'years'
-            ? `Go to the previous ${
-                displayYears.to - displayYears.from + 1
-              } years`
-            : labelPrevious(previousMonth)
+          navView === 'years' ?
+            `Go to the previous ${
+              displayYears.to - displayYears.from + 1
+            } years`
+          : labelPrevious(previousMonth)
         }
         onClick={handlePreviousClick}
       >
@@ -368,9 +368,9 @@ function Nav({
         tabIndex={isNextDisabled ? undefined : -1}
         disabled={isNextDisabled}
         aria-label={
-          navView === 'years'
-            ? `Go to the next ${displayYears.to - displayYears.from + 1} years`
-            : labelNext(nextMonth)
+          navView === 'years' ?
+            `Go to the next ${displayYears.to - displayYears.from + 1} years`
+          : labelNext(nextMonth)
         }
         onClick={handleNextClick}
       >
@@ -401,9 +401,9 @@ function CaptionLabel({
       size='sm'
       onClick={() => setNavView((prev) => (prev === 'days' ? 'years' : 'days'))}
     >
-      {navView === 'days'
-        ? children
-        : displayYears.from + ' - ' + displayYears.to}
+      {navView === 'days' ?
+        children
+      : displayYears.from + ' - ' + displayYears.to}
     </Button>
   )
 }

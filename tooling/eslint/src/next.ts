@@ -12,8 +12,7 @@ export default [
     },
     rules: {
       ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
-      '@next/next/no-duplicate-head': 'off'
+      ...nextPlugin.configs['core-web-vitals'].rules
     }
   }
 ] satisfies ConfigArray
