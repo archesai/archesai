@@ -28,7 +28,7 @@
       "path": "../../packages/storage"
     },
     {
-      "path": "../../packages/workflows"
+      "path": "../../packages/orchestration"
     },
     {
       "path": "../../tooling/eslint"

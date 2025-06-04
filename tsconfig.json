@@ -40,16 +40,13 @@
       "path": "./packages/database"
     },
     {
-      "path": "./packages/organizations"
-    },
-    {
       "path": "./packages/storage"
     },
     {
       "path": "./packages/ui"
     },
     {
-      "path": "./packages/workflows"
+      "path": "./packages/orchestration"
     },
     {
       "path": "./tooling/eslint"

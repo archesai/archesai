@@ -51,7 +51,6 @@ import {
   ScraperModule,
   SpeechModule
 } from '@archesai/intelligence'
-import { FilesModule, StorageModule } from '@archesai/storage'
 import {
   ContentModule,
   JobsModule,
@@ -59,7 +58,8 @@ import {
   PipelinesModule,
   RunsModule,
   ToolsModule
-} from '@archesai/workflows'
+} from '@archesai/orchestration'
+import { FilesModule, StorageModule } from '@archesai/storage'
 
 export const AppModuleDefinition: ModuleMetadata = {
   imports: [
@@ -92,7 +92,7 @@ export const AppModuleDefinition: ModuleMetadata = {
     // EXTRA GLOBAL MODULES
     EventBusModule,
 
-    // WORKFLOWS MODULES
+    // ORCHESTRATION MODULES
     PipelinesModule,
     ToolsModule,
     ContentModule,
@@ -100,7 +100,7 @@ export const AppModuleDefinition: ModuleMetadata = {
     LabelsModule,
     JobsModule,
 
-    // ORGANIZATIONS MODULES
+    // AUTH MODULES
     OrganizationsModule,
     UsersModule,
     MembersModule,
