@@ -11,9 +11,6 @@
       "path": "../../packages/domain/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/organizations/tsconfig.lib.json"
-    },
-    {
       "path": "../../tooling/eslint/tsconfig.lib.json"
     }
   ]

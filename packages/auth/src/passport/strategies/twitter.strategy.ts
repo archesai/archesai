@@ -1,11 +1,11 @@
 import { Strategy as PassportTwitterStrategy } from 'passport-twitter'
 
 import type { ConfigService } from '@archesai/core'
-import type { UsersService } from '@archesai/organizations'
 
 import { catchErrorAsync, Logger, NotFoundException } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
+import type { UsersService } from '#users/users.service'
 
 /**
  * Strategy for authenticating with Twitter.

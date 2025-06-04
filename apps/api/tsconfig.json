@@ -10,7 +10,7 @@
       "path": "./tsconfig.spec.json"
     },
     {
-      "path": "../../packages/ai"
+      "path": "../../packages/intelligence"
     },
     {
       "path": "../../packages/auth"
@@ -22,10 +22,7 @@
       "path": "../../packages/core"
     },
     {
-      "path": "../../packages/drizzle"
-    },
-    {
-      "path": "../../packages/organizations"
+      "path": "../../packages/database"
     },
     {
       "path": "../../packages/storage"

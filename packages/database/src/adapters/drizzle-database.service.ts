@@ -1,6 +1,6 @@
 import type { SQL } from 'drizzle-orm'
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
-import type { AnyPgTable, PgColumn } from 'drizzle-orm/pg-core'
+import type { PgColumn, PgTable } from 'drizzle-orm/pg-core'
 
 import { sql } from 'drizzle-orm'
 
@@ -16,13 +16,7 @@ export class DrizzleDatabaseService<
   TDatabase extends NodePgDatabase<Record<string, unknown>> = NodePgDatabase<
     Record<string, unknown>
   >
-> extends DatabaseService<
-  TEntity,
-  TInsert,
-  TModel,
-  SQL,
-  keyof TDatabase['_']['fullSchema']
-> {
+> extends DatabaseService<TEntity, TInsert, TModel, SQL, PgTable> {
   private readonly db: TDatabase
   constructor(db: TDatabase) {
     super()
@@ -30,7 +24,7 @@ export class DrizzleDatabaseService<
   }
 
   public buildWhereConditions(
-    table: string,
+    table: PgTable,
     query: SearchQuery<TEntity>
   ): SQL | undefined {
     const conditions: SQL[] = []
@@ -97,10 +91,7 @@ export class DrizzleDatabaseService<
     return conditions.length > 0 ? sql.join(conditions, sql` AND `) : undefined
   }
 
-  public async count(
-    table: keyof TDatabase['_']['fullSchema'],
-    where?: SQL
-  ): Promise<number> {
+  public async count(table: PgTable, where?: SQL): Promise<number> {
     const t = this.getTableFromName(table)
     const [count] = await this.db
       .select({ count: sql<number>`COUNT(*)` })
@@ -112,10 +103,7 @@ export class DrizzleDatabaseService<
     return count.count
   }
 
-  public async delete(
-    table: keyof TDatabase['_']['fullSchema'],
-    where?: SQL
-  ): Promise<TModel[]> {
+  public async delete(table: PgTable, where?: SQL): Promise<TModel[]> {
     const t = this.getTableFromName(table)
     return this.db.delete(t).where(where).returning() as unknown as Promise<
       TModel[]
@@ -126,39 +114,27 @@ export class DrizzleDatabaseService<
     return this.db.execute(query)
   }
 
-  public getTableFromName(
-    table: keyof TDatabase['_']['fullSchema']
-  ): AnyPgTable & {
+  public getTableFromName(table: PgTable): PgTable & {
     id: PgColumn
   } {
-    const t = this.db._.fullSchema.table
-
-    if (!t) {
-      throw new Error(`Table ${table.toString()} not found`)
-    }
-    return t as unknown as AnyPgTable & {
+    return table as PgTable & {
       id: PgColumn
     }
   }
-  public insert(
-    table: keyof TDatabase['_']['fullSchema'],
-    values: TInsert[]
-  ): Promise<TModel[]> {
+
+  public insert(table: PgTable, values: TInsert[]): Promise<TModel[]> {
     const t = this.getTableFromName(table)
-    return this.db.insert(t).values(values).returning() as unknown as Promise<
-      TModel[]
-    >
+    const query = this.db.insert(t).values(values).returning()
+    return query as unknown as Promise<TModel[]>
   }
-  public select(
-    table: keyof TDatabase['_']['fullSchema'],
-    where?: SQL
-  ): Promise<TModel[]> {
+
+  public select(table: PgTable, where?: SQL): Promise<TModel[]> {
     const t = this.getTableFromName(table)
     return this.db.select().from(t).where(where) as unknown as Promise<TModel[]>
   }
 
   public update(
-    table: keyof TDatabase['_']['fullSchema'],
+    table: PgTable,
     values: Partial<TInsert>,
     where?: SQL
   ): Promise<TModel[]> {

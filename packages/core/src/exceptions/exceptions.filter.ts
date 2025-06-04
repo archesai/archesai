@@ -70,7 +70,9 @@ export class ExceptionsFilter {
 
     if (statusCode >= 500) {
       this.logger.error(`server error`, {
-        errorResponse
+        cause: exception.cause,
+        errorResponse,
+        stack: exception.stack
       })
     } else if (statusCode >= 400) {
       this.logger.warn(`client error`, { errorResponse })

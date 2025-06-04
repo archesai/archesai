@@ -3,24 +3,21 @@ import { DiscoveryModule } from '@nestjs/core'
 import type { DynamicModule, ModuleMetadata } from '@archesai/core'
 
 import {
-  AudioModule,
-  LlmModule,
-  RunpodModule,
-  ScraperModule,
-  SpeechModule
-} from '@archesai/ai'
-import {
   AccessTokensModule,
   AccountsModule,
   ApiTokensModule,
   AuthenticationModule,
   EmailChangeModule,
   EmailVerificationModule,
+  InvitationsModule,
   JwtModule,
+  MembersModule,
   OAuthModule,
+  OrganizationsModule,
   PassportModule,
   PasswordResetModule,
   SessionsModule,
+  UsersModule,
   VerificationTokensModule
 } from '@archesai/auth'
 import {
@@ -46,13 +43,14 @@ import {
   LoggingModule,
   WebsocketsModule
 } from '@archesai/core'
-import { createDrizzleDatabaseService } from '@archesai/drizzle'
+import { createDrizzleDatabaseService } from '@archesai/database'
 import {
-  InvitationsModule,
-  MembersModule,
-  OrganizationsModule,
-  UsersModule
-} from '@archesai/organizations'
+  AudioModule,
+  LlmModule,
+  RunpodModule,
+  ScraperModule,
+  SpeechModule
+} from '@archesai/intelligence'
 import { FilesModule, StorageModule } from '@archesai/storage'
 import {
   ContentModule,

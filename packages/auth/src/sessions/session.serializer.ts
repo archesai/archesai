@@ -1,5 +1,6 @@
 import type { UserEntity } from '@archesai/domain'
-import type { UsersService } from '@archesai/organizations'
+
+import type { UsersService } from '#users/users.service'
 
 /**
  * Serializer for session management.

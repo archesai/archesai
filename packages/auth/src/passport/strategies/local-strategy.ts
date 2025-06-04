@@ -1,11 +1,10 @@
 import { Strategy as LocalStrategyBase } from 'passport-local'
 
-import type { UsersService } from '@archesai/organizations'
-
 import { Logger, UnauthorizedException } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
 import type { HashingService } from '#hashing/hashing.service'
+import type { UsersService } from '#users/users.service'
 
 /**
  * Strategy for authenticating with local credentials.

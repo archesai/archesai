@@ -19,7 +19,7 @@
       "path": "./e2e/platform-e2e"
     },
     {
-      "path": "./packages/ai"
+      "path": "./packages/intelligence"
     },
     {
       "path": "./packages/auth"
@@ -37,7 +37,7 @@
       "path": "./packages/domain"
     },
     {
-      "path": "./packages/drizzle"
+      "path": "./packages/database"
     },
     {
       "path": "./packages/organizations"

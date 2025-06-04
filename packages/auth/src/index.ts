@@ -26,37 +26,70 @@ export * from '#email-change/dto/update-email-change-request.dto'
 export * from '#email-change/email-change.controller'
 export * from '#email-change/email-change.module'
 export * from '#email-change/email-change.service'
-
 export * from '#email-verification/dto/create-email-verification-request.dto'
+
 export * from '#email-verification/dto/update-email-verification-request.dto'
 export * from '#email-verification/email-verification.controller'
 export * from '#email-verification/email-verification.module'
 export * from '#email-verification/email-verification.service'
 export * from '#email-verification/guards/email-verified.guard'
+export * from '#invitations/dto/create-invitation.req.dto'
+export * from '#invitations/dto/update-invitation.req.dto'
+export * from '#invitations/invitation.repository'
+export * from '#invitations/invitations.controller'
 
+export * from '#invitations/invitations.module'
+export * from '#invitations/invitations.service'
 export type * from '#jwt/interfaces/jwt-sign-options.interface'
 export * from '#jwt/jwt.module'
 export * from '#jwt/jwt.service'
+export * from '#members/dto/create-member.req.dto'
 
+export * from '#members/dto/update-member.req.dto'
+export * from '#members/factories/member.factory'
+export * from '#members/guards/membership.guard'
+
+export * from '#members/guards/scopes.guard'
+export * from '#members/member.repository'
+export * from '#members/members.controller'
+export * from '#members/members.module'
+
+export * from '#members/members.service'
 export * from '#oauth/oauth.controller'
 export * from '#oauth/oauth.module'
 export * from '#oauth/oauth.service'
+export * from '#organizations/dto/create-organization.req.dto'
 
+export * from '#organizations/dto/update-organization.req.dto'
+export * from '#organizations/organization.repository'
+export * from '#organizations/organizations.controller'
+export * from '#organizations/organizations.module'
+export * from '#organizations/organizations.service'
 export * from '#passport/passport.module'
+
 export * from '#passport/strategies/api-key.strategy'
 export * from '#passport/strategies/jwt.strategy'
 export * from '#passport/strategies/local-strategy'
-export * from '#passport/strategies/twitter.strategy'
 
+export * from '#passport/strategies/twitter.strategy'
 export * from '#password-reset/dto/create-password-reset.req.dto'
 export * from '#password-reset/dto/update-password-reset.req.dto'
+
 export * from '#password-reset/password-reset.controller'
 export * from '#password-reset/password-reset.module'
 export * from '#password-reset/password-reset.service'
-
 export * from '#sessions/session.serializer'
 export * from '#sessions/sessions.module'
+
 export * from '#sessions/sessions.service'
+export * from '#users/dto/create-user.req.dto'
+export * from '#users/dto/update-user.req.dto'
+export * from '#users/factories/user.factory'
+export * from '#users/user.repository'
+
+export * from '#users/users.controller'
+export * from '#users/users.module'
+export * from '#users/users.service'
 
 export * from '#verification-tokens/verification-token.repository'
 export * from '#verification-tokens/verification-tokens.module'

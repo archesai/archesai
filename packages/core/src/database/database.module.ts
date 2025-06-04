@@ -2,16 +2,13 @@ import type { DynamicModule } from '#utils/nest'
 
 import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
-import {
-  DATABASE_SERVICE_TOKEN,
-  DatabaseHostModule
-} from '#database/database-host.module'
 import { DatabaseService } from '#database/database.service'
 import { Module } from '#utils/nest'
 
+export const DATABASE_SERVICE_TOKEN = Symbol('DATABASE_SERVICE')
+
 @Module({
-  exports: [DatabaseHostModule, DatabaseService],
-  imports: [DatabaseHostModule],
+  exports: [DatabaseService],
   providers: [
     {
       provide: DatabaseService,
@@ -24,13 +21,14 @@ export class DatabaseModule {
     databaseServiceFactory: (databaseString: string) => DatabaseService
   ): DynamicModule {
     return {
-      exports: [DatabaseHostModule, DatabaseService],
-      imports: [DatabaseHostModule, ConfigModule],
+      exports: [DATABASE_SERVICE_TOKEN],
+      global: true,
+      imports: [ConfigModule],
       module: DatabaseModule,
       providers: [
         {
           inject: [ConfigService],
-          provide: DatabaseService,
+          provide: DATABASE_SERVICE_TOKEN, // Register a custom provider to override the default one
           useFactory: (configService: ConfigService) =>
             databaseServiceFactory(configService.get('database.url'))
         }

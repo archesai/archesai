@@ -1,8 +1,7 @@
+import type { SearchQuery } from '@archesai/core'
 import type { BaseEntity } from '@archesai/domain'
 
-import type { SearchQuery } from '#http/dto/search-query.dto'
-
-import { DatabaseService } from '#database/database.service'
+import { DatabaseService } from '@archesai/core'
 
 type InMemoryDatabase<TEntity extends BaseEntity = BaseEntity> = Record<
   string,

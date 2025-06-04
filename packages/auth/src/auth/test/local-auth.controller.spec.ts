@@ -5,10 +5,9 @@ import { Test } from '@nestjs/testing'
 
 import type { ArchesApiResponse } from '@archesai/core'
 
-import { createRandomUser } from '@archesai/organizations'
-
 import { AuthenticationController } from '#auth/auth.controller'
 import { AuthenticationService } from '#auth/auth.service'
+import { createRandomUser } from '#users/factories/user.factory'
 
 describe('LocalAuthController', () => {
   let authenticationService: AuthenticationService

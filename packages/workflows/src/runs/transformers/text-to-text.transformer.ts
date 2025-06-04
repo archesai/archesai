@@ -1,5 +1,5 @@
 // import type { Logger } from '@archesai/core'
-// import type { LlmService } from '@archesai/ai'
+// import type { LlmService } from '@archesai/intelligence'
 // import type { ContentEntity } from '@archesai/domain'
 // import { retry } from '@archesai/core'
 // import { contentEntitySchema } from '@archesai/domain'

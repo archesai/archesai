@@ -1,5 +1,3 @@
-import type { UsersService } from '@archesai/organizations'
-
 import {
   BadRequestException,
   getEmailChangeConfirmationHtml,
@@ -8,6 +6,7 @@ import {
 
 import type { CreateEmailChangeRequest } from '#email-change/dto/create-email-change-request.dto'
 import type { UpdateEmailChangeRequest } from '#email-change/dto/update-email-change-request.dto'
+import type { UsersService } from '#users/users.service'
 import type { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 
 /**

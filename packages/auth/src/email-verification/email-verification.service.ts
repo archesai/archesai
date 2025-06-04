@@ -1,9 +1,8 @@
-import type { UsersService } from '@archesai/organizations'
-
 import { getEmailVerificationHtml, Logger } from '@archesai/core'
 
 import type { CreateEmailVerificationRequest } from '#email-verification/dto/create-email-verification-request.dto'
 import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
+import type { UsersService } from '#users/users.service'
 import type { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 
 /**

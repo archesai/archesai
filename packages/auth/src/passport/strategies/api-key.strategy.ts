@@ -2,11 +2,11 @@ import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt'
 
 import type { ConfigService } from '@archesai/core'
 import type { ApiTokenDecodedJwt } from '@archesai/domain'
-import type { UsersService } from '@archesai/organizations'
 
 import { catchErrorAsync, Logger, UnauthorizedException } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
+import type { UsersService } from '#users/users.service'
 
 /**
  * Strategy for authenticating with API key.

@@ -1,6 +1,7 @@
 'use client'
 
 import { Type } from '@sinclair/typebox'
+import { FormatRegistry } from '@sinclair/typebox/type'
 
 import type { RegisterBody } from '@archesai/client'
 import type { AccountEntity } from '@archesai/domain'
@@ -9,6 +10,10 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 import { useAuth } from '@archesai/ui/hooks/use-auth'
+
+FormatRegistry.Set('email', (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+)
 
 export const RegisterSchema = Type.Object({
   confirmPassword: Type.String({

@@ -38,9 +38,9 @@ export const ContentTable = pgTable(
 
 // RELATIONS
 export const contentRelations = relations(ContentTable, ({ many, one }) => ({
-  children: many(_ParentToChild, {
-    relationName: 'children'
-  }),
+  // children: many(_ParentToChild, {
+  //   relationName: 'children'
+  // }),
   consumers: many(_RunToContentTable),
 
   labels: many(_LabelsToContent),

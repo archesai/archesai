@@ -1,5 +1,5 @@
 {
-  "name": "@archesai/organizations",
+  "name": "@archesai/database",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -20,6 +20,13 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "db:generate": "drizzle-kit generate",
+    "db:inspect": "drizzle-kit inspect",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:reset": "node ./src/helpers/reset.ts",
+    "db:seed": "node ./src/helpers/seed.ts",
+    "db:studio": "drizzle-kit studio",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -28,17 +35,18 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@faker-js/faker": "^9.8.0",
-    "@sinclair/typebox": "catalog:",
+    "@libsql/client": "^0.15.8",
+    "drizzle-orm": "^0.44.1",
+    "drizzle-seed": "^0.3.1",
+    "pg": "^8.16.0",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@golevelup/ts-jest": "catalog:",
-    "@nestjs/testing": "catalog:",
-    "@types/jest": "catalog:",
     "@types/node": "catalog:",
-    "jest": "catalog:",
+    "@types/pg": "^8.15.2",
+    "drizzle-kit": "^0.31.1",
+    "drizzle-seed": "^0.3.1",
     "typescript": "catalog:"
   }
 }

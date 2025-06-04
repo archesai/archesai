@@ -1,6 +1,6 @@
 // import path from 'node:path'
 // import type { Logger } from '@archesai/core'
-// import type { RunpodService } from '@archesai/ai'
+// import type { RunpodService } from '@archesai/intelligence'
 // import type { ContentEntity } from '@archesai/domain'
 // import type { StorageService } from '@archesai/storage'
 

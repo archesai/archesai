@@ -20,8 +20,8 @@ export const LoggingModuleDefinition: ModuleMetadata = {
         const targets: TransportTargetOptions[] = [
           {
             options: {
-              colorize: true,
-              singleLine: true
+              colorize: true
+              // singleLine: true
             },
             target: 'pino-pretty'
           }

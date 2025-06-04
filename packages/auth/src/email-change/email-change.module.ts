@@ -1,10 +1,11 @@
 import type { ModuleMetadata } from '@archesai/core'
 
 import { Module } from '@archesai/core'
-import { UsersModule, UsersService } from '@archesai/organizations'
 
 import { EmailChangeController } from '#email-change/email-change.controller'
 import { EmailChangeService } from '#email-change/email-change.service'
+import { UsersModule } from '#users/users.module'
+import { UsersService } from '#users/users.service'
 import { VerificationTokensModule } from '#verification-tokens/verification-tokens.module'
 import { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 

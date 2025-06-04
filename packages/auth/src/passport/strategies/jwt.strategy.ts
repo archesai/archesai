@@ -5,11 +5,11 @@ import type {
   AccessTokenDecodedJwt,
   ApiTokenDecodedJwt
 } from '@archesai/domain'
-import type { UsersService } from '@archesai/organizations'
 
 import { Logger, UnauthorizedException } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
+import type { UsersService } from '#users/users.service'
 
 /**
  * Strategy for authenticating with JWT.

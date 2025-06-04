@@ -10,20 +10,20 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
-    "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base tsx --watch src/main.ts",
+    "dev:build": "tsc --build --watch",
+    "dev:serve": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node --watch src/main.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node dist/main.js",
-    "typecheck": "tsc --build --emitDeclarationOnly"
+    "typecheck": "tsc --project tsconfig.lib.json --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@archesai/ai": "workspace:*",
     "@archesai/auth": "workspace:*",
     "@archesai/billing": "workspace:*",
     "@archesai/core": "workspace:*",
-    "@archesai/drizzle": "workspace:*",
-    "@archesai/organizations": "workspace:*",
+    "@archesai/database": "workspace:*",
+    "@archesai/intelligence": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@archesai/workflows": "workspace:*",
     "@fastify/helmet": "^13.0.1",
@@ -37,7 +37,6 @@
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
-    "tsx": "^4.19.4",
     "typescript": "catalog:"
   }
 }

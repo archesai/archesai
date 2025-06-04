@@ -26,9 +26,9 @@
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@archesai/ai": "workspace:*",
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
+    "@archesai/intelligence": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@sinclair/typebox": "catalog:",
     "bullmq": "^5.53.1",

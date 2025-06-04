@@ -51,7 +51,7 @@ runpod:
   token: E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP
 database:
   type: postgres
-  url: postgresql://admin:admin@postgres:5432/archesai-db?schema=public
+  url: postgresql://admin:admin@localhost:5432/archesai-db?schema=public
 monitoring:
   enabled: false
   loki:

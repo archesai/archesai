@@ -1,12 +1,12 @@
 {
   "files.exclude": {
-    "**/*.tsbuildinfo": false,
-    "**/.cache": false,
-    "**/.next": false,
-    "**/.turbo": false,
-    "**/dist": false,
-    "**/next-env.d.ts": false,
-    "**/node_modules": false
+    "**/*.tsbuildinfo": true,
+    "**/.cache": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/dist": true,
+    "**/next-env.d.ts": true,
+    "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
     "./apps/landing/src/styles/globals.css": "./apps/landing/**",

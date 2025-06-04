@@ -5,7 +5,7 @@
   ],
   "references": [
     {
-      "path": "../../packages/ai/tsconfig.lib.json"
+      "path": "../../packages/intelligence/tsconfig.lib.json"
     },
     {
       "path": "../../packages/auth/tsconfig.lib.json"
@@ -17,10 +17,7 @@
       "path": "../../packages/core/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/drizzle/tsconfig.lib.json"
-    },
-    {
-      "path": "../../packages/organizations/tsconfig.lib.json"
+      "path": "../../packages/database/tsconfig.lib.json"
     },
     {
       "path": "../../packages/storage/tsconfig.lib.json"

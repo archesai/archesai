@@ -28,7 +28,6 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@archesai/organizations": "workspace:*",
     "@faker-js/faker": "^9.8.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/passport": "^3.0.2",

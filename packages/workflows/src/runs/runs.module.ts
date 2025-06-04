@@ -1,7 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 import type { RunEntity } from '@archesai/domain'
 
-import { LlmModule, RunpodModule } from '@archesai/ai'
 import {
   ConfigService,
   DatabaseModule,
@@ -10,6 +9,7 @@ import {
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
+import { LlmModule, RunpodModule } from '@archesai/intelligence'
 import { StorageModule } from '@archesai/storage'
 
 import { ContentModule } from '#content/content.module'

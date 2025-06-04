@@ -1,7 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
 import { ConfigModule, ConfigService, Module } from '@archesai/core'
-import { UsersModule, UsersService } from '@archesai/organizations'
 
 import { AccountsModule } from '#accounts/accounts.module'
 import { AccountsService } from '#accounts/accounts.service'
@@ -10,6 +9,8 @@ import { HashingService } from '#hashing/hashing.service'
 import { ApiKeyStrategy } from '#passport/strategies/api-key.strategy'
 import { JwtStrategy } from '#passport/strategies/jwt.strategy'
 import { LocalStrategy } from '#passport/strategies/local-strategy'
+import { UsersModule } from '#users/users.module'
+import { UsersService } from '#users/users.service'
 
 export const PassportModuleDefinition: ModuleMetadata = {
   exports: [LocalStrategy, JwtStrategy, ApiKeyStrategy],

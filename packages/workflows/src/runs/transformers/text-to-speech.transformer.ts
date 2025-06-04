@@ -1,6 +1,6 @@
 // import type { Logger } from '@archesai/core'
 
-// import type { SpeechService } from '@archesai/ai'
+// import type { SpeechService } from '@archesai/intelligence'
 // import type { ContentEntity } from '@archesai/domain'
 // import type { StorageService } from '@archesai/storage'
 // import { contentEntitySchema } from '@archesai/domain'

@@ -12,8 +12,6 @@ export * from '#config/schemas/config.schema'
 export * from '#cors/cors.module'
 export * from '#cors/cors.service'
 
-export * from '#database/adapters/in-memory-database.service'
-export * from '#database/database-host.module'
 export * from '#database/database.module'
 export * from '#database/database.service'
 
