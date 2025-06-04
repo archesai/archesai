@@ -25,6 +25,26 @@ export class UsersService extends BaseService<UserEntity> {
     this.websocketsService = websocketsService
   }
 
+  public async checkIfEmailExists(email: string): Promise<boolean> {
+    try {
+      await this.userRepository.findFirst({
+        filter: {
+          email: {
+            equals: email
+          }
+        },
+        page: {
+          number: 1,
+          size: 1
+        },
+        sort: '-createdAt'
+      })
+      return true
+    } catch {
+      return false
+    }
+  }
+
   public override async create(value: BaseInsertion<UserEntity>) {
     const user = await this.userRepository.create({
       ...value,
@@ -39,11 +59,24 @@ export class UsersService extends BaseService<UserEntity> {
   }
 
   public async deactivate(id: string): Promise<void> {
-    await this.userRepository.deactivate(id)
+    await this.userRepository.update(id, {
+      deactivated: true
+    })
   }
 
   public async findOneByEmail(email: string): Promise<UserEntity> {
-    return this.userRepository.findOneByEmail(email)
+    return this.userRepository.findFirst({
+      filter: {
+        email: {
+          equals: email
+        }
+      },
+      page: {
+        number: 1,
+        size: 1
+      },
+      sort: '-createdAt'
+    })
   }
 
   protected emitMutationEvent(user: UserEntity): void {

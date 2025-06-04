@@ -7,9 +7,9 @@ import type { RegisterBody } from '@archesai/client'
 import type { AccountEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
+import { register } from '@archesai/client'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
-import { useAuth } from '@archesai/ui/hooks/use-auth'
 
 FormatRegistry.Set('email', (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -30,8 +30,6 @@ export const RegisterSchema = Type.Object({
 })
 
 export default function RegisterForm() {
-  const { registerWithEmailAndPassword } = useAuth()
-
   const formFields: FormFieldConfig<AccountEntity>[] = [
     {
       component: Input,
@@ -76,10 +74,10 @@ export default function RegisterForm() {
       fields={formFields}
       isUpdateForm={false}
       onSubmitCreate={async (registerDto) => {
-        await registerWithEmailAndPassword(
-          registerDto.email,
-          registerDto.password
-        )
+        await register({
+          email: registerDto.email,
+          password: registerDto.password
+        })
       }}
       title='Configuration'
     />

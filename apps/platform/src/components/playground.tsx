@@ -14,10 +14,8 @@ export default function Playground() {
   const { selectedRunId, selectedTool } = usePlayground()
 
   const { data: runsResponse } = useFindManyRuns()
-  if (!runsResponse?.status || runsResponse.status !== 200) {
-    return <div>Runs not found</div>
-  }
-  const runs = runsResponse.data.data
+
+  const runs = runsResponse?.data.data ?? []
   const run = runs.find((r) => r.id === selectedRunId)
 
   const hasInputs = false

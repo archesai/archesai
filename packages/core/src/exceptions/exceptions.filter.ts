@@ -94,22 +94,25 @@ export class ExceptionsFilter {
   }
 
   private isBadRequestError(exception: unknown): boolean {
-    return (
-      exception instanceof Error && exception.message.includes('Bad Request')
-    )
+    return this.isErrorOfType(exception, 'BadRequest')
   }
 
   private isConflictEror(exception: unknown): boolean {
-    return exception instanceof Error && exception.message.includes('Conflict')
+    return this.isErrorOfType(exception, 'Conflict')
   }
 
-  private isNotFoundError(exception: Error): boolean {
-    return exception instanceof Error && exception.message.includes('Not Found')
-  }
-
-  private isUnauthorizedError(exception: Error): boolean {
+  private isErrorOfType(exception: unknown, type: string): boolean {
     return (
-      exception instanceof Error && exception.message.includes('Unauthorized')
+      exception instanceof Error &&
+      (exception.message.includes(type) || exception.name.includes(type))
     )
+  }
+
+  private isNotFoundError(exception: unknown): boolean {
+    return this.isErrorOfType(exception, 'NotFound')
+  }
+
+  private isUnauthorizedError(exception: unknown): boolean {
+    return this.isErrorOfType(exception, 'Unauthorized')
   }
 }

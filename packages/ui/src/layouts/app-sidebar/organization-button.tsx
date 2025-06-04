@@ -39,7 +39,7 @@ export interface OrganizationButtonProps {
 export async function OrganizationButton({
   organization
 }: OrganizationButtonProps) {
-  const { data: user, status } = await getOneUser('me')
+  const { data: user, status } = await getOneUser('organziation-button')
   if (status !== 200) {
     return null
   }
@@ -54,7 +54,7 @@ export async function OrganizationButton({
   const { isMobile } = useSidebar()
 
   const handleSwitchOrganization = async (orgname: string) => {
-    const { data, status } = await updateUser('me', {
+    const { data, status } = await updateUser('organization-bar', {
       orgname
     })
 

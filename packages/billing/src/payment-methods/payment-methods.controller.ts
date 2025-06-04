@@ -50,7 +50,7 @@ export class PaymentMethodsController implements Controller {
             200: PaymentMethodEntitySchema
           },
           summary: 'Delete a payment method',
-          tags: ['Billing - Payment Methods']
+          tags: ['Billing']
         }
       },
       this.delete.bind(this)
@@ -68,7 +68,7 @@ export class PaymentMethodsController implements Controller {
             }
           },
           summary: 'Get all payment methods',
-          tags: ['Billing - Payment Methods']
+          tags: ['Billing']
         }
       },
       this.findMany.bind(this)
@@ -87,7 +87,7 @@ export class PaymentMethodsController implements Controller {
             200: PaymentMethodEntitySchema
           },
           summary: 'Get a payment method',
-          tags: ['Billing - Payment Methods']
+          tags: ['Billing']
         }
       },
       (request) => {

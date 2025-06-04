@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation'
 
-import { Authenticated } from '@archesai/ui/components/custom/authenticated'
 import {
   SidebarInset,
   SidebarProvider
@@ -20,7 +19,6 @@ export default function AppLayout({
   const pathname = usePathname()
   return (
     <>
-      <Authenticated />
       <SidebarProvider>
         {/* This is the sidebar that is displayed on the left side of the screen. */}
         <AppSidebar

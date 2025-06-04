@@ -1,37 +1,38 @@
+// local-auth.guard.ts
+
 import type {
   ArchesApiRequest,
   ArchesApiResponse,
-  CanActivate,
   HttpInstance
 } from '@archesai/core'
 
-/**
- * Guard for authenticating with local strategy.
- */
-export class LocalAuthGuard implements CanActivate {
-  private app: HttpInstance
+import { UnauthorizedException } from '@archesai/core'
 
-  constructor(app: HttpInstance) {
-    this.app = app
-  }
-
-  public async canActivate(
-    request: ArchesApiRequest,
+export function LocalAuthGuard(app: HttpInstance) {
+  return async function (
+    req: ArchesApiRequest,
     reply: ArchesApiResponse
-  ): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      const handler = request.passport.authenticate(
+  ): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      const handler = req.passport.authenticate(
         ['local'],
         { session: true },
-        async (req, _rep, err, user) => {
+        async (authReq, _authRes, err, user) => {
           if (err || !user) {
-            resolve(false)
+            reject(new UnauthorizedException())
+            return
           }
-          await req.logIn(user)
-          resolve(true)
+
+          try {
+            await authReq.logIn(user)
+            resolve()
+          } catch {
+            reject(new UnauthorizedException())
+          }
         }
       )
-      handler.call(this.app, request, reply)
+
+      handler.call(app, req, reply)
     })
   }
 }

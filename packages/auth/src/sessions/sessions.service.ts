@@ -9,9 +9,16 @@ import { Authenticator } from '@fastify/passport'
 import fastifySession from '@fastify/session'
 import { createClient } from 'redis'
 
-import type { ConfigService, HttpInstance } from '@archesai/core'
+import type {
+  ArchesApiRequest,
+  ArchesApiResponse,
+  ConfigService,
+  HttpInstance
+} from '@archesai/core'
 
 import { Logger } from '@archesai/core'
+
+import type { SessionSerializer } from '#sessions/session.serializer'
 
 import { RedisStore } from '#sessions/sessions.store'
 
@@ -21,14 +28,48 @@ import { RedisStore } from '#sessions/sessions.store'
 export class SessionsService {
   private readonly configService: ConfigService
   private readonly logger = new Logger(SessionsService.name)
+  private readonly sessionSerializer: SessionSerializer
   private readonly strategies: Record<string, Strategy>
 
   constructor(
     configService: ConfigService,
-    strategies: Record<string, Strategy>
+    strategies: Record<string, Strategy>,
+    sessionSerializer: SessionSerializer
   ) {
     this.configService = configService
+    this.sessionSerializer = sessionSerializer
     this.strategies = strategies
+  }
+
+  // public async login(userId: string, res?: ArchesApiResponse): Promise<void> {
+  //   this.logger.debug('attempting to login', { userId })
+  //   const accessTokens = await this.accessTokensService.create(userId)
+  //   if (res) {
+  //     this.logger.debug('request was passed, setting cookies')
+  //     this.setCookies(res, accessTokens)
+  //   } else {
+  //     this.logger.debug('request was not passed, not setting cookies')
+  //   }
+  // }
+
+  public async logout(
+    req?: ArchesApiRequest,
+    res?: ArchesApiResponse
+  ): Promise<void> {
+    if (res) {
+      this.logger.debug('response was passed, removing cookies')
+      res.clearCookie('archesai.accessToken')
+      res.clearCookie('archesai.refreshToken')
+      this.logger.debug('deleted cookies')
+    } else {
+      this.logger.debug('response was not passed, not removing cookies')
+    }
+    if (req) {
+      this.logger.debug('request was passed, deleting cookies')
+      await req.logOut()
+    } else {
+      this.logger.debug('request was not passed, not delsseting cookies')
+    }
   }
 
   public setup(app: HttpInstance): void {
@@ -37,7 +78,7 @@ export class SessionsService {
       // if redis is enabled, use it for the session store
       let redisStore: RedisStore | undefined
       if (this.configService.get('redis.enabled')) {
-        this.logger.debug('redis enabled - using redis store')
+        this.logger.debug('redis enabled - using ssredis store')
         const redisClient: RedisClientType = createClient({
           password: this.configService.get('redis.auth')!,
           url: `redis://${this.configService.get('redis.host')}:${this.configService.get('redis.port').toString()}`,
@@ -89,6 +130,13 @@ export class SessionsService {
 
       const fastifyPassport = new Authenticator()
 
+      fastifyPassport.registerUserSerializer(
+        this.sessionSerializer.serializeUser.bind(this.sessionSerializer)
+      )
+      fastifyPassport.registerUserDeserializer(
+        this.sessionSerializer.deserializeUser.bind(this.sessionSerializer)
+      )
+
       app.register(fastifyPassport.initialize())
       app.register(fastifyPassport.secureSession())
 
@@ -102,4 +150,24 @@ export class SessionsService {
       this.logger.debug('session disabled - skipping')
     }
   }
+
+  // private setCookies(
+  //   res: ArchesApiResponse,
+  //   accessTokens: AccessTokenEntity
+  // ): void {
+  //   res.cookie('archesai.accessToken', accessTokens.accessToken, {
+  //     httpOnly: true,
+  //     maxAge: 15 * 60 * 1000, // 15 minutes for access token
+  //     sameSite: 'none',
+  //     secure: true
+  //   })
+  //   res.cookie('archesai.refreshToken', accessTokens.refreshToken, {
+  //     httpOnly: true,
+  //     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
+  //     sameSite: 'none',
+  //     secure: true,
+  //     signed: true
+  //   })
+  //   this.logger.debug('set cookies in response')
+  // }
 }

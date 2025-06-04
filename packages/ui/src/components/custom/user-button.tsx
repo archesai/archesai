@@ -10,7 +10,12 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { updateUser, useFindManyMembers, useGetOneUser } from '@archesai/client'
+import {
+  logout,
+  updateUser,
+  useFindManyMembers,
+  useGetOneUser
+} from '@archesai/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
@@ -35,7 +40,6 @@ import {
   useSidebar
 } from '#components/shadcn/sidebar'
 import { Skeleton } from '#components/shadcn/skeleton'
-import { useAuth } from '#hooks/use-auth'
 import { cn } from '#lib/utils'
 
 export function UserButton({
@@ -46,8 +50,8 @@ export function UserButton({
   size?: 'default' | 'lg' | 'sm' | null | undefined
 }) {
   const { isMobile } = useSidebar()
-  const { defaultOrgname, logout } = useAuth()
-  const { data, status } = useGetOneUser('me')
+  const defaultOrgname = 'Arches Platform'
+  const { data, status } = useGetOneUser('user-button')
   if (status === 'pending') return null
   if (data?.status === 404) {
     return null

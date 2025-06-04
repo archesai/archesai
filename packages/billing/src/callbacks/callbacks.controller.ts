@@ -29,6 +29,7 @@ export class CallbacksController implements Controller {
       {
         schema: {
           description: `Handles Stripe webhook callbacks`,
+          hide: true,
           operationId: 'stripeCallback',
           response: {
             200: {

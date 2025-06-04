@@ -18,8 +18,6 @@ import {
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 
-// import { useAuth } from '@archesai/ui/hooks/use-auth'
-
 import RunFormNode from './node'
 
 const initialNodes: Node[] = []

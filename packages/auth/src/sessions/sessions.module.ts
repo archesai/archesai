@@ -9,6 +9,7 @@ import { ApiKeyStrategy } from '#passport/strategies/api-key.strategy'
 import { JwtStrategy } from '#passport/strategies/jwt.strategy'
 import { LocalStrategy } from '#passport/strategies/local-strategy'
 import { SessionSerializer } from '#sessions/session.serializer'
+import { SessionsController } from '#sessions/sessions.controller'
 import { SessionsService } from '#sessions/sessions.service'
 import { UsersModule } from '#users/users.module'
 import { UsersService } from '#users/users.service'
@@ -18,20 +19,27 @@ export const SessionsModuleDefinition: ModuleMetadata = {
   imports: [ConfigModule, PassportModule, UsersModule],
   providers: [
     {
-      inject: [ApiKeyStrategy, ConfigService, JwtStrategy, LocalStrategy],
+      inject: [
+        ApiKeyStrategy,
+        ConfigService,
+        JwtStrategy,
+        LocalStrategy,
+        SessionSerializer
+      ],
       provide: SessionsService,
       useFactory: (
         apiKeyStrategy: ApiKeyStrategy,
         configService: ConfigService,
         jwtStrategy: JwtStrategy,
-        localStrategy: LocalStrategy
+        localStrategy: LocalStrategy,
+        sessionSerializer: SessionSerializer
       ) => {
         const strategies = {
           'api-key-auth': apiKeyStrategy,
           jwt: jwtStrategy,
           local: localStrategy
         } satisfies Record<string, Strategy>
-        return new SessionsService(configService, strategies)
+        return new SessionsService(configService, strategies, sessionSerializer)
       }
     },
     {
@@ -39,6 +47,12 @@ export const SessionsModuleDefinition: ModuleMetadata = {
       provide: SessionSerializer,
       useFactory: (usersService: UsersService) =>
         new SessionSerializer(usersService)
+    },
+    {
+      inject: [SessionsService],
+      provide: SessionsController,
+      useFactory: (sessionsService: SessionsService) =>
+        new SessionsController(sessionsService)
     }
   ]
 }

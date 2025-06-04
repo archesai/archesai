@@ -16,6 +16,9 @@
       "path": "../../packages/domain"
     },
     {
+      "path": "../../packages/database"
+    },
+    {
       "path": "../../tooling/eslint"
     }
   ]

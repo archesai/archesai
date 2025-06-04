@@ -6,7 +6,6 @@ import {
   AccessTokensModule,
   AccountsModule,
   ApiTokensModule,
-  AuthenticationModule,
   EmailChangeModule,
   EmailVerificationModule,
   InvitationsModule,
@@ -16,6 +15,7 @@ import {
   OrganizationsModule,
   PassportModule,
   PasswordResetModule,
+  RegistrationModule,
   SessionsModule,
   UsersModule,
   VerificationTokensModule
@@ -119,7 +119,6 @@ export const AppModuleDefinition: ModuleMetadata = {
     // AUTH MODULES
     JwtModule,
     ApiTokensModule,
-    AuthenticationModule,
     OAuthModule,
     AccountsModule,
     SessionsModule,
@@ -128,7 +127,8 @@ export const AppModuleDefinition: ModuleMetadata = {
     PasswordResetModule,
     EmailChangeModule,
     EmailVerificationModule,
-    PassportModule
+    PassportModule,
+    RegistrationModule
   ]
 }
 

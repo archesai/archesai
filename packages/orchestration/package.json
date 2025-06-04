@@ -27,6 +27,7 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
+    "@archesai/database": "workspace:*",
     "@archesai/domain": "workspace:*",
     "@archesai/intelligence": "workspace:*",
     "@archesai/storage": "workspace:*",

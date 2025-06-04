@@ -167,12 +167,12 @@ importers:
       '@archesai/intelligence':
         specifier: workspace:*
         version: link:../../packages/intelligence
-      '@archesai/storage':
-        specifier: workspace:*
-        version: link:../../packages/storage
       '@archesai/orchestration':
         specifier: workspace:*
         version: link:../../packages/orchestration
+      '@archesai/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@fastify/helmet':
         specifier: ^13.0.1
         version: 13.0.1
@@ -372,6 +372,9 @@ importers:
       '@archesai/core':
         specifier: workspace:*
         version: link:../core
+      '@archesai/database':
+        specifier: workspace:*
+        version: link:../database
       '@archesai/domain':
         specifier: workspace:*
         version: link:../domain
@@ -480,7 +483,7 @@ importers:
   packages/client:
     dependencies:
       '@tanstack/react-query':
-        specifier: 'catalog:'
+        specifier: 5.80.2
         version: 5.80.2(react@19.1.0)
       tslib:
         specifier: 'catalog:'
@@ -499,7 +502,7 @@ importers:
         specifier: ^7.9.0
         version: 7.9.0(openapi-types@12.1.3)
       typescript:
-        specifier: 'catalog:'
+        specifier: 5.8.3
         version: 5.8.3
 
   packages/core:
@@ -581,25 +584,6 @@ importers:
         specifier: 'catalog:'
         version: 5.8.3
 
-  packages/domain:
-    dependencies:
-      '@sinclair/typebox':
-        specifier: 'catalog:'
-        version: 0.34.33
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
-    devDependencies:
-      '@archesai/typescript':
-        specifier: workspace:*
-        version: link:../../tooling/typescript
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.15.21
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
   packages/database:
     dependencies:
       '@archesai/core':
@@ -636,6 +620,25 @@ importers:
       drizzle-kit:
         specifier: ^0.31.1
         version: 0.31.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/domain:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: 'catalog:'
+        version: 0.34.33
+      tslib:
+        specifier: 'catalog:'
+        version: 2.8.1
+    devDependencies:
+      '@archesai/typescript':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.15.21
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -688,6 +691,43 @@ importers:
       jest:
         specifier: 'catalog:'
         version: 29.7.0(@types/node@22.15.21)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.3
+
+  packages/orchestration:
+    dependencies:
+      '@archesai/core':
+        specifier: workspace:*
+        version: link:../core
+      '@archesai/database':
+        specifier: workspace:*
+        version: link:../database
+      '@archesai/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@archesai/intelligence':
+        specifier: workspace:*
+        version: link:../intelligence
+      '@archesai/storage':
+        specifier: workspace:*
+        version: link:../storage
+      '@sinclair/typebox':
+        specifier: 'catalog:'
+        version: 0.34.33
+      bullmq:
+        specifier: ^5.53.1
+        version: 5.53.2
+      tslib:
+        specifier: 'catalog:'
+        version: 2.8.1
+    devDependencies:
+      '@archesai/typescript':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.15.21
       typescript:
         specifier: 'catalog:'
         version: 5.8.3
@@ -918,40 +958,6 @@ importers:
       tw-animate-css:
         specifier: 'catalog:'
         version: 1.3.3
-      typescript:
-        specifier: 'catalog:'
-        version: 5.8.3
-
-  packages/orchestration:
-    dependencies:
-      '@archesai/core':
-        specifier: workspace:*
-        version: link:../core
-      '@archesai/domain':
-        specifier: workspace:*
-        version: link:../domain
-      '@archesai/intelligence':
-        specifier: workspace:*
-        version: link:../intelligence
-      '@archesai/storage':
-        specifier: workspace:*
-        version: link:../storage
-      '@sinclair/typebox':
-        specifier: 'catalog:'
-        version: 0.34.33
-      bullmq:
-        specifier: ^5.53.1
-        version: 5.53.2
-      tslib:
-        specifier: 'catalog:'
-        version: 2.8.1
-    devDependencies:
-      '@archesai/typescript':
-        specifier: workspace:*
-        version: link:../../tooling/typescript
-      '@types/node':
-        specifier: 'catalog:'
-        version: 22.15.21
       typescript:
         specifier: 'catalog:'
         version: 5.8.3

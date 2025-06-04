@@ -1,8 +1,6 @@
 import { useEffect } from 'react'
 import { io } from 'socket.io-client'
 
-import { useAuth } from '#hooks/use-auth'
-
 export const useWebsockets = ({
   overrideToken,
   queryClient
@@ -15,18 +13,19 @@ export const useWebsockets = ({
     }) => Promise<void>
   }
 }) => {
-  const { defaultOrgname: accessToken } = useAuth()
+  const defaultOrgname = 'Arches Platform'
 
   useEffect(() => {
-    if (accessToken) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (defaultOrgname) {
       const websocket = io(
         `ws${process.env.NEXT_PUBLIC_ARCHES_TLS_ENABLED ? 's' : ''}://${process.env.NEXT_PUBLIC_ARCHES_SERVER_HOST!}`,
         {
           auth: {
-            token: overrideToken ?? accessToken
+            token: overrideToken ?? defaultOrgname
           },
           extraHeaders: {
-            Authorization: `Bearer ${overrideToken ?? accessToken}`
+            Authorization: `Bearer ${overrideToken ?? defaultOrgname}`
           },
           reconnection: true,
           reconnectionAttempts: Infinity,
@@ -74,5 +73,5 @@ export const useWebsockets = ({
       }
     }
     return
-  }, [queryClient, accessToken, overrideToken])
+  }, [queryClient, defaultOrgname, overrideToken])
 }

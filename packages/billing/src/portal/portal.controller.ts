@@ -40,7 +40,7 @@ export class PortalController implements Controller {
             }
           },
           summary: 'Create a new portal',
-          tags: ['Billing - Portal']
+          tags: ['Billing']
         }
       },
       this.create.bind(this)

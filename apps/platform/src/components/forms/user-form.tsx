@@ -13,7 +13,7 @@ import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function UserForm() {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: userResponse } = useGetOneUser('me')
+  const { data: userResponse } = useGetOneUser('user-form')
 
   if (userResponse?.status !== 200) {
     return <div>Run not found</div>

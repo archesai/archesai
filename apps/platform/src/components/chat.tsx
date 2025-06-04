@@ -4,21 +4,20 @@ import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { useEffect, useRef, useState } from 'react'
 
-import { createLabel, createRun, useFindManyContents } from '@archesai/client'
+import { createLabel, createRun, useFindManyArtifacts } from '@archesai/client'
 import { RefreshCcw } from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { ScrollArea } from '@archesai/ui/components/shadcn/scroll-area'
 import { toast } from '@archesai/ui/components/shadcn/sonner'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
-import { useAuth } from '@archesai/ui/hooks/use-auth'
 import { cn } from '@archesai/ui/lib/utils'
 
 export default function Chat() {
   const [labelId, setLabelId] = useState<string>('')
-  const { defaultOrgname } = useAuth()
+  const defaultOrgname = 'Arches Platform'
   const [message, setMessage] = useState<string>('')
 
-  const { data } = useFindManyContents({
+  const { data } = useFindManyArtifacts({
     filter: {
       orgname: {
         equals: defaultOrgname
@@ -211,7 +210,7 @@ export default function Chat() {
         >
           <div className='flex items-center gap-2'>
             <Textarea
-              className='text-md max-h-40 flex-1 resize-none rounded-lg bg-muted/50 text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
+              className='text-md bg-muted/50 max-h-40 flex-1 resize-none rounded-lg text-gray-800 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 dark:text-gray-200'
               onChange={handleChange}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement

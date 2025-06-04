@@ -53,7 +53,7 @@ export class EmailVerificationController implements Controller {
     app.post(
       `/auth/email-verification/request`,
       {
-        preValidation: [new AuthenticatedGuard(app).canActivate.bind(this)],
+        preValidation: [AuthenticatedGuard(app)],
         schema: {
           description:
             'This endpoint will send an e-mail verification link to you. ADMIN ONLY.',

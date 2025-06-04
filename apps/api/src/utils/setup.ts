@@ -1,6 +1,6 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 
-import helmet from '@fastify/helmet'
+// import helmet from '@fastify/helmet'
 import { DiscoveryService, NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 
@@ -41,18 +41,18 @@ export async function setup(): Promise<NestFastifyApplication> {
   const corsService = app.get(CorsService)
   corsService.setup(httpInstance)
 
-  // Security Middlewares
-  await httpInstance.register(helmet, {
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: [`'self'`],
-        fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
-        imgSrc: [`'self'`, 'data:'],
-        scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
-        styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
-      }
-    }
-  })
+  // // Security Middlewares
+  // await httpInstance.register(helmet, {
+  //   contentSecurityPolicy: {
+  //     directives: {
+  //       defaultSrc: [`'self'`],
+  //       fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
+  //       imgSrc: [`'self'`, 'data:'],
+  //       scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
+  //       styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
+  //     }
+  //   }
+  // })
 
   // Session Management
   const sessionsService = app.get(SessionsService)

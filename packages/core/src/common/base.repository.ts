@@ -4,6 +4,7 @@ import type { DatabaseService } from '#database/database.service'
 import type { EntityFilter, SearchQuery } from '#http/dto/search-query.dto'
 import type { Type } from '#types/type'
 
+import { NotFoundException } from '#exceptions/http-errors'
 import { Logger } from '#logging/logger'
 
 /**
@@ -76,7 +77,7 @@ export abstract class BaseRepository<
       whereConditions
     )
     if (!model) {
-      throw new Error(`${id} not found`)
+      throw new NotFoundException(`${id} not found`)
     }
     return this.toEntity(model)
   }
@@ -153,7 +154,7 @@ export abstract class BaseRepository<
       whereConditions
     )
     if (!model) {
-      throw new Error(`${id} not found`)
+      throw new NotFoundException(`${id} not found`)
     }
     return this.toEntity(model)
   }

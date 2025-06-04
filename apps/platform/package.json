@@ -12,10 +12,10 @@
   "scripts": {
     "build": "next build --turbo",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
-    "dev": "next dev --turbo --hostname 0.0.0.0",
+    "dev": "next dev --turbo --hostname platform.localhost --port 3000",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "start": "next start --hostname 0.0.0.0",
+    "start": "next start --hostname platform.localhost --port 3000",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",

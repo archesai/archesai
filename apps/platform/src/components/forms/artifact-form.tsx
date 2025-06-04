@@ -5,14 +5,14 @@ import type { TSchema } from '@sinclair/typebox'
 import { useState } from 'react'
 import { Type } from '@sinclair/typebox'
 
-import type { CreateContentBody, UpdateContentBody } from '@archesai/client'
+import type { CreateArtifactBody, UpdateArtifactBody } from '@archesai/client'
 import type { ArtifactEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
-  createContent,
-  updateContent,
-  useGetOneContent
+  createArtifact,
+  updateArtifact,
+  useGetOneArtifact
 } from '@archesai/client'
 import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/domain'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
@@ -29,7 +29,7 @@ import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse } = useGetOneContent(artifactId!, {
+  const { data: existingContentResponse } = useGetOneArtifact(artifactId!, {
     query: {
       enabled: !!artifactId
     }
@@ -120,18 +120,18 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
   ]
 
   return (
-    <GenericForm<ArtifactEntity, CreateContentBody, UpdateContentBody>
+    <GenericForm<ArtifactEntity, CreateArtifactBody, UpdateArtifactBody>
       description={
         !artifactId ? 'Invite a new content' : 'Update an existing content'
       }
       entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!artifactId}
-      onSubmitCreate={async (createContentDto, mutateOptions) => {
-        await createContent(createContentDto, mutateOptions)
+      onSubmitCreate={async (createArtifactDto, mutateOptions) => {
+        await createArtifact(createArtifactDto, mutateOptions)
       }}
       onSubmitUpdate={async (updateContentDto, mutateOptions) => {
-        await updateContent(artifactId!, updateContentDto, mutateOptions)
+        await updateArtifact(artifactId!, updateContentDto, mutateOptions)
       }}
       title='Configuration'
     />

@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy as PassportJwtStrategy } from 'passport-jwt'
 
-import type { ArchesApiRequest, ConfigService } from '@archesai/core'
+import type { ConfigService } from '@archesai/core'
 import type {
   AccessTokenDecodedJwt,
   ApiTokenDecodedJwt
@@ -24,23 +24,7 @@ export class JwtStrategy extends PassportJwtStrategy {
   ) {
     super(
       {
-        jwtFromRequest: ExtractJwt.fromExtractors([
-          (request: ArchesApiRequest) => {
-            const bearerToken =
-              ExtractJwt.fromAuthHeaderAsBearerToken()(request)
-            if (bearerToken) {
-              this.logger.debug(`access token extracted from auth header`)
-              return bearerToken
-            }
-            const cookieToken: unknown = request.cookies['archesai.accessToken']
-            if (typeof cookieToken === 'string' && cookieToken.length > 0) {
-              this.logger.debug(`access token extracted from cookies`)
-              return cookieToken
-            }
-            this.logger.debug(`access token not found`)
-            return ''
-          }
-        ]),
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: configService.get('jwt.secret')
       },
       async (payload: AccessTokenDecodedJwt | ApiTokenDecodedJwt, done) => {

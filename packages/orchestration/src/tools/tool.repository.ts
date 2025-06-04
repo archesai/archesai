@@ -1,6 +1,7 @@
 import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
+import { ToolTable } from '@archesai/database'
 import { ToolEntity } from '@archesai/domain'
 
 /**
@@ -8,7 +9,7 @@ import { ToolEntity } from '@archesai/domain'
  */
 export class ToolRepository extends BaseRepository<ToolEntity> {
   constructor(databaseService: DatabaseService<ToolEntity>) {
-    super(databaseService, 'tools', ToolEntity)
+    super(databaseService, ToolTable, ToolEntity)
   }
 
   public async createDefaultTools(orgname: string): Promise<{

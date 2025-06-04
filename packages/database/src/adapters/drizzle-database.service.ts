@@ -3,6 +3,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import type { PgColumn, PgTable } from 'drizzle-orm/pg-core'
 
 import { sql } from 'drizzle-orm'
+import { getTableConfig } from 'drizzle-orm/pg-core'
 
 import type { SearchQuery } from '@archesai/core'
 import type { BaseEntity, BaseInsertion } from '@archesai/domain'
@@ -34,52 +35,54 @@ export class DrizzleDatabaseService<
     }
 
     // Dynamic filters
+    const tableName = getTableConfig(table).name
     Object.entries(query.filter).forEach(([field, filter]) => {
       {
         Object.entries(filter as Record<string, unknown>).forEach(
           ([operator, value]) => {
+            const columnRef = sql`${sql.identifier(tableName)}.${sql.identifier(field)}`
             switch (operator) {
               case 'equals':
-                conditions.push(sql`${table}.${field} = ${value}`)
+                conditions.push(sql`${columnRef} = ${value}`)
                 break
               case 'gt':
-                conditions.push(sql`${table}.${field} > ${value}`)
+                conditions.push(sql`${columnRef} > ${value}`)
                 break
               case 'gte':
-                conditions.push(sql`${table}.${field} >= ${value}`)
+                conditions.push(sql`${columnRef} >= ${value}`)
                 break
               case 'in':
                 if (!Array.isArray(value)) {
                   throw new Error(`Value for NOT_IN operator must be an array`)
                 }
                 conditions.push(
-                  sql`${table}.${field} IN (${sql.join(value as SQL[])}))`
+                  sql`${columnRef} IN (${sql.join(value as SQL[])}))`
                 )
                 break
               case 'is_not_null':
-                conditions.push(sql`${table}.${field} IS NOT NULL`)
+                conditions.push(sql`${columnRef} IS NOT NULL`)
                 break
               case 'is_null':
-                conditions.push(sql`${table}.${field} IS NULL`)
+                conditions.push(sql`${columnRef} IS NULL`)
                 break
               case 'like':
-                conditions.push(sql`${table}.${field} LIKE ${value}`)
+                conditions.push(sql`${columnRef} LIKE ${value}`)
                 break
               case 'lt':
-                conditions.push(sql`${table}.${field} < ${value}`)
+                conditions.push(sql`${columnRef} < ${value}`)
                 break
               case 'lte':
-                conditions.push(sql`${table}.${field} <= ${value}`)
+                conditions.push(sql`${columnRef} <= ${value}`)
                 break
               case 'not_equals':
-                conditions.push(sql`${table}.${field} != ${value}`)
+                conditions.push(sql`${columnRef} != ${value}`)
                 break
               case 'not_in':
                 if (!Array.isArray(value)) {
                   throw new Error(`Value for NOT_IN operator must be an array`)
                 }
                 conditions.push(
-                  sql`${table}.${field} NOT IN (${sql.join(value as SQL[])})`
+                  sql`${columnRef} NOT IN (${sql.join(value as SQL[])})`
                 )
                 break
             }

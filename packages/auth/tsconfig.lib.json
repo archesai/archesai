@@ -8,6 +8,9 @@
       "path": "../../packages/core/tsconfig.lib.json"
     },
     {
+      "path": "../../packages/database/tsconfig.lib.json"
+    },
+    {
       "path": "../../packages/domain/tsconfig.lib.json"
     },
     {

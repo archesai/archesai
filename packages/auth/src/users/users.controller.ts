@@ -1,4 +1,4 @@
-import type { ArchesApiRequest, Controller } from '@archesai/core'
+import type { Controller } from '@archesai/core'
 import type { UserEntity } from '@archesai/domain'
 
 import { BaseController } from '@archesai/core'
@@ -24,9 +24,5 @@ export class UsersController
       UpdateUserRequestSchema,
       usersService
     )
-  }
-
-  public currentUser(request: ArchesApiRequest) {
-    return request.user!
   }
 }

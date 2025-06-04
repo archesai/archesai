@@ -37,9 +37,17 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
 
   public async addOrRemoveCredits(orgname: string, numCredits: number) {
     this.logger.debug(`Adding ${numCredits.toString()} credits to ${orgname}`)
-    const organization = await this.organizationRepository.addOrRemoveCredits(
-      orgname,
-      numCredits
+
+    let organization = await this.findByOrgname(orgname)
+    organization = await this.organizationRepository.update(
+      ORGANIZATION_ENTITY_KEY,
+      {
+        billingEmail: organization.billingEmail,
+        credits:
+          numCredits < 0 ?
+            organization.credits + numCredits
+          : organization.credits - -1 * numCredits
+      }
     )
     this.emitMutationEvent(organization)
     return organization
@@ -77,7 +85,13 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
   }
 
   public async findByOrgname(orgname: string) {
-    return this.organizationRepository.findByOrgname(orgname)
+    return this.organizationRepository.findFirst({
+      filter: {
+        orgname: {
+          equals: orgname
+        }
+      }
+    })
   }
 
   public async setPlan(orgname: string, plan: PlanType) {

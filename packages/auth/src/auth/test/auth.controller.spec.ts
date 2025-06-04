@@ -5,31 +5,27 @@ import { Test } from '@nestjs/testing'
 
 import type { ArchesApiRequest, ArchesApiResponse } from '@archesai/core'
 
-import { AuthenticationController } from '#auth/auth.controller'
-import { AuthenticationService } from '#auth/auth.service'
+import { SessionsController } from '#sessions/sessions.controller'
+import { SessionsService } from '#sessions/sessions.service'
 
-describe('AuthenticationController', () => {
-  let authController: AuthenticationController
-  let authenticationService: AuthenticationService
+describe('SessionsController', () => {
+  let sessionsController: SessionsController
+  let sessionsenticationService: SessionsService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthenticationController, AuthenticationController],
-      providers: [AuthenticationService]
+      controllers: [SessionsController, SessionsController],
+      providers: [SessionsService]
     })
       .useMocker(createMock)
       .compile()
 
-    authController = module.get<AuthenticationController>(
-      AuthenticationController
-    )
-    authenticationService = module.get<AuthenticationService>(
-      AuthenticationService
-    )
+    sessionsController = module.get<SessionsController>(SessionsController)
+    sessionsenticationService = module.get<SessionsService>(SessionsService)
   })
 
   it('should be defined', () => {
-    expect(authController).toBeDefined()
+    expect(sessionsController).toBeDefined()
   })
 
   describe('logout', () => {
@@ -37,8 +33,8 @@ describe('AuthenticationController', () => {
       const req: ArchesApiRequest = {} as ArchesApiRequest
       const res: ArchesApiResponse = {} as ArchesApiResponse
 
-      await authController.logout(req, res)
-      expect(authenticationService.logout).toHaveBeenCalledWith(res)
+      await sessionsController.logout(req, res)
+      expect(sessionsenticationService.logout).toHaveBeenCalledWith(res)
     })
   })
 })

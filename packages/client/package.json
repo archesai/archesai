@@ -27,7 +27,7 @@
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-query": "5.80.2",
     "tslib": "catalog:"
   },
   "devDependencies": {
@@ -35,6 +35,6 @@
     "@ibm-cloud/openapi-ruleset": "^1.31.1",
     "@types/node": "catalog:",
     "orval": "^7.9.0",
-    "typescript": "catalog:"
+    "typescript": "5.8.3"
   }
 }

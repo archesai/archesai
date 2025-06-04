@@ -58,10 +58,16 @@ export class AccountsService extends BaseService<AccountEntity> {
     provider: ProviderType,
     providerAccountId: string
   ): Promise<AccountEntity> {
-    return this.accountRepository.findByProviderAndProviderAccountId(
-      provider,
-      providerAccountId
-    )
+    return this.accountRepository.findFirst({
+      filter: {
+        provider: {
+          equals: provider
+        },
+        providerAccountId: {
+          equals: providerAccountId
+        }
+      }
+    })
   }
 
   protected override emitMutationEvent(entity: AccountEntity): void {

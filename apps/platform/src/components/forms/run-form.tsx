@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import type {
   CreateRunBody,
-  FindManyContentsParams,
+  FindManyArtifactsParams,
   FindManyToolsParams,
   UpdateRunBody
 } from '@archesai/client'
@@ -15,7 +15,7 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 
 import {
   useCreateRun,
-  useFindManyContents,
+  useFindManyArtifacts,
   useFindManyTools,
   useGetOneRun,
   useUpdateRun
@@ -178,7 +178,7 @@ export function RunForm({ runId }: { runId?: string }) {
             </TabsTrigger>
           </TabsList>
           <TabsContent value='artifactIds'>
-            <DataSelector<ArtifactEntity, FindManyContentsParams>
+            <DataSelector<ArtifactEntity, FindManyArtifactsParams>
               findManyParams={{}}
               isMultiSelect={true}
               itemType={ARTIFACT_ENTITY_KEY}
@@ -197,7 +197,7 @@ export function RunForm({ runId }: { runId?: string }) {
                 await setSelectedContent(content)
                 field.onChange(content.map((c) => c.id))
               }}
-              useFindMany={useFindManyContents}
+              useFindMany={useFindManyArtifacts}
             />
           </TabsContent>
           <TabsContent value='text'>

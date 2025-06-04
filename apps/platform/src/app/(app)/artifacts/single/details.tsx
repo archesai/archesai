@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 
-import { useGetOneContent } from '@archesai/client'
+import { useGetOneArtifact } from '@archesai/client'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 import { Button } from '@archesai/ui/components/shadcn/button'
@@ -16,7 +16,7 @@ import {
 export const ArtifactDetailsHeader = () => {
   const searchParams = useSearchParams()
   const artifactId = searchParams.get('artifactId')!
-  const { data } = useGetOneContent(artifactId)
+  const { data } = useGetOneArtifact(artifactId)
 
   if (!data) {
     return (
@@ -62,7 +62,7 @@ export const ArtifactDetailsHeader = () => {
 export const ArtifactDetailsBody = () => {
   const searchParams = useSearchParams()
   const artifactId = searchParams.get('artifactId')
-  const { data: content } = useGetOneContent(artifactId!)
+  const { data: content } = useGetOneArtifact(artifactId!)
   if (!content) {
     return (
       <CardContent>

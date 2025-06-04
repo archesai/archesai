@@ -36,7 +36,7 @@ export class SubscriptionsController implements Controller {
             id: Type.String()
           }),
           summary: 'Cancel a subscription',
-          tags: ['Billing - Subscriptions']
+          tags: ['Billing']
         }
       },
       this.delete.bind(this)
@@ -53,7 +53,7 @@ export class SubscriptionsController implements Controller {
             id: Type.String()
           }),
           summary: 'Update a subscription',
-          tags: ['Billing - Subscriptions']
+          tags: ['Billing']
         }
       },
       this.update.bind(this)

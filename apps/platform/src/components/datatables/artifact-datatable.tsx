@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import type { ArtifactEntity } from '@archesai/domain'
 
-import { useFindManyContents } from '@archesai/client'
+import { useFindManyArtifacts } from '@archesai/client'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
 import { ArtifactViewer } from '@archesai/ui/components/custom/artifact-viewer'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
@@ -158,7 +158,7 @@ export default function ArtifactDataTable({
       }}
       icon={<File size={24} />}
       readonly={readonly}
-      useFindMany={useFindManyContents}
+      useFindMany={useFindManyArtifacts}
     />
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useGetOneUser } from '@archesai/client'
+import { useGetSession } from '@archesai/client'
 import { UserEntity } from '@archesai/domain'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
@@ -22,8 +22,8 @@ export function AppSidebar({
   siteRoutes,
   ...props
 }: PageHeaderProps & React.ComponentProps<typeof Sidebar>) {
-  const { data: user, status } = useGetOneUser('me')
-  if (status !== 'success' || user.status !== 200) {
+  const { data: session, status } = useGetSession()
+  if (status !== 'success' || session.status === 401) {
     return null
   }
 
@@ -34,12 +34,7 @@ export function AppSidebar({
     >
       <SidebarHeader className='flex h-14 items-center justify-center'>
         <OrganizationButton
-          user={
-            new UserEntity({
-              ...user.data.data,
-              ...user.data.data.attributes
-            })
-          }
+          user={new UserEntity(session.data as unknown as UserEntity)}
         />
       </SidebarHeader>
       <SidebarContent className='gap-0'>

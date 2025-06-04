@@ -65,7 +65,7 @@ export class PlansController implements Controller {
             200: PlanCollectionResponseSchema
           },
           summary: 'Get all plans',
-          tags: ['Billing - Plans']
+          tags: ['Billing']
         }
       },
       this.findMany.bind(this)

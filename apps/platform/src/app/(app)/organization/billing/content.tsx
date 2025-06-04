@@ -26,10 +26,9 @@ import {
   TableHeader,
   TableRow
 } from '@archesai/ui/components/shadcn/table'
-import { useAuth } from '@archesai/ui/hooks/use-auth'
 
 export default function BillingPageContent() {
-  const { defaultOrgname } = useAuth()
+  const defaultOrgname = 'Arches Platform'
   const [clickedButtonIndex, setClickedButtonIndex] = useState<null | number>(
     -1
   )

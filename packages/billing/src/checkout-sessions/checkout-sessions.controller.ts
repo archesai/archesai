@@ -45,7 +45,7 @@ export class CheckoutSessionsController implements Controller {
             200: CheckoutSessionResponseSchema
           },
           summary: 'Create a checkout session',
-          tags: ['Billing - Checkout Sessions']
+          tags: ['Billing']
         }
       },
       this.create.bind(this)

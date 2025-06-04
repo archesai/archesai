@@ -2,7 +2,7 @@
 
 import {
   useDeleteUser,
-  useGetOneUser,
+  useGetSession,
   useRequestPasswordReset
 } from '@archesai/client'
 import {
@@ -20,7 +20,12 @@ import { Separator } from '@archesai/ui/components/shadcn/separator'
 import { toast } from '@archesai/ui/components/shadcn/sonner'
 
 export default function ProfileSecuritySettingsPage() {
-  const { data: userResponse } = useGetOneUser('me')
+  const { data: sessionResponse } = useGetSession({
+    fetch: {
+      credentials: 'include',
+      mode: 'cors'
+    }
+  })
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
   const {
@@ -28,8 +33,8 @@ export default function ProfileSecuritySettingsPage() {
     mutateAsync: requestPasswordReset
   } = useRequestPasswordReset()
 
-  if (!userResponse || userResponse.status !== 200) return null
-  const user = userResponse.data.data
+  if (!sessionResponse) return null
+  const session = sessionResponse.data
 
   return (
     <div className='flex flex-col gap-3'>
@@ -93,7 +98,7 @@ export default function ProfileSecuritySettingsPage() {
             onClick={async () => {
               await deactivateAccount(
                 {
-                  id: user.id
+                  id: se.id
                 },
                 {
                   onError: () => {

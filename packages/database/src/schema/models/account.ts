@@ -10,6 +10,7 @@ export const AccountTable = pgTable(
   ACCOUNT_ENTITY_KEY,
   {
     access_token: text('access_token'),
+    authType: authType('authType').notNull(),
     expires_at: integer('expires_at'),
     // my custom stuff
     hashed_password: text('hashed_password'),
@@ -24,7 +25,6 @@ export const AccountTable = pgTable(
     scope: text('scope'),
     session_state: text('session_state'),
     token_type: text('token_type'),
-    type: authType('type').notNull(),
     userId: text('userId')
       .notNull()
       .references(() => UserTable.id, { onDelete: 'cascade' })

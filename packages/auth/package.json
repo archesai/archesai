@@ -27,6 +27,7 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
+    "@archesai/database": "workspace:*",
     "@archesai/domain": "workspace:*",
     "@faker-js/faker": "^9.8.0",
     "@fastify/cookie": "^11.0.2",

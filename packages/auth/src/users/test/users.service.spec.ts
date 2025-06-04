@@ -56,12 +56,10 @@ describe('UsersService', () => {
   describe('deactivate', () => {
     it('should deactivate user', async () => {
       const mockedUser = createRandomUser()
-      mockedUserRepository.deactivate.mockResolvedValue()
+      mockedUserRepository.delete.mockResolvedValue(mockedUser)
       await service.deactivate(mockedUser.id)
 
-      expect(mockedUserRepository.deactivate).toHaveBeenCalledWith(
-        mockedUser.id
-      )
+      expect(mockedUserRepository.delete).toHaveBeenCalledWith(mockedUser.id)
     })
   })
 })
