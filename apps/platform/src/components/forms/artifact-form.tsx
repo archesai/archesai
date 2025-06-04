@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Type } from '@sinclair/typebox'
 
 import type { CreateContentBody, UpdateContentBody } from '@archesai/client'
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -14,7 +14,7 @@ import {
   updateContent,
   useGetOneContent
 } from '@archesai/client'
-import { CONTENT_ENTITY_KEY, ContentEntitySchema } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/domain'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -26,12 +26,12 @@ import {
 } from '@archesai/ui/components/shadcn/tabs'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 
-export default function ContentForm({ contentId }: { contentId?: string }) {
+export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse } = useGetOneContent(contentId!, {
+  const { data: existingContentResponse } = useGetOneContent(artifactId!, {
     query: {
-      enabled: !!contentId
+      enabled: !!artifactId
     }
   })
 
@@ -40,7 +40,7 @@ export default function ContentForm({ contentId }: { contentId?: string }) {
   }
   const content = existingContentResponse.data.data
 
-  const formFields: FormFieldConfig<ContentEntity>[] = [
+  const formFields: FormFieldConfig<ArtifactEntity>[] = [
     {
       component: Input,
       defaultValue: content.attributes.name,
@@ -113,25 +113,25 @@ export default function ContentForm({ contentId }: { contentId?: string }) {
           </TabsContent>
         </Tabs>
       ),
-      validationRule: ContentEntitySchema.properties[
+      validationRule: ArtifactEntitySchema.properties[
         tab == 'file' ? 'text' : tab
       ] as unknown as TSchema
     }
   ]
 
   return (
-    <GenericForm<ContentEntity, CreateContentBody, UpdateContentBody>
+    <GenericForm<ArtifactEntity, CreateContentBody, UpdateContentBody>
       description={
-        !contentId ? 'Invite a new content' : 'Update an existing content'
+        !artifactId ? 'Invite a new content' : 'Update an existing content'
       }
-      entityKey={CONTENT_ENTITY_KEY}
+      entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
-      isUpdateForm={!!contentId}
+      isUpdateForm={!!artifactId}
       onSubmitCreate={async (createContentDto, mutateOptions) => {
         await createContent(createContentDto, mutateOptions)
       }}
       onSubmitUpdate={async (updateContentDto, mutateOptions) => {
-        await updateContent(contentId!, updateContentDto, mutateOptions)
+        await updateContent(artifactId!, updateContentDto, mutateOptions)
       }}
       title='Configuration'
     />

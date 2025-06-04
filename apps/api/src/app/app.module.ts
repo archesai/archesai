@@ -52,7 +52,7 @@ import {
   SpeechModule
 } from '@archesai/intelligence'
 import {
-  ContentModule,
+  ArtifactsModule,
   JobsModule,
   LabelsModule,
   PipelinesModule,
@@ -95,7 +95,7 @@ export const AppModuleDefinition: ModuleMetadata = {
     // ORCHESTRATION MODULES
     PipelinesModule,
     ToolsModule,
-    ContentModule,
+    ArtifactsModule,
     RunsModule,
     LabelsModule,
     JobsModule,

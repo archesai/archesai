@@ -3,8 +3,8 @@ import { pgTable, primaryKey, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
 import { LABEL_ENTITY_KEY } from '@archesai/domain'
 
+import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
-import { ContentTable } from '#schema/models/content'
 import { organizationFk } from '#schema/models/organization'
 
 // TABLE
@@ -28,27 +28,27 @@ export const labelRelations = relations(LabelTable, ({ many }) => ({
 export const _LabelsToContent = pgTable(
   '_labelsToContent',
   {
-    contentId: text()
+    artifactId: text()
       .notNull()
-      .references(() => ContentTable.id),
+      .references(() => ArtifactTable.id),
     labelId: text()
       .notNull()
       .references(() => LabelTable.id)
   },
-  (t) => [primaryKey({ columns: [t.labelId, t.contentId] })]
+  (t) => [primaryKey({ columns: [t.labelId, t.artifactId] })]
 )
 
 export const _labelsToContentRelations = relations(
   _LabelsToContent,
   ({ one }) => ({
-    content: one(ContentTable, {
-      fields: [_LabelsToContent.contentId],
-      references: [ContentTable.id]
+    content: one(ArtifactTable, {
+      fields: [_LabelsToContent.artifactId],
+      references: [ArtifactTable.id]
     }),
     label: one(LabelTable, {
       fields: [_LabelsToContent.labelId],
       references: [LabelTable.id],
-      relationName: 'content'
+      relationName: 'artifact'
     })
   })
 )

@@ -1,19 +1,19 @@
 // import type { Logger } from '@archesai/core'
 // import type { LlmService } from '@archesai/intelligence'
-// import type { ContentEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/domain'
 // import { retry } from '@archesai/core'
 // import { contentEntitySchema } from '@archesai/domain'
 
-// import type { ContentService } from '#content/content.service'
+// import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'
 
 // export const transformTextToText: Transformer = async (
 //   runId: string,
-//   runInput: ContentEntity[],
+//   runInput: ArtifactEntity[],
 //   logger: Logger,
-//   contentService: ContentService,
+//   artifactsService: ArtifactsService,
 //   llmService: LlmService
-// ): Promise<ContentEntity[]> => {
+// ): Promise<ArtifactEntity[]> => {
 //   logger.log(
 //     {
 //       runId
@@ -46,7 +46,7 @@
 //     `got summary for content`
 //   )
 
-//   const summaryContent = await contentService.create({
+//   const summaryContent = await artifactsService.create({
 //     credits: 0,
 //     description: '',
 //     labels: [],

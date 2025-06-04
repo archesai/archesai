@@ -1,30 +1,30 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 import type { StorageService } from '@archesai/storage'
 
 import { BaseService, catchErrorAsync } from '@archesai/core'
-import { CONTENT_ENTITY_KEY } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
 
-import type { ContentRepository } from '#content/content.repository'
+import type { ArtifactRepository } from '#artifacts/artifact.repository'
 
 /**
  * Service for content.
  */
-export class ContentService extends BaseService<ContentEntity> {
+export class ArtifactsService extends BaseService<ArtifactEntity> {
   private readonly storageService: StorageService
   private readonly websocketsService: WebsocketsService
 
   constructor(
-    contentRepository: ContentRepository,
+    artifactRepository: ArtifactRepository,
     storageService: StorageService,
     websocketsService: WebsocketsService
   ) {
-    super(contentRepository)
+    super(artifactRepository)
     this.storageService = storageService
     this.websocketsService = websocketsService
   }
 
-  // override async create(data: ContentInsert): Promise<ContentEntity> {
+  // override async create(data: ContentInsert): Promise<ArtifactEntity> {
   //   let mimeType: string
   //   if (data.url) {
   //     mimeType = await this.scraperService.detectMimeType(data.url)
@@ -48,7 +48,7 @@ export class ContentService extends BaseService<ContentEntity> {
   //     }
   //   )
 
-  //   const content = await this.contentRepository.create({
+  //   const content = await this.artifactRepository.create({
   //     mimeType,
   //     name: thumbnailFile.name,
   //     orgname: data.orgname,
@@ -61,7 +61,7 @@ export class ContentService extends BaseService<ContentEntity> {
   //   return contentEntity
   // }
 
-  public async populateReadUrl(content: ContentEntity) {
+  public async populateReadUrl(content: ArtifactEntity) {
     const url = `https://storage.googleapis.com/archesai/storage/${content.orgname}/`
     if (!content.url?.startsWith(url)) {
       this.logger.debug('url does not start with storage url', { content })
@@ -84,9 +84,9 @@ export class ContentService extends BaseService<ContentEntity> {
     return content
   }
 
-  protected emitMutationEvent(entity: ContentEntity): void {
+  protected emitMutationEvent(entity: ArtifactEntity): void {
     this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, CONTENT_ENTITY_KEY]
+      queryKey: ['organizations', entity.orgname, ARTIFACT_ENTITY_KEY]
     })
   }
 }

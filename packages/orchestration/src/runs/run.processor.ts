@@ -4,14 +4,14 @@ import type { Job } from 'bullmq'
 import { Worker } from 'bullmq'
 
 import type { ConfigService } from '@archesai/core'
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 
 import { Logger } from '@archesai/core'
 import { RUN_ENTITY_KEY } from '@archesai/domain'
 
 import type { RunsService } from '#runs/runs.service'
 
-export type RunJob = Job<ContentEntity[], ContentEntity[]>
+export type RunJob = Job<ArtifactEntity[], ArtifactEntity[]>
 
 /**
  * Processor for runs.
@@ -50,14 +50,14 @@ export class RunProcessor {
     this.logger.log(`processing run`, { job })
     return Promise.resolve([])
     // const inputs = job.data
-    // const outputs: ContentEntity[] = []
+    // const outputs: ArtifactEntity[] = []
     // switch (job.name) {
     // case 'create-embeddings':
     //   outputs = transformTextToEmbeddings()
     //   // job.id,
     //   // inputs,
     //   // this.logger,
-    //   // this.contentService,
+    //   // this.artifactsService,
     //   // this.openAiEmbeddingsService
     //   break
     // case 'extract-text':
@@ -65,7 +65,7 @@ export class RunProcessor {
     //     job.id,
     //     inputs,
     //     this.logger,
-    //     this.contentService,
+    //     this.artifactsService,
     //     this.configService,
     //     this.storageService
     //   )
@@ -75,7 +75,7 @@ export class RunProcessor {
     //     job.id,
     //     inputs,
     //     this.logger,
-    //     this.contentService,
+    //     this.artifactsService,
     //     this.llmService
     //   )
     //   break
@@ -84,7 +84,7 @@ export class RunProcessor {
     //     job.id,
     //     inputs,
     //     this.logger,
-    //     this.contentService,
+    //     this.artifactsService,
     //     this.runpodService,
     //     this.storageService
     //   )
@@ -94,7 +94,7 @@ export class RunProcessor {
     //     job.id,
     //     inputs,
     //     this.logger,
-    //     this.contentService,
+    //     this.artifactsService,
     //     this.storageService,
     //     this.speechService
     //   )

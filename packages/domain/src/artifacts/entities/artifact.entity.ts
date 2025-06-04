@@ -4,46 +4,47 @@ import { Type } from '@sinclair/typebox'
 
 import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
 
-export const ContentEntitySchema = Type.Object(
+export const ArtifactEntitySchema = Type.Object(
   {
     ...BaseEntitySchema.properties,
     credits: Type.Number({
       description:
-        'The number of credits required to access this content. This is used for metering and billing purposes.'
+        'The number of credits required to access this artifact. This is used for metering and billing purposes.'
     }),
-    description: Type.String({ description: "The content's description" }),
+    description: Type.String({ description: "The artifact's description" }),
     embedding: Type.Array(Type.Number(), {
       description:
-        "The content's embedding, used for semantic search and other ML tasks"
+        "The artifact's embedding, used for semantic search and other ML tasks"
     }),
     mimeType: Type.String({
-      description: 'The MIME type of the content, e.g. image/png'
+      description: 'The MIME type of the artifact, e.g. image/png'
     }),
     orgname: Type.String({ description: 'The organization name' }),
     parentId: Type.String({
       description:
-        'The ID of the parent content, if this content is a child of another content'
+        'The ID of the parent artifact, if this artifact is a child of another artifact'
     }),
     previewImage: Type.String({
       description:
-        'The URL of the preview image for this content. This is used for displaying a thumbnail in the UI.'
+        'The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'
     }),
     producerId: Type.String({
-      description: 'The ID of the run that produced this content, if applicable'
+      description:
+        'The ID of the run that produced this artifact, if applicable'
     }),
-    text: Type.Optional(Type.String({ description: 'The content text' })),
-    url: Type.Optional(Type.String({ description: 'The content URL' }))
+    text: Type.Optional(Type.String({ description: 'The artifact text' })),
+    url: Type.Optional(Type.String({ description: 'The artifact URL' }))
   },
   {
-    $id: 'ContentEntity',
-    description: 'The content entity',
-    title: 'Content Entity'
+    $id: 'ArtifactEntity',
+    description: 'The artifact entity',
+    title: 'Artifact Entity'
   }
 )
 
-export class ContentEntity
+export class ArtifactEntity
   extends BaseEntity
-  implements Static<typeof ContentEntitySchema>
+  implements Static<typeof ArtifactEntitySchema>
 {
   public credits: number
   public description: string
@@ -54,10 +55,10 @@ export class ContentEntity
   public previewImage: string
   public producerId: string
   public text?: string
-  public type = CONTENT_ENTITY_KEY
+  public type = ARTIFACT_ENTITY_KEY
   public url?: string
 
-  constructor(props: ContentEntity) {
+  constructor(props: ArtifactEntity) {
     super(props)
     this.credits = props.credits
     this.description = props.description
@@ -76,14 +77,14 @@ export class ContentEntity
   }
 }
 
-// export class ContentRelationships {
+// export class artifactRelationships {
 //   children: BaseEntity[]
 //   consumers: BaseEntity[]
 //   labels: LabelEntity[]
 //   parent?: BaseEntity | null
 //   producer?: BaseEntity | null
 
-//   constructor(props: ContentRelationships) {
+//   constructor(props: artifactRelationships) {
 //     this.children = props.children
 //     this.consumers = props.consumers
 //     this.labels = props.labels
@@ -94,22 +95,22 @@ export class ContentEntity
 //   static schema() {
 //     return Type.Object({
 //       children: Type.Array(BaseEntity.schema(), {
-//         description: 'The children of the content'
+//         description: 'The children of the artifact'
 //       }),
 //       consumers: Type.Array(BaseEntity.schema(), {
-//         description: 'The consumers of the content'
+//         description: 'The consumers of the artifact'
 //       }),
 //       labels: Type.Array(LabelEntity.schema(), {
-//         description: 'The labels of the content'
+//         description: 'The labels of the artifact'
 //       }),
 //       parent: Type.Optional(BaseEntity.schema({ nullable: true }), {
-//         description: 'The parent of the content'
+//         description: 'The parent of the artifact'
 //       }),
 //       producer: Type.Optional(BaseEntity.schema({ nullable: true }), {
-//         description: 'The producer of the content'
+//         description: 'The producer of the artifact'
 //       })
 //     })
 //   }
 // }
 
-export const CONTENT_ENTITY_KEY = 'contents'
+export const ARTIFACT_ENTITY_KEY = 'artifacts'

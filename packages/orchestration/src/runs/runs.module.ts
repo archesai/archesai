@@ -12,7 +12,7 @@ import {
 import { LlmModule, RunpodModule } from '@archesai/intelligence'
 import { StorageModule } from '@archesai/storage'
 
-import { ContentModule } from '#content/content.module'
+import { ArtifactsModule } from '#artifacts/artifacts.module'
 import { PipelinesModule } from '#pipelines/pipelines.module'
 import { RunProcessor } from '#runs/run.processor'
 import { RunRepository } from '#runs/run.repository'
@@ -24,7 +24,7 @@ export const RunsModuleDefinition: ModuleMetadata = {
   exports: [RunsService],
   imports: [
     StorageModule,
-    ContentModule,
+    ArtifactsModule,
     LlmModule,
     RunpodModule,
     PipelinesModule,

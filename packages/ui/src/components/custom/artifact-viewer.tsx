@@ -4,11 +4,11 @@
 // import Image from 'next/image'
 import ReactPlayer from 'react-player'
 
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 
 // const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
-export function ContentViewer({ content }: { content: ContentEntity }) {
+export function ArtifactViewer({ content }: { content: ArtifactEntity }) {
   const { mimeType, text, url } = content
 
   let hoverContent = null

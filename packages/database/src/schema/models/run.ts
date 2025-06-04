@@ -10,8 +10,8 @@ import {
 import { RUN_ENTITY_KEY } from '@archesai/domain'
 
 import { runStatus, runType } from '#schema/enums'
+import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
-import { ContentTable } from '#schema/models/content'
 import { organizationFk } from '#schema/models/organization'
 import {
   PipelineTable
@@ -49,8 +49,8 @@ export const RunTable = pgTable(
 
 // RELATIONS
 export const runRelations = relations(RunTable, ({ many, one }) => ({
-  inputs: many(_RunToContentTable),
-  outputs: many(ContentTable),
+  inputs: many(_RunToArtifactTable),
+  outputs: many(ArtifactTable),
   pipeline: one(PipelineTable, {
     fields: [RunTable.pipelineId],
     references: [PipelineTable.id]
@@ -62,12 +62,12 @@ export const runRelations = relations(RunTable, ({ many, one }) => ({
 }))
 
 // MANY TO MANY
-export const _RunToContentTable = pgTable(
+export const _RunToArtifactTable = pgTable(
   '_runToContent',
   {
-    contentId: text()
+    artifactId: text()
       .notNull()
-      .references(() => ContentTable.id, {
+      .references(() => ArtifactTable.id, {
         onDelete: 'cascade'
       }),
     runId: text()
@@ -76,19 +76,19 @@ export const _RunToContentTable = pgTable(
         onDelete: 'cascade'
       })
   },
-  (t) => [primaryKey({ columns: [t.runId, t.contentId] })]
+  (t) => [primaryKey({ columns: [t.runId, t.artifactId] })]
 )
 
 export const _runToContentRelations = relations(
-  _RunToContentTable,
+  _RunToArtifactTable,
   ({ one }) => ({
     consumer: one(RunTable, {
-      fields: [_RunToContentTable.runId],
+      fields: [_RunToArtifactTable.runId],
       references: [RunTable.id]
     }),
-    input: one(ContentTable, {
-      fields: [_RunToContentTable.contentId],
-      references: [ContentTable.id]
+    input: one(ArtifactTable, {
+      fields: [_RunToArtifactTable.artifactId],
+      references: [ArtifactTable.id]
     })
   })
 )

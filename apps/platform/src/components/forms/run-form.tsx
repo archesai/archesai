@@ -10,7 +10,7 @@ import type {
   FindManyToolsParams,
   UpdateRunBody
 } from '@archesai/client'
-import type { ContentEntity, RunEntity, ToolEntity } from '@archesai/domain'
+import type { ArtifactEntity, RunEntity, ToolEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -21,7 +21,7 @@ import {
   useUpdateRun
 } from '@archesai/client'
 import {
-  CONTENT_ENTITY_KEY,
+  ARTIFACT_ENTITY_KEY,
   RunEntitySchema,
   TOOL_ENTITY_KEY,
   ToolEntitySchema
@@ -43,8 +43,8 @@ import { usePlayground } from '#hooks/use-playground'
 import { toolBaseIcons } from '#lib/site-config'
 
 export function RunForm({ runId }: { runId?: string }) {
-  const [tab, setTab] = useState<'contentIds' | 'file' | 'text' | 'url'>(
-    'contentIds'
+  const [tab, setTab] = useState<'artifactIds' | 'file' | 'text' | 'url'>(
+    'artifactIds'
   )
 
   const { mutateAsync: createRun } = useCreateRun()
@@ -83,7 +83,7 @@ export function RunForm({ runId }: { runId?: string }) {
                 <h4 className='flex items-center gap-1 leading-none font-medium'>
                   {tool.name}
                 </h4>
-                <div className='text-sm text-muted-foreground'>
+                <div className='text-muted-foreground text-sm'>
                   {tool.description}
                 </div>
               </div>
@@ -140,15 +140,15 @@ export function RunForm({ runId }: { runId?: string }) {
       description:
         'Select the content you would like to run the tool on. You can select multiple content items.',
       label: 'Input',
-      name: tab === 'file' ? 'contentIds' : tab,
+      name: tab === 'file' ? 'artifactIds' : tab,
       renderControl: (field) => (
         <Tabs value={tab}>
           <TabsList className='grid w-full grid-cols-4 px-1'>
             <TabsTrigger
               onClick={() => {
-                setTab('contentIds')
+                setTab('artifactIds')
               }}
-              value='contentIds'
+              value='artifactIds'
             >
               Content
             </TabsTrigger>
@@ -177,11 +177,11 @@ export function RunForm({ runId }: { runId?: string }) {
               URL
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='contentIds'>
-            <DataSelector<ContentEntity, FindManyContentsParams>
+          <TabsContent value='artifactIds'>
+            <DataSelector<ArtifactEntity, FindManyContentsParams>
               findManyParams={{}}
               isMultiSelect={true}
-              itemType={CONTENT_ENTITY_KEY}
+              itemType={ARTIFACT_ENTITY_KEY}
               selectedData={selectedContent}
               setSelectedData={async (content) => {
                 if (!content) {
@@ -217,7 +217,7 @@ export function RunForm({ runId }: { runId?: string }) {
             <ImportCard
               cb={async (content) => {
                 await setSelectedContent((old) => old.concat(content))
-                setTab('contentIds')
+                setTab('artifactIds')
                 field.onChange(content.map((c) => c.id))
               }}
             />

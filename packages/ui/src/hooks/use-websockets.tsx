@@ -56,7 +56,7 @@ export const useWebsockets = ({
       // websocket.on(
       //   'chat',
       //   (event: {
-      //     content: ContentEntity
+      //     content: ArtifactEntity
       //     labelId: string
       //     orgname: string
       //   }) => {

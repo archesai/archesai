@@ -10,7 +10,7 @@ import type { RunRepository } from '#runs/run.repository'
  * Service for runs.
  */
 export class RunsService extends BaseService<RunEntity> {
-  // private readonly contentService: ContentService
+  // private readonly artifactsService: ArtifactsService
   // private readonly flowProducer: FlowProducer
   private readonly runRepository: RunRepository
   private readonly websocketsService: WebsocketsService
@@ -31,7 +31,7 @@ export class RunsService extends BaseService<RunEntity> {
   //     throw new BadRequestException('Tool ID is required for tool runs')
   //   }
 
-  //   const { data: content } = await this.contentService.findMany({
+  //   const { data: content } = await this.artifactsService.findMany({
   //     filter: {
   //       id: {
   //         IN: value.inputs.map((input) => input.id)
@@ -60,7 +60,7 @@ export class RunsService extends BaseService<RunEntity> {
   // async setInputsOrOutputs(
   //   runId: string,
   //   type: 'inputs' | 'outputs',
-  //   content: ContentEntity[]
+  //   content: ArtifactEntity[]
   // ) {
   //   const run = await this.runRepository.setInputsOrOutputs(
   //     runId,

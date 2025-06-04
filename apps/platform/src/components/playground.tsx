@@ -5,7 +5,7 @@ import { useFindManyRuns } from '@archesai/client'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { cn } from '@archesai/ui/lib/utils'
 
-import ContentDataTable from '#components/datatables/content-datatable'
+import ArtifactDataTable from '#components/datatables/artifact-datatable'
 import { RunForm } from '#components/forms/run-form'
 import { ToolCards } from '#components/tool-cards'
 import { usePlayground } from '#hooks/use-playground'
@@ -38,13 +38,13 @@ export default function Playground() {
                 hasOutputs ? 'h-1/2' : 'h-full'
               )}
             >
-              <ContentDataTable readonly />
+              <ArtifactDataTable readonly />
             </div>
           : null}
 
           {hasOutputs ?
             <div className='h-1/2 overflow-auto'>
-              <ContentDataTable readonly />
+              <ArtifactDataTable readonly />
             </div>
           : null}
         </div>

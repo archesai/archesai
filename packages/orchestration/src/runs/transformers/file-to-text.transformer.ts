@@ -3,20 +3,20 @@
 // import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured'
 
 // import type { ConfigService } from '@archesai/core'
-// import type { ContentEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/domain'
 // import type { StorageService } from '@archesai/storage'
 
-// import type { ContentService } from '#content/content.service'
+// import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'
 
 // export const transformFileToText: Transformer = async (
 //   runId: string,
-//   inputs: ContentEntity[],
+//   inputs: ArtifactEntity[],
 //   logger: Logger,
-//   contentService: ContentService,
+//   artifactsService: ArtifactsService,
 //   configService: ConfigService,
 //   storageService: StorageService
-// ): Promise<ContentEntity[]> => {
+// ): Promise<ArtifactEntity[]> => {
 //   logger.log(
 //     {
 //       inputs,
@@ -60,14 +60,14 @@
 
 //   // update name
 //   if (!title.includes('http')) {
-//     content = await contentService.update(content.id, {
+//     content = await artifactsService.update(content.id, {
 //       name: title
 //     })
 //   }
 
 //   const chunkedContent = await Promise.all(
 //     sanitizedTextContent.map((data, i) =>
-//       contentService.create({
+//       artifactsService.create({
 //         credits: 0,
 //         description: '',
 //         labels: [],

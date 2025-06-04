@@ -6,14 +6,14 @@ import type { HttpInstance } from '@archesai/core'
 
 import { getUser, registerUser, setEmailVerified } from '#utils/helpers'
 
-describe('Content', () => {
+describe('Artifacts', () => {
   let app: HttpInstance
   let accessToken: string
   let orgname: string
-  let contentId: string
+  let artifactId: string
 
   const credentials = {
-    email: 'content-test@archesai.com',
+    email: 'artifacts-test@archesai.com',
     password: 'password'
   }
 
@@ -34,22 +34,22 @@ describe('Content', () => {
     await app.close()
   })
 
-  it('CREATE - should be able to create content', async () => {
+  it('CREATE - should be able to create artifacts', async () => {
     // Upload the file
     const readUrl = await uploadFile(orgname, accessToken, filePath)
 
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/content`)
+      .post(`/organizations/${orgname}/artifacts`)
       .send({ name: 'book.pdf', url: readUrl })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
     expect(res.status).toBe(201)
-    contentId = res.body.id
+    artifactId = res.body.id
   })
 
-  it('UPDATE - should be able to update content name', async () => {
+  it('UPDATE - should be able to update artifacts name', async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
       .send({ name: 'new-book.pdf' })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
@@ -59,29 +59,29 @@ describe('Content', () => {
 
   it('UPDATE - should fail if you try to create with bad labels', async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
       .send({ labels: ['label1', 'label2'] })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(404)
   })
 
-  it('UPDATE - should be able to update content labels', async () => {
+  it('UPDATE - should be able to update artifacts labels', async () => {
     const label = await request(app.getHttpServer())
       .post(`/organizations/${orgname}/labels`)
-      .send({ name: 'content-test-label' })
+      .send({ name: 'artifacts-test-label' })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(label.status).toBe(201)
     expect(label).toSatisfyApiSpec()
 
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/content/${contentId}`)
+      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
       .send({ labels: [label.body.name] })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(200)
     expect(res).toSatisfyApiSpec()
 
     const getRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/content/${contentId}`)
+      .get(`/organizations/${orgname}/artifacts/${artifactId}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(getRes.status).toBe(200)
     expect(getRes.body.labels.length).toBe(1)

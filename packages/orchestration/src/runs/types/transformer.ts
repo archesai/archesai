@@ -1,14 +1,14 @@
 import type { Logger } from '@archesai/core'
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 
-import type { ContentService } from '#content/content.service'
+import type { ArtifactsService } from '#artifacts/artifacts.service'
 
 // A tool run processor should take in the runId, the input contents, a logger, and the content service
 // It should return the output contents
 export type Transformer = (
   runId: string,
-  inputs: ContentEntity[],
+  inputs: ArtifactEntity[],
   logger: Logger,
-  contentService: ContentService,
+  artifactsService: ArtifactsService,
   ...args: unknown[]
-) => Promise<ContentEntity[]>
+) => Promise<ArtifactEntity[]>

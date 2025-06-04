@@ -3,7 +3,7 @@
 import { useCallback } from 'react'
 import { parseAsArrayOf, parseAsJson, parseAsString, useQueryState } from 'nuqs'
 
-import type { ContentEntity, ToolEntity } from '@archesai/domain'
+import type { ArtifactEntity, ToolEntity } from '@archesai/domain'
 
 export const usePlayground = () => {
   const [selectedTool, setSelectedTool] = useQueryState(
@@ -14,7 +14,9 @@ export const usePlayground = () => {
   )
   const [selectedContent, setSelectedContent] = useQueryState(
     'selectedContent',
-    parseAsArrayOf(parseAsJson<ContentEntity>((tool) => tool as ContentEntity))
+    parseAsArrayOf(
+      parseAsJson<ArtifactEntity>((tool) => tool as ArtifactEntity)
+    )
       .withOptions({
         clearOnDefault: true
       })

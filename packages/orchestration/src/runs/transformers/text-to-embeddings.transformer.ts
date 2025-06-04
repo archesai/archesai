@@ -1,7 +1,7 @@
-// // import { ContentService } from "#content/content.service";
+// // import { ArtifactsService } from "#artifacts/artifacts.service";
 // import type { Logger } from '@archesai/core'
 // // import { retry } from "#common/utils/retry";
-// import type { ContentEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/domain'
 
 // // import { OpenAiEmbeddingsService } from "#embeddings/embeddings.openai.service";
 
@@ -11,17 +11,17 @@
 // //   );
 
 // export const transformTextToEmbeddings = () // runId: string,
-// // runInputContentIds: ContentEntity[],
+// // runInputContentIds: ArtifactEntity[],
 // // logger: Logger,
-// // contentService: ContentService,
+// // artifactsService: ArtifactsService,
 // // openAiEmbeddingsService: OpenAiEmbeddingsService
-// : ContentEntity[] => {
+// : ArtifactEntity[] => {
 //   // const t1 = Date.now();
 //   // let embeddings = [] satisfies {
 //   //   embedding: number[];
 //   //   tokens: number;
 //   // }[];
-//   // const textChunks = await contentService.findMany(content.id, {});
+//   // const textChunks = await artifactsService.findMany(content.id, {});
 //   // const textContentChunks = chunkArray(textChunks.results, 100);
 //   // for (const textContentChunk of textContentChunks) {
 //   //   const embeddingsChunk = await retry(
@@ -46,7 +46,7 @@
 //   // });
 
 //   // const start = Date.now();
-//   // await contentService.upsertVectors(
+//   // await artifactsService.upsertVectors(
 //   //   content.orgname,
 //   //   content.id,
 //   //   populatedTextContent

@@ -3,16 +3,16 @@ import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { integer, pgTable, primaryKey, text, vector } from 'drizzle-orm/pg-core'
 
-import { CONTENT_ENTITY_KEY } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
 
 import { baseFields } from '#schema/models/base'
 import { _LabelsToContent } from '#schema/models/label'
 import { organizationFk } from '#schema/models/organization'
-import { _RunToContentTable, RunTable } from '#schema/models/run'
+import { _RunToArtifactTable, RunTable } from '#schema/models/run'
 
 // TABLE
-export const ContentTable = pgTable(
-  CONTENT_ENTITY_KEY,
+export const ArtifactTable = pgTable(
+  ARTIFACT_ENTITY_KEY,
   {
     ...baseFields,
     credits: integer().default(0).notNull(),
@@ -21,7 +21,7 @@ export const ContentTable = pgTable(
       dimensions: 1536
     }),
     mimeType: text(),
-    parentId: text().references((): AnyPgColumn => ContentTable.id, {
+    parentId: text().references((): AnyPgColumn => ArtifactTable.id, {
       onDelete: 'set null',
       onUpdate: 'cascade'
     }),
@@ -33,30 +33,30 @@ export const ContentTable = pgTable(
     text: text(),
     url: text()
   },
-  (ContentTable) => [organizationFk(ContentTable)]
+  (ArtifactTable) => [organizationFk(ArtifactTable)]
 )
 
 // RELATIONS
-export const contentRelations = relations(ContentTable, ({ many, one }) => ({
+export const contentRelations = relations(ArtifactTable, ({ many, one }) => ({
   // children: many(_ParentToChild, {
   //   relationName: 'children'
   // }),
-  consumers: many(_RunToContentTable),
+  consumers: many(_RunToArtifactTable),
 
   labels: many(_LabelsToContent),
   parent: one(_ParentToChild, {
-    fields: [ContentTable.id],
+    fields: [ArtifactTable.id],
     references: [_ParentToChild.parentId],
     relationName: 'parent'
   }),
   producer: one(RunTable, {
-    fields: [ContentTable.producerId],
+    fields: [ArtifactTable.producerId],
     references: [RunTable.id]
   })
 }))
 
 // SCHEMAS
-export type ContentModel = (typeof ContentTable)['$inferSelect']
+export type ContentModel = (typeof ArtifactTable)['$inferSelect']
 
 // MANY TO MANY
 export const _ParentToChild = pgTable(
@@ -64,12 +64,12 @@ export const _ParentToChild = pgTable(
   {
     childId: text()
       .notNull()
-      .references(() => ContentTable.id, {
+      .references(() => ArtifactTable.id, {
         onDelete: 'cascade'
       }),
     parentId: text()
       .notNull()
-      .references(() => ContentTable.id, {
+      .references(() => ArtifactTable.id, {
         onDelete: 'cascade'
       })
   },
@@ -77,12 +77,12 @@ export const _ParentToChild = pgTable(
 )
 
 export const _parentToChildRelations = relations(_ParentToChild, ({ one }) => ({
-  child: one(ContentTable, {
+  child: one(ArtifactTable, {
     fields: [_ParentToChild.childId],
-    references: [ContentTable.id]
+    references: [ArtifactTable.id]
   }),
-  parent: one(ContentTable, {
+  parent: one(ArtifactTable, {
     fields: [_ParentToChild.parentId],
-    references: [ContentTable.id]
+    references: [ArtifactTable.id]
   })
 }))

@@ -1,21 +1,21 @@
 // import type { Logger } from '@archesai/core'
 
 // import type { SpeechService } from '@archesai/intelligence'
-// import type { ContentEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/domain'
 // import type { StorageService } from '@archesai/storage'
 // import { contentEntitySchema } from '@archesai/domain'
 
-// import type { ContentService } from '#content/content.service'
+// import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'
 
 // export const transformTextToSpeech: Transformer = async (
 //   runId: string,
-//   inputs: ContentEntity[],
+//   inputs: ArtifactEntity[],
 //   logger: Logger,
-//   contentService: ContentService,
+//   artifactsService: ArtifactsService,
 //   storageService: StorageService,
 //   speechService: SpeechService
-// ): Promise<ContentEntity[]> => {
+// ): Promise<ArtifactEntity[]> => {
 //   logger.log(
 //     {
 //       runId
@@ -39,7 +39,7 @@
 //     }
 //   )
 
-//   const content = await contentService.create({
+//   const content = await artifactsService.create({
 //     labels: [],
 //     mimeType: 'audio/mpeg',
 //     name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),

@@ -1,20 +1,20 @@
 // import path from 'node:path'
 // import type { Logger } from '@archesai/core'
 // import type { RunpodService } from '@archesai/intelligence'
-// import type { ContentEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/domain'
 // import type { StorageService } from '@archesai/storage'
 
-// import type { ContentService } from '#content/content.service'
+// import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'
 
 // export const transformTextToImage: Transformer = async (
 //   runId: string,
-//   inputs: ContentEntity[],
+//   inputs: ArtifactEntity[],
 //   logger: Logger,
-//   contentService: ContentService,
+//   artifactsService: ArtifactsService,
 //   runpodService: RunpodService,
 //   storageService: StorageService
-// ): Promise<ContentEntity[]> => {
+// ): Promise<ArtifactEntity[]> => {
 //   logger.log(
 //     {
 //       inputs,
@@ -46,7 +46,7 @@
 //   })
 //   logger.log({ fileEntity, runId }, `text-to-image complete`)
 
-//   const content = await contentService.create({
+//   const content = await artifactsService.create({
 //     credits: 0,
 //     description: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
 //     labels: [],

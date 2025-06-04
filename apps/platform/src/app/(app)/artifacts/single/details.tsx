@@ -13,10 +13,10 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 
-export const ContentDetailsHeader = () => {
+export const ArtifactDetailsHeader = () => {
   const searchParams = useSearchParams()
-  const contentId = searchParams.get('contentId')!
-  const { data } = useGetOneContent(contentId)
+  const artifactId = searchParams.get('artifactId')!
+  const { data } = useGetOneContent(artifactId)
 
   if (!data) {
     return (
@@ -35,34 +35,34 @@ export const ContentDetailsHeader = () => {
     )
   }
 
-  const contentData = data.data.data
+  const artifactData = data.data.data
   return (
     <CardHeader>
       <CardTitle className='flex items-center justify-between'>
-        <div>{contentData.attributes.name}</div>
+        <div>{artifactData.attributes.name}</div>
         <Button
           asChild
           size='sm'
           variant='outline'
         >
           <a
-            href={contentData.attributes.url ?? ''}
+            href={artifactData.attributes.url ?? ''}
             rel='noopener noreferrer'
             target='_blank'
           >
-            Download Content
+            Download Artifact
           </a>
         </Button>
       </CardTitle>
-      <CardDescription>{contentData.attributes.description}</CardDescription>
+      <CardDescription>{artifactData.attributes.description}</CardDescription>
     </CardHeader>
   )
 }
 
-export const ContentDetailsBody = () => {
+export const ArtifactDetailsBody = () => {
   const searchParams = useSearchParams()
-  const contentId = searchParams.get('contentId')
-  const { data: content } = useGetOneContent(contentId!)
+  const artifactId = searchParams.get('artifactId')
+  const { data: content } = useGetOneContent(artifactId!)
   if (!content) {
     return (
       <CardContent>
@@ -77,14 +77,14 @@ export const ContentDetailsBody = () => {
       </CardContent>
     )
   }
-  const contentData = content.data.data
+  const artifactData = content.data.data
   return (
     <CardContent>
       <div className='flex items-center gap-2'>
-        <Badge>{contentData.attributes.mimeType}</Badge>
-        {contentData.attributes.createdAt && (
+        <Badge>{artifactData.attributes.mimeType}</Badge>
+        {artifactData.attributes.createdAt && (
           <Badge>
-            <Timestamp date={contentData.attributes.createdAt} />
+            <Timestamp date={artifactData.attributes.createdAt} />
           </Badge>
         )}
       </div>

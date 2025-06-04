@@ -31,11 +31,11 @@ export const siteRoutes: SiteRoute[] = [
     title: 'Playground'
   },
   {
-    description: 'Browse and manage your content here.',
-    href: '/content/view',
+    description: 'Browse and manage your artifacts here.',
+    href: '/artifacts/view',
     Icon: Server,
     section: 'Data',
-    title: 'Content'
+    title: 'Artifacts'
   },
   {
     description: 'Explore and run tools.',

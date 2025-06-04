@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { CloudUpload, Loader2, Trash, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { ContentEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/domain'
 
 import { createFile } from '@archesai/client'
 
@@ -17,7 +17,7 @@ import { cn } from '#lib/utils'
 export default function ImportCard({
   cb
 }: {
-  cb?: (content: ContentEntity[]) => void
+  cb?: (content: ArtifactEntity[]) => void
 }) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState<boolean>(false)
@@ -61,7 +61,10 @@ export default function ImportCard({
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const uploadFile = (file: File, writeUrl: string): Promise<ContentEntity> => {
+  const uploadFile = (
+    file: File,
+    writeUrl: string
+  ): Promise<ArtifactEntity> => {
     return new Promise((resolve, reject) => {
       // Create a new XMLHttpRequest
       const xhr = new XMLHttpRequest()
@@ -86,7 +89,7 @@ export default function ImportCard({
             })
             console.log('readUrlResponse', readUrlResponse)
 
-            resolve('' as unknown as ContentEntity) // FIXME
+            resolve('' as unknown as ArtifactEntity) // FIXME
           } catch (error) {
             console.error(error)
             reject(new Error(`Failed to create content`))
