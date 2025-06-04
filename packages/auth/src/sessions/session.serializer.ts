@@ -17,7 +17,7 @@ export class SessionSerializer {
     return this.usersService.findOne(id)
   }
 
-  public serializeUser(user: UserEntity, _request: ArchesApiRequest) {
+  public async serializeUser(user: UserEntity, _request: ArchesApiRequest) {
     return Promise.resolve(user.id)
   }
 }

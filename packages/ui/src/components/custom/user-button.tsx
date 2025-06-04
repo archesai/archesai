@@ -1,6 +1,5 @@
 'use client'
 
-import { Link } from '@radix-ui/react-navigation-menu'
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -10,12 +9,9 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import {
-  logout,
-  updateUser,
-  useFindManyMembers,
-  useGetOneUser
-} from '@archesai/client'
+import type { UserEntity } from '@archesai/domain'
+
+import { logout, updateUser, useFindManyMembers } from '@archesai/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
@@ -51,26 +47,27 @@ export function UserButton({
 }) {
   const { isMobile } = useSidebar()
   const defaultOrgname = 'Arches Platform'
-  const { data, status } = useGetOneUser('user-button')
-  if (status === 'pending') return null
-  if (data?.status === 404) {
-    return null
-  }
-  const user = data?.data.data
-  if (!user) {
-    return null
-  }
 
-  const { data: memberships } = useFindManyMembers({
-    filter: {
-      userId: {
-        equals: user.id
+  const user = {} as UserEntity
+  const userId = ''
+
+  const { data: memberships } = useFindManyMembers(
+    {
+      filter: {
+        userId: {
+          equals: userId
+        }
+      }
+    },
+    {
+      fetch: {
+        credentials: 'include'
+      },
+      query: {
+        enabled: !!userId
       }
     }
-  })
-  if (!memberships) {
-    return null
-  }
+  )
 
   return (
     <SidebarMenu>
@@ -86,8 +83,8 @@ export function UserButton({
             >
               <Avatar className='h-8 w-8 rounded-lg'>
                 <AvatarImage
-                  alt={user.attributes.name}
-                  src={user.attributes.image ?? ''}
+                  alt={user.name}
+                  src={user.image ?? ''}
                 />
                 <AvatarFallback className='rounded-xl'>
                   <Skeleton className='h-9 w-9 bg-sidebar-accent' />
@@ -114,29 +111,28 @@ export function UserButton({
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage
-                    alt={user.attributes.name}
-                    src={user.attributes.image ?? ''}
+                    alt={user.name}
+                    src={user.image ?? ''}
                   />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>
-                    {user.attributes.name}
-                  </span>
-                  <span className='truncate text-xs'>
-                    {user.attributes.email}
-                  </span>
+                  <span className='truncate font-semibold'>{user.name}</span>
+                  <span className='truncate text-xs'>{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href='/profile/general'>
+                <a
+                  className='flex w-full'
+                  href='/profile/general'
+                >
                   <BadgeCheck />
                   Profile
                   <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
-                </Link>
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -144,51 +140,65 @@ export function UserButton({
               <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {memberships.data.data.map((membership) => (
-                    <DropdownMenuItem
-                      className='flex justify-between gap-2'
-                      key={membership.id}
-                      onClick={async () => {
-                        const { status } = await updateUser(user.id, {
-                          orgname: membership.attributes.orgname
-                        })
-
-                        if (status === 200) {
-                          toast('Organization changed', {
-                            description: `You have
-                              switched to ${membership.attributes.orgname}`
+                  {memberships ?
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    (memberships.data.data ?? []).map((membership) => (
+                      <DropdownMenuItem
+                        className='flex justify-between gap-2'
+                        key={membership.id}
+                        onClick={async () => {
+                          const { status } = await updateUser(user.id, {
+                            orgname: membership.attributes.orgname
                           })
-                        }
-                      }}
-                    >
-                      {membership.attributes.orgname}
-                      {defaultOrgname === membership.attributes.orgname && (
-                        <Badge>Current</Badge>
-                      )}
-                    </DropdownMenuItem>
-                  ))}
+
+                          if (status === 200) {
+                            toast('Organization changed', {
+                              description: `You have
+                              switched to ${membership.attributes.orgname}`
+                            })
+                          }
+                        }}
+                      >
+                        {membership.attributes.orgname}
+                        {defaultOrgname === membership.attributes.orgname && (
+                          <Badge>Current</Badge>
+                        )}
+                      </DropdownMenuItem>
+                    ))
+                  : null}
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuItem>
-              <Link href='/organization/general'>Settings</Link>
+              <a
+                className='flex w-full'
+                href='/organization/general'
+              >
+                Settings
+              </a>
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href='/organization/billing'>
+                <a
+                  className='flex w-full'
+                  href='/organization/billing'
+                >
                   <Sparkles />
                   Upgrade to Pro
-                </Link>
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href='/organization/billing'>
+                <a
+                  className='flex w-full'
+                  href='/organization/billing'
+                >
                   <CreditCard />
                   Billing
-                </Link>
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

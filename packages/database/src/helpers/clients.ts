@@ -13,7 +13,7 @@ export const createClient = (url: string) => {
   const db = pgDrizzle({
     casing: 'snake_case',
     connection: url,
-    logger: true,
+    // logger: true,
     schema
   })
 
@@ -24,7 +24,7 @@ export const createPooledClient = (pool: pg.Pool) => {
   const db = pgDrizzle(pool, {
     // connection: databaseUrl,
     casing: 'snake_case',
-    logger: true,
+    // logger: true,
     schema
   })
 

@@ -9,7 +9,7 @@ import type {
   UserEntity
 } from '@archesai/domain'
 
-import { findManyMembers, getOneUser, updateUser } from '@archesai/client'
+import { updateUser, useFindManyMembers, useGetSession } from '@archesai/client'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
 import { Badge } from '#components/shadcn/badge'
@@ -36,17 +36,17 @@ export interface OrganizationButtonProps {
   user: UserEntity
 }
 
-export async function OrganizationButton({
-  organization
-}: OrganizationButtonProps) {
-  const { data: user, status } = await getOneUser('organziation-button')
-  if (status !== 200) {
-    return null
-  }
-  const { data: memberships } = await findManyMembers({
+export function OrganizationButton({ organization }: OrganizationButtonProps) {
+  const { data: _session } = useGetSession({
+    fetch: {
+      credentials: 'include'
+    }
+  })
+
+  const { data: memberships } = useFindManyMembers({
     filter: {
       orgname: {
-        equals: user.data.attributes.orgname
+        equals: 'Arches Platform'
       }
     }
   })
@@ -110,19 +110,23 @@ export async function OrganizationButton({
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
-            {memberships.data.map((membership) => (
-              <DropdownMenuItem
-                className='flex justify-between gap-2'
-                key={membership.id}
-                onClick={async () =>
-                  handleSwitchOrganization(membership.attributes.orgname)
-                }
-              >
-                {membership.attributes.orgname}
-                {user.data.attributes.orgname ===
-                  membership.attributes.orgname && <Badge>Current</Badge>}
-              </DropdownMenuItem>
-            ))}
+            {memberships ?
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              (memberships.data.data ?? []).map((membership) => (
+                <DropdownMenuItem
+                  className='flex justify-between gap-2'
+                  key={membership.id}
+                  onClick={async () =>
+                    handleSwitchOrganization(membership.attributes.orgname)
+                  }
+                >
+                  {membership.attributes.orgname}
+                  {'Arches Platform' === membership.attributes.orgname && (
+                    <Badge>Current</Badge>
+                  )}
+                </DropdownMenuItem>
+              ))
+            : null}
             <DropdownMenuSeparator />
             <DropdownMenuItem className='gap-2 p-2'>
               <div className='flex size-6 items-center justify-center rounded-md border bg-background'>

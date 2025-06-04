@@ -22,7 +22,11 @@ export function AppSidebar({
   siteRoutes,
   ...props
 }: PageHeaderProps & React.ComponentProps<typeof Sidebar>) {
-  const { data: session, status } = useGetSession()
+  const { data: session, status } = useGetSession({
+    fetch: {
+      credentials: 'include'
+    }
+  })
   if (status !== 'success' || session.status === 401) {
     return null
   }

@@ -1,5 +1,7 @@
 'use client'
 
+import type { UserEntity } from '@archesai/domain'
+
 import {
   useDeleteUser,
   useGetSession,
@@ -22,8 +24,7 @@ import { toast } from '@archesai/ui/components/shadcn/sonner'
 export default function ProfileSecuritySettingsPage() {
   const { data: sessionResponse } = useGetSession({
     fetch: {
-      credentials: 'include',
-      mode: 'cors'
+      credentials: 'include'
     }
   })
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
@@ -35,6 +36,8 @@ export default function ProfileSecuritySettingsPage() {
 
   if (!sessionResponse) return null
   const session = sessionResponse.data
+  console.log('session', session)
+  const user = {} as UserEntity
 
   return (
     <div className='flex flex-col gap-3'>
@@ -54,7 +57,7 @@ export default function ProfileSecuritySettingsPage() {
               await requestPasswordReset(
                 {
                   data: {
-                    email: user.attributes.email
+                    email: user.email
                   }
                 },
 
@@ -98,7 +101,7 @@ export default function ProfileSecuritySettingsPage() {
             onClick={async () => {
               await deactivateAccount(
                 {
-                  id: se.id
+                  id: user.id
                 },
                 {
                   onError: () => {

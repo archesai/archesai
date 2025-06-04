@@ -88,7 +88,7 @@ export class SessionsController implements Controller {
     app.get(
       `/auth/session`,
       {
-        preValidation: [AuthenticatedGuard(app)],
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: `This endpoint will return the current session information`,
           operationId: 'getSession',

@@ -1,6 +1,5 @@
 'use client'
 
-import { Link } from '@radix-ui/react-navigation-menu'
 import { ChevronRight } from 'lucide-react'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
@@ -42,7 +41,10 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                   if (!rootRoute.children?.length) {
                     return (
                       <SidebarMenuItem key={i}>
-                        <Link href={rootRoute.href}>
+                        <a
+                          className='flex'
+                          href={rootRoute.href}
+                        >
                           <SidebarMenuButton
                             className={
                               pathname === rootRoute.href ?
@@ -61,7 +63,7 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
 
                             <span>{rootRoute.title}</span>
                           </SidebarMenuButton>
-                        </Link>
+                        </a>
                       </SidebarMenuItem>
                     )
                   }
@@ -99,9 +101,12 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                                     : ''
                                   }
                                 >
-                                  <Link href={route.href}>
+                                  <a
+                                    className='flex'
+                                    href={route.href}
+                                  >
                                     <span>{route.title}</span>
-                                  </Link>
+                                  </a>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}

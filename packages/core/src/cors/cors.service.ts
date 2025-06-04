@@ -19,18 +19,25 @@ export class CorsService {
         .get('server.cors.origins')
         .split(',')
       app.register(cors, {
-        allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
-        origin: (origin, callback) => {
-          if (
-            !origin ||
-            allowedOrigins.includes(origin) ||
-            allowedOrigins[0] === '*'
-          ) {
-            callback(null, true)
-          } else {
-            callback(new Error('Not allowed by CORS'), false)
+        maxAge: 86400,
+        methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        origin: (origin, cb) => {
+          // 1. Same-origin fetches / curl / Postman → origin is undefined → allow
+          if (!origin) {
+            cb(null, true)
+            return
           }
+
+          // 2. Whitelisted sub-domains
+          if (allowedOrigins.includes(origin)) {
+            cb(null, true)
+            return
+          }
+
+          // 3. Everything else → block
+          cb(new Error('Not allowed by CORS'), false)
         }
       })
     }

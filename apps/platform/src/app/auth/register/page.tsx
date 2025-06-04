@@ -24,8 +24,7 @@ export default function RegisterPage() {
         password: data.password
       },
       {
-        credentials: 'include',
-        mode: 'cors'
+        credentials: 'include'
       }
     )
     if (response.status === 401) {

@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto'
 import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
@@ -24,7 +23,8 @@ export abstract class BaseEntity implements Static<typeof BaseEntitySchema> {
 
   protected constructor(props: BaseInsertion<BaseEntity>) {
     this.createdAt = props.createdAt ?? new Date().toISOString()
-    this.id = props.id ?? randomUUID()
+    this.id = props.id ?? Math.random().toString(36).substring(2, 15)
+    // Ensure name is trimmed and not empty
     this.name = props.name?.trim() === '' ? this.id : (props.name ?? this.id)
     this.updatedAt = props.updatedAt ?? this.createdAt
     this.slug = generateSlug(this.name)

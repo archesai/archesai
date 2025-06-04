@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 
 // import helmet from '@fastify/helmet'
@@ -21,7 +22,15 @@ export async function setup(): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.forRoot(),
     new FastifyAdapter({
-      disableRequestLogging: true
+      disableRequestLogging: true,
+      https: {
+        cert: readFileSync(
+          import.meta.dirname + '/../../certificates/localhost.pem'
+        ),
+        key: readFileSync(
+          import.meta.dirname + '/../../certificates/localhost-key.pem'
+        )
+      }
     })
   )
 

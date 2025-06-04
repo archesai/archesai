@@ -1,6 +1,6 @@
 import { Strategy as LocalStrategyBase } from 'passport-local'
 
-import { Logger } from '@archesai/core'
+import { Logger, UnauthorizedException } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
 import type { HashingService } from '#hashing/hashing.service'
@@ -36,7 +36,7 @@ export class LocalStrategy extends LocalStrategyBase {
 
           if (!match) {
             this.logger.debug(`invalid credentials`, { email })
-            done(undefined, false)
+            done(new UnauthorizedException(), false)
           }
 
           const user = await usersService.findOne(account.userId)

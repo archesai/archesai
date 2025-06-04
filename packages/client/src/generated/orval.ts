@@ -131,6 +131,7 @@ import type {
   GetOneUser200,
   GetOneUser404,
   GetPlans200,
+  GetSession200,
   GetSession401,
   Login401,
   LoginBody,
@@ -191,7 +192,7 @@ export type getConfigResponse = getConfigResponseComposite & {
 }
 
 export const getGetConfigUrl = () => {
-  return `http://api.localhost:3001/config`
+  return `https://localhost:3001/config`
 }
 
 export const getConfig = async (
@@ -209,7 +210,7 @@ export const getConfig = async (
 }
 
 export const getGetConfigQueryKey = () => {
-  return [`http://api.localhost:3001/config`] as const
+  return [`https://localhost:3001/config`] as const
 }
 
 export const getGetConfigQueryOptions = <
@@ -345,7 +346,7 @@ export type createFileResponse = createFileResponseComposite & {
 }
 
 export const getCreateFileUrl = () => {
-  return `http://api.localhost:3001/files`
+  return `https://localhost:3001/files`
 }
 
 export const createFile = async (
@@ -468,8 +469,8 @@ export const getFindManyFilesUrl = (params?: FindManyFilesParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/files?${stringifiedParams}`
-    : `http://api.localhost:3001/files`
+      `https://localhost:3001/files?${stringifiedParams}`
+    : `https://localhost:3001/files`
 }
 
 export const findManyFiles = async (
@@ -492,10 +493,7 @@ export const findManyFiles = async (
 }
 
 export const getFindManyFilesQueryKey = (params?: FindManyFilesParams) => {
-  return [
-    `http://api.localhost:3001/files`,
-    ...(params ? [params] : [])
-  ] as const
+  return [`https://localhost:3001/files`, ...(params ? [params] : [])] as const
 }
 
 export const getFindManyFilesQueryOptions = <
@@ -646,7 +644,7 @@ export type deleteFileResponse = deleteFileResponseComposite & {
 }
 
 export const getDeleteFileUrl = (id: string) => {
-  return `http://api.localhost:3001/files/${id}`
+  return `https://localhost:3001/files/${id}`
 }
 
 export const deleteFile = async (
@@ -763,7 +761,7 @@ export type getOneFileResponse = getOneFileResponseComposite & {
 }
 
 export const getGetOneFileUrl = (id: string) => {
-  return `http://api.localhost:3001/files/${id}`
+  return `https://localhost:3001/files/${id}`
 }
 
 export const getOneFile = async (
@@ -786,7 +784,7 @@ export const getOneFile = async (
 }
 
 export const getGetOneFileQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/files/${id}`] as const
+  return [`https://localhost:3001/files/${id}`] as const
 }
 
 export const getGetOneFileQueryOptions = <
@@ -941,7 +939,7 @@ export type updateFileResponse = updateFileResponseComposite & {
 }
 
 export const getUpdateFileUrl = (id: string) => {
-  return `http://api.localhost:3001/files/${id}`
+  return `https://localhost:3001/files/${id}`
 }
 
 export const updateFile = async (
@@ -1054,7 +1052,7 @@ export type createPipelineResponse = createPipelineResponseComposite & {
 }
 
 export const getCreatePipelineUrl = () => {
-  return `http://api.localhost:3001/pipelines`
+  return `https://localhost:3001/pipelines`
 }
 
 export const createPipeline = async (
@@ -1177,8 +1175,8 @@ export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/pipelines?${stringifiedParams}`
-    : `http://api.localhost:3001/pipelines`
+      `https://localhost:3001/pipelines?${stringifiedParams}`
+    : `https://localhost:3001/pipelines`
 }
 
 export const findManyPipelines = async (
@@ -1204,7 +1202,7 @@ export const getFindManyPipelinesQueryKey = (
   params?: FindManyPipelinesParams
 ) => {
   return [
-    `http://api.localhost:3001/pipelines`,
+    `https://localhost:3001/pipelines`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -1381,7 +1379,7 @@ export type deletePipelineResponse = deletePipelineResponseComposite & {
 }
 
 export const getDeletePipelineUrl = (id: string) => {
-  return `http://api.localhost:3001/pipelines/${id}`
+  return `https://localhost:3001/pipelines/${id}`
 }
 
 export const deletePipeline = async (
@@ -1501,7 +1499,7 @@ export type getOnePipelineResponse = getOnePipelineResponseComposite & {
 }
 
 export const getGetOnePipelineUrl = (id: string) => {
-  return `http://api.localhost:3001/pipelines/${id}`
+  return `https://localhost:3001/pipelines/${id}`
 }
 
 export const getOnePipeline = async (
@@ -1524,7 +1522,7 @@ export const getOnePipeline = async (
 }
 
 export const getGetOnePipelineQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/pipelines/${id}`] as const
+  return [`https://localhost:3001/pipelines/${id}`] as const
 }
 
 export const getGetOnePipelineQueryOptions = <
@@ -1679,7 +1677,7 @@ export type updatePipelineResponse = updatePipelineResponseComposite & {
 }
 
 export const getUpdatePipelineUrl = (id: string) => {
-  return `http://api.localhost:3001/pipelines/${id}`
+  return `https://localhost:3001/pipelines/${id}`
 }
 
 export const updatePipeline = async (
@@ -1795,7 +1793,7 @@ export type createToolResponse = createToolResponseComposite & {
 }
 
 export const getCreateToolUrl = () => {
-  return `http://api.localhost:3001/tools`
+  return `https://localhost:3001/tools`
 }
 
 export const createTool = async (
@@ -1918,8 +1916,8 @@ export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/tools?${stringifiedParams}`
-    : `http://api.localhost:3001/tools`
+      `https://localhost:3001/tools?${stringifiedParams}`
+    : `https://localhost:3001/tools`
 }
 
 export const findManyTools = async (
@@ -1942,10 +1940,7 @@ export const findManyTools = async (
 }
 
 export const getFindManyToolsQueryKey = (params?: FindManyToolsParams) => {
-  return [
-    `http://api.localhost:3001/tools`,
-    ...(params ? [params] : [])
-  ] as const
+  return [`https://localhost:3001/tools`, ...(params ? [params] : [])] as const
 }
 
 export const getFindManyToolsQueryOptions = <
@@ -2096,7 +2091,7 @@ export type deleteToolResponse = deleteToolResponseComposite & {
 }
 
 export const getDeleteToolUrl = (id: string) => {
-  return `http://api.localhost:3001/tools/${id}`
+  return `https://localhost:3001/tools/${id}`
 }
 
 export const deleteTool = async (
@@ -2213,7 +2208,7 @@ export type getOneToolResponse = getOneToolResponseComposite & {
 }
 
 export const getGetOneToolUrl = (id: string) => {
-  return `http://api.localhost:3001/tools/${id}`
+  return `https://localhost:3001/tools/${id}`
 }
 
 export const getOneTool = async (
@@ -2236,7 +2231,7 @@ export const getOneTool = async (
 }
 
 export const getGetOneToolQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/tools/${id}`] as const
+  return [`https://localhost:3001/tools/${id}`] as const
 }
 
 export const getGetOneToolQueryOptions = <
@@ -2391,7 +2386,7 @@ export type updateToolResponse = updateToolResponseComposite & {
 }
 
 export const getUpdateToolUrl = (id: string) => {
-  return `http://api.localhost:3001/tools/${id}`
+  return `https://localhost:3001/tools/${id}`
 }
 
 export const updateTool = async (
@@ -2504,7 +2499,7 @@ export type createArtifactResponse = createArtifactResponseComposite & {
 }
 
 export const getCreateArtifactUrl = () => {
-  return `http://api.localhost:3001/artifacts`
+  return `https://localhost:3001/artifacts`
 }
 
 export const createArtifact = async (
@@ -2627,8 +2622,8 @@ export const getFindManyArtifactsUrl = (params?: FindManyArtifactsParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/artifacts?${stringifiedParams}`
-    : `http://api.localhost:3001/artifacts`
+      `https://localhost:3001/artifacts?${stringifiedParams}`
+    : `https://localhost:3001/artifacts`
 }
 
 export const findManyArtifacts = async (
@@ -2654,7 +2649,7 @@ export const getFindManyArtifactsQueryKey = (
   params?: FindManyArtifactsParams
 ) => {
   return [
-    `http://api.localhost:3001/artifacts`,
+    `https://localhost:3001/artifacts`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -2831,7 +2826,7 @@ export type deleteArtifactResponse = deleteArtifactResponseComposite & {
 }
 
 export const getDeleteArtifactUrl = (id: string) => {
-  return `http://api.localhost:3001/artifacts/${id}`
+  return `https://localhost:3001/artifacts/${id}`
 }
 
 export const deleteArtifact = async (
@@ -2951,7 +2946,7 @@ export type getOneArtifactResponse = getOneArtifactResponseComposite & {
 }
 
 export const getGetOneArtifactUrl = (id: string) => {
-  return `http://api.localhost:3001/artifacts/${id}`
+  return `https://localhost:3001/artifacts/${id}`
 }
 
 export const getOneArtifact = async (
@@ -2974,7 +2969,7 @@ export const getOneArtifact = async (
 }
 
 export const getGetOneArtifactQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/artifacts/${id}`] as const
+  return [`https://localhost:3001/artifacts/${id}`] as const
 }
 
 export const getGetOneArtifactQueryOptions = <
@@ -3129,7 +3124,7 @@ export type updateArtifactResponse = updateArtifactResponseComposite & {
 }
 
 export const getUpdateArtifactUrl = (id: string) => {
-  return `http://api.localhost:3001/artifacts/${id}`
+  return `https://localhost:3001/artifacts/${id}`
 }
 
 export const updateArtifact = async (
@@ -3245,7 +3240,7 @@ export type createRunResponse = createRunResponseComposite & {
 }
 
 export const getCreateRunUrl = () => {
-  return `http://api.localhost:3001/runs`
+  return `https://localhost:3001/runs`
 }
 
 export const createRun = async (
@@ -3364,8 +3359,8 @@ export const getFindManyRunsUrl = (params?: FindManyRunsParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/runs?${stringifiedParams}`
-    : `http://api.localhost:3001/runs`
+      `https://localhost:3001/runs?${stringifiedParams}`
+    : `https://localhost:3001/runs`
 }
 
 export const findManyRuns = async (
@@ -3388,10 +3383,7 @@ export const findManyRuns = async (
 }
 
 export const getFindManyRunsQueryKey = (params?: FindManyRunsParams) => {
-  return [
-    `http://api.localhost:3001/runs`,
-    ...(params ? [params] : [])
-  ] as const
+  return [`https://localhost:3001/runs`, ...(params ? [params] : [])] as const
 }
 
 export const getFindManyRunsQueryOptions = <
@@ -3541,7 +3533,7 @@ export type deleteRunResponse = deleteRunResponseComposite & {
 }
 
 export const getDeleteRunUrl = (id: string) => {
-  return `http://api.localhost:3001/runs/${id}`
+  return `https://localhost:3001/runs/${id}`
 }
 
 export const deleteRun = async (
@@ -3654,7 +3646,7 @@ export type getOneRunResponse = getOneRunResponseComposite & {
 }
 
 export const getGetOneRunUrl = (id: string) => {
-  return `http://api.localhost:3001/runs/${id}`
+  return `https://localhost:3001/runs/${id}`
 }
 
 export const getOneRun = async (
@@ -3673,7 +3665,7 @@ export const getOneRun = async (
 }
 
 export const getGetOneRunQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/runs/${id}`] as const
+  return [`https://localhost:3001/runs/${id}`] as const
 }
 
 export const getGetOneRunQueryOptions = <
@@ -3826,7 +3818,7 @@ export type updateRunResponse = updateRunResponseComposite & {
 }
 
 export const getUpdateRunUrl = (id: string) => {
-  return `http://api.localhost:3001/runs/${id}`
+  return `https://localhost:3001/runs/${id}`
 }
 
 export const updateRun = async (
@@ -3935,7 +3927,7 @@ export type createLabelResponse = createLabelResponseComposite & {
 }
 
 export const getCreateLabelUrl = () => {
-  return `http://api.localhost:3001/labels`
+  return `https://localhost:3001/labels`
 }
 
 export const createLabel = async (
@@ -4058,8 +4050,8 @@ export const getFindManyLabelsUrl = (params?: FindManyLabelsParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/labels?${stringifiedParams}`
-    : `http://api.localhost:3001/labels`
+      `https://localhost:3001/labels?${stringifiedParams}`
+    : `https://localhost:3001/labels`
 }
 
 export const findManyLabels = async (
@@ -4082,10 +4074,7 @@ export const findManyLabels = async (
 }
 
 export const getFindManyLabelsQueryKey = (params?: FindManyLabelsParams) => {
-  return [
-    `http://api.localhost:3001/labels`,
-    ...(params ? [params] : [])
-  ] as const
+  return [`https://localhost:3001/labels`, ...(params ? [params] : [])] as const
 }
 
 export const getFindManyLabelsQueryOptions = <
@@ -4236,7 +4225,7 @@ export type deleteLabelResponse = deleteLabelResponseComposite & {
 }
 
 export const getDeleteLabelUrl = (id: string) => {
-  return `http://api.localhost:3001/labels/${id}`
+  return `https://localhost:3001/labels/${id}`
 }
 
 export const deleteLabel = async (
@@ -4353,7 +4342,7 @@ export type getOneLabelResponse = getOneLabelResponseComposite & {
 }
 
 export const getGetOneLabelUrl = (id: string) => {
-  return `http://api.localhost:3001/labels/${id}`
+  return `https://localhost:3001/labels/${id}`
 }
 
 export const getOneLabel = async (
@@ -4376,7 +4365,7 @@ export const getOneLabel = async (
 }
 
 export const getGetOneLabelQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/labels/${id}`] as const
+  return [`https://localhost:3001/labels/${id}`] as const
 }
 
 export const getGetOneLabelQueryOptions = <
@@ -4531,7 +4520,7 @@ export type updateLabelResponse = updateLabelResponseComposite & {
 }
 
 export const getUpdateLabelUrl = (id: string) => {
-  return `http://api.localhost:3001/labels/${id}`
+  return `https://localhost:3001/labels/${id}`
 }
 
 export const updateLabel = async (
@@ -4644,7 +4633,7 @@ export type createOrganizationResponse = createOrganizationResponseComposite & {
 }
 
 export const getCreateOrganizationUrl = () => {
-  return `http://api.localhost:3001/organizations`
+  return `https://localhost:3001/organizations`
 }
 
 export const createOrganization = async (
@@ -4771,8 +4760,8 @@ export const getFindManyOrganizationsUrl = (
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/organizations?${stringifiedParams}`
-    : `http://api.localhost:3001/organizations`
+      `https://localhost:3001/organizations?${stringifiedParams}`
+    : `https://localhost:3001/organizations`
 }
 
 export const findManyOrganizations = async (
@@ -4799,7 +4788,7 @@ export const getFindManyOrganizationsQueryKey = (
   params?: FindManyOrganizationsParams
 ) => {
   return [
-    `http://api.localhost:3001/organizations`,
+    `https://localhost:3001/organizations`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -4976,7 +4965,7 @@ export type deleteOrganizationResponse = deleteOrganizationResponseComposite & {
 }
 
 export const getDeleteOrganizationUrl = (id: string) => {
-  return `http://api.localhost:3001/organizations/${id}`
+  return `https://localhost:3001/organizations/${id}`
 }
 
 export const deleteOrganization = async (
@@ -5096,7 +5085,7 @@ export type getOneOrganizationResponse = getOneOrganizationResponseComposite & {
 }
 
 export const getGetOneOrganizationUrl = (id: string) => {
-  return `http://api.localhost:3001/organizations/${id}`
+  return `https://localhost:3001/organizations/${id}`
 }
 
 export const getOneOrganization = async (
@@ -5119,7 +5108,7 @@ export const getOneOrganization = async (
 }
 
 export const getGetOneOrganizationQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/organizations/${id}`] as const
+  return [`https://localhost:3001/organizations/${id}`] as const
 }
 
 export const getGetOneOrganizationQueryOptions = <
@@ -5295,7 +5284,7 @@ export type updateOrganizationResponse = updateOrganizationResponseComposite & {
 }
 
 export const getUpdateOrganizationUrl = (id: string) => {
-  return `http://api.localhost:3001/organizations/${id}`
+  return `https://localhost:3001/organizations/${id}`
 }
 
 export const updateOrganization = async (
@@ -5411,7 +5400,7 @@ export type createUserResponse = createUserResponseComposite & {
 }
 
 export const getCreateUserUrl = () => {
-  return `http://api.localhost:3001/users`
+  return `https://localhost:3001/users`
 }
 
 export const createUser = async (
@@ -5534,8 +5523,8 @@ export const getFindManyUsersUrl = (params?: FindManyUsersParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/users?${stringifiedParams}`
-    : `http://api.localhost:3001/users`
+      `https://localhost:3001/users?${stringifiedParams}`
+    : `https://localhost:3001/users`
 }
 
 export const findManyUsers = async (
@@ -5558,10 +5547,7 @@ export const findManyUsers = async (
 }
 
 export const getFindManyUsersQueryKey = (params?: FindManyUsersParams) => {
-  return [
-    `http://api.localhost:3001/users`,
-    ...(params ? [params] : [])
-  ] as const
+  return [`https://localhost:3001/users`, ...(params ? [params] : [])] as const
 }
 
 export const getFindManyUsersQueryOptions = <
@@ -5712,7 +5698,7 @@ export type deleteUserResponse = deleteUserResponseComposite & {
 }
 
 export const getDeleteUserUrl = (id: string) => {
-  return `http://api.localhost:3001/users/${id}`
+  return `https://localhost:3001/users/${id}`
 }
 
 export const deleteUser = async (
@@ -5829,7 +5815,7 @@ export type getOneUserResponse = getOneUserResponseComposite & {
 }
 
 export const getGetOneUserUrl = (id: string) => {
-  return `http://api.localhost:3001/users/${id}`
+  return `https://localhost:3001/users/${id}`
 }
 
 export const getOneUser = async (
@@ -5852,7 +5838,7 @@ export const getOneUser = async (
 }
 
 export const getGetOneUserQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/users/${id}`] as const
+  return [`https://localhost:3001/users/${id}`] as const
 }
 
 export const getGetOneUserQueryOptions = <
@@ -6007,7 +5993,7 @@ export type updateUserResponse = updateUserResponseComposite & {
 }
 
 export const getUpdateUserUrl = (id: string) => {
-  return `http://api.localhost:3001/users/${id}`
+  return `https://localhost:3001/users/${id}`
 }
 
 export const updateUser = async (
@@ -6120,7 +6106,7 @@ export type createMemberResponse = createMemberResponseComposite & {
 }
 
 export const getCreateMemberUrl = () => {
-  return `http://api.localhost:3001/members`
+  return `https://localhost:3001/members`
 }
 
 export const createMember = async (
@@ -6243,8 +6229,8 @@ export const getFindManyMembersUrl = (params?: FindManyMembersParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/members?${stringifiedParams}`
-    : `http://api.localhost:3001/members`
+      `https://localhost:3001/members?${stringifiedParams}`
+    : `https://localhost:3001/members`
 }
 
 export const findManyMembers = async (
@@ -6268,7 +6254,7 @@ export const findManyMembers = async (
 
 export const getFindManyMembersQueryKey = (params?: FindManyMembersParams) => {
   return [
-    `http://api.localhost:3001/members`,
+    `https://localhost:3001/members`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -6441,7 +6427,7 @@ export type deleteMemberResponse = deleteMemberResponseComposite & {
 }
 
 export const getDeleteMemberUrl = (id: string) => {
-  return `http://api.localhost:3001/members/${id}`
+  return `https://localhost:3001/members/${id}`
 }
 
 export const deleteMember = async (
@@ -6558,7 +6544,7 @@ export type getOneMemberResponse = getOneMemberResponseComposite & {
 }
 
 export const getGetOneMemberUrl = (id: string) => {
-  return `http://api.localhost:3001/members/${id}`
+  return `https://localhost:3001/members/${id}`
 }
 
 export const getOneMember = async (
@@ -6581,7 +6567,7 @@ export const getOneMember = async (
 }
 
 export const getGetOneMemberQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/members/${id}`] as const
+  return [`https://localhost:3001/members/${id}`] as const
 }
 
 export const getGetOneMemberQueryOptions = <
@@ -6736,7 +6722,7 @@ export type updateMemberResponse = updateMemberResponseComposite & {
 }
 
 export const getUpdateMemberUrl = (id: string) => {
-  return `http://api.localhost:3001/members/${id}`
+  return `https://localhost:3001/members/${id}`
 }
 
 export const updateMember = async (
@@ -6849,7 +6835,7 @@ export type createInvitationResponse = createInvitationResponseComposite & {
 }
 
 export const getCreateInvitationUrl = () => {
-  return `http://api.localhost:3001/invitations`
+  return `https://localhost:3001/invitations`
 }
 
 export const createInvitation = async (
@@ -6976,8 +6962,8 @@ export const getFindManyInvitationsUrl = (
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/invitations?${stringifiedParams}`
-    : `http://api.localhost:3001/invitations`
+      `https://localhost:3001/invitations?${stringifiedParams}`
+    : `https://localhost:3001/invitations`
 }
 
 export const findManyInvitations = async (
@@ -7003,7 +6989,7 @@ export const getFindManyInvitationsQueryKey = (
   params?: FindManyInvitationsParams
 ) => {
   return [
-    `http://api.localhost:3001/invitations`,
+    `https://localhost:3001/invitations`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -7180,7 +7166,7 @@ export type deleteInvitationResponse = deleteInvitationResponseComposite & {
 }
 
 export const getDeleteInvitationUrl = (id: string) => {
-  return `http://api.localhost:3001/invitations/${id}`
+  return `https://localhost:3001/invitations/${id}`
 }
 
 export const deleteInvitation = async (
@@ -7300,7 +7286,7 @@ export type getOneInvitationResponse = getOneInvitationResponseComposite & {
 }
 
 export const getGetOneInvitationUrl = (id: string) => {
-  return `http://api.localhost:3001/invitations/${id}`
+  return `https://localhost:3001/invitations/${id}`
 }
 
 export const getOneInvitation = async (
@@ -7323,7 +7309,7 @@ export const getOneInvitation = async (
 }
 
 export const getGetOneInvitationQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/invitations/${id}`] as const
+  return [`https://localhost:3001/invitations/${id}`] as const
 }
 
 export const getGetOneInvitationQueryOptions = <
@@ -7499,7 +7485,7 @@ export type updateInvitationResponse = updateInvitationResponseComposite & {
 }
 
 export const getUpdateInvitationUrl = (id: string) => {
-  return `http://api.localhost:3001/invitations/${id}`
+  return `https://localhost:3001/invitations/${id}`
 }
 
 export const updateInvitation = async (
@@ -7634,7 +7620,7 @@ export type acceptInvitationResponse = acceptInvitationResponseComposite & {
 }
 
 export const getAcceptInvitationUrl = (id: string) => {
-  return `http://api.localhost:3001/invitations/${id}/accept`
+  return `https://localhost:3001/invitations/${id}/accept`
 }
 
 export const acceptInvitation = async (
@@ -7752,7 +7738,7 @@ export type createCheckoutSessionResponse =
   }
 
 export const getCreateCheckoutSessionUrl = () => {
-  return `http://api.localhost:3001/billing/checkout-sessions`
+  return `https://localhost:3001/billing/checkout-sessions`
 }
 
 export const createCheckoutSession = async (
@@ -7867,7 +7853,7 @@ export type deletePaymentMethodResponse =
   }
 
 export const getDeletePaymentMethodUrl = (id: string) => {
-  return `http://api.localhost:3001/billing/payment-methods/${id}`
+  return `https://localhost:3001/billing/payment-methods/${id}`
 }
 
 export const deletePaymentMethod = async (
@@ -7979,7 +7965,7 @@ export type findOnePaymentMethodResponse =
   }
 
 export const getFindOnePaymentMethodUrl = (id: string) => {
-  return `http://api.localhost:3001/billing/payment-methods/${id}`
+  return `https://localhost:3001/billing/payment-methods/${id}`
 }
 
 export const findOnePaymentMethod = async (
@@ -8003,7 +7989,7 @@ export const findOnePaymentMethod = async (
 }
 
 export const getFindOnePaymentMethodQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/billing/payment-methods/${id}`] as const
+  return [`https://localhost:3001/billing/payment-methods/${id}`] as const
 }
 
 export const getFindOnePaymentMethodQueryOptions = <
@@ -8174,7 +8160,7 @@ export type findManyPaymentMethodsResponse =
   }
 
 export const getFindManyPaymentMethodsUrl = () => {
-  return `http://api.localhost:3001/billing/payment-methods`
+  return `https://localhost:3001/billing/payment-methods`
 }
 
 export const findManyPaymentMethods = async (
@@ -8197,7 +8183,7 @@ export const findManyPaymentMethods = async (
 }
 
 export const getFindManyPaymentMethodsQueryKey = () => {
-  return [`http://api.localhost:3001/billing/payment-methods`] as const
+  return [`https://localhost:3001/billing/payment-methods`] as const
 }
 
 export const getFindManyPaymentMethodsQueryOptions = <
@@ -8354,7 +8340,7 @@ export type getPlansResponse = getPlansResponseComposite & {
 }
 
 export const getGetPlansUrl = () => {
-  return `http://api.localhost:3001/billing/plans`
+  return `https://localhost:3001/billing/plans`
 }
 
 export const getPlans = async (
@@ -8372,7 +8358,7 @@ export const getPlans = async (
 }
 
 export const getGetPlansQueryKey = () => {
-  return [`http://api.localhost:3001/billing/plans`] as const
+  return [`https://localhost:3001/billing/plans`] as const
 }
 
 export const getGetPlansQueryOptions = <
@@ -8508,7 +8494,7 @@ export type createPortalResponse = createPortalResponseComposite & {
 }
 
 export const getCreatePortalUrl = () => {
-  return `http://api.localhost:3001/billing/portal`
+  return `https://localhost:3001/billing/portal`
 }
 
 export const createPortal = async (
@@ -8620,7 +8606,7 @@ export type cancelSubscriptionResponse = cancelSubscriptionResponseComposite & {
 }
 
 export const getCancelSubscriptionUrl = (id: string) => {
-  return `http://api.localhost:3001/billing/subscriptions/${id}`
+  return `https://localhost:3001/billing/subscriptions/${id}`
 }
 
 export const cancelSubscription = async (
@@ -8730,7 +8716,7 @@ export type updateSubscriptionResponse = updateSubscriptionResponseComposite & {
 }
 
 export const getUpdateSubscriptionUrl = (id: string) => {
-  return `http://api.localhost:3001/billing/subscriptions/${id}`
+  return `https://localhost:3001/billing/subscriptions/${id}`
 }
 
 export const updateSubscription = async (
@@ -8843,7 +8829,7 @@ export type createApiTokenResponse = createApiTokenResponseComposite & {
 }
 
 export const getCreateApiTokenUrl = () => {
-  return `http://api.localhost:3001/api-tokens`
+  return `https://localhost:3001/api-tokens`
 }
 
 export const createApiToken = async (
@@ -8966,8 +8952,8 @@ export const getFindManyApiTokensUrl = (params?: FindManyApiTokensParams) => {
   const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ?
-      `http://api.localhost:3001/api-tokens?${stringifiedParams}`
-    : `http://api.localhost:3001/api-tokens`
+      `https://localhost:3001/api-tokens?${stringifiedParams}`
+    : `https://localhost:3001/api-tokens`
 }
 
 export const findManyApiTokens = async (
@@ -8993,7 +8979,7 @@ export const getFindManyApiTokensQueryKey = (
   params?: FindManyApiTokensParams
 ) => {
   return [
-    `http://api.localhost:3001/api-tokens`,
+    `https://localhost:3001/api-tokens`,
     ...(params ? [params] : [])
   ] as const
 }
@@ -9170,7 +9156,7 @@ export type deleteApiTokenResponse = deleteApiTokenResponseComposite & {
 }
 
 export const getDeleteApiTokenUrl = (id: string) => {
-  return `http://api.localhost:3001/api-tokens/${id}`
+  return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const deleteApiToken = async (
@@ -9290,7 +9276,7 @@ export type getOneApiTokenResponse = getOneApiTokenResponseComposite & {
 }
 
 export const getGetOneApiTokenUrl = (id: string) => {
-  return `http://api.localhost:3001/api-tokens/${id}`
+  return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const getOneApiToken = async (
@@ -9313,7 +9299,7 @@ export const getOneApiToken = async (
 }
 
 export const getGetOneApiTokenQueryKey = (id: string) => {
-  return [`http://api.localhost:3001/api-tokens/${id}`] as const
+  return [`https://localhost:3001/api-tokens/${id}`] as const
 }
 
 export const getGetOneApiTokenQueryOptions = <
@@ -9468,7 +9454,7 @@ export type updateApiTokenResponse = updateApiTokenResponseComposite & {
 }
 
 export const getUpdateApiTokenUrl = (id: string) => {
-  return `http://api.localhost:3001/api-tokens/${id}`
+  return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const updateApiToken = async (
@@ -9584,7 +9570,7 @@ export type firebaseResponse = firebaseResponseComposite & {
 }
 
 export const getFirebaseUrl = () => {
-  return `http://api.localhost:3001/oauth/firebase`
+  return `https://localhost:3001/oauth/firebase`
 }
 
 export const firebase = async (
@@ -9687,7 +9673,7 @@ export type twitterResponse = twitterResponseComposite & {
 }
 
 export const getTwitterUrl = () => {
-  return `http://api.localhost:3001/oauth/twitter`
+  return `https://localhost:3001/oauth/twitter`
 }
 
 export const twitter = async (
@@ -9705,7 +9691,7 @@ export const twitter = async (
 }
 
 export const getTwitterQueryKey = () => {
-  return [`http://api.localhost:3001/oauth/twitter`] as const
+  return [`https://localhost:3001/oauth/twitter`] as const
 }
 
 export const getTwitterQueryOptions = <
@@ -9841,7 +9827,7 @@ export type twitterCallbackResponse = twitterCallbackResponseComposite & {
 }
 
 export const getTwitterCallbackUrl = () => {
-  return `http://api.localhost:3001/oauth/twitter/callback`
+  return `https://localhost:3001/oauth/twitter/callback`
 }
 
 export const twitterCallback = async (
@@ -9863,7 +9849,7 @@ export const twitterCallback = async (
 }
 
 export const getTwitterCallbackQueryKey = () => {
-  return [`http://api.localhost:3001/oauth/twitter/callback`] as const
+  return [`https://localhost:3001/oauth/twitter/callback`] as const
 }
 
 export const getTwitterCallbackQueryOptions = <
@@ -10020,7 +10006,7 @@ export type loginResponse = loginResponseComposite & {
 }
 
 export const getLoginUrl = () => {
-  return `http://api.localhost:3001/auth/login`
+  return `https://localhost:3001/auth/login`
 }
 
 export const login = async (
@@ -10131,7 +10117,7 @@ export type logoutResponse = logoutResponseComposite & {
 }
 
 export const getLogoutUrl = () => {
-  return `http://api.localhost:3001/auth/logout`
+  return `https://localhost:3001/auth/logout`
 }
 
 export const logout = async (
@@ -10222,9 +10208,9 @@ export const useLogout = <TError = Logout401, TContext = unknown>(
  * This endpoint will return the current session information
  * @summary Get Session
  */
-export type getSessionResponse204 = {
-  data: void
-  status: 204
+export type getSessionResponse200 = {
+  data: GetSession200
+  status: 200
 }
 
 export type getSessionResponse401 = {
@@ -10233,7 +10219,7 @@ export type getSessionResponse401 = {
 }
 
 export type getSessionResponseComposite =
-  | getSessionResponse204
+  | getSessionResponse200
   | getSessionResponse401
 
 export type getSessionResponse = getSessionResponseComposite & {
@@ -10241,7 +10227,7 @@ export type getSessionResponse = getSessionResponseComposite & {
 }
 
 export const getGetSessionUrl = () => {
-  return `http://api.localhost:3001/auth/session`
+  return `https://localhost:3001/auth/session`
 }
 
 export const getSession = async (
@@ -10263,7 +10249,7 @@ export const getSession = async (
 }
 
 export const getGetSessionQueryKey = () => {
-  return [`http://api.localhost:3001/auth/session`] as const
+  return [`https://localhost:3001/auth/session`] as const
 }
 
 export const getGetSessionQueryOptions = <
@@ -10413,7 +10399,7 @@ export type confirmPasswordResetResponse =
   }
 
 export const getConfirmPasswordResetUrl = () => {
-  return `http://api.localhost:3001/auth/password-reset/confirm`
+  return `https://localhost:3001/auth/password-reset/confirm`
 }
 
 export const confirmPasswordReset = async (
@@ -10533,7 +10519,7 @@ export type requestPasswordResetResponse =
   }
 
 export const getRequestPasswordResetUrl = () => {
-  return `http://api.localhost:3001/auth/password-reset/request`
+  return `https://localhost:3001/auth/password-reset/request`
 }
 
 export const requestPasswordReset = async (
@@ -10659,7 +10645,7 @@ export type confirmEmailChangeResponse = confirmEmailChangeResponseComposite & {
 }
 
 export const getConfirmEmailChangeUrl = () => {
-  return `http://api.localhost:3001/auth/email-change/confirm`
+  return `https://localhost:3001/auth/email-change/confirm`
 }
 
 export const confirmEmailChange = async (
@@ -10776,7 +10762,7 @@ export type requestEmailChangeResponse = requestEmailChangeResponseComposite & {
 }
 
 export const getRequestEmailChangeUrl = () => {
-  return `http://api.localhost:3001/auth/email-change/request`
+  return `https://localhost:3001/auth/email-change/request`
 }
 
 export const requestEmailChange = async (
@@ -10902,7 +10888,7 @@ export type confirmEmailVerificationResponse =
   }
 
 export const getConfirmEmailVerificationUrl = () => {
-  return `http://api.localhost:3001/auth/email-verification/confirm`
+  return `https://localhost:3001/auth/email-verification/confirm`
 }
 
 export const confirmEmailVerification = async (
@@ -11022,7 +11008,7 @@ export type requestEmailVerificationResponse =
   }
 
 export const getRequestEmailVerificationUrl = () => {
-  return `http://api.localhost:3001/auth/email-verification/request`
+  return `https://localhost:3001/auth/email-verification/request`
 }
 
 export const requestEmailVerification = async (
@@ -11140,7 +11126,7 @@ export type registerResponse = registerResponseComposite & {
 }
 
 export const getRegisterUrl = () => {
-  return `http://api.localhost:3001/auth/register`
+  return `https://localhost:3001/auth/register`
 }
 
 export const register = async (

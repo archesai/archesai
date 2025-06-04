@@ -30,8 +30,8 @@ export default defineConfig({
       //     }
       //   }
       // },
-      target: 'http://api.localhost:3001/docs/openapi.json'
-    },
+      target: 'https://localhost:3001/docs/openapi.json'
+    }, /// NODE_TLS_REJECT_UNAUTHORIZED=0
     output: {
       target: './src/generated/orval.ts',
       client: 'react-query',

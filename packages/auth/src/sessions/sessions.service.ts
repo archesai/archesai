@@ -116,7 +116,7 @@ export class SessionsService {
         cookie: {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // e.g., 1 hour in milliseconds
-          sameSite: 'lax',
+          sameSite: 'strict', // Use 'strict' for better security, 'lax' if you need cross-site requests
           secure: this.configService.get('tls.enabled') // Set to true if using HTTPS in production
         },
         secret: this.configService.get('session.secret'),
@@ -150,24 +150,4 @@ export class SessionsService {
       this.logger.debug('session disabled - skipping')
     }
   }
-
-  // private setCookies(
-  //   res: ArchesApiResponse,
-  //   accessTokens: AccessTokenEntity
-  // ): void {
-  //   res.cookie('archesai.accessToken', accessTokens.accessToken, {
-  //     httpOnly: true,
-  //     maxAge: 15 * 60 * 1000, // 15 minutes for access token
-  //     sameSite: 'none',
-  //     secure: true
-  //   })
-  //   res.cookie('archesai.refreshToken', accessTokens.refreshToken, {
-  //     httpOnly: true,
-  //     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
-  //     sameSite: 'none',
-  //     secure: true,
-  //     signed: true
-  //   })
-  //   this.logger.debug('set cookies in response')
-  // }
 }

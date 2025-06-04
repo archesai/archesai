@@ -22,7 +22,7 @@ export const ServerConfigSchema = Type.Object({
     enabled: Type.Boolean({ default: false }),
     export: Type.Boolean({ default: false })
   }),
-  host: Type.String({ default: 'api.localhost' }),
+  host: Type.String({ default: 'localhost' }),
   port: Type.Number({ default: 3001 })
 })
 export type ServerConfig = Static<typeof ServerConfigSchema>

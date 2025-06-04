@@ -1,8 +1,8 @@
 server:
-  host: 'api.localhost'
+  host: 'localhost'
   cors:
     enabled: true
-    origins: 'http://platform.localhost:3000'
+    origins: 'https://localhost:3000,https://localhost:3001'
   docs:
     enabled: true
     export: true
@@ -22,7 +22,7 @@ llm:
 session:
   secret: archesai-archesai-archesai-archesai
 logging:
-  level: debug
+  level: info
   pretty: true
 unstructured:
   enabled: false
@@ -63,7 +63,7 @@ scraper:
 storage:
   type: local
 tls:
-  enabled: false
+  enabled: true
 speech:
   enabled: true
   token: sk_d6c86e029888836fa68bda6cc3cb40de0aefb9fbb2ca76a9

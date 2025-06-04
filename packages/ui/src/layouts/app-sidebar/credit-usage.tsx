@@ -1,7 +1,5 @@
 'use client'
 
-import { Link } from '@radix-ui/react-navigation-menu'
-
 import type { OrganizationEntity } from '@archesai/domain'
 
 import { Badge } from '#components/shadcn/badge'
@@ -25,9 +23,12 @@ export const CreditQuota = ({ organization }: CreditQuotaProps) => {
       <div className='flex items-center justify-between'>
         <div className='font-semibold'>Credit Usage</div>
         <div>
-          <Link href='/organization/billing'>
+          <a
+            className='flex'
+            href='/organization/billing'
+          >
             <Badge variant='secondary'>Upgrade</Badge>
-          </Link>
+          </a>
         </div>
       </div>
       <div className='flex items-center gap-2'>

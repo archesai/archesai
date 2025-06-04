@@ -7146,6 +7146,8 @@ export type Logout401 = {
   errors: Logout401ErrorsItem[]
 }
 
+export type GetSession200 = { [key: string]: unknown }
+
 export type GetSession401ErrorsItem = {
   detail: string
   status: string

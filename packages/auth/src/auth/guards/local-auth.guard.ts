@@ -6,8 +6,6 @@ import type {
   HttpInstance
 } from '@archesai/core'
 
-import { UnauthorizedException } from '@archesai/core'
-
 export function LocalAuthGuard(app: HttpInstance) {
   return async function (
     req: ArchesApiRequest,
@@ -18,16 +16,20 @@ export function LocalAuthGuard(app: HttpInstance) {
         ['local'],
         { session: true },
         async (authReq, _authRes, err, user) => {
-          if (err || !user) {
-            reject(new UnauthorizedException())
+          if (err) {
+            reject(err)
+            return
+          }
+          if (!user) {
+            reject(new Error('Unauthorized'))
             return
           }
 
           try {
             await authReq.logIn(user)
             resolve()
-          } catch {
-            reject(new UnauthorizedException())
+          } catch (err) {
+            reject(err as Error)
           }
         }
       )

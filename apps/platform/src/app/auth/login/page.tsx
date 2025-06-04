@@ -3,10 +3,10 @@
 import type { Static } from '@sinclair/typebox'
 
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+// import { redirect } from 'next/navigation'
 import { Type } from '@sinclair/typebox'
 
-import { login } from '@archesai/client'
+import { getSession, login } from '@archesai/client'
 
 import { AuthForm } from '#components/auth-form'
 
@@ -20,14 +20,17 @@ export default function LoginPage() {
     const response = await login(
       { email: data.email, password: data.password },
       {
-        credentials: 'include',
-        mode: 'cors'
+        credentials: 'include'
       }
     )
     if (response.status === 401) {
       throw new Error(response.data.errors.map((e) => e.detail).join(', '))
     }
-    redirect('/playground')
+    const session = await getSession({
+      credentials: 'include'
+    })
+    console.log('session', session)
+    // redirect('/playground')
   }
 
   return (
