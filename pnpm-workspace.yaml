@@ -56,4 +56,4 @@ publicHoistPattern:
   - '*prettier*'
 strictDepBuilds: true
 strictPeerDependencies: true
-useNodeVersion: 23.11.0
+useNodeVersion: 24.2.0
