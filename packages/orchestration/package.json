@@ -32,7 +32,7 @@
     "@archesai/intelligence": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@sinclair/typebox": "catalog:",
-    "bullmq": "^5.53.1",
+    "bullmq": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {

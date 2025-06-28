@@ -6,7 +6,7 @@
   "prettier": "@archesai/prettier/base",
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "catalog:",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

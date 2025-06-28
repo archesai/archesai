@@ -27,14 +27,14 @@
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@tanstack/react-query": "5.80.2",
+    "@tanstack/react-query": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@ibm-cloud/openapi-ruleset": "^1.31.1",
+    "@ibm-cloud/openapi-ruleset": "catalog:",
     "@types/node": "catalog:",
-    "orval": "^7.9.0",
-    "typescript": "5.8.3"
+    "orval": "catalog:",
+    "typescript": "catalog:"
   }
 }

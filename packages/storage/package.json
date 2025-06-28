@@ -28,9 +28,9 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/domain": "workspace:*",
-    "@aws-sdk/client-s3": "^3.821.0",
-    "@aws-sdk/s3-request-presigner": "^3.821.0",
-    "@google-cloud/storage": "^7.16.0",
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
+    "@google-cloud/storage": "catalog:",
     "@sinclair/typebox": "catalog:",
     "tslib": "catalog:"
   },

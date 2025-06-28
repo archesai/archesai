@@ -26,9 +26,9 @@
     "@hookform/resolvers": "catalog:",
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",
-    "@xyflow/react": "^12.6.4",
+    "@xyflow/react": "catalog:",
     "next": "catalog:",
-    "nuqs": "^2.4.3",
+    "nuqs": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:"

@@ -25,7 +25,7 @@ export function ArtifactViewer({ content }: { content: ArtifactEntity }) {
     hoverContent = (
       <ReactPlayer
         config={{
-          file: {
+          html: {
             attributes: {
               controlsList: 'nodownload'
             }
@@ -33,7 +33,7 @@ export function ArtifactViewer({ content }: { content: ArtifactEntity }) {
         }}
         controls
         height='100%'
-        url={url}
+        src={url}
         width='100%'
       />
     )
