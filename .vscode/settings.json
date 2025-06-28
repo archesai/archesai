@@ -1,4 +1,10 @@
 {
+  "eslint.workingDirectories": [
+    { "pattern": "apps/*/" },
+    { "pattern": "packages/*/" },
+    { "pattern": "tooling/*/" },
+    { "pattern": "e2e/*/" }
+  ],
   "files.exclude": {
     "**/*.tsbuildinfo": true,
     "**/.cache": true,
