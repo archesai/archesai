@@ -3,7 +3,7 @@ import type { ModuleMetadata } from '#utils/nest'
 import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
 import { CorsService } from '#cors/cors.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const CorsModuleDefinition: ModuleMetadata = {
   exports: [CorsService],
@@ -18,5 +18,5 @@ export const CorsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(CorsModuleDefinition)
-export class CorsModule {}
+export const CorsModule = (() =>
+  createModule(class CorsModule {}, CorsModuleDefinition))()

@@ -6,6 +6,8 @@ import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import ffmpeg from 'fluent-ffmpeg'
 
+import type { Type } from '@archesai/core'
+
 import { FetcherModule } from '@archesai/core'
 
 import { AudioService } from '#audio/audio.service'
@@ -42,7 +44,7 @@ describe('AudioService', () => {
       providers: [
         AudioService,
         {
-          provide: FetcherModule,
+          provide: FetcherModule as Type,
           useValue: {
             get: jest.fn(),
             post: jest.fn()

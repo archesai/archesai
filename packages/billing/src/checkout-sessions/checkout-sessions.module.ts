@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { CheckoutSessionsController } from '#checkout-sessions/checkout-sessions.controller'
 import { CheckoutSessionsService } from '#checkout-sessions/checkout-sessions.service'
@@ -27,5 +27,8 @@ export const CheckoutSessionsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(CheckoutSessionsModuleDefinition)
-export class CheckoutSessionsModule {}
+export const CheckoutSessionsModule = (() =>
+  createModule(
+    class CheckoutSessionsModule {},
+    CheckoutSessionsModuleDefinition
+  ))()

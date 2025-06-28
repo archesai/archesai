@@ -2,11 +2,11 @@ import type { ModuleMetadata } from '@archesai/core'
 import type { InvitationEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
   EventBus,
   EventBusModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -69,5 +69,5 @@ export const InvitationsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(InvitationsModuleDefinition)
-export class InvitationsModule {}
+export const InvitationsModule = (() =>
+  createModule(class InvitationsModule {}, InvitationsModuleDefinition))()

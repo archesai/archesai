@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { EventBus, EventBusModule, Module } from '@archesai/core'
+import { createModule, EventBus, EventBusModule } from '@archesai/core'
 
 import { CustomersService } from '#customers/customers.service'
 import { CustomersSubscriber } from '#customers/customers.subscriber'
@@ -26,5 +26,5 @@ export const CustomersModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(CustomersModuleDefinition)
-export class CustomersModule {}
+export const CustomersModule = (() =>
+  createModule(class CustomersModule {}, CustomersModuleDefinition))()

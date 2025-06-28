@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { EmailChangeController } from '#email-change/email-change.controller'
 import { EmailChangeService } from '#email-change/email-change.service'
@@ -29,5 +29,5 @@ export const EmailChangeModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(EmailChangeModuleDefinition)
-export class EmailChangeModule {}
+export const EmailChangeModule = (() =>
+  createModule(class EmailChangeModule {}, EmailChangeModuleDefinition))()

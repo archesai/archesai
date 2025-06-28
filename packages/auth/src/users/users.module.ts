@@ -1,15 +1,15 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type { UserEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
   EventBus,
   EventBusModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
-import { UserEntity } from '@archesai/domain'
 
 import { DeactivatedGuard } from '#users/guards/deactivated.guard'
 import { UserRepository } from '#users/user.repository'
@@ -48,5 +48,5 @@ export const UsersModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(UsersModuleDefinition)
-export class UsersModule {}
+export const UsersModule = (() =>
+  createModule(class UsersModule {}, UsersModuleDefinition))()

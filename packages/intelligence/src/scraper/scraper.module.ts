@@ -3,9 +3,9 @@ import type { ModuleMetadata } from '@archesai/core'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   FetcherModule,
-  FetcherService,
-  Module
+  FetcherService
 } from '@archesai/core'
 
 import { ScraperService } from '#scraper/scraper.service'
@@ -25,5 +25,5 @@ export const ScraperModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(ScraperModuleDefinition)
-export class ScraperModule {}
+export const ScraperModule = (() =>
+  createModule(class ScraperModule {}, ScraperModuleDefinition))()

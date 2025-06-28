@@ -3,7 +3,7 @@ import type { ModuleMetadata } from '#utils/nest'
 import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
 import { EmailService } from '#email/email.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const EmailModuleDefinition: ModuleMetadata = {
   exports: [EmailService],
@@ -18,5 +18,5 @@ export const EmailModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(EmailModuleDefinition)
-export class EmailModule {}
+export const EmailModule = (() =>
+  createModule(class EmailModule {}, EmailModuleDefinition))()

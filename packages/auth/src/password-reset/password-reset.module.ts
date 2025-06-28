@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { AccountsModule } from '#accounts/accounts.module'
 import { AccountsService } from '#accounts/accounts.service'
@@ -37,5 +37,5 @@ export const PasswordResetModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PasswordResetModuleDefinition)
-export class PasswordResetModule {}
+export const PasswordResetModule = (() =>
+  createModule(class PasswordResetModule {}, PasswordResetModuleDefinition))()

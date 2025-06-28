@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { PlansController } from '#plans/plans.controller'
 import { PlansService } from '#plans/plans.service'
@@ -26,5 +26,5 @@ export const PlansModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PlansModuleDefinition)
-export class PlansModule {}
+export const PlansModule = (() =>
+  createModule(class PlansModule {}, PlansModuleDefinition))()

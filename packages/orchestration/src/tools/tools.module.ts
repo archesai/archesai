@@ -2,10 +2,10 @@ import type { ModuleMetadata } from '@archesai/core'
 import type { ToolEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
   LoggingModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -14,7 +14,7 @@ import { ToolRepository } from '#tools/tool.repository'
 import { ToolsController } from '#tools/tools.controller'
 import { ToolsService } from '#tools/tools.service'
 
-const ToolsModuleDefinition: ModuleMetadata = {
+export const ToolsModuleDefinition: ModuleMetadata = {
   exports: [ToolsService],
   imports: [DatabaseModule, WebsocketsModule, LoggingModule],
   providers: [
@@ -41,5 +41,5 @@ const ToolsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(ToolsModuleDefinition)
-export class ToolsModule {}
+export const ToolsModule = (() =>
+  createModule(class ToolsModule {}, ToolsModuleDefinition))()

@@ -2,11 +2,11 @@ import type { ModuleMetadata } from '@archesai/core'
 import type { PipelineEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
   EventBus,
   EventBusModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -18,7 +18,7 @@ import { PipelinesSubscriber } from '#pipelines/pipelines.subscriber'
 import { ToolsModule } from '#tools/tools.module'
 import { ToolsService } from '#tools/tools.service'
 
-export const PipleinesModuleDefinition: ModuleMetadata = {
+export const PipelinesModuleDefinition: ModuleMetadata = {
   exports: [PipelinesService],
   imports: [DatabaseModule, EventBusModule, ToolsModule, WebsocketsModule],
   providers: [
@@ -57,5 +57,5 @@ export const PipleinesModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PipleinesModuleDefinition)
-export class PipelinesModule {}
+export const PipelinesModule = (() =>
+  createModule(class PipelinesModule {}, PipelinesModuleDefinition))()

@@ -1,13 +1,13 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type { MemberEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
-import { MemberEntity } from '@archesai/domain'
 
 import { MembershipGuard } from '#members/guards/membership.guard'
 import { MemberRepository } from '#members/member.repository'
@@ -48,5 +48,5 @@ export const MembersModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(MembersModuleDefinition)
-export class MembersModule {}
+export const MembersModule = (() =>
+  createModule(class MembersModule {}, MembersModuleDefinition))()

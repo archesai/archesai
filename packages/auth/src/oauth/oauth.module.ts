@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, Module } from '@archesai/core'
+import { ConfigModule, createModule } from '@archesai/core'
 
 import { OAuthController } from '#oauth/oauth.controller'
 import { OAuthService } from '#oauth/oauth.service'
@@ -19,5 +19,5 @@ export const OAuthModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(OAuthModuleDefinition)
-export class OAuthModule {}
+export const OAuthModule = (() =>
+  createModule(class OAuthModule {}, OAuthModuleDefinition))()

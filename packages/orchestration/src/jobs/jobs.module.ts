@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { createQueue } from '#jobs/factories/queue.factory'
 
@@ -27,5 +27,5 @@ export const JobsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(JobsModuleDefinition)
-export class JobsModule {}
+export const JobsModule = (() =>
+  createModule(class JobsModule {}, JobsModuleDefinition))()

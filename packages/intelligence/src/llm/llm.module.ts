@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { LlmService } from '#llm/llm.service'
 
@@ -17,5 +17,5 @@ export const LlmModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(LlmModuleDefinition)
-export class LlmModule {}
+export const LlmModule = (() =>
+  createModule(class LlmModule {}, LlmModuleDefinition))()

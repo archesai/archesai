@@ -131,6 +131,7 @@ const base: ConfigArray = tseslint.config(
       'import/no-named-as-default-member': 'off',
       'import/no-relative-packages': 'error',
       'import/no-unresolved': 'off',
+      'import/extensions': 'off',
       ...(process.env.CI === 'true' ?
         {}
       : {
@@ -147,7 +148,6 @@ const base: ConfigArray = tseslint.config(
         '@typescript-eslint/parser': ['.ts', '.tsx']
       },
       'import/resolver': {
-        node: true,
         typescript: true
       }
     }

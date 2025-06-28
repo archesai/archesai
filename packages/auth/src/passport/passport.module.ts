@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { AccountsModule } from '#accounts/accounts.module'
 import { AccountsService } from '#accounts/accounts.service'
@@ -46,5 +46,5 @@ export const PassportModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PassportModuleDefinition)
-export class PassportModule {}
+export const PassportModule = (() =>
+  createModule(class PassportModule {}, PassportModuleDefinition))()

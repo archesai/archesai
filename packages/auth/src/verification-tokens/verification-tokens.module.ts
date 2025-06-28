@@ -4,11 +4,11 @@ import type { VerificationTokenEntity } from '@archesai/domain'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   DatabaseModule,
   DatabaseService,
   EmailModule,
-  EmailService,
-  Module
+  EmailService
 } from '@archesai/core'
 
 import { HashingModule } from '#hashing/hashing.module'
@@ -50,5 +50,8 @@ export const VerificationTokensModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(VerificationTokensModuleDefinition)
-export class VerificationTokensModule {}
+export const VerificationTokensModule = (() =>
+  createModule(
+    class VerificationTokensModule {},
+    VerificationTokensModuleDefinition
+  ))()

@@ -1,10 +1,10 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { FetcherModule, FetcherService, Module } from '@archesai/core'
+import { createModule, FetcherModule, FetcherService } from '@archesai/core'
 
 import { AudioService } from '#audio/audio.service'
 
-const AudioModuleDefinition: ModuleMetadata = {
+export const AudioModuleDefinition: ModuleMetadata = {
   exports: [AudioService],
   imports: [FetcherModule],
   providers: [
@@ -17,5 +17,5 @@ const AudioModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(AudioModuleDefinition)
-export class AudioModule {}
+export const AudioModule = (() =>
+  createModule(class AudioModule {}, AudioModuleDefinition))()

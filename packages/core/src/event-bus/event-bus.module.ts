@@ -3,7 +3,7 @@ import type { ModuleMetadata } from '#utils/nest'
 
 import { EventBus } from '#event-bus/event-bus'
 import { EventSubscribersLoader } from '#event-bus/event-subscribers.loader'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const EventBusModuleDefinition: ModuleMetadata = {
   exports: [EventBus],
@@ -21,5 +21,5 @@ export const EventBusModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(EventBusModuleDefinition)
-export class EventBusModule {}
+export const EventBusModule = (() =>
+  createModule(class EventBusModule {}, EventBusModuleDefinition))()

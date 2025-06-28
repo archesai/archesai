@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { AccessTokensService } from '#access-tokens/access-tokens.service'
 import { AccountsModule } from '#accounts/accounts.module'
@@ -21,5 +21,5 @@ export const AccessTokensModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(AccessTokensModuleDefinition)
-export class AccessTokensModule {}
+export const AccessTokensModule = (() =>
+  createModule(class AccessTokensModule {}, AccessTokensModuleDefinition))()

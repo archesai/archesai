@@ -4,11 +4,11 @@ import type { OrganizationEntity } from '@archesai/domain'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   DatabaseModule,
   DatabaseService,
   EventBus,
   EventBusModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -66,5 +66,5 @@ export const OrganizationsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(OrganizationsModuleDefinition)
-export class OrganizationsModule {}
+export const OrganizationsModule = (() =>
+  createModule(class OrganizationsModule {}, OrganizationsModuleDefinition))()

@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { StripeModule } from '#stripe/stripe.module'
 import { StripeService } from '#stripe/stripe.service'
@@ -26,5 +26,5 @@ export const SubscriptionModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(SubscriptionModuleDefinition)
-export class SubscriptionModule {}
+export const SubscriptionModule = (() =>
+  createModule(class SubscriptionModule {}, SubscriptionModuleDefinition))()

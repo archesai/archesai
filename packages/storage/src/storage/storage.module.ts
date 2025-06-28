@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { GoogleCloudStorageService } from '#storage/services/gcp.service'
 import { LocalStorageService } from '#storage/services/local.service'
@@ -31,5 +31,5 @@ export const StorageModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(StorageModuleDefinition)
-export class StorageModule {}
+export const StorageModule = (() =>
+  createModule(class StorageModule {}, StorageModuleDefinition))()

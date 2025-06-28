@@ -1,13 +1,11 @@
-import type { TransportTargetOptions } from 'pino'
-
-import { pino } from 'pino'
+import type { pino, TransportTargetOptions } from 'pino'
 
 import type { ModuleMetadata } from '#utils/nest'
 
 import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
 import { LoggerService } from '#logging/logger.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const LoggingModuleDefinition: ModuleMetadata = {
   exports: [LoggerService],
@@ -62,5 +60,5 @@ export const LoggingModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(LoggingModuleDefinition)
-export class LoggingModule {}
+export const LoggingModule = (() =>
+  createModule(class LoggingModule {}, LoggingModuleDefinition))()

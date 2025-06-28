@@ -1,7 +1,7 @@
 import type { ModuleMetadata } from '#utils/nest'
 
 import { ExceptionsFilter } from '#exceptions/exceptions.filter'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const ExceptionsModuleDefinition: ModuleMetadata = {
   providers: [
@@ -12,5 +12,5 @@ export const ExceptionsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(ExceptionsModuleDefinition)
-export class ExceptionsModule {}
+export const ExceptionsModule = (() =>
+  createModule(class ExceptionsModule {}, ExceptionsModuleDefinition))()

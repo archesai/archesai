@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { EmailVerificationController } from '#email-verification/email-verification.controller'
 import { EmailVerificationService } from '#email-verification/email-verification.service'
@@ -29,5 +29,8 @@ export const EmailVerificationModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(EmailVerificationModuleDefinition)
-export class EmailVerificationModule {}
+export const EmailVerificationModule = (() =>
+  createModule(
+    class EmailVerificationModule {},
+    EmailVerificationModuleDefinition
+  ))()

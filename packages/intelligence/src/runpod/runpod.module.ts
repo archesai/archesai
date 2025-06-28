@@ -3,9 +3,9 @@ import type { ModuleMetadata } from '@archesai/core'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   FetcherModule,
-  FetcherService,
-  Module
+  FetcherService
 } from '@archesai/core'
 
 import { RunpodService } from '#runpod/runpod.service'
@@ -25,5 +25,5 @@ export const RunpodModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(RunpodModuleDefinition)
-export class RunpodModule {}
+export const RunpodModule = (() =>
+  createModule(class RunpodModule {}, RunpodModuleDefinition))()

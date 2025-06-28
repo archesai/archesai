@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { JwtService } from '#jwt/jwt.service'
 
@@ -19,5 +19,5 @@ export const JwtModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(JwtModuleDefinition)
-export class JwtModule {}
+export const JwtModule = (() =>
+  createModule(class JwtModule {}, JwtModuleDefinition))()

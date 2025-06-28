@@ -3,9 +3,9 @@ import type { ModuleMetadata } from '@archesai/core'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   EventBus,
   EventBusModule,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -43,5 +43,5 @@ export const CallbacksModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(CallbacksModuleDefinition)
-export class CallbacksModule {}
+export const CallbacksModule = (() =>
+  createModule(class CallbacksModule {}, CallbacksModuleDefinition))()

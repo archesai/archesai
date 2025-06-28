@@ -4,7 +4,7 @@ import { ConfigController } from '#config/config.controller'
 import { ConfigLoader } from '#config/config.loader'
 import { ConfigService } from '#config/config.service'
 import { ArchesConfigSchema } from '#config/schemas/config.schema'
-import { Global, Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const ConfigModuleDefinition: ModuleMetadata = {
   exports: [ConfigService],
@@ -25,6 +25,5 @@ export const ConfigModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Global()
-@Module(ConfigModuleDefinition)
-export class ConfigModule {}
+export const ConfigModule = (() =>
+  createModule(class ConfigModule {}, ConfigModuleDefinition, true))()

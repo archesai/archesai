@@ -4,7 +4,7 @@ import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
 import { RedisModule } from '#redis/redis.module'
 import { RedisService } from '#redis/redis.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 import { WebsocketsService } from '#websockets/websockets.service'
 
 export const WebsocketsModuleDefinition: ModuleMetadata = {
@@ -20,5 +20,5 @@ export const WebsocketsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(WebsocketsModuleDefinition)
-export class WebsocketsModule {}
+export const WebsocketsModule = (() =>
+  createModule(class WebsocketsModule {}, WebsocketsModuleDefinition))()

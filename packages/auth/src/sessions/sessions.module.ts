@@ -5,7 +5,7 @@ import type { ModuleMetadata } from '@archesai/core'
 import {
   ConfigModule,
   ConfigService,
-  Module,
+  createModule,
   RedisService
 } from '@archesai/core'
 
@@ -69,5 +69,5 @@ export const SessionsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(SessionsModuleDefinition)
-export class SessionsModule {}
+export const SessionsModule = (() =>
+  createModule(class SessionsModule {}, SessionsModuleDefinition))()

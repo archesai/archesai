@@ -62,6 +62,24 @@ interface ValueProvider<T = any> {
   useValue: T
 }
 
+export function createModule<
+  T extends DynamicModule | Promise<DynamicModule> | Type
+>(target: T, metadata: ModuleMetadata, global = true): T {
+  for (const property in metadata) {
+    if (Object.hasOwnProperty.call(metadata, property)) {
+      Reflect.defineMetadata(
+        property,
+        metadata[property as keyof typeof metadata],
+        target
+      )
+    }
+  }
+  if (global) {
+    Reflect.defineMetadata('__module:global__', true, target)
+  }
+  return target
+}
+
 export function Global(): ClassDecorator {
   return (target: Function) => {
     Reflect.defineMetadata('__module:global__', true, target)

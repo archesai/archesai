@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { SpeechService } from '#speech/speech.service'
 
@@ -17,5 +17,5 @@ export const SpeechModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(SpeechModuleDefinition)
-export class SpeechModule {}
+export const SpeechModule = (() =>
+  createModule(class SpeechModule {}, SpeechModuleDefinition))()

@@ -1,10 +1,10 @@
 import type { ModuleMetadata } from '#utils/nest'
 
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const HttpModuleDefinition: ModuleMetadata = {
   providers: []
 }
 
-@Module(HttpModuleDefinition)
-export class HttpModule {}
+export const HttpModule = (() =>
+  createModule(class HttpModule {}, HttpModuleDefinition))()

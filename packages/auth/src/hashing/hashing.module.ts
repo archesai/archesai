@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { HashingService } from '#hashing/hashing.service'
 
@@ -14,5 +14,5 @@ export const HashingModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(HashingModuleDefinition)
-export class HashingModule {}
+export const HashingModule = (() =>
+  createModule(class HashingModule {}, HashingModuleDefinition))()

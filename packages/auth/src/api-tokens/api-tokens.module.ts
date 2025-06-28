@@ -4,9 +4,9 @@ import type { ApiTokenEntity } from '@archesai/domain'
 import {
   ConfigModule,
   ConfigService,
+  createModule,
   DatabaseModule,
   DatabaseService,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -57,5 +57,5 @@ export const ApiTokensModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(ApiTokensModuleDefinition)
-export class ApiTokensModule {}
+export const ApiTokensModule = (() =>
+  createModule(class ApiTokensModule {}, ApiTokensModuleDefinition))()

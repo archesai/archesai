@@ -2,7 +2,7 @@ import type { ModuleMetadata } from '#utils/nest'
 
 import { ConfigModule } from '#config/config.module'
 import { HealthController } from '#health/health.controller'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const HealthModuleDefinition: ModuleMetadata = {
   imports: [ConfigModule],
@@ -14,5 +14,5 @@ export const HealthModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(HealthModuleDefinition)
-export class HealthModule {}
+export const HealthModule = (() =>
+  createModule(class HealthModule {}, HealthModuleDefinition))()

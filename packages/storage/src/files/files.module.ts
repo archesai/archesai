@@ -1,6 +1,10 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module, WebsocketsModule, WebsocketsService } from '@archesai/core'
+import {
+  createModule,
+  WebsocketsModule,
+  WebsocketsService
+} from '@archesai/core'
 
 import { FilesController } from '#files/files.controller'
 import { FilesService } from '#files/files.service'
@@ -21,6 +25,7 @@ export const FilesModuleDefinition: ModuleMetadata = {
       }
     },
     {
+      inject: [FilesService],
       provide: FilesController,
       useFactory: (filesService: FilesService): FilesController => {
         return new FilesController(filesService)
@@ -29,5 +34,5 @@ export const FilesModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(FilesModuleDefinition)
-export class FilesModule {}
+export const FilesModule = (() =>
+  createModule(class FilesModule {}, FilesModuleDefinition))()

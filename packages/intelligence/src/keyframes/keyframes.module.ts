@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module } from '@archesai/core'
+import { createModule } from '@archesai/core'
 
 import { KeyframesService } from '#keyframes/keyframes.service'
 
@@ -14,5 +14,5 @@ export const KeyframesModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(KeyframesModuleDefinition)
-export class KeyframesModule {}
+export const KeyframesModule = (() =>
+  createModule(class KeyframesModule {}, KeyframesModuleDefinition))()

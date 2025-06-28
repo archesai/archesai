@@ -3,9 +3,9 @@ import type { RunEntity } from '@archesai/domain'
 
 import {
   ConfigService,
+  createModule,
   DatabaseModule,
   DatabaseService,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -62,5 +62,5 @@ export const RunsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(RunsModuleDefinition)
-export class RunsModule {}
+export const RunsModule = (() =>
+  createModule(class RunsModule {}, RunsModuleDefinition))()

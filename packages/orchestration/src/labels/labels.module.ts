@@ -2,9 +2,9 @@ import type { ModuleMetadata } from '@archesai/core'
 import type { LabelEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -40,5 +40,5 @@ export const LabelsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(LabelsModuleDefinition)
-export class LabelsModule {}
+export const LabelsModule = (() =>
+  createModule(class LabelsModule {}, LabelsModuleDefinition))()

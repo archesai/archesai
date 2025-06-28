@@ -132,6 +132,7 @@ loglevel: warn
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@parcel/watcher'
+  - '@swc/core'
   - '@tailwindcss/oxide'
   - esbuild
   - msgpackr-extract

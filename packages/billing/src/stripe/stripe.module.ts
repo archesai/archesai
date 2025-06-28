@@ -2,7 +2,7 @@ import type Stripe from 'stripe'
 
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { StripeService } from '#stripe/stripe.service'
 
@@ -36,5 +36,5 @@ export const StripeModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(StripeModuleDefinition)
-export class StripeModule {}
+export const StripeModule = (() =>
+  createModule(class StripeModule {}, StripeModuleDefinition))()

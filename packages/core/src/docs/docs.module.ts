@@ -3,7 +3,7 @@ import type { ModuleMetadata } from '#utils/nest'
 import { ConfigModule } from '#config/config.module'
 import { ConfigService } from '#config/config.service'
 import { DocsService } from '#docs/docs.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const DocsModuleDefinition: ModuleMetadata = {
   exports: [DocsService],
@@ -18,5 +18,5 @@ export const DocsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(DocsModuleDefinition)
-export class DocsModule {}
+export const DocsModule = (() =>
+  createModule(class DocsModule {}, DocsModuleDefinition))()

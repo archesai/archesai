@@ -1,6 +1,10 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { Module, WebsocketsModule, WebsocketsService } from '@archesai/core'
+import {
+  createModule,
+  WebsocketsModule,
+  WebsocketsService
+} from '@archesai/core'
 
 import { CustomersModule } from '#customers/customers.module'
 import { CustomersService } from '#customers/customers.service'
@@ -15,7 +19,7 @@ export const PaymentMethodsModuleDefinition: ModuleMetadata = {
   imports: [CustomersModule, WebsocketsModule, StripeModule],
   providers: [
     {
-      inject: [CustomersService, WebsocketsService],
+      inject: [CustomersService, PaymentMethodRepository, WebsocketsService],
       provide: PaymentMethodsService,
       useFactory: (
         customersService: CustomersService,
@@ -43,5 +47,5 @@ export const PaymentMethodsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PaymentMethodsModuleDefinition)
-export class PaymentMethodsModule {}
+export const PaymentMethodsModule = (() =>
+  createModule(class PaymentMethodsModule {}, PaymentMethodsModuleDefinition))()

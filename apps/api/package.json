@@ -10,8 +10,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
-    "dev:build": "tsc --build --watch",
-    "dev:serve": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node --watch src/main.ts",
+    "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node --import @swc-node/register/esm-register --watch src/main.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node dist/main.js",
@@ -35,6 +34,10 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
+    "@swc-node/core": "^1.13.3",
+    "@swc-node/register": "^1.10.10",
+    "@swc/core": "^1.12.7",
+    "@swc/types": "^0.1.23",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

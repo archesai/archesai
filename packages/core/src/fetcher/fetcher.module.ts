@@ -1,7 +1,7 @@
 import type { ModuleMetadata } from '#utils/nest'
 
 import { FetcherService } from '#fetcher/fetcher.service'
-import { Module } from '#utils/nest'
+import { createModule } from '#utils/nest'
 
 export const FetcherModuleDefinition: ModuleMetadata = {
   exports: [FetcherService],
@@ -13,5 +13,5 @@ export const FetcherModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(FetcherModuleDefinition)
-export class FetcherModule {}
+export const FetcherModule = (() =>
+  createModule(class FetcherModule {}, FetcherModuleDefinition))()

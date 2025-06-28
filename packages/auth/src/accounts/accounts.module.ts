@@ -2,9 +2,9 @@ import type { ModuleMetadata } from '@archesai/core'
 import type { AccountEntity } from '@archesai/domain'
 
 import {
+  createModule,
   DatabaseModule,
   DatabaseService,
-  Module,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
@@ -41,5 +41,5 @@ export const AccountsModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(AccountsModuleDefinition)
-export class AccountsModule {}
+export const AccountsModule = (() =>
+  createModule(class AccountsModule {}, AccountsModuleDefinition))()

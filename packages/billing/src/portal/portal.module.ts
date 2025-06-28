@@ -1,6 +1,6 @@
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
 import { PortalController } from '#portal/portal.controller'
 import { PortalService } from '#portal/portal.service'
@@ -28,5 +28,5 @@ export const PortalModuleDefinition: ModuleMetadata = {
   ]
 }
 
-@Module(PortalModuleDefinition)
-export class PortalModule {}
+export const PortalModule = (() =>
+  createModule(class PortalModule {}, PortalModuleDefinition))()
