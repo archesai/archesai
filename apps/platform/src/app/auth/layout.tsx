@@ -22,7 +22,7 @@ export default function AuthenticationLayout({
       </Link>
 
       {/* Left side of the screen */}
-      <div className='bg-primary hidden h-full flex-col justify-between p-10 text-white lg:flex'>
+      <div className='hidden h-full flex-col justify-between bg-primary p-10 text-white lg:flex'>
         <ArchesLogo />
         <blockquote className='flex flex-col gap-2'>
           <p className='text-lg'>
@@ -37,17 +37,17 @@ export default function AuthenticationLayout({
       {/* Right side of the screen or main*/}
       <div className='mx-auto flex h-full max-w-xs flex-col justify-center gap-2'>
         {children}
-        <p className='text-muted-foreground text-center text-sm'>
+        <p className='text-center text-sm text-muted-foreground'>
           By clicking continue, you agree to our{' '}
           <Link
-            className='hover:text-foreground underline underline-offset-4'
+            className='underline underline-offset-4 hover:text-foreground'
             href='/legal/terms'
           >
             Terms of Service
           </Link>{' '}
           and{' '}
           <Link
-            className='hover:text-foreground underline underline-offset-4'
+            className='underline underline-offset-4 hover:text-foreground'
             href='/legal/privacy'
           >
             Privacy Policy

@@ -207,7 +207,7 @@ export const ConfirmationForm = ({
           : 'Reset Password'}
         </Button>
       </form>
-      <p className='text-muted-foreground text-sm'>
+      <p className='text-sm text-muted-foreground'>
         {form.formState.errors.root ?
           ''
         : type === 'password-reset' ?

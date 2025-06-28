@@ -19,7 +19,7 @@ export default function NotFound() {
     <div className='flex min-h-screen items-center justify-center p-4'>
       <Card className='w-full max-w-md text-center'>
         <CardHeader>
-          <div className='text-muted-foreground text-6xl font-bold'>404</div>
+          <div className='text-6xl font-bold text-muted-foreground'>404</div>
           <CardTitle className='text-2xl'>Page Not Found</CardTitle>
           <CardDescription>
             The page you're looking for doesn't exist or has been moved.

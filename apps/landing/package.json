@@ -25,7 +25,6 @@
   },
   "devDependencies": {
     "@archesai/next": "workspace:*",
-    "@archesai/tailwind": "workspace:*",
     "@archesai/typescript": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@types/node": "catalog:",

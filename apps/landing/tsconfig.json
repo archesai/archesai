@@ -17,9 +17,6 @@
     },
     {
       "path": "../../tooling/next"
-    },
-    {
-      "path": "../../tooling/tailwind"
     }
   ]
 }

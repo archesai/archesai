@@ -7,20 +7,18 @@
   ],
   "type": "module",
   "imports": {
-    "#globals.css": "./dist/styles/globals.css",
+    "#globals.css": "./src/styles/globals.css",
     "#*": "./dist/*.js"
   },
   "exports": {
     "./package.json": "./package.json",
-    "./globals.css": "./dist/styles/globals.css",
+    "./globals.css": "./src/styles/globals.css",
+    "./postcss.config": "./postcss.config.js",
     "./*": "./dist/*.js"
   },
   "scripts": {
-    "build:components": "tsc --build",
-    "build:styles": "tailwindcss -i ./src/styles/globals.css -o ./dist/styles/globals.css",
+    "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
-    "dev:components": "tsc --build --watch",
-    "dev:styles": "tailwindcss -i ./src/styles/globals.css -o ./dist/styles/globals.css --watch",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -82,14 +80,14 @@
   },
   "devDependencies": {
     "@archesai/jest": "workspace:*",
-    "@archesai/tailwind": "workspace:*",
     "@archesai/typescript": "workspace:*",
-    "@tailwindcss/cli": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "jest": "catalog:",
+    "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "tw-animate-css": "catalog:",
     "typescript": "catalog:"

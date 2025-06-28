@@ -9,12 +9,11 @@
     "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
-    "./apps/landing/src/styles/globals.css": "./apps/landing/**",
-    "./apps/platform/src/styles/globals.css": "./apps/platform/**",
-    "./packages/ui/src/styles/globals.css": "./packages/ui/**"
+    "./apps/landing/src/styles/globals.css": "./apps/landing/src/**",
+    "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
+    "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
-    // "zod/dist/types/index.d.ts", // Force auto-imports to v4
     "next/router.d.ts",
     "next/dist/client/router.d.ts"
   ],

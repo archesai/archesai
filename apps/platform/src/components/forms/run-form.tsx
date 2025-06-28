@@ -83,7 +83,7 @@ export function RunForm({ runId }: { runId?: string }) {
                 <h4 className='flex items-center gap-1 leading-none font-medium'>
                   {tool.name}
                 </h4>
-                <div className='text-muted-foreground text-sm'>
+                <div className='text-sm text-muted-foreground'>
                   {tool.description}
                 </div>
               </div>

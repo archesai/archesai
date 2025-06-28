@@ -8,6 +8,10 @@ export const About = () => {
       className='container py-24 sm:py-32'
       id='about'
     >
+      {' '}
+      <button className='bg-sky-700 px-4 py-2 text-white hover:bg-sky-800 sm:px-8 sm:py-3'>
+        Submit
+      </button>
       <div className='rounded-lg border bg-muted/50 py-12'>
         <div className='flex flex-col-reverse items-center gap-8 px-6 md:flex-row md:gap-12'>
           <ArchesLogo size='sm' />

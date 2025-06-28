@@ -67,7 +67,7 @@ export function AuthForm({
     <div className='flex w-full flex-col gap-4'>
       <div className='text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>{title}</h1>
-        <p className='text-muted-foreground text-sm'>{description}</p>
+        <p className='text-sm text-muted-foreground'>{description}</p>
       </div>
       <Form {...form}>
         <form
