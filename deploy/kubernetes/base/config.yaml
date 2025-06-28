@@ -22,7 +22,7 @@ llm:
 session:
   secret: archesai-archesai-archesai-archesai
 logging:
-  level: info
+  level: debug
   pretty: true
 unstructured:
   enabled: false
