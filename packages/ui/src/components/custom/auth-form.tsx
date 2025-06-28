@@ -5,15 +5,15 @@ import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { FormatRegistry, Type } from '@sinclair/typebox'
 import { useForm } from 'react-hook-form'
 
-import { FloatingLabelInput } from '@archesai/ui/components/custom/floating-label'
-import { Button } from '@archesai/ui/components/shadcn/button'
+import { FloatingLabelInput } from '#components/custom/floating-label'
+import { Button } from '#components/shadcn/button'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage
-} from '@archesai/ui/components/shadcn/form'
+} from '#components/shadcn/form'
 
 FormatRegistry.Set('email', (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)

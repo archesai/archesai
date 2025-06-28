@@ -3,9 +3,8 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 
+import { ConfirmationForm } from '@archesai/ui/components/custom/verification-token-confirmation-form'
 import { Button } from '@archesai/ui/components/shadcn/button'
-
-import { ConfirmationForm } from './password-reset-form'
 
 type ActionType = 'email-change' | 'email-verification' | 'password-reset'
 

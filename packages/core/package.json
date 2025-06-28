@@ -29,6 +29,7 @@
     "@archesai/domain": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/deepmerge": "catalog:",
+    "@fastify/helmet": "catalog:",
     "@fastify/swagger": "catalog:",
     "@fastify/type-provider-typebox": "catalog:",
     "@redis/client": "catalog:",

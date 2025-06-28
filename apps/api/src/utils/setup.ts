@@ -50,19 +50,6 @@ export async function setup(): Promise<NestFastifyApplication> {
   const corsService = app.get(CorsService)
   corsService.setup(httpInstance)
 
-  // // Security Middlewares
-  // await httpInstance.register(helmet, {
-  //   contentSecurityPolicy: {
-  //     directives: {
-  //       defaultSrc: [`'self'`],
-  //       fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
-  //       imgSrc: [`'self'`, 'data:'],
-  //       scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
-  //       styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
-  //     }
-  //   }
-  // })
-
   // Session Management
   const sessionsService = app.get(SessionsService)
   await sessionsService.setup(httpInstance)

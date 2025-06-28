@@ -1,7 +1,5 @@
 'use client'
 
-import type { DialogProps } from '@radix-ui/react-dialog'
-
 import { useCallback, useEffect, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -20,6 +18,14 @@ import {
 } from '#components/shadcn/command'
 import { DialogDescription, DialogTitle } from '#components/shadcn/dialog'
 import { cn } from '#lib/utils'
+
+interface DialogProps {
+  children?: React.ReactNode
+  defaultOpen?: boolean
+  modal?: boolean
+  onOpenChange?(open: boolean): void
+  open?: boolean
+}
 
 export function CommandMenu({
   siteRoutes,

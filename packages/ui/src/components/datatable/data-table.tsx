@@ -9,9 +9,9 @@ import type {
 } from '@tanstack/react-table'
 
 import { useEffect, useMemo, useState } from 'react'
-import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
+import { VisuallyHidden } from 'radix-ui'
 
 import type { SearchQuery } from '@archesai/core'
 import type { BaseEntity } from '@archesai/domain'

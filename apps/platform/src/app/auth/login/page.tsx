@@ -6,8 +6,7 @@ import Link from 'next/link'
 import { Type } from '@sinclair/typebox'
 
 import { useLogin } from '@archesai/client'
-
-import { AuthForm } from '#components/auth-form'
+import { AuthForm } from '@archesai/ui/components/custom/auth-form'
 
 const LoginSchema = Type.Object({
   email: Type.String({ format: 'email' }),

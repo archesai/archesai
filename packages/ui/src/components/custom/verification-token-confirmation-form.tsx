@@ -12,7 +12,8 @@ import {
   confirmEmailVerification,
   confirmPasswordReset
 } from '@archesai/client'
-import { Button } from '@archesai/ui/components/shadcn/button'
+
+import { Button } from '#components/shadcn/button'
 import {
   Form,
   FormControl,
@@ -20,9 +21,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@archesai/ui/components/shadcn/form'
-import { Input } from '@archesai/ui/components/shadcn/input'
-import { toast } from '@archesai/ui/components/shadcn/sonner'
+} from '#components/shadcn/form'
+import { Input } from '#components/shadcn/input'
+import { toast } from '#components/shadcn/sonner'
 
 // Define allowed action types
 type ActionType = 'email-change' | 'email-verification' | 'password-reset'
@@ -115,7 +116,7 @@ export const ConfirmationForm = ({
         })
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // FIXME eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const submitPasswordReset = async ({

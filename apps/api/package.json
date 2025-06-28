@@ -26,7 +26,6 @@
     "@archesai/intelligence": "workspace:*",
     "@archesai/orchestration": "workspace:*",
     "@archesai/storage": "workspace:*",
-    "@fastify/helmet": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "@nestjs/platform-fastify": "catalog:",

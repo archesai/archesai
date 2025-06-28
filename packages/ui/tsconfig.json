@@ -1,4 +1,15 @@
 {
+  // THE FOLLOWING IS NEEDED FOR SHADCN UTILS
+  // "compilerOptions": {
+  //   "aliases": {
+  //     "components": "src/components/shadcn",
+  //     "hooks": "src/hooks",
+  //     "lib": "src/lib",
+  //     "ui": "src/components/shadcn",
+  //     "utils": "src/lib/utils"
+  //   },
+  //   "baseUrl": "."
+  // },
   "extends": "../../tooling/typescript/src/base.json",
   "files": [],
   "include": [],

@@ -23,15 +23,13 @@
     "@archesai/client": "workspace:*",
     "@archesai/domain": "workspace:*",
     "@archesai/ui": "workspace:*",
-    "@hookform/resolvers": "catalog:",
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@xyflow/react": "catalog:",
     "next": "catalog:",
     "nuqs": "catalog:",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19",
-    "react-hook-form": "catalog:"
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
     "@archesai/next": "workspace:*",

@@ -6,8 +6,7 @@ import Link from 'next/link'
 import { Type } from '@sinclair/typebox'
 
 import { useRegister } from '@archesai/client'
-
-import { AuthForm } from '#components/auth-form'
+import { AuthForm } from '@archesai/ui/components/custom/auth-form'
 
 const RegisterSchema = Type.Object({
   confirmPassword: Type.String({ minLength: 8 }),
