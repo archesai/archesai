@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -xdf node_modules .turbo",
+    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "clean:workspaces": "turbo run clean",
     "dev": "turbo watch dev --continue -F !@archesai/landing",
     "dev:api": "turbo watch dev -F @archesai/api",
