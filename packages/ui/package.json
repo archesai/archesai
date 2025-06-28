@@ -8,13 +8,24 @@
   "type": "module",
   "imports": {
     "#globals.css": "./src/styles/globals.css",
-    "#*": "./dist/*.js"
+    "#postcss.config": "./postcss.config.js",
+    "#atoms/*": "./src/atoms/*.ts",
+    "#components/*": "./src/components/*.tsx",
+    "#hooks/*": "./src/hooks/*.tsx",
+    "#layouts/*": "./src/layouts/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#providers/*": "./src/providers/*.tsx"
   },
   "exports": {
     "./package.json": "./package.json",
     "./globals.css": "./src/styles/globals.css",
     "./postcss.config": "./postcss.config.js",
-    "./*": "./dist/*.js"
+    "./atoms/*": "./src/atoms/*.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.tsx",
+    "./layouts/*": "./src/layouts/*.tsx",
+    "./lib/*": "./src/lib/*.ts",
+    "./providers/*": "./src/providers/*.tsx"
   },
   "scripts": {
     "build": "tsc --build",
