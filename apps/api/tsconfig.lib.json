@@ -24,9 +24,6 @@
     },
     {
       "path": "../../packages/orchestration/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/eslint/tsconfig.lib.json"
     }
   ]
 }

@@ -10,7 +10,7 @@ import type {
   FindManyToolsParams,
   UpdateRunBody
 } from '@archesai/client'
-import type { ArtifactEntity, RunEntity, ToolEntity } from '@archesai/domain'
+import type { ArtifactEntity, ToolEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -66,7 +66,7 @@ export function RunForm({ runId }: { runId?: string }) {
     return <div>Run not found</div>
   }
 
-  const formFields: FormFieldConfig<RunEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: selectedTool?.id,
@@ -230,7 +230,7 @@ export function RunForm({ runId }: { runId?: string }) {
   ]
 
   return (
-    <GenericForm<RunEntity, CreateRunBody, UpdateRunBody>
+    <GenericForm<CreateRunBody, UpdateRunBody>
       description={
         'Run a tool on a piece of content. You can select multiple content items.'
       }

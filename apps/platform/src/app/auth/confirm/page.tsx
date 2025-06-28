@@ -1,3 +1,5 @@
+'use client'
+
 import { Suspense } from 'react'
 import Link from 'next/link'
 
@@ -5,42 +7,47 @@ import { Button } from '@archesai/ui/components/shadcn/button'
 
 import { ConfirmationForm } from './password-reset-form'
 
-// Define allowed action types
 type ActionType = 'email-change' | 'email-verification' | 'password-reset'
 
-export default async function ConfirmPage({
+export default function ConfirmPage({
   searchParams
 }: {
-  searchParams: Promise<Record<string, string | undefined>>
+  searchParams: Record<string, string | undefined>
 }) {
-  const { token = '', type = '' } = (await searchParams) as {
+  const { token = '', type = '' } = searchParams as {
     token: string
     type: '' | ActionType
   }
 
+  const formatTitle = (actionType: string) => {
+    return actionType
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  }
+
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex flex-col gap-2 text-center'>
-        <h1 className='text-2xl font-semibold tracking-tight'>
-          {type.split('-').join(' ')}
-        </h1>
+    <>
+      <div className='flex w-xs flex-col gap-2'>
+        <div className='text-center'>
+          <h1 className='text-2xl font-semibold tracking-tight'>
+            {formatTitle(type || 'password-reset')}
+          </h1>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <Suspense fallback={<div>Loading...</div>}>
+            <ConfirmationForm
+              token={token}
+              type={type || 'password-reset'}
+            />
+          </Suspense>
+        </div>
       </div>
-      <div className='flex flex-col gap-2'>
-        {/* Handle Password Reset Form */}
-        <Suspense fallback={<div>Loading...</div>}>
-          <ConfirmationForm
-            token={token}
-            type={type || 'password-reset'}
-          />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
-          <div className='text-center'>
-            <Button asChild>
-              <Link href='/playground'>Go to Home</Link>
-            </Button>
-          </div>
-        </Suspense>
+      <div className='text-center text-sm'>
+        <Button asChild>
+          <Link href='/playground'>Go to Home</Link>
+        </Button>
       </div>
-    </div>
+    </>
   )
 }

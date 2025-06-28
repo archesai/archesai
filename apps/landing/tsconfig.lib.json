@@ -23,15 +23,6 @@
   "references": [
     {
       "path": "../../packages/ui/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/eslint/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/next/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/tailwind/tsconfig.lib.json"
     }
   ]
 }

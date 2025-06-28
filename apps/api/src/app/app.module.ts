@@ -41,6 +41,7 @@ import {
   FetcherModule,
   HealthModule,
   LoggingModule,
+  RedisModule,
   WebsocketsModule
 } from '@archesai/core'
 import { createDrizzleDatabaseService } from '@archesai/database'
@@ -77,6 +78,7 @@ export const AppModuleDefinition: ModuleMetadata = {
     LoggingModule,
     WebsocketsModule,
     FetcherModule,
+    RedisModule.forRoot(),
 
     // AI MODULES
     LlmModule,

@@ -12,15 +12,12 @@
     {
       "path": "./apps/platform"
     },
-    {
-      "path": "./e2e/api-e2e"
-    },
-    {
-      "path": "./e2e/platform-e2e"
-    },
-    {
-      "path": "./packages/intelligence"
-    },
+    // {
+    //   "path": "./e2e/api-e2e"
+    // },
+    // {
+    //   "path": "./e2e/platform-e2e"
+    // },
     {
       "path": "./packages/auth"
     },
@@ -34,19 +31,22 @@
       "path": "./packages/core"
     },
     {
+      "path": "./packages/database"
+    },
+    {
       "path": "./packages/domain"
     },
     {
-      "path": "./packages/database"
+      "path": "./packages/intelligence"
+    },
+    {
+      "path": "./packages/orchestration"
     },
     {
       "path": "./packages/storage"
     },
     {
       "path": "./packages/ui"
-    },
-    {
-      "path": "./packages/orchestration"
     },
     {
       "path": "./tooling/eslint"

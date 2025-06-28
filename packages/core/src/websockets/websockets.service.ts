@@ -4,6 +4,7 @@ import type { Socket } from 'socket.io'
 import { Server as WebsocketsServer } from 'socket.io'
 
 import type { ConfigService } from '#config/config.service'
+import type { RedisService } from '#redis/redis.service'
 
 import { Logger } from '#logging/logger'
 import { RedisIoAdapter } from '#websockets/adapters/redis-io.adapter'
@@ -17,9 +18,11 @@ export class WebsocketsService {
   }
   private readonly configService: ConfigService
   private readonly logger = new Logger(WebsocketsService.name)
+  private readonly redisService: RedisService
 
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigService, redisService: RedisService) {
     this.configService = configService
+    this.redisService = redisService
   }
 
   public broadcastEvent(room: string, event: string, data: unknown): void {
@@ -66,7 +69,10 @@ export class WebsocketsService {
     })
 
     if (this.configService.get('redis.enabled')) {
-      const redisIoAdapter = new RedisIoAdapter(this.configService, this.logger)
+      const redisIoAdapter = new RedisIoAdapter(
+        this.configService,
+        this.redisService
+      )
       await redisIoAdapter.connectToRedis()
       this.io.adapter(redisIoAdapter.adapterConstructor!)
       this.logger.debug('redis adapter attached to socket.io')

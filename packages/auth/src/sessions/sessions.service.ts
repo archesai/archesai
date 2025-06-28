@@ -1,19 +1,17 @@
-import { readFileSync } from 'node:fs'
 import type { FastifyCookieOptions } from '@fastify/cookie'
 import type { FastifySessionOptions } from '@fastify/session'
 import type { Strategy } from 'passport'
-import type { RedisClientType } from 'redis'
 
 import fastifyCookie from '@fastify/cookie'
 import { Authenticator } from '@fastify/passport'
 import fastifySession from '@fastify/session'
-import { createClient } from 'redis'
 
 import type {
   ArchesApiRequest,
   ArchesApiResponse,
   ConfigService,
-  HttpInstance
+  HttpInstance,
+  RedisService
 } from '@archesai/core'
 
 import { Logger } from '@archesai/core'
@@ -28,15 +26,18 @@ import { RedisStore } from '#sessions/sessions.store'
 export class SessionsService {
   private readonly configService: ConfigService
   private readonly logger = new Logger(SessionsService.name)
+  private readonly redisService: RedisService
   private readonly sessionSerializer: SessionSerializer
   private readonly strategies: Record<string, Strategy>
 
   constructor(
     configService: ConfigService,
+    redisService: RedisService,
     strategies: Record<string, Strategy>,
     sessionSerializer: SessionSerializer
   ) {
     this.configService = configService
+    this.redisService = redisService
     this.sessionSerializer = sessionSerializer
     this.strategies = strategies
   }
@@ -72,35 +73,14 @@ export class SessionsService {
     }
   }
 
-  public setup(app: HttpInstance): void {
+  public async setup(app: HttpInstance): Promise<void> {
     this.logger.debug('setting up sessions')
     if (this.configService.get('session.enabled')) {
       // if redis is enabled, use it for the session store
       let redisStore: RedisStore | undefined
       if (this.configService.get('redis.enabled')) {
-        this.logger.debug('redis enabled - using ssredis store')
-        const redisClient: RedisClientType = createClient({
-          password: this.configService.get('redis.auth')!,
-          url: `redis://${this.configService.get('redis.host')}:${this.configService.get('redis.port').toString()}`,
-          ...(this.configService.get('redis.ca') ?
-            {
-              socket: {
-                ca: readFileSync(this.configService.get('redis.ca')!),
-                host: this.configService.get('redis.host'),
-                rejectUnauthorized: false,
-                tls: true
-              }
-            }
-          : {})
-        })
-
-        redisClient.on('error', (error: unknown) => {
-          this.logger.error('redis client error', { error })
-        })
-        redisClient.on('connect', () => {
-          this.logger.debug('redis client connected')
-        })
-        redisClient.connect().catch(console.error)
+        this.logger.debug('redis enabled - using redis store')
+        const redisClient = await this.redisService.createClient()
         redisStore = new RedisStore({
           client: redisClient
         })

@@ -3,7 +3,6 @@
 import { Type } from '@sinclair/typebox'
 
 import type { CreateLabelBody, UpdateLabelBody } from '@archesai/client'
-import type { LabelEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -29,7 +28,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
   }
   const label = existingLabelResponse.data.data
 
-  const formFields: FormFieldConfig<LabelEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: label.attributes.name,
@@ -44,7 +43,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
   ]
 
   return (
-    <GenericForm<LabelEntity, CreateLabelBody, UpdateLabelBody>
+    <GenericForm<CreateLabelBody, UpdateLabelBody>
       description={!labelId ? 'Invite a new label' : 'Update an existing label'}
       entityKey={LABEL_ENTITY_KEY}
       fields={formFields}

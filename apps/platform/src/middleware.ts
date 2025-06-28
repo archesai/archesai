@@ -8,8 +8,8 @@ const auth =
   }
 
 // // Or like this if you need to do something here.
-export default auth(async (req) => {
-  console.log(req) //  { session: { user: { ... } } }
+export default auth(async (_req) => {
+  // console.log(req) //  { session: { user: { ... } } }
   return Promise.resolve()
 })
 

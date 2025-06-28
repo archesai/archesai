@@ -3,7 +3,6 @@
 import { Type } from '@sinclair/typebox'
 
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
-import type { MemberEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { createMember, updateMember, useGetOneMember } from '@archesai/client'
@@ -31,7 +30,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
   }
   const member = existingMemberResponse.data.data
 
-  const formFields: FormFieldConfig<MemberEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: member.attributes.invitationId,
@@ -55,7 +54,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       name: 'role',
       renderControl: (field) => (
         <Select
-          defaultValue={field.value}
+          defaultValue={field.value as string}
           onValueChange={(value) => {
             field.onChange(value)
           }}
@@ -91,7 +90,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
   ]
 
   return (
-    <GenericForm<MemberEntity, CreateMemberBody, UpdateMemberBody>
+    <GenericForm<CreateMemberBody, UpdateMemberBody>
       description={
         !memberId ? 'Invite a new member' : 'Update an existing member'
       }

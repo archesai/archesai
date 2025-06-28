@@ -4,7 +4,6 @@ import type {
   CreateOrganizationBody,
   UpdateOrganizationBody
 } from '@archesai/client'
-import type { OrganizationEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -31,7 +30,7 @@ export default function OrganizationForm({ orgname }: { orgname?: string }) {
     return <div>Organization not found</div>
   }
 
-  const formFields: FormFieldConfig<OrganizationEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: orgname,
@@ -45,11 +44,7 @@ export default function OrganizationForm({ orgname }: { orgname?: string }) {
   ]
 
   return (
-    <GenericForm<
-      OrganizationEntity,
-      CreateOrganizationBody,
-      UpdateOrganizationBody
-    >
+    <GenericForm<CreateOrganizationBody, UpdateOrganizationBody>
       description={"View your organization's details"}
       entityKey={ORGANIZATION_ENTITY_KEY}
       fields={formFields}

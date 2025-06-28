@@ -5,16 +5,15 @@ import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { FormatRegistry, Type } from '@sinclair/typebox'
 import { useForm } from 'react-hook-form'
 
+import { FloatingLabelInput } from '@archesai/ui/components/custom/floating-label'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@archesai/ui/components/shadcn/form'
-import { Input } from '@archesai/ui/components/shadcn/input'
 
 FormatRegistry.Set('email', (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -65,7 +64,7 @@ export function AuthForm({
   })
 
   return (
-    <div className='flex w-xs flex-col gap-2'>
+    <div className='flex w-full flex-col gap-4'>
       <div className='text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>{title}</h1>
         <p className='text-muted-foreground text-sm'>{description}</p>
@@ -83,9 +82,10 @@ export function AuthForm({
               name={String(field.name)}
               render={({ field: f }) => (
                 <FormItem>
-                  <FormLabel>{field.label}</FormLabel>
                   <FormControl>
-                    <Input
+                    <FloatingLabelInput
+                      id={field.label}
+                      label={field.label}
                       type={field.type ?? 'text'}
                       {...f}
                       value={
@@ -108,7 +108,6 @@ export function AuthForm({
             </div>
           )}
           <Button
-            className='mt-5 w-full'
             disabled={form.formState.isSubmitting}
             type='submit'
           >

@@ -3,10 +3,9 @@
 import type { Static } from '@sinclair/typebox'
 
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { Type } from '@sinclair/typebox'
 
-import { register } from '@archesai/client'
+import { useRegister } from '@archesai/client'
 
 import { AuthForm } from '#components/auth-form'
 
@@ -17,20 +16,25 @@ const RegisterSchema = Type.Object({
 })
 
 export default function RegisterPage() {
-  const onSubmit = async (data: Static<typeof RegisterSchema>) => {
-    const response = await register(
+  const { mutate: register } = useRegister()
+
+  const onSubmit = (data: Static<typeof RegisterSchema>) => {
+    register(
       {
-        email: data.email,
-        password: data.password
+        data: {
+          email: data.email,
+          password: data.password
+        }
       },
       {
-        credentials: 'include'
+        onError: (err) => {
+          console.log(err)
+        },
+        onSuccess: (session) => {
+          console.log('Registration successful:', session)
+        }
       }
     )
-    if (response.status === 401) {
-      throw new Error(response.data.errors.map((e) => e.detail).join(', '))
-    }
-    redirect('/playground')
   }
 
   return (
@@ -63,7 +67,9 @@ export default function RegisterPage() {
             })
           }
         ]}
-        onSubmit={(data) => onSubmit(data as Static<typeof RegisterSchema>)}
+        onSubmit={(data) => {
+          onSubmit(data as Static<typeof RegisterSchema>)
+        }}
         title='Register'
       />
       <div className='text-center text-sm'>

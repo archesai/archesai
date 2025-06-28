@@ -4,7 +4,6 @@ import { Type } from '@sinclair/typebox'
 import { FormatRegistry } from '@sinclair/typebox/type'
 
 import type { RegisterBody } from '@archesai/client'
-import type { AccountEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { register } from '@archesai/client'
@@ -30,7 +29,7 @@ export const RegisterSchema = Type.Object({
 })
 
 export default function RegisterForm() {
-  const formFields: FormFieldConfig<AccountEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: '',
@@ -68,7 +67,7 @@ export default function RegisterForm() {
   ]
 
   return (
-    <GenericForm<AccountEntity, RegisterBody, never>
+    <GenericForm<RegisterBody, never>
       description={"Configure your member's settings"}
       entityKey='register'
       fields={formFields}

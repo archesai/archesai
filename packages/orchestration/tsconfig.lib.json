@@ -15,9 +15,6 @@
     },
     {
       "path": "../../packages/storage/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tooling/eslint/tsconfig.lib.json"
     }
   ]
 }

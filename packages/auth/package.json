@@ -39,7 +39,6 @@
     "passport-jwt": "catalog:",
     "passport-local": "catalog:",
     "passport-twitter": "catalog:",
-    "redis": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {

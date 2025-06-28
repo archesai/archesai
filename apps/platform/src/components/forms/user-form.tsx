@@ -3,7 +3,6 @@
 import { Type } from '@sinclair/typebox'
 
 import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
-import type { UserEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { useGetOneUser, useUpdateUser } from '@archesai/client'
@@ -20,7 +19,7 @@ export default function UserForm() {
   }
   const user = userResponse.data.data
 
-  const formFields: FormFieldConfig<UserEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: user.attributes.name,
@@ -55,7 +54,7 @@ export default function UserForm() {
   ]
 
   return (
-    <GenericForm<UserEntity, CreateUserBody, UpdateUserBody>
+    <GenericForm<CreateUserBody, UpdateUserBody>
       description='View and update your user details'
       entityKey={USER_ENTITY_KEY}
       fields={formFields}

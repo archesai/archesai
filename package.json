@@ -7,7 +7,7 @@
     "build": "turbo run build",
     "clean": "git clean -xdf node_modules .turbo",
     "clean:workspaces": "turbo run clean",
-    "dev": "turbo watch dev --continue",
+    "dev": "turbo watch dev --continue -F !@archesai/landing",
     "dev:api": "turbo watch dev -F @archesai/api",
     "dev:landing": "turbo watch dev -F @archesai/landing",
     "dev:platform": "turbo watch dev -F @archesai/platform",

@@ -66,6 +66,9 @@ export * from '#logging/logger'
 export * from '#logging/logger.service'
 export * from '#logging/logging.module'
 
+export * from '#redis/redis.module'
+export * from '#redis/redis.service'
+
 export type * from '#types/can-activate'
 export type * from '#types/context'
 export type * from '#types/type'

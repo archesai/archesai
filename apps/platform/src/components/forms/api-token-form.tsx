@@ -37,7 +37,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   }
   const apiToken = existingApiTokenResponse.data.data
 
-  const formFields: FormFieldConfig<ApiTokenEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: apiToken.attributes.name,
@@ -60,7 +60,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       name: 'role' as keyof ApiTokenEntity,
       renderControl: (field) => (
         <Select
-          defaultValue={field.value}
+          defaultValue={field.value as string}
           onValueChange={(value) => {
             field.onChange(value)
           }}
@@ -96,7 +96,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   ]
 
   return (
-    <GenericForm<ApiTokenEntity, CreateApiTokenBody, UpdateApiTokenBody>
+    <GenericForm<CreateApiTokenBody, UpdateApiTokenBody>
       description={'API Tokens are used to authenticate with the API.'}
       entityKey={API_TOKEN_ENTITY_KEY}
       fields={formFields}

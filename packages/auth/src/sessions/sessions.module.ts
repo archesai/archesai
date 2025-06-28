@@ -2,7 +2,12 @@ import type { Strategy } from 'passport'
 
 import type { ModuleMetadata } from '@archesai/core'
 
-import { ConfigModule, ConfigService, Module } from '@archesai/core'
+import {
+  ConfigModule,
+  ConfigService,
+  Module,
+  RedisService
+} from '@archesai/core'
 
 import { PassportModule } from '#passport/passport.module'
 import { ApiKeyStrategy } from '#passport/strategies/api-key.strategy'
@@ -24,6 +29,7 @@ export const SessionsModuleDefinition: ModuleMetadata = {
         ConfigService,
         JwtStrategy,
         LocalStrategy,
+        RedisService,
         SessionSerializer
       ],
       provide: SessionsService,
@@ -32,6 +38,7 @@ export const SessionsModuleDefinition: ModuleMetadata = {
         configService: ConfigService,
         jwtStrategy: JwtStrategy,
         localStrategy: LocalStrategy,
+        redisService: RedisService,
         sessionSerializer: SessionSerializer
       ) => {
         const strategies = {
@@ -39,7 +46,12 @@ export const SessionsModuleDefinition: ModuleMetadata = {
           jwt: jwtStrategy,
           local: localStrategy
         } satisfies Record<string, Strategy>
-        return new SessionsService(configService, strategies, sessionSerializer)
+        return new SessionsService(
+          configService,
+          redisService,
+          strategies,
+          sessionSerializer
+        )
       }
     },
     {

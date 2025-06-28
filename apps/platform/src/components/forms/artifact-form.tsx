@@ -6,7 +6,6 @@ import { useState } from 'react'
 import { Type } from '@sinclair/typebox'
 
 import type { CreateArtifactBody, UpdateArtifactBody } from '@archesai/client'
-import type { ArtifactEntity } from '@archesai/domain'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
@@ -40,7 +39,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
   }
   const content = existingContentResponse.data.data
 
-  const formFields: FormFieldConfig<ArtifactEntity>[] = [
+  const formFields: FormFieldConfig[] = [
     {
       component: Input,
       defaultValue: content.attributes.name,
@@ -120,7 +119,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
   ]
 
   return (
-    <GenericForm<ArtifactEntity, CreateArtifactBody, UpdateArtifactBody>
+    <GenericForm<CreateArtifactBody, UpdateArtifactBody>
       description={
         !artifactId ? 'Invite a new content' : 'Update an existing content'
       }

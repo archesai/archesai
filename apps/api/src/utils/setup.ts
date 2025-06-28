@@ -65,7 +65,7 @@ export async function setup(): Promise<NestFastifyApplication> {
 
   // Session Management
   const sessionsService = app.get(SessionsService)
-  sessionsService.setup(httpInstance)
+  await sessionsService.setup(httpInstance)
 
   // Websocket Adapter
   const websocketsService = app.get(WebsocketsService)

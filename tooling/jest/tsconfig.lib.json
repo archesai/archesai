@@ -3,9 +3,5 @@
     "../../tooling/typescript/src/base.json",
     "../../tooling/typescript/src/lib.json"
   ],
-  "references": [
-    {
-      "path": "../../tooling/swc/tsconfig.lib.json"
-    }
-  ]
+  "references": []
 }

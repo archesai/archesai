@@ -3,10 +3,9 @@
 import type { Static } from '@sinclair/typebox'
 
 import Link from 'next/link'
-// import { redirect } from 'next/navigation'
 import { Type } from '@sinclair/typebox'
 
-import { getSession, login } from '@archesai/client'
+import { useLogin } from '@archesai/client'
 
 import { AuthForm } from '#components/auth-form'
 
@@ -16,21 +15,25 @@ const LoginSchema = Type.Object({
 })
 
 export default function LoginPage() {
-  const onSubmit = async (data: Static<typeof LoginSchema>) => {
-    const response = await login(
-      { email: data.email, password: data.password },
+  const { mutate: login } = useLogin()
+
+  const onSubmit = (data: Static<typeof LoginSchema>) => {
+    login(
       {
-        credentials: 'include'
+        data: {
+          email: data.email,
+          password: data.password
+        }
+      },
+      {
+        onError: (err) => {
+          console.log(err)
+        },
+        onSuccess: (session) => {
+          console.log('Login successful:', session)
+        }
       }
     )
-    if (response.status === 401) {
-      throw new Error(response.data.errors.map((e) => e.detail).join(', '))
-    }
-    const session = await getSession({
-      credentials: 'include'
-    })
-    console.log('session', session)
-    // redirect('/playground')
   }
 
   return (
@@ -53,7 +56,9 @@ export default function LoginPage() {
             validationRule: LoginSchema.properties.password
           }
         ]}
-        onSubmit={(data) => onSubmit(data as Static<typeof LoginSchema>)}
+        onSubmit={(data) => {
+          onSubmit(data as Static<typeof LoginSchema>)
+        }}
         title='Login'
       />
       <div className='text-center text-sm'>

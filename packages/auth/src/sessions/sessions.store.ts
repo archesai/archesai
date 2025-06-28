@@ -1,6 +1,7 @@
 import type { SessionStore } from '@fastify/session'
 import type { Session } from 'fastify'
-import type { RedisClientType } from 'redis'
+
+import type { RedisClientType } from '@archesai/core'
 
 const noop = (_err?: unknown, _data?: Session) => {
   // no-op
@@ -219,7 +220,7 @@ export class RedisStore implements SessionStore {
         const iterator = client.scanIterator({
           COUNT: count,
           MATCH: match
-        }) as AsyncIterable<string[]>
+        })
         // Flatten the arrays yielded by the underlying iterator
         async function* flatten() {
           for await (const arr of iterator) {

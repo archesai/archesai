@@ -8,8 +8,6 @@ import { LoaderIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import type { BaseEntity } from '@archesai/domain'
-
 import { Button } from '#components/shadcn/button'
 import {
   Card,
@@ -30,7 +28,7 @@ import {
 import { Separator } from '#components/shadcn/separator'
 import { cn } from '#lib/utils'
 
-export interface FormFieldConfig<TEntity extends BaseEntity> {
+export interface FormFieldConfig {
   component: React.ComponentType
   defaultValue?: boolean | number | string | undefined
   description: string
@@ -38,18 +36,17 @@ export interface FormFieldConfig<TEntity extends BaseEntity> {
   label: string
   name: string
   props?: Record<string, unknown>
-  renderControl?: (field: ControllerRenderProps<TEntity>) => React.ReactNode
+  renderControl?: (field: ControllerRenderProps) => React.ReactNode
   validationRule?: TSchema
 }
 
 type GenericFormProps<
-  TEntity extends BaseEntity,
   CreateDto extends FieldValues,
   UpdateDto extends FieldValues
 > = {
   description?: string
   entityKey: string
-  fields: FormFieldConfig<TEntity>[]
+  fields: FormFieldConfig[]
   onSubmitCreate?: (
     data: CreateDto,
     mutateOptions: Record<string, unknown>
@@ -74,7 +71,6 @@ type GenericFormProps<
 )
 
 export function GenericForm<
-  TEntity extends BaseEntity,
   CreateDto extends FieldValues,
   UpdateDto extends FieldValues
 >({
@@ -86,7 +82,7 @@ export function GenericForm<
   onSubmitUpdate,
   showCard = false,
   title
-}: GenericFormProps<TEntity, CreateDto, UpdateDto>) {
+}: GenericFormProps<CreateDto, UpdateDto>) {
   const defaultValues = fields.reduce<Record<string, unknown>>((acc, field) => {
     if (field.defaultValue !== undefined) {
       acc[field.name] = field.defaultValue
@@ -181,8 +177,7 @@ export function GenericForm<
                         <FormControl>
                           {
                             fieldConfig.renderControl ?
-                              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-                              fieldConfig.renderControl(field.value as any)
+                              fieldConfig.renderControl(field)
                               // <fieldConfig.component
                               //   {...field}
                               //   {...fieldConfig.props}
