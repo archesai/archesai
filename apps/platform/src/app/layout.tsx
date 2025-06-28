@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
 
 import { Geist, Geist_Mono } from 'next/font/google'
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
+import { NuqsAdapter } from '@archesai/ui/providers/nuqs-adapter'
 import { QCProvider } from '@archesai/ui/providers/query-client-provider'
+import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
 import '../styles/globals.css'
-
-import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
 const fontSans = Geist({
   subsets: ['latin'],

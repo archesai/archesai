@@ -6,7 +6,6 @@
   "imports": {
     "#app/*": "./src/app/*.tsx",
     "#components/*": "./src/components/*.tsx",
-    "#hooks/*": "./src/hooks/*.tsx",
     "#lib/*": "./src/lib/*.ts"
   },
   "scripts": {
@@ -27,7 +26,6 @@
     "@tanstack/react-query": "catalog:",
     "@xyflow/react": "catalog:",
     "next": "catalog:",
-    "nuqs": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19"
   },

@@ -3,12 +3,12 @@
 
 import { useFindManyRuns } from '@archesai/client'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
+import { usePlayground } from '@archesai/ui/hooks/use-playground'
 import { cn } from '@archesai/ui/lib/utils'
 
 import ArtifactDataTable from '#components/datatables/artifact-datatable'
 import { RunForm } from '#components/forms/run-form'
 import { ToolCards } from '#components/tool-cards'
-import { usePlayground } from '#hooks/use-playground'
 
 export default function Playground() {
   const { selectedRunId, selectedTool } = usePlayground()

@@ -37,9 +37,9 @@ import {
   TabsTrigger
 } from '@archesai/ui/components/shadcn/tabs'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
+import { usePlayground } from '@archesai/ui/hooks/use-playground'
 import { stringToColor } from '@archesai/ui/lib/utils'
 
-import { usePlayground } from '#hooks/use-playground'
 import { toolBaseIcons } from '#lib/site-config'
 
 export function RunForm({ runId }: { runId?: string }) {
