@@ -56,10 +56,10 @@
     "react-day-picker": "^9.7.0",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:",
-    "react-player": "^3.0.0",
+    "react-player": "^3.1.0",
     "react-resizable-panels": "^3.0.3",
     "socket.io-client": "catalog:",
-    "sonner": "^2.0.5",
+    "sonner": "^2.0.6",
     "tailwind-merge": "catalog:",
     "tslib": "catalog:",
     "vaul": "^1.1.2"

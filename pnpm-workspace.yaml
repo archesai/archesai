@@ -7,41 +7,41 @@ packages:
 autoInstallPeers: false
 
 catalog:
-  eslint: ^9.30.0
+  eslint: ^9.30.1
   '@eslint/compat': ^1.3.1
-  '@eslint/js': ^9.30.0
+  '@eslint/js': ^9.30.1
   '@next/eslint-plugin-next': ^15.3.4
   eslint-config-prettier: ^10.1.5
   eslint-import-resolver-typescript: ^4.4.4
   eslint-plugin-import: ^2.32.0
   eslint-plugin-jest: ^29.0.1
-  eslint-plugin-jsdoc: ^51.2.3
+  eslint-plugin-jsdoc: ^51.3.3
   eslint-plugin-perfectionist: ^4.15.0
   eslint-plugin-react: ^7.37.5
   eslint-plugin-react-hooks: ^5.2.0
-  globals: ^16.2.0
-  typescript-eslint: ^8.35.0
+  globals: ^16.3.0
+  typescript-eslint: ^8.35.1
   prettier: ^3.6.2
   '@ianvs/prettier-plugin-sort-imports': ^4.4.2
   prettier-plugin-packagejson: ^2.5.17
   prettier-plugin-sh: ^0.18.0
   prettier-plugin-sort-json: ^4.1.1
   prettier-plugin-tailwindcss: ^0.6.13
-  '@types/node': 24.0.7
+  '@types/node': 24.0.10
   typescript: ^5.8.3
   tailwindcss: ^4.1.11
   '@tailwindcss/postcss': ^4.1.11
   '@tailwindcss/cli': ^4.1.11
-  tw-animate-css: ^1.3.4
+  tw-animate-css: ^1.3.5
   postcss: ^8.5.6
   lucide-react: ^0.525.0
   react-hook-form: ^7.59.0
   '@hookform/resolvers': ^5.1.1
   '@sinclair/typebox': ^0.34.37
   next: ^15.3.4
-  jest: ^30.0.3
+  jest: ^30.0.4
   '@types/jest': ^30.0.0
-  jest-environment-jsdom: ^30.0.2
+  jest-environment-jsdom: ^30.0.4
   '@golevelup/ts-jest': ^0.7.0
   jest-openapi: ^0.14.2
   '@nestjs/testing': ^11.1.3
@@ -63,7 +63,7 @@ catalog:
   '@fastify/passport': ^3.0.2
   '@fastify/session': ^11.1.0
   '@scalar/fastify-api-reference': ^1.32.1
-  nodemailer: ^7.0.3
+  nodemailer: ^7.0.4
   '@types/nodemailer': ^6.4.17
   '@nestjs/common': ^11.1.3
   '@nestjs/core': ^11.1.3
@@ -87,26 +87,26 @@ catalog:
   '@types/passport-local': ^1.0.38
   passport-twitter: ^1.0.4
   '@types/passport-twitter': ^1.0.40
-  '@aws-sdk/client-s3': ^3.839.0
-  '@aws-sdk/s3-request-presigner': ^3.839.0
+  '@aws-sdk/client-s3': ^3.842.0
+  '@aws-sdk/s3-request-presigner': ^3.842.0
   '@google-cloud/storage': ^7.16.0
-  '@faker-js/faker': ^9.8.0
+  '@faker-js/faker': ^9.9.0
   socket.io: ^4.8.1
   socket.io-client: ^4.8.1
   '@socket.io/redis-adapter': ^8.3.0
   pino: ^9.7.0
   pino-pretty: ^13.0.0
   sharp: ^0.34.2
-  stripe: ^18.2.1
+  stripe: ^18.3.0
   openai: ^5.8.2
-  bullmq: ^5.56.0
-  '@playwright/test': ^1.53.1
-  playwright-core: ^1.53.1
+  bullmq: ^5.56.1
+  '@playwright/test': ^1.53.2
+  playwright-core: ^1.53.2
   '@tanstack/react-table': ^8.21.3
   clsx: ^2.1.1
   class-variance-authority: ^0.7.1
   tailwind-merge: ^3.3.1
-  '@elevenlabs/elevenlabs-js': ^2.4.1
+  '@elevenlabs/elevenlabs-js': ^2.5.0
   fluent-ffmpeg: ^2.1.3
   '@types/fluent-ffmpeg': ^2.1.27
   '@xyflow/react': ^12.8.1
