@@ -25,10 +25,12 @@ export async function setup(): Promise<NestFastifyApplication> {
       disableRequestLogging: true,
       https: {
         cert: readFileSync(
-          import.meta.dirname + '/../../certificates/localhost.pem'
+          import.meta.dirname +
+            '/../../../../deploy/kubernetes/overlays/development/certs/api/localhost.pem'
         ),
         key: readFileSync(
-          import.meta.dirname + '/../../certificates/localhost-key.pem'
+          import.meta.dirname +
+            '/../../../../deploy/kubernetes/overlays/development/certs/api/localhost-key.pem'
         )
       }
     })
