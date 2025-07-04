@@ -40,7 +40,7 @@ export function DataTableColumnHeader<TData, TValue>({
             <ArrowDown className='h-4 w-4' />
           : column.getIsSorted() === 'asc' ?
             <ArrowUp className='h-4 w-4' />
-          : <ArrowsUpFromLine className='h-4 w-4' />}
+          : <></>}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='start'>

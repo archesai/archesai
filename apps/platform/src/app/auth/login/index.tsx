@@ -1,7 +1,7 @@
 import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
 import { useLogin } from '@archesai/client'
 import { AuthForm } from '@archesai/ui/components/custom/auth-form'
@@ -12,29 +12,25 @@ const LoginSchema = Type.Object({
 })
 
 export const Route = createFileRoute('/auth/login/')({
-  component: LoginSchema
+  component: LoginPage
 })
 
 export default function LoginPage() {
-  const { mutate: login } = useLogin()
+  const router = useRouter()
+  const { mutateAsync: login } = useLogin({
+    fetch: {
+      credentials: 'include'
+    }
+  })
 
-  const onSubmit = (data: Static<typeof LoginSchema>) => {
-    login(
-      {
-        data: {
-          email: data.email,
-          password: data.password
-        }
-      },
-      {
-        onError: (err) => {
-          console.log(err)
-        },
-        onSuccess: (session) => {
-          console.log('Login successful:', session)
-        }
+  const onSubmit = async (data: Static<typeof LoginSchema>) => {
+    await login({
+      data: {
+        email: data.email,
+        password: data.password
       }
-    )
+    })
+    await router.navigate({ to: '/chat' })
   }
 
   return (
@@ -57,8 +53,8 @@ export default function LoginPage() {
             validationRule: LoginSchema.properties.password
           }
         ]}
-        onSubmit={(data) => {
-          onSubmit(data as Static<typeof LoginSchema>)
+        onSubmit={async (data) => {
+          await onSubmit(data as Static<typeof LoginSchema>)
         }}
         title='Login'
       />

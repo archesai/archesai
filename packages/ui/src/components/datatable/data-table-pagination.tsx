@@ -12,6 +12,7 @@ import {
 } from '#components/shadcn/select'
 import { useSearchQuery } from '#hooks/use-search-query'
 import { useSelectItems } from '#hooks/use-select-items'
+import { cn } from '#lib/utils'
 
 interface DataTablePaginationProps<TEntity extends BaseEntity> {
   response: {
@@ -31,17 +32,21 @@ export function DataTablePagination<TEntity extends BaseEntity>({
     useSearchQuery()
   const { selectedItems } = useSelectItems({ items: [] })
   return (
-    <div className='flex items-center justify-between'>
+    <div
+      className={cn(
+        'flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8'
+      )}
+    >
       {/* Display the number of items found and selected on left side*/}
-      <div className='hidden text-sm text-muted-foreground sm:block'>
+      <div className='flex-1 text-sm whitespace-nowrap text-muted-foreground'>
         {response.meta.total_records} found - {selectedItems.length || 0} of{' '}
         {Math.min(pageSize, response.data.length) || 0} item(s) selected.
       </div>
       {/* Pagination controls on right side*/}
-      <div className='flex items-center gap-2 lg:gap-3'>
+      <div className='flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8'>
         {/* Rows per page dropdown */}
-        <div className='flex items-center gap-2'>
-          <p className='hidden text-sm font-medium sm:block'>Rows per page</p>
+        <div className='flex items-center space-x-2'>
+          <p className='text-sm font-medium whitespace-nowrap'>Rows per page</p>
           <Select
             onValueChange={(value) => {
               setSearchQuery({
@@ -57,7 +62,10 @@ export function DataTablePagination<TEntity extends BaseEntity>({
             }}
             value={pageSize.toString()}
           >
-            <SelectTrigger className='h-8 w-[70px]'>
+            <SelectTrigger
+              className='h-8 w-[4.5rem] [&[data-size]]:h-8'
+              size='sm'
+            >
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
             <SelectContent side='top'>
@@ -86,39 +94,40 @@ export function DataTablePagination<TEntity extends BaseEntity>({
         {/* Previous and Next page buttons */}
         <div className='flex items-center gap-2'>
           <Button
-            className='hidden h-8 w-8 p-0 lg:flex'
+            className='hidden lg:flex'
             disabled={pageSize === 0}
             onClick={() => {
               setPage(0, pageSize)
             }}
+            size={'sm'}
             variant='outline'
           >
             <ArrowBigLeftDash className='h-5 w-5' />
           </Button>
           <Button
-            className='h-8 w-8 p-0'
             disabled={pageSize === 0}
             onClick={() => {
               setPage(pageNumber - 1, pageSize)
             }}
+            size='sm'
             variant='outline'
           >
             <ArrowBigLeftDash className='h-5 w-5' />
           </Button>
           <Button
-            className='h-8 w-8 p-0'
             disabled={
               pageSize >= Math.ceil(response.meta.total_records / pageSize) - 1
             }
             onClick={() => {
               setPage(pageNumber + 1, pageSize)
             }}
+            size='sm'
             variant='outline'
           >
             <ArrowBigRightDash className='h-5 w-5' />
           </Button>
           <Button
-            className='hidden h-8 w-8 p-0 lg:flex'
+            className='hidden lg:flex'
             disabled={
               pageSize >= Math.ceil(response.meta.total_records / pageSize) - 1
             }
@@ -128,6 +137,7 @@ export function DataTablePagination<TEntity extends BaseEntity>({
                 pageSize
               )
             }}
+            size='sm'
             variant='outline'
           >
             <ArrowBigRightDash className='h-5 w-5' />

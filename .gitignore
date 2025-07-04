@@ -16,6 +16,7 @@ next-env.d.ts
 # nitro
 .nitro/
 .output/
+.tanstack
 
 # expo
 .expo/

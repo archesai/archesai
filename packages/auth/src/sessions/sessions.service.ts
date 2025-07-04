@@ -96,7 +96,7 @@ export class SessionsService {
         cookie: {
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // e.g., 1 hour in milliseconds
-          sameSite: 'strict', // Use 'strict' for better security, 'lax' if you need cross-site requests
+          sameSite: 'lax', // Use 'strict' for better security, 'lax' if you need cross-site requests
           secure: this.configService.get('tls.enabled') // Set to true if using HTTPS in production
         },
         secret: this.configService.get('session.secret'),

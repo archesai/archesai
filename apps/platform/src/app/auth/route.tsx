@@ -1,8 +1,6 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
-import { buttonVariants } from '@archesai/ui/components/shadcn/button'
-import { cn } from '@archesai/ui/lib/utils'
+import { CpuIcon } from '@archesai/ui/components/custom/icons'
 
 export const Route = createFileRoute('/auth')({
   component: AuthenticationLayout
@@ -10,50 +8,18 @@ export const Route = createFileRoute('/auth')({
 
 export default function AuthenticationLayout() {
   return (
-    <div className='relative grid h-svh items-center justify-center lg:grid-cols-2'>
-      <Link
-        className={cn(
-          buttonVariants({ variant: 'ghost' }),
-          'absolute top-4 left-4 lg:right-4 lg:left-auto'
-        )}
-        to='/'
-      >
-        Back
-      </Link>
-
-      {/* Left side of the screen */}
-      <div className='hidden h-full flex-col justify-between bg-primary p-10 text-white lg:flex'>
-        <ArchesLogo />
-        <blockquote className='flex flex-col gap-2'>
-          <p className='text-lg'>
-            &ldquo;This library has saved me countless hours of work and helped
-            me deliver stunning designs to my clients faster than ever
-            before.&rdquo;
-          </p>
-          <footer className='text-sm'>Sofia Davis</footer>
-        </blockquote>
-      </div>
-
-      {/* Right side of the screen or main*/}
-      <div className='mx-auto flex h-full max-w-xs flex-col justify-center gap-2'>
+    <div className='flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10'>
+      <div className='flex w-full max-w-sm flex-col gap-6'>
+        <a
+          className='flex items-center gap-2 self-center font-medium'
+          href='#'
+        >
+          <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
+            <CpuIcon className='size-4' />
+          </div>
+          Acme Inc.
+        </a>
         <Outlet />
-        <p className='text-center text-sm text-muted-foreground'>
-          By clicking continue, you agree to our{' '}
-          <Link
-            className='underline underline-offset-4 hover:text-foreground'
-            to='/legal/terms'
-          >
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link
-            className='underline underline-offset-4 hover:text-foreground'
-            to='/legal/privacy'
-          >
-            Privacy Policy
-          </Link>
-          .
-        </p>
       </div>
     </div>
   )

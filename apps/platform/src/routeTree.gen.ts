@@ -9,193 +9,219 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
-import { Route as appArtifactsSingleIndexRouteImport } from './app/(app)/artifacts/single/index'
-import { Route as appArtifactsViewIndexRouteImport } from './app/(app)/artifacts/view/index'
-import { Route as appChatIndexRouteImport } from './app/(app)/chat/index'
-import { Route as appLabelsIndexRouteImport } from './app/(app)/labels/index'
-import { Route as appOrganizationApiTokensIndexRouteImport } from './app/(app)/organization/api-tokens/index'
-import { Route as appOrganizationGeneralIndexRouteImport } from './app/(app)/organization/general/index'
-import { Route as appOrganizationMembersIndexRouteImport } from './app/(app)/organization/members/index'
-import { Route as appPipelinesCreateIndexRouteImport } from './app/(app)/pipelines/create/index'
-import { Route as appPipelinesIndexRouteImport } from './app/(app)/pipelines/index'
-import { Route as appPlaygroundIndexRouteImport } from './app/(app)/playground/index'
-import { Route as appProfileGeneralIndexRouteImport } from './app/(app)/profile/general/index'
-import { Route as appProfileSecurityIndexRouteImport } from './app/(app)/profile/security/index'
-import { Route as appRunsIndexRouteImport } from './app/(app)/runs/index'
-import { Route as appToolsIndexRouteImport } from './app/(app)/tools/index'
-import { Route as AuthConfirmIndexRouteImport } from './app/auth/confirm/index'
-import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
-import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthRouteRouteImport } from './app/auth/route'
+import { Route as AppRouteRouteImport } from './app/_app/route'
+import { Route as AppIndexRouteImport } from './app/_app/index'
+import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
+import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
+import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
+import { Route as AuthConfirmIndexRouteImport } from './app/auth/confirm/index'
+import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
+import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
+import { Route as AppPlaygroundIndexRouteImport } from './app/_app/playground/index'
+import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
+import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
+import { Route as AppChatIndexRouteImport } from './app/_app/chat/index'
+import { Route as AppProfileSecurityIndexRouteImport } from './app/_app/profile/security/index'
+import { Route as AppProfileGeneralIndexRouteImport } from './app/_app/profile/general/index'
+import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
+import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
+import { Route as AppOrganizationGeneralIndexRouteImport } from './app/_app/organization/general/index'
+import { Route as AppOrganizationBillingIndexRouteImport } from './app/_app/organization/billing/index'
+import { Route as AppOrganizationApiTokensIndexRouteImport } from './app/_app/organization/api-tokens/index'
+import { Route as AppArtifactsViewIndexRouteImport } from './app/_app/artifacts/view/index'
+import { Route as AppArtifactsSingleIndexRouteImport } from './app/_app/artifacts/single/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
   id: '/register/',
   path: '/register/',
-  getParentRoute: () => AuthRouteRoute
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => AuthRouteRoute
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
   id: '/forgot-password/',
   path: '/forgot-password/',
-  getParentRoute: () => AuthRouteRoute
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthConfirmIndexRoute = AuthConfirmIndexRouteImport.update({
   id: '/confirm/',
   path: '/confirm/',
-  getParentRoute: () => AuthRouteRoute
+  getParentRoute: () => AuthRouteRoute,
 } as any)
-const appToolsIndexRoute = appToolsIndexRouteImport.update({
-  id: '/(app)/tools/',
+const AppToolsIndexRoute = AppToolsIndexRouteImport.update({
+  id: '/tools/',
   path: '/tools/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appRunsIndexRoute = appRunsIndexRouteImport.update({
-  id: '/(app)/runs/',
+const AppRunsIndexRoute = AppRunsIndexRouteImport.update({
+  id: '/runs/',
   path: '/runs/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
-  id: '/(app)/playground/',
+const AppPlaygroundIndexRoute = AppPlaygroundIndexRouteImport.update({
+  id: '/playground/',
   path: '/playground/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appPipelinesIndexRoute = appPipelinesIndexRouteImport.update({
-  id: '/(app)/pipelines/',
+const AppPipelinesIndexRoute = AppPipelinesIndexRouteImport.update({
+  id: '/pipelines/',
   path: '/pipelines/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appLabelsIndexRoute = appLabelsIndexRouteImport.update({
-  id: '/(app)/labels/',
+const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
+  id: '/labels/',
   path: '/labels/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appChatIndexRoute = appChatIndexRouteImport.update({
-  id: '/(app)/chat/',
+const AppChatIndexRoute = AppChatIndexRouteImport.update({
+  id: '/chat/',
   path: '/chat/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appProfileSecurityIndexRoute = appProfileSecurityIndexRouteImport.update({
-  id: '/(app)/profile/security/',
+const AppProfileSecurityIndexRoute = AppProfileSecurityIndexRouteImport.update({
+  id: '/profile/security/',
   path: '/profile/security/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appProfileGeneralIndexRoute = appProfileGeneralIndexRouteImport.update({
-  id: '/(app)/profile/general/',
+const AppProfileGeneralIndexRoute = AppProfileGeneralIndexRouteImport.update({
+  id: '/profile/general/',
   path: '/profile/general/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appPipelinesCreateIndexRoute = appPipelinesCreateIndexRouteImport.update({
-  id: '/(app)/pipelines/create/',
+const AppPipelinesCreateIndexRoute = AppPipelinesCreateIndexRouteImport.update({
+  id: '/pipelines/create/',
   path: '/pipelines/create/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appOrganizationMembersIndexRoute =
-  appOrganizationMembersIndexRouteImport.update({
-    id: '/(app)/organization/members/',
+const AppOrganizationMembersIndexRoute =
+  AppOrganizationMembersIndexRouteImport.update({
+    id: '/organization/members/',
     path: '/organization/members/',
-    getParentRoute: () => rootRouteImport
+    getParentRoute: () => AppRouteRoute,
   } as any)
-const appOrganizationGeneralIndexRoute =
-  appOrganizationGeneralIndexRouteImport.update({
-    id: '/(app)/organization/general/',
+const AppOrganizationGeneralIndexRoute =
+  AppOrganizationGeneralIndexRouteImport.update({
+    id: '/organization/general/',
     path: '/organization/general/',
-    getParentRoute: () => rootRouteImport
+    getParentRoute: () => AppRouteRoute,
   } as any)
-const appOrganizationApiTokensIndexRoute =
-  appOrganizationApiTokensIndexRouteImport.update({
-    id: '/(app)/organization/api-tokens/',
+const AppOrganizationBillingIndexRoute =
+  AppOrganizationBillingIndexRouteImport.update({
+    id: '/organization/billing/',
+    path: '/organization/billing/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+const AppOrganizationApiTokensIndexRoute =
+  AppOrganizationApiTokensIndexRouteImport.update({
+    id: '/organization/api-tokens/',
     path: '/organization/api-tokens/',
-    getParentRoute: () => rootRouteImport
+    getParentRoute: () => AppRouteRoute,
   } as any)
-const appArtifactsViewIndexRoute = appArtifactsViewIndexRouteImport.update({
-  id: '/(app)/artifacts/view/',
+const AppArtifactsViewIndexRoute = AppArtifactsViewIndexRouteImport.update({
+  id: '/artifacts/view/',
   path: '/artifacts/view/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const appArtifactsSingleIndexRoute = appArtifactsSingleIndexRouteImport.update({
-  id: '/(app)/artifacts/single/',
+const AppArtifactsSingleIndexRoute = AppArtifactsSingleIndexRouteImport.update({
+  id: '/artifacts/single/',
   path: '/artifacts/single/',
-  getParentRoute: () => rootRouteImport
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
-  '/chat': typeof appChatIndexRoute
-  '/labels': typeof appLabelsIndexRoute
-  '/pipelines': typeof appPipelinesIndexRoute
-  '/playground': typeof appPlaygroundIndexRoute
-  '/runs': typeof appRunsIndexRoute
-  '/tools': typeof appToolsIndexRoute
+  '/': typeof AppIndexRoute
+  '/chat': typeof AppChatIndexRoute
+  '/labels': typeof AppLabelsIndexRoute
+  '/pipelines': typeof AppPipelinesIndexRoute
+  '/playground': typeof AppPlaygroundIndexRoute
+  '/runs': typeof AppRunsIndexRoute
+  '/tools': typeof AppToolsIndexRoute
   '/auth/confirm': typeof AuthConfirmIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/single': typeof appArtifactsSingleIndexRoute
-  '/artifacts/view': typeof appArtifactsViewIndexRoute
-  '/organization/api-tokens': typeof appOrganizationApiTokensIndexRoute
-  '/organization/general': typeof appOrganizationGeneralIndexRoute
-  '/organization/members': typeof appOrganizationMembersIndexRoute
-  '/pipelines/create': typeof appPipelinesCreateIndexRoute
-  '/profile/general': typeof appProfileGeneralIndexRoute
-  '/profile/security': typeof appProfileSecurityIndexRoute
+  '/artifacts/single': typeof AppArtifactsSingleIndexRoute
+  '/artifacts/view': typeof AppArtifactsViewIndexRoute
+  '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
+  '/organization/billing': typeof AppOrganizationBillingIndexRoute
+  '/organization/general': typeof AppOrganizationGeneralIndexRoute
+  '/organization/members': typeof AppOrganizationMembersIndexRoute
+  '/pipelines/create': typeof AppPipelinesCreateIndexRoute
+  '/profile/general': typeof AppProfileGeneralIndexRoute
+  '/profile/security': typeof AppProfileSecurityIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
-  '/chat': typeof appChatIndexRoute
-  '/labels': typeof appLabelsIndexRoute
-  '/pipelines': typeof appPipelinesIndexRoute
-  '/playground': typeof appPlaygroundIndexRoute
-  '/runs': typeof appRunsIndexRoute
-  '/tools': typeof appToolsIndexRoute
+  '/': typeof AppIndexRoute
+  '/chat': typeof AppChatIndexRoute
+  '/labels': typeof AppLabelsIndexRoute
+  '/pipelines': typeof AppPipelinesIndexRoute
+  '/playground': typeof AppPlaygroundIndexRoute
+  '/runs': typeof AppRunsIndexRoute
+  '/tools': typeof AppToolsIndexRoute
   '/auth/confirm': typeof AuthConfirmIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/single': typeof appArtifactsSingleIndexRoute
-  '/artifacts/view': typeof appArtifactsViewIndexRoute
-  '/organization/api-tokens': typeof appOrganizationApiTokensIndexRoute
-  '/organization/general': typeof appOrganizationGeneralIndexRoute
-  '/organization/members': typeof appOrganizationMembersIndexRoute
-  '/pipelines/create': typeof appPipelinesCreateIndexRoute
-  '/profile/general': typeof appProfileGeneralIndexRoute
-  '/profile/security': typeof appProfileSecurityIndexRoute
+  '/artifacts/single': typeof AppArtifactsSingleIndexRoute
+  '/artifacts/view': typeof AppArtifactsViewIndexRoute
+  '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
+  '/organization/billing': typeof AppOrganizationBillingIndexRoute
+  '/organization/general': typeof AppOrganizationGeneralIndexRoute
+  '/organization/members': typeof AppOrganizationMembersIndexRoute
+  '/pipelines/create': typeof AppPipelinesCreateIndexRoute
+  '/profile/general': typeof AppProfileGeneralIndexRoute
+  '/profile/security': typeof AppProfileSecurityIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/(app)/chat/': typeof appChatIndexRoute
-  '/(app)/labels/': typeof appLabelsIndexRoute
-  '/(app)/pipelines/': typeof appPipelinesIndexRoute
-  '/(app)/playground/': typeof appPlaygroundIndexRoute
-  '/(app)/runs/': typeof appRunsIndexRoute
-  '/(app)/tools/': typeof appToolsIndexRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/chat/': typeof AppChatIndexRoute
+  '/_app/labels/': typeof AppLabelsIndexRoute
+  '/_app/pipelines/': typeof AppPipelinesIndexRoute
+  '/_app/playground/': typeof AppPlaygroundIndexRoute
+  '/_app/runs/': typeof AppRunsIndexRoute
+  '/_app/tools/': typeof AppToolsIndexRoute
   '/auth/confirm/': typeof AuthConfirmIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
-  '/(app)/artifacts/single/': typeof appArtifactsSingleIndexRoute
-  '/(app)/artifacts/view/': typeof appArtifactsViewIndexRoute
-  '/(app)/organization/api-tokens/': typeof appOrganizationApiTokensIndexRoute
-  '/(app)/organization/general/': typeof appOrganizationGeneralIndexRoute
-  '/(app)/organization/members/': typeof appOrganizationMembersIndexRoute
-  '/(app)/pipelines/create/': typeof appPipelinesCreateIndexRoute
-  '/(app)/profile/general/': typeof appProfileGeneralIndexRoute
-  '/(app)/profile/security/': typeof appProfileSecurityIndexRoute
+  '/_app/artifacts/single/': typeof AppArtifactsSingleIndexRoute
+  '/_app/artifacts/view/': typeof AppArtifactsViewIndexRoute
+  '/_app/organization/api-tokens/': typeof AppOrganizationApiTokensIndexRoute
+  '/_app/organization/billing/': typeof AppOrganizationBillingIndexRoute
+  '/_app/organization/general/': typeof AppOrganizationGeneralIndexRoute
+  '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
+  '/_app/pipelines/create/': typeof AppPipelinesCreateIndexRoute
+  '/_app/profile/general/': typeof AppProfileGeneralIndexRoute
+  '/_app/profile/security/': typeof AppProfileSecurityIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
+    | '/'
     | '/chat'
     | '/labels'
     | '/pipelines'
@@ -209,6 +235,7 @@ export interface FileRouteTypes {
     | '/artifacts/single'
     | '/artifacts/view'
     | '/organization/api-tokens'
+    | '/organization/billing'
     | '/organization/general'
     | '/organization/members'
     | '/pipelines/create'
@@ -217,6 +244,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/'
     | '/chat'
     | '/labels'
     | '/pipelines'
@@ -230,6 +258,7 @@ export interface FileRouteTypes {
     | '/artifacts/single'
     | '/artifacts/view'
     | '/organization/api-tokens'
+    | '/organization/billing'
     | '/organization/general'
     | '/organization/members'
     | '/pipelines/create'
@@ -237,43 +266,33 @@ export interface FileRouteTypes {
     | '/profile/security'
   id:
     | '__root__'
+    | '/_app'
     | '/auth'
-    | '/(app)/chat/'
-    | '/(app)/labels/'
-    | '/(app)/pipelines/'
-    | '/(app)/playground/'
-    | '/(app)/runs/'
-    | '/(app)/tools/'
+    | '/_app/'
+    | '/_app/chat/'
+    | '/_app/labels/'
+    | '/_app/pipelines/'
+    | '/_app/playground/'
+    | '/_app/runs/'
+    | '/_app/tools/'
     | '/auth/confirm/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/register/'
-    | '/(app)/artifacts/single/'
-    | '/(app)/artifacts/view/'
-    | '/(app)/organization/api-tokens/'
-    | '/(app)/organization/general/'
-    | '/(app)/organization/members/'
-    | '/(app)/pipelines/create/'
-    | '/(app)/profile/general/'
-    | '/(app)/profile/security/'
+    | '/_app/artifacts/single/'
+    | '/_app/artifacts/view/'
+    | '/_app/organization/api-tokens/'
+    | '/_app/organization/billing/'
+    | '/_app/organization/general/'
+    | '/_app/organization/members/'
+    | '/_app/pipelines/create/'
+    | '/_app/profile/general/'
+    | '/_app/profile/security/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  appChatIndexRoute: typeof appChatIndexRoute
-  appLabelsIndexRoute: typeof appLabelsIndexRoute
-  appPipelinesIndexRoute: typeof appPipelinesIndexRoute
-  appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
-  appRunsIndexRoute: typeof appRunsIndexRoute
-  appToolsIndexRoute: typeof appToolsIndexRoute
-  appArtifactsSingleIndexRoute: typeof appArtifactsSingleIndexRoute
-  appArtifactsViewIndexRoute: typeof appArtifactsViewIndexRoute
-  appOrganizationApiTokensIndexRoute: typeof appOrganizationApiTokensIndexRoute
-  appOrganizationGeneralIndexRoute: typeof appOrganizationGeneralIndexRoute
-  appOrganizationMembersIndexRoute: typeof appOrganizationMembersIndexRoute
-  appPipelinesCreateIndexRoute: typeof appPipelinesCreateIndexRoute
-  appProfileGeneralIndexRoute: typeof appProfileGeneralIndexRoute
-  appProfileSecurityIndexRoute: typeof appProfileSecurityIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,6 +303,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/auth/register/': {
       id: '/auth/register/'
@@ -313,106 +346,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthConfirmIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/(app)/tools/': {
-      id: '/(app)/tools/'
+    '/_app/tools/': {
+      id: '/_app/tools/'
       path: '/tools'
       fullPath: '/tools'
-      preLoaderRoute: typeof appToolsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppToolsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/runs/': {
-      id: '/(app)/runs/'
+    '/_app/runs/': {
+      id: '/_app/runs/'
       path: '/runs'
       fullPath: '/runs'
-      preLoaderRoute: typeof appRunsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppRunsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/playground/': {
-      id: '/(app)/playground/'
+    '/_app/playground/': {
+      id: '/_app/playground/'
       path: '/playground'
       fullPath: '/playground'
-      preLoaderRoute: typeof appPlaygroundIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppPlaygroundIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/pipelines/': {
-      id: '/(app)/pipelines/'
+    '/_app/pipelines/': {
+      id: '/_app/pipelines/'
       path: '/pipelines'
       fullPath: '/pipelines'
-      preLoaderRoute: typeof appPipelinesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppPipelinesIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/labels/': {
-      id: '/(app)/labels/'
+    '/_app/labels/': {
+      id: '/_app/labels/'
       path: '/labels'
       fullPath: '/labels'
-      preLoaderRoute: typeof appLabelsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppLabelsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/chat/': {
-      id: '/(app)/chat/'
+    '/_app/chat/': {
+      id: '/_app/chat/'
       path: '/chat'
       fullPath: '/chat'
-      preLoaderRoute: typeof appChatIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppChatIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/profile/security/': {
-      id: '/(app)/profile/security/'
+    '/_app/profile/security/': {
+      id: '/_app/profile/security/'
       path: '/profile/security'
       fullPath: '/profile/security'
-      preLoaderRoute: typeof appProfileSecurityIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppProfileSecurityIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/profile/general/': {
-      id: '/(app)/profile/general/'
+    '/_app/profile/general/': {
+      id: '/_app/profile/general/'
       path: '/profile/general'
       fullPath: '/profile/general'
-      preLoaderRoute: typeof appProfileGeneralIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppProfileGeneralIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/pipelines/create/': {
-      id: '/(app)/pipelines/create/'
+    '/_app/pipelines/create/': {
+      id: '/_app/pipelines/create/'
       path: '/pipelines/create'
       fullPath: '/pipelines/create'
-      preLoaderRoute: typeof appPipelinesCreateIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppPipelinesCreateIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/organization/members/': {
-      id: '/(app)/organization/members/'
+    '/_app/organization/members/': {
+      id: '/_app/organization/members/'
       path: '/organization/members'
       fullPath: '/organization/members'
-      preLoaderRoute: typeof appOrganizationMembersIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppOrganizationMembersIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/organization/general/': {
-      id: '/(app)/organization/general/'
+    '/_app/organization/general/': {
+      id: '/_app/organization/general/'
       path: '/organization/general'
       fullPath: '/organization/general'
-      preLoaderRoute: typeof appOrganizationGeneralIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppOrganizationGeneralIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/organization/api-tokens/': {
-      id: '/(app)/organization/api-tokens/'
+    '/_app/organization/billing/': {
+      id: '/_app/organization/billing/'
+      path: '/organization/billing'
+      fullPath: '/organization/billing'
+      preLoaderRoute: typeof AppOrganizationBillingIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
+    '/_app/organization/api-tokens/': {
+      id: '/_app/organization/api-tokens/'
       path: '/organization/api-tokens'
       fullPath: '/organization/api-tokens'
-      preLoaderRoute: typeof appOrganizationApiTokensIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppOrganizationApiTokensIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/artifacts/view/': {
-      id: '/(app)/artifacts/view/'
+    '/_app/artifacts/view/': {
+      id: '/_app/artifacts/view/'
       path: '/artifacts/view'
       fullPath: '/artifacts/view'
-      preLoaderRoute: typeof appArtifactsViewIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppArtifactsViewIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/(app)/artifacts/single/': {
-      id: '/(app)/artifacts/single/'
+    '/_app/artifacts/single/': {
+      id: '/_app/artifacts/single/'
       path: '/artifacts/single'
       fullPath: '/artifacts/single'
-      preLoaderRoute: typeof appArtifactsSingleIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppArtifactsSingleIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
   }
 }
+
+interface AppRouteRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+  AppChatIndexRoute: typeof AppChatIndexRoute
+  AppLabelsIndexRoute: typeof AppLabelsIndexRoute
+  AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
+  AppPlaygroundIndexRoute: typeof AppPlaygroundIndexRoute
+  AppRunsIndexRoute: typeof AppRunsIndexRoute
+  AppToolsIndexRoute: typeof AppToolsIndexRoute
+  AppArtifactsSingleIndexRoute: typeof AppArtifactsSingleIndexRoute
+  AppArtifactsViewIndexRoute: typeof AppArtifactsViewIndexRoute
+  AppOrganizationApiTokensIndexRoute: typeof AppOrganizationApiTokensIndexRoute
+  AppOrganizationBillingIndexRoute: typeof AppOrganizationBillingIndexRoute
+  AppOrganizationGeneralIndexRoute: typeof AppOrganizationGeneralIndexRoute
+  AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
+  AppPipelinesCreateIndexRoute: typeof AppPipelinesCreateIndexRoute
+  AppProfileGeneralIndexRoute: typeof AppProfileGeneralIndexRoute
+  AppProfileSecurityIndexRoute: typeof AppProfileSecurityIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+  AppChatIndexRoute: AppChatIndexRoute,
+  AppLabelsIndexRoute: AppLabelsIndexRoute,
+  AppPipelinesIndexRoute: AppPipelinesIndexRoute,
+  AppPlaygroundIndexRoute: AppPlaygroundIndexRoute,
+  AppRunsIndexRoute: AppRunsIndexRoute,
+  AppToolsIndexRoute: AppToolsIndexRoute,
+  AppArtifactsSingleIndexRoute: AppArtifactsSingleIndexRoute,
+  AppArtifactsViewIndexRoute: AppArtifactsViewIndexRoute,
+  AppOrganizationApiTokensIndexRoute: AppOrganizationApiTokensIndexRoute,
+  AppOrganizationBillingIndexRoute: AppOrganizationBillingIndexRoute,
+  AppOrganizationGeneralIndexRoute: AppOrganizationGeneralIndexRoute,
+  AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
+  AppPipelinesCreateIndexRoute: AppPipelinesCreateIndexRoute,
+  AppProfileGeneralIndexRoute: AppProfileGeneralIndexRoute,
+  AppProfileSecurityIndexRoute: AppProfileSecurityIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
 
 interface AuthRouteRouteChildren {
   AuthConfirmIndexRoute: typeof AuthConfirmIndexRoute
@@ -425,29 +507,16 @@ const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthConfirmIndexRoute: AuthConfirmIndexRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthRegisterIndexRoute: AuthRegisterIndexRoute
+  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren
+  AuthRouteRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  appChatIndexRoute: appChatIndexRoute,
-  appLabelsIndexRoute: appLabelsIndexRoute,
-  appPipelinesIndexRoute: appPipelinesIndexRoute,
-  appPlaygroundIndexRoute: appPlaygroundIndexRoute,
-  appRunsIndexRoute: appRunsIndexRoute,
-  appToolsIndexRoute: appToolsIndexRoute,
-  appArtifactsSingleIndexRoute: appArtifactsSingleIndexRoute,
-  appArtifactsViewIndexRoute: appArtifactsViewIndexRoute,
-  appOrganizationApiTokensIndexRoute: appOrganizationApiTokensIndexRoute,
-  appOrganizationGeneralIndexRoute: appOrganizationGeneralIndexRoute,
-  appOrganizationMembersIndexRoute: appOrganizationMembersIndexRoute,
-  appPipelinesCreateIndexRoute: appPipelinesCreateIndexRoute,
-  appProfileGeneralIndexRoute: appProfileGeneralIndexRoute,
-  appProfileSecurityIndexRoute: appProfileSecurityIndexRoute
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

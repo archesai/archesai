@@ -1,10 +1,27 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
-    port: 3000
+    port: 3000,
+    proxy: {},
+    https: {
+      // ca: '/home/jonathan/.local/share/mkcert/rootCA.pem',
+      key: fs.readFileSync(
+        path.resolve(
+          '/home/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost-key.pem'
+        )
+      ),
+      cert: fs.readFileSync(
+        path.resolve(
+          '/home/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost.pem'
+        )
+      )
+    }
   },
   plugins: [
     tailwindcss(),

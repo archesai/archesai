@@ -15,9 +15,6 @@ export * from '#api-tokens/dto/create-api-token.req.dto'
 export * from '#api-tokens/dto/update-api-token.req.dto'
 export * from '#api-tokens/factories/api-token.factory'
 
-export * from '#auth/guards/authenticated.guard'
-export * from '#auth/guards/local-auth.guard'
-
 export * from '#email-change/dto/create-email-change-request.dto'
 export * from '#email-change/dto/update-email-change-request.dto'
 export * from '#email-change/email-change.controller'

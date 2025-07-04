@@ -27,7 +27,7 @@ export default function NotFound() {
             <Button
               className='flex-1'
               onClick={async () => {
-                await navigate({ to: '/' })
+                await navigate({ to: '/chat' })
               }}
               variant='outline'
             >
@@ -37,7 +37,7 @@ export default function NotFound() {
               asChild
               className='flex-1'
             >
-              <Link to='/'>Go Home</Link>
+              <Link to='/chat'>Go Home</Link>
             </Button>
           </div>
         </CardContent>

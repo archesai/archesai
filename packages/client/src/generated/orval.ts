@@ -102,6 +102,7 @@ import type {
   GetOneUser200,
   GetPlans200,
   GetSession200,
+  Login201,
   LoginBody,
   NoContentResponse,
   NotFoundResponse,
@@ -8698,7 +8699,7 @@ export const getLoginUrl = () => {
 export const login = async (
   loginBody: LoginBody,
   options?: RequestInit
-): Promise<NoContentResponse> => {
+): Promise<Login201> => {
   const res = await fetch(getLoginUrl(), {
     ...options,
     method: 'POST',
@@ -8707,7 +8708,7 @@ export const login = async (
   })
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text()
-  const data: NoContentResponse = body ? JSON.parse(body) : {}
+  const data: Login201 = body ? JSON.parse(body) : {}
 
   return data
 }

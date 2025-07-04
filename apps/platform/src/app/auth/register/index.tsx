@@ -1,7 +1,7 @@
 import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
 import { useRegister } from '@archesai/client'
 import { AuthForm } from '@archesai/ui/components/custom/auth-form'
@@ -17,25 +17,19 @@ export const Route = createFileRoute('/auth/register/')({
 })
 
 export default function RegisterPage() {
-  const { mutate: register } = useRegister()
+  const router = useRouter()
+  const { mutateAsync: register } = useRegister()
 
-  const onSubmit = (data: Static<typeof RegisterSchema>) => {
-    register(
-      {
-        data: {
-          email: data.email,
-          password: data.password
-        }
-      },
-      {
-        onError: (err) => {
-          console.log(err)
-        },
-        onSuccess: (session) => {
-          console.log('Registration successful:', session)
-        }
+  const onSubmit = async (data: Static<typeof RegisterSchema>) => {
+    await register({
+      data: {
+        email: data.email,
+        password: data.password
       }
-    )
+    })
+    await router.navigate({
+      to: '/chat'
+    })
   }
 
   return (
@@ -68,8 +62,8 @@ export default function RegisterPage() {
             })
           }
         ]}
-        onSubmit={(data) => {
-          onSubmit(data as Static<typeof RegisterSchema>)
+        onSubmit={async (data) => {
+          await onSubmit(data as Static<typeof RegisterSchema>)
         }}
         title='Register'
       />

@@ -4,6 +4,7 @@ import {
   ArchesApiNoContentResponseSchema,
   ArchesApiNotFoundResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
 import { LegacyRef } from '@archesai/domain'
@@ -56,6 +57,7 @@ export class EmailChangeController implements Controller {
     app.post(
       `/auth/email-change/request`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           body: CreateEmailChangeRequestSchema,
           description:

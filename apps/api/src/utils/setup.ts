@@ -26,11 +26,11 @@ export async function setup(): Promise<NestFastifyApplication> {
       https: {
         cert: readFileSync(
           import.meta.dirname +
-            '/../../../../deploy/kubernetes/overlays/development/certs/api/localhost.pem'
+            '/../../../../deploy/kubernetes/overlays/development/certs/localhost.pem'
         ),
         key: readFileSync(
           import.meta.dirname +
-            '/../../../../deploy/kubernetes/overlays/development/certs/api/localhost-key.pem'
+            '/../../../../deploy/kubernetes/overlays/development/certs/localhost-key.pem'
         )
       }
     })

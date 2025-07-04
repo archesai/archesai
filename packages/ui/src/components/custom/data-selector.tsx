@@ -72,7 +72,7 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
 
   // Filter data based on search term
   const filteredData = useMemo(() => {
-    return data.data.data.filter((item) =>
+    return data.data.filter((item) =>
       item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [data, searchTerm])

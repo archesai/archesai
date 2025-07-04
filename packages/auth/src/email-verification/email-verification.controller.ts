@@ -4,6 +4,7 @@ import {
   ArchesApiNoContentResponseSchema,
   ArchesApiNotFoundResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
 import { LegacyRef } from '@archesai/domain'
@@ -11,7 +12,6 @@ import { LegacyRef } from '@archesai/domain'
 import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
 import type { EmailVerificationService } from '#email-verification/email-verification.service'
 
-import { AuthenticatedGuard } from '#auth/guards/authenticated.guard'
 import { UpdateEmailVerificationRequestSchema } from '#email-verification/dto/update-email-verification-request.dto'
 
 /**

@@ -17,6 +17,7 @@ import { createSearchQuerySchema } from '#http/dto/search-query.dto'
 import { createCollectionResponseSchema } from '#http/factories/collection-response.schema'
 import { createIndividualResponseSchema } from '#http/factories/individual-response.schema'
 import { createResourceObjectSchema } from '#http/factories/resource-object.schema'
+import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
 import { capitalize } from '#utils/capitalize'
 import { singularize } from '#utils/pluralize'
 import { toCamelCase, toTitleCase, vf } from '#utils/strings'
@@ -124,6 +125,7 @@ export abstract class BaseController<
     app.post(
       `/${this.entityKey}`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           body: this.CreateSchema,
           description: `Create a new ${singularize(this.entityKey)}`,
@@ -142,6 +144,7 @@ export abstract class BaseController<
     app.delete(
       `/${this.entityKey}/:id`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: `Delete a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
           operationId:
@@ -163,6 +166,7 @@ export abstract class BaseController<
     app.get(
       `/${this.entityKey}`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: `Find many ${this.entityKey}`,
           operationId: 'findMany' + capitalize(toCamelCase(this.entityKey)),
@@ -180,6 +184,7 @@ export abstract class BaseController<
     app.get(
       `/${this.entityKey}/:id`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: `Find a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
           operationId:
@@ -205,6 +210,7 @@ export abstract class BaseController<
     app.patch(
       `/${this.entityKey}/:id`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           body: this.UpdateSchema,
           description: `Update a${vf(this.entityKey)} ${singularize(this.entityKey)}`,

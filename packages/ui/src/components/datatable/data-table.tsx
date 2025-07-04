@@ -86,13 +86,10 @@ export interface DataTableProps<
 }
 export interface TFindManyResponse<TEntity extends BaseEntity> {
   data: {
-    data: {
-      attributes: Omit<TEntity, 'id' | 'type'>
-      id: TEntity['id']
-      type: string
-    }[]
-  }
-  status: 200
+    attributes: Omit<TEntity, 'id' | 'type'>
+    id: TEntity['id']
+    type: string
+  }[]
 }
 
 export function DataTable<TEntity extends BaseEntity>(
@@ -137,18 +134,9 @@ export function DataTable<TEntity extends BaseEntity>(
 
   const { data, isFetched } = props.useFindMany({}, {})
 
-  if (!data) {
-    return (
-      <div className='flex h-full items-center justify-center'>
-        <span className='text-lg font-medium'>Loading...</span>
-      </div>
-    )
-  }
-
-  const memoizedData = data.data.data.map((item) => {
+  const memoizedData = (data ?? { data: [] }).data.map((item) => {
     return {
       id: item.id,
-
       type: item.type,
       ...item.attributes
     } as TEntity

@@ -7,9 +7,12 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { UserEntity } from '@archesai/domain'
-
-import { logout, useFindManyMembers, useUpdateUser } from '@archesai/client'
+import {
+  logout,
+  useFindManyMembers,
+  useGetSession,
+  useUpdateUser
+} from '@archesai/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
@@ -34,35 +37,35 @@ import {
   useSidebar
 } from '#components/shadcn/sidebar'
 import { Skeleton } from '#components/shadcn/skeleton'
-import { cn } from '#lib/utils'
 
 export function UserButton({
-  side = 'right',
   size = 'lg'
 }: {
   side?: 'bottom' | 'left' | 'right' | 'top'
   size?: 'default' | 'lg' | 'sm' | null | undefined
 }) {
-  const { isMobile } = useSidebar()
   const defaultOrgname = 'Arches Platform'
-
-  const user = {} as UserEntity
-  const userId = ''
+  const { data: user } = useGetSession({
+    fetch: {
+      credentials: 'include'
+    }
+  })
+  const { isMobile } = useSidebar()
 
   const { data: memberships } = useFindManyMembers(
     {
       filter: {
         userId: {
-          equals: userId
+          equals: 'Arches Platform'
         }
       }
     },
     {
-      fetch: {
-        credentials: 'include'
-      },
       query: {
-        enabled: !!userId
+        enabled: false,
+        initialData: {
+          data: []
+        }
       }
     }
   )
@@ -75,19 +78,18 @@ export function UserButton({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              className={cn(
-                'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-                size === 'sm' ? 'p-0' : 'p-2'
-              )}
+              className={
+                'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+              }
               size={size}
             >
               <Avatar className='h-8 w-8 rounded-lg'>
                 <AvatarImage
-                  alt={user.name}
-                  src={user.image ?? ''}
+                  alt={user?.name}
+                  src={user?.image}
                 />
-                <AvatarFallback className='rounded-xl'>
-                  <Skeleton className='h-9 w-9 bg-sidebar-accent' />
+                <AvatarFallback className='rounded-lg'>
+                  <Skeleton className='h-8 w-8 bg-sidebar-accent' />
                 </AvatarFallback>
               </Avatar>
               {size !== 'sm' && (
@@ -103,36 +105,35 @@ export function UserButton({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align='end'
-            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-            side={isMobile ? 'bottom' : side}
+            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+            side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className='p-0 font-normal'>
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage
-                    alt={user.name}
-                    src={user.image ?? ''}
+                    alt={user?.name}
+                    src={user?.image}
                   />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate font-medium'>
+                    {user ? user.name : <Skeleton />}
+                  </span>
+                  <span className='truncate text-xs'>
+                    {user ? user.email : <Skeleton />}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/profile/general'
-                >
-                  <BadgeCheck />
-                  Profile
-                  <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
-                </a>
+                <BadgeCheck />
+                Profile
+                <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -140,70 +141,53 @@ export function UserButton({
               <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {memberships ?
-                    memberships.data.map((membership) => (
-                      <DropdownMenuItem
-                        className='flex justify-between gap-2'
-                        key={membership.id}
-                        onClick={async () => {
-                          await updateUser(
-                            {
-                              data: {
-                                orgname: membership.attributes.orgname
-                              },
-                              id: ''
+                  {memberships.data.map((membership) => (
+                    <DropdownMenuItem
+                      className='flex justify-between gap-2'
+                      key={membership.id}
+                      onClick={async () => {
+                        await updateUser(
+                          {
+                            data: {
+                              orgname: membership.attributes.orgname
                             },
-                            {
-                              onSuccess: () => {
-                                toast('Organization changed', {
-                                  description: `You have
+                            id: ''
+                          },
+                          {
+                            onSuccess: () => {
+                              toast('Organization changed', {
+                                description: `You have
                               switched to ${membership.attributes.orgname}`
-                                })
-                              }
+                              })
                             }
-                          )
-                        }}
-                      >
-                        {membership.attributes.orgname}
-                        {defaultOrgname === membership.attributes.orgname && (
-                          <Badge>Current</Badge>
-                        )}
-                      </DropdownMenuItem>
-                    ))
-                  : null}
+                          }
+                        )
+                      }}
+                    >
+                      {membership.attributes.orgname}
+                      {defaultOrgname === membership.attributes.orgname && (
+                        <Badge>Current</Badge>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuItem>
-              <a
-                className='flex w-full'
-                href='/organization/general'
-              >
-                Settings
-              </a>
+              Settings
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/organization/billing'
-                >
-                  <Sparkles />
-                  Upgrade to Pro
-                </a>
+                <Sparkles />
+                Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/organization/billing'
-                >
-                  <CreditCard />
-                  Billing
-                </a>
+                <CreditCard />
+                Billing
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

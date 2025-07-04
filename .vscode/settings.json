@@ -9,6 +9,7 @@
     "**/*.tsbuildinfo": true,
     "**/.cache": true,
     "**/.next": true,
+    "**/.tanstack": true,
     "**/.turbo": true,
     "**/dist": true,
     "**/next-env.d.ts": true,

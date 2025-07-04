@@ -46,32 +46,13 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
           }}
         />
       )}
-      {/* <Input
-        className='h-8 flex-1'
-        onChange={(event) => {
-          setQuery(event.target.value)
-        }}
-        placeholder={`Search ${entityType}s...`}
-        value={query}
-      /> */}
-      {/* {table.getColumn("llmBase") && (
-        <DataTableFacetedFilter
-          column={table.getColumn("llmBase")}
-          options={[
-            {
-              label: "GPT-4",
-              value: "GPT-4",
-            },
-          ]}
-          title="Language Model"
-        />
-      )} */}
+
       {isFiltered && (
         <Button
-          className='flex h-8 gap-2 p-2'
           onClick={() => {
             table.resetColumnFilters()
           }}
+          size='sm'
           variant='outline'
         >
           <span>Reset</span>
@@ -84,7 +65,6 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       <DataTableViewOptions table={table} />
       {createForm && !readonly ?
         <Button
-          className='text-sm font-normal capitalize'
           onClick={() => {
             setFormOpen(true)
           }}

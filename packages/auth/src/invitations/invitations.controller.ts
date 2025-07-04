@@ -7,6 +7,7 @@ import {
   ArchesApiForbiddenResponseSchema,
   ArchesApiNotFoundResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   BaseController,
   toTitleCase
 } from '@archesai/core'
@@ -51,6 +52,7 @@ export class InvitationsController
     app.post(
       `/${INVITATION_ENTITY_KEY}/:id/accept`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: 'Accept an invitation',
           operationId: 'acceptInvitation',

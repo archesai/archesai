@@ -1,16 +1,20 @@
-import { Toaster } from '@archesai/ui/components/shadcn/sonner'
-import { NuqsAdapter } from '@archesai/ui/providers/nuqs-adapter'
-import { QCProvider } from '@archesai/ui/providers/query-client-provider'
-import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
+/// <reference types="vite/client" />
+import type { QueryClient } from '@tanstack/react-query'
 
-import '../styles/globals.css'
-
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
-  createRootRoute,
+  createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts
 } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+
+import { Toaster } from '@archesai/ui/components/shadcn/sonner'
+import { NuqsAdapter } from '@archesai/ui/providers/nuqs-adapter'
+import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
+
+import globalsCss from '../styles/globals.css?url'
 
 // const fontSans = Geist({
 //   subsets: ['latin'],
@@ -22,19 +26,22 @@ import {
 //   variable: '--font-mono'
 // })
 
-export const Route = createRootRoute({
-  component: RootLayout,
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      {
-        content: 'width=device-width, initial-scale=1',
-        name: 'viewport'
-      },
-      { title: 'TanStack Start Starter' }
-    ]
-  })
-})
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    component: RootLayout,
+    head: () => ({
+      links: [{ href: globalsCss, rel: 'stylesheet' }],
+      meta: [
+        { charSet: 'utf-8' },
+        {
+          content: 'width=device-width, initial-scale=1',
+          name: 'viewport'
+        },
+        { title: 'TanStack Start Starter' }
+      ]
+    })
+  }
+)
 
 export const metadata = {
   description:
@@ -77,21 +84,19 @@ export default function RootLayout() {
       <head>
         <HeadContent />
       </head>
-      <body
-      // className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
-      >
+      <body className={`overscroll-none font-sans antialiased`}>
         <ThemeProvider
           attribute='class'
-          defaultTheme='system'
+          defaultTheme='light'
           disableTransitionOnChange
           enableColorScheme
           enableSystem
         >
           <NuqsAdapter>
-            <QCProvider>
-              <Outlet />
-              <Scripts />
-            </QCProvider>
+            <Outlet />
+            <TanStackRouterDevtools position='bottom-right' />
+            <ReactQueryDevtools buttonPosition='bottom-left' />
+            <Scripts />
             <Toaster />
           </NuqsAdapter>
         </ThemeProvider>
@@ -99,3 +104,16 @@ export default function RootLayout() {
     </html>
   )
 }
+
+// import { SiteFooter } from "@/components/site-footer"
+// import { SiteHeader } from "@/components/site-header"
+
+// export default function AppLayout({ children }: { children: React.ReactNode }) {
+//   return (
+//     <div className="bg-background relative z-10 flex min-h-svh flex-col">
+//       <SiteHeader />
+//       <main className="flex flex-1 flex-col">{children}</main>
+//       <SiteFooter />
+//     </div>
+//   )
+// }

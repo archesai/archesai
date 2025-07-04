@@ -43,8 +43,8 @@ export default function LabelDataTable() {
       }}
       entityType={LABEL_ENTITY_KEY}
       getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
-      handleSelect={(chatbot) => {
-        router.push(`/chatbots/chat?labelId=${chatbot.id}`)
+      handleSelect={async (chatbot) => {
+        await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}
       icon={<ListMinus />}
       useFindMany={useFindManyLabels}
