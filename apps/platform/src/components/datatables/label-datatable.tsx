@@ -1,6 +1,4 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 
 import type { LabelEntity } from '@archesai/domain'
 
@@ -13,7 +11,7 @@ import { Badge } from '@archesai/ui/components/shadcn/badge'
 import LabelForm from '#components/forms/label-form'
 
 export default function LabelDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<LabelEntity>
@@ -25,8 +23,10 @@ export default function LabelDataTable() {
               <div className='flex gap-2'>
                 <span
                   className='max-w-[500px] truncate font-medium'
-                  onClick={() => {
-                    router.push(`/chatbots/chat?labelId=${row.original.id}`)
+                  onClick={async () => {
+                    await navigate({
+                      to: `/chatbots/chat?labelId=${row.original.id}`
+                    })
                   }}
                 >
                   <Badge variant={'secondary'}>{row.original.name}</Badge>

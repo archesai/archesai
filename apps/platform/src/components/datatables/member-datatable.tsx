@@ -1,5 +1,3 @@
-'use client'
-
 import type { MemberEntity } from '@archesai/domain'
 
 import { deleteMember, useFindManyMembers } from '@archesai/client'

@@ -1,5 +1,3 @@
-'use client'
-
 import type { TSchema } from '@sinclair/typebox'
 
 import { useState } from 'react'

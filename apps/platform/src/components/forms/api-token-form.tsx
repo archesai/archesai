@@ -1,5 +1,3 @@
-'use client'
-
 import { Type } from '@sinclair/typebox'
 
 import type { CreateApiTokenBody, UpdateApiTokenBody } from '@archesai/client'

@@ -1,7 +1,4 @@
-'use client'
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { RunEntity } from '@archesai/domain'
 
@@ -14,7 +11,7 @@ import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Button } from '@archesai/ui/components/shadcn/button'
 
 export default function RunDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<RunEntity>
@@ -26,7 +23,7 @@ export default function RunDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium'
-                  href={`/run/single?runId=${row.original.id}`}
+                  to={`/run/single?runId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -102,8 +99,8 @@ export default function RunDataTable() {
         await deleteRun(id)
       }}
       entityType={RUN_ENTITY_KEY}
-      handleSelect={(run) => {
-        router.push(`/run/single?runId=${run.id}`)
+      handleSelect={async (run) => {
+        await navigate({ to: `/run/single?runId=${run.id}` })
       }}
       icon={<PackageCheck />}
       useFindMany={useFindManyRuns}

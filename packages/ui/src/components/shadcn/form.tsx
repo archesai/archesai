@@ -1,5 +1,3 @@
-'use client'
-
 import type { ControllerProps, FieldPath, FieldValues } from 'react-hook-form'
 
 import * as React from 'react'

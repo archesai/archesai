@@ -1,7 +1,4 @@
-'use client'
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
@@ -13,7 +10,7 @@ import {
 } from '@archesai/ui/components/shadcn/card'
 
 export default function NotFound() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <div className='flex min-h-screen items-center justify-center p-4'>
@@ -29,18 +26,18 @@ export default function NotFound() {
           <div className='flex flex-col gap-2 sm:flex-row'>
             <Button
               className='flex-1'
-              onClick={() => {
-                router.back()
+              onClick={async () => {
+                await navigate({ to: '/' })
               }}
               variant='outline'
             >
-              Go Back
+              Go Home
             </Button>
             <Button
               asChild
               className='flex-1'
             >
-              <Link href='/'>Go Home</Link>
+              <Link to='/'>Go Home</Link>
             </Button>
           </div>
         </CardContent>

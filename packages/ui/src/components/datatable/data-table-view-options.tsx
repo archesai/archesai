@@ -1,5 +1,3 @@
-'use client'
-
 import type { Table } from '@tanstack/react-table'
 
 import * as React from 'react'

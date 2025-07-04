@@ -1,7 +1,4 @@
-'use client'
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { PipelineEntity } from '@archesai/domain'
 
@@ -13,7 +10,7 @@ import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
 export default function PipelineDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<PipelineEntity>
@@ -25,7 +22,7 @@ export default function PipelineDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium text-primary'
-                  href={`/pipelines/single?pipelineId=${row.original.id}`}
+                  to={`/pipelines/single?pipelineId=${row.original.id}`}
                 >
                   {row.original.name}
                 </Link>
@@ -70,8 +67,8 @@ export default function PipelineDataTable() {
         await deletePipeline(id)
       }}
       entityType={PIPELINE_ENTITY_KEY}
-      handleSelect={(pipeline) => {
-        router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
+      handleSelect={async (pipeline) => {
+        await navigate({ to: `/pipelines/single?pipelineId=${pipeline.id}` })
       }}
       icon={<Workflow />}
       useFindMany={useFindManyPipelines}

@@ -24,18 +24,21 @@
     "@archesai/ui": "workspace:*",
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",
+    "@tanstack/react-router": "^1.124.0",
+    "@tanstack/react-start": "^1.124.1",
     "@xyflow/react": "catalog:",
-    "next": "catalog:",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "vite": "^7.0.2"
   },
   "devDependencies": {
     "@archesai/next": "workspace:*",
     "@archesai/typescript": "workspace:*",
-    "@tailwindcss/postcss": "catalog:",
+    "@tailwindcss/vite": "^4.1.11",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "^4.6.0",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"

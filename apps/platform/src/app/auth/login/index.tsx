@@ -1,9 +1,7 @@
-'use client'
-
 import type { Static } from '@sinclair/typebox'
 
-import Link from 'next/link'
 import { Type } from '@sinclair/typebox'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { useLogin } from '@archesai/client'
 import { AuthForm } from '@archesai/ui/components/custom/auth-form'
@@ -11,6 +9,10 @@ import { AuthForm } from '@archesai/ui/components/custom/auth-form'
 const LoginSchema = Type.Object({
   email: Type.String({ format: 'email' }),
   password: Type.String({ minLength: 8 })
+})
+
+export const Route = createFileRoute('/auth/login/')({
+  component: LoginSchema
 })
 
 export default function LoginPage() {
@@ -64,7 +66,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{' '}
         <Link
           className='underline'
-          href='/auth/register'
+          to='/auth/register'
         >
           Sign up
         </Link>

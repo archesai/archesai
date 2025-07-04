@@ -1,5 +1,3 @@
-'use client'
-
 import type { DayPickerProps } from 'react-day-picker'
 
 import * as React from 'react'

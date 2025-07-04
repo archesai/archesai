@@ -1,9 +1,7 @@
-'use client'
-
 import type { Static } from '@sinclair/typebox'
 
-import Link from 'next/link'
 import { Type } from '@sinclair/typebox'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { useRegister } from '@archesai/client'
 import { AuthForm } from '@archesai/ui/components/custom/auth-form'
@@ -12,6 +10,10 @@ const RegisterSchema = Type.Object({
   confirmPassword: Type.String({ minLength: 8 }),
   email: Type.String({ format: 'email' }),
   password: Type.String({ minLength: 8 })
+})
+
+export const Route = createFileRoute('/auth/register/')({
+  component: RegisterPage
 })
 
 export default function RegisterPage() {
@@ -75,7 +77,7 @@ export default function RegisterPage() {
         Already have an account?{' '}
         <Link
           className='underline'
-          href='/auth/login'
+          to='/auth/login'
         >
           Login
         </Link>

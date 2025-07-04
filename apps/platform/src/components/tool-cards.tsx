@@ -1,6 +1,4 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 
 import { useFindManyTools } from '@archesai/client'
 import { Card } from '@archesai/ui/components/shadcn/card'
@@ -10,7 +8,7 @@ import { cn, stringToColor } from '@archesai/ui/lib/utils'
 import { toolBaseIcons } from '#lib/site-config'
 
 export const ToolCards = () => {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { data: toolsResponse, isPending } = useFindManyTools()
   if (isPending) {
     return (
@@ -46,8 +44,10 @@ export const ToolCards = () => {
           <Card
             className='flex cursor-pointer flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
             key={index}
-            onClick={() => {
-              router.push(`/playground?selectedTool=${JSON.stringify(tool)}`)
+            onClick={async () => {
+              await navigate({
+                to: `/playground?selectedTool=${JSON.stringify(tool)}`
+              })
             }}
           >
             <Icon

@@ -1,14 +1,14 @@
-'use client'
-
-import Link from 'next/link'
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router'
 
 import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
 import { buttonVariants } from '@archesai/ui/components/shadcn/button'
 import { cn } from '@archesai/ui/lib/utils'
 
-export default function AuthenticationLayout({
-  children
-}: Readonly<{ children: React.ReactNode }>) {
+export const Route = createFileRoute('/auth')({
+  component: AuthenticationLayout
+})
+
+export default function AuthenticationLayout() {
   return (
     <div className='relative grid h-svh items-center justify-center lg:grid-cols-2'>
       <Link
@@ -16,7 +16,7 @@ export default function AuthenticationLayout({
           buttonVariants({ variant: 'ghost' }),
           'absolute top-4 left-4 lg:right-4 lg:left-auto'
         )}
-        href='/'
+        to='/'
       >
         Back
       </Link>
@@ -36,19 +36,19 @@ export default function AuthenticationLayout({
 
       {/* Right side of the screen or main*/}
       <div className='mx-auto flex h-full max-w-xs flex-col justify-center gap-2'>
-        {children}
+        <Outlet />
         <p className='text-center text-sm text-muted-foreground'>
           By clicking continue, you agree to our{' '}
           <Link
             className='underline underline-offset-4 hover:text-foreground'
-            href='/legal/terms'
+            to='/legal/terms'
           >
             Terms of Service
           </Link>{' '}
           and{' '}
           <Link
             className='underline underline-offset-4 hover:text-foreground'
-            href='/legal/privacy'
+            to='/legal/privacy'
           >
             Privacy Policy
           </Link>

@@ -1,7 +1,3 @@
-import type { Metadata } from 'next'
-
-import { Geist, Geist_Mono } from 'next/font/google'
-
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
 import { NuqsAdapter } from '@archesai/ui/providers/nuqs-adapter'
 import { QCProvider } from '@archesai/ui/providers/query-client-provider'
@@ -9,14 +5,35 @@ import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
 import '../styles/globals.css'
 
-const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans'
-})
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts
+} from '@tanstack/react-router'
 
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono'
+// const fontSans = Geist({
+//   subsets: ['latin'],
+//   variable: '--font-sans'
+// })
+
+// const fontMono = Geist_Mono({
+//   subsets: ['latin'],
+//   variable: '--font-mono'
+// })
+
+export const Route = createRootRoute({
+  component: RootLayout,
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      {
+        content: 'width=device-width, initial-scale=1',
+        name: 'viewport'
+      },
+      { title: 'TanStack Start Starter' }
+    ]
+  })
 })
 
 export const metadata = {
@@ -49,20 +66,19 @@ export const metadata = {
     title: 'Arches AI',
     url: 'https://www.archesai.com/'
   }
-} as Metadata
+}
 
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout() {
   return (
     <html
       lang='en'
       suppressHydrationWarning
     >
+      <head>
+        <HeadContent />
+      </head>
       <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
+      // className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute='class'
@@ -72,7 +88,10 @@ export default function RootLayout({
           enableSystem
         >
           <NuqsAdapter>
-            <QCProvider>{children}</QCProvider>
+            <QCProvider>
+              <Outlet />
+              <Scripts />
+            </QCProvider>
             <Toaster />
           </NuqsAdapter>
         </ThemeProvider>

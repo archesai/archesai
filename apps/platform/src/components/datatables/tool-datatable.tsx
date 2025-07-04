@@ -1,7 +1,4 @@
-'use client'
-
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { ToolEntity } from '@archesai/domain'
 
@@ -13,7 +10,7 @@ import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
 export default function ToolDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<ToolEntity>
@@ -25,7 +22,7 @@ export default function ToolDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
+                  to={`/playground?selectedTool=${JSON.stringify(row.original)}`}
                 >
                   {row.original.name}
                 </Link>
@@ -78,8 +75,8 @@ export default function ToolDataTable() {
         await deleteTool(id)
       }}
       entityType={TOOL_ENTITY_KEY}
-      handleSelect={(tool) => {
-        router.push(`/tool/single?toolId=${tool.id}`)
+      handleSelect={async (tool) => {
+        await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
       icon={<PackageCheck />}
       useFindMany={useFindManyTools}

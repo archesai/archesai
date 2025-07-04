@@ -1,5 +1,3 @@
-'use client'
-
 import { useCallback } from 'react'
 import { parseAsArrayOf, parseAsJson, parseAsString, useQueryState } from 'nuqs'
 

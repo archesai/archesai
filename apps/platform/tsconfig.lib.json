@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "noEmit": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    // "plugins": [
+    //   {
+    //     "name": "next"
+    //   }
+    // ],
     "rootDir": "."
   },
   "extends": [

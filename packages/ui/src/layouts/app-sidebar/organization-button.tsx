@@ -1,5 +1,3 @@
-'use client'
-
 import { ChevronsUpDown, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 

@@ -1,6 +1,4 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
+import { useLocation } from '@tanstack/react-router'
 
 import {
   SidebarInset,
@@ -16,20 +14,20 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const pathname = usePathname()
+  const location = useLocation()
   return (
     <>
       <SidebarProvider>
         {/* This is the sidebar that is displayed on the left side of the screen. */}
         <AppSidebar
-          pathname={pathname}
+          pathname={location.pathname}
           siteRoutes={siteRoutes}
         />
         {/* This is the main content area. */}
         <SidebarInset>
           <main className='flex h-svh flex-col'>
             <PageHeader
-              pathname={pathname}
+              pathname={location.pathname}
               siteRoutes={siteRoutes}
             />
             <div className='container flex-1 overflow-auto p-4'>{children}</div>

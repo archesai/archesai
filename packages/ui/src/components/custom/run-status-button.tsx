@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { Ban, CheckCircle2, ClockArrowUpIcon, Loader2Icon } from 'lucide-react'
 

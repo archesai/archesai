@@ -1,5 +1,3 @@
-'use client'
-
 import { useGetSession } from '@archesai/client'
 import { UserEntity } from '@archesai/domain'
 

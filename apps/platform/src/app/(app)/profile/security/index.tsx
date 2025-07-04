@@ -1,4 +1,4 @@
-'use client'
+import { createFileRoute } from '@tanstack/react-router'
 
 import type { UserEntity } from '@archesai/domain'
 
@@ -20,6 +20,10 @@ import {
 } from '@archesai/ui/components/shadcn/card'
 import { Separator } from '@archesai/ui/components/shadcn/separator'
 import { toast } from '@archesai/ui/components/shadcn/sonner'
+
+export const Route = createFileRoute('/(app)/profile/security/')({
+  component: ProfileSecuritySettingsPage
+})
 
 export default function ProfileSecuritySettingsPage() {
   const { data: sessionResponse } = useGetSession({

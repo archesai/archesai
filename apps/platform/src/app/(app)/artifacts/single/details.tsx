@@ -1,7 +1,3 @@
-'use client'
-
-import { useSearchParams } from 'next/navigation'
-
 import { useGetOneArtifact } from '@archesai/client'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
@@ -14,8 +10,7 @@ import {
 } from '@archesai/ui/components/shadcn/card'
 
 export const ArtifactDetailsHeader = () => {
-  const searchParams = useSearchParams()
-  const artifactId = searchParams.get('artifactId')!
+  const artifactId = ''
   const { data, error } = useGetOneArtifact(artifactId)
 
   if (!data) {
@@ -60,9 +55,8 @@ export const ArtifactDetailsHeader = () => {
 }
 
 export const ArtifactDetailsBody = () => {
-  const searchParams = useSearchParams()
-  const artifactId = searchParams.get('artifactId')
-  const { data: artifact, error } = useGetOneArtifact(artifactId!)
+  const artifactId = ''
+  const { data: artifact, error } = useGetOneArtifact(artifactId)
   if (!artifact) {
     return (
       <CardContent>

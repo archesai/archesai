@@ -1,24 +1,56 @@
-'use client'
-
 import type { Connection, Edge, Node } from '@xyflow/react'
 
 // import '@xyflow/react/dist/style.css'
 
 import { useCallback, useMemo } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+// import RunForm from "#components/forms/run-form";
 import {
   addEdge,
   Background,
   Controls,
+  Handle,
   MiniMap,
   Panel,
+  Position,
   ReactFlow,
   useEdgesState,
   useNodesState
 } from '@xyflow/react'
 
-import { Button } from '@archesai/ui/components/shadcn/button'
+import type { PipelineStepEntity } from '@archesai/domain'
 
-import RunFormNode from './node'
+import { Button } from '@archesai/ui/components/shadcn/button'
+import { Card } from '@archesai/ui/components/shadcn/card'
+
+export const Route = createFileRoute('/(app)/pipelines/create/')({
+  component: CreatePipelinePage
+})
+
+export default function CreatePipelinePage() {
+  return <CreatePipelineContent />
+}
+
+function RunFormNode({ data }: { data: PipelineStepEntity }) {
+  return (
+    <div>
+      {/* Include your RunForm component */}
+      {/* <RunForm /> */}
+      <Card className='flex items-center justify-center px-2 py-1'>
+        {data.tool.name}
+      </Card>
+      {/* Add handles for connecting nodes */}
+      <Handle
+        position={Position.Left}
+        type='target'
+      />
+      <Handle
+        position={Position.Right}
+        type='source'
+      />
+    </div>
+  )
+}
 
 const initialNodes: Node[] = []
 const initialEdges: Edge[] = []

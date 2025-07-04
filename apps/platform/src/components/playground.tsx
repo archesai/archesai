@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-'use client'
 
 import { useFindManyRuns } from '@archesai/client'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'

@@ -1,9 +1,14 @@
 import { Suspense } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 
 // import { ArtifactViewer } from '@archesai/ui/components/custom/content-viewer'
 import { Card } from '@archesai/ui/components/shadcn/card'
 
 import { ArtifactDetailsBody, ArtifactDetailsHeader } from './details'
+
+export const Route = createFileRoute('/(app)/artifacts/single/')({
+  component: ArtifactDetailsPage
+})
 
 export default function ArtifactDetailsPage() {
   return (

@@ -1,5 +1,3 @@
-'use client'
-
 import type { Static } from '@sinclair/typebox'
 
 import { useEffect, useState } from 'react'

@@ -1,5 +1,3 @@
-'use client'
-
 import type { OrganizationEntity } from '@archesai/domain'
 
 import { Badge } from '#components/shadcn/badge'

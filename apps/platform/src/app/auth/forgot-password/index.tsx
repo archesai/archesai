@@ -1,15 +1,17 @@
-'use client'
-
 import type { Static } from '@sinclair/typebox'
 
-import Link from 'next/link'
 import { Type } from '@sinclair/typebox'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { useRequestPasswordReset } from '@archesai/client'
 import { AuthForm } from '@archesai/ui/components/custom/auth-form'
 
 const ForgotPasswordSchema = Type.Object({
   email: Type.String({ format: 'email' })
+})
+
+export const Route = createFileRoute('/auth/forgot-password/')({
+  component: ForgotPasswordPage
 })
 
 export default function ForgotPasswordPage() {
@@ -55,7 +57,7 @@ export default function ForgotPasswordPage() {
         Remembered your password?{' '}
         <Link
           className='underline'
-          href='/auth/login'
+          to='/auth/login'
         >
           Login
         </Link>

@@ -1,5 +1,3 @@
-'use client'
-
 import { useCallback, useEffect, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'

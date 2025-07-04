@@ -1,6 +1,4 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 
 import type { ApiTokenEntity } from '@archesai/domain'
 
@@ -14,7 +12,7 @@ import { Badge } from '@archesai/ui/components/shadcn/badge'
 import APITokenForm from '#components/forms/api-token-form'
 
 export default function ApiTokenDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<ApiTokenEntity>
@@ -67,9 +65,9 @@ export default function ApiTokenDataTable() {
           />
         </div>
       )}
-      handleSelect={(apiToken) => {
+      handleSelect={async (apiToken) => {
         console.error('handleSelect', apiToken)
-        router.push(`/organization/api-tokens`)
+        await navigate({ to: `/organization/api-tokens` })
       }}
       icon={
         <User
