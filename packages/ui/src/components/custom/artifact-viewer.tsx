@@ -1,7 +1,5 @@
 'use client'
 
-// import dynamic from 'next/dynamic'
-// import Image from 'next/image'
 import ReactPlayer from 'react-player'
 
 import type { ArtifactEntity } from '@archesai/domain'

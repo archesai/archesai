@@ -1,6 +1,7 @@
 import type { Controller, HttpInstance } from '@archesai/core'
 
 import { ArchesApiNoContentResponseSchema, IS_CONTROLLER } from '@archesai/core'
+import { LegacyRef } from '@archesai/domain'
 
 /**
  * Controller for managing OAuth.
@@ -21,7 +22,7 @@ export class OAuthController implements Controller {
           description: 'Authenticate with Firebase using OAuth',
           operationId: 'firebase',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           summary: 'Authenticate with Firebase',
           tags: ['OAuth']
@@ -38,7 +39,7 @@ export class OAuthController implements Controller {
           description: 'Redirects user to Twitter for authentication.',
           operationId: 'twitter',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           summary: 'Redirect to Twitter OAuth',
           tags: ['OAuth']
@@ -56,7 +57,7 @@ export class OAuthController implements Controller {
             'Receives the Twitter OAuth callback after successful authentication.',
           operationId: 'twitterCallback',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           summary: 'Handle Twitter OAuth callback',
           tags: ['OAuth']

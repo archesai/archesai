@@ -14,8 +14,6 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono'
 })
 
-export const fetchCache = 'default-cache'
-
 export const metadata = {
   description:
     'Arches AI is the perfect tool to explore documents using artificial intelligence. Simply upload your PDF and start asking questions to your personalized chatbot.',

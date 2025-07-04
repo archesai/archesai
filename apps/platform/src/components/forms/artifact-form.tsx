@@ -28,16 +28,19 @@ import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse } = useGetOneArtifact(artifactId!, {
-    query: {
-      enabled: !!artifactId
+  const { data: existingContentResponse, error } = useGetOneArtifact(
+    artifactId!,
+    {
+      query: {
+        enabled: !!artifactId
+      }
     }
-  })
+  )
 
-  if (existingContentResponse?.status !== 200) {
+  if (error) {
     return <div>Content not found</div>
   }
-  const content = existingContentResponse.data.data
+  const content = existingContentResponse!.data
 
   const formFields: FormFieldConfig[] = [
     {

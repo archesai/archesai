@@ -1,4 +1,4 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TSchema } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -46,3 +46,6 @@ export type BaseInsertion<TEntity extends BaseEntity> = Omit<
   keyof BaseEntity
 > &
   Partial<BaseEntity>
+
+export const LegacyRef = <T extends TSchema>(schema: T) =>
+  Type.Unsafe<Static<T>>(Type.Ref(schema.$id!))

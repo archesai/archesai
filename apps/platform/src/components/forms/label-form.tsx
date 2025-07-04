@@ -17,16 +17,16 @@ import { Input } from '@archesai/ui/components/shadcn/input'
 export default function LabelForm({ labelId }: { labelId?: string }) {
   const { mutateAsync: updateLabel } = useUpdateLabel({})
   const { mutateAsync: createLabel } = useCreateLabel({})
-  const { data: existingLabelResponse } = useGetOneLabel(labelId!, {
+  const { data: existingLabelResponse, error } = useGetOneLabel(labelId!, {
     query: {
       enabled: !!labelId
     }
   })
 
-  if (existingLabelResponse?.status !== 200) {
+  if (error) {
     return <div>Label not found</div>
   }
-  const label = existingLabelResponse.data.data
+  const label = existingLabelResponse!.data
 
   const formFields: FormFieldConfig[] = [
     {

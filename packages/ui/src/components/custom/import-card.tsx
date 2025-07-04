@@ -123,7 +123,7 @@ export default function ImportCard({
             action: 'write',
             path: `uploads/${file.name}`
           })
-          const writeUrl = response.data.data.attributes.write
+          const writeUrl = response.data.attributes.write
           // if (response.status !== 201) {
           //   throw new Error('Failed to create file.')
           // }

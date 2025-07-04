@@ -28,7 +28,7 @@ export const ToolCards = () => {
       </div>
     )
   }
-  const tools = toolsResponse?.data.data
+  const tools = toolsResponse?.data
   if (!tools) {
     return (
       <div className='flex h-[150px] items-center justify-center'>

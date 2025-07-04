@@ -5,6 +5,8 @@ import { Type } from '@sinclair/typebox'
 
 import type { BaseEntity, BaseInsertion } from '@archesai/domain'
 
+import { LegacyRef } from '@archesai/domain'
+
 import type { BaseService } from '#common/base.service'
 import type { SearchQuery } from '#http/dto/search-query.dto'
 import type { Controller } from '#http/interfaces/controller.interface'
@@ -149,7 +151,7 @@ export abstract class BaseController<
           }),
           response: {
             200: this.IndividualEntityResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Delete a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
           tags: [toTitleCase(this.entityKey)]
@@ -191,7 +193,7 @@ export abstract class BaseController<
           },
           response: {
             200: this.IndividualEntityResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Find a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
           tags: [toTitleCase(this.entityKey)]
@@ -217,7 +219,7 @@ export abstract class BaseController<
           },
           response: {
             200: this.IndividualEntityResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Update a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
           tags: [toTitleCase(this.entityKey)]

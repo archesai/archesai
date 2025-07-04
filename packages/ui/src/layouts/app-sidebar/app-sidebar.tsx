@@ -37,9 +37,7 @@ export function AppSidebar({
       {...props}
     >
       <SidebarHeader className='flex h-14 items-center justify-center'>
-        <OrganizationButton
-          user={new UserEntity(session.data as unknown as UserEntity)}
-        />
+        <OrganizationButton user={new UserEntity(session.data as UserEntity)} />
       </SidebarHeader>
       <SidebarContent className='gap-0'>
         <SidebarLinks

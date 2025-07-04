@@ -6,6 +6,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
+import { LegacyRef } from '@archesai/domain'
 
 import type { CreatePasswordResetRequest } from '#password-reset/dto/create-password-reset.req.dto'
 import type { UpdatePasswordResetRequest } from '#password-reset/dto/update-password-reset.req.dto'
@@ -41,9 +42,9 @@ export class PasswordResetController implements Controller {
             'This endpoint will confirm your password change with a token',
           operationId: 'confirmPasswordReset',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: 'Confirm password reset',
           tags: ['Password Reset']
@@ -60,7 +61,7 @@ export class PasswordResetController implements Controller {
           description: 'This endpoint will request a password reset link',
           operationId: 'requestPasswordReset',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           summary: 'Request password reset',
           tags: ['Password Reset']

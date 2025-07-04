@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 
 import type { UserEntity } from '@archesai/domain'
 
-import { logout, updateUser, useFindManyMembers } from '@archesai/client'
+import { logout, useFindManyMembers, useUpdateUser } from '@archesai/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
@@ -68,6 +68,8 @@ export function UserButton({
       }
     }
   )
+
+  const { mutateAsync: updateUser } = useUpdateUser()
 
   return (
     <SidebarMenu>
@@ -141,22 +143,27 @@ export function UserButton({
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                   {memberships ?
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                    (memberships.data.data ?? []).map((membership) => (
+                    memberships.data.map((membership) => (
                       <DropdownMenuItem
                         className='flex justify-between gap-2'
                         key={membership.id}
                         onClick={async () => {
-                          const { status } = await updateUser(user.id, {
-                            orgname: membership.attributes.orgname
-                          })
-
-                          if (status === 200) {
-                            toast('Organization changed', {
-                              description: `You have
+                          await updateUser(
+                            {
+                              data: {
+                                orgname: membership.attributes.orgname
+                              },
+                              id: ''
+                            },
+                            {
+                              onSuccess: () => {
+                                toast('Organization changed', {
+                                  description: `You have
                               switched to ${membership.attributes.orgname}`
-                            })
-                          }
+                                })
+                              }
+                            }
+                          )
                         }}
                       >
                         {membership.attributes.orgname}

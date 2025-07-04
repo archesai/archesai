@@ -9,7 +9,11 @@ import type {
   UserEntity
 } from '@archesai/domain'
 
-import { updateUser, useFindManyMembers, useGetSession } from '@archesai/client'
+import {
+  useFindManyMembers,
+  useGetSession,
+  useUpdateUser
+} from '@archesai/client'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
 import { Badge } from '#components/shadcn/badge'
@@ -51,22 +55,31 @@ export function OrganizationButton({ organization }: OrganizationButtonProps) {
     }
   })
 
+  const { mutateAsync: updateUser } = useUpdateUser()
+
   const { isMobile } = useSidebar()
 
   const handleSwitchOrganization = async (orgname: string) => {
-    const { data, status } = await updateUser('organization-bar', {
-      orgname
-    })
-
-    if (status === 200) {
-      toast('Default organization updated', {
-        description: 'Your default organization has been updated.'
-      })
-    } else {
-      toast('Error updating default organization', {
-        description: data.errors.map((error) => error.title).join(' ')
-      })
-    }
+    await updateUser(
+      {
+        data: {
+          orgname
+        },
+        id: 'organization'
+      },
+      {
+        onError: (errors) => {
+          toast('Error updating default organization', {
+            description: errors.errors.map((error) => error.title).join(' ')
+          })
+        },
+        onSuccess: () => {
+          toast('Default organization updated', {
+            description: 'Your default organization has been updated.'
+          })
+        }
+      }
+    )
   }
 
   return (
@@ -111,14 +124,15 @@ export function OrganizationButton({ organization }: OrganizationButtonProps) {
               Organizations
             </DropdownMenuLabel>
             {memberships ?
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-              (memberships.data.data ?? []).map((membership) => (
+              memberships.data.map((membership) => (
                 <DropdownMenuItem
                   className='flex justify-between gap-2'
                   key={membership.id}
-                  onClick={async () =>
-                    handleSwitchOrganization(membership.attributes.orgname)
-                  }
+                  onClick={async () => {
+                    await handleSwitchOrganization(
+                      membership.attributes.orgname
+                    )
+                  }}
                 >
                   {membership.attributes.orgname}
                   {'Arches Platform' === membership.attributes.orgname && (

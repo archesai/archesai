@@ -19,16 +19,16 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
-  const { data: existingMemberResponse } = useGetOneMember(memberId!, {
+  const { data: existingMemberResponse, error } = useGetOneMember(memberId!, {
     query: {
       enabled: !!memberId
     }
   })
 
-  if (existingMemberResponse?.status !== 200) {
+  if (error || !existingMemberResponse) {
     return <div>Member not found</div>
   }
-  const member = existingMemberResponse.data.data
+  const member = existingMemberResponse.data
 
   const formFields: FormFieldConfig[] = [
     {

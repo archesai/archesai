@@ -16,7 +16,7 @@ import {
 export const ArtifactDetailsHeader = () => {
   const searchParams = useSearchParams()
   const artifactId = searchParams.get('artifactId')!
-  const { data } = useGetOneArtifact(artifactId)
+  const { data, error } = useGetOneArtifact(artifactId)
 
   if (!data) {
     return (
@@ -26,16 +26,16 @@ export const ArtifactDetailsHeader = () => {
     )
   }
 
-  if (data.status !== 200) {
+  if (error) {
     return (
       <CardHeader>
         <CardTitle>Error</CardTitle>
-        <CardDescription>{data.data.errors[0]?.detail}</CardDescription>
+        <CardDescription>{error.errors[0]?.detail}</CardDescription>
       </CardHeader>
     )
   }
 
-  const artifactData = data.data.data
+  const artifactData = data.data
   return (
     <CardHeader>
       <CardTitle className='flex items-center justify-between'>
@@ -62,22 +62,22 @@ export const ArtifactDetailsHeader = () => {
 export const ArtifactDetailsBody = () => {
   const searchParams = useSearchParams()
   const artifactId = searchParams.get('artifactId')
-  const { data: content } = useGetOneArtifact(artifactId!)
-  if (!content) {
+  const { data: artifact, error } = useGetOneArtifact(artifactId!)
+  if (!artifact) {
     return (
       <CardContent>
         <div className='flex items-center gap-2'>Loading...</div>
       </CardContent>
     )
   }
-  if (content.status !== 200) {
+  if (error) {
     return (
       <CardContent>
         <div className='flex items-center gap-2'>Error</div>
       </CardContent>
     )
   }
-  const artifactData = content.data.data
+  const artifactData = artifact.data
   return (
     <CardContent>
       <div className='flex items-center gap-2'>

@@ -18,15 +18,12 @@ import { Input } from '@archesai/ui/components/shadcn/input'
 export default function OrganizationForm({ orgname }: { orgname?: string }) {
   const { mutateAsync: createOrganization } = useCreateOrganization({})
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
-  const { data: existingOrganizationResponse } = useGetOneOrganization(
-    orgname!,
-    {
-      query: {
-        enabled: !!orgname
-      }
+  const { error } = useGetOneOrganization(orgname!, {
+    query: {
+      enabled: !!orgname
     }
-  )
-  if (existingOrganizationResponse?.status !== 200) {
+  })
+  if (error) {
     return <div>Organization not found</div>
   }
 

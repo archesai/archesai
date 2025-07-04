@@ -6,6 +6,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
+import { LegacyRef } from '@archesai/domain'
 
 import type { CreateEmailChangeRequest } from '#email-change/dto/create-email-change-request.dto'
 import type { UpdateEmailChangeRequest } from '#email-change/dto/update-email-change-request.dto'
@@ -41,9 +42,9 @@ export class EmailChangeController implements Controller {
             'This endpoint will confirm your e-mail change with a token',
           operationId: 'confirmEmailChange',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: 'Confirm e-mail change',
           tags: ['Email Change']
@@ -61,7 +62,7 @@ export class EmailChangeController implements Controller {
             'This endpoint will request your e-mail change with a token',
           operationId: 'requestEmailChange',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           summary: 'Request e-mail change',
           tags: ['Email Change']

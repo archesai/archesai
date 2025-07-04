@@ -1,4 +1,3 @@
-import ruleset from '@ibm-cloud/openapi-ruleset'
 import { ConfigExternal, defineConfig } from 'orval'
 
 export default defineConfig({
@@ -31,15 +30,23 @@ export default defineConfig({
       //   }
       // },
       target: 'https://localhost:3001/docs/openapi.json'
-    }, /// NODE_TLS_REJECT_UNAUTHORIZED=0
+    },
     output: {
+      override: {
+        fetch: {
+          includeHttpResponseReturnType: false
+        }
+      },
       target: './src/generated/orval.ts',
       client: 'react-query',
       httpClient: 'fetch',
       mode: 'split',
+      // urlEncodeParameters: true,
+      // allParamsOptional: true,
       baseUrl: {
         getBaseUrlFromSpecification: true
       }
+      // propertySortOrder: 'Alphabetical'
     },
     hooks: {
       afterAllFilesWrite: [
@@ -47,9 +54,5 @@ export default defineConfig({
         `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`
       ]
     }
-
-    // hooks: {
-    //   afterAllFilesWrite: 'prettier --write'
-    // }
   }
 } satisfies ConfigExternal)

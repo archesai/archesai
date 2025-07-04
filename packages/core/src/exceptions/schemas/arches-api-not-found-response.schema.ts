@@ -1,5 +1,3 @@
-import type { TSchema } from '@sinclair/typebox'
-
 import { Type } from '@sinclair/typebox'
 
 export const ArchesApiNotFoundResponseSchema = Type.Object(
@@ -23,4 +21,4 @@ export const ArchesApiNotFoundResponseSchema = Type.Object(
     description: 'Not Found',
     title: 'Not Found'
   }
-) satisfies TSchema as TSchema
+)

@@ -12,6 +12,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
+import { LegacyRef } from '@archesai/domain'
 
 import type { SessionsService } from '#sessions/sessions.service'
 
@@ -58,8 +59,8 @@ export class SessionsController implements Controller {
           description: `This endpoint will log you in with your e-mail and password`,
           operationId: 'login',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Login`,
           tags: ['Sessions']
@@ -75,8 +76,8 @@ export class SessionsController implements Controller {
           description: `This endpoint will log you out of the current session`,
           operationId: 'logout',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Logout`,
           tags: ['Sessions']
@@ -94,7 +95,7 @@ export class SessionsController implements Controller {
           operationId: 'getSession',
           response: {
             200: Type.Object({}),
-            401: ArchesApiUnauthorizedResponseSchema
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Get Session`,
           tags: ['Sessions']

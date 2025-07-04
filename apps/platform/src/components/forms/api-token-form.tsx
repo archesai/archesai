@@ -26,16 +26,19 @@ import {
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   const { mutateAsync: createApiToken } = useUpdateApiToken({})
   const { mutateAsync: updateApiToken } = useCreateApiToken({})
-  const { data: existingApiTokenResponse } = useGetOneApiToken(apiTokenId!, {
-    query: {
-      enabled: !!apiTokenId
+  const { data: existingApiTokenResponse, error } = useGetOneApiToken(
+    apiTokenId!,
+    {
+      query: {
+        enabled: !!apiTokenId
+      }
     }
-  })
+  )
 
-  if (existingApiTokenResponse?.status !== 200) {
+  if (error) {
     return <div>API Token not found</div>
   }
-  const apiToken = existingApiTokenResponse.data.data
+  const apiToken = existingApiTokenResponse!.data
 
   const formFields: FormFieldConfig[] = [
     {

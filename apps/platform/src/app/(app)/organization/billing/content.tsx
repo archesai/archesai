@@ -33,7 +33,7 @@ export default function BillingPageContent() {
     -1
   )
 
-  const { data: plansResponse } = useGetPlans()
+  const { data: plansResponse, error: plansError } = useGetPlans()
 
   const { data: organizationResponse } = useGetOneOrganization(defaultOrgname)
 
@@ -64,12 +64,12 @@ export default function BillingPageContent() {
     mutateAsync: cancelSubscription
   } = useCancelSubscription()
 
-  const plans = plansResponse?.data.data
+  const plans = plansResponse?.data
 
-  if (organizationResponse?.status !== 200) {
+  if (plansError || !organizationResponse) {
     return null
   }
-  const organization = organizationResponse.data.data
+  const organization = organizationResponse.data
 
   return (
     <div className='flex flex-col gap-3'>
@@ -153,7 +153,7 @@ export default function BillingPageContent() {
                                   priceId: plan.id
                                 }
                               })
-                              window.location.href = data.data.url
+                              window.location.href = data.url
                             }}
                             size='sm'
                           >

@@ -24,7 +24,7 @@ export default function Chat() {
       }
     }
   })
-  const messages = data?.data.data
+  const messages = data?.data
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Chat() {
         const label = await createLabel({
           name: 'Chat'
         })
-        setLabelId(label.data.data.id)
+        setLabelId(label.data.id)
       } catch (error: unknown) {
         console.error(error)
         toast('Failed to create label')

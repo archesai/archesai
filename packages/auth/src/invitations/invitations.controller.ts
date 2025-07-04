@@ -10,7 +10,11 @@ import {
   BaseController,
   toTitleCase
 } from '@archesai/core'
-import { INVITATION_ENTITY_KEY, InvitationEntitySchema } from '@archesai/domain'
+import {
+  INVITATION_ENTITY_KEY,
+  InvitationEntitySchema,
+  LegacyRef
+} from '@archesai/domain'
 
 import type { InvitationsService } from '#invitations/invitations.service'
 
@@ -55,9 +59,9 @@ export class InvitationsController
           }),
           response: {
             200: this.IndividualEntityResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema,
-            403: ArchesApiForbiddenResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
+            403: LegacyRef(ArchesApiForbiddenResponseSchema),
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: 'Accept an invitation',
           tags: [toTitleCase(INVITATION_ENTITY_KEY)]

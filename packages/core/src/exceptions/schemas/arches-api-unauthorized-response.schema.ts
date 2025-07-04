@@ -1,5 +1,3 @@
-import type { TSchema } from '@sinclair/typebox'
-
 import { Type } from '@sinclair/typebox'
 
 export const ArchesApiUnauthorizedResponseSchema = Type.Object(
@@ -23,4 +21,4 @@ export const ArchesApiUnauthorizedResponseSchema = Type.Object(
     description: 'Unauthorized',
     title: 'Unauthorized'
   }
-) satisfies TSchema as TSchema
+)

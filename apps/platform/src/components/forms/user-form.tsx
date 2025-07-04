@@ -12,12 +12,12 @@ import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function UserForm() {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: userResponse } = useGetOneUser('user-form')
+  const { data: userResponse, error } = useGetOneUser('user-form')
 
-  if (userResponse?.status !== 200) {
+  if (error || !userResponse) {
     return <div>Run not found</div>
   }
-  const user = userResponse.data.data
+  const user = userResponse.data
 
   const formFields: FormFieldConfig[] = [
     {

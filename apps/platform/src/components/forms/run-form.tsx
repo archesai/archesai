@@ -56,13 +56,13 @@ export function RunForm({ runId }: { runId?: string }) {
     setSelectedRunId,
     setSelectedTool
   } = usePlayground()
-  const { data: existingRunResponse } = useGetOneRun(runId!, {
+  const { error } = useGetOneRun(runId!, {
     query: {
       enabled: !!runId
     }
   })
 
-  if (existingRunResponse?.status !== 200) {
+  if (error) {
     return <div>Run not found</div>
   }
 
@@ -244,7 +244,7 @@ export function RunForm({ runId }: { runId?: string }) {
           },
           mutateOptions
         )
-        await setSelectedRunId(run.data.data.id)
+        await setSelectedRunId(run.data.id)
       }}
       showCard={true}
       title='Try a Tool'

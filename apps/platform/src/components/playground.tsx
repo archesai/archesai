@@ -15,7 +15,7 @@ export default function Playground() {
 
   const { data: runsResponse } = useFindManyRuns()
 
-  const runs = runsResponse?.data.data ?? []
+  const runs = runsResponse?.data ?? []
   const run = runs.find((r) => r.id === selectedRunId)
 
   const hasInputs = false

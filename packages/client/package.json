@@ -14,7 +14,7 @@
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "orval",
+    "generate": "NODE_TLS_REJECT_UNAUTHORIZED=0 orval",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },

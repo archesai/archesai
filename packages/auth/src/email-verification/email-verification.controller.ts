@@ -6,6 +6,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
+import { LegacyRef } from '@archesai/domain'
 
 import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
 import type { EmailVerificationService } from '#email-verification/email-verification.service'
@@ -39,9 +40,9 @@ export class EmailVerificationController implements Controller {
           description: 'This endpoint will confirm your e-mail with a token',
           operationId: 'confirmEmailVerification',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema,
-            404: ArchesApiNotFoundResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
+            404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: 'Confirm e-mail verification',
           tags: ['Email Verification']
@@ -59,7 +60,7 @@ export class EmailVerificationController implements Controller {
             'This endpoint will send an e-mail verification link to you. ADMIN ONLY.',
           operationId: 'requestEmailVerification',
           response: {
-            204: ArchesApiNoContentResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema)
           },
           security: [{ bearerAuth: [] }], // ✅ add this line
           summary: 'Request e-mail verification',

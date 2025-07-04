@@ -7,7 +7,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
-import { AccountEntitySchema } from '@archesai/domain'
+import { LegacyRef } from '@archesai/domain'
 
 import type { RegistrationService } from '#registration/registration.service'
 
@@ -45,8 +45,8 @@ export class RegistrationController implements Controller {
           description: `This endpoint will register you with your e-mail and password`,
           operationId: 'register',
           response: {
-            204: ArchesApiNoContentResponseSchema,
-            401: ArchesApiUnauthorizedResponseSchema
+            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Register`,
           tags: ['Registration']
@@ -54,6 +54,5 @@ export class RegistrationController implements Controller {
       },
       this.register.bind(this)
     )
-    app.addSchema(AccountEntitySchema)
   }
 }

@@ -70,7 +70,5 @@ export class PlansController implements Controller {
       },
       this.findMany.bind(this)
     )
-
-    app.addSchema(PlanResourceObjectSchema)
   }
 }
