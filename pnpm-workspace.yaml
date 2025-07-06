@@ -22,7 +22,7 @@ catalog:
   typescript-eslint: ^8.35.1
   prettier: ^3.6.2
   '@ianvs/prettier-plugin-sort-imports': ^4.4.2
-  prettier-plugin-packagejson: ^2.5.17
+  prettier-plugin-packagejson: ^2.5.18
   prettier-plugin-sh: ^0.18.0
   prettier-plugin-sort-json: ^4.1.1
   prettier-plugin-tailwindcss: ^0.6.13
@@ -32,7 +32,7 @@ catalog:
   '@tailwindcss/cli': ^4.1.11
   tw-animate-css: ^1.3.5
   lucide-react: ^0.525.0
-  react-hook-form: ^7.59.0
+  react-hook-form: ^7.60.0
   '@hookform/resolvers': ^5.1.1
   '@sinclair/typebox': ^0.34.37
   jest: ^30.0.4
@@ -143,4 +143,4 @@ strictDepBuilds: true
 
 strictPeerDependencies: true
 
-useNodeVersion: 24.2.0
+useNodeVersion: 24.3.0

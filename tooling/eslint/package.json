@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },

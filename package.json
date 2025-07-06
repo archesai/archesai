@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
     "clean:workspaces": "turbo run clean",
     "dev": "turbo watch dev --continue",
     "dev:api": "turbo watch dev -F @archesai/api",
@@ -43,7 +43,7 @@
   },
   "packageManager": "pnpm@10.12.4",
   "engines": {
-    "node": ">=24.2.0",
+    "node": ">=24.3.0",
     "pnpm": "^10.12.4"
   }
 }

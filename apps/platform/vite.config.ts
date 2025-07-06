@@ -10,15 +10,14 @@ export default defineConfig({
     port: 3000,
     proxy: {},
     https: {
-      // ca: '/home/jonathan/.local/share/mkcert/rootCA.pem',
       key: fs.readFileSync(
         path.resolve(
-          '/Users/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost-key.pem'
+          '../../deploy/kubernetes/overlays/development/certs/localhost-key.pem'
         )
       ),
       cert: fs.readFileSync(
         path.resolve(
-          '/Users/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost.pem'
+          '../../deploy/kubernetes/overlays/development/certs/localhost.pem'
         )
       )
     }

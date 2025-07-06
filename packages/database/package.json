@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
     "db:migrate": "drizzle-kit migrate",
