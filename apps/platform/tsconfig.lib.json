@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
-    "noEmit": true,
-    "rootDir": "."
+    "noEmit": true
+    // "types": ["vite/client"]
   },
   "extends": [
     "../../tooling/typescript/src/base.json",
     "../../tooling/typescript/src/react.json",
     "../../tooling/typescript/src/lib.json"
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "../../packages/client/tsconfig.lib.json"

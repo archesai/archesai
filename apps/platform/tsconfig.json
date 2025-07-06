@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "baseUrl": "."
-  },
   "extends": "../../tooling/typescript/src/base.json",
   "files": [],
   "include": [],

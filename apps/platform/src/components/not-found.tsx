@@ -1,4 +1,4 @@
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
@@ -9,9 +9,7 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 
-export default function NotFound() {
-  const navigate = useNavigate()
-
+export default function NotFound({ children }: { children?: React.ReactNode }) {
   return (
     <div className='flex min-h-screen items-center justify-center p-4'>
       <Card className='w-full max-w-md text-center'>
@@ -20,14 +18,15 @@ export default function NotFound() {
           <CardTitle className='text-2xl'>Page Not Found</CardTitle>
           <CardDescription>
             The page you're looking for doesn't exist or has been moved.
+            {children}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className='flex flex-col gap-2 sm:flex-row'>
             <Button
               className='flex-1'
-              onClick={async () => {
-                await navigate({ to: '/chat' })
+              onClick={() => {
+                window.history.back()
               }}
               variant='outline'
             >

@@ -15,7 +15,7 @@
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "start": "next start --hostname localhost --port 3000 --experimental-https",
+    "start": "vite start",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",

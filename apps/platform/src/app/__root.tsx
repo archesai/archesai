@@ -1,74 +1,91 @@
 /// <reference types="vite/client" />
 import type { QueryClient } from '@tanstack/react-query'
 
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
-  Scripts
-  //
+  Scripts,
+  useRouterState
 } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import type { AuthContext } from '@archesai/ui/hooks/use-auth'
 
 import { ActiveThemeProvider } from '@archesai/ui/components/custom/active-theme'
-// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
+import { seo } from '@archesai/ui/lib/seo'
 import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
+import { DefaultCatchBoundary } from '#components/default-catch-boundary'
+import NotFound from '#components/not-found'
 import globalsCss from '../styles/globals.css?url'
-
-export const metadata = {
-  description:
-    'Arches AI is the perfect tool to explore documents using artificial intelligence. Simply upload your PDF and start asking questions to your personalized chatbot.',
-  icons: {
-    icon: '/icon.png'
-  },
-  openGraph: {
-    description:
-      'Arches AI is the perfect tool to explore documents using artificial intelligence. Simply upload your PDF and start asking questions to your personalized chatbot.',
-    images: [
-      {
-        alt: 'Arches AI',
-        height: 600,
-        url: 'https://www.archesai.com/sc.png',
-        width: 800
-      }
-    ],
-    title: 'Arches AI',
-    type: 'website',
-    url: 'https://www.archesai.com/'
-  },
-  title: 'Arches AI',
-  twitter: {
-    card: 'summary_large_image',
-    description:
-      'Arches AI is the perfect tool to explore documents using artificial intelligence. Simply upload your PDF and start asking questions to your personalized chatbot.',
-    images: ['https://www.archesai.com/sc.png'],
-    title: 'Arches AI',
-    url: 'https://www.archesai.com/'
-  }
-}
 
 export const Route = createRootRouteWithContext<{
   authentication: AuthContext
   queryClient: QueryClient
 }>()({
   component: RootComponent,
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    )
+  },
   head: () => ({
-    links: [{ href: globalsCss, rel: 'stylesheet' }],
+    links: [
+      { href: globalsCss, rel: 'stylesheet' },
+      {
+        href: '/apple-touch-icon.png',
+        rel: 'apple-touch-icon',
+        sizes: '180x180'
+      },
+      {
+        href: '/favicon-32x32.png',
+        rel: 'icon',
+        sizes: '32x32',
+        type: 'image/png'
+      },
+      {
+        href: '/favicon-16x16.png',
+        rel: 'icon',
+        sizes: '16x16',
+        type: 'image/png'
+      },
+      { color: '#fffff', href: '/site.webmanifest', rel: 'manifest' },
+      { href: '/favicon.ico', rel: 'icon' }
+    ],
     meta: [
       { charSet: 'utf-8' },
       {
         content: 'width=device-width, initial-scale=1',
         name: 'viewport'
       },
-      { title: 'TanStack Start Starter' }
+      ...seo({
+        description:
+          'Arches AI is the perfect tool to explore documents using artificial intelligence. Simply upload your PDF and start asking questions to your personalized chatbot.',
+        image: 'https://www.archesai.com/sc.png',
+        title: 'Arches AI'
+      })
     ]
-  })
+  }),
+  notFoundComponent: () => <NotFound />
 })
+
+export function LoadingIndicator() {
+  const isLoading = useRouterState({ select: (s) => s.isLoading })
+  return (
+    <div
+      className={`h-12 transition-all duration-300 ${
+        isLoading ? `opacity-100 delay-300` : `opacity-0 delay-0`
+      }`}
+    >
+      <Loader />
+    </div>
+  )
+}
 
 export default function RootDocument({
   children
@@ -76,10 +93,7 @@ export default function RootDocument({
   children: React.ReactNode
 }) {
   return (
-    <html
-      lang='en'
-      suppressHydrationWarning
-    >
+    <html>
       <head>
         <HeadContent />
       </head>
@@ -93,14 +107,22 @@ export default function RootDocument({
         >
           <ActiveThemeProvider>
             {children}
-            {/* <TanStackRouterDevtools position='bottom-right' />
-          <ReactQueryDevtools buttonPosition='bottom-left' /> */}
-            <Scripts />
             <Toaster />
           </ActiveThemeProvider>
         </ThemeProvider>
+        <TanStackRouterDevtools position='bottom-right' />
+        <ReactQueryDevtools buttonPosition='bottom-left' />
+        <Scripts />
       </body>
     </html>
+  )
+}
+
+function Loader() {
+  return (
+    <div className='flex h-full'>
+      <div className='m-auto aspect-square h-20 max-h-full animate-spin rounded-full border-8 border-gray-300 border-t-slate-900' />
+    </div>
   )
 }
 
