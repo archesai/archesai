@@ -20,9 +20,5 @@
     "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
     "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
   },
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "next/router.d.ts",
-    "next/dist/client/router.d.ts"
-  ],
   "typescript.tsdk": "node_modules/typescript/lib"
 }

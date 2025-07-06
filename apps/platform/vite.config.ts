@@ -13,12 +13,12 @@ export default defineConfig({
       // ca: '/home/jonathan/.local/share/mkcert/rootCA.pem',
       key: fs.readFileSync(
         path.resolve(
-          '/home/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost-key.pem'
+          '/Users/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost-key.pem'
         )
       ),
       cert: fs.readFileSync(
         path.resolve(
-          '/home/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost.pem'
+          '/Users/jonathan/Projects/archesai/deploy/kubernetes/overlays/development/certs/localhost.pem'
         )
       )
     }

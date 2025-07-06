@@ -41,8 +41,8 @@ export default defineConfig({
       client: 'react-query',
       httpClient: 'fetch',
       mode: 'split',
-      // urlEncodeParameters: true,
-      // allParamsOptional: true,
+      urlEncodeParameters: true,
+      allParamsOptional: true,
       baseUrl: {
         getBaseUrlFromSpecification: true
       }

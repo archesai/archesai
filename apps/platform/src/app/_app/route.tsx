@@ -1,11 +1,10 @@
 import {
   createFileRoute,
   Outlet,
-  redirect,
+  // redirect,
   useLocation
 } from '@tanstack/react-router'
 
-import { getSession } from '@archesai/client'
 import {
   SidebarInset,
   SidebarProvider
@@ -16,25 +15,20 @@ import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
-  beforeLoad: async ({ location }) => {
-    try {
-      const user = await getSession({
-        credentials: 'include'
-      })
-      return user
-    } catch {
-      return redirect({
-        search: {
-          // Use the current location to power a redirect after login
-          // (Do not use `router.state.resolvedLocation` as it can
-          // potentially lag behind the actual current location)
-          redirect: location.href
-        },
-        throw: true,
-        to: '/auth/login'
-      })
-    }
-  },
+  // beforeLoad: ({ context, location }) => {
+  //   if (!context.authentication.isLogged()) {
+  //     redirect({
+  //       search: {
+  //         // Use the current location to power a redirect after login
+  //         // (Do not use `router.state.resolvedLocation` as it can
+  //         // potentially lag behind the actual current location)
+  //         redirect: location.href
+  //       },
+  //       throw: true,
+  //       to: '/auth/login'
+  //     })
+  //   }
+  // },
   component: AppLayout
 })
 

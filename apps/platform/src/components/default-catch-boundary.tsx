@@ -17,8 +17,6 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
     strict: false
   })
 
-  console.error(error)
-
   return (
     <div className='flex min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4'>
       <ErrorComponent error={error} />
@@ -34,15 +32,20 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
         </Button>
         {isRoot ?
           <Link to='/chat'>Home</Link>
-        : <Link
-            onClick={(e) => {
-              e.preventDefault()
-              window.history.back()
-            }}
-            to='/chat'
+        : <Button
+            size='sm'
+            variant={'ghost'}
           >
-            Go Back
-          </Link>
+            <Link
+              onClick={(e) => {
+                e.preventDefault()
+                window.history.back()
+              }}
+              to='/chat'
+            >
+              Go Back
+            </Link>
+          </Button>
         }
       </div>
     </div>

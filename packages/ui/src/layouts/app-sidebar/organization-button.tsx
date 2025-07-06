@@ -1,6 +1,10 @@
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
-import { useFindManyMembers, useUpdateUser } from '@archesai/client'
+import {
+  useFindManyMembers,
+  useGetSession,
+  useUpdateUser
+} from '@archesai/client'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
 import { Badge } from '#components/shadcn/badge'
@@ -18,8 +22,14 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '#components/shadcn/sidebar'
+import { Skeleton } from '#components/shadcn/skeleton'
 
 export function OrganizationButton() {
+  const { data: session } = useGetSession({
+    fetch: {
+      credentials: 'include'
+    }
+  })
   const { data: memberships } = useFindManyMembers(
     {
       filter: {
@@ -63,22 +73,22 @@ export function OrganizationButton() {
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground'>
                 <div className='-mt-0.5'>
                   <ArchesLogo
-                    scale={0.1}
+                    scale={0.12}
                     size='sm'
                   />
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                {/* <span className='truncate font-medium'>
+                <span className='truncate font-medium'>
                   {!session ?
                     <Skeleton />
-                  : organization.orgname}
+                  : session.orgname}
                 </span>
                 <span className='truncate text-xs'>
-                  {!organization ?
+                  {!session ?
                     <Skeleton />
-                  : organization.plan + ' Plan'}
-                </span> */}
+                  : session.email + ' Plan'}
+                </span>
               </div>
               <ChevronsUpDown className='ml-auto' />
             </SidebarMenuButton>

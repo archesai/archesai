@@ -17,7 +17,6 @@
   "dependencies": {
     "@eslint/compat": "catalog:",
     "@eslint/js": "catalog:",
-    "@next/eslint-plugin-next": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-import-resolver-typescript": "catalog:",
     "eslint-plugin-import": "catalog:",

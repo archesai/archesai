@@ -12,6 +12,7 @@ export function createRouter() {
   return routerWithQueryClient(
     createTanStackRouter({
       context: {
+        authentication: undefined!,
         queryClient
       },
       defaultErrorComponent: DefaultCatchBoundary,
@@ -19,7 +20,7 @@ export function createRouter() {
         return <NotFound />
       },
       defaultPreload: 'intent',
-      defaultPreloadStaleTime: 0,
+      // defaultPreloadStaleTime: 0,
       routeTree,
       scrollRestoration: true
     }),

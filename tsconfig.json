@@ -7,9 +7,6 @@
       "path": "./apps/api"
     },
     {
-      "path": "./apps/landing"
-    },
-    {
       "path": "./apps/platform"
     },
     // {
@@ -53,9 +50,6 @@
     },
     {
       "path": "./tooling/jest"
-    },
-    {
-      "path": "./tooling/next"
     },
     {
       "path": "./tooling/prettier"

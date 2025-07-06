@@ -26,9 +26,6 @@
     },
     {
       "path": "../../tooling/jest"
-    },
-    {
-      "path": "../../tooling/next"
     }
   ]
 }

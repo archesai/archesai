@@ -14,8 +14,6 @@ import {
 } from '@archesai/core'
 import { LegacyRef, UserEntitySchema } from '@archesai/domain'
 
-import type { SessionsService } from '#sessions/sessions.service'
-
 import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto'
 
 /**
@@ -23,11 +21,6 @@ import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto
  */
 export class SessionsController implements Controller {
   public readonly [IS_CONTROLLER] = true
-  private readonly sessionsService: SessionsService
-
-  constructor(sessionsService: SessionsService) {
-    this.sessionsService = sessionsService
-  }
 
   public getSession(request: ArchesApiRequest) {
     return { ...request.user } as UserEntity
@@ -43,9 +36,9 @@ export class SessionsController implements Controller {
 
   public async logout(
     request: ArchesApiRequest,
-    reply: ArchesApiResponse
+    _reply: ArchesApiResponse
   ): Promise<void> {
-    await this.sessionsService.logout(request, reply)
+    await request.logOut()
   }
 
   public registerRoutes(app: HttpInstance) {

@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
 import Playground from '#components/playground'
@@ -11,9 +10,5 @@ export const Route = createFileRoute('/_app/playground/')({
 })
 
 export default function PlaygroundPage() {
-  return (
-    <Suspense>
-      <Playground />
-    </Suspense>
-  )
+  return <Playground />
 }

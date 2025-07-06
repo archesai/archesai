@@ -1,3 +1,5 @@
+import type { Table } from '@tanstack/react-table'
+
 import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/domain'
@@ -11,7 +13,6 @@ import {
   SelectValue
 } from '#components/shadcn/select'
 import { useSearchQuery } from '#hooks/use-search-query'
-import { useSelectItems } from '#hooks/use-select-items'
 import { cn } from '#lib/utils'
 
 interface DataTablePaginationProps<TEntity extends BaseEntity> {
@@ -23,14 +24,16 @@ interface DataTablePaginationProps<TEntity extends BaseEntity> {
       total_records: number
     }
   }
+  table: Table<TEntity>
 }
 
 export function DataTablePagination<TEntity extends BaseEntity>({
-  response
+  response,
+  table
 }: DataTablePaginationProps<TEntity>) {
   const { pageNumber, pageSize, searchQuery, setPage, setSearchQuery } =
     useSearchQuery()
-  const { selectedItems } = useSelectItems({ items: [] })
+  const selected = table.getSelectedRowModel().rows
   return (
     <div
       className={cn(
@@ -39,8 +42,8 @@ export function DataTablePagination<TEntity extends BaseEntity>({
     >
       {/* Display the number of items found and selected on left side*/}
       <div className='flex-1 text-sm whitespace-nowrap text-muted-foreground'>
-        {response.meta.total_records} found - {selectedItems.length || 0} of{' '}
-        {Math.min(pageSize, response.data.length) || 0} item(s) selected.
+        {response.meta.total_records} found - {selected.length} of{' '}
+        {Math.min(pageSize, response.data.length)} item(s) selected.
       </div>
       {/* Pagination controls on right side*/}
       <div className='flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8'>

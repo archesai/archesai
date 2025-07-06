@@ -6,12 +6,13 @@
   "imports": {
     "#app/*": "./src/app/*.tsx",
     "#components/*": "./src/components/*.tsx",
-    "#lib/*": "./src/lib/*.ts"
+    "#lib/*": "./src/lib/*.ts",
+    "#router": "./src/router.tsx"
   },
   "scripts": {
-    "build": "next build --turbo",
+    "build": "vite build",
     "clean": "git clean -xdf node_modules .cache .turbo .next dist",
-    "dev": "NODE_EXTRA_CA_CERTS=/home/jonathan/.local/share/mkcert/rootCA.pem vite dev",
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "start": "next start --hostname localhost --port 3000 --experimental-https",
@@ -36,7 +37,6 @@
     "vite": "^7.0.2"
   },
   "devDependencies": {
-    "@archesai/next": "workspace:*",
     "@archesai/typescript": "workspace:*",
     "@fontsource/geist": "^5.2.6",
     "@fontsource/geist-mono": "^5.2.6",

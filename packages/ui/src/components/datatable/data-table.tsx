@@ -34,7 +34,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '#components/shadcn/dropdown-menu'
-import { useSelectItems } from '#hooks/use-select-items'
 import { useToggleView } from '#hooks/use-toggle-view'
 import { toSentenceCase } from '#lib/utils'
 import { DataTableColumnHeader } from './data-table-column-header'
@@ -54,10 +53,16 @@ export interface DataTableProps<
   TEntity extends BaseEntity,
   FindManyParams extends SearchQuery<TEntity> = SearchQuery<TEntity>,
   FindManyOptions extends {
+    fetch?: {
+      credentials: 'include'
+    }
     query?: {
       enabled?: boolean
     }
   } = {
+    fetch?: {
+      credentials: 'include'
+    }
     query?: {
       enabled?: boolean
     }
@@ -132,7 +137,14 @@ export function DataTable<TEntity extends BaseEntity>(
     [props.columns]
   )
 
-  const { data, isFetched } = props.useFindMany({}, {})
+  const { data, isFetched } = props.useFindMany(
+    {},
+    {
+      fetch: {
+        credentials: 'include'
+      }
+    }
+  )
 
   const memoizedData = (data ?? { data: [] }).data.map((item) => {
     return {
@@ -140,10 +152,6 @@ export function DataTable<TEntity extends BaseEntity>(
       type: item.type,
       ...item.attributes
     } as TEntity
-  })
-
-  const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
-    items: memoizedData
   })
 
   const table = useReactTable({
@@ -156,10 +164,10 @@ export function DataTable<TEntity extends BaseEntity>(
               <div className='flex'>
                 <Checkbox
                   aria-label='Select row'
-                  checked={selectedItems.includes(row.original.id)}
+                  checked={row.getIsSelected()}
                   className='justify-self-center'
                   onCheckedChange={() => {
-                    toggleSelection(row.original.id)
+                    row.toggleSelected()
                   }}
                 />
               </div>
@@ -226,7 +234,7 @@ export function DataTable<TEntity extends BaseEntity>(
                               )
                             }
                             await props.deleteItem(id)
-                            setSelectedItems([])
+                            table.toggleAllRowsSelected(false)
                           }}
                           entityType={props.entityType}
                           items={[row.original]}
@@ -259,6 +267,8 @@ export function DataTable<TEntity extends BaseEntity>(
     }
   })
 
+  const selectedRows = table.getSelectedRowModel().rows
+
   return (
     <div className='flex h-full flex-col gap-3'>
       {/* SEARCH TOOLBAR */}
@@ -274,19 +284,19 @@ export function DataTable<TEntity extends BaseEntity>(
       )}
 
       {/* DELETE ITEMS BUTTON */}
-      {selectedItems.length > 0 &&
+      {selectedRows.length > 0 &&
         (props.deleteItem ?
           <DeleteItems
             deleteItem={async (id) => {
               if (props.deleteItem) {
                 await props.deleteItem(id)
               }
-              setSelectedItems([])
+              table.toggleAllRowsSelected(false)
             }}
             entityType={props.entityType}
-            items={selectedItems
-              .map((id) => {
-                const item = memoizedData.find((i) => i.id === id)
+            items={selectedRows
+              .map((row) => {
+                const item = memoizedData.find((i) => i.id === row.id)
                 return item
               })
               .filter((item) => !!item)}
@@ -301,16 +311,16 @@ export function DataTable<TEntity extends BaseEntity>(
             {...props}
             data={memoizedData}
             isFetched={isFetched}
-            selectedItems={selectedItems}
+            selectedItems={selectedRows.map((r) => r.id)}
             setFinalForm={setFinalForm}
             setFormOpen={setFormOpen}
-            toggleSelection={toggleSelection}
+            toggleSelection={table.getToggleAllRowsSelectedHandler()}
           />
         : <TableView<TEntity>
             {...props}
             data={memoizedData}
             isFetched={isFetched}
-            selectedItems={selectedItems}
+            selectedItems={selectedRows.map((r) => r.id)}
             table={table}
           />
         }
@@ -329,6 +339,7 @@ export function DataTable<TEntity extends BaseEntity>(
                 total_records: 0
               }
             }}
+            table={table}
           />
         </div>
       )}

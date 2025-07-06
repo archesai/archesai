@@ -5,12 +5,12 @@ import {
   createModule,
   DatabaseModule,
   DatabaseService,
-  EventBus,
-  EventBusModule,
   WebsocketsModule,
   WebsocketsService
 } from '@archesai/core'
 
+import { OrganizationsModule } from '#organizations/organizations.module'
+import { OrganizationsService } from '#organizations/organizations.service'
 import { DeactivatedGuard } from '#users/guards/deactivated.guard'
 import { UserRepository } from '#users/user.repository'
 import { UsersController } from '#users/users.controller'
@@ -18,16 +18,21 @@ import { UsersService } from '#users/users.service'
 
 export const UsersModuleDefinition: ModuleMetadata = {
   exports: [UsersService],
-  imports: [DatabaseModule, EventBusModule, WebsocketsModule],
+  imports: [DatabaseModule, OrganizationsModule, WebsocketsModule],
   providers: [
     {
-      inject: [EventBus, UserRepository, WebsocketsService],
+      inject: [OrganizationsService, UserRepository, WebsocketsService],
       provide: UsersService,
       useFactory: (
-        eventBus: EventBus,
+        organizationsService: OrganizationsService,
         userRepository: UserRepository,
         websocketsService: WebsocketsService
-      ) => new UsersService(eventBus, userRepository, websocketsService)
+      ) =>
+        new UsersService(
+          organizationsService,
+          userRepository,
+          websocketsService
+        )
     },
     {
       inject: [DatabaseService],

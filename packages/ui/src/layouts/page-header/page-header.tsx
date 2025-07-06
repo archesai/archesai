@@ -47,7 +47,7 @@ export const PageHeader = ({ siteRoutes }: PageHeaderProps) => {
           <div className='flex flex-1 items-center justify-end gap-3'>
             <CommandMenu siteRoutes={siteRoutes} />
             <ModeToggle />
-            <div className='h-8 w-8'>
+            <div>
               <UserButton size={'sm'} />
             </div>
           </div>

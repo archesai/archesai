@@ -10,7 +10,6 @@ import { DataTableViewOptions } from '#components/datatable/data-table-view-opti
 import { DatePickerWithRange } from '#components/datatable/date-range-picker'
 import { Button } from '#components/shadcn/button'
 import { Checkbox } from '#components/shadcn/checkbox'
-import { useSelectItems } from '#hooks/use-select-items'
 import { useToggleView } from '#hooks/use-toggle-view'
 
 export interface DataTableToolbarProps<TEntity extends BaseEntity>
@@ -23,16 +22,14 @@ export interface DataTableToolbarProps<TEntity extends BaseEntity>
 
 export function DataTableToolbar<TEntity extends BaseEntity>({
   createForm,
-  data,
   entityType,
   readonly,
   setFormOpen,
   table
 }: DataTableToolbarProps<TEntity>) {
   const isFiltered = table.getState().columnFilters.length > 0
-
-  const { selectedAllItems, selectedSomeItems, toggleSelectAll } =
-    useSelectItems({ items: data })
+  const isAllSelected = table.getIsAllRowsSelected()
+  const isSomeEelected = table.getIsSomeRowsSelected()
 
   // const { searchQuery, setSearchQuery } = useSearchQuery()
   return (
@@ -40,9 +37,14 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       {!readonly && (
         <Checkbox
           aria-label='Select all'
-          checked={selectedAllItems || (selectedSomeItems && 'indeterminate')}
+          checked={
+            isAllSelected ? true
+            : isSomeEelected ?
+              'indeterminate'
+            : false
+          }
           onCheckedChange={() => {
-            toggleSelectAll()
+            table.getToggleAllRowsSelectedHandler()
           }}
         />
       )}

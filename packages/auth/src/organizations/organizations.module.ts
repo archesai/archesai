@@ -16,7 +16,6 @@ import {
 import { OrganizationRepository } from '#organizations/organization.repository'
 import { OrganizationsController } from '#organizations/organizations.controller'
 import { OrganizationsService } from '#organizations/organizations.service'
-import { OrganizationsSubscriber } from '#organizations/organizations.subscriber'
 
 export const OrganizationsModuleDefinition: ModuleMetadata = {
   exports: [OrganizationsService],
@@ -48,14 +47,6 @@ export const OrganizationsModuleDefinition: ModuleMetadata = {
       provide: OrganizationRepository,
       useFactory: (databaseService: DatabaseService<OrganizationEntity>) =>
         new OrganizationRepository(databaseService)
-    },
-    {
-      inject: [EventBus, OrganizationsService],
-      provide: OrganizationsSubscriber,
-      useFactory: (
-        eventBus: EventBus,
-        organizationsService: OrganizationsService
-      ) => new OrganizationsSubscriber(eventBus, organizationsService)
     },
     {
       inject: [OrganizationsService],

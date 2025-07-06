@@ -1,47 +1,24 @@
 /// <reference types="vite/client" />
 import type { QueryClient } from '@tanstack/react-query'
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts
+  //
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+
+import type { AuthContext } from '@archesai/ui/hooks/use-auth'
+
+import { ActiveThemeProvider } from '@archesai/ui/components/custom/active-theme'
+// import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
-import { NuqsAdapter } from '@archesai/ui/providers/nuqs-adapter'
 import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
 import globalsCss from '../styles/globals.css?url'
-
-// const fontSans = Geist({
-//   subsets: ['latin'],
-//   variable: '--font-sans'
-// })
-
-// const fontMono = Geist_Mono({
-//   subsets: ['latin'],
-//   variable: '--font-mono'
-// })
-
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
-  {
-    component: RootLayout,
-    head: () => ({
-      links: [{ href: globalsCss, rel: 'stylesheet' }],
-      meta: [
-        { charSet: 'utf-8' },
-        {
-          content: 'width=device-width, initial-scale=1',
-          name: 'viewport'
-        },
-        { title: 'TanStack Start Starter' }
-      ]
-    })
-  }
-)
 
 export const metadata = {
   description:
@@ -75,7 +52,29 @@ export const metadata = {
   }
 }
 
-export default function RootLayout() {
+export const Route = createRootRouteWithContext<{
+  authentication: AuthContext
+  queryClient: QueryClient
+}>()({
+  component: RootComponent,
+  head: () => ({
+    links: [{ href: globalsCss, rel: 'stylesheet' }],
+    meta: [
+      { charSet: 'utf-8' },
+      {
+        content: 'width=device-width, initial-scale=1',
+        name: 'viewport'
+      },
+      { title: 'TanStack Start Starter' }
+    ]
+  })
+})
+
+export default function RootDocument({
+  children
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html
       lang='en'
@@ -87,21 +86,29 @@ export default function RootLayout() {
       <body className={`overscroll-none font-sans antialiased`}>
         <ThemeProvider
           attribute='class'
-          defaultTheme='light'
+          defaultTheme='system'
           disableTransitionOnChange
           enableColorScheme
           enableSystem
         >
-          <NuqsAdapter>
-            <Outlet />
-            <TanStackRouterDevtools position='bottom-right' />
-            <ReactQueryDevtools buttonPosition='bottom-left' />
+          <ActiveThemeProvider>
+            {children}
+            {/* <TanStackRouterDevtools position='bottom-right' />
+          <ReactQueryDevtools buttonPosition='bottom-left' /> */}
             <Scripts />
             <Toaster />
-          </NuqsAdapter>
+          </ActiveThemeProvider>
         </ThemeProvider>
       </body>
     </html>
+  )
+}
+
+function RootComponent() {
+  return (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
   )
 }
 

@@ -59,8 +59,7 @@ export class SessionsService {
   ): Promise<void> {
     if (res) {
       this.logger.debug('response was passed, removing cookies')
-      res.clearCookie('archesai.accessToken')
-      res.clearCookie('archesai.refreshToken')
+      res.clearCookie('sessionId')
       this.logger.debug('deleted cookies')
     } else {
       this.logger.debug('response was not passed, not removing cookies')

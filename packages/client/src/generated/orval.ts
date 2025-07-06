@@ -543,12 +543,12 @@ export function useFindManyFiles<
  * Delete a file
  * @summary Delete a file
  */
-export const getDeleteFileUrl = (id: string) => {
+export const getDeleteFileUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/files/${id}`
 }
 
 export const deleteFile = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteFile200> => {
   const res = await fetch(getDeleteFileUrl(id), {
@@ -569,14 +569,14 @@ export const getDeleteFileMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteFile>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteFile>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteFile']
@@ -593,7 +593,7 @@ export const getDeleteFileMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteFile>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -617,7 +617,7 @@ export const useDeleteFile = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteFile>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -626,7 +626,7 @@ export const useDeleteFile = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteFile>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteFileMutationOptions(options)
@@ -638,12 +638,12 @@ export const useDeleteFile = <TError = NotFoundResponse, TContext = unknown>(
  * Find a file
  * @summary Find a file
  */
-export const getGetOneFileUrl = (id: string) => {
+export const getGetOneFileUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/files/${id}`
 }
 
 export const getOneFile = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneFile200> => {
   const res = await fetch(getGetOneFileUrl(id), {
@@ -657,7 +657,7 @@ export const getOneFile = async (
   return data
 }
 
-export const getGetOneFileQueryKey = (id: string) => {
+export const getGetOneFileQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/files/${id}`] as const
 }
 
@@ -665,7 +665,7 @@ export const getGetOneFileQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneFile>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneFile>>, TError, TData>
@@ -702,7 +702,7 @@ export function useGetOneFile<
   TData = Awaited<ReturnType<typeof getOneFile>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneFile>>, TError, TData>
@@ -725,7 +725,7 @@ export function useGetOneFile<
   TData = Awaited<ReturnType<typeof getOneFile>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneFile>>, TError, TData>
@@ -748,7 +748,7 @@ export function useGetOneFile<
   TData = Awaited<ReturnType<typeof getOneFile>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneFile>>, TError, TData>
@@ -767,7 +767,7 @@ export function useGetOneFile<
   TData = Awaited<ReturnType<typeof getOneFile>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneFile>>, TError, TData>
@@ -794,12 +794,12 @@ export function useGetOneFile<
  * Update a file
  * @summary Update a file
  */
-export const getUpdateFileUrl = (id: string) => {
+export const getUpdateFileUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/files/${id}`
 }
 
 export const updateFile = async (
-  id: string,
+  id: string | undefined | null,
   updateFileBody: UpdateFileBody,
   options?: RequestInit
 ): Promise<UpdateFile200> => {
@@ -823,14 +823,14 @@ export const getUpdateFileMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateFile>>,
     TError,
-    { id: string; data: UpdateFileBody },
+    { id: string | undefined | null; data: UpdateFileBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateFile>>,
   TError,
-  { id: string; data: UpdateFileBody },
+  { id: string | undefined | null; data: UpdateFileBody },
   TContext
 > => {
   const mutationKey = ['updateFile']
@@ -847,7 +847,7 @@ export const getUpdateFileMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateFile>>,
-    { id: string; data: UpdateFileBody }
+    { id: string | undefined | null; data: UpdateFileBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -871,7 +871,7 @@ export const useUpdateFile = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateFile>>,
       TError,
-      { id: string; data: UpdateFileBody },
+      { id: string | undefined | null; data: UpdateFileBody },
       TContext
     >
     fetch?: RequestInit
@@ -880,7 +880,7 @@ export const useUpdateFile = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateFile>>,
   TError,
-  { id: string; data: UpdateFileBody },
+  { id: string | undefined | null; data: UpdateFileBody },
   TContext
 > => {
   const mutationOptions = getUpdateFileMutationOptions(options)
@@ -1182,12 +1182,12 @@ export function useFindManyPipelines<
  * Delete a pipeline
  * @summary Delete a pipeline
  */
-export const getDeletePipelineUrl = (id: string) => {
+export const getDeletePipelineUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/pipelines/${id}`
 }
 
 export const deletePipeline = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeletePipeline200> => {
   const res = await fetch(getDeletePipelineUrl(id), {
@@ -1208,14 +1208,14 @@ export const getDeletePipelineMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deletePipeline>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deletePipeline>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deletePipeline']
@@ -1232,7 +1232,7 @@ export const getDeletePipelineMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deletePipeline>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -1259,7 +1259,7 @@ export const useDeletePipeline = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deletePipeline>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -1268,7 +1268,7 @@ export const useDeletePipeline = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof deletePipeline>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeletePipelineMutationOptions(options)
@@ -1280,12 +1280,12 @@ export const useDeletePipeline = <
  * Find a pipeline
  * @summary Find a pipeline
  */
-export const getGetOnePipelineUrl = (id: string) => {
+export const getGetOnePipelineUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/pipelines/${id}`
 }
 
 export const getOnePipeline = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOnePipeline200> => {
   const res = await fetch(getGetOnePipelineUrl(id), {
@@ -1299,7 +1299,7 @@ export const getOnePipeline = async (
   return data
 }
 
-export const getGetOnePipelineQueryKey = (id: string) => {
+export const getGetOnePipelineQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/pipelines/${id}`] as const
 }
 
@@ -1307,7 +1307,7 @@ export const getGetOnePipelineQueryOptions = <
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
@@ -1344,7 +1344,7 @@ export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
@@ -1367,7 +1367,7 @@ export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
@@ -1390,7 +1390,7 @@ export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
@@ -1409,7 +1409,7 @@ export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
@@ -1436,12 +1436,12 @@ export function useGetOnePipeline<
  * Update a pipeline
  * @summary Update a pipeline
  */
-export const getUpdatePipelineUrl = (id: string) => {
+export const getUpdatePipelineUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/pipelines/${id}`
 }
 
 export const updatePipeline = async (
-  id: string,
+  id: string | undefined | null,
   updatePipelineBody: UpdatePipelineBody,
   options?: RequestInit
 ): Promise<UpdatePipeline200> => {
@@ -1465,14 +1465,14 @@ export const getUpdatePipelineMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updatePipeline>>,
     TError,
-    { id: string; data: UpdatePipelineBody },
+    { id: string | undefined | null; data: UpdatePipelineBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updatePipeline>>,
   TError,
-  { id: string; data: UpdatePipelineBody },
+  { id: string | undefined | null; data: UpdatePipelineBody },
   TContext
 > => {
   const mutationKey = ['updatePipeline']
@@ -1489,7 +1489,7 @@ export const getUpdatePipelineMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updatePipeline>>,
-    { id: string; data: UpdatePipelineBody }
+    { id: string | undefined | null; data: UpdatePipelineBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -1516,7 +1516,7 @@ export const useUpdatePipeline = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updatePipeline>>,
       TError,
-      { id: string; data: UpdatePipelineBody },
+      { id: string | undefined | null; data: UpdatePipelineBody },
       TContext
     >
     fetch?: RequestInit
@@ -1525,7 +1525,7 @@ export const useUpdatePipeline = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof updatePipeline>>,
   TError,
-  { id: string; data: UpdatePipelineBody },
+  { id: string | undefined | null; data: UpdatePipelineBody },
   TContext
 > => {
   const mutationOptions = getUpdatePipelineMutationOptions(options)
@@ -1798,12 +1798,12 @@ export function useFindManyTools<
  * Delete a tool
  * @summary Delete a tool
  */
-export const getDeleteToolUrl = (id: string) => {
+export const getDeleteToolUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/tools/${id}`
 }
 
 export const deleteTool = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteTool200> => {
   const res = await fetch(getDeleteToolUrl(id), {
@@ -1824,14 +1824,14 @@ export const getDeleteToolMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteTool>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteTool>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteTool']
@@ -1848,7 +1848,7 @@ export const getDeleteToolMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteTool>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -1872,7 +1872,7 @@ export const useDeleteTool = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteTool>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -1881,7 +1881,7 @@ export const useDeleteTool = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteTool>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteToolMutationOptions(options)
@@ -1893,12 +1893,12 @@ export const useDeleteTool = <TError = NotFoundResponse, TContext = unknown>(
  * Find a tool
  * @summary Find a tool
  */
-export const getGetOneToolUrl = (id: string) => {
+export const getGetOneToolUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/tools/${id}`
 }
 
 export const getOneTool = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneTool200> => {
   const res = await fetch(getGetOneToolUrl(id), {
@@ -1912,7 +1912,7 @@ export const getOneTool = async (
   return data
 }
 
-export const getGetOneToolQueryKey = (id: string) => {
+export const getGetOneToolQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/tools/${id}`] as const
 }
 
@@ -1920,7 +1920,7 @@ export const getGetOneToolQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneTool>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
@@ -1957,7 +1957,7 @@ export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
@@ -1980,7 +1980,7 @@ export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
@@ -2003,7 +2003,7 @@ export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
@@ -2022,7 +2022,7 @@ export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
@@ -2049,12 +2049,12 @@ export function useGetOneTool<
  * Update a tool
  * @summary Update a tool
  */
-export const getUpdateToolUrl = (id: string) => {
+export const getUpdateToolUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/tools/${id}`
 }
 
 export const updateTool = async (
-  id: string,
+  id: string | undefined | null,
   updateToolBody: UpdateToolBody,
   options?: RequestInit
 ): Promise<UpdateTool200> => {
@@ -2078,14 +2078,14 @@ export const getUpdateToolMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateTool>>,
     TError,
-    { id: string; data: UpdateToolBody },
+    { id: string | undefined | null; data: UpdateToolBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateTool>>,
   TError,
-  { id: string; data: UpdateToolBody },
+  { id: string | undefined | null; data: UpdateToolBody },
   TContext
 > => {
   const mutationKey = ['updateTool']
@@ -2102,7 +2102,7 @@ export const getUpdateToolMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateTool>>,
-    { id: string; data: UpdateToolBody }
+    { id: string | undefined | null; data: UpdateToolBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -2126,7 +2126,7 @@ export const useUpdateTool = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateTool>>,
       TError,
-      { id: string; data: UpdateToolBody },
+      { id: string | undefined | null; data: UpdateToolBody },
       TContext
     >
     fetch?: RequestInit
@@ -2135,7 +2135,7 @@ export const useUpdateTool = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateTool>>,
   TError,
-  { id: string; data: UpdateToolBody },
+  { id: string | undefined | null; data: UpdateToolBody },
   TContext
 > => {
   const mutationOptions = getUpdateToolMutationOptions(options)
@@ -2437,12 +2437,12 @@ export function useFindManyArtifacts<
  * Delete an artifact
  * @summary Delete an artifact
  */
-export const getDeleteArtifactUrl = (id: string) => {
+export const getDeleteArtifactUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/artifacts/${id}`
 }
 
 export const deleteArtifact = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteArtifact200> => {
   const res = await fetch(getDeleteArtifactUrl(id), {
@@ -2463,14 +2463,14 @@ export const getDeleteArtifactMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteArtifact>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteArtifact>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteArtifact']
@@ -2487,7 +2487,7 @@ export const getDeleteArtifactMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteArtifact>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -2514,7 +2514,7 @@ export const useDeleteArtifact = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteArtifact>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -2523,7 +2523,7 @@ export const useDeleteArtifact = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteArtifact>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteArtifactMutationOptions(options)
@@ -2535,12 +2535,12 @@ export const useDeleteArtifact = <
  * Find an artifact
  * @summary Find an artifact
  */
-export const getGetOneArtifactUrl = (id: string) => {
+export const getGetOneArtifactUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/artifacts/${id}`
 }
 
 export const getOneArtifact = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneArtifact200> => {
   const res = await fetch(getGetOneArtifactUrl(id), {
@@ -2554,7 +2554,7 @@ export const getOneArtifact = async (
   return data
 }
 
-export const getGetOneArtifactQueryKey = (id: string) => {
+export const getGetOneArtifactQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/artifacts/${id}`] as const
 }
 
@@ -2562,7 +2562,7 @@ export const getGetOneArtifactQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
@@ -2599,7 +2599,7 @@ export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
@@ -2622,7 +2622,7 @@ export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
@@ -2645,7 +2645,7 @@ export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
@@ -2664,7 +2664,7 @@ export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
@@ -2691,12 +2691,12 @@ export function useGetOneArtifact<
  * Update an artifact
  * @summary Update an artifact
  */
-export const getUpdateArtifactUrl = (id: string) => {
+export const getUpdateArtifactUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/artifacts/${id}`
 }
 
 export const updateArtifact = async (
-  id: string,
+  id: string | undefined | null,
   updateArtifactBody: UpdateArtifactBody,
   options?: RequestInit
 ): Promise<UpdateArtifact200> => {
@@ -2720,14 +2720,14 @@ export const getUpdateArtifactMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateArtifact>>,
     TError,
-    { id: string; data: UpdateArtifactBody },
+    { id: string | undefined | null; data: UpdateArtifactBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateArtifact>>,
   TError,
-  { id: string; data: UpdateArtifactBody },
+  { id: string | undefined | null; data: UpdateArtifactBody },
   TContext
 > => {
   const mutationKey = ['updateArtifact']
@@ -2744,7 +2744,7 @@ export const getUpdateArtifactMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateArtifact>>,
-    { id: string; data: UpdateArtifactBody }
+    { id: string | undefined | null; data: UpdateArtifactBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -2771,7 +2771,7 @@ export const useUpdateArtifact = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateArtifact>>,
       TError,
-      { id: string; data: UpdateArtifactBody },
+      { id: string | undefined | null; data: UpdateArtifactBody },
       TContext
     >
     fetch?: RequestInit
@@ -2780,7 +2780,7 @@ export const useUpdateArtifact = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateArtifact>>,
   TError,
-  { id: string; data: UpdateArtifactBody },
+  { id: string | undefined | null; data: UpdateArtifactBody },
   TContext
 > => {
   const mutationOptions = getUpdateArtifactMutationOptions(options)
@@ -3052,12 +3052,12 @@ export function useFindManyRuns<
  * Delete a run
  * @summary Delete a run
  */
-export const getDeleteRunUrl = (id: string) => {
+export const getDeleteRunUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/runs/${id}`
 }
 
 export const deleteRun = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteRun200> => {
   const res = await fetch(getDeleteRunUrl(id), {
@@ -3078,14 +3078,14 @@ export const getDeleteRunMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteRun>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteRun>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteRun']
@@ -3102,7 +3102,7 @@ export const getDeleteRunMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteRun>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -3126,7 +3126,7 @@ export const useDeleteRun = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteRun>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -3135,7 +3135,7 @@ export const useDeleteRun = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteRun>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteRunMutationOptions(options)
@@ -3147,12 +3147,12 @@ export const useDeleteRun = <TError = NotFoundResponse, TContext = unknown>(
  * Find a run
  * @summary Find a run
  */
-export const getGetOneRunUrl = (id: string) => {
+export const getGetOneRunUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/runs/${id}`
 }
 
 export const getOneRun = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneRun200> => {
   const res = await fetch(getGetOneRunUrl(id), {
@@ -3166,7 +3166,7 @@ export const getOneRun = async (
   return data
 }
 
-export const getGetOneRunQueryKey = (id: string) => {
+export const getGetOneRunQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/runs/${id}`] as const
 }
 
@@ -3174,7 +3174,7 @@ export const getGetOneRunQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneRun>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
@@ -3209,7 +3209,7 @@ export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
@@ -3232,7 +3232,7 @@ export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
@@ -3255,7 +3255,7 @@ export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
@@ -3274,7 +3274,7 @@ export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
@@ -3301,12 +3301,12 @@ export function useGetOneRun<
  * Update a run
  * @summary Update a run
  */
-export const getUpdateRunUrl = (id: string) => {
+export const getUpdateRunUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/runs/${id}`
 }
 
 export const updateRun = async (
-  id: string,
+  id: string | undefined | null,
   updateRunBody: UpdateRunBody,
   options?: RequestInit
 ): Promise<UpdateRun200> => {
@@ -3330,14 +3330,14 @@ export const getUpdateRunMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateRun>>,
     TError,
-    { id: string; data: UpdateRunBody },
+    { id: string | undefined | null; data: UpdateRunBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateRun>>,
   TError,
-  { id: string; data: UpdateRunBody },
+  { id: string | undefined | null; data: UpdateRunBody },
   TContext
 > => {
   const mutationKey = ['updateRun']
@@ -3354,7 +3354,7 @@ export const getUpdateRunMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateRun>>,
-    { id: string; data: UpdateRunBody }
+    { id: string | undefined | null; data: UpdateRunBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -3378,7 +3378,7 @@ export const useUpdateRun = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateRun>>,
       TError,
-      { id: string; data: UpdateRunBody },
+      { id: string | undefined | null; data: UpdateRunBody },
       TContext
     >
     fetch?: RequestInit
@@ -3387,7 +3387,7 @@ export const useUpdateRun = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateRun>>,
   TError,
-  { id: string; data: UpdateRunBody },
+  { id: string | undefined | null; data: UpdateRunBody },
   TContext
 > => {
   const mutationOptions = getUpdateRunMutationOptions(options)
@@ -3660,12 +3660,12 @@ export function useFindManyLabels<
  * Delete a label
  * @summary Delete a label
  */
-export const getDeleteLabelUrl = (id: string) => {
+export const getDeleteLabelUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/labels/${id}`
 }
 
 export const deleteLabel = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteLabel200> => {
   const res = await fetch(getDeleteLabelUrl(id), {
@@ -3686,14 +3686,14 @@ export const getDeleteLabelMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteLabel>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteLabel>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteLabel']
@@ -3710,7 +3710,7 @@ export const getDeleteLabelMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteLabel>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -3734,7 +3734,7 @@ export const useDeleteLabel = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteLabel>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -3743,7 +3743,7 @@ export const useDeleteLabel = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteLabel>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteLabelMutationOptions(options)
@@ -3755,12 +3755,12 @@ export const useDeleteLabel = <TError = NotFoundResponse, TContext = unknown>(
  * Find a label
  * @summary Find a label
  */
-export const getGetOneLabelUrl = (id: string) => {
+export const getGetOneLabelUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/labels/${id}`
 }
 
 export const getOneLabel = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneLabel200> => {
   const res = await fetch(getGetOneLabelUrl(id), {
@@ -3774,7 +3774,7 @@ export const getOneLabel = async (
   return data
 }
 
-export const getGetOneLabelQueryKey = (id: string) => {
+export const getGetOneLabelQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/labels/${id}`] as const
 }
 
@@ -3782,7 +3782,7 @@ export const getGetOneLabelQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneLabel>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
@@ -3819,7 +3819,7 @@ export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
@@ -3842,7 +3842,7 @@ export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
@@ -3865,7 +3865,7 @@ export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
@@ -3884,7 +3884,7 @@ export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
@@ -3911,12 +3911,12 @@ export function useGetOneLabel<
  * Update a label
  * @summary Update a label
  */
-export const getUpdateLabelUrl = (id: string) => {
+export const getUpdateLabelUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/labels/${id}`
 }
 
 export const updateLabel = async (
-  id: string,
+  id: string | undefined | null,
   updateLabelBody: UpdateLabelBody,
   options?: RequestInit
 ): Promise<UpdateLabel200> => {
@@ -3940,14 +3940,14 @@ export const getUpdateLabelMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateLabel>>,
     TError,
-    { id: string; data: UpdateLabelBody },
+    { id: string | undefined | null; data: UpdateLabelBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateLabel>>,
   TError,
-  { id: string; data: UpdateLabelBody },
+  { id: string | undefined | null; data: UpdateLabelBody },
   TContext
 > => {
   const mutationKey = ['updateLabel']
@@ -3964,7 +3964,7 @@ export const getUpdateLabelMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateLabel>>,
-    { id: string; data: UpdateLabelBody }
+    { id: string | undefined | null; data: UpdateLabelBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -3988,7 +3988,7 @@ export const useUpdateLabel = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateLabel>>,
       TError,
-      { id: string; data: UpdateLabelBody },
+      { id: string | undefined | null; data: UpdateLabelBody },
       TContext
     >
     fetch?: RequestInit
@@ -3997,7 +3997,7 @@ export const useUpdateLabel = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateLabel>>,
   TError,
-  { id: string; data: UpdateLabelBody },
+  { id: string | undefined | null; data: UpdateLabelBody },
   TContext
 > => {
   const mutationOptions = getUpdateLabelMutationOptions(options)
@@ -4301,12 +4301,12 @@ export function useFindManyOrganizations<
  * Delete an organization
  * @summary Delete an organization
  */
-export const getDeleteOrganizationUrl = (id: string) => {
+export const getDeleteOrganizationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/organizations/${id}`
 }
 
 export const deleteOrganization = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteOrganization200> => {
   const res = await fetch(getDeleteOrganizationUrl(id), {
@@ -4327,14 +4327,14 @@ export const getDeleteOrganizationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteOrganization>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteOrganization>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteOrganization']
@@ -4351,7 +4351,7 @@ export const getDeleteOrganizationMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteOrganization>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -4378,7 +4378,7 @@ export const useDeleteOrganization = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteOrganization>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -4387,7 +4387,7 @@ export const useDeleteOrganization = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteOrganization>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteOrganizationMutationOptions(options)
@@ -4399,12 +4399,12 @@ export const useDeleteOrganization = <
  * Find an organization
  * @summary Find an organization
  */
-export const getGetOneOrganizationUrl = (id: string) => {
+export const getGetOneOrganizationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/organizations/${id}`
 }
 
 export const getOneOrganization = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneOrganization200> => {
   const res = await fetch(getGetOneOrganizationUrl(id), {
@@ -4418,7 +4418,9 @@ export const getOneOrganization = async (
   return data
 }
 
-export const getGetOneOrganizationQueryKey = (id: string) => {
+export const getGetOneOrganizationQueryKey = (
+  id: string | undefined | null
+) => {
   return [`https://localhost:3001/organizations/${id}`] as const
 }
 
@@ -4426,7 +4428,7 @@ export const getGetOneOrganizationQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4468,7 +4470,7 @@ export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -4495,7 +4497,7 @@ export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4522,7 +4524,7 @@ export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4545,7 +4547,7 @@ export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -4576,12 +4578,12 @@ export function useGetOneOrganization<
  * Update an organization
  * @summary Update an organization
  */
-export const getUpdateOrganizationUrl = (id: string) => {
+export const getUpdateOrganizationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/organizations/${id}`
 }
 
 export const updateOrganization = async (
-  id: string,
+  id: string | undefined | null,
   updateOrganizationBody: UpdateOrganizationBody,
   options?: RequestInit
 ): Promise<UpdateOrganization200> => {
@@ -4605,14 +4607,14 @@ export const getUpdateOrganizationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateOrganization>>,
     TError,
-    { id: string; data: UpdateOrganizationBody },
+    { id: string | undefined | null; data: UpdateOrganizationBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateOrganization>>,
   TError,
-  { id: string; data: UpdateOrganizationBody },
+  { id: string | undefined | null; data: UpdateOrganizationBody },
   TContext
 > => {
   const mutationKey = ['updateOrganization']
@@ -4629,7 +4631,7 @@ export const getUpdateOrganizationMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateOrganization>>,
-    { id: string; data: UpdateOrganizationBody }
+    { id: string | undefined | null; data: UpdateOrganizationBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -4656,7 +4658,7 @@ export const useUpdateOrganization = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateOrganization>>,
       TError,
-      { id: string; data: UpdateOrganizationBody },
+      { id: string | undefined | null; data: UpdateOrganizationBody },
       TContext
     >
     fetch?: RequestInit
@@ -4665,7 +4667,7 @@ export const useUpdateOrganization = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateOrganization>>,
   TError,
-  { id: string; data: UpdateOrganizationBody },
+  { id: string | undefined | null; data: UpdateOrganizationBody },
   TContext
 > => {
   const mutationOptions = getUpdateOrganizationMutationOptions(options)
@@ -4938,12 +4940,12 @@ export function useFindManyUsers<
  * Delete an user
  * @summary Delete an user
  */
-export const getDeleteUserUrl = (id: string) => {
+export const getDeleteUserUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/users/${id}`
 }
 
 export const deleteUser = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteUser200> => {
   const res = await fetch(getDeleteUserUrl(id), {
@@ -4964,14 +4966,14 @@ export const getDeleteUserMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteUser>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteUser>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteUser']
@@ -4988,7 +4990,7 @@ export const getDeleteUserMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteUser>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -5012,7 +5014,7 @@ export const useDeleteUser = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteUser>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -5021,7 +5023,7 @@ export const useDeleteUser = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteUser>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteUserMutationOptions(options)
@@ -5033,12 +5035,12 @@ export const useDeleteUser = <TError = NotFoundResponse, TContext = unknown>(
  * Find an user
  * @summary Find an user
  */
-export const getGetOneUserUrl = (id: string) => {
+export const getGetOneUserUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/users/${id}`
 }
 
 export const getOneUser = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneUser200> => {
   const res = await fetch(getGetOneUserUrl(id), {
@@ -5052,7 +5054,7 @@ export const getOneUser = async (
   return data
 }
 
-export const getGetOneUserQueryKey = (id: string) => {
+export const getGetOneUserQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/users/${id}`] as const
 }
 
@@ -5060,7 +5062,7 @@ export const getGetOneUserQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneUser>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
@@ -5097,7 +5099,7 @@ export function useGetOneUser<
   TData = Awaited<ReturnType<typeof getOneUser>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
@@ -5120,7 +5122,7 @@ export function useGetOneUser<
   TData = Awaited<ReturnType<typeof getOneUser>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
@@ -5143,7 +5145,7 @@ export function useGetOneUser<
   TData = Awaited<ReturnType<typeof getOneUser>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
@@ -5162,7 +5164,7 @@ export function useGetOneUser<
   TData = Awaited<ReturnType<typeof getOneUser>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
@@ -5189,12 +5191,12 @@ export function useGetOneUser<
  * Update an user
  * @summary Update an user
  */
-export const getUpdateUserUrl = (id: string) => {
+export const getUpdateUserUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/users/${id}`
 }
 
 export const updateUser = async (
-  id: string,
+  id: string | undefined | null,
   updateUserBody: UpdateUserBody,
   options?: RequestInit
 ): Promise<UpdateUser200> => {
@@ -5218,14 +5220,14 @@ export const getUpdateUserMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateUser>>,
     TError,
-    { id: string; data: UpdateUserBody },
+    { id: string | undefined | null; data: UpdateUserBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateUser>>,
   TError,
-  { id: string; data: UpdateUserBody },
+  { id: string | undefined | null; data: UpdateUserBody },
   TContext
 > => {
   const mutationKey = ['updateUser']
@@ -5242,7 +5244,7 @@ export const getUpdateUserMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateUser>>,
-    { id: string; data: UpdateUserBody }
+    { id: string | undefined | null; data: UpdateUserBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -5266,7 +5268,7 @@ export const useUpdateUser = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateUser>>,
       TError,
-      { id: string; data: UpdateUserBody },
+      { id: string | undefined | null; data: UpdateUserBody },
       TContext
     >
     fetch?: RequestInit
@@ -5275,7 +5277,7 @@ export const useUpdateUser = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateUser>>,
   TError,
-  { id: string; data: UpdateUserBody },
+  { id: string | undefined | null; data: UpdateUserBody },
   TContext
 > => {
   const mutationOptions = getUpdateUserMutationOptions(options)
@@ -5571,12 +5573,12 @@ export function useFindManyMembers<
  * Delete a member
  * @summary Delete a member
  */
-export const getDeleteMemberUrl = (id: string) => {
+export const getDeleteMemberUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/members/${id}`
 }
 
 export const deleteMember = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteMember200> => {
   const res = await fetch(getDeleteMemberUrl(id), {
@@ -5597,14 +5599,14 @@ export const getDeleteMemberMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteMember>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteMember>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteMember']
@@ -5621,7 +5623,7 @@ export const getDeleteMemberMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteMember>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -5645,7 +5647,7 @@ export const useDeleteMember = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteMember>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -5654,7 +5656,7 @@ export const useDeleteMember = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteMember>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteMemberMutationOptions(options)
@@ -5666,12 +5668,12 @@ export const useDeleteMember = <TError = NotFoundResponse, TContext = unknown>(
  * Find a member
  * @summary Find a member
  */
-export const getGetOneMemberUrl = (id: string) => {
+export const getGetOneMemberUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/members/${id}`
 }
 
 export const getOneMember = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneMember200> => {
   const res = await fetch(getGetOneMemberUrl(id), {
@@ -5685,7 +5687,7 @@ export const getOneMember = async (
   return data
 }
 
-export const getGetOneMemberQueryKey = (id: string) => {
+export const getGetOneMemberQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/members/${id}`] as const
 }
 
@@ -5693,7 +5695,7 @@ export const getGetOneMemberQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneMember>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
@@ -5730,7 +5732,7 @@ export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
@@ -5753,7 +5755,7 @@ export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
@@ -5776,7 +5778,7 @@ export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
@@ -5795,7 +5797,7 @@ export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
@@ -5822,12 +5824,12 @@ export function useGetOneMember<
  * Update a member
  * @summary Update a member
  */
-export const getUpdateMemberUrl = (id: string) => {
+export const getUpdateMemberUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/members/${id}`
 }
 
 export const updateMember = async (
-  id: string,
+  id: string | undefined | null,
   updateMemberBody: UpdateMemberBody,
   options?: RequestInit
 ): Promise<UpdateMember200> => {
@@ -5851,14 +5853,14 @@ export const getUpdateMemberMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateMember>>,
     TError,
-    { id: string; data: UpdateMemberBody },
+    { id: string | undefined | null; data: UpdateMemberBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateMember>>,
   TError,
-  { id: string; data: UpdateMemberBody },
+  { id: string | undefined | null; data: UpdateMemberBody },
   TContext
 > => {
   const mutationKey = ['updateMember']
@@ -5875,7 +5877,7 @@ export const getUpdateMemberMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateMember>>,
-    { id: string; data: UpdateMemberBody }
+    { id: string | undefined | null; data: UpdateMemberBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -5899,7 +5901,7 @@ export const useUpdateMember = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateMember>>,
       TError,
-      { id: string; data: UpdateMemberBody },
+      { id: string | undefined | null; data: UpdateMemberBody },
       TContext
     >
     fetch?: RequestInit
@@ -5908,7 +5910,7 @@ export const useUpdateMember = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateMember>>,
   TError,
-  { id: string; data: UpdateMemberBody },
+  { id: string | undefined | null; data: UpdateMemberBody },
   TContext
 > => {
   const mutationOptions = getUpdateMemberMutationOptions(options)
@@ -6212,12 +6214,12 @@ export function useFindManyInvitations<
  * Delete an invitation
  * @summary Delete an invitation
  */
-export const getDeleteInvitationUrl = (id: string) => {
+export const getDeleteInvitationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/invitations/${id}`
 }
 
 export const deleteInvitation = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteInvitation200> => {
   const res = await fetch(getDeleteInvitationUrl(id), {
@@ -6238,14 +6240,14 @@ export const getDeleteInvitationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteInvitation>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteInvitation>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteInvitation']
@@ -6262,7 +6264,7 @@ export const getDeleteInvitationMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteInvitation>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -6289,7 +6291,7 @@ export const useDeleteInvitation = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteInvitation>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -6298,7 +6300,7 @@ export const useDeleteInvitation = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteInvitation>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteInvitationMutationOptions(options)
@@ -6310,12 +6312,12 @@ export const useDeleteInvitation = <
  * Find an invitation
  * @summary Find an invitation
  */
-export const getGetOneInvitationUrl = (id: string) => {
+export const getGetOneInvitationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/invitations/${id}`
 }
 
 export const getOneInvitation = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneInvitation200> => {
   const res = await fetch(getGetOneInvitationUrl(id), {
@@ -6329,7 +6331,7 @@ export const getOneInvitation = async (
   return data
 }
 
-export const getGetOneInvitationQueryKey = (id: string) => {
+export const getGetOneInvitationQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/invitations/${id}`] as const
 }
 
@@ -6337,7 +6339,7 @@ export const getGetOneInvitationQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -6379,7 +6381,7 @@ export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -6406,7 +6408,7 @@ export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -6433,7 +6435,7 @@ export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -6456,7 +6458,7 @@ export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -6487,12 +6489,12 @@ export function useGetOneInvitation<
  * Update an invitation
  * @summary Update an invitation
  */
-export const getUpdateInvitationUrl = (id: string) => {
+export const getUpdateInvitationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/invitations/${id}`
 }
 
 export const updateInvitation = async (
-  id: string,
+  id: string | undefined | null,
   updateInvitationBody: UpdateInvitationBody,
   options?: RequestInit
 ): Promise<UpdateInvitation200> => {
@@ -6516,14 +6518,14 @@ export const getUpdateInvitationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateInvitation>>,
     TError,
-    { id: string; data: UpdateInvitationBody },
+    { id: string | undefined | null; data: UpdateInvitationBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateInvitation>>,
   TError,
-  { id: string; data: UpdateInvitationBody },
+  { id: string | undefined | null; data: UpdateInvitationBody },
   TContext
 > => {
   const mutationKey = ['updateInvitation']
@@ -6540,7 +6542,7 @@ export const getUpdateInvitationMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateInvitation>>,
-    { id: string; data: UpdateInvitationBody }
+    { id: string | undefined | null; data: UpdateInvitationBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -6567,7 +6569,7 @@ export const useUpdateInvitation = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateInvitation>>,
       TError,
-      { id: string; data: UpdateInvitationBody },
+      { id: string | undefined | null; data: UpdateInvitationBody },
       TContext
     >
     fetch?: RequestInit
@@ -6576,7 +6578,7 @@ export const useUpdateInvitation = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateInvitation>>,
   TError,
-  { id: string; data: UpdateInvitationBody },
+  { id: string | undefined | null; data: UpdateInvitationBody },
   TContext
 > => {
   const mutationOptions = getUpdateInvitationMutationOptions(options)
@@ -6588,12 +6590,12 @@ export const useUpdateInvitation = <
  * Accept an invitation
  * @summary Accept an invitation
  */
-export const getAcceptInvitationUrl = (id: string) => {
+export const getAcceptInvitationUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/invitations/${id}/accept`
 }
 
 export const acceptInvitation = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<AcceptInvitation200> => {
   const res = await fetch(getAcceptInvitationUrl(id), {
@@ -6614,14 +6616,14 @@ export const getAcceptInvitationMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof acceptInvitation>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof acceptInvitation>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['acceptInvitation']
@@ -6638,7 +6640,7 @@ export const getAcceptInvitationMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof acceptInvitation>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -6668,7 +6670,7 @@ export const useAcceptInvitation = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof acceptInvitation>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -6677,7 +6679,7 @@ export const useAcceptInvitation = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof acceptInvitation>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getAcceptInvitationMutationOptions(options)
@@ -6786,12 +6788,12 @@ export const useCreateCheckoutSession = <TError = unknown, TContext = unknown>(
  * Delete a payment method
  * @summary Delete a payment method
  */
-export const getDeletePaymentMethodUrl = (id: string) => {
+export const getDeletePaymentMethodUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/billing/payment-methods/${id}`
 }
 
 export const deletePaymentMethod = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeletePaymentMethod200> => {
   const res = await fetch(getDeletePaymentMethodUrl(id), {
@@ -6812,14 +6814,14 @@ export const getDeletePaymentMethodMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deletePaymentMethod>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deletePaymentMethod>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deletePaymentMethod']
@@ -6836,7 +6838,7 @@ export const getDeletePaymentMethodMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deletePaymentMethod>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -6860,7 +6862,7 @@ export const useDeletePaymentMethod = <TError = unknown, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deletePaymentMethod>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -6869,7 +6871,7 @@ export const useDeletePaymentMethod = <TError = unknown, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof deletePaymentMethod>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeletePaymentMethodMutationOptions(options)
@@ -6881,12 +6883,12 @@ export const useDeletePaymentMethod = <TError = unknown, TContext = unknown>(
  * Get a payment method
  * @summary Get a payment method
  */
-export const getFindOnePaymentMethodUrl = (id: string) => {
+export const getFindOnePaymentMethodUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/billing/payment-methods/${id}`
 }
 
 export const findOnePaymentMethod = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<FindOnePaymentMethod200> => {
   const res = await fetch(getFindOnePaymentMethodUrl(id), {
@@ -6900,7 +6902,9 @@ export const findOnePaymentMethod = async (
   return data
 }
 
-export const getFindOnePaymentMethodQueryKey = (id: string) => {
+export const getFindOnePaymentMethodQueryKey = (
+  id: string | undefined | null
+) => {
   return [`https://localhost:3001/billing/payment-methods/${id}`] as const
 }
 
@@ -6908,7 +6912,7 @@ export const getFindOnePaymentMethodQueryOptions = <
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -6950,7 +6954,7 @@ export function useFindOnePaymentMethod<
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -6977,7 +6981,7 @@ export function useFindOnePaymentMethod<
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -7004,7 +7008,7 @@ export function useFindOnePaymentMethod<
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -7027,7 +7031,7 @@ export function useFindOnePaymentMethod<
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -7460,12 +7464,12 @@ export const useCreatePortal = <TError = unknown, TContext = unknown>(
  * Cancel a subscription
  * @summary Cancel a subscription
  */
-export const getCancelSubscriptionUrl = (id: string) => {
+export const getCancelSubscriptionUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/billing/subscriptions/${id}`
 }
 
 export const cancelSubscription = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<void> => {
   const res = await fetch(getCancelSubscriptionUrl(id), {
@@ -7486,14 +7490,14 @@ export const getCancelSubscriptionMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof cancelSubscription>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof cancelSubscription>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['cancelSubscription']
@@ -7510,7 +7514,7 @@ export const getCancelSubscriptionMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof cancelSubscription>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -7534,7 +7538,7 @@ export const useCancelSubscription = <TError = unknown, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof cancelSubscription>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -7543,7 +7547,7 @@ export const useCancelSubscription = <TError = unknown, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof cancelSubscription>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getCancelSubscriptionMutationOptions(options)
@@ -7555,12 +7559,12 @@ export const useCancelSubscription = <TError = unknown, TContext = unknown>(
  * Update a subscription
  * @summary Update a subscription
  */
-export const getUpdateSubscriptionUrl = (id: string) => {
+export const getUpdateSubscriptionUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/billing/subscriptions/${id}`
 }
 
 export const updateSubscription = async (
-  id: string,
+  id: string | undefined | null,
   updateSubscriptionBody: UpdateSubscriptionBody,
   options?: RequestInit
 ): Promise<void> => {
@@ -7584,14 +7588,14 @@ export const getUpdateSubscriptionMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateSubscription>>,
     TError,
-    { id: string; data: UpdateSubscriptionBody },
+    { id: string | undefined | null; data: UpdateSubscriptionBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateSubscription>>,
   TError,
-  { id: string; data: UpdateSubscriptionBody },
+  { id: string | undefined | null; data: UpdateSubscriptionBody },
   TContext
 > => {
   const mutationKey = ['updateSubscription']
@@ -7608,7 +7612,7 @@ export const getUpdateSubscriptionMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateSubscription>>,
-    { id: string; data: UpdateSubscriptionBody }
+    { id: string | undefined | null; data: UpdateSubscriptionBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -7632,7 +7636,7 @@ export const useUpdateSubscription = <TError = unknown, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateSubscription>>,
       TError,
-      { id: string; data: UpdateSubscriptionBody },
+      { id: string | undefined | null; data: UpdateSubscriptionBody },
       TContext
     >
     fetch?: RequestInit
@@ -7641,7 +7645,7 @@ export const useUpdateSubscription = <TError = unknown, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateSubscription>>,
   TError,
-  { id: string; data: UpdateSubscriptionBody },
+  { id: string | undefined | null; data: UpdateSubscriptionBody },
   TContext
 > => {
   const mutationOptions = getUpdateSubscriptionMutationOptions(options)
@@ -7943,12 +7947,12 @@ export function useFindManyApiTokens<
  * Delete an api-token
  * @summary Delete an api-token
  */
-export const getDeleteApiTokenUrl = (id: string) => {
+export const getDeleteApiTokenUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const deleteApiToken = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<DeleteApiToken200> => {
   const res = await fetch(getDeleteApiTokenUrl(id), {
@@ -7969,14 +7973,14 @@ export const getDeleteApiTokenMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteApiToken>>,
     TError,
-    { id: string },
+    { id: string | undefined | null },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteApiToken>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationKey = ['deleteApiToken']
@@ -7993,7 +7997,7 @@ export const getDeleteApiTokenMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteApiToken>>,
-    { id: string }
+    { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
@@ -8020,7 +8024,7 @@ export const useDeleteApiToken = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteApiToken>>,
       TError,
-      { id: string },
+      { id: string | undefined | null },
       TContext
     >
     fetch?: RequestInit
@@ -8029,7 +8033,7 @@ export const useDeleteApiToken = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteApiToken>>,
   TError,
-  { id: string },
+  { id: string | undefined | null },
   TContext
 > => {
   const mutationOptions = getDeleteApiTokenMutationOptions(options)
@@ -8041,12 +8045,12 @@ export const useDeleteApiToken = <
  * Find an api-token
  * @summary Find an api-token
  */
-export const getGetOneApiTokenUrl = (id: string) => {
+export const getGetOneApiTokenUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const getOneApiToken = async (
-  id: string,
+  id: string | undefined | null,
   options?: RequestInit
 ): Promise<GetOneApiToken200> => {
   const res = await fetch(getGetOneApiTokenUrl(id), {
@@ -8060,7 +8064,7 @@ export const getOneApiToken = async (
   return data
 }
 
-export const getGetOneApiTokenQueryKey = (id: string) => {
+export const getGetOneApiTokenQueryKey = (id: string | undefined | null) => {
   return [`https://localhost:3001/api-tokens/${id}`] as const
 }
 
@@ -8068,7 +8072,7 @@ export const getGetOneApiTokenQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneApiToken>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
@@ -8105,7 +8109,7 @@ export function useGetOneApiToken<
   TData = Awaited<ReturnType<typeof getOneApiToken>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
@@ -8128,7 +8132,7 @@ export function useGetOneApiToken<
   TData = Awaited<ReturnType<typeof getOneApiToken>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
@@ -8151,7 +8155,7 @@ export function useGetOneApiToken<
   TData = Awaited<ReturnType<typeof getOneApiToken>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
@@ -8170,7 +8174,7 @@ export function useGetOneApiToken<
   TData = Awaited<ReturnType<typeof getOneApiToken>>,
   TError = NotFoundResponse
 >(
-  id: string,
+  id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
@@ -8197,12 +8201,12 @@ export function useGetOneApiToken<
  * Update an api-token
  * @summary Update an api-token
  */
-export const getUpdateApiTokenUrl = (id: string) => {
+export const getUpdateApiTokenUrl = (id: string | undefined | null) => {
   return `https://localhost:3001/api-tokens/${id}`
 }
 
 export const updateApiToken = async (
-  id: string,
+  id: string | undefined | null,
   updateApiTokenBody: UpdateApiTokenBody,
   options?: RequestInit
 ): Promise<UpdateApiToken200> => {
@@ -8226,14 +8230,14 @@ export const getUpdateApiTokenMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateApiToken>>,
     TError,
-    { id: string; data: UpdateApiTokenBody },
+    { id: string | undefined | null; data: UpdateApiTokenBody },
     TContext
   >
   fetch?: RequestInit
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateApiToken>>,
   TError,
-  { id: string; data: UpdateApiTokenBody },
+  { id: string | undefined | null; data: UpdateApiTokenBody },
   TContext
 > => {
   const mutationKey = ['updateApiToken']
@@ -8250,7 +8254,7 @@ export const getUpdateApiTokenMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateApiToken>>,
-    { id: string; data: UpdateApiTokenBody }
+    { id: string | undefined | null; data: UpdateApiTokenBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -8277,7 +8281,7 @@ export const useUpdateApiToken = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateApiToken>>,
       TError,
-      { id: string; data: UpdateApiTokenBody },
+      { id: string | undefined | null; data: UpdateApiTokenBody },
       TContext
     >
     fetch?: RequestInit
@@ -8286,7 +8290,7 @@ export const useUpdateApiToken = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateApiToken>>,
   TError,
-  { id: string; data: UpdateApiTokenBody },
+  { id: string | undefined | null; data: UpdateApiTokenBody },
   TContext
 > => {
   const mutationOptions = getUpdateApiTokenMutationOptions(options)
