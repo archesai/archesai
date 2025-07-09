@@ -1,8 +1,8 @@
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
 import {
-  useFindManyMembers,
-  useGetSession,
+  useFindManyMembersSuspense,
+  useGetSessionSuspense,
   useUpdateUser
 } from '@archesai/client'
 
@@ -22,27 +22,16 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '#components/shadcn/sidebar'
-import { Skeleton } from '#components/shadcn/skeleton'
 
 export function OrganizationButton() {
-  const { data: session } = useGetSession()
-  const { data: memberships } = useFindManyMembers(
-    {
-      filter: {
-        orgname: {
-          equals: 'Arches Platform'
-        }
-      }
-    },
-    {
-      query: {
-        enabled: false,
-        initialData: {
-          data: []
-        }
+  const { data: session } = useGetSessionSuspense()
+  const { data: memberships } = useFindManyMembersSuspense({
+    filter: {
+      orgname: {
+        equals: 'Arches Platform'
       }
     }
-  )
+  })
 
   const { mutateAsync: updateUser } = useUpdateUser()
 
@@ -75,15 +64,9 @@ export function OrganizationButton() {
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>
-                  {!session ?
-                    <Skeleton />
-                  : session.orgname}
-                </span>
+                <span className='truncate font-medium'>{session.orgname}</span>
                 <span className='truncate text-xs'>
-                  {!session ?
-                    <Skeleton />
-                  : session.email + ' Plan'}
+                  {session.email + ' Plan'}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />

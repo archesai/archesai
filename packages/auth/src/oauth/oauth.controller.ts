@@ -1,7 +1,7 @@
 import type { Controller, HttpInstance } from '@archesai/core'
 
 import { ArchesApiNoContentResponseSchema, IS_CONTROLLER } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 /**
  * Controller for managing OAuth.

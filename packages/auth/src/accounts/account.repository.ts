@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { AccountTable } from '@archesai/database'
-import { AccountEntity } from '@archesai/domain'
+import { AccountEntity } from '@archesai/schemas'
 
 /**
  * Repository for managing accounts.

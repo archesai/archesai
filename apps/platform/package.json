@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 vite dev",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
@@ -21,7 +21,7 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/client": "workspace:*",
-    "@archesai/domain": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@archesai/ui": "workspace:*",
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",

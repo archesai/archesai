@@ -1,7 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import { pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
-import { MEMBER_ENTITY_KEY } from '@archesai/domain'
+import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'

@@ -12,10 +12,10 @@ import type {
 import type {
   OrganizationCustomerSubscriptionUpdatedEvent,
   PlanType
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import { InternalServerErrorException } from '@archesai/core'
-import { PlanTypes } from '@archesai/domain'
+import { PlanTypes } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 

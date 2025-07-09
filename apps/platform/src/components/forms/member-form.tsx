@@ -3,8 +3,12 @@ import { Type } from '@sinclair/typebox'
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import { createMember, updateMember, useGetOneMember } from '@archesai/client'
-import { MEMBER_ENTITY_KEY } from '@archesai/domain'
+import {
+  createMember,
+  updateMember,
+  useGetOneMemberSuspense
+} from '@archesai/client'
+import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -17,15 +21,8 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
-  const { data: existingMemberResponse, error } = useGetOneMember(memberId, {
-    query: {
-      enabled: !!memberId
-    }
-  })
+  const { data: existingMemberResponse } = useGetOneMemberSuspense(memberId)
 
-  if (error || !existingMemberResponse) {
-    return <div>Member not found</div>
-  }
   const member = existingMemberResponse.data
 
   const formFields: FormFieldConfig[] = [

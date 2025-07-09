@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateOrganization201,
@@ -165,6 +170,152 @@ export const getFindManyOrganizationsQueryKey = (
   params?: FindManyOrganizationsParams
 ) => {
   return [`/organizations`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyOrganizationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyOrganizations>>,
+  TError = unknown
+>(
+  params?: FindManyOrganizationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyOrganizations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyOrganizations>>
+  > = ({ signal }) =>
+    findManyOrganizations(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyOrganizations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyOrganizationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyOrganizations>>
+>
+export type FindManyOrganizationsQueryError = unknown
+
+export function useFindManyOrganizations<
+  TData = Awaited<ReturnType<typeof findManyOrganizations>>,
+  TError = unknown
+>(
+  params: undefined | FindManyOrganizationsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyOrganizations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyOrganizations>>,
+          TError,
+          Awaited<ReturnType<typeof findManyOrganizations>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyOrganizations<
+  TData = Awaited<ReturnType<typeof findManyOrganizations>>,
+  TError = unknown
+>(
+  params?: FindManyOrganizationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyOrganizations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyOrganizations>>,
+          TError,
+          Awaited<ReturnType<typeof findManyOrganizations>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyOrganizations<
+  TData = Awaited<ReturnType<typeof findManyOrganizations>>,
+  TError = unknown
+>(
+  params?: FindManyOrganizationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyOrganizations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many organizations
+ */
+
+export function useFindManyOrganizations<
+  TData = Awaited<ReturnType<typeof findManyOrganizations>>,
+  TError = unknown
+>(
+  params?: FindManyOrganizationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyOrganizations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyOrganizationsQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyOrganizationsSuspenseQueryOptions = <
@@ -416,6 +567,155 @@ export const getGetOneOrganizationQueryKey = (
   id: string | undefined | null
 ) => {
   return [`/organizations/${id}`] as const
+}
+
+export const getGetOneOrganizationQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneOrganization>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneOrganization>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneOrganizationQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getOneOrganization>>
+  > = ({ signal }) => getOneOrganization(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneOrganization>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneOrganizationQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneOrganization>>
+>
+export type GetOneOrganizationQueryError = NotFoundResponse
+
+export function useGetOneOrganization<
+  TData = Awaited<ReturnType<typeof getOneOrganization>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneOrganization>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneOrganization>>,
+          TError,
+          Awaited<ReturnType<typeof getOneOrganization>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneOrganization<
+  TData = Awaited<ReturnType<typeof getOneOrganization>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneOrganization>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneOrganization>>,
+          TError,
+          Awaited<ReturnType<typeof getOneOrganization>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneOrganization<
+  TData = Awaited<ReturnType<typeof getOneOrganization>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneOrganization>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find an organization
+ */
+
+export function useGetOneOrganization<
+  TData = Awaited<ReturnType<typeof getOneOrganization>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneOrganization>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneOrganizationQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneOrganizationSuspenseQueryOptions = <

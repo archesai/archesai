@@ -11,7 +11,7 @@
       "path": "../../packages/database/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/domain/tsconfig.lib.json"
+      "path": "../../packages/schemas/tsconfig.lib.json"
     }
   ]
 }

@@ -8,7 +8,7 @@
 //   FindManyToolsParams,
 //   UpdateRunBody
 // } from '@archesai/client'
-// import type { ArtifactEntity, ToolEntity } from '@archesai/domain'
+// import type { ArtifactEntity, ToolEntity } from '@archesai/schemas'
 // import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 // import {
@@ -23,7 +23,7 @@
 //   RunEntitySchema,
 //   TOOL_ENTITY_KEY,
 //   ToolEntitySchema
-// } from '@archesai/domain'
+// } from '@archesai/schemas'
 // import { DataSelector } from '@archesai/ui/components/custom/data-selector'
 // import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 // import ImportCard from '@archesai/ui/components/custom/import-card'

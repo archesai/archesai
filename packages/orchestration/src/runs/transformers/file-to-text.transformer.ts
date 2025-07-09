@@ -3,7 +3,7 @@
 // import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured'
 
 // import type { ConfigService } from '@archesai/core'
-// import type { ArtifactEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/schemas'
 // import type { StorageService } from '@archesai/storage'
 
 // import type { ArtifactsService } from '#artifacts/artifacts.service'

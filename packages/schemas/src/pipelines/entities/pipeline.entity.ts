@@ -1,4 +1,4 @@
-// filepath: /home/jonathan/Projects/archesai/packages/domain/src/pipelines/entities/pipeline.entity.ts
+// filepath: /home/jonathan/Projects/archesai/packages/schemas/src/pipelines/entities/pipeline.entity.ts
 import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'

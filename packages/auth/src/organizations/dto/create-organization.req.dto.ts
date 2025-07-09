@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { OrganizationEntitySchema } from '@archesai/domain'
+import { OrganizationEntitySchema } from '@archesai/schemas'
 
 export const CreateOrganizationRequestSchema = Type.Object({
   billingEmail: OrganizationEntitySchema.properties.billingEmail,

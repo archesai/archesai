@@ -1,11 +1,11 @@
 import type { Controller } from '@archesai/core'
-import type { OrganizationEntity } from '@archesai/domain'
+import type { OrganizationEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
 import {
   ORGANIZATION_ENTITY_KEY,
   OrganizationEntitySchema
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import type { OrganizationsService } from '#organizations/organizations.service'
 

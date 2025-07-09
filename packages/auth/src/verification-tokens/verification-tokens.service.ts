@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
 
 import type { ConfigService, EmailService } from '@archesai/core'
-import type { VerificationTokenType } from '@archesai/domain'
+import type { VerificationTokenType } from '@archesai/schemas'
 
 import { UnauthorizedException } from '@archesai/core'
 

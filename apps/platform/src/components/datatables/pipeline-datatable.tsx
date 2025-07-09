@@ -1,9 +1,12 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { PipelineEntity } from '@archesai/domain'
+import type { PipelineEntity } from '@archesai/schemas'
 
-import { deletePipeline, useFindManyPipelines } from '@archesai/client'
-import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import {
+  deletePipeline,
+  getFindManyPipelinesSuspenseQueryOptions
+} from '@archesai/client'
+import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { Workflow } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -72,7 +75,7 @@ export default function PipelineDataTable() {
         await navigate({ to: `/pipelines/single?pipelineId=${pipeline.id}` })
       }}
       icon={<Workflow />}
-      useFindMany={useFindManyPipelines}
+      useFindMany={getFindManyPipelinesSuspenseQueryOptions()}
     />
   )
 }

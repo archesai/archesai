@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { RunEntity } from '@archesai/domain'
+import type { RunEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { RUN_ENTITY_KEY, RunEntitySchema } from '@archesai/domain'
+import { RUN_ENTITY_KEY, RunEntitySchema } from '@archesai/schemas'
 
 import type { RunsService } from '#runs/runs.service'
 

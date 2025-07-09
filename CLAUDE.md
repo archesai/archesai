@@ -25,7 +25,7 @@ Arches AI is a comprehensive data processing platform built with a modern monore
 - `packages/billing`: Stripe integration for subscriptions
 - `packages/core`: Shared utilities, config, logging, database
 - `packages/database`: Drizzle ORM schema and migrations
-- `packages/domain`: Domain entities and business logic
+- `packages/schemas`: Domain entities and business logic
 - `packages/intelligence`: AI services (LLM, speech, audio, scraping)
 - `packages/orchestration`: Pipeline management and data processing
 - `packages/storage`: File handling and cloud storage

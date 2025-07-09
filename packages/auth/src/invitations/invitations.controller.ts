@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
-import type { InvitationEntity } from '@archesai/domain'
+import type { InvitationEntity } from '@archesai/schemas'
 
 import {
   ArchesApiForbiddenResponseSchema,
@@ -15,7 +15,7 @@ import {
   INVITATION_ENTITY_KEY,
   InvitationEntitySchema,
   LegacyRef
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import type { InvitationsService } from '#invitations/invitations.service'
 

@@ -2,7 +2,7 @@ import type { Table } from '@tanstack/react-table'
 
 import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { Button } from '#components/shadcn/button'
 import {

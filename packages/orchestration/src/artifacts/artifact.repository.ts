@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { ArtifactTable } from '@archesai/database'
-import { ArtifactEntity } from '@archesai/domain'
+import { ArtifactEntity } from '@archesai/schemas'
 
 /**
  * Repository for content.

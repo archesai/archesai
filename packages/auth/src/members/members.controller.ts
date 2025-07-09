@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { MemberEntity } from '@archesai/domain'
+import type { MemberEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { MEMBER_ENTITY_KEY, MemberEntitySchema } from '@archesai/domain'
+import { MEMBER_ENTITY_KEY, MemberEntitySchema } from '@archesai/schemas'
 
 import type { MembersService } from '#members/members.service'
 

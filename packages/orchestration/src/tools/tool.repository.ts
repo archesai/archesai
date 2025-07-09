@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { ToolTable } from '@archesai/database'
-import { ToolEntity } from '@archesai/domain'
+import { ToolEntity } from '@archesai/schemas'
 
 /**
  * Repository for tools.

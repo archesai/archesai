@@ -2,7 +2,7 @@ import type { Table as ReactTable } from '@tanstack/react-table'
 
 import { flexRender } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { Skeleton } from '#components/shadcn/skeleton'
 import {

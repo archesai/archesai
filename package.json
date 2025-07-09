@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "clean:workspaces": "turbo run clean",
     "dev": "turbo watch dev --continue",
     "dev:api": "turbo watch dev -F @archesai/api",

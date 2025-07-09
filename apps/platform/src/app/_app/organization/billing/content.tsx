@@ -3,8 +3,8 @@ import { useState } from 'react'
 import {
   useCancelSubscription,
   useCreateCheckoutSession,
-  useGetOneOrganization,
-  useGetPlans,
+  useGetOneOrganizationSuspense,
+  useGetPlansSuspense,
   useUpdateSubscription
 } from '@archesai/client'
 import { Loader2 } from '@archesai/ui/components/custom/icons'
@@ -31,9 +31,10 @@ export default function BillingPageContent() {
     -1
   )
 
-  const { data: plansResponse, error: plansError } = useGetPlans()
+  const { data: plansResponse } = useGetPlansSuspense()
 
-  const { data: organizationResponse } = useGetOneOrganization(defaultOrgname)
+  const { data: organizationResponse } =
+    useGetOneOrganizationSuspense(defaultOrgname)
 
   const {
     isPending: createCheckoutSessionLoading,
@@ -62,11 +63,8 @@ export default function BillingPageContent() {
     mutateAsync: cancelSubscription
   } = useCancelSubscription()
 
-  const plans = plansResponse?.data
+  const plans = plansResponse.data
 
-  if (plansError || !organizationResponse) {
-    return null
-  }
   const organization = organizationResponse.data
 
   return (
@@ -81,7 +79,7 @@ export default function BillingPageContent() {
         </CardHeader>
         <CardContent>
           <>
-            {plans && plans.length > 0 ?
+            {plans.length > 0 ?
               <Table>
                 <TableHeader>
                   <TableRow>

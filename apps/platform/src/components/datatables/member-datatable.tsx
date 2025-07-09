@@ -1,6 +1,10 @@
-import type { MemberEntity } from '@archesai/domain'
+import type { MemberEntity } from '@archesai/schemas'
 
-import { deleteMember, useFindManyMembers } from '@archesai/client'
+import {
+  deleteMember,
+  getFindManyMembersSuspenseQueryOptions
+} from '@archesai/client'
+import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { CheckIcon, User, XIcon } from '@archesai/ui/components/custom/icons'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
@@ -56,20 +60,15 @@ export default function MemberDataTable() {
       deleteItem={async (id) => {
         await deleteMember(id)
       }}
-      entityType='Member'
+      entityType={MEMBER_ENTITY_KEY}
       getEditFormFromItem={(member) => {
         return <MemberForm memberId={member.id} />
       }}
       handleSelect={() => {
         console.log('handleSelect')
       }}
-      icon={
-        <User
-          className='opacity-30'
-          size={24}
-        />
-      }
-      useFindMany={useFindManyMembers}
+      icon={<User />}
+      useFindMany={getFindManyMembersSuspenseQueryOptions()}
     />
   )
 }

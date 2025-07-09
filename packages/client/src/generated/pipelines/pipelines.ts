@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreatePipeline201,
@@ -160,6 +165,151 @@ export const getFindManyPipelinesQueryKey = (
   params?: FindManyPipelinesParams
 ) => {
   return [`/pipelines`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyPipelinesQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyPipelines>>,
+  TError = unknown
+>(
+  params?: FindManyPipelinesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPipelines>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyPipelines>>
+  > = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyPipelines>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyPipelinesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyPipelines>>
+>
+export type FindManyPipelinesQueryError = unknown
+
+export function useFindManyPipelines<
+  TData = Awaited<ReturnType<typeof findManyPipelines>>,
+  TError = unknown
+>(
+  params: undefined | FindManyPipelinesParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPipelines>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyPipelines>>,
+          TError,
+          Awaited<ReturnType<typeof findManyPipelines>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyPipelines<
+  TData = Awaited<ReturnType<typeof findManyPipelines>>,
+  TError = unknown
+>(
+  params?: FindManyPipelinesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPipelines>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyPipelines>>,
+          TError,
+          Awaited<ReturnType<typeof findManyPipelines>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyPipelines<
+  TData = Awaited<ReturnType<typeof findManyPipelines>>,
+  TError = unknown
+>(
+  params?: FindManyPipelinesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPipelines>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many pipelines
+ */
+
+export function useFindManyPipelines<
+  TData = Awaited<ReturnType<typeof findManyPipelines>>,
+  TError = unknown
+>(
+  params?: FindManyPipelinesParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPipelines>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyPipelinesQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyPipelinesSuspenseQueryOptions = <
@@ -405,6 +555,135 @@ export const getOnePipeline = async (
 
 export const getGetOnePipelineQueryKey = (id: string | undefined | null) => {
   return [`/pipelines/${id}`] as const
+}
+
+export const getGetOnePipelineQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOnePipeline>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOnePipeline>>> = ({
+    signal
+  }) => getOnePipeline(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOnePipeline>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOnePipelineQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOnePipeline>>
+>
+export type GetOnePipelineQueryError = NotFoundResponse
+
+export function useGetOnePipeline<
+  TData = Awaited<ReturnType<typeof getOnePipeline>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOnePipeline>>,
+          TError,
+          Awaited<ReturnType<typeof getOnePipeline>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOnePipeline<
+  TData = Awaited<ReturnType<typeof getOnePipeline>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOnePipeline>>,
+          TError,
+          Awaited<ReturnType<typeof getOnePipeline>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOnePipeline<
+  TData = Awaited<ReturnType<typeof getOnePipeline>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find a pipeline
+ */
+
+export function useGetOnePipeline<
+  TData = Awaited<ReturnType<typeof getOnePipeline>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOnePipelineQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOnePipelineSuspenseQueryOptions = <

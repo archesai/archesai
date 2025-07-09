@@ -1,4 +1,4 @@
-import type { BaseEntity, BaseInsertion } from '@archesai/domain'
+import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
 
 import type { SearchQuery } from '#http/dto/search-query.dto'
 

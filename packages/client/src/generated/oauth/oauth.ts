@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type { NoContentResponse } from '../orval.schemas'
 
@@ -130,6 +135,123 @@ export const twitter = async (
 
 export const getTwitterQueryKey = () => {
   return [`/oauth/twitter`] as const
+}
+
+export const getTwitterQueryOptions = <
+  TData = Awaited<ReturnType<typeof twitter>>,
+  TError = unknown
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof twitter>>, TError, TData>
+  >
+  request?: SecondParameter<typeof customFetch>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getTwitterQueryKey()
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof twitter>>> = ({
+    signal
+  }) => twitter({ signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof twitter>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TwitterQueryResult = NonNullable<
+  Awaited<ReturnType<typeof twitter>>
+>
+export type TwitterQueryError = unknown
+
+export function useTwitter<
+  TData = Awaited<ReturnType<typeof twitter>>,
+  TError = unknown
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof twitter>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof twitter>>,
+          TError,
+          Awaited<ReturnType<typeof twitter>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useTwitter<
+  TData = Awaited<ReturnType<typeof twitter>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof twitter>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof twitter>>,
+          TError,
+          Awaited<ReturnType<typeof twitter>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useTwitter<
+  TData = Awaited<ReturnType<typeof twitter>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof twitter>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Redirect to Twitter OAuth
+ */
+
+export function useTwitter<
+  TData = Awaited<ReturnType<typeof twitter>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof twitter>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getTwitterQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getTwitterSuspenseQueryOptions = <
@@ -270,6 +392,139 @@ export const twitterCallback = async (
 
 export const getTwitterCallbackQueryKey = () => {
   return [`/oauth/twitter/callback`] as const
+}
+
+export const getTwitterCallbackQueryOptions = <
+  TData = Awaited<ReturnType<typeof twitterCallback>>,
+  TError = unknown
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof twitterCallback>>, TError, TData>
+  >
+  request?: SecondParameter<typeof customFetch>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getTwitterCallbackQueryKey()
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof twitterCallback>>> = ({
+    signal
+  }) => twitterCallback({ signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof twitterCallback>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TwitterCallbackQueryResult = NonNullable<
+  Awaited<ReturnType<typeof twitterCallback>>
+>
+export type TwitterCallbackQueryError = unknown
+
+export function useTwitterCallback<
+  TData = Awaited<ReturnType<typeof twitterCallback>>,
+  TError = unknown
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof twitterCallback>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof twitterCallback>>,
+          TError,
+          Awaited<ReturnType<typeof twitterCallback>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useTwitterCallback<
+  TData = Awaited<ReturnType<typeof twitterCallback>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof twitterCallback>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof twitterCallback>>,
+          TError,
+          Awaited<ReturnType<typeof twitterCallback>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useTwitterCallback<
+  TData = Awaited<ReturnType<typeof twitterCallback>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof twitterCallback>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Handle Twitter OAuth callback
+ */
+
+export function useTwitterCallback<
+  TData = Awaited<ReturnType<typeof twitterCallback>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof twitterCallback>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getTwitterCallbackQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getTwitterCallbackSuspenseQueryOptions = <

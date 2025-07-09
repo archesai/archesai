@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { BaseInsertion, UserEntity } from '@archesai/domain'
+import type { BaseInsertion, UserEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { USER_ENTITY_KEY } from '@archesai/domain'
+import { USER_ENTITY_KEY } from '@archesai/schemas'
 
 import type { OrganizationsService } from '#organizations/organizations.service'
 import type { UserRepository } from '#users/user.repository'

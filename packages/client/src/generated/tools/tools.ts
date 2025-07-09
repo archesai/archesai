@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateTool201,
@@ -156,6 +161,130 @@ export const findManyTools = async (
 
 export const getFindManyToolsQueryKey = (params?: FindManyToolsParams) => {
   return [`/tools`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyToolsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyTools>>,
+  TError = unknown
+>(
+  params?: FindManyToolsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getFindManyToolsQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyTools>>> = ({
+    signal
+  }) => findManyTools(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyTools>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyToolsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyTools>>
+>
+export type FindManyToolsQueryError = unknown
+
+export function useFindManyTools<
+  TData = Awaited<ReturnType<typeof findManyTools>>,
+  TError = unknown
+>(
+  params: undefined | FindManyToolsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyTools>>,
+          TError,
+          Awaited<ReturnType<typeof findManyTools>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyTools<
+  TData = Awaited<ReturnType<typeof findManyTools>>,
+  TError = unknown
+>(
+  params?: FindManyToolsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyTools>>,
+          TError,
+          Awaited<ReturnType<typeof findManyTools>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyTools<
+  TData = Awaited<ReturnType<typeof findManyTools>>,
+  TError = unknown
+>(
+  params?: FindManyToolsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many tools
+ */
+
+export function useFindManyTools<
+  TData = Awaited<ReturnType<typeof findManyTools>>,
+  TError = unknown
+>(
+  params?: FindManyToolsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyToolsQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyToolsSuspenseQueryOptions = <
@@ -397,6 +526,135 @@ export const getOneTool = async (
 
 export const getGetOneToolQueryKey = (id: string | undefined | null) => {
   return [`/tools/${id}`] as const
+}
+
+export const getGetOneToolQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneTool>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneToolQueryKey(id)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneTool>>> = ({
+    signal
+  }) => getOneTool(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneTool>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneToolQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneTool>>
+>
+export type GetOneToolQueryError = NotFoundResponse
+
+export function useGetOneTool<
+  TData = Awaited<ReturnType<typeof getOneTool>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneTool>>,
+          TError,
+          Awaited<ReturnType<typeof getOneTool>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneTool<
+  TData = Awaited<ReturnType<typeof getOneTool>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneTool>>,
+          TError,
+          Awaited<ReturnType<typeof getOneTool>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneTool<
+  TData = Awaited<ReturnType<typeof getOneTool>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find a tool
+ */
+
+export function useGetOneTool<
+  TData = Awaited<ReturnType<typeof getOneTool>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneToolQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneToolSuspenseQueryOptions = <

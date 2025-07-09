@@ -1,33 +1,32 @@
 import { useNavigate } from '@tanstack/react-router'
 
-import { useFindManyTools } from '@archesai/client'
+import { useFindManyToolsSuspense } from '@archesai/client'
 import { Card } from '@archesai/ui/components/shadcn/card'
-import { Skeleton } from '@archesai/ui/components/shadcn/skeleton'
 import { cn, stringToColor } from '@archesai/ui/lib/utils'
 
 import { toolBaseIcons } from '#lib/site-config'
 
 export const ToolCards = () => {
   const navigate = useNavigate()
-  const { data: toolsResponse, isPending } = useFindManyTools()
-  if (isPending) {
-    return (
-      <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
-        {new Array(6).map((_, index) => (
-          <Card
-            className='flex h-[150px] flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
-            key={index}
-          >
-            <Skeleton className='mx-auto h-8 w-8' />
-            <Skeleton className='mx-auto h-6 w-3/4' />
-            <Skeleton className='mx-auto h-4 w-5/6' />
-          </Card>
-        ))}
-      </div>
-    )
-  }
-  const tools = toolsResponse?.data
-  if (!tools) {
+  const { data: toolsResponse } = useFindManyToolsSuspense()
+  // if (isPending) {
+  //   return (
+  //     <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
+  //       {new Array(6).map((_, index) => (
+  //         <Card
+  //           className='flex h-[150px] flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
+  //           key={index}
+  //         >
+  //           <Skeleton className='mx-auto h-8 w-8' />
+  //           <Skeleton className='mx-auto h-6 w-3/4' />
+  //           <Skeleton className='mx-auto h-4 w-5/6' />
+  //         </Card>
+  //       ))}
+  //     </div>
+  //   )
+  // }
+  const tools = toolsResponse.data
+  if (!tools.length) {
     return (
       <div className='flex h-[150px] items-center justify-center'>
         <p className='text-lg font-semibold'>No tools found</p>

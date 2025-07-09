@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { CloudUpload, Loader2, Trash, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 import { createFile } from '@archesai/client'
 

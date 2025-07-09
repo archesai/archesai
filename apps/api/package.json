@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node --watch src/main.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",

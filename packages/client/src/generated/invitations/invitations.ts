@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   AcceptInvitation200,
@@ -168,6 +173,151 @@ export const getFindManyInvitationsQueryKey = (
   params?: FindManyInvitationsParams
 ) => {
   return [`/invitations`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyInvitationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyInvitations>>,
+  TError = unknown
+>(
+  params?: FindManyInvitationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyInvitations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindManyInvitationsQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyInvitations>>
+  > = ({ signal }) => findManyInvitations(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyInvitations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyInvitationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyInvitations>>
+>
+export type FindManyInvitationsQueryError = unknown
+
+export function useFindManyInvitations<
+  TData = Awaited<ReturnType<typeof findManyInvitations>>,
+  TError = unknown
+>(
+  params: undefined | FindManyInvitationsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyInvitations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyInvitations>>,
+          TError,
+          Awaited<ReturnType<typeof findManyInvitations>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyInvitations<
+  TData = Awaited<ReturnType<typeof findManyInvitations>>,
+  TError = unknown
+>(
+  params?: FindManyInvitationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyInvitations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyInvitations>>,
+          TError,
+          Awaited<ReturnType<typeof findManyInvitations>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyInvitations<
+  TData = Awaited<ReturnType<typeof findManyInvitations>>,
+  TError = unknown
+>(
+  params?: FindManyInvitationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyInvitations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many invitations
+ */
+
+export function useFindManyInvitations<
+  TData = Awaited<ReturnType<typeof findManyInvitations>>,
+  TError = unknown
+>(
+  params?: FindManyInvitationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyInvitations>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyInvitationsQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyInvitationsSuspenseQueryOptions = <
@@ -416,6 +566,155 @@ export const getOneInvitation = async (
 
 export const getGetOneInvitationQueryKey = (id: string | undefined | null) => {
   return [`/invitations/${id}`] as const
+}
+
+export const getGetOneInvitationQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneInvitation>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneInvitation>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneInvitationQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getOneInvitation>>
+  > = ({ signal }) => getOneInvitation(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneInvitation>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneInvitationQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneInvitation>>
+>
+export type GetOneInvitationQueryError = NotFoundResponse
+
+export function useGetOneInvitation<
+  TData = Awaited<ReturnType<typeof getOneInvitation>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneInvitation>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneInvitation>>,
+          TError,
+          Awaited<ReturnType<typeof getOneInvitation>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneInvitation<
+  TData = Awaited<ReturnType<typeof getOneInvitation>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneInvitation>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneInvitation>>,
+          TError,
+          Awaited<ReturnType<typeof getOneInvitation>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneInvitation<
+  TData = Awaited<ReturnType<typeof getOneInvitation>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneInvitation>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find an invitation
+ */
+
+export function useGetOneInvitation<
+  TData = Awaited<ReturnType<typeof getOneInvitation>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getOneInvitation>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneInvitationQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneInvitationSuspenseQueryOptions = <

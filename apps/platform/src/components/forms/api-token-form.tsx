@@ -1,15 +1,15 @@
 import { Type } from '@sinclair/typebox'
 
 import type { CreateApiTokenBody, UpdateApiTokenBody } from '@archesai/client'
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
   useCreateApiToken,
-  useGetOneApiToken,
+  useGetOneApiTokenSuspense,
   useUpdateApiToken
 } from '@archesai/client'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -24,19 +24,13 @@ import {
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   const { mutateAsync: createApiToken } = useUpdateApiToken({})
   const { mutateAsync: updateApiToken } = useCreateApiToken({})
-  const { data: existingApiTokenResponse, error } = useGetOneApiToken(
-    apiTokenId,
-    {
-      query: {
-        enabled: !!apiTokenId
-      }
-    }
-  )
+  const { data: existingApiTokenResponse, error } =
+    useGetOneApiTokenSuspense(apiTokenId)
 
   if (error) {
     return <div>API Token not found</div>
   }
-  const apiToken = existingApiTokenResponse!.data
+  const apiToken = existingApiTokenResponse.data
 
   const formFields: FormFieldConfig[] = [
     {

@@ -7,7 +7,7 @@ import {
   AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import type { CreateEmailChangeRequest } from '#email-change/dto/create-email-change-request.dto'
 import type { UpdateEmailChangeRequest } from '#email-change/dto/update-email-change-request.dto'

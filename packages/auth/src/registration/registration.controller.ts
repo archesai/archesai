@@ -7,7 +7,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import type { RegistrationService } from '#registration/registration.service'
 

@@ -1,7 +1,10 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, primaryKey, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
-import { PIPELINE_ENTITY_KEY, PIPELINE_STEP_ENTITY_KEY } from '@archesai/domain'
+import {
+  PIPELINE_ENTITY_KEY,
+  PIPELINE_STEP_ENTITY_KEY
+} from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
 import { organizationFk } from '#schema/models/organization'

@@ -9,7 +9,7 @@ import {
   RunTypes,
   StatusTypes,
   VerificationTokenTypes
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 export const roleEnum = pgEnum('role', RoleTypes)
 

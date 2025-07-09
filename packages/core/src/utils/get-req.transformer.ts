@@ -4,7 +4,7 @@ import type {
   RouteGenericInterface
 } from 'fastify'
 
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 export type ArchesApiRequest<
   T extends RouteGenericInterface = RouteGenericInterface

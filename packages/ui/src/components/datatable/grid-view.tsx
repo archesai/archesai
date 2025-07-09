@@ -3,7 +3,7 @@ import type { Table } from '@tanstack/react-table'
 import { useState } from 'react'
 import { FilePenLine } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import type { DataTableProps } from '#components/datatable/data-table'
 
@@ -88,15 +88,18 @@ export function GridView<TEntity extends BaseEntity>({
                 </span>
               </div>
               <div className='flex shrink-0 items-center gap-2'>
-                {!readonly && getEditFormFromItem && (
-                  <FilePenLine
-                    className='h-5 w-5 cursor-pointer text-primary'
-                    onClick={() => {
-                      setFinalForm(getEditFormFromItem(item.original))
-                      setFormOpen(true)
-                    }}
-                  />
-                )}
+                {!readonly &&
+                  getEditFormFromItem &&
+                  setFinalForm &&
+                  setFormOpen && (
+                    <FilePenLine
+                      className='h-5 w-5 cursor-pointer text-primary'
+                      onClick={() => {
+                        setFinalForm(getEditFormFromItem(item.original))
+                        setFormOpen(true)
+                      }}
+                    />
+                  )}
                 {!readonly && deleteItem ?
                   <DeleteItems
                     deleteItem={deleteItem}

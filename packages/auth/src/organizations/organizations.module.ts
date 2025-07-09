@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { OrganizationEntity } from '@archesai/domain'
+import type { OrganizationEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,

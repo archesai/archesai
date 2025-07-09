@@ -1,7 +1,7 @@
 // // import { ArtifactsService } from "#artifacts/artifacts.service";
 // import type { Logger } from '@archesai/core'
 // // import { retry } from "#common/utils/retry";
-// import type { ArtifactEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/schemas'
 
 // // import { OpenAiEmbeddingsService } from "#embeddings/embeddings.openai.service";
 

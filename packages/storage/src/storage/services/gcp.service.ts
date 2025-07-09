@@ -5,7 +5,7 @@ import { Readable } from 'node:stream'
 import { Storage } from '@google-cloud/storage'
 
 import type { HealthCheck, HealthStatus } from '@archesai/core'
-import type { FileEntity } from '@archesai/domain'
+import type { FileEntity } from '@archesai/schemas'
 
 import { ConflictException, Logger, NotFoundException } from '@archesai/core'
 

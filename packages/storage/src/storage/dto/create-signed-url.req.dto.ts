@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { FileEntitySchema } from '@archesai/domain'
+import { FileEntitySchema } from '@archesai/schemas'
 
 export const CreateSignedUrlRequestSchema = Type.Object({
   action: Type.Union([Type.Literal('read'), Type.Literal('write')], {

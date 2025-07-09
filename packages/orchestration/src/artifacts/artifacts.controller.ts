@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/schemas'
 
 import type { ArtifactsService } from '#artifacts/artifacts.service'
 

@@ -9,9 +9,9 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import {
   createArtifact,
   updateArtifact,
-  useGetOneArtifact
+  useGetOneArtifactSuspense
 } from '@archesai/client'
-import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -26,19 +26,13 @@ import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse, error } = useGetOneArtifact(
-    artifactId,
-    {
-      query: {
-        enabled: !!artifactId
-      }
-    }
-  )
+  const { data: existingContentResponse, error } =
+    useGetOneArtifactSuspense(artifactId)
 
   if (error) {
     return <div>Content not found</div>
   }
-  const content = existingContentResponse!.data
+  const content = existingContentResponse.data
 
   const formFields: FormFieldConfig[] = [
     {

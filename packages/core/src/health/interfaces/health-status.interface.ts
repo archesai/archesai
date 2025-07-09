@@ -1,4 +1,4 @@
-import type { StatusType } from '@archesai/domain'
+import type { StatusType } from '@archesai/schemas'
 
 import type { Errors } from '#http/schemas/errors.schema'
 

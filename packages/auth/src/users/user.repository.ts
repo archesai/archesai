@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { UserTable } from '@archesai/database'
-import { UserEntity } from '@archesai/domain'
+import { UserEntity } from '@archesai/schemas'
 
 /**
  * Repository for handling users.

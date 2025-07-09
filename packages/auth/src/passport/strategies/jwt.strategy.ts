@@ -4,7 +4,7 @@ import type { ConfigService } from '@archesai/core'
 import type {
   AccessTokenDecodedJwt,
   ApiTokenDecodedJwt
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import { Logger, UnauthorizedException } from '@archesai/core'
 

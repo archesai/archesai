@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { LabelEntity } from '@archesai/domain'
+import type { LabelEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { LABEL_ENTITY_KEY, LabelEntitySchema } from '@archesai/domain'
+import { LABEL_ENTITY_KEY, LabelEntitySchema } from '@archesai/schemas'
 
 import type { LabelsService } from '#labels/labels.service'
 

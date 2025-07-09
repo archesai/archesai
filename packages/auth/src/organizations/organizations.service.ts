@@ -3,13 +3,13 @@ import type {
   BaseInsertion,
   OrganizationEntity,
   PlanType
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import { BaseService, ForbiddenException } from '@archesai/core'
 import {
   ORGANIZATION_ENTITY_KEY,
   OrganizationCreatedEvent
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import type { OrganizationRepository } from '#organizations/organization.repository'
 

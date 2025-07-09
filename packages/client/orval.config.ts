@@ -41,7 +41,7 @@ export default defineConfig({
           name: 'customFetch'
         },
         query: {
-          useQuery: false,
+          useQuery: true,
           useInfinite: false,
           useSuspenseQuery: true,
           useSuspenseInfiniteQuery: false

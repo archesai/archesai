@@ -27,7 +27,7 @@
       "path": "../../packages/core"
     },
     {
-      "path": "../../packages/domain"
+      "path": "../../packages/schemas"
     },
     {
       "path": "../../tooling/eslint"

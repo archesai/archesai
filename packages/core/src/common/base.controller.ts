@@ -3,9 +3,9 @@ import type { FastifyPluginCallback } from 'fastify'
 
 import { Type } from '@sinclair/typebox'
 
-import type { BaseEntity, BaseInsertion } from '@archesai/domain'
+import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
 
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import type { BaseService } from '#common/base.service'
 import type { SearchQuery } from '#http/dto/search-query.dto'

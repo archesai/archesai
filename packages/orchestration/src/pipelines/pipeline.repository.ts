@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { PipelineTable } from '@archesai/database'
-import { PipelineEntity } from '@archesai/domain'
+import { PipelineEntity } from '@archesai/schemas'
 
 /**
  * Repository for pipelines.

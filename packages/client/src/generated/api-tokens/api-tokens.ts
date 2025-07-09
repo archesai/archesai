@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateApiToken201,
@@ -160,6 +165,151 @@ export const getFindManyApiTokensQueryKey = (
   params?: FindManyApiTokensParams
 ) => {
   return [`/api-tokens`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyApiTokensQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+  TError = unknown
+>(
+  params?: FindManyApiTokensParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyApiTokens>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindManyApiTokensQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyApiTokens>>
+  > = ({ signal }) => findManyApiTokens(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyApiTokens>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyApiTokensQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyApiTokens>>
+>
+export type FindManyApiTokensQueryError = unknown
+
+export function useFindManyApiTokens<
+  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+  TError = unknown
+>(
+  params: undefined | FindManyApiTokensParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyApiTokens>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyApiTokens>>,
+          TError,
+          Awaited<ReturnType<typeof findManyApiTokens>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyApiTokens<
+  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+  TError = unknown
+>(
+  params?: FindManyApiTokensParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyApiTokens>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyApiTokens>>,
+          TError,
+          Awaited<ReturnType<typeof findManyApiTokens>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyApiTokens<
+  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+  TError = unknown
+>(
+  params?: FindManyApiTokensParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyApiTokens>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many api-tokens
+ */
+
+export function useFindManyApiTokens<
+  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+  TError = unknown
+>(
+  params?: FindManyApiTokensParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyApiTokens>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyApiTokensQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyApiTokensSuspenseQueryOptions = <
@@ -405,6 +555,135 @@ export const getOneApiToken = async (
 
 export const getGetOneApiTokenQueryKey = (id: string | undefined | null) => {
   return [`/api-tokens/${id}`] as const
+}
+
+export const getGetOneApiTokenQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneApiTokenQueryKey(id)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneApiToken>>> = ({
+    signal
+  }) => getOneApiToken(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneApiToken>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneApiTokenQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneApiToken>>
+>
+export type GetOneApiTokenQueryError = NotFoundResponse
+
+export function useGetOneApiToken<
+  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneApiToken>>,
+          TError,
+          Awaited<ReturnType<typeof getOneApiToken>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneApiToken<
+  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneApiToken>>,
+          TError,
+          Awaited<ReturnType<typeof getOneApiToken>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneApiToken<
+  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find an api-token
+ */
+
+export function useGetOneApiToken<
+  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneApiTokenQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneApiTokenSuspenseQueryOptions = <

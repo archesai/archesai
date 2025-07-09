@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { InvitationEntity } from '@archesai/domain'
+import type { InvitationEntity } from '@archesai/schemas'
 
 import {
   createModule,

@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { LabelEntity } from '@archesai/domain'
+import type { LabelEntity } from '@archesai/schemas'
 
 import {
   createModule,

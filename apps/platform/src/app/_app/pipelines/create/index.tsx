@@ -18,7 +18,7 @@ import {
   useNodesState
 } from '@xyflow/react'
 
-import type { PipelineStepEntity } from '@archesai/domain'
+import type { PipelineStepEntity } from '@archesai/schemas'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Card } from '@archesai/ui/components/shadcn/card'

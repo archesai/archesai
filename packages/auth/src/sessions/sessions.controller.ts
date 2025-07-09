@@ -4,7 +4,7 @@ import type {
   Controller,
   HttpInstance
 } from '@archesai/core'
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
@@ -12,7 +12,7 @@ import {
   AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef, UserEntitySchema } from '@archesai/domain'
+import { LegacyRef, UserEntitySchema } from '@archesai/schemas'
 
 import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto'
 

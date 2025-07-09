@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { InvitationTable } from '@archesai/database'
-import { InvitationEntity } from '@archesai/domain'
+import { InvitationEntity } from '@archesai/schemas'
 
 /**
  * Repository for interacting with the invitation entity.

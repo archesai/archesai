@@ -3,18 +3,15 @@ import { Type } from '@sinclair/typebox'
 import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import { useGetOneUser, useUpdateUser } from '@archesai/client'
-import { USER_ENTITY_KEY } from '@archesai/domain'
+import { useGetOneUserSuspense, useUpdateUser } from '@archesai/client'
+import { USER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function UserForm() {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: userResponse, error } = useGetOneUser('user-form')
+  const { data: userResponse } = useGetOneUserSuspense('user-form')
 
-  if (error || !userResponse) {
-    return <div>Run not found</div>
-  }
   const user = userResponse.data
 
   const formFields: FormFieldConfig[] = [

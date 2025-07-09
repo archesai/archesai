@@ -2,7 +2,7 @@ import type { Table } from '@tanstack/react-table'
 
 import { CrossIcon, GridIcon, ListIcon } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import type { DataTableProps } from '#components/datatable/data-table'
 
@@ -65,7 +65,7 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       <DatePickerWithRange />
       <ViewToggle />
       <DataTableViewOptions table={table} />
-      {createForm && !readonly ?
+      {createForm && setFormOpen && !readonly ?
         <Button
           onClick={() => {
             setFormOpen(true)

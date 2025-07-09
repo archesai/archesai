@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { API_TOKEN_ENTITY_KEY, ApiTokenEntitySchema } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY, ApiTokenEntitySchema } from '@archesai/schemas'
 
 import type { ApiTokensService } from '#api-tokens/api-tokens.service'
 

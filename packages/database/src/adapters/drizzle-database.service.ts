@@ -6,7 +6,7 @@ import { sql } from 'drizzle-orm'
 import { getTableConfig } from 'drizzle-orm/pg-core'
 
 import type { SearchQuery } from '@archesai/core'
-import type { BaseEntity, BaseInsertion } from '@archesai/domain'
+import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
 
 import { DatabaseService } from '@archesai/core'
 

@@ -31,7 +31,7 @@
       "path": "./packages/database"
     },
     {
-      "path": "./packages/domain"
+      "path": "./packages/schemas"
     },
     {
       "path": "./packages/intelligence"

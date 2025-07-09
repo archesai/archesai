@@ -1,5 +1,5 @@
 import type { Logger } from '@archesai/core'
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 import type { ArtifactsService } from '#artifacts/artifacts.service'
 

@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
-import { TOOL_ENTITY_KEY } from '@archesai/domain'
+import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
 import { toolIO } from '#schema/enums'
 import { baseFields } from '#schema/models/base'

@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { OrganizationTable } from '@archesai/database'
-import { OrganizationEntity } from '@archesai/domain'
+import { OrganizationEntity } from '@archesai/schemas'
 
 /**
  * Repository for handling organizations.

@@ -7,14 +7,19 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type { GetConfig200 } from '../orval.schemas'
 
@@ -41,6 +46,123 @@ export const getConfig = async (
 
 export const getGetConfigQueryKey = () => {
   return [`/config`] as const
+}
+
+export const getGetConfigQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConfig>>,
+  TError = unknown
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>
+  >
+  request?: SecondParameter<typeof customFetch>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetConfigQueryKey()
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getConfig>>> = ({
+    signal
+  }) => getConfig({ signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getConfig>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetConfigQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConfig>>
+>
+export type GetConfigQueryError = unknown
+
+export function useGetConfig<
+  TData = Awaited<ReturnType<typeof getConfig>>,
+  TError = unknown
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getConfig>>,
+          TError,
+          Awaited<ReturnType<typeof getConfig>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetConfig<
+  TData = Awaited<ReturnType<typeof getConfig>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getConfig>>,
+          TError,
+          Awaited<ReturnType<typeof getConfig>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetConfig<
+  TData = Awaited<ReturnType<typeof getConfig>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get the configuration
+ */
+
+export function useGetConfig<
+  TData = Awaited<ReturnType<typeof getConfig>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getConfig>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetConfigQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetConfigSuspenseQueryOptions = <

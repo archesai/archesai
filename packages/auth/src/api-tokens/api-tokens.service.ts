@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 
 import type { ConfigService, WebsocketsService } from '@archesai/core'
-import type { ApiTokenEntity, BaseInsertion } from '@archesai/domain'
+import type { ApiTokenEntity, BaseInsertion } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 import type { ApiTokenRepository } from '#api-tokens/api-token.repository'
 import type { JwtService } from '#jwt/jwt.service'

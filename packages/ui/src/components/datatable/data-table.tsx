@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type {
   AccessorKeyColumnDef,
@@ -15,7 +16,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { VisuallyHidden } from 'radix-ui'
 
 import type { SearchQuery } from '@archesai/core'
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { DataTablePagination } from '#components/datatable/data-table-pagination'
 import { DataTableToolbar } from '#components/datatable/data-table-toolbar'
@@ -62,8 +63,8 @@ export interface DataTableProps<TEntity extends BaseEntity> {
   minimal?: boolean
   query?: SearchQuery<TEntity>
   readonly?: boolean
-  setFinalForm: (form: React.ReactNode) => void
-  setFormOpen: (open: boolean) => void
+  setFinalForm?: (form: React.ReactNode) => void
+  setFormOpen?: (open: boolean) => void
   useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TEntity>>
 }
 
@@ -71,7 +72,8 @@ export interface TFindManyResponse<TEntity extends BaseEntity> {
   data: {
     attributes: Omit<TEntity, 'id' | 'type'>
     id: TEntity['id']
-    type: TEntity['type']
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: any
   }[]
 }
 

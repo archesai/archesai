@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Trash } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { Button } from '#components/shadcn/button'
 import {

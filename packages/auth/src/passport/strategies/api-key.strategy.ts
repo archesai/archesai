@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt'
 
 import type { ConfigService } from '@archesai/core'
-import type { ApiTokenDecodedJwt } from '@archesai/domain'
+import type { ApiTokenDecodedJwt } from '@archesai/schemas'
 
 import { catchErrorAsync, Logger, UnauthorizedException } from '@archesai/core'
 

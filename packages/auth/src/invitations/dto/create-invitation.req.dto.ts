@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
 
-import { InvitationEntitySchema } from '@archesai/domain'
+import { InvitationEntitySchema } from '@archesai/schemas'
 
 export const CreateInvitationRequestSchema = Type.Object({
   email: InvitationEntitySchema.properties.email,

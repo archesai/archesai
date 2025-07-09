@@ -1,8 +1,8 @@
 import type { Controller } from '@archesai/core'
-import type { ToolEntity } from '@archesai/domain'
+import type { ToolEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { TOOL_ENTITY_KEY, ToolEntitySchema } from '@archesai/domain'
+import { TOOL_ENTITY_KEY, ToolEntitySchema } from '@archesai/schemas'
 
 import type { ToolsService } from '#tools/tools.service'
 

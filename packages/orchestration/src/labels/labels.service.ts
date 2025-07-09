@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { LabelEntity } from '@archesai/domain'
+import type { LabelEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { LABEL_ENTITY_KEY } from '@archesai/domain'
+import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 
 import type { LabelRepository } from '#labels/label.repository'
 

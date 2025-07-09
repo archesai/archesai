@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { AccountEntity } from '@archesai/domain'
+import type { AccountEntity } from '@archesai/schemas'
 
 import {
   createModule,

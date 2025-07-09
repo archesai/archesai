@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { RunEntity } from '@archesai/domain'
+import type { RunEntity } from '@archesai/schemas'
 
 import {
   ConfigService,

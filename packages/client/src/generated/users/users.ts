@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateUser201,
@@ -156,6 +161,130 @@ export const findManyUsers = async (
 
 export const getFindManyUsersQueryKey = (params?: FindManyUsersParams) => {
   return [`/users`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyUsersQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyUsers>>,
+  TError = unknown
+>(
+  params?: FindManyUsersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getFindManyUsersQueryKey(params)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyUsers>>> = ({
+    signal
+  }) => findManyUsers(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyUsers>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyUsersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyUsers>>
+>
+export type FindManyUsersQueryError = unknown
+
+export function useFindManyUsers<
+  TData = Awaited<ReturnType<typeof findManyUsers>>,
+  TError = unknown
+>(
+  params: undefined | FindManyUsersParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyUsers>>,
+          TError,
+          Awaited<ReturnType<typeof findManyUsers>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyUsers<
+  TData = Awaited<ReturnType<typeof findManyUsers>>,
+  TError = unknown
+>(
+  params?: FindManyUsersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyUsers>>,
+          TError,
+          Awaited<ReturnType<typeof findManyUsers>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyUsers<
+  TData = Awaited<ReturnType<typeof findManyUsers>>,
+  TError = unknown
+>(
+  params?: FindManyUsersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many users
+ */
+
+export function useFindManyUsers<
+  TData = Awaited<ReturnType<typeof findManyUsers>>,
+  TError = unknown
+>(
+  params?: FindManyUsersParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof findManyUsers>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyUsersQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyUsersSuspenseQueryOptions = <
@@ -397,6 +526,135 @@ export const getOneUser = async (
 
 export const getGetOneUserQueryKey = (id: string | undefined | null) => {
   return [`/users/${id}`] as const
+}
+
+export const getGetOneUserQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneUser>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneUserQueryKey(id)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneUser>>> = ({
+    signal
+  }) => getOneUser(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneUser>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneUserQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneUser>>
+>
+export type GetOneUserQueryError = NotFoundResponse
+
+export function useGetOneUser<
+  TData = Awaited<ReturnType<typeof getOneUser>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneUser>>,
+          TError,
+          Awaited<ReturnType<typeof getOneUser>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneUser<
+  TData = Awaited<ReturnType<typeof getOneUser>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneUser>>,
+          TError,
+          Awaited<ReturnType<typeof getOneUser>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneUser<
+  TData = Awaited<ReturnType<typeof getOneUser>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find an user
+ */
+
+export function useGetOneUser<
+  TData = Awaited<ReturnType<typeof getOneUser>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneUser>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneUserQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneUserSuspenseQueryOptions = <

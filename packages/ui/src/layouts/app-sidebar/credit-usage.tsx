@@ -1,4 +1,4 @@
-import type { OrganizationEntity } from '@archesai/domain'
+import type { OrganizationEntity } from '@archesai/schemas'
 
 import { Badge } from '#components/shadcn/badge'
 import { useSidebar } from '#components/shadcn/sidebar'

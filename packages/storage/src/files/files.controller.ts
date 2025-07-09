@@ -1,10 +1,10 @@
 import { Type } from '@sinclair/typebox'
 
 import type { BaseService, Controller } from '@archesai/core'
-import type { FileEntity } from '@archesai/domain'
+import type { FileEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { FILE_ENTITY_KEY, FileEntitySchema } from '@archesai/domain'
+import { FILE_ENTITY_KEY, FileEntitySchema } from '@archesai/schemas'
 
 import type { FilesService } from '#files/files.service'
 

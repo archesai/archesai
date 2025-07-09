@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
-import { useFindManyArtifacts } from '@archesai/client'
-import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
+import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 import { ArtifactViewer } from '@archesai/ui/components/custom/artifact-viewer'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { File, ScanSearch } from '@archesai/ui/components/custom/icons'
@@ -166,7 +166,7 @@ export default function ArtifactDataTable({
       }}
       icon={<File size={24} />}
       readonly={readonly}
-      useFindMany={useFindManyArtifacts}
+      useFindMany={getFindManyArtifactsSuspenseQueryOptions()}
     />
   )
 }

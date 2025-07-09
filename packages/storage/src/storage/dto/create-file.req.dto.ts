@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { FileEntitySchema } from '@archesai/domain'
+import { FileEntitySchema } from '@archesai/schemas'
 
 export const CreateFileRequestSchema = Type.Object({
   isDir: FileEntitySchema.properties.isDir,

@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 export const createRandomApiToken = (
   overrides?: Partial<ApiTokenEntity>

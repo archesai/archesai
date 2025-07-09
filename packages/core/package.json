@@ -12,14 +12,14 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@archesai/domain": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/deepmerge": "catalog:",
     "@fastify/helmet": "catalog:",

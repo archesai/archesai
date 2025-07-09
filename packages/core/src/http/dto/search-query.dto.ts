@@ -2,9 +2,9 @@ import type { TObject } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import { toTitleCaseNoSpaces } from '#utils/strings'
 

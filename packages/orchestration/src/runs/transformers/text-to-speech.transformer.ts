@@ -1,9 +1,9 @@
 // import type { Logger } from '@archesai/core'
 
 // import type { SpeechService } from '@archesai/intelligence'
-// import type { ArtifactEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/schemas'
 // import type { StorageService } from '@archesai/storage'
-// import { contentEntitySchema } from '@archesai/domain'
+// import { contentEntitySchema } from '@archesai/schemas'
 
 // import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'

@@ -1,9 +1,12 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { RunEntity } from '@archesai/domain'
+import type { RunEntity } from '@archesai/schemas'
 
-import { deleteRun, useFindManyRuns } from '@archesai/client'
-import { RUN_ENTITY_KEY } from '@archesai/domain'
+import {
+  deleteRun,
+  getFindManyRunsSuspenseQueryOptions
+} from '@archesai/client'
+import { RUN_ENTITY_KEY } from '@archesai/schemas'
 import { PackageCheck, Workflow } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
@@ -106,7 +109,7 @@ export default function RunDataTable() {
         await navigate({ to: `/run/single?runId=${run.id}` })
       }}
       icon={<PackageCheck />}
-      useFindMany={useFindManyRuns}
+      useFindMany={getFindManyRunsSuspenseQueryOptions()}
     />
   )
 }

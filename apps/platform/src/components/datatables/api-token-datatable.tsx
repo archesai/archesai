@@ -1,9 +1,9 @@
 import { useNavigate } from '@tanstack/react-router'
 
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 
 import { getFindManyApiTokensSuspenseQueryOptions } from '@archesai/client'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 import { User } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'

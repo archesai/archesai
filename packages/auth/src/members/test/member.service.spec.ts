@@ -4,7 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { createMock } from '@golevelup/ts-jest'
 import { Test } from '@nestjs/testing'
 
-import type { BaseInsertion, MemberEntity } from '@archesai/domain'
+import type { BaseInsertion, MemberEntity } from '@archesai/schemas'
 
 import { createRandomMember } from '#members/factories/member.factory'
 import { MemberRepository } from '#members/member.repository'

@@ -3,7 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 
 import { ConfigService, WebsocketsService } from '@archesai/core'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 import { ApiTokenRepository } from '#api-tokens/api-token.repository'
 import { ApiTokensService } from '#api-tokens/api-tokens.service'

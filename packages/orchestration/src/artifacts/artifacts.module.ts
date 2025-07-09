@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 import {
   createModule,

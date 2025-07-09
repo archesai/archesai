@@ -3,7 +3,7 @@ import os from 'node:os'
 import { basename, dirname, join } from 'node:path'
 
 import type { HealthCheck, HealthStatus } from '@archesai/core'
-import type { FileEntity } from '@archesai/domain'
+import type { FileEntity } from '@archesai/schemas'
 
 import { ConflictException, Logger, NotFoundException } from '@archesai/core'
 

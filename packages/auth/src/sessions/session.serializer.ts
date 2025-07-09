@@ -1,5 +1,5 @@
 import type { ArchesApiRequest } from '@archesai/core'
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 import type { UsersService } from '#users/users.service'
 

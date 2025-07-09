@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { MemberEntitySchema } from '@archesai/domain'
+import { MemberEntitySchema } from '@archesai/schemas'
 
 export const CreateMemberRequestSchema = Type.Object({
   name: MemberEntitySchema.properties.name,

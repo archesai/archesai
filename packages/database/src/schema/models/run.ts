@@ -7,7 +7,7 @@ import {
   timestamp
 } from 'drizzle-orm/pg-core'
 
-import { RUN_ENTITY_KEY } from '@archesai/domain'
+import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
 import { runStatus, runType } from '#schema/enums'
 import { ArtifactTable } from '#schema/models/artifact'

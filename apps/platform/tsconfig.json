@@ -13,7 +13,7 @@
       "path": "../../packages/client"
     },
     {
-      "path": "../../packages/domain"
+      "path": "../../packages/schemas"
     },
     {
       "path": "../../packages/ui"

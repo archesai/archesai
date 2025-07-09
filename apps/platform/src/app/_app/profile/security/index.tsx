@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import {
   useDeleteUser,
-  useGetSession,
+  useGetSessionSuspense,
   useRequestPasswordReset
 } from '@archesai/client'
 import {
@@ -24,15 +24,13 @@ export const Route = createFileRoute('/_app/profile/security/')({
 })
 
 export default function ProfileSecuritySettingsPage() {
-  const { data: user } = useGetSession()
+  const { data: user } = useGetSessionSuspense()
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
   const {
     isPending: requestPasswordResetPending,
     mutateAsync: requestPasswordReset
   } = useRequestPasswordReset()
-
-  if (!user) return null
 
   return (
     <div className='flex flex-col gap-3'>

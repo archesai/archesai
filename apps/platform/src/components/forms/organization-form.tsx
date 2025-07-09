@@ -6,21 +6,17 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 
 import {
   useCreateOrganization,
-  useGetOneOrganization,
+  useGetOneOrganizationSuspense,
   useUpdateOrganization
 } from '@archesai/client'
-import { ORGANIZATION_ENTITY_KEY } from '@archesai/domain'
+import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function OrganizationForm({ orgname }: { orgname?: string }) {
   const { mutateAsync: createOrganization } = useCreateOrganization({})
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
-  const { error } = useGetOneOrganization(orgname, {
-    query: {
-      enabled: !!orgname
-    }
-  })
+  const { error } = useGetOneOrganizationSuspense(orgname)
   if (error) {
     return <div>Organization not found</div>
   }

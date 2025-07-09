@@ -1,7 +1,7 @@
 import { RocketIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 import { requestEmailVerification } from '@archesai/client'
 

@@ -1,4 +1,4 @@
-import { useGetOneArtifact } from '@archesai/client'
+import { useGetOneArtifactSuspense } from '@archesai/client'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 import { Button } from '@archesai/ui/components/shadcn/button'
@@ -11,15 +11,7 @@ import {
 
 export const ArtifactDetailsHeader = () => {
   const artifactId = ''
-  const { data, error } = useGetOneArtifact(artifactId)
-
-  if (!data) {
-    return (
-      <CardHeader>
-        <CardTitle>Loading...</CardTitle>
-      </CardHeader>
-    )
-  }
+  const { data, error } = useGetOneArtifactSuspense(artifactId)
 
   if (error) {
     return (
@@ -56,14 +48,8 @@ export const ArtifactDetailsHeader = () => {
 
 export const ArtifactDetailsBody = () => {
   const artifactId = ''
-  const { data: artifact, error } = useGetOneArtifact(artifactId)
-  if (!artifact) {
-    return (
-      <CardContent>
-        <div className='flex items-center gap-2'>Loading...</div>
-      </CardContent>
-    )
-  }
+  const { data: artifact, error } = useGetOneArtifactSuspense(artifactId)
+
   if (error) {
     return (
       <CardContent>

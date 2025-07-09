@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntitySchema, PlanTypes } from '@archesai/domain'
+import { BaseEntitySchema, PlanTypes } from '@archesai/schemas'
 
 export const PLAN_ENTITY_KEY = 'plans'
 

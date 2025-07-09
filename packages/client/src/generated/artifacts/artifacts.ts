@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateArtifact201,
@@ -160,6 +165,151 @@ export const getFindManyArtifactsQueryKey = (
   params?: FindManyArtifactsParams
 ) => {
   return [`/artifacts`, ...(params ? [params] : [])] as const
+}
+
+export const getFindManyArtifactsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyArtifacts>>,
+  TError = unknown
+>(
+  params?: FindManyArtifactsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyArtifacts>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindManyArtifactsQueryKey(params)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyArtifacts>>
+  > = ({ signal }) => findManyArtifacts(params, { signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyArtifacts>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyArtifactsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyArtifacts>>
+>
+export type FindManyArtifactsQueryError = unknown
+
+export function useFindManyArtifacts<
+  TData = Awaited<ReturnType<typeof findManyArtifacts>>,
+  TError = unknown
+>(
+  params: undefined | FindManyArtifactsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyArtifacts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyArtifacts>>,
+          TError,
+          Awaited<ReturnType<typeof findManyArtifacts>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyArtifacts<
+  TData = Awaited<ReturnType<typeof findManyArtifacts>>,
+  TError = unknown
+>(
+  params?: FindManyArtifactsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyArtifacts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyArtifacts>>,
+          TError,
+          Awaited<ReturnType<typeof findManyArtifacts>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyArtifacts<
+  TData = Awaited<ReturnType<typeof findManyArtifacts>>,
+  TError = unknown
+>(
+  params?: FindManyArtifactsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyArtifacts>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find many artifacts
+ */
+
+export function useFindManyArtifacts<
+  TData = Awaited<ReturnType<typeof findManyArtifacts>>,
+  TError = unknown
+>(
+  params?: FindManyArtifactsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyArtifacts>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyArtifactsQueryOptions(params, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getFindManyArtifactsSuspenseQueryOptions = <
@@ -405,6 +555,135 @@ export const getOneArtifact = async (
 
 export const getGetOneArtifactQueryKey = (id: string | undefined | null) => {
   return [`/artifacts/${id}`] as const
+}
+
+export const getGetOneArtifactQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneArtifact>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetOneArtifactQueryKey(id)
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneArtifact>>> = ({
+    signal
+  }) => getOneArtifact(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOneArtifact>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOneArtifactQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneArtifact>>
+>
+export type GetOneArtifactQueryError = NotFoundResponse
+
+export function useGetOneArtifact<
+  TData = Awaited<ReturnType<typeof getOneArtifact>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneArtifact>>,
+          TError,
+          Awaited<ReturnType<typeof getOneArtifact>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneArtifact<
+  TData = Awaited<ReturnType<typeof getOneArtifact>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOneArtifact>>,
+          TError,
+          Awaited<ReturnType<typeof getOneArtifact>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetOneArtifact<
+  TData = Awaited<ReturnType<typeof getOneArtifact>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Find an artifact
+ */
+
+export function useGetOneArtifact<
+  TData = Awaited<ReturnType<typeof getOneArtifact>>,
+  TError = NotFoundResponse
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetOneArtifactQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetOneArtifactSuspenseQueryOptions = <

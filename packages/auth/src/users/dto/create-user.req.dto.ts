@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { UserEntitySchema } from '@archesai/domain'
+import { UserEntitySchema } from '@archesai/schemas'
 
 export const CreateUserRequestSchema = Type.Object({
   email: UserEntitySchema.properties.email,

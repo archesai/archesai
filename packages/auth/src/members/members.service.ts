@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { MemberEntity } from '@archesai/domain'
+import type { MemberEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { MEMBER_ENTITY_KEY } from '@archesai/domain'
+import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
 import type { MemberRepository } from '#members/member.repository'
 

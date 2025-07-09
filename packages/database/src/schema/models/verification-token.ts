@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm'
 import { pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
 
-import { VERIFICATION_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { VERIFICATION_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 import { verificationTokenType } from '#schema/enums'
 

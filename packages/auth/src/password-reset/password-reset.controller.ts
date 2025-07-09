@@ -6,7 +6,7 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import type { CreatePasswordResetRequest } from '#password-reset/dto/create-password-reset.req.dto'
 import type { UpdatePasswordResetRequest } from '#password-reset/dto/update-password-reset.req.dto'

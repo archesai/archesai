@@ -9,12 +9,9 @@ export const Route = createFileRoute('/auth/confirm/')({
   component: ConfirmPage
 })
 
-export default async function ConfirmPage({
-  searchParams
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
-}) {
-  const { token = '', type = '' } = (await searchParams) as {
+export default function ConfirmPage() {
+  const search = Route.useSearch()
+  const { token = '', type = '' } = search as {
     token: string
     type: '' | ActionType
   }

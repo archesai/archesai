@@ -4,10 +4,10 @@ import type { Job } from 'bullmq'
 import { Worker } from 'bullmq'
 
 import type { ConfigService } from '@archesai/core'
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 import { Logger } from '@archesai/core'
-import { RUN_ENTITY_KEY } from '@archesai/domain'
+import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
 import type { RunsService } from '#runs/runs.service'
 

@@ -7,7 +7,7 @@ import {
   AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef } from '@archesai/schemas'
 
 import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
 import type { EmailVerificationService } from '#email-verification/email-verification.service'

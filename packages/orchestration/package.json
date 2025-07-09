@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -21,8 +21,8 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
-    "@archesai/domain": "workspace:*",
     "@archesai/intelligence": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@sinclair/typebox": "catalog:",
     "bullmq": "catalog:",

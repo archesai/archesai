@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { CheckSquareIcon, PlusSquareIcon, SortAsc } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import type { TFindManyResponse } from '#components/datatable/data-table'
 

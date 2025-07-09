@@ -7,17 +7,22 @@
  */
 import type {
   DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
 } from '@tanstack/react-query'
 
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 
 import type {
   CreateCheckoutSession200,
@@ -237,6 +242,155 @@ export const getFindOnePaymentMethodQueryKey = (
   return [`/billing/payment-methods/${id}`] as const
 }
 
+export const getFindOnePaymentMethodQueryOptions = <
+  TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
+  TError = unknown
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findOnePaymentMethod>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getFindOnePaymentMethodQueryKey(id)
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findOnePaymentMethod>>
+  > = ({ signal }) => findOnePaymentMethod(id, { signal, ...requestOptions })
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof findOnePaymentMethod>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindOnePaymentMethodQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findOnePaymentMethod>>
+>
+export type FindOnePaymentMethodQueryError = unknown
+
+export function useFindOnePaymentMethod<
+  TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
+  TError = unknown
+>(
+  id: string | undefined | null,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findOnePaymentMethod>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findOnePaymentMethod>>,
+          TError,
+          Awaited<ReturnType<typeof findOnePaymentMethod>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindOnePaymentMethod<
+  TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
+  TError = unknown
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findOnePaymentMethod>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findOnePaymentMethod>>,
+          TError,
+          Awaited<ReturnType<typeof findOnePaymentMethod>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindOnePaymentMethod<
+  TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
+  TError = unknown
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findOnePaymentMethod>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get a payment method
+ */
+
+export function useFindOnePaymentMethod<
+  TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
+  TError = unknown
+>(
+  id: string | undefined | null,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findOnePaymentMethod>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindOnePaymentMethodQueryOptions(id, options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const getFindOnePaymentMethodSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findOnePaymentMethod>>,
   TError = unknown
@@ -388,6 +542,143 @@ export const getFindManyPaymentMethodsQueryKey = () => {
   return [`/billing/payment-methods`] as const
 }
 
+export const getFindManyPaymentMethodsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
+  TError = unknown
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof findManyPaymentMethods>>,
+      TError,
+      TData
+    >
+  >
+  request?: SecondParameter<typeof customFetch>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getFindManyPaymentMethodsQueryKey()
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findManyPaymentMethods>>
+  > = ({ signal }) => findManyPaymentMethods({ signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findManyPaymentMethods>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FindManyPaymentMethodsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyPaymentMethods>>
+>
+export type FindManyPaymentMethodsQueryError = unknown
+
+export function useFindManyPaymentMethods<
+  TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
+  TError = unknown
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPaymentMethods>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyPaymentMethods>>,
+          TError,
+          Awaited<ReturnType<typeof findManyPaymentMethods>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyPaymentMethods<
+  TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPaymentMethods>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findManyPaymentMethods>>,
+          TError,
+          Awaited<ReturnType<typeof findManyPaymentMethods>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useFindManyPaymentMethods<
+  TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPaymentMethods>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get all payment methods
+ */
+
+export function useFindManyPaymentMethods<
+  TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findManyPaymentMethods>>,
+        TError,
+        TData
+      >
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getFindManyPaymentMethodsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
+}
+
 export const getFindManyPaymentMethodsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyPaymentMethods>>,
   TError = unknown
@@ -528,6 +819,123 @@ export const getPlans = async (options?: RequestInit): Promise<GetPlans200> => {
 
 export const getGetPlansQueryKey = () => {
   return [`/billing/plans`] as const
+}
+
+export const getGetPlansQueryOptions = <
+  TData = Awaited<ReturnType<typeof getPlans>>,
+  TError = unknown
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getPlans>>, TError, TData>
+  >
+  request?: SecondParameter<typeof customFetch>
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {}
+
+  const queryKey = queryOptions?.queryKey ?? getGetPlansQueryKey()
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPlans>>> = ({
+    signal
+  }) => getPlans({ signal, ...requestOptions })
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getPlans>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPlansQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getPlans>>
+>
+export type GetPlansQueryError = unknown
+
+export function useGetPlans<
+  TData = Awaited<ReturnType<typeof getPlans>>,
+  TError = unknown
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPlans>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPlans>>,
+          TError,
+          Awaited<ReturnType<typeof getPlans>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPlans<
+  TData = Awaited<ReturnType<typeof getPlans>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPlans>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPlans>>,
+          TError,
+          Awaited<ReturnType<typeof getPlans>>
+        >,
+        'initialData'
+      >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+export function useGetPlans<
+  TData = Awaited<ReturnType<typeof getPlans>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPlans>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+}
+/**
+ * @summary Get all plans
+ */
+
+export function useGetPlans<
+  TData = Awaited<ReturnType<typeof getPlans>>,
+  TError = unknown
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getPlans>>, TError, TData>
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>
+} {
+  const queryOptions = getGetPlansQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> }
+
+  query.queryKey = queryOptions.queryKey
+
+  return query
 }
 
 export const getGetPlansSuspenseQueryOptions = <

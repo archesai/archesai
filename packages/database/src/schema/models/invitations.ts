@@ -1,6 +1,6 @@
 import { boolean, pgTable, text } from 'drizzle-orm/pg-core'
 
-import { INVITATION_ENTITY_KEY } from '@archesai/domain'
+import { INVITATION_ENTITY_KEY } from '@archesai/schemas'
 
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'

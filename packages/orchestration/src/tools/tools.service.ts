@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { ToolEntity } from '@archesai/domain'
+import type { ToolEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { TOOL_ENTITY_KEY } from '@archesai/domain'
+import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
 import type { ToolRepository } from '#tools/tool.repository'
 

@@ -1,6 +1,6 @@
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'

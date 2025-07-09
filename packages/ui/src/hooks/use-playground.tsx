@@ -1,7 +1,7 @@
 // import { useCallback } from 'react'
 // import { useRouter, useSearch } from '@tanstack/react-router'
 
-// import type { ArtifactEntity, ToolEntity } from '@archesai/domain'
+// import type { ArtifactEntity, ToolEntity } from '@archesai/schemas'
 
 // export const usePlayground = () => {
 //   const router = useRouter()
