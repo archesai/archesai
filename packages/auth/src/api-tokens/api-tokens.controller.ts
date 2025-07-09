@@ -1,5 +1,4 @@
-import type { Controller } from 'node_modules/@archesai/core/src/http/interfaces/controller.interface.ts'
-
+import type { Controller } from '@archesai/core'
 import type { ApiTokenEntity } from '@archesai/domain'
 
 import { BaseController } from '@archesai/core'

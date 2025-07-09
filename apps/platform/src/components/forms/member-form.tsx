@@ -17,7 +17,7 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
-  const { data: existingMemberResponse, error } = useGetOneMember(memberId!, {
+  const { data: existingMemberResponse, error } = useGetOneMember(memberId, {
     query: {
       enabled: !!memberId
     }
@@ -99,7 +99,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
         await createMember(createMemberDto, mutateOptions)
       }}
       onSubmitUpdate={async (data, mutateOptions) => {
-        await updateMember(memberId!, data, mutateOptions)
+        await updateMember(memberId, data, mutateOptions)
       }}
       title='Configuration'
     />

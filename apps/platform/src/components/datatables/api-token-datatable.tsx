@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 import type { ApiTokenEntity } from '@archesai/domain'
 
-import { useFindManyApiTokens } from '@archesai/client'
+import { getFindManyApiTokensSuspenseQueryOptions } from '@archesai/client'
 import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
 import { User } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
@@ -75,7 +75,7 @@ export default function ApiTokenDataTable() {
           size={24}
         />
       }
-      useFindMany={useFindManyApiTokens}
+      useFindMany={getFindManyApiTokensSuspenseQueryOptions()}
     />
   )
 }

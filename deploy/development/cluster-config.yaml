@@ -4,12 +4,12 @@ metadata:
   name: tower
 # servers: 1
 # agents: 2
-options:
-  k3s:
-    extraArgs:
-      - arg: '--disable=traefik'
-        nodeFilters:
-          - server:0
+# options:
+#   k3s:
+#     extraArgs:
+#       - arg: '--disable=traefik'
+#         nodeFilters:
+#           - server:0
 ports:
   - port: 80:80
     nodeFilters:

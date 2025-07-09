@@ -22,7 +22,10 @@ export default function ToolDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  to={`/playground?selectedTool=${JSON.stringify(row.original)}`}
+                  search={{
+                    selectedTool: JSON.stringify(row.original)
+                  }}
+                  to={`/playground`}
                 >
                   {row.original.name}
                 </Link>

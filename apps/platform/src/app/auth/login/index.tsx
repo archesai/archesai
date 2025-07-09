@@ -17,11 +17,7 @@ export const Route = createFileRoute('/auth/login/')({
 
 export default function LoginPage() {
   const router = useRouter()
-  const { mutateAsync: login } = useLogin({
-    fetch: {
-      credentials: 'include'
-    }
-  })
+  const { mutateAsync: login } = useLogin()
 
   const onSubmit = async (data: Static<typeof LoginSchema>) => {
     await login({

@@ -27,7 +27,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
   const { data: existingContentResponse, error } = useGetOneArtifact(
-    artifactId!,
+    artifactId,
     {
       query: {
         enabled: !!artifactId
@@ -131,7 +131,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
         await createArtifact(createArtifactDto, mutateOptions)
       }}
       onSubmitUpdate={async (updateContentDto, mutateOptions) => {
-        await updateArtifact(artifactId!, updateContentDto, mutateOptions)
+        await updateArtifact(artifactId, updateContentDto, mutateOptions)
       }}
       title='Configuration'
     />

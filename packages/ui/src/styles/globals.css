@@ -188,6 +188,9 @@
   body {
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
+    /* font-feature-settings:
+      "rlig" 1,
+      "calt" 1; */
   }
 
   @supports (font: -apple-system-body) and (-webkit-appearance: none) {

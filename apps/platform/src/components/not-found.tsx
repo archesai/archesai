@@ -17,7 +17,8 @@ export default function NotFound({ children }: { children?: React.ReactNode }) {
           <div className='text-6xl font-bold text-muted-foreground'>404</div>
           <CardTitle className='text-2xl'>Page Not Found</CardTitle>
           <CardDescription>
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been
+            moved.
             {children}
           </CardDescription>
         </CardHeader>

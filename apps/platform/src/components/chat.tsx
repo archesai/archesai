@@ -15,20 +15,13 @@ export default function Chat() {
   const defaultOrgname = 'Arches Platform'
   const [message, setMessage] = useState<string>('')
 
-  const { data } = useFindManyArtifacts(
-    {
-      filter: {
-        orgname: {
-          equals: defaultOrgname
-        }
-      }
-    },
-    {
-      fetch: {
-        credentials: 'include'
+  const { data } = useFindManyArtifacts({
+    filter: {
+      orgname: {
+        equals: defaultOrgname
       }
     }
-  )
+  })
   const messages = data?.data
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)

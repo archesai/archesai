@@ -72,6 +72,8 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     const billingEnabled = this.configService.get('billing.enabled')
     const organization = await this.organizationRepository.create({
       ...value,
+      billingEmail: value.billingEmail,
+      orgname: value.orgname,
       plan: billingEnabled ? 'FREE' : 'UNLIMITED',
       type: ORGANIZATION_ENTITY_KEY
     })

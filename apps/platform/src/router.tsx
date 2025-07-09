@@ -20,12 +20,15 @@ export function createRouter() {
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnReconnect: () => !queryClient.isMutating()
+        refetchOnReconnect: () => !queryClient.isMutating(),
+        refetchOnWindowFocus: false,
+        retry: 0,
+        staleTime: 1000 * 60 * 2 // 2 minutes
       }
     },
     mutationCache: new MutationCache({
       onError: (error) => {
-        toast(error.message, { className: 'bg-red-500 text-white' })
+        toast.error(error.message, { className: 'bg-red-500 text-white' })
       },
       onSettled: () => {
         if (queryClient.isMutating() === 1) {
@@ -40,12 +43,14 @@ export function createRouter() {
   return routerWithQueryClient(
     createTanStackRouter({
       context: {
-        authentication: undefined!,
         queryClient
       },
       defaultErrorComponent: DefaultCatchBoundary,
       defaultNotFoundComponent: () => <NotFound />,
       defaultPreload: 'intent',
+      // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
+      defaultPreloadStaleTime: 0,
+      defaultStructuralSharing: true,
       routeTree,
       scrollRestoration: true
     }),

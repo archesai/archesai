@@ -4,8 +4,6 @@ import { flexRender } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/domain'
 
-import type { DataTableContainerProps } from '#components/datatable/data-table'
-
 import { Skeleton } from '#components/shadcn/skeleton'
 import {
   Table,
@@ -16,25 +14,17 @@ import {
   TableRow
 } from '#components/shadcn/table'
 
-export interface TableViewProps<TEntity extends BaseEntity>
-  extends Pick<
-    DataTableContainerProps<TEntity>,
-    | 'columns'
-    | 'data'
-    | 'deleteItem'
-    | 'entityType'
-    | 'isFetched'
-    | 'selectedItems'
-  > {
+export interface TableViewProps<TEntity extends BaseEntity> {
+  isFetched: boolean
   table: ReactTable<TEntity>
 }
 
 export function TableView<TEntity extends BaseEntity>({
-  columns,
-  entityType,
   isFetched,
   table
 }: TableViewProps<TEntity>) {
+  const columns = table.getAllColumns()
+  const entityType = table.options.meta?.entityType ?? 'Entity'
   return (
     <div className='rounded-lg border shadow-xs'>
       <Table>

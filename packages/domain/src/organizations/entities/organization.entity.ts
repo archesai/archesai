@@ -47,7 +47,6 @@ export class OrganizationEntity
   implements Static<typeof OrganizationEntitySchema>
 {
   public billingEmail: string
-  public creatorId?: string
   public credits: number
   public customer?: string
   public orgname: string

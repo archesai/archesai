@@ -4,7 +4,7 @@ import { CrossIcon, GridIcon, ListIcon } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/domain'
 
-import type { DataTableContainerProps } from '#components/datatable/data-table'
+import type { DataTableProps } from '#components/datatable/data-table'
 
 import { DataTableViewOptions } from '#components/datatable/data-table-view-options'
 import { DatePickerWithRange } from '#components/datatable/date-range-picker'
@@ -14,19 +14,19 @@ import { useToggleView } from '#hooks/use-toggle-view'
 
 export interface DataTableToolbarProps<TEntity extends BaseEntity>
   extends Pick<
-    DataTableContainerProps<TEntity>,
-    'createForm' | 'data' | 'entityType' | 'readonly' | 'setFormOpen'
+    DataTableProps<TEntity>,
+    'createForm' | 'readonly' | 'setFormOpen'
   > {
   table: Table<TEntity>
 }
 
 export function DataTableToolbar<TEntity extends BaseEntity>({
   createForm,
-  entityType,
   readonly,
   setFormOpen,
   table
 }: DataTableToolbarProps<TEntity>) {
+  const entityType = table.options.meta?.entityType ?? 'Entity'
   const isFiltered = table.getState().columnFilters.length > 0
   const isAllSelected = table.getIsAllRowsSelected()
   const isSomeEelected = table.getIsSomeRowsSelected()

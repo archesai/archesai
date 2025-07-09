@@ -23,7 +23,10 @@ export default function RunDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium'
-                  to={`/run/single?runId=${row.original.id}`}
+                  params={{
+                    runId: row.original.id
+                  }}
+                  to={`/runs/$runId`}
                 >
                   {row.original.name}
                 </Link>

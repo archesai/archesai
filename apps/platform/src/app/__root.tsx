@@ -11,19 +11,17 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
-import type { AuthContext } from '@archesai/ui/hooks/use-auth'
-
-import { ActiveThemeProvider } from '@archesai/ui/components/custom/active-theme'
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
+import { LinkProvider } from '@archesai/ui/hooks/use-link'
 import { seo } from '@archesai/ui/lib/seo'
 import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 
 import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
+import { SmartLink } from '#components/smart-links'
 import globalsCss from '../styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
-  authentication: AuthContext
   queryClient: QueryClient
 }>()({
   component: RootComponent,
@@ -105,10 +103,10 @@ export default function RootDocument({
           enableColorScheme
           enableSystem
         >
-          <ActiveThemeProvider>
+          <LinkProvider Link={SmartLink}>
             {children}
             <Toaster />
-          </ActiveThemeProvider>
+          </LinkProvider>
         </ThemeProvider>
         <TanStackRouterDevtools position='bottom-right' />
         <ReactQueryDevtools buttonPosition='bottom-left' />

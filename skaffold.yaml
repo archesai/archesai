@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta11
+apiVersion: skaffold/v4beta13
 kind: Config
 build:
   local:
@@ -13,15 +13,15 @@ build:
     - image: api
       context: .
       docker:
-        dockerfile: ./apps/api/Dockerfile
+        dockerfile: ./deploy/dockerfiles/Dockerfile.api
     - image: platform
       context: .
       docker:
-        dockerfile: ./apps/platform/Dockerfile
+        dockerfile: ./deploy/dockerfiles/Dockerfile.platform
 manifests:
   kustomize:
     paths:
-      - kubernetes/base
+      - deploy/kubernetes/base
 deploy:
   statusCheckDeadlineSeconds: 300
   tolerateFailuresUntilDeadline: true

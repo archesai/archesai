@@ -35,7 +35,7 @@ export class ApiTokenEntity
   public key: string
   public orgname: string
   public role: ApiTokenRoleType
-  public type = API_TOKEN_ENTITY_KEY
+  public type: string = API_TOKEN_ENTITY_KEY
 
   constructor(props: ApiTokenEntity) {
     super(props)

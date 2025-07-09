@@ -46,17 +46,8 @@ export function UserButton({
   size?: 'default' | 'lg' | 'sm' | null | undefined
 }) {
   const defaultOrgname = 'Arches Platform'
-  const { data: user } = useGetSession({
-    fetch: {
-      credentials: 'include'
-    }
-  })
-  const { mutateAsync: logout } = useLogout({
-    fetch: {
-      credentials: 'include',
-      redirect: 'error'
-    }
-  })
+  const { data: user } = useGetSession()
+  const { mutateAsync: logout } = useLogout()
   const { isMobile } = useSidebar()
 
   const { data: memberships } = useFindManyMembers(

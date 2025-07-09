@@ -25,7 +25,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   const { mutateAsync: createApiToken } = useUpdateApiToken({})
   const { mutateAsync: updateApiToken } = useCreateApiToken({})
   const { data: existingApiTokenResponse, error } = useGetOneApiToken(
-    apiTokenId!,
+    apiTokenId,
     {
       query: {
         enabled: !!apiTokenId

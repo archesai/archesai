@@ -1,56 +1,50 @@
+import type { Table } from '@tanstack/react-table'
+
 import { useState } from 'react'
 import { FilePenLine } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/domain'
 
-import type { DataTableContainerProps } from '#components/datatable/data-table'
+import type { DataTableProps } from '#components/datatable/data-table'
 
 import { DeleteItems } from '#components/datatable/delete-items'
 import { Card } from '#components/shadcn/card'
 import { Checkbox } from '#components/shadcn/checkbox'
 
 export type GridViewProps<TEntity extends BaseEntity> = Pick<
-  DataTableContainerProps<TEntity>,
-  | 'createForm'
-  | 'data'
-  | 'defaultView'
+  DataTableProps<TEntity>,
   | 'deleteItem'
-  | 'entityType'
   | 'getEditFormFromItem'
   | 'grid'
   | 'gridHover'
-  | 'handleSelect'
   | 'icon'
-  | 'isFetched'
   | 'readonly'
-  | 'selectedItems'
   | 'setFinalForm'
   | 'setFormOpen'
-  | 'toggleSelection'
->
+> & {
+  table: Table<TEntity>
+}
 
 export function GridView<TEntity extends BaseEntity>({
-  data,
   deleteItem,
-  entityType,
   getEditFormFromItem,
   grid,
   gridHover,
-  handleSelect,
   icon,
   readonly,
-  selectedItems,
   setFinalForm,
   setFormOpen,
-  toggleSelection
+  table
 }: GridViewProps<TEntity>) {
+  const entityType = table.options.meta?.entityType ?? 'Entity'
+  const data = table.getRowModel().rows
   const [hover, setHover] = useState(-1)
 
   return (
     <div className='grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4'>
       {/* Data Cards */}
       {data.map((item, i) => {
-        const isItemSelected = selectedItems.includes(item.id)
+        const isItemSelected = item.getIsSelected()
         return (
           <Card
             className={`relative flex aspect-auto h-64 flex-col shadow-xs transition-all hover:bg-muted ${
@@ -61,9 +55,7 @@ export function GridView<TEntity extends BaseEntity>({
             {/* Top Content */}
             <div
               className='group relative grow cursor-pointer overflow-hidden rounded-t-xl transition-all'
-              onClick={() => {
-                handleSelect(item)
-              }}
+              onClick={item.getToggleSelectedHandler()}
               onMouseEnter={() => {
                 setHover(i)
               }}
@@ -72,7 +64,7 @@ export function GridView<TEntity extends BaseEntity>({
               }}
             >
               {grid ?
-                grid(item)
+                grid(item.original)
               : <div className='flex h-full w-full items-center justify-center'>
                   {icon}
                 </div>
@@ -85,16 +77,14 @@ export function GridView<TEntity extends BaseEntity>({
               <div className='flex min-w-0 items-center gap-2'>
                 {!readonly && (
                   <Checkbox
-                    aria-label={`Select ${item.name}`}
-                    checked={isItemSelected}
+                    aria-label={`Select ${item.original.name}`}
+                    checked={item.getIsSelected()}
                     className='rounded-xs text-blue-600 focus:ring-blue-500'
-                    onCheckedChange={() => {
-                      toggleSelection(item.id)
-                    }}
+                    onCheckedChange={item.getToggleSelectedHandler()}
                   />
                 )}
                 <span className='overflow-hidden text-base leading-tight text-ellipsis whitespace-nowrap'>
-                  {item.name}
+                  {item.original.name}
                 </span>
               </div>
               <div className='flex shrink-0 items-center gap-2'>
@@ -102,7 +92,7 @@ export function GridView<TEntity extends BaseEntity>({
                   <FilePenLine
                     className='h-5 w-5 cursor-pointer text-primary'
                     onClick={() => {
-                      setFinalForm(getEditFormFromItem(item))
+                      setFinalForm(getEditFormFromItem(item.original))
                       setFormOpen(true)
                     }}
                   />
@@ -111,12 +101,12 @@ export function GridView<TEntity extends BaseEntity>({
                   <DeleteItems
                     deleteItem={deleteItem}
                     entityType={entityType}
-                    items={[item]}
+                    items={[item.original]}
                   />
                 : null}
               </div>
             </div>
-            {gridHover && hover === i && gridHover(item)}
+            {gridHover && hover === i && gridHover(item.original)}
           </Card>
         )
       })}

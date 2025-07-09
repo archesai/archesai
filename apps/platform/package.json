@@ -26,11 +26,10 @@
     "@sinclair/typebox": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-query-devtools": "^5.81.5",
-    "@tanstack/react-router": "^1.125.1",
+    "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "^1.125.1",
     "@tanstack/react-router-with-query": "^1.125.1",
-    "@tanstack/react-start": "^1.125.1",
-    "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "@tanstack/react-start": "catalog:",
     "@xyflow/react": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
@@ -45,6 +44,7 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "^4.6.0",
+    "babel-plugin-react-compiler": "19.1.0-rc.2",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }

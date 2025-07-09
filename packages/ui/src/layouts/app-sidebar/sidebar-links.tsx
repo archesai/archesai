@@ -18,10 +18,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem
 } from '#components/shadcn/sidebar'
+import { useLinkComponent } from '#hooks/use-link'
 
 export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
-
+  const Link = useLinkComponent()
   return (
     <>
       {sections.map((section) => {
@@ -46,10 +47,10 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                             asChild
                             tooltip={rootRoute.title}
                           >
-                            <a href={rootRoute.href}>
+                            <Link href={rootRoute.href}>
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
-                            </a>
+                            </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       )
@@ -75,9 +76,9 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                               {children.map((route) => (
                                 <SidebarMenuSubItem key={route.title}>
                                   <SidebarMenuSubButton asChild>
-                                    <a href={route.href}>
+                                    <Link href={route.href}>
                                       <span>{route.title}</span>
-                                    </a>
+                                    </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}

@@ -23,6 +23,7 @@ import {
 } from '#components/shadcn/form'
 import { Input } from '#components/shadcn/input'
 import { Label } from '#components/shadcn/label'
+import { useLinkComponent } from '#hooks/use-link'
 
 FormatRegistry.Set('email', (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -45,6 +46,7 @@ export function AuthForm({
   onSubmit: (data: Record<string, unknown>) => void
   title?: string
 }) {
+  const Link = useLinkComponent()
   const defaultValues = useMemo(
     () =>
       fields.reduce<Record<string, unknown>>((acc, field) => {
@@ -132,12 +134,12 @@ export function AuthForm({
                 <div className='grid gap-3'>
                   <div className='flex items-center'>
                     <Label htmlFor='password'>Password</Label>
-                    <a
+                    <Link
                       className='ml-auto text-sm underline-offset-4 hover:underline'
                       href='#'
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <Input
                     id='password'
@@ -154,12 +156,12 @@ export function AuthForm({
               </div>
               <div className='text-center text-sm'>
                 Don&apos;t have an account?{' '}
-                <a
+                <Link
                   className='underline underline-offset-4'
                   href='#'
                 >
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </form>
@@ -167,8 +169,9 @@ export function AuthForm({
       </Card>
 
       <div className='text-center text-xs text-balance text-muted-foreground *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary'>
-        By clicking continue, you agree to our <a href='#'>Terms of Service</a>{' '}
-        and <a href='#'>Privacy Policy</a>.
+        By clicking continue, you agree to our{' '}
+        <Link href='#'>Terms of Service</Link> and{' '}
+        <Link href='#'>Privacy Policy</Link>.
       </div>
 
       <Form {...form}>

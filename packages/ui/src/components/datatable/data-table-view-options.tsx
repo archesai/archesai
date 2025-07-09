@@ -1,6 +1,5 @@
 import type { Table } from '@tanstack/react-table'
 
-import * as React from 'react'
 import { Check, ChevronsUpDown, Settings2 } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/domain'
@@ -28,16 +27,12 @@ interface DataTableViewOptionsProps<TEntity extends BaseEntity> {
 export function DataTableViewOptions<TEntity extends BaseEntity>({
   table
 }: DataTableViewOptionsProps<TEntity>) {
-  const columns = React.useMemo(
-    () =>
-      table
-        .getAllColumns()
-        .filter(
-          (column) =>
-            typeof column.accessorFn !== 'undefined' && column.getCanHide()
-        ),
-    [table]
-  )
+  const columns = table
+    .getAllColumns()
+    .filter(
+      (column) =>
+        typeof column.accessorFn !== 'undefined' && column.getCanHide()
+    )
 
   return (
     <Popover modal>

@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 
 // import helmet from '@fastify/helmet'
@@ -13,27 +12,27 @@ import {
   CorsService,
   DocsService,
   Logger,
+  LoggerService,
   WebsocketsService
 } from '@archesai/core'
 
 import { AppModule } from '#app/app.module'
 
 export async function setup(): Promise<NestFastifyApplication> {
+  new LoggerService() // FIXME
+  const fastifyAdapter = new FastifyAdapter({
+    loggerInstance: LoggerService.getPinoInstance().child({
+      context: 'Fastify'
+    }),
+    trustProxy: true
+  })
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule.forRoot(),
-    new FastifyAdapter({
-      disableRequestLogging: true,
-      https: {
-        cert: readFileSync(
-          import.meta.dirname +
-            '/../../../../deploy/kubernetes/overlays/development/certs/localhost.pem'
-        ),
-        key: readFileSync(
-          import.meta.dirname +
-            '/../../../../deploy/kubernetes/overlays/development/certs/localhost-key.pem'
-        )
-      }
-    })
+    fastifyAdapter,
+    {
+      logger: new Logger('NestApplication')
+    }
   )
 
   // Get fastify instance
@@ -42,7 +41,8 @@ export async function setup(): Promise<NestFastifyApplication> {
     .getInstance() as unknown as HttpInstance
 
   //  Setup Logger
-  app.useLogger(new Logger('NestApplication'))
+  // app.useLogger(new Logger('NestApplication'))
+  httpInstance.log = LoggerService.getPinoInstance()
 
   // Docs Setup
   const docsService = app.get(DocsService)

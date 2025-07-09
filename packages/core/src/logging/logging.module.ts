@@ -17,11 +17,7 @@ export const LoggingModuleDefinition: ModuleMetadata = {
       useFactory: (configService: ConfigService) => {
         const targets: TransportTargetOptions[] = [
           {
-            options: {
-              colorize: true
-              // singleLine: true
-            },
-            target: 'pino-pretty'
+            ...LoggerService.defaultOptions.transport
           }
         ]
         if (configService.get('monitoring.loki.enabled')) {
@@ -40,16 +36,6 @@ export const LoggingModuleDefinition: ModuleMetadata = {
         const loggerConfig: pino.LoggerOptions = {
           level: configService.get('logging.level'),
           messageKey: 'message',
-          ...(configService.get('logging.gcpfix') ?
-            {
-              formatters: {
-                level: (label: string) => ({
-                  level: label,
-                  severity: label.toUpperCase()
-                })
-              }
-            }
-          : {}),
           transport: {
             targets
           }

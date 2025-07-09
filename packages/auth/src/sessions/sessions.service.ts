@@ -93,6 +93,7 @@ export class SessionsService {
       // Register the session plugin
       app.register(fastifySession, {
         cookie: {
+          domain: '.archesai.dev',
           httpOnly: true,
           maxAge: 24 * 60 * 60 * 1000, // e.g., 1 hour in milliseconds
           sameSite: 'lax', // Use 'strict' for better security, 'lax' if you need cross-site requests

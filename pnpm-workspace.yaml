@@ -17,10 +17,13 @@ catalog:
   eslint-plugin-jsdoc: ^51.3.3
   eslint-plugin-perfectionist: ^4.15.0
   eslint-plugin-react: ^7.37.5
-  eslint-plugin-react-hooks: ^5.2.0
+  eslint-plugin-react-hooks: ^6.0.0-rc.1
+  '@tanstack/table-core': ^8.21.3
   globals: ^16.3.0
   typescript-eslint: ^8.35.1
   prettier: ^3.6.2
+  '@tanstack/react-start': ^1.125.1
+  '@tanstack/react-router': ^1.125.1
   '@ianvs/prettier-plugin-sort-imports': ^4.4.2
   prettier-plugin-packagejson: ^2.5.18
   prettier-plugin-sh: ^0.18.0

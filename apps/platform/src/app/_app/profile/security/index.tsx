@@ -24,11 +24,7 @@ export const Route = createFileRoute('/_app/profile/security/')({
 })
 
 export default function ProfileSecuritySettingsPage() {
-  const { data: user } = useGetSession({
-    fetch: {
-      credentials: 'include'
-    }
-  })
+  const { data: user } = useGetSession()
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
   const {

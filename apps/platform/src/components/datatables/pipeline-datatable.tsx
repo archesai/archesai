@@ -22,7 +22,8 @@ export default function PipelineDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium text-primary'
-                  to={`/pipelines/single?pipelineId=${row.original.id}`}
+                  params={{ pipelineId: row.original.id }}
+                  to={`/pipelines/$pipelineId`}
                 >
                   {row.original.name}
                 </Link>

@@ -3,6 +3,7 @@ import type { OrganizationEntity } from '@archesai/domain'
 import { Badge } from '#components/shadcn/badge'
 import { useSidebar } from '#components/shadcn/sidebar'
 import { Skeleton } from '#components/shadcn/skeleton'
+import { useLinkComponent } from '#hooks/use-link'
 
 export interface CreditQuotaProps {
   children?: never
@@ -11,7 +12,7 @@ export interface CreditQuotaProps {
 
 export const CreditQuota = ({ organization }: CreditQuotaProps) => {
   const { open } = useSidebar()
-
+  const Link = useLinkComponent()
   if (!open) {
     return <></>
   }
@@ -21,12 +22,12 @@ export const CreditQuota = ({ organization }: CreditQuotaProps) => {
       <div className='flex items-center justify-between'>
         <div className='font-semibold'>Credit Usage</div>
         <div>
-          <a
+          <Link
             className='flex'
             href='/organization/billing'
           >
             <Badge variant='secondary'>Upgrade</Badge>
-          </a>
+          </Link>
         </div>
       </div>
       <div className='flex items-center gap-2'>

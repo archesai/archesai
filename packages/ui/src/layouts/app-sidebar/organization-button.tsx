@@ -25,11 +25,7 @@ import {
 import { Skeleton } from '#components/shadcn/skeleton'
 
 export function OrganizationButton() {
-  const { data: session } = useGetSession({
-    fetch: {
-      credentials: 'include'
-    }
-  })
+  const { data: session } = useGetSession()
   const { data: memberships } = useFindManyMembers(
     {
       filter: {

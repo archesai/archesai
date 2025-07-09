@@ -37,7 +37,10 @@ export default function ArtifactDataTable({
                 <ContentTypeToIcon contentType={row.original.mimeType || ''} />
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  to={`/artifacts/single?artifactId=${row.original.id}`}
+                  search={{
+                    artifactId: row.original.id
+                  }}
+                  to={`/artifacts/single`}
                 >
                   {row.original.name}
                 </Link>
@@ -53,7 +56,10 @@ export default function ArtifactDataTable({
                 {row.original.text ?? (
                   <HoverCard openDelay={200}>
                     <Link
-                      to={`/artifacts/single?artifactId=${row.original.id}`}
+                      search={{
+                        artifactId: row.original.id
+                      }}
+                      to={`/artifacts/single`}
                     >
                       <HoverCardTrigger asChild>
                         <ScanSearch />
@@ -82,7 +88,10 @@ export default function ArtifactDataTable({
             return row.original.parentId ?
                 <Link
                   className='max-w-lg truncate text-base text-wrap md:text-sm'
-                  to={`/artifacts/single?artifactId=${row.original.parentId}`}
+                  search={{
+                    artifactId: row.original.parentId
+                  }}
+                  to={`/artifacts/single`}
                 >
                   {row.original.parentId}
                 </Link>
@@ -96,7 +105,10 @@ export default function ArtifactDataTable({
             return row.original.producerId ?
                 <Link
                   className='max-w-lg truncate text-base text-wrap md:text-sm'
-                  to={`/playground?selectedRunId=${row.original.producerId}`}
+                  search={{
+                    selectedRunId: row.original.producerId
+                  }}
+                  to={`/playground`}
                 >
                   {row.original.producerId}
                 </Link>

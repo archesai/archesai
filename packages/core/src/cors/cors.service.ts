@@ -19,10 +19,10 @@ export class CorsService {
         .get('server.cors.origins')
         .split(',')
       app.register(cors, {
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
         credentials: true,
         maxAge: 86400,
-        methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
         origin: (origin, cb) => {
           // 1. Same-origin fetches / curl / Postman → origin is undefined → allow
           if (!origin) {

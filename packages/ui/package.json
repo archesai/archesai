@@ -64,6 +64,8 @@
   "devDependencies": {
     "@archesai/jest": "workspace:*",
     "@archesai/typescript": "workspace:*",
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/table-core": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",

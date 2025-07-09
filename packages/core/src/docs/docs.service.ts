@@ -74,7 +74,7 @@ export class DocsService {
           openapi: '3.1.1',
           servers: [
             {
-              url: `${this.configService.get('tls.enabled') ? 'https://' : 'http://'}${this.configService.get('server.host')}:${this.configService.get('server.port').toString()}`
+              url: `${this.configService.get('tls.enabled') ? 'https://' : 'http://'}${this.configService.get('server.host')}`
             }
           ]
         },
@@ -97,7 +97,6 @@ export class DocsService {
       await app.register(scalarUi, {
         configuration: {
           _integration: 'fastify',
-          baseServerURL: `${this.configService.get('tls.enabled') ? 'https://' : 'http://'}${this.configService.get('server.host')}:${this.configService.get('server.port').toString()}`,
           forceDarkModeState: 'dark',
           layout: 'modern',
           theme: 'purple',
