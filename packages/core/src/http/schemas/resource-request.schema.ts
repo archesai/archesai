@@ -9,7 +9,6 @@ import { ResourceObjectSchema } from '#http/schemas/resource-object.schema'
 export const ResourceRequest = Type.Object(
   {
     data: LegacyRef(ResourceObjectSchema),
-    // jsonapi: Type.Optional(JsonApiObject),
     meta: Type.Optional(LegacyRef(MetaSchema))
   },
   {

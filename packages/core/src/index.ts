@@ -62,7 +62,6 @@ export * from '#http/schemas/relationship.schema'
 export * from '#http/schemas/resource-identifier.schema'
 export * from '#http/schemas/resource-object.schema'
 export * from '#http/schemas/resource-request.schema'
-export * from '#http/schemas/success-document.schema'
 
 export * from '#logging/adapters/pino-logger-adapter'
 export type * from '#logging/interface/logger.interface'

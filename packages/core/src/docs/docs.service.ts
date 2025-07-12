@@ -18,7 +18,6 @@ import { MetaSchema } from '#http/schemas/meta.schema'
 import { RelationshipsSchema } from '#http/schemas/relationship.schema'
 import { ResourceIdentifierSchema } from '#http/schemas/resource-identifier.schema'
 import { ResourceObjectSchema } from '#http/schemas/resource-object.schema'
-import { SuccessDocumentSchema } from '#http/schemas/success-document.schema'
 import { Logger } from '#logging/logger'
 
 /**
@@ -36,7 +35,6 @@ export class DocsService {
     ErrorObjectSchema,
     ErrorDocumentSchema,
     RelationshipsSchema,
-    SuccessDocumentSchema,
     ArchesApiForbiddenResponseSchema,
     ArchesApiNoContentResponseSchema,
     ArchesApiUnauthorizedResponseSchema,
