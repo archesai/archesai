@@ -47,7 +47,7 @@
 
 //   // const start = Date.now();
 //   // await artifactsService.upsertVectors(
-//   //   content.orgname,
+//   //   content.organizationId,
 //   //   content.id,
 //   //   populatedTextContent
 //   // );

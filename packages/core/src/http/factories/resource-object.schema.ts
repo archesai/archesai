@@ -22,7 +22,7 @@ export const createResourceObjectSchema = (
       id: Type.Pick(entitySchema, ['id']).properties.id,
       links: Type.Optional(
         Type.Object({
-          self: LegacyRef(LinkSchema)
+          self: Type.Optional(LegacyRef(LinkSchema))
         })
       ),
       relationships:

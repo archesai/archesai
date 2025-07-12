@@ -6,7 +6,7 @@ import { OrganizationEntitySchema } from '#auth/organizations/entities/organizat
 
 export const CreateOrganizationDtoSchema = Type.Object({
   billingEmail: OrganizationEntitySchema.properties.billingEmail,
-  orgname: OrganizationEntitySchema.properties.orgname
+  organizationId: OrganizationEntitySchema.properties.organizationId
 })
 
 export type CreateOrganizationDto = Static<typeof CreateOrganizationDtoSchema>

@@ -8,7 +8,7 @@ import { getUser, registerUser, setEmailVerified } from '#utils/helpers'
 describe('Runs', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
 
   const credentials = {
     email: 'runs-test@archesai.com',
@@ -22,7 +22,7 @@ describe('Runs', () => {
     accessToken = (await registerUser(app, credentials)).accessToken
 
     const user = await getUser(app, accessToken)
-    orgname = user.defaultOrgname
+    organizationId = user.defaultOrgname
     await setEmailVerified(app, user.id)
   })
 
@@ -61,7 +61,7 @@ describe('Runs', () => {
 
     for (const badRun of badInputs) {
       const res = await request(app.getHttpServer())
-        .post(`/organizations/${orgname}/runs`)
+        .post(`/organizations/${organizationId}/runs`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send(badRun)
       expect(res.status).toBe(400)
@@ -80,7 +80,7 @@ describe('Runs', () => {
       runType: 'TOOL_RUN'
     }
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/runs`)
+      .post(`/organizations/${organizationId}/runs`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send(createRunDto)
     expect(res.status).toBe(201)
@@ -89,7 +89,7 @@ describe('Runs', () => {
 
   const getDefaultTools = async () => {
     const res = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/tools`)
+      .get(`/organizations/${organizationId}/tools`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(200)
     expect(res).toSatisfyApiSpec()

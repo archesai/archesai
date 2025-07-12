@@ -1,3 +1,5 @@
+import { AssertError } from '@sinclair/typebox/value'
+
 import type { BaseEntity, TSchema } from '@archesai/schemas'
 
 import { Value } from '@archesai/schemas'
@@ -118,7 +120,7 @@ export abstract class BaseRepository<
       whereConditions
     )
     if (!model) {
-      throw new Error('No results found')
+      throw new NotFoundException()
     }
     return this.toEntity(model)
   }
@@ -202,7 +204,22 @@ export abstract class BaseRepository<
   }
 
   protected toEntity(model: TModel): TEntity {
-    return Value.Parse(this.entitySchema, model)
+    this.logger.debug('toEntity', { model })
+    try {
+      return Value.Parse(this.entitySchema, model)
+    } catch (error) {
+      if (error instanceof AssertError) {
+        const errors = [...error.Errors()]
+        this.logger.error('Validation error while parsing model to entity', {
+          ...error,
+          errors: errors,
+          model
+        })
+        throw new Error('Validation error while parsing model to entity')
+      }
+      this.logger.error('Failed to parse model to entity', { error, model })
+      throw new Error('Failed to parse model to entity')
+    }
   }
 
   private buildSearchQueryPrimaryKey(value: string): SearchQuery<TEntity> {

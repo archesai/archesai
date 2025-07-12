@@ -24,7 +24,7 @@ export const RunEntitySchema = Type.Object(
       })
     ),
     error: Type.Optional(Type.String({ description: 'The error message' })),
-    orgname: Type.String({ description: 'The organization name' }),
+    organizationId: Type.String({ description: 'The organization name' }),
     pipelineId: Type.String({
       description: 'The pipeline ID associated with the run'
     }),

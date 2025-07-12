@@ -31,11 +31,11 @@ describe('MembersService', () => {
 
   describe('create', () => {
     it('should create a new smember', async () => {
-      const orgname = 'test-org'
+      const organizationId = 'test-org'
       const createMemberRequest: BaseInsertion<MemberEntity> = {
         createdAt: new Date().toISOString(),
         invitationId: 'test-invitation-id',
-        orgname,
+        organizationId,
         role: 'ADMIN',
         updatedAt: new Date().toISOString(),
         userId: 'test-user-id'
@@ -53,11 +53,11 @@ describe('MembersService', () => {
     })
 
     it('should create a new member without existing user', async () => {
-      const orgname = 'test-org'
+      const organizationId = 'test-org'
       const createMemberRequest: BaseInsertion<MemberEntity> = {
         createdAt: new Date().toISOString(),
         invitationId: 'test-invitation-id',
-        orgname,
+        organizationId,
         role: 'ADMIN',
         updatedAt: new Date().toISOString(),
         userId: 'test-user-id'
@@ -72,7 +72,7 @@ describe('MembersService', () => {
 
       await memberService.create({
         ...createMemberRequest,
-        orgname
+        organizationId
       })
     })
   })

@@ -57,10 +57,10 @@ export const useWebsockets = ({
       //   (event: {
       //     content: ArtifactEntity
       //     labelId: string
-      //     orgname: string
+      //     organizationId: string
       //   }) => {
       //     streamContent(
-      //       event.orgname,
+      //       event.organizationId,
       //       event.labelId,
       //       event.content,
       //       queryClient

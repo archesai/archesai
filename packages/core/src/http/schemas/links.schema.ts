@@ -30,7 +30,7 @@ export const LinksSchema = Type.Object(
     last: Type.Optional(LegacyRef(LinkSchema)),
     next: Type.Optional(LegacyRef(LinkSchema)),
     prev: Type.Optional(LegacyRef(LinkSchema)),
-    self: LegacyRef(LinkSchema)
+    self: Type.Optional(LegacyRef(LinkSchema))
   },
   {
     $id: 'Links',

@@ -110,7 +110,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
           data: {
             ...updateApiTokenDto,
             name: apiToken.attributes.name,
-            orgname: apiToken.attributes.organizationId,
+            organizationId: apiToken.attributes.organizationId,
             role: apiToken.attributes.role
           }
         })

@@ -6,8 +6,7 @@ import { UserEntitySchema } from '#auth/users/entities/user.entity'
 
 export const CreateUserDtoSchema = Type.Object({
   email: UserEntitySchema.properties.email,
-  image: UserEntitySchema.properties.image,
-  orgname: UserEntitySchema.properties.orgname
+  image: UserEntitySchema.properties.image
 })
 
 export type CreateUserDto = Static<typeof CreateUserDtoSchema>

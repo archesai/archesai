@@ -1,12 +1,14 @@
 import { relations } from 'drizzle-orm'
-import { date, pgTable, text } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 import { baseFields } from '#schema/models/base'
 import { UserTable } from '#schema/models/user'
 
 export const SessionTable = pgTable('session', {
   ...baseFields,
-  expiresAt: date().notNull(),
+  expiresAt: timestamp({
+    mode: 'string'
+  }).notNull(),
   ipAddress: text(),
   token: text().notNull(),
   userAgent: text(),

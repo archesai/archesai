@@ -30,7 +30,7 @@ interface DataSelectorProps<TItem extends BaseEntity> {
   icons?: { color: string; Icon: LucideIcon; name: string }[]
   isMultiSelect?: boolean
   itemType: string
-  orgname?: string
+  organizationId?: string
   selectedData: TItem | TItem[] | undefined
   setSelectedData: (data: TItem | TItem[] | undefined) => void
   useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TItem>>

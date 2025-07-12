@@ -169,7 +169,7 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
       createdAt: (result.LastModified ?? new Date()).toUTCString(),
       id: path,
       isDir: false,
-      orgname: basename(path), // FIXME
+      organizationId: basename(path), // FIXME
       path,
       size: result.ContentLength ?? 0,
       updatedAt: (result.LastModified ?? new Date()).toUTCString()
@@ -199,7 +199,7 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
           createdAt: new Date().toUTCString(),
           id: subPrefix,
           isDir: true,
-          orgname: basename(path), // FIXME
+          organizationId: basename(path), // FIXME
           path: subPrefix,
           size: 0,
           updatedAt: new Date().toUTCString()
@@ -216,7 +216,7 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
           createdAt: (content.LastModified ?? new Date()).toUTCString(),
           id: content.Key ?? randomUUID(),
           isDir: false,
-          orgname: basename(path), // FIXME
+          organizationId: basename(path), // FIXME
           path: content.Key ?? '',
           size: content.Size ?? 0,
           updatedAt: (content.LastModified ?? new Date()).toUTCString()

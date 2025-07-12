@@ -47,12 +47,12 @@ export class UsersService extends BaseService<UserEntity> {
     }
   }
 
-  public override async create(value: UserInsertModel) {
+  public override async create(value: UserInsertModel): Promise<UserEntity> {
     // Create user
     const user = await this.userRepository.create({
       ...value
       // username:
-      //   value.orgname ||
+      //   value.organizationId ||
       //   (value.email.split('@')[0] ?? value.email) +
       //     '-' +
       //     Math.random().toString(36).substring(2, 6)
@@ -63,12 +63,12 @@ export class UsersService extends BaseService<UserEntity> {
     if (!usernamePrefix) {
       throw new Error('Could not extract username from email')
     }
-    const orgname = usernamePrefix + user.id.slice(0, 5)
+    const organizationId = usernamePrefix + user.id.slice(0, 5)
     await this.organizationsService.create({
       billingEmail: user.email,
       createdAt: new Date().toISOString(),
       credits: 0,
-      orgname,
+      organizationId,
       plan: 'FREE',
       updatedAt: new Date().toISOString()
     })
@@ -97,7 +97,7 @@ export class UsersService extends BaseService<UserEntity> {
   }
 
   protected emitMutationEvent(user: UserEntity): void {
-    this.websocketsService.broadcastEvent(user.orgname, 'update', {
+    this.websocketsService.broadcastEvent(user.id, 'update', {
       queryKey: [USER_ENTITY_KEY]
     })
   }

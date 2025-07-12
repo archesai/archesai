@@ -51,7 +51,7 @@ export class ArtifactsService extends BaseService<ArtifactEntity> {
   //   const content = await this.artifactRepository.create({
   //     mimeType,
   //     name: thumbnailFile.name,
-  //     orgname: data.orgname,
+  //     organizationId: data.organizationId,
   //     previewImage: thumbnailFile.read ?? '',
   //     text: data.text,
   //     url: data.url
@@ -62,7 +62,7 @@ export class ArtifactsService extends BaseService<ArtifactEntity> {
   // }
 
   public async populateReadUrl(content: ArtifactEntity) {
-    const url = `https://storage.googleapis.com/archesai/storage/${content.orgname}/`
+    const url = `https://storage.googleapis.com/archesai/storage/${content.organizationId}/`
     if (!content.url?.startsWith(url)) {
       this.logger.debug('url does not start with storage url', { content })
       return content
@@ -85,8 +85,8 @@ export class ArtifactsService extends BaseService<ArtifactEntity> {
   }
 
   protected emitMutationEvent(entity: ArtifactEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, ARTIFACT_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, ARTIFACT_ENTITY_KEY]
     })
   }
 }

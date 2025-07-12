@@ -60,7 +60,7 @@ export class StripeController implements Controller {
       },
       (req) => {
         return this.stripeService.createCheckoutSession(
-          '', // FIXME should be req.user!.orgname,
+          '', // FIXME should be req.user!.organizationId,
           {
             price: req.body.priceId,
             quantity: 1

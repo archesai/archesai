@@ -14,7 +14,7 @@ export const InvitationEntitySchema = Type.Object(
     email: Type.String({
       description: 'The email of the invitated user'
     }),
-    orgname: Type.String({
+    organizationId: Type.String({
       description: 'The name of the organization the token belongs to'
     }),
     role: Type.Union(

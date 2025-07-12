@@ -48,7 +48,7 @@ export class LocalStrategy extends LocalStrategyBase {
             email,
             error
           })
-          done(error, false)
+          done(new UnauthorizedException(), false)
           return
         }
       }

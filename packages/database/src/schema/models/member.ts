@@ -1,5 +1,5 @@
-import { relations, sql } from 'drizzle-orm'
-import { pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { pgTable, text } from 'drizzle-orm/pg-core'
 
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
@@ -9,30 +9,22 @@ import { InvitationTable } from '#schema/models/invitations'
 import { OrganizationTable } from '#schema/models/organization'
 import { UserTable } from '#schema/models/user'
 
-export const MemberTable = pgTable(
-  MEMBER_ENTITY_KEY,
-  {
-    ...baseFields,
-    invitationId: text('invitationId').references(() => InvitationTable.id, {
-      onDelete: 'cascade'
+export const MemberTable = pgTable(MEMBER_ENTITY_KEY, {
+  ...baseFields,
+  invitationId: text('invitationId').references(() => InvitationTable.id, {
+    onDelete: 'cascade'
+  }),
+  organizationId: text()
+    .notNull()
+    .references(() => OrganizationTable.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
     }),
-    organizationId: text()
-      .notNull()
-      .references(() => OrganizationTable.id, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade'
-      }),
-    role: roleEnum().default('USER').notNull(),
-    userId: text('userId')
-      .notNull()
-      .references(() => UserTable.id, { onDelete: 'cascade' })
-  },
-  (MemberTable) => [
-    uniqueIndex()
-      .on(MemberTable.userId, MemberTable.organizationId)
-      .where(sql`${MemberTable.userId} IS NOT NULL`)
-  ]
-)
+  role: roleEnum().default('USER').notNull(),
+  userId: text('userId')
+    .notNull()
+    .references(() => UserTable.id, { onDelete: 'cascade' })
+})
 
 export type MemberInsertModel = typeof MemberTable.$inferInsert
 export type MemberSelectModel = typeof MemberTable.$inferSelect

@@ -35,10 +35,12 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     this.websocketsService = websocketsService
   }
 
-  public async addOrRemoveCredits(orgname: string, numCredits: number) {
-    this.logger.debug(`Adding ${numCredits.toString()} credits to ${orgname}`)
+  public async addOrRemoveCredits(organizationId: string, numCredits: number) {
+    this.logger.debug(
+      `Adding ${numCredits.toString()} credits to ${organizationId}`
+    )
 
-    let organization = await this.findByOrgname(orgname)
+    let organization = await this.findByOrgname(organizationId)
     organization = await this.organizationRepository.update(
       ORGANIZATION_ENTITY_KEY,
       {
@@ -53,11 +55,11 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     return organization
   }
 
-  public async checkCredits(orgname: string, numCredits: number) {
+  public async checkCredits(organizationId: string, numCredits: number) {
     this.logger.debug(
-      `Checking ${numCredits.toString()} credits for ${orgname}`
+      `Checking ${numCredits.toString()} credits for ${organizationId}`
     )
-    const organization = await this.findByOrgname(orgname)
+    const organization = await this.findByOrgname(organizationId)
     if (organization.plan != 'PREMIUM' && organization.credits <= numCredits) {
       throw new ForbiddenException(
         'Sorry, you do not have enough credits. Please purchase more credits to continue' +
@@ -73,7 +75,7 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     const organization = await this.organizationRepository.create({
       ...value,
       billingEmail: value.billingEmail,
-      orgname: value.orgname,
+      organizationId: value.organizationId,
       plan: billingEnabled ? 'FREE' : 'UNLIMITED'
     })
     this.eventBus.emit(
@@ -85,18 +87,18 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     return organization
   }
 
-  public async findByOrgname(orgname: string) {
+  public async findByOrgname(organizationId: string) {
     return this.organizationRepository.findFirst({
       filter: {
-        orgname: {
-          equals: orgname
+        organizationId: {
+          equals: organizationId
         }
       }
     })
   }
 
-  public async setPlan(orgname: string, plan: PlanType) {
-    const organization = await this.findByOrgname(orgname)
+  public async setPlan(organizationId: string, plan: PlanType) {
+    const organization = await this.findByOrgname(organizationId)
     const organizationEntity = await this.organizationRepository.update(
       organization.id,
       {
@@ -109,8 +111,8 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
   }
 
   protected emitMutationEvent(entity: OrganizationEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId]
     })
   }
 }

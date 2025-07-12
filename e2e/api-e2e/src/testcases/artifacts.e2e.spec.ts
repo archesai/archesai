@@ -9,7 +9,7 @@ import { getUser, registerUser, setEmailVerified } from '#utils/helpers'
 describe('Artifacts', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
   let artifactId: string
 
   const credentials = {
@@ -26,7 +26,7 @@ describe('Artifacts', () => {
     accessToken = (await registerUser(app, credentials)).accessToken
 
     const user = await getUser(app, accessToken)
-    orgname = user.defaultOrgname
+    organizationId = user.defaultOrgname
     await setEmailVerified(app, user.id)
   })
 
@@ -36,10 +36,10 @@ describe('Artifacts', () => {
 
   it('CREATE - should be able to create artifacts', async () => {
     // Upload the file
-    const readUrl = await uploadFile(orgname, accessToken, filePath)
+    const readUrl = await uploadFile(organizationId, accessToken, filePath)
 
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/artifacts`)
+      .post(`/organizations/${organizationId}/artifacts`)
       .send({ name: 'book.pdf', url: readUrl })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
@@ -49,7 +49,7 @@ describe('Artifacts', () => {
 
   it('UPDATE - should be able to update artifacts name', async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
+      .patch(`/organizations/${organizationId}/artifacts/${artifactId}`)
       .send({ name: 'new-book.pdf' })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
@@ -59,7 +59,7 @@ describe('Artifacts', () => {
 
   it('UPDATE - should fail if you try to create with bad labels', async () => {
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
+      .patch(`/organizations/${organizationId}/artifacts/${artifactId}`)
       .send({ labels: ['label1', 'label2'] })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(404)
@@ -67,21 +67,21 @@ describe('Artifacts', () => {
 
   it('UPDATE - should be able to update artifacts labels', async () => {
     const label = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/labels`)
+      .post(`/organizations/${organizationId}/labels`)
       .send({ name: 'artifacts-test-label' })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(label.status).toBe(201)
     expect(label).toSatisfyApiSpec()
 
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/artifacts/${artifactId}`)
+      .patch(`/organizations/${organizationId}/artifacts/${artifactId}`)
       .send({ labels: [label.body.name] })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(200)
     expect(res).toSatisfyApiSpec()
 
     const getRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/artifacts/${artifactId}`)
+      .get(`/organizations/${organizationId}/artifacts/${artifactId}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(getRes.status).toBe(200)
     expect(getRes.body.labels.length).toBe(1)
@@ -92,12 +92,12 @@ describe('Artifacts', () => {
 
   // Helper function to get a write url, upload a file, and get a read url
   const uploadFile = async (
-    orgname: string,
+    organizationId: string,
     accessToken: string,
     filePath: string
   ) => {
     const fileRes = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/storage/write`)
+      .post(`/organizations/${organizationId}/storage/write`)
       .send({ path: filePath })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(fileRes.status).toBe(201)
@@ -112,7 +112,7 @@ describe('Artifacts', () => {
     expect(uploadRes.status).toBe(200)
 
     const readRes = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/storage/read`)
+      .post(`/organizations/${organizationId}/storage/read`)
       .send({ path: filePath })
       .set('Authorization', `Bearer ${accessToken}`)
     expect(readRes.status).toBe(201)

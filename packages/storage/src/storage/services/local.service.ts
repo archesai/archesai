@@ -97,7 +97,7 @@ export class LocalStorageService extends StorageService implements HealthCheck {
       createdAt: stats.birthtime.toUTCString(),
       id: path,
       isDir: stats.isDirectory(),
-      orgname: basename(path), // FIXME
+      organizationId: basename(path), // FIXME
       path,
       read: path,
       size: stats.size,
@@ -123,7 +123,7 @@ export class LocalStorageService extends StorageService implements HealthCheck {
           id: itemFullPath,
           isDir: isDir,
           name: item,
-          orgname: basename(path), // FIXME
+          organizationId: basename(path), // FIXME
           path: itemFullPath,
           size: stats.size,
           slug: path.split('/').pop() ?? '',

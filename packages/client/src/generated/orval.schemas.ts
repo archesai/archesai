@@ -128,7 +128,7 @@ export interface Links {
   last?: Link
   next?: Link
   prev?: Link
-  self: Link
+  self?: Link
 }
 
 /**
@@ -608,7 +608,7 @@ export type CreateFile201DataAttributes = {
   /** Whether or not this is a directory */
   isDir: boolean
   /** The original name of the file */
-  orgname: string
+  organizationId: string
   /** The path to the item */
   path: string
   /** The read-only URL that you can use to download the file from secure storage */
@@ -620,7 +620,7 @@ export type CreateFile201DataAttributes = {
 }
 
 export type CreateFile201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -684,7 +684,7 @@ export type FindManyFilesParams = {
     id?: FieldFilter
     updatedAt?: FieldFilter
     isDir?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     path?: FieldFilter
     read?: FieldFilter
     size?: FieldFilter
@@ -722,7 +722,7 @@ export type FindManyFiles200DataItemAttributes = {
   /** Whether or not this is a directory */
   isDir: boolean
   /** The original name of the file */
-  orgname: string
+  organizationId: string
   /** The path to the item */
   path: string
   /** The read-only URL that you can use to download the file from secure storage */
@@ -734,7 +734,7 @@ export type FindManyFiles200DataItemAttributes = {
 }
 
 export type FindManyFiles200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -799,7 +799,7 @@ export type DeleteFile200DataAttributes = {
   /** Whether or not this is a directory */
   isDir: boolean
   /** The original name of the file */
-  orgname: string
+  organizationId: string
   /** The path to the item */
   path: string
   /** The read-only URL that you can use to download the file from secure storage */
@@ -811,7 +811,7 @@ export type DeleteFile200DataAttributes = {
 }
 
 export type DeleteFile200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -877,7 +877,7 @@ export type GetOneFile200DataAttributes = {
   /** Whether or not this is a directory */
   isDir: boolean
   /** The original name of the file */
-  orgname: string
+  organizationId: string
   /** The path to the item */
   path: string
   /** The read-only URL that you can use to download the file from secure storage */
@@ -889,7 +889,7 @@ export type GetOneFile200DataAttributes = {
 }
 
 export type GetOneFile200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -964,7 +964,7 @@ export type UpdateFile200DataAttributes = {
   /** Whether or not this is a directory */
   isDir: boolean
   /** The original name of the file */
-  orgname: string
+  organizationId: string
   /** The path to the item */
   path: string
   /** The read-only URL that you can use to download the file from secure storage */
@@ -976,7 +976,7 @@ export type UpdateFile200DataAttributes = {
 }
 
 export type UpdateFile200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1070,7 +1070,7 @@ export type CreatePipelineBodyStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof CreatePipelineBodyStepsItemToolOutputType)[keyof typeof CreatePipelineBodyStepsItemToolOutputType]
   /** The base of the tool */
@@ -1145,7 +1145,7 @@ export type CreatePipeline201DataAttributesStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof CreatePipeline201DataAttributesStepsItemToolOutputType)[keyof typeof CreatePipeline201DataAttributesStepsItemToolOutputType]
   /** The base of the tool */
@@ -1191,7 +1191,7 @@ export type CreatePipeline201DataAttributes = {
 }
 
 export type CreatePipeline201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1319,7 +1319,7 @@ export type FindManyPipelines200DataItemAttributesStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof FindManyPipelines200DataItemAttributesStepsItemToolOutputType)[keyof typeof FindManyPipelines200DataItemAttributesStepsItemToolOutputType]
   /** The base of the tool */
@@ -1365,7 +1365,7 @@ export type FindManyPipelines200DataItemAttributes = {
 }
 
 export type FindManyPipelines200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1458,7 +1458,7 @@ export type DeletePipeline200DataAttributesStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof DeletePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof DeletePipeline200DataAttributesStepsItemToolOutputType]
   /** The base of the tool */
@@ -1504,7 +1504,7 @@ export type DeletePipeline200DataAttributes = {
 }
 
 export type DeletePipeline200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1598,7 +1598,7 @@ export type GetOnePipeline200DataAttributesStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof GetOnePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof GetOnePipeline200DataAttributesStepsItemToolOutputType]
   /** The base of the tool */
@@ -1644,7 +1644,7 @@ export type GetOnePipeline200DataAttributes = {
 }
 
 export type GetOnePipeline200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1738,7 +1738,7 @@ export type UpdatePipelineBodyStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof UpdatePipelineBodyStepsItemToolOutputType)[keyof typeof UpdatePipelineBodyStepsItemToolOutputType]
   /** The base of the tool */
@@ -1813,7 +1813,7 @@ export type UpdatePipeline200DataAttributesStepsItemTool = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof UpdatePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof UpdatePipeline200DataAttributesStepsItemToolOutputType]
   /** The base of the tool */
@@ -1859,7 +1859,7 @@ export type UpdatePipeline200DataAttributes = {
 }
 
 export type UpdatePipeline200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -1950,7 +1950,7 @@ export type CreateTool201DataAttributes = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof CreateTool201DataAttributesOutputType)[keyof typeof CreateTool201DataAttributesOutputType]
   /** The base of the tool */
@@ -1958,7 +1958,7 @@ export type CreateTool201DataAttributes = {
 }
 
 export type CreateTool201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2024,7 +2024,7 @@ export type FindManyToolsParams = {
     description?: FieldFilter
     inputType?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     outputType?: FieldFilter
     toolBase?: FieldFilter
   }
@@ -2078,7 +2078,7 @@ export type FindManyTools200DataItemAttributes = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof FindManyTools200DataItemAttributesOutputType)[keyof typeof FindManyTools200DataItemAttributesOutputType]
   /** The base of the tool */
@@ -2086,7 +2086,7 @@ export type FindManyTools200DataItemAttributes = {
 }
 
 export type FindManyTools200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2169,7 +2169,7 @@ export type DeleteTool200DataAttributes = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof DeleteTool200DataAttributesOutputType)[keyof typeof DeleteTool200DataAttributesOutputType]
   /** The base of the tool */
@@ -2177,7 +2177,7 @@ export type DeleteTool200DataAttributes = {
 }
 
 export type DeleteTool200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2261,7 +2261,7 @@ export type GetOneTool200DataAttributes = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof GetOneTool200DataAttributesOutputType)[keyof typeof GetOneTool200DataAttributesOutputType]
   /** The base of the tool */
@@ -2269,7 +2269,7 @@ export type GetOneTool200DataAttributes = {
 }
 
 export type GetOneTool200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2360,7 +2360,7 @@ export type UpdateTool200DataAttributes = {
   /** The name of the tool */
   name?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The output type of the tool */
   outputType: (typeof UpdateTool200DataAttributesOutputType)[keyof typeof UpdateTool200DataAttributesOutputType]
   /** The base of the tool */
@@ -2368,7 +2368,7 @@ export type UpdateTool200DataAttributes = {
 }
 
 export type UpdateTool200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2445,13 +2445,13 @@ export type CreateArtifact201DataAttributes = {
   /** The artifact's description */
   description: string
   /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding: number[]
+  embedding?: number[]
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The ID of the parent artifact, if this artifact is a child of another artifact */
   parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
@@ -2465,7 +2465,7 @@ export type CreateArtifact201DataAttributes = {
 }
 
 export type CreateArtifact201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2533,7 +2533,7 @@ export type FindManyArtifactsParams = {
     embedding?: FieldFilter
     mimeType?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     parentId?: FieldFilter
     previewImage?: FieldFilter
     producerId?: FieldFilter
@@ -2574,13 +2574,13 @@ export type FindManyArtifacts200DataItemAttributes = {
   /** The artifact's description */
   description: string
   /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding: number[]
+  embedding?: number[]
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The ID of the parent artifact, if this artifact is a child of another artifact */
   parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
@@ -2594,7 +2594,7 @@ export type FindManyArtifacts200DataItemAttributes = {
 }
 
 export type FindManyArtifacts200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2661,13 +2661,13 @@ export type DeleteArtifact200DataAttributes = {
   /** The artifact's description */
   description: string
   /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding: number[]
+  embedding?: number[]
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The ID of the parent artifact, if this artifact is a child of another artifact */
   parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
@@ -2681,7 +2681,7 @@ export type DeleteArtifact200DataAttributes = {
 }
 
 export type DeleteArtifact200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2749,13 +2749,13 @@ export type GetOneArtifact200DataAttributes = {
   /** The artifact's description */
   description: string
   /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding: number[]
+  embedding?: number[]
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The ID of the parent artifact, if this artifact is a child of another artifact */
   parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
@@ -2769,7 +2769,7 @@ export type GetOneArtifact200DataAttributes = {
 }
 
 export type GetOneArtifact200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2846,13 +2846,13 @@ export type UpdateArtifact200DataAttributes = {
   /** The artifact's description */
   description: string
   /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding: number[]
+  embedding?: number[]
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The ID of the parent artifact, if this artifact is a child of another artifact */
   parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
@@ -2866,7 +2866,7 @@ export type UpdateArtifact200DataAttributes = {
 }
 
 export type UpdateArtifact200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -2944,7 +2944,7 @@ export type CreateRun201DataAttributes = {
   /** The error message */
   error?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The pipeline ID associated with the run */
   pipelineId: string
   /** The percent progress of the run */
@@ -2960,7 +2960,7 @@ export type CreateRun201DataAttributes = {
 }
 
 export type CreateRun201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3025,7 +3025,7 @@ export type FindManyRunsParams = {
     updatedAt?: FieldFilter
     completedAt?: FieldFilter
     error?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     pipelineId?: FieldFilter
     progress?: FieldFilter
     runType?: FieldFilter
@@ -3072,7 +3072,7 @@ export type FindManyRuns200DataItemAttributes = {
   /** The error message */
   error?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The pipeline ID associated with the run */
   pipelineId: string
   /** The percent progress of the run */
@@ -3088,7 +3088,7 @@ export type FindManyRuns200DataItemAttributes = {
 }
 
 export type FindManyRuns200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3160,7 +3160,7 @@ export type DeleteRun200DataAttributes = {
   /** The error message */
   error?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The pipeline ID associated with the run */
   pipelineId: string
   /** The percent progress of the run */
@@ -3176,7 +3176,7 @@ export type DeleteRun200DataAttributes = {
 }
 
 export type DeleteRun200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3249,7 +3249,7 @@ export type GetOneRun200DataAttributes = {
   /** The error message */
   error?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The pipeline ID associated with the run */
   pipelineId: string
   /** The percent progress of the run */
@@ -3265,7 +3265,7 @@ export type GetOneRun200DataAttributes = {
 }
 
 export type GetOneRun200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3343,7 +3343,7 @@ export type UpdateRun200DataAttributes = {
   /** The error message */
   error?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The pipeline ID associated with the run */
   pipelineId: string
   /** The percent progress of the run */
@@ -3359,7 +3359,7 @@ export type UpdateRun200DataAttributes = {
 }
 
 export type UpdateRun200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3430,11 +3430,11 @@ export type CreateLabel201DataAttributes = {
   /** The name of the label */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 export type CreateLabel201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3498,7 +3498,7 @@ export type FindManyLabelsParams = {
     id?: FieldFilter
     updatedAt?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
   }
   /**
    * Pagination
@@ -3532,11 +3532,11 @@ export type FindManyLabels200DataItemAttributes = {
   /** The name of the label */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 export type FindManyLabels200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3601,11 +3601,11 @@ export type DeleteLabel200DataAttributes = {
   /** The name of the label */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 export type DeleteLabel200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3671,11 +3671,11 @@ export type GetOneLabel200DataAttributes = {
   /** The name of the label */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 export type GetOneLabel200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3746,11 +3746,11 @@ export type UpdateLabel200DataAttributes = {
   /** The name of the label */
   name: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 export type UpdateLabel200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3809,7 +3809,7 @@ export type CreateOrganizationBody = {
   /** The billing email to use for the organization */
   billingEmail: string
   /** The organization name */
-  orgname: string
+  organizationId: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -3837,13 +3837,13 @@ export type CreateOrganization201DataAttributes = {
   /** The Stripe customer ID */
   customerId?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The plan that the organization is subscribed to */
   plan: (typeof CreateOrganization201DataAttributesPlan)[keyof typeof CreateOrganization201DataAttributesPlan]
 }
 
 export type CreateOrganization201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -3910,7 +3910,7 @@ export type FindManyOrganizationsParams = {
     creator?: FieldFilter
     credits?: FieldFilter
     customerId?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     plan?: FieldFilter
   }
   /**
@@ -3959,13 +3959,13 @@ export type FindManyOrganizations200DataItemAttributes = {
   /** The Stripe customer ID */
   customerId?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The plan that the organization is subscribed to */
   plan: (typeof FindManyOrganizations200DataItemAttributesPlan)[keyof typeof FindManyOrganizations200DataItemAttributesPlan]
 }
 
 export type FindManyOrganizations200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4044,13 +4044,13 @@ export type DeleteOrganization200DataAttributes = {
   /** The Stripe customer ID */
   customerId?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The plan that the organization is subscribed to */
   plan: (typeof DeleteOrganization200DataAttributesPlan)[keyof typeof DeleteOrganization200DataAttributesPlan]
 }
 
 export type DeleteOrganization200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4130,13 +4130,13 @@ export type GetOneOrganization200DataAttributes = {
   /** The Stripe customer ID */
   customerId?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The plan that the organization is subscribed to */
   plan: (typeof GetOneOrganization200DataAttributesPlan)[keyof typeof GetOneOrganization200DataAttributesPlan]
 }
 
 export type GetOneOrganization200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4195,7 +4195,7 @@ export type UpdateOrganizationBody = {
   /** The billing email to use for the organization */
   billingEmail?: string
   /** The organization name */
-  orgname?: string
+  organizationId?: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -4223,13 +4223,13 @@ export type UpdateOrganization200DataAttributes = {
   /** The Stripe customer ID */
   customerId?: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The plan that the organization is subscribed to */
   plan: (typeof UpdateOrganization200DataAttributesPlan)[keyof typeof UpdateOrganization200DataAttributesPlan]
 }
 
 export type UpdateOrganization200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4284,14 +4284,22 @@ export type UpdateOrganization200 = {
   links?: Links
 }
 
+/**
+ * The user's avatar image URL
+ */
+export type CreateUserBodyImage = null | string
+
 export type CreateUserBody = {
   /** The user's e-mail */
   email: string
   /** The user's avatar image URL */
-  image?: string
-  /** The user's organization name */
-  orgname: string
+  image: CreateUserBodyImage
 }
+
+/**
+ * The user's avatar image URL
+ */
+export type CreateUser201DataAttributesImage = null | string
 
 /**
  * The user entity
@@ -4308,18 +4316,16 @@ export type CreateUser201DataAttributes = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: CreateUser201DataAttributesImage
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type CreateUser201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4387,7 +4393,6 @@ export type FindManyUsersParams = {
     emailVerified?: FieldFilter
     image?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
   }
   /**
    * Pagination
@@ -4411,6 +4416,11 @@ export type FindManyUsersParams = {
 }
 
 /**
+ * The user's avatar image URL
+ */
+export type FindManyUsers200DataItemAttributesImage = null | string
+
+/**
  * The user entity
  */
 export type FindManyUsers200DataItemAttributes = {
@@ -4425,18 +4435,16 @@ export type FindManyUsers200DataItemAttributes = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: FindManyUsers200DataItemAttributesImage
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type FindManyUsers200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4491,6 +4499,11 @@ export type FindManyUsers200 = {
 }
 
 /**
+ * The user's avatar image URL
+ */
+export type DeleteUser200DataAttributesImage = null | string
+
+/**
  * The user entity
  */
 export type DeleteUser200DataAttributes = {
@@ -4505,18 +4518,16 @@ export type DeleteUser200DataAttributes = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: DeleteUser200DataAttributesImage
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type DeleteUser200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4572,6 +4583,11 @@ export type DeleteUser200 = {
 }
 
 /**
+ * The user's avatar image URL
+ */
+export type GetOneUser200DataAttributesImage = null | string
+
+/**
  * The user entity
  */
 export type GetOneUser200DataAttributes = {
@@ -4586,18 +4602,16 @@ export type GetOneUser200DataAttributes = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: GetOneUser200DataAttributesImage
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type GetOneUser200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4652,14 +4666,22 @@ export type GetOneUser200 = {
   links?: Links
 }
 
+/**
+ * The user's avatar image URL
+ */
+export type UpdateUserBodyImage = null | string
+
 export type UpdateUserBody = {
   /** The user's e-mail */
   email?: string
   /** The user's avatar image URL */
-  image?: string
-  /** The user's organization name */
-  orgname?: string
+  image?: UpdateUserBodyImage
 }
+
+/**
+ * The user's avatar image URL
+ */
+export type UpdateUser200DataAttributesImage = null | string
 
 /**
  * The user entity
@@ -4676,18 +4698,16 @@ export type UpdateUser200DataAttributes = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: UpdateUser200DataAttributesImage
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type UpdateUser200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4765,7 +4785,7 @@ export type CreateMember201DataAttributes = {
   /** The invitation id */
   invitationId: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The role of the member */
   role: (typeof CreateMember201DataAttributesRole)[keyof typeof CreateMember201DataAttributesRole]
   /** The user id */
@@ -4773,7 +4793,7 @@ export type CreateMember201DataAttributes = {
 }
 
 export type CreateMember201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4837,7 +4857,7 @@ export type FindManyMembersParams = {
     id?: FieldFilter
     updatedAt?: FieldFilter
     invitationId?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     role?: FieldFilter
     userId?: FieldFilter
   }
@@ -4878,7 +4898,7 @@ export type FindManyMembers200DataItemAttributes = {
   /** The invitation id */
   invitationId: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The role of the member */
   role: (typeof FindManyMembers200DataItemAttributesRole)[keyof typeof FindManyMembers200DataItemAttributesRole]
   /** The user id */
@@ -4886,7 +4906,7 @@ export type FindManyMembers200DataItemAttributes = {
 }
 
 export type FindManyMembers200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -4956,7 +4976,7 @@ export type DeleteMember200DataAttributes = {
   /** The invitation id */
   invitationId: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The role of the member */
   role: (typeof DeleteMember200DataAttributesRole)[keyof typeof DeleteMember200DataAttributesRole]
   /** The user id */
@@ -4964,7 +4984,7 @@ export type DeleteMember200DataAttributes = {
 }
 
 export type DeleteMember200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5035,7 +5055,7 @@ export type GetOneMember200DataAttributes = {
   /** The invitation id */
   invitationId: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The role of the member */
   role: (typeof GetOneMember200DataAttributesRole)[keyof typeof GetOneMember200DataAttributesRole]
   /** The user id */
@@ -5043,7 +5063,7 @@ export type GetOneMember200DataAttributes = {
 }
 
 export type GetOneMember200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5121,7 +5141,7 @@ export type UpdateMember200DataAttributes = {
   /** The invitation id */
   invitationId: string
   /** The organization name */
-  orgname: string
+  organizationId: string
   /** The role of the member */
   role: (typeof UpdateMember200DataAttributesRole)[keyof typeof UpdateMember200DataAttributesRole]
   /** The user id */
@@ -5129,7 +5149,7 @@ export type UpdateMember200DataAttributes = {
 }
 
 export type UpdateMember200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5214,13 +5234,13 @@ export type CreateInvitation201DataAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof CreateInvitation201DataAttributesRole)[keyof typeof CreateInvitation201DataAttributesRole]
 }
 
 export type CreateInvitation201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5285,7 +5305,7 @@ export type FindManyInvitationsParams = {
     updatedAt?: FieldFilter
     accepted?: FieldFilter
     email?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     role?: FieldFilter
   }
   /**
@@ -5327,13 +5347,13 @@ export type FindManyInvitations200DataItemAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof FindManyInvitations200DataItemAttributesRole)[keyof typeof FindManyInvitations200DataItemAttributesRole]
 }
 
 export type FindManyInvitations200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5405,13 +5425,13 @@ export type DeleteInvitation200DataAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof DeleteInvitation200DataAttributesRole)[keyof typeof DeleteInvitation200DataAttributesRole]
 }
 
 export type DeleteInvitation200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5484,13 +5504,13 @@ export type GetOneInvitation200DataAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof GetOneInvitation200DataAttributesRole)[keyof typeof GetOneInvitation200DataAttributesRole]
 }
 
 export type GetOneInvitation200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5575,13 +5595,13 @@ export type UpdateInvitation200DataAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof UpdateInvitation200DataAttributesRole)[keyof typeof UpdateInvitation200DataAttributesRole]
 }
 
 export type UpdateInvitation200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -5654,13 +5674,13 @@ export type AcceptInvitation200DataAttributes = {
   /** The email of the invitated user */
   email: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the invitation */
   role: (typeof AcceptInvitation200DataAttributesRole)[keyof typeof AcceptInvitation200DataAttributesRole]
 }
 
 export type AcceptInvitation200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6111,7 +6131,7 @@ export type CreateApiToken201DataAttributes = {
 }
 
 export type CreateApiToken201DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6224,7 +6244,7 @@ export type FindManyApiTokens200DataItemAttributes = {
 }
 
 export type FindManyApiTokens200DataItemLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6302,7 +6322,7 @@ export type DeleteApiToken200DataAttributes = {
 }
 
 export type DeleteApiToken200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6381,7 +6401,7 @@ export type GetOneApiToken200DataAttributes = {
 }
 
 export type GetOneApiToken200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6462,7 +6482,7 @@ export type UpdateApiToken200DataAttributes = {
 }
 
 export type UpdateApiToken200DataLinks = {
-  self: Link
+  self?: Link
 }
 
 /**
@@ -6525,6 +6545,11 @@ export type LoginBody = {
 }
 
 /**
+ * The user's avatar image URL
+ */
+export type Login201Image = null | string
+
+/**
  * The user entity
  */
 export type Login201 = {
@@ -6541,15 +6566,18 @@ export type Login201 = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: Login201Image
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
+
+/**
+ * The user's avatar image URL
+ */
+export type GetSession200Image = null | string
 
 /**
  * The user entity
@@ -6568,14 +6596,12 @@ export type GetSession200 = {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image?: string
+  image: GetSession200Image
   /**
    * The user's name
    * @minLength 1
    */
   name: string
-  /** The user's organization name */
-  orgname: string
 }
 
 export type ConfirmPasswordResetBody = {

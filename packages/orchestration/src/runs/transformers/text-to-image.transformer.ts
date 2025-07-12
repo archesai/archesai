@@ -52,7 +52,7 @@
 //     labels: [],
 //     mimeType: 'image/png',
 //     name: 'Text to Speech Tool -' + inputs.map((x) => x.name).join(', '),
-//     orgname: inputs[0].orgname,
+//     organizationId: inputs[0].organizationId,
 //     text: null,
 //     url: fileEntity.read ?? null
 //   })

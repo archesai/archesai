@@ -25,7 +25,7 @@ export class PipelinesSubscriber implements EventSubscriber {
         ;(async () => {
           const { organization } = event
           await this.pipelinesService.createDefaultPipeline(
-            organization.orgname
+            organization.organizationId
           )
         })().catch((error: unknown) => {
           this.logger.error('error', {

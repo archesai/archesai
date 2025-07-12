@@ -120,8 +120,8 @@ export class RunsService extends BaseService<RunEntity> {
   }
 
   protected emitMutationEvent(entity: RunEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, RUN_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, RUN_ENTITY_KEY]
     })
   }
 }

@@ -27,7 +27,7 @@ export function OrganizationButton() {
   const { data: session } = useGetSessionSuspense()
   const { data: memberships } = useFindManyMembersSuspense({
     // filter: {
-    //   orgname: {
+    //   organizationId: {
     //     equals: 'Arches Platform'
     //   }
     // }
@@ -37,11 +37,9 @@ export function OrganizationButton() {
 
   const { isMobile } = useSidebar()
 
-  const handleSwitchOrganization = async (orgname: string) => {
+  const handleSwitchOrganization = async (_organizationId: string) => {
     await updateUser({
-      data: {
-        orgname
-      },
+      data: {},
       id: 'organization'
     })
   }
@@ -64,7 +62,7 @@ export function OrganizationButton() {
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>{session.orgname}</span>
+                <span className='truncate font-medium'>{session.email}</span>
                 <span className='truncate text-xs'>
                   {session.email + ' Plan'}
                 </span>
@@ -86,11 +84,13 @@ export function OrganizationButton() {
                 className='gap-2 p-2'
                 key={membership.id}
                 onClick={async () => {
-                  await handleSwitchOrganization(membership.attributes.orgname)
+                  await handleSwitchOrganization(
+                    membership.attributes.organizationId
+                  )
                 }}
               >
-                {membership.attributes.orgname}
-                {'Arches Platform' === membership.attributes.orgname && (
+                {membership.attributes.organizationId}
+                {'Arches Platform' === membership.attributes.organizationId && (
                   <Badge>Current</Badge>
                 )}
               </DropdownMenuItem>

@@ -52,7 +52,7 @@
 //     labels: [],
 //     mimeType: 'text/plain',
 //     name: 'Summary Tool - ' + runInput.map((x) => x.name).join(', '),
-//     orgname: runInput[0].orgname,
+//     organizationId: runInput[0].organizationId,
 //     text: summary,
 //     url: null
 //   })

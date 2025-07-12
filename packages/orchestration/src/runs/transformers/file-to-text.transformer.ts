@@ -73,7 +73,7 @@
 //         labels: [],
 //         mimeType: 'text/plain',
 //         name: `${content.name} - Page ${data.page} - Index ${i}`,
-//         orgname: content.orgname,
+//         organizationId: content.organizationId,
 //         previewImage: '',
 //         text: data.text,
 //         url: null

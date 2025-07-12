@@ -20,7 +20,7 @@ export default function Chat() {
 
   const { data } = useFindManyArtifactsSuspense({
     // filter: {
-    //   orgname: {
+    //   organizationId: {
     //     equals: defaultOrgname
     //   }
     // }
@@ -66,7 +66,7 @@ export default function Chat() {
     //     labels: [],
     //     mimeType: 'text/plain',
     //     name: 'Pending',
-    //     orgname: defaultOrgname,
+    //     organizationId: defaultOrgname,
     //     parent: {
     //       id: '',
     //       name: 'Chat'

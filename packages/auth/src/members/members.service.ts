@@ -20,8 +20,8 @@ export class MembersService extends BaseService<MemberEntity> {
   }
 
   protected emitMutationEvent(entity: MemberEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, MEMBER_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]
     })
   }
 }

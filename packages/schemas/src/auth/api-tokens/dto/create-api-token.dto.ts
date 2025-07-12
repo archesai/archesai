@@ -6,7 +6,7 @@ import { Type } from '@sinclair/typebox'
 
 export const CreateApiTokenDtoSchema = Type.Object({
   // name: BaseEntitySchema.properties.name
-  // orgname: ApiTokenEntitySchema.properties.orgname,
+  // organizationId: ApiTokenEntitySchema.properties.organizationId,
   // role: ApiTokenEntitySchema.properties.role
 })
 

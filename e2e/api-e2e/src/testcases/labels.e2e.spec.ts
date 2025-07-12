@@ -7,7 +7,7 @@ import { getUser, registerUser } from '#utils/helpers'
 describe('Labels', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
   let labelId: string
 
   const credentials = {
@@ -21,7 +21,7 @@ describe('Labels', () => {
     accessToken = (await registerUser(app, credentials)).accessToken
     const usersService = app.get<UsersService>(UsersService)
     const user = await getUser(app, accessToken)
-    orgname = user.defaultOrgname
+    organizationId = user.defaultOrgname
     await usersService.setEmailVerified(user.id)
   })
 
@@ -31,7 +31,7 @@ describe('Labels', () => {
 
   it('CREATE - should be able to create a label', async () => {
     const labelRes = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/labels`)
+      .post(`/organizations/${organizationId}/labels`)
       .send({
         name: 'name'
       })
@@ -46,7 +46,7 @@ describe('Labels', () => {
 
   it('GET - should be able to get a label', async () => {
     const getRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/labels/${labelId}`)
+      .get(`/organizations/${organizationId}/labels/${labelId}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(getRes.status).toBe(200)
     expect(getRes).toSatisfyApiSpec()
@@ -54,7 +54,7 @@ describe('Labels', () => {
 
   it('UPDATE - should be able to update a label', async () => {
     const updateRes = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/labels/${labelId}`)
+      .patch(`/organizations/${organizationId}/labels/${labelId}`)
       .send({
         name: 'new-label-name'
       })
@@ -66,7 +66,7 @@ describe('Labels', () => {
 
   it('FIND_MANY - should be able to get all labels', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/labels`)
+      .get(`/organizations/${organizationId}/labels`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res.status).toBe(200)
     expect(res).toSatisfyApiSpec()
@@ -77,7 +77,7 @@ describe('Labels', () => {
   it('DELETE - should be able to delete a label', async () => {
     // Delete the chatbot
     const deleteRes = await request(app.getHttpServer())
-      .delete(`/organizations/${orgname}/labels/${labelId}`)
+      .delete(`/organizations/${organizationId}/labels/${labelId}`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(deleteRes.status).toBe(200)
   })

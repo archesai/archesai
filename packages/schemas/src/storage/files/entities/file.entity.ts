@@ -10,7 +10,9 @@ export const FileEntitySchema = Type.Object(
     isDir: Type.Boolean({
       description: 'Whether or not this is a directory'
     }),
-    orgname: Type.String({ description: 'The original name of the file' }),
+    organizationId: Type.String({
+      description: 'The original name of the file'
+    }),
     path: Type.String({ description: 'The path to the item' }),
     read: Type.Optional(
       Type.String({

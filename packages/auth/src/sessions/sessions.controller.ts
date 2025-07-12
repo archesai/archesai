@@ -9,7 +9,8 @@ import {
   ArchesApiNoContentResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
   AuthenticatedGuard,
-  IS_CONTROLLER
+  IS_CONTROLLER,
+  UnauthorizedException
 } from '@archesai/core'
 import {
   CreateAccountDtoSchema,
@@ -108,8 +109,8 @@ export function LocalAuthGuard(app: HttpInstance) {
           try {
             await authReq.logIn(user)
             resolve()
-          } catch (err) {
-            reject(err as Error)
+          } catch {
+            reject(new UnauthorizedException())
           }
         }
       )

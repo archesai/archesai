@@ -11,7 +11,7 @@ export function createRandomMember(
     createdAt: faker.date.recent().toISOString(),
     id: faker.string.uuid(),
     invitationId: faker.string.uuid(),
-    orgname: faker.internet.domainName(),
+    organizationId: faker.internet.domainName(),
     role: faker.helpers.arrayElement(RoleTypes),
     updatedAt: faker.date.recent().toISOString(),
     userId: faker.string.uuid(),

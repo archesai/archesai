@@ -60,13 +60,13 @@ describe('ApiTokensService', () => {
 
   describe('create', () => {
     it('should create an API token', async () => {
-      const orgname = 'test-org'
+      const organizationId = 'test-org'
       const createTokenDto = {
         name: 'test-token',
         role: 'ADMIN'
       } as const
       const overrides = {
-        orgname,
+        organizationId,
         username: 'test-user'
       }
       const mockedApiToken = createRandomApiToken({
@@ -86,7 +86,7 @@ describe('ApiTokensService', () => {
       const result = await service.create({
         createdAt: new Date().toISOString(),
         name: createTokenDto.name,
-        organizationId: orgname,
+        organizationId: organizationId,
         role: createTokenDto.role,
         updatedAt: new Date().toISOString()
       })

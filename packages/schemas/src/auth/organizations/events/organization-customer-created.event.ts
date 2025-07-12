@@ -1,9 +1,9 @@
 export class OrganizationCustomerCreatedEvent {
   public customer: string
-  public orgname: string
+  public organizationId: string
 
-  constructor(event: { customer: string; orgname: string }) {
+  constructor(event: { customer: string; organizationId: string }) {
     this.customer = event.customer
-    this.orgname = event.orgname
+    this.organizationId = event.organizationId
   }
 }

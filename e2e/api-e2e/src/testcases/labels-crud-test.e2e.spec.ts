@@ -8,7 +8,7 @@ import { runCrudTestSuite } from '#utils/test-suite.spec'
 describe('Labels E2E', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
   const credentials = {
     email: 'chatbots-test@archesai.com',
     password: 'password'
@@ -26,7 +26,7 @@ describe('Labels E2E', () => {
   beforeEach(async () => {
     accessToken = (await registerUser(app, credentials)).accessToken
     const user = await getUser(app, accessToken)
-    orgname = user.orgname
+    organizationId = user.organizationId
   })
 
   afterEach(async () => {
@@ -38,31 +38,31 @@ describe('Labels E2E', () => {
   describe('CRUD', () => {
     runCrudTestSuite<LabelEntity, CreateLabelDto, UpdateLabelDto>(
       {
-        async create(accessToken, orgname, createDto) {
+        async create(accessToken, organizationId, createDto) {
           return request(app.getHttpServer())
-            .post(`/organizations/${orgname}/labels`)
+            .post(`/organizations/${organizationId}/labels`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(createDto)
         },
-        async delete(accessToken, orgname, id) {
+        async delete(accessToken, organizationId, id) {
           return request(app.getHttpServer())
-            .delete(`/organizations/${orgname}/labels/${id}`)
+            .delete(`/organizations/${organizationId}/labels/${id}`)
             .set('Authorization', `Bearer ${accessToken}`)
         },
-        async findMany(accessToken, orgname, query) {
+        async findMany(accessToken, organizationId, query) {
           return request(app.getHttpServer())
-            .get(`/organizations/${orgname}/labels`)
+            .get(`/organizations/${organizationId}/labels`)
             .query(query)
             .set('Authorization', `Bearer ${accessToken}`)
         },
-        async findOne(accessToken, orgname, id) {
+        async findOne(accessToken, organizationId, id) {
           return request(app.getHttpServer())
-            .get(`/organizations/${orgname}/labels/${id}`)
+            .get(`/organizations/${organizationId}/labels/${id}`)
             .set('Authorization', `Bearer ${accessToken}`)
         },
-        async update(accessToken, orgname, id, updateDto) {
+        async update(accessToken, organizationId, id, updateDto) {
           return request(app.getHttpServer())
-            .patch(`/organizations/${orgname}/labels/${id}`)
+            .patch(`/organizations/${organizationId}/labels/${id}`)
             .set('Authorization', `Bearer ${accessToken}`)
             .send(updateDto)
         }
@@ -74,14 +74,14 @@ describe('Labels E2E', () => {
             createDto: { name: 'ValidName' },
             expectedStatus: 201,
             name: 'valid label name',
-            orgname
+            organizationId
           },
           {
             accessToken,
             createDto: { name: '' },
             expectedStatus: 400, // You might need custom logic in create() to check this
             name: 'empty label name',
-            orgname
+            organizationId
           }
         ],
         delete: [
@@ -90,14 +90,14 @@ describe('Labels E2E', () => {
             createDto: { name: 'ToDelete' },
             expectedStatus: 200,
             name: 'valid delete',
-            orgname
+            organizationId
           },
           {
             accessToken,
             createDto: { name: 'Temp' },
             expectedStatus: 404,
             name: 'delete nonexistent resource',
-            orgname
+            organizationId
           }
         ],
         findMany: [
@@ -106,7 +106,7 @@ describe('Labels E2E', () => {
             createDtos: [{ name: 'ListMe1' }, { name: 'ListMe2' }],
             expectedStatus: 200,
             name: 'default list scenario',
-            orgname,
+            organizationId,
             query: {}
           }
         ],
@@ -116,7 +116,7 @@ describe('Labels E2E', () => {
             createDto: { name: 'ToRead' },
             expectedStatus: 200,
             name: 'existing label',
-            orgname,
+            organizationId,
             query: {}
           },
           {
@@ -124,7 +124,7 @@ describe('Labels E2E', () => {
             createDto: { name: 'temp' },
             expectedStatus: 404,
             name: 'non-existent label',
-            orgname,
+            organizationId,
             query: {}
           }
         ],
@@ -134,7 +134,7 @@ describe('Labels E2E', () => {
             createDto: { name: 'Updatable' },
             expectedStatus: 200,
             name: 'update name successfully',
-            orgname,
+            organizationId,
             updateDto: { name: 'NewName' }
           },
           {
@@ -142,7 +142,7 @@ describe('Labels E2E', () => {
             createDto: { name: 'Original' },
             expectedStatus: 400,
             name: 'update with invalid data',
-            orgname,
+            organizationId,
             updateDto: { name: '' }
           }
         ]

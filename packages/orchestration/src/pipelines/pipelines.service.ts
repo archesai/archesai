@@ -35,8 +35,8 @@ export class PipelinesService extends BaseService<PipelineEntity> {
     return this.findOne(pipeline.id)
   }
 
-  public async createDefaultPipeline(orgname: string) {
-    const tools = await this.toolsService.createDefaultTools(orgname)
+  public async createDefaultPipeline(organizationId: string) {
+    const tools = await this.toolsService.createDefaultTools(organizationId)
     const tool = tools.data.find((t) => t.name == 'Extract Text')
     if (!tool) {
       throw new Error('Could not create default pipeline, no extract text tool')
@@ -46,7 +46,7 @@ export class PipelinesService extends BaseService<PipelineEntity> {
     const pipeline = await this.pipelineRepository.create({
       description:
         'This is a default pipeline for indexing arbitrary documents. It extracts text from the document, creates an image from the text, summarizes the text, creates embeddings from the text, and converts the text to speech.',
-      organizationId: orgname
+      organizationId: organizationId
       // steps: [
       // {
       //   id: firstId,

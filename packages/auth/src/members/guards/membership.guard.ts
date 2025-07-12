@@ -16,18 +16,18 @@ export class MembershipGuard implements CanActivate {
   }
 
   public async canActivate(
-    request: ArchesApiRequest & { params: { orgname?: string } }
+    request: ArchesApiRequest & { params: { organizationId?: string } }
   ): Promise<boolean> {
-    const orgname = request.params.orgname
+    const organizationId = request.params.organizationId
     const user = request.user
 
     // If no organization is specified or no user is attached, allow the request.
-    if (!orgname || !user) {
+    if (!organizationId || !user) {
       return true
     }
 
     this.logger.debug('Checking membership for user', {
-      orgname,
+      organizationId,
       path: request.url,
       user
     })
@@ -47,10 +47,12 @@ export class MembershipGuard implements CanActivate {
       }
     })
 
-    // Find membership that matches the orgname
-    const membership = memberships.find((m) => m.orgname === orgname)
+    // Find membership that matches the organizationId
+    const membership = memberships.find(
+      (m) => m.organizationId === organizationId
+    )
     if (!membership) {
-      this.logger.debug('user is not a member', { orgname, user })
+      this.logger.debug('user is not a member', { organizationId, user })
       return false
     }
 
@@ -60,7 +62,7 @@ export class MembershipGuard implements CanActivate {
     if (allowedRoles && allowedRoles.length > 0) {
       if (!allowedRoles.includes(membership.role)) {
         this.logger.debug('User does not have required role', {
-          orgname,
+          organizationId,
           requiredRoles: allowedRoles,
           user,
           userRole: membership.role

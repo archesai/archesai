@@ -147,7 +147,7 @@ export class GoogleCloudStorageService
       ).toUTCString(),
       id: file.id ?? randomUUID(),
       isDir: false,
-      orgname: basename(path), // FIXME
+      organizationId: basename(path), // FIXME
       path: file.name,
       size: Number(file.metadata.size),
       updatedAt: new Date(file.metadata.updated ?? Date.now()).toUTCString()
@@ -178,7 +178,7 @@ export class GoogleCloudStorageService
           ).toUTCString(),
           id: file.id ?? randomUUID(),
           isDir: false,
-          orgname: basename(path), // FIXME
+          organizationId: basename(path), // FIXME
           path: file.name,
           size: Number(file.metadata.size),
           updatedAt: new Date(file.metadata.updated ?? Date.now()).toUTCString()
@@ -191,7 +191,7 @@ export class GoogleCloudStorageService
           createdAt: new Date().toUTCString(),
           id: `${fullPath}${dirName}/`,
           isDir: true,
-          orgname: basename(path), // FIXME
+          organizationId: basename(path), // FIXME
           path: `${fullPath}${dirName}/`,
           size: 0,
           updatedAt: new Date().toUTCString()

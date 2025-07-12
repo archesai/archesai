@@ -42,11 +42,11 @@ export const getUser = async (
 // Helper function to check organization data
 export const getOrganization = async (
   app: HttpInstance,
-  orgname: string,
+  organizationId: string,
   accessToken: string
 ): Promise<OrganizationEntity> => {
   const res = await request(app.getHttpServer())
-    .get(`/organizations/${orgname}`)
+    .get(`/organizations/${organizationId}`)
     .set('Authorization', `Bearer ${accessToken}`)
   expect(res.status).toBe(200)
   expect(res).toSatisfyApiSpec()

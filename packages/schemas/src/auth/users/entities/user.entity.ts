@@ -12,24 +12,18 @@ export const UserEntitySchema = Type.Object(
       description: 'Whether or not the user is deactivated'
     }),
     email: Type.String({
-      description: "The user's e-mail",
-      format: 'email'
+      description: "The user's e-mail"
+      // format: 'email'
     }),
     emailVerified: Type.Boolean({
-      description: "Whether or not the user's e-mail has been verified",
-      format: 'date-time'
+      description: "Whether or not the user's e-mail has been verified"
     }),
-    image: Type.Optional(
-      Type.String({
-        description: "The user's avatar image URL"
-      })
-    ),
+    image: Type.Union([Type.Null(), Type.String()], {
+      description: "The user's avatar image URL"
+    }),
     name: Type.String({
       description: "The user's name",
       minLength: 1
-    }),
-    orgname: Type.String({
-      description: "The user's organization name"
     })
   },
   {

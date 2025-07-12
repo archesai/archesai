@@ -1,9 +1,6 @@
 import type { WebsocketsService } from '@archesai/core'
-import type {
-  AccountEntity,
-  BaseInsertion,
-  ProviderType
-} from '@archesai/schemas'
+import type { AccountInsertModel } from '@archesai/database'
+import type { AccountEntity, ProviderType } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
 
@@ -35,7 +32,7 @@ export class AccountsService extends BaseService<AccountEntity> {
    * @returns The created account entity.
    */
   public override async create(
-    value: BaseInsertion<AccountEntity>
+    value: AccountInsertModel
   ): Promise<AccountEntity> {
     if (value.providerId === 'LOCAL') {
       if (!value.password) {

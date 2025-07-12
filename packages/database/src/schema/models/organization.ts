@@ -9,7 +9,7 @@ export const OrganizationTable = pgTable(ORGANIZATION_ENTITY_KEY, {
   ...baseFields,
   billingEmail: text().notNull(),
   credits: integer().default(0).notNull(),
-  orgname: text('orgname').notNull().unique(),
+  organizationId: text('organizationId').notNull().unique(),
   plan: planType().default('FREE').notNull(),
   stripeCustomerId: text().unique()
 })

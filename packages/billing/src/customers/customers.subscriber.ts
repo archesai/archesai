@@ -24,7 +24,7 @@ export class CustomersSubscriber implements EventSubscriber {
       (event: OrganizationCreatedEvent) => {
         ;(async () => {
           this.logger.log('creating customer', {
-            orgname: event.organization.orgname
+            organizationId: event.organization.organizationId
           })
 
           if (!event.organization.billingEmail) {
@@ -33,7 +33,7 @@ export class CustomersSubscriber implements EventSubscriber {
 
           // replicate your create(...) logic:
           const customer = await this.customersService.create(
-            event.organization.orgname,
+            event.organization.organizationId,
             event.organization.billingEmail
           )
           this.logger.log('created customer', {

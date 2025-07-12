@@ -58,22 +58,22 @@
 //     expect(mockedMembersService).toBeDefined()
 //   })
 
-//   it('POST /organizations/:orgname/members should validate role', async () => {
-//     const orgname = 'testOrg'
+//   it('POST /organizations/:organizationId/members should validate role', async () => {
+//     const organizationId = 'testOrg'
 //     const createMemberRequest = {
 //       inviteEmail: 'jonathan@gmail.com',
 //       role: 'BADROLE'
 //     }
 //     const response = await request(app.getHttpServer())
-//       .post(`/organizations/${orgname}/members`)
+//       .post(`/organizations/${organizationId}/members`)
 //       .set('Content-Type', 'application/json')
 //       .send(createMemberRequest)
 
 //     expect(response.status).toBe(400)
 //   })
 
-//   it('POST /organizations/:orgname/members should call service.create', async () => {
-//     const orgname = 'testOrg'
+//   it('POST /organizations/:organizationId/members should call service.create', async () => {
+//     const organizationId = 'testOrg'
 //     const createMemberRequest: CreateMemberRequest = {
 //       name: 'Jonathan',
 //       role: 'ADMIN'
@@ -82,7 +82,7 @@
 //     mockedMembersService.create.mockResolvedValue(mockedMember)
 
 //     const response = await request(app.getHttpServer())
-//       .post(`/organizations/${orgname}/members`)
+//       .post(`/organizations/${organizationId}/members`)
 //       .send(createMemberRequest)
 
 //     expect(response.status).toBe(201)
@@ -97,8 +97,8 @@
 //     )
 //   })
 
-//   it('GET /organizations/:orgname/members should call service.findMany', async () => {
-//     const orgname = 'testOrg'
+//   it('GET /organizations/:organizationId/members should call service.findMany', async () => {
+//     const organizationId = 'testOrg'
 //     const mockedMember = createRandomMember()
 //     const mockedPaginatedMembers = {
 //       count: 100,
@@ -107,7 +107,7 @@
 //     mockedMembersService.findMany.mockResolvedValue(mockedPaginatedMembers)
 
 //     const response = await request(app.getHttpServer())
-//       .get(`/organizations/${orgname}/members`)
+//       .get(`/organizations/${organizationId}/members`)
 //       .query({})
 
 //     expect(response.status).toBe(200)
@@ -125,9 +125,9 @@
 //       endDate: undefined,
 //       filters: [
 //         {
-//           field: 'orgname',
+//           field: 'organizationId',
 //           operator: 'equals',
-//           value: orgname
+//           value: organizationId
 //         }
 //       ],
 //       limit: 10,
@@ -138,13 +138,13 @@
 //     })
 //   })
 
-//   it('GET /organizations/:orgname/members/:id should call service.findOne', async () => {
-//     const orgname = 'testOrg'
+//   it('GET /organizations/:organizationId/members/:id should call service.findOne', async () => {
+//     const organizationId = 'testOrg'
 //     const mockedMember = createRandomMember()
 //     mockedMembersService.findOne.mockResolvedValue(mockedMember)
 
 //     const response = await request(app.getHttpServer()).get(
-//       `/organizations/${orgname}/members/1`
+//       `/organizations/${organizationId}/members/1`
 //     )
 
 //     expect(response.status).toBe(200)
@@ -156,15 +156,15 @@
 //     expect(mockedMembersService.findOne).toHaveBeenCalledWith('1')
 //   })
 
-//   it('PATCH /organizations/:orgname/members/:id should call service.update', async () => {
-//     const orgname = 'testOrg'
+//   it('PATCH /organizations/:organizationId/members/:id should call service.update', async () => {
+//     const organizationId = 'testOrg'
 //     const mockedMember = createRandomMember({
-//       orgname
+//       organizationId
 //     })
 //     mockedMembersService.update.mockResolvedValue(mockedMember)
 
 //     const response = await request(app.getHttpServer())
-//       .patch(`/organizations/${orgname}/members/1`)
+//       .patch(`/organizations/${organizationId}/members/1`)
 //       .send({ role: 'ADMIN' })
 //       .set('Authorization', 'Bearer token')
 
@@ -179,7 +179,7 @@
 //     })
 //   })
 
-//   it('DELETE /organizations/:orgname/members/:id should call service.remove', async () => {
+//   it('DELETE /organizations/:organizationId/members/:id should call service.remove', async () => {
 //     const response = await request(app.getHttpServer())
 //       .delete('/organizations/testOrg/members/1')
 //       .set('Authorization', 'Bearer token')

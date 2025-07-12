@@ -74,7 +74,7 @@
 //       }
 //       const mockedUser = createRandomUser({
 //         id: 'test-id',
-//         orgname: 'test-org'
+//         organizationId: 'test-org'
 //       })
 //       mockedUsersService.update.mockResolvedValue(mockedUser)
 

@@ -26,7 +26,7 @@ export function runCrudTestSuite<
           // Create the entity
           const created = await operations.create(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             scenario.createDto
           )
 
@@ -47,7 +47,7 @@ export function runCrudTestSuite<
           if (created.body.id && operations.delete) {
             await operations.delete(
               scenario.accessToken,
-              scenario.orgname,
+              scenario.organizationId,
               created.body.id
             )
           }
@@ -73,7 +73,7 @@ export function runCrudTestSuite<
           // Create the entity
           const created = await operations.create(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             scenario.createDto
           )
 
@@ -86,7 +86,7 @@ export function runCrudTestSuite<
           // Find the entity
           const found = await operations.findOne(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             created.body.id
           )
 
@@ -107,7 +107,7 @@ export function runCrudTestSuite<
           if (created.body.id && operations.delete) {
             await operations.delete(
               scenario.accessToken,
-              scenario.orgname,
+              scenario.organizationId,
               created.body.id
             )
           }
@@ -133,7 +133,7 @@ export function runCrudTestSuite<
           // Create the entity
           const created = await operations.create(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             scenario.createDto
           )
 
@@ -146,7 +146,7 @@ export function runCrudTestSuite<
           // Find the entity
           const found = await operations.findOne(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             created.body.id
           )
 
@@ -159,7 +159,7 @@ export function runCrudTestSuite<
           // Update the entity
           const updated = await operations.update(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             found.body.id,
             scenario.updateDto
           )
@@ -181,7 +181,7 @@ export function runCrudTestSuite<
           if (updated.body.id && operations.delete) {
             await operations.delete(
               scenario.accessToken,
-              scenario.orgname,
+              scenario.organizationId,
               updated.body.id
             )
           }
@@ -210,7 +210,7 @@ export function runCrudTestSuite<
             expect(operations.create).toBeDefined()
             const created = await operations.create(
               scenario.accessToken,
-              scenario.orgname,
+              scenario.organizationId,
               createDto
             )
             createdIds.push(created.body.id)
@@ -225,7 +225,7 @@ export function runCrudTestSuite<
           // Find the entities
           const allFound = await operations.findMany(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             scenario.query
           )
 
@@ -247,7 +247,7 @@ export function runCrudTestSuite<
             for (const id of createdIds) {
               await operations.delete(
                 scenario.accessToken,
-                scenario.orgname,
+                scenario.organizationId,
                 id
               )
             }
@@ -274,7 +274,7 @@ export function runCrudTestSuite<
           // Create the entity
           const created = await operations.create(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             scenario.createDto
           )
 
@@ -287,7 +287,7 @@ export function runCrudTestSuite<
           // Delete the entity
           const deleted = await operations.delete(
             scenario.accessToken,
-            scenario.orgname,
+            scenario.organizationId,
             created.body.id
           )
 

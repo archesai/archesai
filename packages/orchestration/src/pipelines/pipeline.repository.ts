@@ -38,7 +38,7 @@ export class PipelineRepository extends BaseRepository<
   //     await this.databaseService.insert(PIPELINE_ENTITY_KEY, [
   //       {
   //         name: step.name,
-  //         orgname: data.orgname,
+  //         organizationId: data.organizationId,
   //         pipelineId: pipeline.id,
   //         toolId: step.toolId
   //       }
@@ -86,7 +86,7 @@ export class PipelineRepository extends BaseRepository<
   // override async update(
   //   id: string,
   //   data: Partial<CreatePipelineRequest & typeof PipelineTable.$inferInsert> & {
-  //     orgname: string
+  //     organizationId: string
   //   }
   // ) {
   //   const [pipeline] = await this.databaseService.db
@@ -110,7 +110,7 @@ export class PipelineRepository extends BaseRepository<
   //   for (const pipelineStep of data.steps || []) {
   //     await this.databaseService.db.insert(PipelineStepTable).values({
   //       name: pipelineStep.name,
-  //       orgname: data.orgname,
+  //       organizationId: data.organizationId,
   //       pipelineId: id,
   //       toolId: pipelineStep.toolId
   //     })

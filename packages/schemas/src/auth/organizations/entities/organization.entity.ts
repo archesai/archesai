@@ -25,7 +25,7 @@ export const OrganizationEntitySchema = Type.Object(
         description: 'The Stripe customer ID'
       })
     ),
-    orgname: Type.String({
+    organizationId: Type.String({
       description: 'The organization name'
     }),
     plan: Type.Union(

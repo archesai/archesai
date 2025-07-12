@@ -7,7 +7,7 @@ import { getUser, registerUser } from '#utils/helpers'
 describe('Members', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
 
   const credentials = {
     email: 'admin@archesai.com',
@@ -33,11 +33,11 @@ describe('Members', () => {
 
     accessToken = (await registerUser(app, credentials)).accessToken
 
-    orgname = (await getUser(app, accessToken)).defaultOrgname
+    organizationId = (await getUser(app, accessToken)).defaultOrgname
 
     const userEntity = await getUser(app, accessToken)
     await usersService.setEmailVerified(userEntity.id)
-    await organizationsService.setPlan(orgname, PlanTypeEnum.UNLIMITED)
+    await organizationsService.setPlan(organizationId, PlanTypeEnum.UNLIMITED)
   })
 
   afterAll(async () => {
@@ -73,14 +73,14 @@ describe('Members', () => {
 
     // Verify invited user added as member
     const memberRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/members`)
+      .get(`/organizations/${organizationId}/members`)
       .set('Authorization', 'Bearer ' + invitedUserToken)
     expect(memberRes.status).toBe(200)
     expect(memberRes.body.metadata.totalResults).toBe(2)
 
     // Verify uninvited user not a member
     const nonMemberRes = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/members`)
+      .get(`/organizations/${organizationId}/members`)
       .set('Authorization', 'Bearer ' + uninvitedUserToken)
     expect(nonMemberRes.status).toBe(404)
 
@@ -94,7 +94,7 @@ describe('Members', () => {
     expectedStatus: number
   ) => {
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members`)
+      .post(`/organizations/${organizationId}/members`)
       .send({ inviteEmail: email, role })
       .set('Authorization', 'Bearer ' + accessToken)
     if (res.status != 400) {
@@ -108,7 +108,7 @@ describe('Members', () => {
     expectedStatus: number
   ) => {
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/members/join`)
+      .post(`/organizations/${organizationId}/members/join`)
       .send({})
       .set('Authorization', 'Bearer ' + userToken)
     expect(res.status).toBe(expectedStatus)
@@ -116,7 +116,7 @@ describe('Members', () => {
 
   const cleanupOrganizationAndUsers = async () => {
     await request(app.getHttpServer())
-      .delete(`/organizations/${orgname}`)
+      .delete(`/organizations/${organizationId}`)
       .set('Authorization', 'Bearer ' + accessToken)
 
     await deactivateUser(credentials)

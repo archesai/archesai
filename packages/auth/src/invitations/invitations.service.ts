@@ -33,8 +33,8 @@ export class InvitationsService extends BaseService<InvitationEntity> {
   }
 
   protected emitMutationEvent(entity: InvitationEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, INVITATION_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, INVITATION_ENTITY_KEY]
     })
   }
 }

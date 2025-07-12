@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm'
-import { date, pgTable, text } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 import { ACCOUNT_ENTITY_KEY } from '@archesai/schemas'
 
@@ -9,13 +9,17 @@ import { UserTable } from '#schema/models/user'
 export const AccountTable = pgTable(ACCOUNT_ENTITY_KEY, {
   ...baseFields,
   accessToken: text(),
-  accessTokenExpiresAt: date(),
+  accessTokenExpiresAt: timestamp({
+    mode: 'string'
+  }),
   accountId: text().notNull(),
   idToken: text(),
   password: text(),
   providerId: text().notNull(),
   refreshToken: text(),
-  refreshTokenExpiresAt: date(),
+  refreshTokenExpiresAt: timestamp({
+    mode: 'string'
+  }),
   scope: text(),
   userId: text()
     .notNull()

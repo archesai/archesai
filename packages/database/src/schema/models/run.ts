@@ -1,11 +1,5 @@
 import { relations } from 'drizzle-orm'
-import {
-  doublePrecision,
-  pgTable,
-  primaryKey,
-  text,
-  timestamp
-} from 'drizzle-orm/pg-core'
+import { doublePrecision, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
@@ -14,6 +8,7 @@ import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
 import { PipelineTable } from '#schema/models/pipeline'
+import { RunToArtifactTable } from '#schema/models/run-to-artifact'
 import { ToolTable } from '#schema/models/tool'
 
 export const RunTable = pgTable(RUN_ENTITY_KEY, {
@@ -43,7 +38,7 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
 })
 
 export const runRelations = relations(RunTable, ({ many, one }) => ({
-  inputs: many(_RunToArtifactTable),
+  inputs: many(RunToArtifactTable),
   outputs: many(ArtifactTable),
   pipeline: one(PipelineTable, {
     fields: [RunTable.pipelineId],
@@ -57,35 +52,3 @@ export const runRelations = relations(RunTable, ({ many, one }) => ({
 
 export type RunInsertModel = typeof RunTable.$inferInsert
 export type RunSelectModel = typeof RunTable.$inferSelect
-
-// MANY TO MANY
-export const _RunToArtifactTable = pgTable(
-  '_runToContent',
-  {
-    artifactId: text()
-      .notNull()
-      .references(() => ArtifactTable.id, {
-        onDelete: 'cascade'
-      }),
-    runId: text()
-      .notNull()
-      .references(() => RunTable.id, {
-        onDelete: 'cascade'
-      })
-  },
-  (t) => [primaryKey({ columns: [t.runId, t.artifactId] })]
-)
-
-export const _runToContentRelations = relations(
-  _RunToArtifactTable,
-  ({ one }) => ({
-    consumer: one(RunTable, {
-      fields: [_RunToArtifactTable.runId],
-      references: [RunTable.id]
-    }),
-    input: one(ArtifactTable, {
-      fields: [_RunToArtifactTable.artifactId],
-      references: [ArtifactTable.id]
-    })
-  })
-)

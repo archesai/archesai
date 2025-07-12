@@ -32,14 +32,14 @@ describe('Organizations', () => {
 
     // Get members of default organization
     const res = await request(app.getHttpServer())
-      .get('/organizations/' + user.orgname + '/members')
+      .get('/organizations/' + user.organizationId + '/members')
       .set('Authorization', 'Bearer ' + accessToken)
     expect(res.status).toBe(200)
     expect(res.body.metadata.totalResults).toBe(1)
 
     // Delete the organization
     await request(app.getHttpServer())
-      .delete('/organizations/' + user.orgname)
+      .delete('/organizations/' + user.organizationId)
       .send()
       .set('Authorization', 'Bearer ' + accessToken)
     expect(res.status).toBe(200)

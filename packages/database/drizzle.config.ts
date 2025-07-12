@@ -9,7 +9,7 @@ if (!process.env.DATABASE_URL) {
 const nonPoolingUrl = process.env.DATABASE_URL.replace(':6543', ':5432')
 
 export default defineConfig({
-  casing: 'snake_case',
+  // casing: 'snake_case',
   dbCredentials: { url: nonPoolingUrl },
   dialect: 'postgresql',
   out: './migrations',

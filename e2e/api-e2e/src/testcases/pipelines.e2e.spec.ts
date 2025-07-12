@@ -7,7 +7,7 @@ import { getUser, registerUser, setEmailVerified } from '#utils/helpers'
 describe('Pipelines', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
 
   const credentials = {
     email: 'pipelines-test@archesai.com',
@@ -21,7 +21,7 @@ describe('Pipelines', () => {
     accessToken = (await registerUser(app, credentials)).accessToken
 
     const user = await getUser(app, accessToken)
-    orgname = user.defaultOrgname
+    organizationId = user.defaultOrgname
     await setEmailVerified(app, user.id)
   })
 
@@ -49,7 +49,7 @@ describe('Pipelines', () => {
     const pipeline = await getPipeline()
 
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/pipelines/${pipeline.id}`) // or .patch depending on your API
+      .patch(`/organizations/${organizationId}/pipelines/${pipeline.id}`) // or .patch depending on your API
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Updated Pipeline',
@@ -67,7 +67,7 @@ describe('Pipelines', () => {
     createPipelineRequest: CreatePipelineRequest
   ) => {
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/pipelines`)
+      .post(`/organizations/${organizationId}/pipelines`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send(createPipelineRequest)
 
@@ -78,7 +78,7 @@ describe('Pipelines', () => {
 
   const getPipeline = async () => {
     const res = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/pipelines`)
+      .get(`/organizations/${organizationId}/pipelines`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
     expect(res.status).toBe(200)

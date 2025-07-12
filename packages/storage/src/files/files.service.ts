@@ -80,7 +80,7 @@ export class FilesService
   }
 
   protected emitMutationEvent(entity: FileEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['files', FILE_ENTITY_KEY]
     })
   }

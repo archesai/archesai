@@ -76,7 +76,7 @@ export function UserButton({
                 <Avatar>
                   <AvatarImage
                     alt={user.email}
-                    src={user.image}
+                    src={user.image ?? undefined}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
@@ -90,7 +90,7 @@ export function UserButton({
                 <Avatar>
                   <AvatarImage
                     alt={user.email}
-                    src={user.image}
+                    src={user.image ?? undefined}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
@@ -113,7 +113,7 @@ export function UserButton({
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage
                     alt={user.email}
-                    src={user.image}
+                    src={user.image ?? undefined}
                   />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
@@ -143,24 +143,23 @@ export function UserButton({
                       onClick={async () => {
                         await updateUser(
                           {
-                            data: {
-                              orgname: membership.attributes.orgname
-                            },
-                            id: ''
+                            data: {},
+                            id: membership.attributes.userId
                           },
                           {
                             onSuccess: () => {
                               toast('Organization changed', {
                                 description: `You have
-                              switched to ${membership.attributes.orgname}`
+                              switched to ${membership.attributes.organizationId}`
                               })
                             }
                           }
                         )
                       }}
                     >
-                      {membership.attributes.orgname}
-                      {defaultOrgname === membership.attributes.orgname && (
+                      {membership.attributes.organizationId}
+                      {defaultOrgname ===
+                        membership.attributes.organizationId && (
                         <Badge>Current</Badge>
                       )}
                     </DropdownMenuItem>

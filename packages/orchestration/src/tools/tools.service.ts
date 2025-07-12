@@ -22,13 +22,13 @@ export class ToolsService extends BaseService<ToolEntity> {
     this.websocketsService = websocketsService
   }
 
-  public async createDefaultTools(orgname: string) {
-    return this.toolsRepository.createDefaultTools(orgname)
+  public async createDefaultTools(organizationId: string) {
+    return this.toolsRepository.createDefaultTools(organizationId)
   }
 
   protected emitMutationEvent(entity: ToolEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, TOOL_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
     })
   }
 }

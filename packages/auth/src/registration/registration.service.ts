@@ -25,21 +25,17 @@ export class RegistrationService {
 
     // Create the user account
     const user = await this.usersService.create({
-      createdAt: new Date().toISOString(),
       deactivated: false,
       email,
-      name: email.split('@')[0] ?? email,
-      // orgname:
+      name: email.split('@')[0] ?? email
+      // organizationId:
       //   email.split('@')[0]! + '-' + Math.random().toString(36).substring(2, 6),
-      updatedAt: new Date().toISOString()
     })
 
     const account = await this.accountsService.create({
       accountId: email,
-      createdAt: new Date().toISOString(),
       password: password,
       providerId: 'LOCAL',
-      updatedAt: new Date().toISOString(),
       userId: user.id
     })
 

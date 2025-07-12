@@ -3,7 +3,7 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 
 import {
   useCreateLabel,
-  useGetOneLabelSuspense,
+  useGetOneLabel,
   useUpdateLabel
 } from '@archesai/client'
 import { LABEL_ENTITY_KEY, Type } from '@archesai/schemas'
@@ -13,11 +13,28 @@ import { Input } from '@archesai/ui/components/shadcn/input'
 export default function LabelForm({ labelId }: { labelId?: string }) {
   const { mutateAsync: updateLabel } = useUpdateLabel({})
   const { mutateAsync: createLabel } = useCreateLabel({})
-  const { data: existingLabelResponse, error } = useGetOneLabelSuspense(labelId)
+  const { data: existingLabelResponse } = useGetOneLabel(labelId, {
+    query: {
+      enabled: !!labelId,
+      placeholderData: {
+        data: {
+          attributes: {
+            createdAt: '',
+            name: '',
+            organizationId: '',
+            updatedAt: ''
+          },
+          id: labelId ?? '',
+          type: LABEL_ENTITY_KEY
+        }
+      }
+    }
+  })
 
-  if (error) {
-    return <div>Label not found</div>
+  if (!existingLabelResponse) {
+    return null
   }
+
   const label = existingLabelResponse.data
 
   const formFields: FormFieldConfig[] = [

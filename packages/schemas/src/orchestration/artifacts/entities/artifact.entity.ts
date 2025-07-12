@@ -12,17 +12,19 @@ export const ArtifactEntitySchema = Type.Object(
         'The number of credits required to access this artifact. This is used for metering and billing purposes.'
     }),
     description: Type.String({ description: "The artifact's description" }),
-    embedding: Type.Array(Type.Number(), {
-      description:
-        "The artifact's embedding, used for semantic search and other ML tasks"
-    }),
+    embedding: Type.Optional(
+      Type.Array(Type.Number(), {
+        description:
+          "The artifact's embedding, used for semantic search and other ML tasks"
+      })
+    ),
     mimeType: Type.String({
       description: 'The MIME type of the artifact, e.g. image/png'
     }),
     name: Type.String({
       description: 'The name of the artifact, used for display purposes'
     }),
-    orgname: Type.String({ description: 'The organization name' }),
+    organizationId: Type.String({ description: 'The organization name' }),
     parentId: Type.String({
       description:
         'The ID of the parent artifact, if this artifact is a child of another artifact'

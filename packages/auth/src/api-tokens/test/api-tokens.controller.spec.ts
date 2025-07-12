@@ -17,7 +17,7 @@
 //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 //   let app: any
 //   let mockedApiTokensService: DeepMocked<ApiTokensService>
-//   let orgname: string
+//   let organizationId: string
 //   let username: string
 
 //   beforeAll(async () => {
@@ -48,7 +48,7 @@
 //     mockedApiTokensService = moduleRef.get(ApiTokensService)
 
 //     const mockUserEntity = createRandomUser()
-//     orgname = mockUserEntity.orgname
+//     organizationId = mockUserEntity.organizationId
 //     username = mockUserEntity.id
 //   })
 
@@ -61,7 +61,7 @@
 //     expect(mockedApiTokensService).toBeDefined()
 //   })
 
-//   it('POST /organizations/:orgname/api-tokens should call service.create', async () => {
+//   it('POST /organizations/:organizationId/api-tokens should call service.create', async () => {
 //     const createApiTokenDto = {
 //       name: 'testToken',
 //       role: 'ADMIN' as const
@@ -70,7 +70,7 @@
 //     mockedApiTokensService.create.mockResolvedValue(mockedApiToken)
 
 //     const response = await request(app.getHttpServer())
-//       .post(`/organizations/${orgname}/api-tokens`)
+//       .post(`/organizations/${organizationId}/api-tokens`)
 //       .send(createApiTokenDto)
 
 //     expect(response.status).toBe(201)
@@ -83,13 +83,13 @@
 //     expect(mockedApiTokensService.create).toHaveBeenCalledWith({
 //       domains: '*',
 //       name: 'testToken',
-//       orgname,
+//       organizationId,
 //       role: 'ADMIN' as const,
 //       username
 //     })
 //   })
 
-//   it('GET /organizations/:orgname/api-tokens should call service.findMany', async () => {
+//   it('GET /organizations/:organizationId/api-tokens should call service.findMany', async () => {
 //     const mockedApiToken = createRandomApiToken()
 //     const mockedPaginatedApiTokens = {
 //       metadata: {
@@ -101,7 +101,7 @@
 //     }
 
 //     const response = await request(app.getHttpServer())
-//       .get(`/organizations/${orgname}/api-tokens`)
+//       .get(`/organizations/${organizationId}/api-tokens`)
 //       .query({})
 
 //     expect(response.status).toBe(200)
@@ -119,9 +119,9 @@
 //       endDate: undefined,
 //       filters: [
 //         {
-//           field: 'orgname',
+//           field: 'organizationId',
 //           operator: 'equals',
-//           value: orgname
+//           value: organizationId
 //         }
 //       ],
 //       limit: 10,
@@ -132,12 +132,12 @@
 //     })
 //   })
 
-//   it('GET /organizations/:orgname/api-tokens/:id should call service.findOne', async () => {
+//   it('GET /organizations/:organizationId/api-tokens/:id should call service.findOne', async () => {
 //     const mockedApiToken = createRandomApiToken()
 //     mockedApiTokensService.findOne.mockResolvedValue(mockedApiToken)
 
 //     const response = await request(app.getHttpServer()).get(
-//       `/organizations/${orgname}/api-tokens/1`
+//       `/organizations/${organizationId}/api-tokens/1`
 //     )
 
 //     expect(response.status).toBe(200)
@@ -149,12 +149,12 @@
 //     expect(mockedApiTokensService.findOne).toHaveBeenCalledWith('1')
 //   })
 
-//   it('PATCH /organizations/:orgname/api-tokens/:id should call service.update', async () => {
+//   it('PATCH /organizations/:organizationId/api-tokens/:id should call service.update', async () => {
 //     const mockedApiToken = createRandomApiToken()
 //     mockedApiTokensService.update.mockResolvedValue(mockedApiToken)
 
 //     const response = await request(app.getHttpServer())
-//       .patch(`/organizations/${orgname}/api-tokens/1`)
+//       .patch(`/organizations/${organizationId}/api-tokens/1`)
 //       .send({ name: 'updatedToken' })
 //       .set('Authorization', 'Bearer token')
 
@@ -169,9 +169,9 @@
 //     })
 //   })
 
-//   it('DELETE /organizations/:orgname/api-tokens/:id should call service.remove', async () => {
+//   it('DELETE /organizations/:organizationId/api-tokens/:id should call service.remove', async () => {
 //     const response = await request(app.getHttpServer())
-//       .delete(`/organizations/${orgname}/api-tokens/1`)
+//       .delete(`/organizations/${organizationId}/api-tokens/1`)
 //       .set('Authorization', 'Bearer token')
 
 //     expect(response.status).toBe(200)

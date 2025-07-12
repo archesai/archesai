@@ -21,8 +21,8 @@ export class LabelsService extends BaseService<LabelEntity> {
   }
 
   protected emitMutationEvent(entity: LabelEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, LABEL_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, LABEL_ENTITY_KEY]
     })
   }
 }

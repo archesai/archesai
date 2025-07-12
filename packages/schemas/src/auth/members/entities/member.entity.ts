@@ -9,7 +9,7 @@ export const MemberEntitySchema = Type.Object(
   {
     ...BaseEntitySchema.properties,
     invitationId: Type.String({ description: 'The invitation id' }),
-    orgname: Type.String({ description: 'The organization name' }),
+    organizationId: Type.String({ description: 'The organization name' }),
     role: Type.Union(
       RoleTypes.map((role) => Type.Literal(role)),
       { description: 'The role of the member' }

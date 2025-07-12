@@ -7,7 +7,7 @@ import { getUser, registerUser, setEmailVerified } from '#utils/helpers'
 describe('Tools', () => {
   let app: HttpInstance
   let accessToken: string
-  let orgname: string
+  let organizationId: string
 
   const credentials = {
     email: 'tools-test@archesai.com',
@@ -21,7 +21,7 @@ describe('Tools', () => {
     accessToken = (await registerUser(app, credentials)).accessToken
 
     const user = await getUser(app, accessToken)
-    orgname = user.defaultOrgname
+    organizationId = user.defaultOrgname
     await setEmailVerified(app, user.id)
   })
 
@@ -31,7 +31,7 @@ describe('Tools', () => {
 
   it('should create default tools on user creation', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/organizations/${orgname}/tools`)
+      .get(`/organizations/${organizationId}/tools`)
       .set('Authorization', `Bearer ${accessToken}`)
     expect(res).toSatisfyApiSpec()
     expect(res.status).toBe(200)
@@ -62,7 +62,7 @@ describe('Tools', () => {
 
     // request to update tool
     const res = await request(app.getHttpServer())
-      .patch(`/organizations/${orgname}/tools/${tool.id}`) // or .patch depending on your API
+      .patch(`/organizations/${organizationId}/tools/${tool.id}`) // or .patch depending on your API
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Updated Tool'
@@ -77,7 +77,7 @@ describe('Tools', () => {
 
   const createTool = async (tool: CreateToolDto) => {
     const res = await request(app.getHttpServer())
-      .post(`/organizations/${orgname}/tools`)
+      .post(`/organizations/${organizationId}/tools`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send(tool)
     expect(res).toSatisfyApiSpec()

@@ -10,7 +10,7 @@ export const LabelEntitySchema = Type.Object(
     name: Type.String({
       description: 'The name of the label'
     }),
-    orgname: Type.String({ description: 'The organization name' })
+    organizationId: Type.String({ description: 'The organization name' })
   },
   {
     $id: 'LabelEntity',

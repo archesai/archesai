@@ -17,7 +17,7 @@ export default function UserForm() {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: user?.data.attributes.orgname,
+      defaultValue: user?.data.attributes.name,
       description: 'Your username',
       label: 'Username',
       name: 'username',

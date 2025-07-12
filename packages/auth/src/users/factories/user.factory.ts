@@ -11,7 +11,6 @@ export function createRandomUser(overrides?: Partial<UserEntity>): UserEntity {
     id: faker.string.uuid(),
     image: faker.image.avatar(),
     name: faker.person.fullName(),
-    orgname: faker.word.adverb(),
     updatedAt: faker.date.recent().toISOString(),
     ...overrides
   }

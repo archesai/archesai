@@ -52,26 +52,26 @@ export class CallbacksService {
       !('customer' in eventObj) ||
       !('metadata' in eventObj) ||
       !eventObj.metadata ||
-      !('orgname' in eventObj.metadata)
+      !('organizationId' in eventObj.metadata)
     ) {
       throw new InternalServerErrorException('Invalid event object')
     }
 
     if (
       typeof eventObj.customer !== 'string' ||
-      typeof eventObj.metadata.orgname !== 'string'
+      typeof eventObj.metadata.organizationId !== 'string'
     ) {
       throw new InternalServerErrorException('Invalid event object')
     }
     const customer = eventObj.customer
-    const orgname = eventObj.metadata.orgname
+    const organizationId = eventObj.metadata.organizationId
 
     if (event.type == 'invoice.paid') {
       const data = event.data.object
       if (data.amount_paid > 0) {
-        const orgname = event.data.object.metadata?.orgname
-        if (typeof orgname !== 'string') {
-          throw new InternalServerErrorException('Invalid orgname')
+        const organizationId = event.data.object.metadata?.organizationId
+        if (typeof organizationId !== 'string') {
+          throw new InternalServerErrorException('Invalid organizationId')
         }
         for (const lineItem of data.lines.data) {
           const priceId = lineItem.id
@@ -93,11 +93,11 @@ export class CallbacksService {
           this.eventBus.emit('organization.customer.subscription.updated', {
             credits: Number(credits) * quantity,
             customer: customer,
-            orgname: orgname
+            organizationId: organizationId
           } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
 
-          this.websocketsService.broadcastEvent(orgname, 'update', {
-            queryKey: ['organizations', orgname]
+          this.websocketsService.broadcastEvent(organizationId, 'update', {
+            queryKey: ['organizations', organizationId]
           })
         }
       }
@@ -124,12 +124,12 @@ export class CallbacksService {
 
       this.eventBus.emit('organization.customer.subscription.updated', {
         customer: customer,
-        orgname: orgname,
+        organizationId: organizationId,
         planType: event.data.object.status == 'active' ? planType : 'FREE'
       } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
 
-      this.websocketsService.broadcastEvent(orgname, 'update', {
-        queryKey: ['organizations', orgname]
+      this.websocketsService.broadcastEvent(organizationId, 'update', {
+        queryKey: ['organizations', organizationId]
       })
     }
   }
