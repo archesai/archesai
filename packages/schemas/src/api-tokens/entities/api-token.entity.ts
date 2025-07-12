@@ -1,5 +1,3 @@
-import type { Static } from '@sinclair/typebox'
-
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
@@ -28,10 +26,7 @@ export const ApiTokenEntitySchema = Type.Object(
   }
 )
 
-export class ApiTokenEntity
-  extends BaseEntity
-  implements Static<typeof ApiTokenEntitySchema>
-{
+export class ApiTokenEntity extends BaseEntity {
   public key: string
   public orgname: string
   public role: ApiTokenRoleType

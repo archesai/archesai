@@ -1,57 +1,31 @@
 import { relations } from 'drizzle-orm'
-import { pgTable, primaryKey, text, uniqueIndex } from 'drizzle-orm/pg-core'
+import { pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 
-import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
-import { organizationFk } from '#schema/models/organization'
+import { LabelToArtifactTable } from '#schema/models/label-to-artifact'
+import { OrganizationTable } from '#schema/models/organization'
 
-// TABLE
 export const LabelTable = pgTable(
   LABEL_ENTITY_KEY,
   {
-    ...baseFields
+    ...baseFields,
+    name: text('name').notNull(),
+    organizationId: text()
+      .notNull()
+      .references(() => OrganizationTable.id, {
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
+      })
   },
-  (LabelTable) => [
-    organizationFk(LabelTable),
-    uniqueIndex().on(LabelTable.name, LabelTable.orgname)
-  ]
+  (LabelTable) => [uniqueIndex().on(LabelTable.name, LabelTable.organizationId)]
 )
 
-// RELATIONS
-export const labelRelations = relations(LabelTable, ({ many }) => ({
-  content: many(_LabelsToContent)
-}))
-
-// MANY TO MANY
-export const _LabelsToContent = pgTable(
-  '_labelsToContent',
-  {
-    artifactId: text()
-      .notNull()
-      .references(() => ArtifactTable.id),
-    labelId: text()
-      .notNull()
-      .references(() => LabelTable.id)
-  },
-  (t) => [primaryKey({ columns: [t.labelId, t.artifactId] })]
-)
-
-export const _labelsToContentRelations = relations(
-  _LabelsToContent,
-  ({ one }) => ({
-    content: one(ArtifactTable, {
-      fields: [_LabelsToContent.artifactId],
-      references: [ArtifactTable.id]
-    }),
-    label: one(LabelTable, {
-      fields: [_LabelsToContent.labelId],
-      references: [LabelTable.id],
-      relationName: 'artifact'
-    })
+export const labelRelations = relations(LabelTable, ({ many, one }) => ({
+  artifacts: many(LabelToArtifactTable),
+  organization: one(OrganizationTable, {
+    fields: [LabelTable.organizationId],
+    references: [OrganizationTable.id]
   })
-)
-
-// SCHEMA
-export type LabelModel = (typeof LabelTable)['$inferSelect']
+}))

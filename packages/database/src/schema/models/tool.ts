@@ -5,26 +5,27 @@ import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
 import { toolIO } from '#schema/enums'
 import { baseFields } from '#schema/models/base'
-import { organizationFk } from '#schema/models/organization'
+import { OrganizationTable } from '#schema/models/organization'
 import { RunTable } from '#schema/models/run'
 
-// TABLE
-export const ToolTable = pgTable(
-  TOOL_ENTITY_KEY,
-  {
-    ...baseFields,
-    description: text().notNull(),
-    inputType: toolIO().notNull(),
-    outputType: toolIO().notNull(),
-    toolBase: text().notNull()
-  },
-  (ToolTable) => [organizationFk(ToolTable)]
-)
+export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
+  ...baseFields,
+  description: text().notNull(),
+  inputType: toolIO().notNull(),
+  organizationId: text()
+    .notNull()
+    .references(() => OrganizationTable.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
+  outputType: toolIO().notNull(),
+  toolBase: text().notNull()
+})
 
-// RELATIONS
-export const toolRelations = relations(ToolTable, ({ many }) => ({
+export const toolRelations = relations(ToolTable, ({ many, one }) => ({
+  organization: one(OrganizationTable, {
+    fields: [ToolTable.organizationId],
+    references: [OrganizationTable.id]
+  }),
   runs: many(RunTable)
 }))
-
-// SCHEMA
-export type ToolModel = (typeof ToolTable)['$inferSelect']

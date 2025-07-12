@@ -38,9 +38,9 @@ export class InvitationsController
     this.invitationsService = invitationsService
   }
 
-  public async accept(request: ArchesApiRequest & { params: { id: string } }) {
+  public async accept(request: ArchesApiRequest) {
     return this.toIndividualResponse(
-      await this.invitationsService.accept(request.params.id, request.user!)
+      await this.invitationsService.accept('FIXME', request.user!)
     )
   }
 

@@ -12,42 +12,36 @@ import { RUN_ENTITY_KEY } from '@archesai/schemas'
 import { runStatus, runType } from '#schema/enums'
 import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
-import { organizationFk } from '#schema/models/organization'
-import {
-  PipelineTable
-  // PipelineStepTable,
-} from '#schema/models/pipeline'
+import { OrganizationTable } from '#schema/models/organization'
+import { PipelineTable } from '#schema/models/pipeline'
 import { ToolTable } from '#schema/models/tool'
 
-// TABLE
-export const RunTable = pgTable(
-  RUN_ENTITY_KEY,
-  {
-    ...baseFields,
-    completedAt: timestamp({ mode: 'string', precision: 3 }),
-    error: text(),
-    pipelineId: text().references(() => PipelineTable.id, {
-      onDelete: 'set null',
+export const RunTable = pgTable(RUN_ENTITY_KEY, {
+  ...baseFields,
+  completedAt: timestamp({ mode: 'string', precision: 3 }),
+  error: text(),
+  organizationId: text()
+    .notNull()
+    .references(() => OrganizationTable.id, {
+      onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    progress: doublePrecision().default(0).notNull(),
-    runType: runType().notNull(),
-    startedAt: timestamp({ mode: 'string', precision: 3 }),
-    status: runStatus().default('QUEUED').notNull(),
-    toolId: text().references(() => ToolTable.id, {
-      onDelete: 'set null',
-      onUpdate: 'cascade'
-    })
-    // pipelineRunId: text().notNull(),
-    // pipelineStepId: text().notNull()
-  },
-  (RunTable) => [
-    organizationFk(RunTable)
-    // uniqueIndex().on(RunTable.pipelineRunId, RunTable.pipelineStepId)
-  ]
-)
+  pipelineId: text().references(() => PipelineTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade'
+  }),
+  progress: doublePrecision().default(0).notNull(),
+  runType: runType().notNull(),
+  startedAt: timestamp({ mode: 'string', precision: 3 }),
+  status: runStatus().default('QUEUED').notNull(),
+  toolId: text().references(() => ToolTable.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade'
+  })
+  // pipelineRunId: text().notNull(),
+  // pipelineStepId: text().notNull()
+})
 
-// RELATIONS
 export const runRelations = relations(RunTable, ({ many, one }) => ({
   inputs: many(_RunToArtifactTable),
   outputs: many(ArtifactTable),
@@ -92,6 +86,3 @@ export const _runToContentRelations = relations(
     })
   })
 )
-
-// SCHEMA
-export type RunModel = (typeof RunTable)['$inferSelect']

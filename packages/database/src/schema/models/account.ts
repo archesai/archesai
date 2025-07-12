@@ -1,47 +1,33 @@
-import { relations, sql } from 'drizzle-orm'
-import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { date, pgTable, text } from 'drizzle-orm/pg-core'
 
 import { ACCOUNT_ENTITY_KEY } from '@archesai/schemas'
 
-import { authType, providerType } from '#schema/enums'
+import { baseFields } from '#schema/models/base'
 import { UserTable } from '#schema/models/user'
 
-export const AccountTable = pgTable(
-  ACCOUNT_ENTITY_KEY,
-  {
-    access_token: text('access_token'),
-    authType: authType('authType').notNull(),
-    expires_at: integer('expires_at'),
-    // my custom stuff
-    hashed_password: text('hashed_password'),
-    id: text('id')
-      .default(sql`gen_random_uuid()`)
-      .unique()
-      .notNull(),
-    id_token: text('id_token'),
-    provider: providerType().notNull(),
-    providerAccountId: text('providerAccountId').notNull(),
-    refresh_token: text('refresh_token'),
-    scope: text('scope'),
-    session_state: text('session_state'),
-    token_type: text('token_type'),
-    userId: text('userId')
-      .notNull()
-      .references(() => UserTable.id, { onDelete: 'cascade' })
-  },
-  (account) => [
-    primaryKey({
-      columns: [account.provider, account.providerAccountId]
+export const AccountTable = pgTable(ACCOUNT_ENTITY_KEY, {
+  ...baseFields,
+  accessToken: text(),
+  accessTokenExpiresAt: date(),
+  accountId: text().notNull(),
+  idToken: text(),
+  password: text(),
+  providerId: text().notNull(),
+  refreshToken: text(),
+  refreshTokenExpiresAt: date(),
+  scope: text(),
+  userId: text()
+    .notNull()
+    .references(() => UserTable.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
     })
-  ]
-)
+})
 
 export const accountRelations = relations(AccountTable, ({ one }) => ({
   user: one(UserTable, {
     fields: [AccountTable.userId],
-    references: [UserTable.id],
-    relationName: 'userAccounts'
+    references: [UserTable.id]
   })
 }))
-
-export type AccountModel = (typeof AccountTable)['$inferSelect']

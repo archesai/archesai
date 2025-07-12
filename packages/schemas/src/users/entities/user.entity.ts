@@ -1,5 +1,3 @@
-import type { Static } from '@sinclair/typebox'
-
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
@@ -37,10 +35,7 @@ export const UserEntitySchema = Type.Object(
   }
 )
 
-export class UserEntity
-  extends BaseEntity
-  implements Static<typeof UserEntitySchema>
-{
+export class UserEntity extends BaseEntity {
   public deactivated: boolean
   public email: string
   public emailVerified?: string

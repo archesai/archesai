@@ -13,7 +13,7 @@ export default defineConfig({
   dbCredentials: { url: nonPoolingUrl },
   dialect: 'postgresql',
   out: './migrations',
-  schema: './src/schema'
+  schema: './src/schema/index.ts'
   // verbose: true,
   // strict: true
 }) satisfies Config

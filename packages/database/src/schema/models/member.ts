@@ -6,10 +6,9 @@ import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'
 import { InvitationTable } from '#schema/models/invitations'
-import { organizationFk } from '#schema/models/organization'
+import { OrganizationTable } from '#schema/models/organization'
 import { UserTable } from '#schema/models/user'
 
-// TABLE
 export const MemberTable = pgTable(
   MEMBER_ENTITY_KEY,
   {
@@ -17,27 +16,31 @@ export const MemberTable = pgTable(
     invitationId: text('invitationId').references(() => InvitationTable.id, {
       onDelete: 'cascade'
     }),
+    organizationId: text()
+      .notNull()
+      .references(() => OrganizationTable.id, {
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
+      }),
     role: roleEnum().default('USER').notNull(),
     userId: text('userId')
       .notNull()
       .references(() => UserTable.id, { onDelete: 'cascade' })
   },
   (MemberTable) => [
-    organizationFk(MemberTable),
     uniqueIndex()
-      .on(MemberTable.userId, MemberTable.orgname)
+      .on(MemberTable.userId, MemberTable.organizationId)
       .where(sql`${MemberTable.userId} IS NOT NULL`)
   ]
 )
 
-// RELATIONS
 export const memberRelations = relations(MemberTable, ({ one }) => ({
+  organization: one(OrganizationTable, {
+    fields: [MemberTable.organizationId],
+    references: [OrganizationTable.id]
+  }),
   user: one(UserTable, {
     fields: [MemberTable.userId],
-    references: [UserTable.id],
-    relationName: 'userMemberships'
+    references: [UserTable.id]
   })
 }))
-
-// SCHEMA
-export type MemberModel = (typeof MemberTable)['$inferSelect']
