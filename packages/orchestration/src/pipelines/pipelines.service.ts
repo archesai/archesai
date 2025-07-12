@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { BaseInsertion, PipelineEntity } from '@archesai/domain'
+import type { BaseInsertion, PipelineEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 
 import type { PipelineRepository } from '#pipelines/pipeline.repository'
 import type { ToolsService } from '#tools/tools.service'

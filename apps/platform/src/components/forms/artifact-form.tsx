@@ -1,5 +1,3 @@
-'use client'
-
 import type { TSchema } from '@sinclair/typebox'
 
 import { useState } from 'react'
@@ -11,9 +9,9 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import {
   createArtifact,
   updateArtifact,
-  useGetOneArtifact
+  useGetOneArtifactSuspense
 } from '@archesai/client'
-import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -28,23 +26,16 @@ import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 export default function ContentForm({ artifactId }: { artifactId?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse, error } = useGetOneArtifact(
-    artifactId!,
-    {
-      query: {
-        enabled: !!artifactId
-      }
-    }
-  )
+  const { data: existingContentResponse, error } =
+    useGetOneArtifactSuspense(artifactId)
 
   if (error) {
     return <div>Content not found</div>
   }
-  const content = existingContentResponse!.data
+  const content = existingContentResponse.data
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: content.attributes.name,
       description: 'This is the name that will be used for this content.',
       label: 'Name',
@@ -52,13 +43,18 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
       props: {
         placeholder: 'Content name here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         maxLength: 128,
         minLength: 1
       })
     },
     {
-      component: Input,
       description:
         'Select the content you would like to run the tool on. You can select multiple content items.',
       label: 'Input',
@@ -129,11 +125,11 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
       entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!artifactId}
-      onSubmitCreate={async (createArtifactDto, mutateOptions) => {
-        await createArtifact(createArtifactDto, mutateOptions)
+      onSubmitCreate={async (createArtifactDto) => {
+        await createArtifact(createArtifactDto)
       }}
-      onSubmitUpdate={async (updateContentDto, mutateOptions) => {
-        await updateArtifact(artifactId!, updateContentDto, mutateOptions)
+      onSubmitUpdate={async (updateContentDto) => {
+        await updateArtifact(artifactId, updateContentDto)
       }}
       title='Configuration'
     />

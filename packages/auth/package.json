@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -21,12 +21,11 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
-    "@archesai/domain": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@faker-js/faker": "catalog:",
     "@fastify/cookie": "catalog:",
     "@fastify/passport": "catalog:",
     "@fastify/session": "catalog:",
-    "@sinclair/typebox": "catalog:",
     "fastify": "catalog:",
     "jsonwebtoken": "catalog:",
     "passport-jwt": "catalog:",

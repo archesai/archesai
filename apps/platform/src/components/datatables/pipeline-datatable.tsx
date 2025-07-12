@@ -1,19 +1,19 @@
-'use client'
+import { Link, useNavigate } from '@tanstack/react-router'
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import type { PipelineEntity } from '@archesai/schemas'
 
-import type { PipelineEntity } from '@archesai/domain'
-
-import { deletePipeline, useFindManyPipelines } from '@archesai/client'
-import { PIPELINE_ENTITY_KEY } from '@archesai/domain'
+import {
+  deletePipeline,
+  getFindManyPipelinesSuspenseQueryOptions
+} from '@archesai/client'
+import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { Workflow } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
 export default function PipelineDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<PipelineEntity>
@@ -25,7 +25,8 @@ export default function PipelineDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium text-primary'
-                  href={`/pipelines/single?pipelineId=${row.original.id}`}
+                  params={{ pipelineId: row.original.id }}
+                  to={`/pipelines/$pipelineId`}
                 >
                   {row.original.name}
                 </Link>
@@ -70,11 +71,11 @@ export default function PipelineDataTable() {
         await deletePipeline(id)
       }}
       entityType={PIPELINE_ENTITY_KEY}
-      handleSelect={(pipeline) => {
-        router.push(`/pipelines/single?pipelineId=${pipeline.id}`)
+      handleSelect={async (pipeline) => {
+        await navigate({ to: `/pipelines/single?pipelineId=${pipeline.id}` })
       }}
       icon={<Workflow />}
-      useFindMany={useFindManyPipelines}
+      useFindMany={getFindManyPipelinesSuspenseQueryOptions()}
     />
   )
 }

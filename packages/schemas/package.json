@@ -1,0 +1,30 @@
+{
+  "name": "@archesai/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*.ts"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint",
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
+  "prettier": "@archesai/prettier/base",
+  "dependencies": {
+    "@sinclair/typebox": "catalog:",
+    "tslib": "catalog:"
+  },
+  "devDependencies": {
+    "@archesai/typescript": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

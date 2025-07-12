@@ -10,7 +10,7 @@
       "path": "./tsconfig.spec.json"
     },
     {
-      "path": "../../packages/domain"
+      "path": "../../packages/schemas"
     },
     {
       "path": "../../tooling/eslint"

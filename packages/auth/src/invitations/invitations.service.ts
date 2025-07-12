@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { InvitationEntity, UserEntity } from '@archesai/domain'
+import type { InvitationEntity, UserEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { INVITATION_ENTITY_KEY } from '@archesai/domain'
+import { INVITATION_ENTITY_KEY } from '@archesai/schemas'
 
 import type { InvitationRepository } from '#invitations/invitation.repository'
 

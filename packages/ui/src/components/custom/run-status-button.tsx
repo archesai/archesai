@@ -1,9 +1,7 @@
-'use client'
-
 import { useState } from 'react'
 import { Ban, CheckCircle2, ClockArrowUpIcon, Loader2Icon } from 'lucide-react'
 
-import type { RunEntity } from '@archesai/domain'
+import type { RunEntity } from '@archesai/schemas'
 
 import { Button } from '#components/shadcn/button'
 import {

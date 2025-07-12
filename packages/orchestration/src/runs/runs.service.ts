@@ -1,8 +1,8 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { RunEntity, StatusType } from '@archesai/domain'
+import type { RunEntity, StatusType } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { RUN_ENTITY_KEY } from '@archesai/domain'
+import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
 import type { RunRepository } from '#runs/run.repository'
 

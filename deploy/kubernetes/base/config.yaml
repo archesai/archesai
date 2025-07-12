@@ -1,8 +1,8 @@
 server:
-  host: 'localhost'
+  host: 'api.archesai.test'
   cors:
     enabled: true
-    origins: 'https://localhost:3000,https://localhost:3001'
+    origins: 'https://api.archesai.test,https://platform.archesai.test'
   docs:
     enabled: true
     export: true

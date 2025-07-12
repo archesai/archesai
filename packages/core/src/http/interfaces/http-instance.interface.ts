@@ -7,7 +7,7 @@ import type {
   RawServerDefault
 } from 'fastify'
 
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 export type HttpInstance = FastifyInstance<
   RawServerDefault,

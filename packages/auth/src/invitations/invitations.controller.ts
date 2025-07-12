@@ -1,25 +1,23 @@
-import { Type } from '@sinclair/typebox'
-
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
-import type { InvitationEntity } from '@archesai/domain'
+import type { InvitationEntity } from '@archesai/schemas'
 
 import {
   ArchesApiForbiddenResponseSchema,
   ArchesApiNotFoundResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   BaseController,
   toTitleCase
 } from '@archesai/core'
 import {
+  CreateInvitationDtoSchema,
   INVITATION_ENTITY_KEY,
   InvitationEntitySchema,
-  LegacyRef
-} from '@archesai/domain'
+  LegacyRef,
+  UpdateInvitationDtoSchema
+} from '@archesai/schemas'
 
 import type { InvitationsService } from '#invitations/invitations.service'
-
-import { CreateInvitationRequestSchema } from '#invitations/dto/create-invitation.req.dto'
-import { UpdateInvitationRequestSchema } from '#invitations/dto/update-invitation.req.dto'
 
 /**
  * Controller for handling invitations.
@@ -33,8 +31,8 @@ export class InvitationsController
     super(
       INVITATION_ENTITY_KEY,
       InvitationEntitySchema,
-      CreateInvitationRequestSchema,
-      UpdateInvitationRequestSchema,
+      CreateInvitationDtoSchema,
+      UpdateInvitationDtoSchema,
       invitationsService
     )
     this.invitationsService = invitationsService
@@ -51,12 +49,13 @@ export class InvitationsController
     app.post(
       `/${INVITATION_ENTITY_KEY}/:id/accept`,
       {
+        preValidation: [AuthenticatedGuard()],
         schema: {
           description: 'Accept an invitation',
           operationId: 'acceptInvitation',
-          params: Type.Object({
-            id: Type.String()
-          }),
+          // params: Type.Object({
+          //   id: Type.String()
+          // }),
           response: {
             200: this.IndividualEntityResponseSchema,
             401: LegacyRef(ArchesApiUnauthorizedResponseSchema),

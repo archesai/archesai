@@ -1,58 +1,53 @@
-'use client'
-
-import { Moon, Sun } from 'lucide-react'
+import * as React from 'react'
 import { useTheme } from 'next-themes'
 
 import { Button } from '#components/shadcn/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '#components/shadcn/dropdown-menu'
-import { cn } from '#lib/utils'
+import { useMetaColor } from '#hooks/use-meta-color'
 
-export function ModeToggle({ h = 'h-8' }) {
-  const { setTheme } = useTheme()
+export function ModeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const { metaColor, setMetaColor } = useMetaColor()
+
+  React.useEffect(() => {
+    setMetaColor(metaColor)
+  }, [metaColor, setMetaColor])
+
+  const toggleTheme = React.useCallback(() => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  }, [resolvedTheme, setTheme])
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          className={cn(
-            h,
-            'border-sidebar-accent bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground'
-          )}
-          size='icon'
-          variant='outline'
-        >
-          <Sun className='h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
-          <Moon className='absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem
-          onClick={() => {
-            setTheme('light')
-          }}
-        >
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setTheme('dark')
-          }}
-        >
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setTheme('system')
-          }}
-        >
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      className='group/toggle extend-touch-target'
+      onClick={toggleTheme}
+      size='sm'
+      title='Toggle theme'
+      variant='ghost'
+    >
+      <svg
+        className='size-4.5'
+        fill='none'
+        height='24'
+        stroke='currentColor'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth='2'
+        viewBox='0 0 24 24'
+        width='24'
+        xmlns='http://www.w3.org/2000/svg'
+      >
+        <path
+          d='M0 0h24v24H0z'
+          fill='none'
+          stroke='none'
+        />
+        <path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0' />
+        <path d='M12 3l0 18' />
+        <path d='M12 9l4.65 -4.65' />
+        <path d='M12 14.3l7.37 -7.37' />
+        <path d='M12 19.6l8.85 -8.85' />
+      </svg>
+      <span className='sr-only'>Toggle theme</span>
+    </Button>
   )
 }

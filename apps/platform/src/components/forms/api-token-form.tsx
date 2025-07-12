@@ -1,17 +1,15 @@
-'use client'
-
 import { Type } from '@sinclair/typebox'
 
 import type { CreateApiTokenBody, UpdateApiTokenBody } from '@archesai/client'
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import {
   useCreateApiToken,
-  useGetOneApiToken,
+  useGetOneApiTokenSuspense,
   useUpdateApiToken
 } from '@archesai/client'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -26,23 +24,16 @@ import {
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
   const { mutateAsync: createApiToken } = useUpdateApiToken({})
   const { mutateAsync: updateApiToken } = useCreateApiToken({})
-  const { data: existingApiTokenResponse, error } = useGetOneApiToken(
-    apiTokenId!,
-    {
-      query: {
-        enabled: !!apiTokenId
-      }
-    }
-  )
+  const { data: existingApiTokenResponse, error } =
+    useGetOneApiTokenSuspense(apiTokenId)
 
   if (error) {
     return <div>API Token not found</div>
   }
-  const apiToken = existingApiTokenResponse!.data
+  const apiToken = existingApiTokenResponse.data
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: apiToken.attributes.name,
       description: 'This is the name that will be used for this API token.',
       label: 'Name',
@@ -50,13 +41,18 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       props: {
         placeholder: 'API Token name here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         maxLength: 128,
         minLength: 1
       })
     },
     {
-      component: Input,
       defaultValue: apiToken.attributes.role,
       description: 'This is the role that will be used for this API token.',
       label: 'RoleTypeEnum',
@@ -104,29 +100,23 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       entityKey={API_TOKEN_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!apiTokenId}
-      onSubmitCreate={async (createApiTokenDto, mutateOptions) => {
-        await createApiToken(
-          {
-            data: {
-              ...createApiTokenDto
-            },
-            id: apiTokenId!
+      onSubmitCreate={async (createApiTokenDto) => {
+        await createApiToken({
+          data: {
+            ...createApiTokenDto
           },
-          mutateOptions
-        )
+          id: apiTokenId!
+        })
       }}
-      onSubmitUpdate={async (updateApiTokenDto, mutateOptions) => {
-        await updateApiToken(
-          {
-            data: {
-              ...updateApiTokenDto,
-              name: apiToken.attributes.name,
-              orgname: apiToken.attributes.orgname,
-              role: apiToken.attributes.role
-            }
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (updateApiTokenDto) => {
+        await updateApiToken({
+          data: {
+            ...updateApiTokenDto,
+            name: apiToken.attributes.name,
+            orgname: apiToken.attributes.orgname,
+            role: apiToken.attributes.role
+          }
+        })
       }}
       title={
         !apiTokenId ? 'Create API Token' : (

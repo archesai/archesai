@@ -1,31 +1,29 @@
-FROM node:24-alpine3.19 AS base
+FROM node:24-alpine3.22 AS base
 
 RUN apk update && apk add --no-cache ffmpeg imagemagick graphicsmagick ghostscript
+RUN npm install -g pnpm@10.13.1
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@9.15.4
-
-WORKDIR /archesai
-ENV ARCHES_CONFIG_ROOT=/archesai/config
-
-FROM base AS dependencies
-COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
-COPY --chown=node:node ./apps/api/package.json ./apps/api/package.json
-COPY --chown=node:node ./apps/api/prisma/schema.prisma ./apps/api/prisma/migrations ./apps/api/prisma/
-RUN pnpm install --filter api --frozen-lockfile
-
-FROM dependencies AS development
-COPY --chown=node:node ./apps/api ./apps/api
 USER node
-CMD ["pnpm", "--filter", "api", "run", "dev"]
+WORKDIR /usr/src/app
 
-FROM dependencies AS build
-COPY --chown=node:node ./apps/api ./apps/api
-RUN pnpm run --filter api build
-RUN pnpm deploy --filter api --prod /prod
+ENV ARCHES_CONFIG_ROOT=/etc/archesai
+
+ENV PNPM_HOME="/usr/src/app/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+FROM base AS builder
+RUN pnpm install -g turbo
+COPY --chown=node:node . .
+RUN turbo prune @archesai/api --docker
+
+FROM base AS installer
+COPY --from=builder /usr/src/app/out/json/ .
+RUN pnpm install
+
+COPY --from=builder /usr/src/app/out/full/ .
+RUN pnpm build
 
 FROM base AS production
-COPY --from=build --chown=node:node /prod .
-USER node
-CMD ["node", "dist/main"]
+COPY --from=installer --chown=node:node /usr/src/app .
+CMD ["pnpm", "--filter", "@archesai/api", "run", "start"]
+

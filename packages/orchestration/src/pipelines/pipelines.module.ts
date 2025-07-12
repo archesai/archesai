@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { PipelineEntity } from '@archesai/domain'
+import type { PipelineEntity } from '@archesai/schemas'
 
 import {
   createModule,

@@ -1,26 +1,27 @@
-import type { EventBus, WebsocketsService } from '@archesai/core'
-import type { BaseInsertion, UserEntity } from '@archesai/domain'
+import type { WebsocketsService } from '@archesai/core'
+import type { BaseInsertion, UserEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
-import { USER_ENTITY_KEY, UserCreatedEvent } from '@archesai/domain'
+import { USER_ENTITY_KEY } from '@archesai/schemas'
 
+import type { OrganizationsService } from '#organizations/organizations.service'
 import type { UserRepository } from '#users/user.repository'
 
 /**
  * Service for handling users.
  */
 export class UsersService extends BaseService<UserEntity> {
-  private readonly eventBus: EventBus
+  private readonly organizationsService: OrganizationsService
   private readonly userRepository: UserRepository
   private readonly websocketsService: WebsocketsService
 
   constructor(
-    eventBus: EventBus,
+    organizationsService: OrganizationsService,
     userRepository: UserRepository,
     websocketsService: WebsocketsService
   ) {
     super(userRepository)
-    this.eventBus = eventBus
+    this.organizationsService = organizationsService
     this.userRepository = userRepository
     this.websocketsService = websocketsService
   }
@@ -46,6 +47,7 @@ export class UsersService extends BaseService<UserEntity> {
   }
 
   public override async create(value: BaseInsertion<UserEntity>) {
+    // Create user
     const user = await this.userRepository.create({
       ...value,
       orgname:
@@ -54,7 +56,19 @@ export class UsersService extends BaseService<UserEntity> {
           '-' +
           Math.random().toString(36).substring(2, 6)
     })
-    this.eventBus.emit('user.created', new UserCreatedEvent(user))
+
+    // Create organization
+    const usernamePrefix = user.email.split('@')[0]
+    if (!usernamePrefix) {
+      throw new Error('Could not extract username from email')
+    }
+    const orgname = usernamePrefix + user.id.slice(0, 5)
+    await this.organizationsService.create({
+      billingEmail: user.email,
+      credits: 0,
+      orgname,
+      plan: 'FREE'
+    })
     return user
   }
 

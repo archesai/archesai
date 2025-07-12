@@ -1,5 +1,3 @@
-'use client'
-
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -9,12 +7,16 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { UserEntity } from '@archesai/domain'
-
-import { logout, useFindManyMembers, useUpdateUser } from '@archesai/client'
+import {
+  useFindManyMembersSuspense,
+  useGetSessionSuspense,
+  useLogout,
+  useUpdateUser
+} from '@archesai/client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
+import { Button } from '#components/shadcn/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,39 +37,25 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '#components/shadcn/sidebar'
-import { Skeleton } from '#components/shadcn/skeleton'
-import { cn } from '#lib/utils'
 
 export function UserButton({
-  side = 'right',
   size = 'lg'
 }: {
   side?: 'bottom' | 'left' | 'right' | 'top'
   size?: 'default' | 'lg' | 'sm' | null | undefined
 }) {
-  const { isMobile } = useSidebar()
   const defaultOrgname = 'Arches Platform'
+  const { data: user } = useGetSessionSuspense()
+  const { mutateAsync: logout } = useLogout()
+  const { isMobile } = useSidebar()
 
-  const user = {} as UserEntity
-  const userId = ''
-
-  const { data: memberships } = useFindManyMembers(
-    {
-      filter: {
-        userId: {
-          equals: userId
-        }
-      }
-    },
-    {
-      fetch: {
-        credentials: 'include'
-      },
-      query: {
-        enabled: !!userId
-      }
-    }
-  )
+  const { data: memberships } = useFindManyMembersSuspense({
+    // filter: {
+    //   userId: {
+    //     equals: 'Arches Platform'
+    //   }
+    // }
+  })
 
   const { mutateAsync: updateUser } = useUpdateUser()
 
@@ -75,38 +63,49 @@ export function UserButton({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              className={cn(
-                'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground',
-                size === 'sm' ? 'p-0' : 'p-2'
-              )}
-              size={size}
-            >
-              <Avatar className='h-8 w-8 rounded-lg'>
-                <AvatarImage
-                  alt={user.name}
-                  src={user.image ?? ''}
-                />
-                <AvatarFallback className='rounded-xl'>
-                  <Skeleton className='h-9 w-9 bg-sidebar-accent' />
-                </AvatarFallback>
-              </Avatar>
-              {size !== 'sm' && (
-                <>
-                  <div className='grid flex-1 text-left text-sm leading-tight'>
-                    <span className='truncate font-semibold'>user.name</span>
-                    <span className='truncate text-xs'>user.email</span>
-                  </div>
-                  <ChevronsUpDown className='ml-auto size-4' />
-                </>
-              )}
-            </SidebarMenuButton>
+          <DropdownMenuTrigger
+            asChild
+            className='align-middle'
+          >
+            {size === 'sm' ?
+              <Button
+                className='h-8 w-8'
+                size='sm'
+                variant={'ghost'}
+              >
+                <Avatar>
+                  <AvatarImage
+                    alt={user.name}
+                    src={user.image}
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </Button>
+            : <SidebarMenuButton
+                className={
+                  'data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
+                }
+                size={size}
+              >
+                <Avatar>
+                  <AvatarImage
+                    alt={user.name}
+                    src={user.image}
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-semibold'>user.name</span>
+                  <span className='truncate text-xs'>user.email</span>
+                </div>
+                <ChevronsUpDown className='ml-auto size-4' />
+              </SidebarMenuButton>
+            }
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align='end'
-            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
-            side={isMobile ? 'bottom' : side}
+            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+            side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className='p-0 font-normal'>
@@ -114,12 +113,12 @@ export function UserButton({
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage
                     alt={user.name}
-                    src={user.image ?? ''}
+                    src={user.image}
                   />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
+                  <span className='truncate font-medium'>{user.name}</span>
                   <span className='truncate text-xs'>{user.email}</span>
                 </div>
               </div>
@@ -127,14 +126,9 @@ export function UserButton({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/profile/general'
-                >
-                  <BadgeCheck />
-                  Profile
-                  <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
-                </a>
+                <BadgeCheck />
+                Profile
+                <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -142,70 +136,53 @@ export function UserButton({
               <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {memberships ?
-                    memberships.data.map((membership) => (
-                      <DropdownMenuItem
-                        className='flex justify-between gap-2'
-                        key={membership.id}
-                        onClick={async () => {
-                          await updateUser(
-                            {
-                              data: {
-                                orgname: membership.attributes.orgname
-                              },
-                              id: ''
+                  {memberships.data.map((membership) => (
+                    <DropdownMenuItem
+                      className='flex justify-between gap-2'
+                      key={membership.id}
+                      onClick={async () => {
+                        await updateUser(
+                          {
+                            data: {
+                              orgname: membership.attributes.orgname
                             },
-                            {
-                              onSuccess: () => {
-                                toast('Organization changed', {
-                                  description: `You have
+                            id: ''
+                          },
+                          {
+                            onSuccess: () => {
+                              toast('Organization changed', {
+                                description: `You have
                               switched to ${membership.attributes.orgname}`
-                                })
-                              }
+                              })
                             }
-                          )
-                        }}
-                      >
-                        {membership.attributes.orgname}
-                        {defaultOrgname === membership.attributes.orgname && (
-                          <Badge>Current</Badge>
-                        )}
-                      </DropdownMenuItem>
-                    ))
-                  : null}
+                          }
+                        )
+                      }}
+                    >
+                      {membership.attributes.orgname}
+                      {defaultOrgname === membership.attributes.orgname && (
+                        <Badge>Current</Badge>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuItem>
-              <a
-                className='flex w-full'
-                href='/organization/general'
-              >
-                Settings
-              </a>
+              Settings
               <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/organization/billing'
-                >
-                  <Sparkles />
-                  Upgrade to Pro
-                </a>
+                <Sparkles />
+                Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <a
-                  className='flex w-full'
-                  href='/organization/billing'
-                >
-                  <CreditCard />
-                  Billing
-                </a>
+                <CreditCard />
+                Billing
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -4,7 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { createMock } from '@golevelup/ts-jest'
 import { Test } from '@nestjs/testing'
 
-import type { BaseInsertion, UserEntity } from '@archesai/domain'
+import type { BaseInsertion, UserEntity } from '@archesai/schemas'
 
 import { OrganizationsService } from '#organizations/organizations.service'
 import { createRandomUser } from '#users/factories/user.factory'

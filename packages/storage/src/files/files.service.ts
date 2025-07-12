@@ -3,9 +3,9 @@ import type {
   SearchQuery,
   WebsocketsService
 } from '@archesai/core'
-import type { BaseInsertion, FileEntity } from '@archesai/domain'
+import type { BaseInsertion, FileEntity } from '@archesai/schemas'
 
-import { FILE_ENTITY_KEY } from '@archesai/domain'
+import { FILE_ENTITY_KEY } from '@archesai/schemas'
 
 import type { StorageService } from '#storage/storage.service'
 

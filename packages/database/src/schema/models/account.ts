@@ -1,7 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core'
 
-import { ACCOUNT_ENTITY_KEY } from '@archesai/domain'
+import { ACCOUNT_ENTITY_KEY } from '@archesai/schemas'
 
 import { authType, providerType } from '#schema/enums'
 import { UserTable } from '#schema/models/user'

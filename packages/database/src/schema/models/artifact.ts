@@ -3,7 +3,7 @@ import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { integer, pgTable, primaryKey, text, vector } from 'drizzle-orm/pg-core'
 
-import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
 import { _LabelsToContent } from '#schema/models/label'

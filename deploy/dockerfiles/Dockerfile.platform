@@ -1,31 +1,28 @@
-FROM node:24-alpine3.19 AS base
+FROM node:24-alpine3.22 AS base
 
-# API ONLY INVISIBLE
+RUN apk update
+RUN npm install -g pnpm@10.13.1
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@10.12.4
-
-WORKDIR /archesai
-ENV ARCHES_CONFIG_ROOT=/archesai/config
-
-FROM base AS dependencies
-COPY --chown=node:node pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
-COPY --chown=node:node ./apps/platform/package.json ./apps/platform/package.json
-# API ONLY INVISIBLE
-RUN pnpm install --filter platform --frozen-lockfile
-
-FROM dependencies AS development
-COPY --chown=node:node ./apps/platform ./apps/platform
 USER node
-CMD ["pnpm", "--filter", "platform", "run", "dev"]
+WORKDIR /usr/src/app
 
-FROM dependencies AS build
-COPY --chown=node:node ./apps/platform ./apps/platform
-RUN pnpm run --filter platform build
-RUN pnpm deploy --filter platform --prod /prod
+ENV ARCHES_CONFIG_ROOT=/etc/archesai
+
+ENV PNPM_HOME="/usr/src/app/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+FROM base AS builder
+RUN pnpm install -g turbo
+COPY --chown=node:node . .
+RUN turbo prune @archesai/platform --docker
+
+FROM base AS installer
+COPY --from=builder /usr/src/app/out/json/ .
+RUN pnpm install
+
+COPY --from=builder /usr/src/app/out/full/ .
+RUN pnpm build
 
 FROM base AS production
-COPY --from=build --chown=node:node /prod .
-USER node
-CMD ["npm", "start"]
+COPY --from=installer --chown=node:node /usr/src/app .
+CMD ["pnpm", "--filter", "@archesai/platform", "run", "start"]

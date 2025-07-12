@@ -3,7 +3,7 @@ import type {
   AccountEntity,
   BaseInsertion,
   ProviderType
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
 

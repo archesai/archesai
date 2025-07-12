@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, primaryKey, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
-import { LABEL_ENTITY_KEY } from '@archesai/domain'
+import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 
 import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'

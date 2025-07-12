@@ -1,7 +1,6 @@
 import type { ConfigService } from '@archesai/core'
+import type { CreatePortalDto, PortalDto } from '@archesai/schemas'
 
-import type { CreatePortalRequest } from '#portal/dto/create-portal.req.dto'
-import type { PortalResource } from '#portal/dto/portal.res.dto'
 import type { StripeService } from '#stripe/stripe.service'
 
 /**
@@ -17,8 +16,8 @@ export class PortalService {
   }
 
   public async create(
-    createPortalRequest: CreatePortalRequest
-  ): Promise<PortalResource> {
+    createPortalRequest: CreatePortalDto
+  ): Promise<PortalDto> {
     return this.stripeService.stripe.billingPortal.sessions.create({
       customer: createPortalRequest.organizationId,
       return_url: `${this.configService.get('platform.host')}/organization/billing`

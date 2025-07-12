@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 
-import type { MemberEntity } from '@archesai/domain'
+import type { MemberEntity } from '@archesai/schemas'
 
-import { MEMBER_ENTITY_KEY, RoleTypes } from '@archesai/domain'
+import { MEMBER_ENTITY_KEY, RoleTypes } from '@archesai/schemas'
 
 export function createRandomMember(
   overrides?: Partial<MemberEntity>

@@ -1,11 +1,9 @@
-'use client'
+import { useNavigate } from '@tanstack/react-router'
 
-import { useRouter } from 'next/navigation'
+import type { ApiTokenEntity } from '@archesai/schemas'
 
-import type { ApiTokenEntity } from '@archesai/domain'
-
-import { useFindManyApiTokens } from '@archesai/client'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/domain'
+import { getFindManyApiTokensSuspenseQueryOptions } from '@archesai/client'
+import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 import { User } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -14,7 +12,7 @@ import { Badge } from '@archesai/ui/components/shadcn/badge'
 import APITokenForm from '#components/forms/api-token-form'
 
 export default function ApiTokenDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<ApiTokenEntity>
@@ -67,9 +65,9 @@ export default function ApiTokenDataTable() {
           />
         </div>
       )}
-      handleSelect={(apiToken) => {
+      handleSelect={async (apiToken) => {
         console.error('handleSelect', apiToken)
-        router.push(`/organization/api-tokens`)
+        await navigate({ to: `/organization/api-tokens` })
       }}
       icon={
         <User
@@ -77,7 +75,7 @@ export default function ApiTokenDataTable() {
           size={24}
         />
       }
-      useFindMany={useFindManyApiTokens}
+      useFindMany={getFindManyApiTokensSuspenseQueryOptions()}
     />
   )
 }

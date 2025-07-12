@@ -1,12 +1,8 @@
-'use client'
-
 import type { Table as ReactTable } from '@tanstack/react-table'
 
 import { flexRender } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/domain'
-
-import type { DataTableContainerProps } from '#components/datatable/data-table'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { Skeleton } from '#components/shadcn/skeleton'
 import {
@@ -18,40 +14,25 @@ import {
   TableRow
 } from '#components/shadcn/table'
 
-export interface TableViewProps<TEntity extends BaseEntity>
-  extends Pick<
-    DataTableContainerProps<TEntity>,
-    | 'columns'
-    | 'data'
-    | 'deleteItem'
-    | 'entityType'
-    | 'isFetched'
-    | 'selectedItems'
-  > {
+export interface TableViewProps<TEntity extends BaseEntity> {
+  isFetched: boolean
   table: ReactTable<TEntity>
 }
 
 export function TableView<TEntity extends BaseEntity>({
-  columns,
-  entityType,
   isFetched,
   table
 }: TableViewProps<TEntity>) {
+  const columns = table.getAllColumns()
+  const entityType = table.options.meta?.entityType ?? 'Entity'
   return (
     <div className='rounded-lg border shadow-xs'>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              className='bg-background/40'
-              key={headerGroup.id}
-            >
-              {headerGroup.headers.map((header, i: number) => (
-                <TableHead
-                  className={'text-base' + (i === 0 ? ' w-4' : '')}
-                  colSpan={header.colSpan}
-                  key={header.id}
-                >
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
                   {header.isPlaceholder ? null : (
                     flexRender(
                       header.column.columnDef.header,
@@ -67,13 +48,7 @@ export function TableView<TEntity extends BaseEntity>({
           {!isFetched ?
             <>
               {Array.from({ length: 10 }).map((_, index) => (
-                <TableRow
-                  className={
-                    'transition-all hover:bg-muted' +
-                    (index % 2 ? ' bg-background/40' : ' ')
-                  }
-                  key={index}
-                >
+                <TableRow key={index}>
                   {columns.map((_column, i) => (
                     <TableCell
                       className='h-12 p-2'
@@ -89,20 +64,13 @@ export function TableView<TEntity extends BaseEntity>({
               ))}
             </>
           : table.getRowModel().rows.length ?
-            table.getRowModel().rows.map((row, index: number) => (
+            table.getRowModel().rows.map((row) => (
               <TableRow
-                className={
-                  'transition-all hover:bg-muted' +
-                  (index % 2 ? ' bg-background/40' : ' ')
-                }
                 data-state={row.getIsSelected() && 'selected'}
                 key={row.id}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    className='p-2'
-                    key={cell.id}
-                  >
+                  <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -113,7 +81,7 @@ export function TableView<TEntity extends BaseEntity>({
                 className='h-24 text-center'
                 colSpan={columns.length + 2}
               >
-                No {entityType}s found
+                No {entityType} found
               </TableCell>
             </TableRow>
           }

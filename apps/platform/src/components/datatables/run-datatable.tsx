@@ -1,12 +1,12 @@
-'use client'
+import { Link, useNavigate } from '@tanstack/react-router'
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import type { RunEntity } from '@archesai/schemas'
 
-import type { RunEntity } from '@archesai/domain'
-
-import { deleteRun, useFindManyRuns } from '@archesai/client'
-import { RUN_ENTITY_KEY } from '@archesai/domain'
+import {
+  deleteRun,
+  getFindManyRunsSuspenseQueryOptions
+} from '@archesai/client'
+import { RUN_ENTITY_KEY } from '@archesai/schemas'
 import { PackageCheck, Workflow } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
@@ -14,7 +14,7 @@ import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Button } from '@archesai/ui/components/shadcn/button'
 
 export default function RunDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<RunEntity>
@@ -26,7 +26,10 @@ export default function RunDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='max-w-[200px] shrink truncate font-medium'
-                  href={`/run/single?runId=${row.original.id}`}
+                  params={{
+                    runId: row.original.id
+                  }}
+                  to={`/runs/$runId`}
                 >
                   {row.original.name}
                 </Link>
@@ -102,11 +105,11 @@ export default function RunDataTable() {
         await deleteRun(id)
       }}
       entityType={RUN_ENTITY_KEY}
-      handleSelect={(run) => {
-        router.push(`/run/single?runId=${run.id}`)
+      handleSelect={async (run) => {
+        await navigate({ to: `/run/single?runId=${run.id}` })
       }}
       icon={<PackageCheck />}
-      useFindMany={useFindManyRuns}
+      useFindMany={getFindManyRunsSuspenseQueryOptions()}
     />
   )
 }

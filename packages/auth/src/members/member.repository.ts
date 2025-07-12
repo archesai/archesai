@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { MemberTable } from '@archesai/database'
-import { MemberEntity } from '@archesai/domain'
+import { MemberEntity } from '@archesai/schemas'
 
 /**
  * Repository for interacting with the member entity.

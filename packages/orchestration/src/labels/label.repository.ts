@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { LabelTable } from '@archesai/database'
-import { LabelEntity } from '@archesai/domain'
+import { LabelEntity } from '@archesai/schemas'
 
 /**
  * Repository for labels.

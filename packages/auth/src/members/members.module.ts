@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { MemberEntity } from '@archesai/domain'
+import type { MemberEntity } from '@archesai/schemas'
 
 import {
   createModule,

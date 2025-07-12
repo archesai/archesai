@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
-import { USER_ENTITY_KEY } from '@archesai/domain'
+import { USER_ENTITY_KEY } from '@archesai/schemas'
 
 export function createRandomUser(overrides?: Partial<UserEntity>): UserEntity {
   return {

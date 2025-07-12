@@ -1,7 +1,7 @@
 // import path from 'node:path'
 // import type { Logger } from '@archesai/core'
 // import type { RunpodService } from '@archesai/intelligence'
-// import type { ArtifactEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/schemas'
 // import type { StorageService } from '@archesai/storage'
 
 // import type { ArtifactsService } from '#artifacts/artifacts.service'

@@ -1,13 +1,15 @@
 import type { Controller } from '@archesai/core'
-import type { LabelEntity } from '@archesai/domain'
+import type { LabelEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { LABEL_ENTITY_KEY, LabelEntitySchema } from '@archesai/domain'
+import {
+  CreateLabelDtoSchema,
+  LABEL_ENTITY_KEY,
+  LabelEntitySchema,
+  UpdateLabelDtoSchema
+} from '@archesai/schemas'
 
 import type { LabelsService } from '#labels/labels.service'
-
-import { CreateLabelRequestSchema } from '#labels/dto/create-label.req.dto'
-import { UpdateLabelRequestSchema } from '#labels/dto/update-label.req.dto'
 
 /**
  * Controller for labels.
@@ -20,8 +22,8 @@ export class LabelsController
     super(
       LABEL_ENTITY_KEY,
       LabelEntitySchema,
-      CreateLabelRequestSchema,
-      UpdateLabelRequestSchema,
+      CreateLabelDtoSchema,
+      UpdateLabelDtoSchema,
       labelsService
     )
   }

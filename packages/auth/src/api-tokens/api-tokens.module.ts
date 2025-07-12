@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { ApiTokenEntity } from '@archesai/domain'
+import type { ApiTokenEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,

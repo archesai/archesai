@@ -6492,7 +6492,61 @@ export type LoginBody = {
   password: string
 }
 
-export type GetSession200 = { [key: string]: unknown }
+/**
+ * The user entity
+ */
+export type Login201 = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The name of the item */
+  name: string
+  /** The slug of the item */
+  slug: string
+  /** The type of the item */
+  type: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified?: string
+  /** The user's avatar image URL */
+  image?: string
+  /** The user's organization name */
+  orgname: string
+}
+
+/**
+ * The user entity
+ */
+export type GetSession200 = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The name of the item */
+  name: string
+  /** The slug of the item */
+  slug: string
+  /** The type of the item */
+  type: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified?: string
+  /** The user's avatar image URL */
+  image?: string
+  /** The user's organization name */
+  orgname: string
+}
 
 export type ConfirmPasswordResetBody = {
   /** The new password */

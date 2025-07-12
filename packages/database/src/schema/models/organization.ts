@@ -2,7 +2,7 @@ import type { PgColumn } from 'drizzle-orm/pg-core'
 
 import { foreignKey, integer, pgTable, text } from 'drizzle-orm/pg-core'
 
-import { ORGANIZATION_ENTITY_KEY } from '@archesai/domain'
+import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
 
 import { planType } from '#schema/enums'
 import { baseFields } from '#schema/models/base'

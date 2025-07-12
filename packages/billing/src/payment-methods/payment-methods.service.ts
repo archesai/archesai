@@ -3,7 +3,7 @@ import type {
   SearchQuery,
   WebsocketsService
 } from '@archesai/core'
-import type { PaymentMethodEntity } from '@archesai/domain'
+import type { PaymentMethodEntity } from '@archesai/schemas'
 
 import { BadRequestException, NotFoundException } from '@archesai/core'
 

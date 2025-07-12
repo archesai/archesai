@@ -29,29 +29,39 @@ export default defineConfig({
       //     }
       //   }
       // },
-      target: 'https://localhost:3001/docs/openapi.json'
+      target: 'https://api.archesai.test/docs/openapi.json'
     },
     output: {
       override: {
         fetch: {
           includeHttpResponseReturnType: false
+        },
+        mutator: {
+          path: './fetcher.ts',
+          name: 'customFetch'
+        },
+        query: {
+          useQuery: true,
+          useInfinite: false,
+          useSuspenseQuery: true,
+          useSuspenseInfiniteQuery: false
         }
       },
-      target: './src/generated/orval.ts',
+      // schemas: 'src/generated/models',
+      target: './generated/orval.ts',
       client: 'react-query',
       httpClient: 'fetch',
-      mode: 'split',
-      // urlEncodeParameters: true,
-      // allParamsOptional: true,
-      baseUrl: {
-        getBaseUrlFromSpecification: true
-      }
+      mode: 'tags-split',
+      urlEncodeParameters: true,
+      allParamsOptional: true,
+      workspace: './src'
       // propertySortOrder: 'Alphabetical'
     },
     hooks: {
       afterAllFilesWrite: [
-        'prettier --write',
-        `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`
+        'prettier --write'
+        // `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`,
+        // `sed -i "s|'../fetcher'|'#fetcher'|g" ./src/generated/orval.ts`
       ]
     }
   }

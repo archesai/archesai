@@ -1,5 +1,4 @@
-'use client'
-
+import { useRouter } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
@@ -11,6 +10,7 @@ import {
 } from '#components/shadcn/collapsible'
 import {
   SidebarGroup,
+  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
@@ -19,104 +19,79 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem
 } from '#components/shadcn/sidebar'
-import { cn } from '#lib/utils'
+import { useLinkComponent } from '#hooks/use-link'
 
-export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
+export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
+  const router = useRouter()
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
-
+  const Link = useLinkComponent()
   return (
     <>
-      {sections.map((section, i) => {
+      {sections.map((section) => {
         return (
-          <SidebarGroup key={i}>
+          <SidebarGroup key={section}>
             <SidebarGroupLabel>{section}</SidebarGroupLabel>
-            <SidebarMenu>
-              {siteRoutes
-                .filter((rootRoute) => rootRoute.section === section)
-                .map((rootRoute, i) => {
-                  const isActive = rootRoute.children?.some((route) =>
-                    pathname.startsWith(route.href)
-                  )
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {siteRoutes
+                  .filter((rootRoute) => rootRoute.section === section)
+                  .map((rootRoute, i) => {
+                    const isActive = rootRoute.children?.some((route) =>
+                      router.state.location.pathname.startsWith(route.href)
+                    )
+                    const children = rootRoute.children ?? []
 
-                  if (!rootRoute.children?.length) {
-                    return (
-                      <SidebarMenuItem key={i}>
-                        <a
-                          className='flex'
-                          href={rootRoute.href}
-                        >
+                    if (!children.length) {
+                      return (
+                        <SidebarMenuItem key={i}>
                           <SidebarMenuButton
-                            className={
-                              pathname === rootRoute.href ?
-                                'bg-sidebar-accent'
-                              : ''
-                            }
+                            // isActive={item.isActive}
+                            asChild
                             tooltip={rootRoute.title}
                           >
-                            <rootRoute.Icon
-                              className={cn(
-                                pathname == rootRoute.href ?
-                                  'text-sidebar-foreground'
-                                : ''
-                              )}
-                            />
-
-                            <span>{rootRoute.title}</span>
+                            <Link href={rootRoute.href}>
+                              <rootRoute.Icon />
+                              <span>{rootRoute.title}</span>
+                            </Link>
                           </SidebarMenuButton>
-                        </a>
-                      </SidebarMenuItem>
+                        </SidebarMenuItem>
+                      )
+                    }
+
+                    return (
+                      <Collapsible
+                        asChild
+                        className='group/collapsible'
+                        defaultOpen={isActive ?? false}
+                        key={rootRoute.title}
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={rootRoute.title}>
+                              <rootRoute.Icon />
+                              <span>{rootRoute.title}</span>
+                              <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {children.map((route) => (
+                                <SidebarMenuSubItem key={route.title}>
+                                  <SidebarMenuSubButton asChild>
+                                    <Link href={route.href}>
+                                      <span>{route.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
                     )
-                  }
-
-                  return (
-                    <Collapsible
-                      asChild
-                      className='group/collapsible'
-                      defaultOpen={isActive ?? false}
-                      key={rootRoute.title}
-                    >
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={rootRoute.title}>
-                            <rootRoute.Icon
-                              className={cn(
-                                pathname == rootRoute.href ?
-                                  'text-sidebar-foreground'
-                                : ''
-                              )}
-                            />
-                            <span>{rootRoute.title}</span>
-                            <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {rootRoute.children.map((route) => (
-                              <SidebarMenuSubItem key={route.title}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  className={
-                                    pathname === route.href ?
-                                      'bg-sidebar-accent'
-                                    : ''
-                                  }
-                                >
-                                  <a
-                                    className='flex'
-                                    href={route.href}
-                                  >
-                                    <span>{route.title}</span>
-                                  </a>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  )
-                })}
-            </SidebarMenu>
+                  })}
+              </SidebarMenu>
+            </SidebarGroupContent>
           </SidebarGroup>
         )
       })}

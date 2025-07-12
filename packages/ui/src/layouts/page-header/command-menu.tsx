@@ -1,5 +1,3 @@
-'use client'
-
 import { useCallback, useEffect, useState } from 'react'
 import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -68,7 +66,7 @@ export function CommandMenu({
     <div>
       <Button
         className={cn(
-          'h-8 w-full justify-between gap-2 rounded-lg border-sidebar-border bg-sidebar text-base font-normal text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:text-sm'
+          'h-8 w-full justify-between gap-2 rounded-lg border-sidebar-border bg-sidebar text-sm font-normal text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground md:text-sm'
         )}
         onClick={() => {
           setOpen(true)

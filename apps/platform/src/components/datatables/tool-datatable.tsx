@@ -1,19 +1,19 @@
-'use client'
+import { Link, useNavigate } from '@tanstack/react-router'
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import type { ToolEntity } from '@archesai/schemas'
 
-import type { ToolEntity } from '@archesai/domain'
-
-import { deleteTool, useFindManyTools } from '@archesai/client'
-import { TOOL_ENTITY_KEY } from '@archesai/domain'
+import {
+  deleteTool,
+  getFindManyToolsSuspenseQueryOptions
+} from '@archesai/client'
+import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { PackageCheck } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
 export default function ToolDataTable() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   return (
     <DataTable<ToolEntity>
@@ -25,7 +25,10 @@ export default function ToolDataTable() {
               <div className='flex gap-2'>
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  href={`/playground?selectedTool=${JSON.stringify(row.original)}`}
+                  search={{
+                    selectedTool: JSON.stringify(row.original)
+                  }}
+                  to={`/playground`}
                 >
                   {row.original.name}
                 </Link>
@@ -78,11 +81,11 @@ export default function ToolDataTable() {
         await deleteTool(id)
       }}
       entityType={TOOL_ENTITY_KEY}
-      handleSelect={(tool) => {
-        router.push(`/tool/single?toolId=${tool.id}`)
+      handleSelect={async (tool) => {
+        await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
       icon={<PackageCheck />}
-      useFindMany={useFindManyTools}
+      useFindMany={getFindManyToolsSuspenseQueryOptions()}
     />
   )
 }

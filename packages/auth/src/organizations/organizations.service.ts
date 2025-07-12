@@ -3,13 +3,13 @@ import type {
   BaseInsertion,
   OrganizationEntity,
   PlanType
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import { BaseService, ForbiddenException } from '@archesai/core'
 import {
   ORGANIZATION_ENTITY_KEY,
   OrganizationCreatedEvent
-} from '@archesai/domain'
+} from '@archesai/schemas'
 
 import type { OrganizationRepository } from '#organizations/organization.repository'
 
@@ -72,6 +72,8 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
     const billingEnabled = this.configService.get('billing.enabled')
     const organization = await this.organizationRepository.create({
       ...value,
+      billingEmail: value.billingEmail,
+      orgname: value.orgname,
       plan: billingEnabled ? 'FREE' : 'UNLIMITED',
       type: ORGANIZATION_ENTITY_KEY
     })

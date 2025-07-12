@@ -1,9 +1,12 @@
+import type {
+  CreatePasswordResetDto,
+  UpdatePasswordResetDto
+} from '@archesai/schemas'
+
 import { getPasswordResetHtml, Logger } from '@archesai/core'
 
 import type { AccountsService } from '#accounts/accounts.service'
 import type { HashingService } from '#hashing/hashing.service'
-import type { CreatePasswordResetRequest } from '#password-reset/dto/create-password-reset.req.dto'
-import type { UpdatePasswordResetRequest } from '#password-reset/dto/update-password-reset.req.dto'
 import type { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 
 /**
@@ -26,11 +29,11 @@ export class PasswordResetService {
   }
 
   public async confirm(
-    updatePasswordResetRequest: UpdatePasswordResetRequest
+    updatePasswordResetDto: UpdatePasswordResetDto
   ): Promise<void> {
     const { userId } = await this.verificationTokensService.verify(
       'PASSWORD_RESET',
-      updatePasswordResetRequest.token
+      updatePasswordResetDto.token
     )
 
     const account =
@@ -41,21 +44,21 @@ export class PasswordResetService {
 
     await this.accountsService.update(account.id, {
       hashed_password: await this.hashingService.hashPassword(
-        updatePasswordResetRequest.newPassword
+        updatePasswordResetDto.newPassword
       )
     })
   }
 
   public async request(
-    createPasswordResetRequest: CreatePasswordResetRequest
+    createPasswordResetDto: CreatePasswordResetDto
   ): Promise<void> {
     this.logger.debug('requesting password reset', {
-      createPasswordResetRequest
+      createPasswordResetDto
     })
     const { userId } =
       await this.accountsService.findByProviderAndProviderAccountId(
         'LOCAL',
-        createPasswordResetRequest.email
+        createPasswordResetDto.email
       )
     this.logger.debug('found userId', { userId })
 
@@ -67,7 +70,7 @@ export class PasswordResetService {
     this.logger.debug('created token, sending email', { token })
     return this.verificationTokensService.sendNotification(
       'PASSWORD_RESET',
-      createPasswordResetRequest.email,
+      createPasswordResetDto.email,
       token,
       'Reset Your Password',
       getPasswordResetHtml

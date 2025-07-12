@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import type { BaseRepository, SearchQuery } from '@archesai/core'
 
 import { NotFoundException } from '@archesai/core'
-import { generateSlug, PaymentMethodEntity } from '@archesai/domain'
+import { generateSlug, PaymentMethodEntity } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 

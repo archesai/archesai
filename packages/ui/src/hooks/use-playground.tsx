@@ -1,49 +1,62 @@
-'use client'
+// import { useCallback } from 'react'
+// import { useRouter, useSearch } from '@tanstack/react-router'
 
-import { useCallback } from 'react'
-import { parseAsArrayOf, parseAsJson, parseAsString, useQueryState } from 'nuqs'
+// import type { ArtifactEntity, ToolEntity } from '@archesai/schemas'
 
-import type { ArtifactEntity, ToolEntity } from '@archesai/domain'
+// export const usePlayground = () => {
+//   const router = useRouter()
+//   const search = useSearch({ strict: false })
 
-export const usePlayground = () => {
-  const [selectedTool, setSelectedTool] = useQueryState(
-    'selectedTool',
-    parseAsJson<ToolEntity>((tool) => tool as ToolEntity).withOptions({
-      clearOnDefault: true
-    })
-  )
-  const [selectedContent, setSelectedContent] = useQueryState(
-    'selectedContent',
-    parseAsArrayOf(
-      parseAsJson<ArtifactEntity>((tool) => tool as ArtifactEntity)
-    )
-      .withOptions({
-        clearOnDefault: true
-      })
-      .withDefault([])
-  )
-  const [selectedRunId, setSelectedRunId] = useQueryState(
-    'selectedRunId',
-    parseAsString
-      .withOptions({
-        clearOnDefault: true
-      })
-      .withDefault('')
-  )
+//   const selectedTool = search.selectedTool as ToolEntity | undefined
+//   const selectedContent = search.selectedContent as ArtifactEntity[] | undefined
+//   const selectedRunId = search.selectedRunId as string | undefined
 
-  const clearParams = useCallback(async () => {
-    await setSelectedContent(null)
-    await setSelectedRunId(null)
-    await setSelectedTool(null)
-  }, [setSelectedContent, setSelectedRunId, setSelectedTool])
+//   const setSelectedTool = useCallback(
+//     (tool: null | ToolEntity) => {
+//       router.setSearch((prev) => ({
+//         ...prev,
+//         selectedTool: tool ?? undefined
+//       }))
+//     },
+//     [router]
+//   )
 
-  return {
-    clearParams,
-    selectedContent,
-    selectedRunId,
-    selectedTool,
-    setSelectedContent,
-    setSelectedRunId,
-    setSelectedTool
-  }
-}
+//   const setSelectedContent = useCallback(
+//     (content: ArtifactEntity[] | null) => {
+//       router.setSearch((prev) => ({
+//         ...prev,
+//         selectedContent: content ?? undefined
+//       }))
+//     },
+//     [router]
+//   )
+
+//   const setSelectedRunId = useCallback(
+//     (runId: null | string) => {
+//       router.setSearch((prev) => ({
+//         ...prev,
+//         selectedRunId: runId ?? undefined
+//       }))
+//     },
+//     [router]
+//   )
+
+//   const clearParams = useCallback(() => {
+//     router.setSearch((prev) => ({
+//       ...prev,
+//       selectedContent: undefined,
+//       selectedRunId: undefined,
+//       selectedTool: undefined
+//     }))
+//   }, [router])
+
+//   return {
+//     clearParams,
+//     selectedContent: selectedContent ?? [],
+//     selectedRunId: selectedRunId ?? '',
+//     selectedTool,
+//     setSelectedContent,
+//     setSelectedRunId,
+//     setSelectedTool
+//   }
+// }

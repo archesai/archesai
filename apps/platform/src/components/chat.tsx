@@ -1,10 +1,12 @@
-'use client'
-
 import type { ChangeEvent, KeyboardEvent } from 'react'
 
 import { useEffect, useRef, useState } from 'react'
 
-import { createLabel, createRun, useFindManyArtifacts } from '@archesai/client'
+import {
+  createLabel,
+  createRun,
+  useFindManyArtifactsSuspense
+} from '@archesai/client'
 import { RefreshCcw } from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { ScrollArea } from '@archesai/ui/components/shadcn/scroll-area'
@@ -14,17 +16,16 @@ import { cn } from '@archesai/ui/lib/utils'
 
 export default function Chat() {
   const [labelId, setLabelId] = useState<string>('')
-  const defaultOrgname = 'Arches Platform'
   const [message, setMessage] = useState<string>('')
 
-  const { data } = useFindManyArtifacts({
-    filter: {
-      orgname: {
-        equals: defaultOrgname
-      }
-    }
+  const { data } = useFindManyArtifactsSuspense({
+    // filter: {
+    //   orgname: {
+    //     equals: defaultOrgname
+    //   }
+    // }
   })
-  const messages = data?.data
+  const messages = data.data
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -134,7 +135,7 @@ export default function Chat() {
         <ScrollArea className='flex-1 p-4'>
           <div className='flex flex-col gap-4 px-8 xl:px-52'>
             {messages
-              ?.slice()
+              .slice()
               .reverse()
               .map((msg) => (
                 <div

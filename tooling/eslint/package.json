@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
@@ -17,7 +17,6 @@
   "dependencies": {
     "@eslint/compat": "catalog:",
     "@eslint/js": "catalog:",
-    "@next/eslint-plugin-next": "catalog:",
     "eslint-config-prettier": "catalog:",
     "eslint-import-resolver-typescript": "catalog:",
     "eslint-plugin-import": "catalog:",

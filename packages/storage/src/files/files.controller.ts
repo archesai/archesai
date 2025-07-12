@@ -1,14 +1,14 @@
-import { Type } from '@sinclair/typebox'
-
 import type { BaseService, Controller } from '@archesai/core'
-import type { FileEntity } from '@archesai/domain'
+import type { FileEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { FILE_ENTITY_KEY, FileEntitySchema } from '@archesai/domain'
+import {
+  CreateSignedUrlDtoSchema,
+  FILE_ENTITY_KEY,
+  FileEntitySchema
+} from '@archesai/schemas'
 
 import type { FilesService } from '#files/files.service'
-
-import { CreateSignedUrlRequestSchema } from '#storage/dto/create-signed-url.req.dto'
 
 /**
  * Controller for files.
@@ -21,8 +21,8 @@ export class FilesController
     super(
       FILE_ENTITY_KEY,
       FileEntitySchema,
-      CreateSignedUrlRequestSchema,
-      Type.Object({}),
+      CreateSignedUrlDtoSchema,
+      CreateSignedUrlDtoSchema,
       filesService as unknown as BaseService<FileEntity>
     )
   }

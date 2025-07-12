@@ -1,18 +1,16 @@
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type { UpdateEmailVerificationDto } from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
   ArchesApiNotFoundResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
+import { LegacyRef, UpdateEmailVerificationDtoSchema } from '@archesai/schemas'
 
-import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
 import type { EmailVerificationService } from '#email-verification/email-verification.service'
-
-import { AuthenticatedGuard } from '#auth/guards/authenticated.guard'
-import { UpdateEmailVerificationRequestSchema } from '#email-verification/dto/update-email-verification-request.dto'
 
 /**
  * Controller for managing email verifications.
@@ -26,7 +24,7 @@ export class EmailVerificationController implements Controller {
   }
 
   public async confirm(
-    request: ArchesApiRequest & { body: UpdateEmailVerificationRequest }
+    request: ArchesApiRequest & { body: UpdateEmailVerificationDto }
   ): Promise<void> {
     await this.emailVerificationService.confirm(request.body)
   }
@@ -36,7 +34,7 @@ export class EmailVerificationController implements Controller {
       `/auth/email-verification/confirm`,
       {
         schema: {
-          body: UpdateEmailVerificationRequestSchema,
+          body: UpdateEmailVerificationDtoSchema,
           description: 'This endpoint will confirm your e-mail with a token',
           operationId: 'confirmEmailVerification',
           response: {

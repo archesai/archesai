@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "baseUrl": "."
-  },
   "extends": "../../tooling/typescript/src/base.json",
   "files": [],
   "include": [],
@@ -16,7 +13,7 @@
       "path": "../../packages/client"
     },
     {
-      "path": "../../packages/domain"
+      "path": "../../packages/schemas"
     },
     {
       "path": "../../packages/ui"
@@ -26,9 +23,6 @@
     },
     {
       "path": "../../tooling/jest"
-    },
-    {
-      "path": "../../tooling/next"
     }
   ]
 }

@@ -2,7 +2,7 @@ import type { DatabaseService } from '@archesai/core'
 
 import { BaseRepository } from '@archesai/core'
 import { RunTable } from '@archesai/database'
-import { RunEntity } from '@archesai/domain'
+import { RunEntity } from '@archesai/schemas'
 
 /**
  * Repository for runs.

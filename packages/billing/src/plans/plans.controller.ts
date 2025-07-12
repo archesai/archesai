@@ -7,15 +7,12 @@ import {
   createResourceObjectSchema,
   IS_CONTROLLER
 } from '@archesai/core'
+import { PLAN_ENTITY_KEY, PlanDtoSchema } from '@archesai/schemas'
 
 import type { PlansService } from '#plans/plans.service'
 
-import { PLAN_ENTITY_KEY, PlanResourceSchema } from '#plans/dto/plan.res.dto'
-
-// import { PlanResourceSchema } from '#plans/dto/plan.res.dto'
-
 const PlanResourceObjectSchema = createResourceObjectSchema(
-  PlanResourceSchema,
+  PlanDtoSchema,
   PLAN_ENTITY_KEY
 )
 

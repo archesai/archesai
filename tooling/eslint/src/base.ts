@@ -24,9 +24,7 @@ const base: ConfigArray = tseslint.config(
   {
     languageOptions: {
       ecmaVersion: 'latest',
-      globals: {
-        ...globals.node
-      },
+      globals: globals.node,
       parser: tseslint.parser,
       parserOptions: {
         projectService: true
@@ -34,39 +32,18 @@ const base: ConfigArray = tseslint.config(
       sourceType: 'module'
     },
     linterOptions: { reportUnusedDisableDirectives: true },
-    name: 'parser',
+    name: 'typescript-base',
     plugins: { '@typescript-eslint': tseslint.plugin }
   },
   {
-    files: ['**/*.js', '**/*.jsx'],
-    name: 'javascript',
-    plugins: {
-      '@typescript-eslint': tseslint.plugin
-    },
-    rules: {
-      ...eslint.configs.recommended.rules,
-      ...tseslint.configs.strictTypeChecked
-        .map((c) => c.rules)
-        .reduce((a, b) => ({ ...a, ...b }), {}),
-      ...tseslint.configs.stylisticTypeChecked
-        .map((c) => c.rules)
-        .reduce((a, b) => ({ ...a, ...b }), {})
-    }
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.{ts,tsx}'],
     name: 'typescript',
-    plugins: {
-      '@typescript-eslint': tseslint.plugin
-    },
+    extends: [
+      eslint.configs.recommended,
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked
+    ],
     rules: {
-      ...eslint.configs.recommended.rules,
-      ...tseslint.configs.strictTypeChecked
-        .map((c) => c.rules)
-        .reduce((a, b) => ({ ...a, ...b }), {}),
-      ...tseslint.configs.stylisticTypeChecked
-        .map((c) => c.rules)
-        .reduce((a, b) => ({ ...a, ...b }), {}),
       '@typescript-eslint/consistent-type-imports': [
         'warn',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
@@ -88,7 +65,7 @@ const base: ConfigArray = tseslint.config(
     }
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.{ts,tsx}'],
     name: 'custom',
     rules: {
       // '@typescript-eslint/consistent-type-assertions': [
@@ -118,6 +95,7 @@ const base: ConfigArray = tseslint.config(
     }
   },
   {
+    files: ['**/*.{ts,tsx}'],
     name: 'import plugin',
     plugins: {
       import: importPlugin
@@ -132,14 +110,12 @@ const base: ConfigArray = tseslint.config(
       'import/no-relative-packages': 'error',
       'import/no-unresolved': 'off',
       'import/extensions': 'off',
-      ...(process.env.CI === 'true' ?
-        {}
-      : {
-          'import/no-cycle': 'off',
-          'import/no-deprecated': 'off',
-          'import/no-named-as-default': 'off',
-          'import/no-unused-modules': 'off'
-        })
+      ...(process.env.CI !== 'true' && {
+        'import/no-cycle': 'off',
+        'import/no-deprecated': 'off',
+        'import/no-named-as-default': 'off',
+        'import/no-unused-modules': 'off'
+      })
       // import/no-extraneous-dependencies https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-extraneous-dependencies.md
     },
     settings: {
@@ -157,15 +133,10 @@ const base: ConfigArray = tseslint.config(
     name: 'perfectionist',
     rules: {
       ...perfectionist.configs['recommended-natural'].rules,
-      // 'perfectionist/sort-classes': ['error', { newlinesBetween: 'always' }],
       'perfectionist/sort-imports': 'off',
       'perfectionist/sort-named-imports': 'off'
     }
   },
-  // {
-  //   name: 'jsdoc',
-  //   ...jsdoc.configs['flat/recommended-typescript']
-  // },
   {
     ...prettier,
     name: 'prettier config'

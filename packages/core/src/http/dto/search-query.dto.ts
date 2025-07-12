@@ -1,8 +1,10 @@
-import type { StaticDecode, TObject } from '@sinclair/typebox'
+import type { TObject } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
+
+import { LegacyRef } from '@archesai/schemas'
 
 import { toTitleCaseNoSpaces } from '#utils/strings'
 
@@ -102,17 +104,11 @@ const createFilterSchema = (EntitySchema: TObject) => {
     Object.keys(EntitySchema.properties).map((key) => Type.Literal(key))
   )
 
-  return Type.Record(
-    entityFields,
-    Type.Unsafe<StaticDecode<typeof FieldFilterSchema>>(
-      Type.Ref('FieldFilter')
-    ),
-    {
-      // $id: 'Filter',
-      description: 'Filter',
-      title: 'Filter'
-    }
-  )
+  return Type.Record(entityFields, LegacyRef(FieldFilterSchema), {
+    // $id: 'Filter',
+    description: 'Filter',
+    title: 'Filter'
+  })
 }
 
 export const createSearchQuerySchema = (

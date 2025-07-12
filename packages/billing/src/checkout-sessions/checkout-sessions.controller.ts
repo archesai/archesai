@@ -1,13 +1,16 @@
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type {
+  CheckoutSessionDto,
+  CreateCheckoutSessionDto
+} from '@archesai/schemas'
 
 import { IS_CONTROLLER } from '@archesai/core'
+import {
+  CheckoutSessionDtoSchema,
+  CreateCheckoutSessionDtoSchema
+} from '@archesai/schemas'
 
 import type { CheckoutSessionsService } from '#checkout-sessions/checkout-sessions.service'
-import type { CheckoutSessionResponse } from '#checkout-sessions/dto/checkout-session.res.dto'
-import type { CreateCheckoutSessionRequest } from '#checkout-sessions/dto/create-checkout-session.req.dto'
-
-import { CheckoutSessionResponseSchema } from '#checkout-sessions/dto/checkout-session.res.dto'
-import { CreateCheckoutSessionRequestSchema } from '#checkout-sessions/dto/create-checkout-session.req.dto'
 
 /**
  * Controller for checkout sessions.
@@ -21,8 +24,8 @@ export class CheckoutSessionsController implements Controller {
   }
 
   public async create(
-    request: ArchesApiRequest & { body: CreateCheckoutSessionRequest }
-  ): Promise<CheckoutSessionResponse> {
+    request: ArchesApiRequest & { body: CreateCheckoutSessionDto }
+  ): Promise<CheckoutSessionDto> {
     return this.checkoutSessionsService.create(
       request.user!.orgname,
       {
@@ -38,11 +41,11 @@ export class CheckoutSessionsController implements Controller {
       `/billing/checkout-sessions`,
       {
         schema: {
-          body: CreateCheckoutSessionRequestSchema,
+          body: CreateCheckoutSessionDtoSchema,
           description: 'Create a checkout session',
           operationId: 'createCheckoutSession',
           response: {
-            200: CheckoutSessionResponseSchema
+            200: CheckoutSessionDtoSchema
           },
           summary: 'Create a checkout session',
           tags: ['Billing']

@@ -61,10 +61,8 @@ export const SessionsModuleDefinition: ModuleMetadata = {
         new SessionSerializer(usersService)
     },
     {
-      inject: [SessionsService],
       provide: SessionsController,
-      useFactory: (sessionsService: SessionsService) =>
-        new SessionsController(sessionsService)
+      useFactory: () => new SessionsController()
     }
   ]
 }

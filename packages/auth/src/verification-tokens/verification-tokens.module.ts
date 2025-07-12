@@ -1,5 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
-import type { VerificationTokenEntity } from '@archesai/domain'
+import type { VerificationTokenEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,

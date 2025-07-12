@@ -1,17 +1,8 @@
-'use client'
-
 import { ChevronsUpDown, Plus } from 'lucide-react'
-import { toast } from 'sonner'
-
-import type {
-  MemberEntity,
-  OrganizationEntity,
-  UserEntity
-} from '@archesai/domain'
 
 import {
-  useFindManyMembers,
-  useGetSession,
+  useFindManyMembersSuspense,
+  useGetSessionSuspense,
   useUpdateUser
 } from '@archesai/client'
 
@@ -31,28 +22,15 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '#components/shadcn/sidebar'
-import { Skeleton } from '#components/shadcn/skeleton'
 
-export interface OrganizationButtonProps {
-  children?: never
-  memberships?: MemberEntity[]
-  organization?: OrganizationEntity
-  user: UserEntity
-}
-
-export function OrganizationButton({ organization }: OrganizationButtonProps) {
-  const { data: _session } = useGetSession({
-    fetch: {
-      credentials: 'include'
-    }
-  })
-
-  const { data: memberships } = useFindManyMembers({
-    filter: {
-      orgname: {
-        equals: 'Arches Platform'
-      }
-    }
+export function OrganizationButton() {
+  const { data: session } = useGetSessionSuspense()
+  const { data: memberships } = useFindManyMembersSuspense({
+    // filter: {
+    //   orgname: {
+    //     equals: 'Arches Platform'
+    //   }
+    // }
   })
 
   const { mutateAsync: updateUser } = useUpdateUser()
@@ -60,26 +38,12 @@ export function OrganizationButton({ organization }: OrganizationButtonProps) {
   const { isMobile } = useSidebar()
 
   const handleSwitchOrganization = async (orgname: string) => {
-    await updateUser(
-      {
-        data: {
-          orgname
-        },
-        id: 'organization'
+    await updateUser({
+      data: {
+        orgname
       },
-      {
-        onError: (errors) => {
-          toast('Error updating default organization', {
-            description: errors.errors.map((error) => error.title).join(' ')
-          })
-        },
-        onSuccess: () => {
-          toast('Default organization updated', {
-            description: 'Your default organization has been updated.'
-          })
-        }
-      }
-    )
+      id: 'organization'
+    })
   }
 
   return (
@@ -91,24 +55,18 @@ export function OrganizationButton({ organization }: OrganizationButtonProps) {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               size='lg'
             >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg border-sidebar-accent text-sidebar-foreground'>
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground'>
                 <div className='-mt-0.5'>
                   <ArchesLogo
-                    scale={0.1}
+                    scale={0.12}
                     size='sm'
                   />
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold'>
-                  {!organization ?
-                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
-                  : organization.orgname}
-                </span>
-                <span className='truncate text-xs capitalize'>
-                  {!organization ?
-                    <Skeleton className='m-1 h-2 bg-sidebar-accent' />
-                  : organization.plan + ' Plan'}
+                <span className='truncate font-medium'>{session.orgname}</span>
+                <span className='truncate text-xs'>
+                  {session.email + ' Plan'}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />
@@ -116,34 +74,30 @@ export function OrganizationButton({ organization }: OrganizationButtonProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align='start'
-            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
-            {memberships ?
-              memberships.data.map((membership) => (
-                <DropdownMenuItem
-                  className='flex justify-between gap-2'
-                  key={membership.id}
-                  onClick={async () => {
-                    await handleSwitchOrganization(
-                      membership.attributes.orgname
-                    )
-                  }}
-                >
-                  {membership.attributes.orgname}
-                  {'Arches Platform' === membership.attributes.orgname && (
-                    <Badge>Current</Badge>
-                  )}
-                </DropdownMenuItem>
-              ))
-            : null}
+            {memberships.data.map((membership) => (
+              <DropdownMenuItem
+                className='gap-2 p-2'
+                key={membership.id}
+                onClick={async () => {
+                  await handleSwitchOrganization(membership.attributes.orgname)
+                }}
+              >
+                {membership.attributes.orgname}
+                {'Arches Platform' === membership.attributes.orgname && (
+                  <Badge>Current</Badge>
+                )}
+              </DropdownMenuItem>
+            ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem className='gap-2 p-2'>
-              <div className='flex size-6 items-center justify-center rounded-md border bg-background'>
+              <div className='flex size-6 items-center justify-center rounded-md border bg-transparent'>
                 <Plus className='size-4' />
               </div>
               <div className='font-medium text-muted-foreground'>

@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -20,11 +20,10 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
-    "@archesai/domain": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@google-cloud/storage": "catalog:",
-    "@sinclair/typebox": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {

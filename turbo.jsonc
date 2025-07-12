@@ -5,12 +5,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        ".cache/*.tsbuildinfo",
-        "dist/**",
-        ".next/**",
-        "!.next/cache/**"
-      ]
+      "outputs": [".cache/*.tsbuildinfo", "dist/**"]
     },
     "clean": {
       "cache": false

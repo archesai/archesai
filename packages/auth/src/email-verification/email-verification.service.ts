@@ -1,7 +1,10 @@
+import type {
+  CreateEmailVerificationDto,
+  UpdateEmailVerificationDto
+} from '@archesai/schemas'
+
 import { getEmailVerificationHtml, Logger } from '@archesai/core'
 
-import type { CreateEmailVerificationRequest } from '#email-verification/dto/create-email-verification-request.dto'
-import type { UpdateEmailVerificationRequest } from '#email-verification/dto/update-email-verification-request.dto'
 import type { UsersService } from '#users/users.service'
 import type { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 
@@ -22,12 +25,12 @@ export class EmailVerificationService {
   }
 
   public async confirm(
-    updateEmailVerificationRequest: UpdateEmailVerificationRequest
+    updateEmailVerificationDto: UpdateEmailVerificationDto
   ): Promise<void> {
-    this.logger.debug('req', { updateEmailVerificationRequest })
+    this.logger.debug('req', { updateEmailVerificationDto })
     const { userId } = await this.verificationTokensService.verify(
       'EMAIL_VERIFICATION',
-      updateEmailVerificationRequest.token
+      updateEmailVerificationDto.token
     )
     await this.usersService.update(userId, {
       emailVerified: new Date().toISOString()
@@ -35,17 +38,17 @@ export class EmailVerificationService {
   }
 
   public async request(
-    createEmailVerificationRequest: CreateEmailVerificationRequest
+    createEmailVerificationDto: CreateEmailVerificationDto
   ): Promise<void> {
-    this.logger.debug('req', { createEmailVerificationRequest })
+    this.logger.debug('req', { createEmailVerificationDto })
     const token = await this.verificationTokensService.create(
       'EMAIL_VERIFICATION',
-      createEmailVerificationRequest.userId,
+      createEmailVerificationDto.userId,
       24
     )
     return this.verificationTokensService.sendNotification(
       'EMAIL_VERIFICATION',
-      createEmailVerificationRequest.email,
+      createEmailVerificationDto.email,
       token,
       'Verify Your Email Address',
       getEmailVerificationHtml

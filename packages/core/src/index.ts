@@ -1,5 +1,6 @@
 export * from '#common/base.controller'
 export * from '#common/base.repository'
+
 export * from '#common/base.service'
 
 export * from '#config/config.controller'
@@ -29,26 +30,29 @@ export type * from '#event-bus/interfaces/event-subscriber.interface'
 
 export * from '#exceptions/app-error'
 export * from '#exceptions/exceptions.filter'
+
 export * from '#exceptions/exceptions.module'
 export * from '#exceptions/http-errors'
 export * from '#exceptions/schemas/arches-api-forbidden-response.schema'
 export * from '#exceptions/schemas/arches-api-no-content-response.schema'
 export * from '#exceptions/schemas/arches-api-not-found-response.schema'
 export * from '#exceptions/schemas/arches-api-unauthorized-response.schema'
-
 export * from '#fetcher/fetcher.module'
 export * from '#fetcher/fetcher.service'
 
 export * from '#health/health.controller'
 export * from '#health/health.module'
+
 export type * from '#health/interfaces/health-check.interface'
 export type * from '#health/interfaces/health-status.interface'
-
 export * from '#http/controllers-loader'
 export * from '#http/dto/search-query.dto'
+
 export * from '#http/factories/collection-response.schema'
 export * from '#http/factories/individual-response.schema'
 export * from '#http/factories/resource-object.schema'
+export * from '#http/guards/authenticated.guard'
+export type * from '#http/guards/local-auth.guard'
 export * from '#http/http.module'
 export type * from '#http/interfaces/controller.interface'
 export type * from '#http/interfaces/http-instance.interface'

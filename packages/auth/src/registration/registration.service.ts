@@ -1,4 +1,4 @@
-import type { UserEntity } from '@archesai/domain'
+import type { UserEntity } from '@archesai/schemas'
 
 import { ConflictException } from '@archesai/core'
 

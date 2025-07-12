@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "NODE_TLS_REJECT_UNAUTHORIZED=0 orval",
     "lint": "eslint",

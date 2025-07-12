@@ -1,7 +1,7 @@
-import type { AccessTokenDecodedJwt } from '@archesai/domain'
+import type { AccessTokenDecodedJwt } from '@archesai/schemas'
 
 import { Logger, UnauthorizedException } from '@archesai/core'
-import { AccessTokenEntity } from '@archesai/domain'
+import { AccessTokenEntity } from '@archesai/schemas'
 
 import type { AccountsService } from '#accounts/accounts.service'
 import type { JwtService } from '#jwt/jwt.service'

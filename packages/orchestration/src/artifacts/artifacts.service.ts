@@ -1,9 +1,9 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 import type { StorageService } from '@archesai/storage'
 
 import { BaseService, catchErrorAsync } from '@archesai/core'
-import { ARTIFACT_ENTITY_KEY } from '@archesai/domain'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 
 import type { ArtifactRepository } from '#artifacts/artifact.repository'
 

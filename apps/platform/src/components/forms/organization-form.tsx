@@ -1,5 +1,3 @@
-'use client'
-
 import type {
   CreateOrganizationBody,
   UpdateOrganizationBody
@@ -8,35 +6,34 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 
 import {
   useCreateOrganization,
-  useGetOneOrganization,
+  useGetOneOrganizationSuspense,
   useUpdateOrganization
 } from '@archesai/client'
-import { ORGANIZATION_ENTITY_KEY } from '@archesai/domain'
+import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function OrganizationForm({ orgname }: { orgname?: string }) {
   const { mutateAsync: createOrganization } = useCreateOrganization({})
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
-  const { error } = useGetOneOrganization(orgname!, {
-    query: {
-      enabled: !!orgname
-    }
-  })
+  const { error } = useGetOneOrganizationSuspense(orgname)
   if (error) {
     return <div>Organization not found</div>
   }
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: orgname,
       description: 'The name of the organization. This cannot be changed.',
       label: 'Name',
       name: 'name',
-      props: {
-        disabled: true
-      }
+      renderControl: (field) => (
+        <Input
+          {...field}
+          disabled={true}
+          type='text'
+        />
+      )
     }
   ]
 
@@ -46,22 +43,16 @@ export default function OrganizationForm({ orgname }: { orgname?: string }) {
       entityKey={ORGANIZATION_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={true}
-      onSubmitCreate={async (createOrganizationDto, mutateOptions) => {
-        await createOrganization(
-          {
-            data: createOrganizationDto
-          },
-          mutateOptions
-        )
+      onSubmitCreate={async (createOrganizationDto) => {
+        await createOrganization({
+          data: createOrganizationDto
+        })
       }}
-      onSubmitUpdate={async (updateOrganizationDto, mutateOptions) => {
-        await updateOrganization(
-          {
-            data: updateOrganizationDto,
-            id: orgname!
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (updateOrganizationDto) => {
+        await updateOrganization({
+          data: updateOrganizationDto,
+          id: orgname!
+        })
       }}
       showCard={true}
       title={ORGANIZATION_ENTITY_KEY}

@@ -1,8 +1,6 @@
-'use client'
-
 import ReactPlayer from 'react-player'
 
-import type { ArtifactEntity } from '@archesai/domain'
+import type { ArtifactEntity } from '@archesai/schemas'
 
 // const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 

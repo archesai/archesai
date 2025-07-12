@@ -1,52 +1,46 @@
-import { Type } from '@sinclair/typebox'
-
 import type {
   ArchesApiRequest,
   ArchesApiResponse,
   Controller,
   HttpInstance
 } from '@archesai/core'
+import type { UserEntity } from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
+  AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/domain'
-
-import type { SessionsService } from '#sessions/sessions.service'
-
-import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto'
-import { AuthenticatedGuard } from '#auth/guards/authenticated.guard'
-import { LocalAuthGuard } from '#auth/guards/local-auth.guard'
+import {
+  CreateAccountDtoSchema,
+  LegacyRef,
+  UserEntitySchema
+} from '@archesai/schemas'
 
 /**
  * Controller for managing authentication.
  */
 export class SessionsController implements Controller {
   public readonly [IS_CONTROLLER] = true
-  private readonly sessionsService: SessionsService
-
-  constructor(sessionsService: SessionsService) {
-    this.sessionsService = sessionsService
-  }
 
   public getSession(request: ArchesApiRequest) {
-    return { ...request.user }
+    return { ...request.user } as UserEntity
   }
 
-  public async login(
-    _request: ArchesApiRequest,
+  public login(
+    request: ArchesApiRequest,
     _reply: ArchesApiResponse
-  ): Promise<void> {
+  ): UserEntity {
     // The LocalAuthGuard will handle the login
+    return request.user!
   }
 
   public async logout(
     request: ArchesApiRequest,
-    reply: ArchesApiResponse
+    _reply: ArchesApiResponse
   ): Promise<void> {
-    await this.sessionsService.logout(request, reply)
+    await request.logOut()
   }
 
   public registerRoutes(app: HttpInstance) {
@@ -55,11 +49,11 @@ export class SessionsController implements Controller {
       {
         preValidation: [LocalAuthGuard(app)],
         schema: {
-          body: CreateAccountRequestSchema,
+          body: CreateAccountDtoSchema,
           description: `This endpoint will log you in with your e-mail and password`,
           operationId: 'login',
           response: {
-            204: LegacyRef(ArchesApiNoContentResponseSchema),
+            201: UserEntitySchema,
             401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Login`,
@@ -94,7 +88,7 @@ export class SessionsController implements Controller {
           description: `This endpoint will return the current session information`,
           operationId: 'getSession',
           response: {
-            200: Type.Object({}),
+            200: UserEntitySchema,
             401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
           },
           summary: `Get Session`,
@@ -103,5 +97,38 @@ export class SessionsController implements Controller {
       },
       this.getSession.bind(this)
     )
+  }
+}
+
+export function LocalAuthGuard(app: HttpInstance) {
+  return async function (
+    req: ArchesApiRequest,
+    reply: ArchesApiResponse
+  ): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      const handler = req.passport.authenticate(
+        ['local'],
+        { session: true },
+        async (authReq, _authRes, err, user) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          if (!user) {
+            reject(new Error('Unauthorized'))
+            return
+          }
+
+          try {
+            await authReq.logIn(user)
+            resolve()
+          } catch (err) {
+            reject(err as Error)
+          }
+        }
+      )
+
+      handler.call(app, req, reply)
+    })
   }
 }

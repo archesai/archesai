@@ -1,20 +1,22 @@
-'use client'
-
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type {
   AccessorKeyColumnDef,
   ColumnDef,
   ColumnFiltersState,
+  RowData,
   SortingState,
   VisibilityState
 } from '@tanstack/react-table'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
 import { VisuallyHidden } from 'radix-ui'
 
 import type { SearchQuery } from '@archesai/core'
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { DataTablePagination } from '#components/datatable/data-table-pagination'
 import { DataTableToolbar } from '#components/datatable/data-table-toolbar'
@@ -36,65 +38,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '#components/shadcn/dropdown-menu'
-import { useSelectItems } from '#hooks/use-select-items'
 import { useToggleView } from '#hooks/use-toggle-view'
 import { toSentenceCase } from '#lib/utils'
 import { DataTableColumnHeader } from './data-table-column-header'
 
-export interface DataTableContainerProps<TEntity extends BaseEntity>
-  extends DataTableProps<TEntity> {
-  data: TEntity[]
-  isFetched: boolean
-  query?: SearchQuery<TEntity>
-  selectedItems: string[]
-  setFinalForm: (form: React.ReactNode) => void
-  setFormOpen: (open: boolean) => void
-  toggleSelection: (id: string) => void
+declare module '@tanstack/table-core' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    entityType: string
+  }
 }
 
-export interface DataTableProps<
-  TEntity extends BaseEntity,
-  FindManyParams extends SearchQuery<TEntity> = SearchQuery<TEntity>,
-  FindManyOptions extends {
-    query?: {
-      enabled?: boolean
-    }
-  } = {
-    query?: {
-      enabled?: boolean
-    }
-  }
-> {
+export interface DataTableProps<TEntity extends BaseEntity> {
   columns: AccessorKeyColumnDef<TEntity>[]
   createForm?: React.ReactNode
   defaultView?: 'grid' | 'table'
   deleteItem?: (id: string) => Promise<void>
-  entityType: string
+  entityType?: string
   getEditFormFromItem?: (item: TEntity) => React.ReactNode
   grid?: (item: TEntity) => React.ReactNode
   gridHover?: (item: TEntity) => React.ReactNode
   handleSelect: (item: TEntity) => void
   icon: React.ReactNode
   minimal?: boolean
+  query?: SearchQuery<TEntity>
   readonly?: boolean
-
-  useFindMany: (
-    params: FindManyParams,
-    options: FindManyOptions
-  ) => {
-    data: TFindManyResponse<TEntity> | undefined
-    isFetched: boolean
-  }
+  setFinalForm?: (form: React.ReactNode) => void
+  setFormOpen?: (open: boolean) => void
+  useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TEntity>>
 }
+
 export interface TFindManyResponse<TEntity extends BaseEntity> {
   data: {
-    data: {
-      attributes: Omit<TEntity, 'id' | 'type'>
-      id: TEntity['id']
-      type: string
-    }[]
-  }
-  status: 200
+    attributes: Omit<TEntity, 'id' | 'type'>
+    id: TEntity['id']
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: any
+  }[]
 }
 
 export function DataTable<TEntity extends BaseEntity>(
@@ -137,28 +117,7 @@ export function DataTable<TEntity extends BaseEntity>(
     [props.columns]
   )
 
-  const { data, isFetched } = props.useFindMany({}, {})
-
-  if (!data) {
-    return (
-      <div className='flex h-full items-center justify-center'>
-        <span className='text-lg font-medium'>Loading...</span>
-      </div>
-    )
-  }
-
-  const memoizedData = data.data.data.map((item) => {
-    return {
-      id: item.id,
-
-      type: item.type,
-      ...item.attributes
-    } as TEntity
-  })
-
-  const { selectedItems, setSelectedItems, toggleSelection } = useSelectItems({
-    items: memoizedData
-  })
+  const { data, isFetched } = useSuspenseQuery(props.useFindMany)
 
   const table = useReactTable({
     columns: [
@@ -170,10 +129,10 @@ export function DataTable<TEntity extends BaseEntity>(
               <div className='flex'>
                 <Checkbox
                   aria-label='Select row'
-                  checked={selectedItems.includes(row.original.id)}
+                  checked={row.getIsSelected()}
                   className='justify-self-center'
                   onCheckedChange={() => {
-                    toggleSelection(row.original.id)
+                    row.toggleSelected()
                   }}
                 />
               </div>
@@ -240,9 +199,11 @@ export function DataTable<TEntity extends BaseEntity>(
                               )
                             }
                             await props.deleteItem(id)
-                            setSelectedItems([])
+                            table.toggleAllRowsSelected(false)
                           }}
-                          entityType={props.entityType}
+                          entityType={
+                            table.options.meta?.entityType ?? 'Entity'
+                          }
                           items={[row.original]}
                           variant='md'
                         />
@@ -257,7 +218,13 @@ export function DataTable<TEntity extends BaseEntity>(
         ]
       : [])
     ],
-    data: memoizedData,
+    data: data.data.map((item) => {
+      return {
+        ...item.attributes,
+        id: item.id,
+        type: item.type
+      } as TEntity
+    }),
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     manualFiltering: true,
@@ -273,14 +240,14 @@ export function DataTable<TEntity extends BaseEntity>(
     }
   })
 
+  const selectedRows = table.getSelectedRowModel().rows
+
   return (
     <div className='flex h-full flex-col gap-3'>
       {/* SEARCH TOOLBAR */}
       {!props.minimal && (
         <DataTableToolbar<TEntity>
           createForm={props.createForm}
-          data={memoizedData}
-          entityType={props.entityType}
           readonly={props.readonly ?? false}
           setFormOpen={setFormOpen}
           table={table}
@@ -288,22 +255,17 @@ export function DataTable<TEntity extends BaseEntity>(
       )}
 
       {/* DELETE ITEMS BUTTON */}
-      {selectedItems.length > 0 &&
+      {selectedRows.length > 0 &&
         (props.deleteItem ?
           <DeleteItems
             deleteItem={async (id) => {
               if (props.deleteItem) {
                 await props.deleteItem(id)
               }
-              setSelectedItems([])
+              table.toggleAllRowsSelected(false)
             }}
-            entityType={props.entityType}
-            items={selectedItems
-              .map((id) => {
-                const item = memoizedData.find((i) => i.id === id)
-                return item
-              })
-              .filter((item) => !!item)}
+            entityType={table.options.meta?.entityType ?? 'Entity'}
+            items={table.getSelectedRowModel().rows.map((row) => row.original)}
             variant='lg'
           />
         : null)}
@@ -312,19 +274,13 @@ export function DataTable<TEntity extends BaseEntity>(
       <div className='flex-1 overflow-auto'>
         {view === 'grid' ?
           <GridView<TEntity>
-            {...props}
-            data={memoizedData}
-            isFetched={isFetched}
-            selectedItems={selectedItems}
+            icon={props.icon}
             setFinalForm={setFinalForm}
             setFormOpen={setFormOpen}
-            toggleSelection={toggleSelection}
+            table={table}
           />
         : <TableView<TEntity>
-            {...props}
-            data={memoizedData}
             isFetched={isFetched}
-            selectedItems={selectedItems}
             table={table}
           />
         }
@@ -334,15 +290,8 @@ export function DataTable<TEntity extends BaseEntity>(
       {!props.minimal && (
         <div className='self-auto'>
           <DataTablePagination<TEntity>
-            response={{
-              // FIXME
-              data: memoizedData,
-              meta: {
-                page: 0,
-                size: 0,
-                total_records: 0
-              }
-            }}
+            table={table}
+            totalRecords={data.data.length}
           />
         </div>
       )}
@@ -360,7 +309,8 @@ export function DataTable<TEntity extends BaseEntity>(
         <VisuallyHidden.Root>
           <DialogDescription />
           <DialogTitle>
-            {finalForm ? 'Edit' : 'Create'} {props.entityType}
+            {finalForm ? 'Edit' : 'Create'}{' '}
+            {table.options.meta?.entityType ?? 'Entity'}
           </DialogTitle>
         </VisuallyHidden.Root>
         <DialogContent

@@ -7,9 +7,6 @@
       "path": "./apps/api"
     },
     {
-      "path": "./apps/landing"
-    },
-    {
       "path": "./apps/platform"
     },
     // {
@@ -34,7 +31,7 @@
       "path": "./packages/database"
     },
     {
-      "path": "./packages/domain"
+      "path": "./packages/schemas"
     },
     {
       "path": "./packages/intelligence"
@@ -53,9 +50,6 @@
     },
     {
       "path": "./tooling/jest"
-    },
-    {
-      "path": "./tooling/next"
     },
     {
       "path": "./tooling/prettier"

@@ -1,40 +1,35 @@
-'use client'
-
 import type { Table } from '@tanstack/react-table'
 
 import { CrossIcon, GridIcon, ListIcon } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
-import type { DataTableContainerProps } from '#components/datatable/data-table'
+import type { DataTableProps } from '#components/datatable/data-table'
 
 import { DataTableViewOptions } from '#components/datatable/data-table-view-options'
 import { DatePickerWithRange } from '#components/datatable/date-range-picker'
 import { Button } from '#components/shadcn/button'
 import { Checkbox } from '#components/shadcn/checkbox'
-import { useSelectItems } from '#hooks/use-select-items'
 import { useToggleView } from '#hooks/use-toggle-view'
 
 export interface DataTableToolbarProps<TEntity extends BaseEntity>
   extends Pick<
-    DataTableContainerProps<TEntity>,
-    'createForm' | 'data' | 'entityType' | 'readonly' | 'setFormOpen'
+    DataTableProps<TEntity>,
+    'createForm' | 'readonly' | 'setFormOpen'
   > {
   table: Table<TEntity>
 }
 
 export function DataTableToolbar<TEntity extends BaseEntity>({
   createForm,
-  data,
-  entityType,
   readonly,
   setFormOpen,
   table
 }: DataTableToolbarProps<TEntity>) {
+  const entityType = table.options.meta?.entityType ?? 'Entity'
   const isFiltered = table.getState().columnFilters.length > 0
-
-  const { selectedAllItems, selectedSomeItems, toggleSelectAll } =
-    useSelectItems({ items: data })
+  const isAllSelected = table.getIsAllRowsSelected()
+  const isSomeEelected = table.getIsSomeRowsSelected()
 
   // const { searchQuery, setSearchQuery } = useSearchQuery()
   return (
@@ -42,38 +37,24 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       {!readonly && (
         <Checkbox
           aria-label='Select all'
-          checked={selectedAllItems || (selectedSomeItems && 'indeterminate')}
+          checked={
+            isAllSelected ? true
+            : isSomeEelected ?
+              'indeterminate'
+            : false
+          }
           onCheckedChange={() => {
-            toggleSelectAll()
+            table.getToggleAllRowsSelectedHandler()
           }}
         />
       )}
-      {/* <Input
-        className='h-8 flex-1'
-        onChange={(event) => {
-          setQuery(event.target.value)
-        }}
-        placeholder={`Search ${entityType}s...`}
-        value={query}
-      /> */}
-      {/* {table.getColumn("llmBase") && (
-        <DataTableFacetedFilter
-          column={table.getColumn("llmBase")}
-          options={[
-            {
-              label: "GPT-4",
-              value: "GPT-4",
-            },
-          ]}
-          title="Language Model"
-        />
-      )} */}
+
       {isFiltered && (
         <Button
-          className='flex h-8 gap-2 p-2'
           onClick={() => {
             table.resetColumnFilters()
           }}
+          size='sm'
           variant='outline'
         >
           <span>Reset</span>
@@ -84,9 +65,8 @@ export function DataTableToolbar<TEntity extends BaseEntity>({
       <DatePickerWithRange />
       <ViewToggle />
       <DataTableViewOptions table={table} />
-      {createForm && !readonly ?
+      {createForm && setFormOpen && !readonly ?
         <Button
-          className='text-sm font-normal capitalize'
           onClick={() => {
             setFormOpen(true)
           }}

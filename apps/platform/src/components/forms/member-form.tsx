@@ -1,12 +1,14 @@
-'use client'
-
 import { Type } from '@sinclair/typebox'
 
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import { createMember, updateMember, useGetOneMember } from '@archesai/client'
-import { MEMBER_ENTITY_KEY } from '@archesai/domain'
+import {
+  createMember,
+  updateMember,
+  useGetOneMemberSuspense
+} from '@archesai/client'
+import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -19,20 +21,12 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 
 export default function MemberForm({ memberId }: { memberId?: string }) {
-  const { data: existingMemberResponse, error } = useGetOneMember(memberId!, {
-    query: {
-      enabled: !!memberId
-    }
-  })
+  const { data: existingMemberResponse } = useGetOneMemberSuspense(memberId)
 
-  if (error || !existingMemberResponse) {
-    return <div>Member not found</div>
-  }
   const member = existingMemberResponse.data
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: member.attributes.invitationId,
       description: 'This is the email that will be used for this member.',
       label: 'E-Mail',
@@ -40,13 +34,18 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       props: {
         placeholder: 'Member email here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         maxLength: 128,
         minLength: 1
       })
     },
     {
-      component: Input,
       defaultValue: member.attributes.role,
       description:
         'This is the role that will be used for this member. Note that different roles have different permissions.',
@@ -97,11 +96,11 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       entityKey={MEMBER_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!memberId}
-      onSubmitCreate={async (createMemberDto, mutateOptions) => {
-        await createMember(createMemberDto, mutateOptions)
+      onSubmitCreate={async (createMemberDto) => {
+        await createMember(createMemberDto)
       }}
-      onSubmitUpdate={async (data, mutateOptions) => {
-        await updateMember(memberId!, data, mutateOptions)
+      onSubmitUpdate={async (data) => {
+        await updateMember(memberId, data)
       }}
       title='Configuration'
     />

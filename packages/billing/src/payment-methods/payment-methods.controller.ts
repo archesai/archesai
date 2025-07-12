@@ -1,10 +1,10 @@
 import { Type } from '@sinclair/typebox'
 
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
-import type { PaymentMethodEntity } from '@archesai/domain'
+import type { PaymentMethodEntity } from '@archesai/schemas'
 
 import { IS_CONTROLLER } from '@archesai/core'
-import { PaymentMethodEntitySchema } from '@archesai/domain'
+import { PaymentMethodEntitySchema } from '@archesai/schemas'
 
 import type { PaymentMethodsService } from '#payment-methods/payment-methods.service'
 

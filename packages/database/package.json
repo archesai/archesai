@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .next dist",
+    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
     "db:migrate": "drizzle-kit migrate",
@@ -27,7 +27,7 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
-    "@archesai/domain": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@libsql/client": "catalog:",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",

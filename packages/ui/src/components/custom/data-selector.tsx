@@ -1,11 +1,11 @@
-'use client'
-
+import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type { LucideIcon } from 'lucide-react'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useState } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { CheckSquareIcon, PlusSquareIcon, SortAsc } from 'lucide-react'
 
-import type { BaseEntity } from '@archesai/domain'
+import type { BaseEntity } from '@archesai/schemas'
 
 import type { TFindManyResponse } from '#components/datatable/data-table'
 
@@ -25,39 +25,18 @@ import {
 } from '#components/shadcn/popover'
 import { cn } from '#lib/utils'
 
-interface DataSelectorProps<
-  TItem extends BaseEntity,
-  TFindAllPathParams,
-  FindManyOptions extends {
-    query?: {
-      enabled?: boolean
-    }
-  } = {
-    query?: {
-      enabled?: boolean
-    }
-  }
-> {
-  findManyParams: TFindAllPathParams
+interface DataSelectorProps<TItem extends BaseEntity> {
   getItemDetails?: (item: TItem) => React.ReactNode
-  //   iconMap?: { [key: string]: IconType };
   icons?: { color: string; Icon: LucideIcon; name: string }[]
   isMultiSelect?: boolean
   itemType: string
   orgname?: string
   selectedData: TItem | TItem[] | undefined
   setSelectedData: (data: TItem | TItem[] | undefined) => void
-  useFindMany: (
-    params: TFindAllPathParams,
-    options: FindManyOptions
-  ) => {
-    data: TFindManyResponse<TItem> | undefined
-    isFetched: boolean
-  }
+  useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TItem>>
 }
 
-export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
-  findManyParams,
+export function DataSelector<TItem extends BaseEntity>({
   getItemDetails,
   icons,
   isMultiSelect = false,
@@ -65,53 +44,44 @@ export function DataSelector<TItem extends BaseEntity, TFindAllPathParams>({
   selectedData,
   setSelectedData,
   useFindMany
-}: DataSelectorProps<TItem, TFindAllPathParams>) {
-  const { data } = useFindMany(findManyParams, {})
+}: DataSelectorProps<TItem>) {
+  const { data } = useSuspenseQuery(useFindMany)
   const [open, setOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<TItem | undefined>()
   const [searchTerm, setSearchTerm] = useState('')
-  if (!data) return null
 
   // Filter data based on search term
-  const filteredData = useMemo(() => {
-    return data.data.data.filter((item) =>
-      item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  }, [data, searchTerm])
+  const filteredData = data.data.filter((item) =>
+    item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   // Handler for selecting/deselecting items
-  const handleSelect = useCallback(
-    (item: TItem) => {
-      if (isMultiSelect) {
-        const selectedArray =
-          Array.isArray(selectedData) ? selectedData
-          : selectedData ? [selectedData]
-          : []
-        const isSelected = selectedArray.some((i) => i.id === item.id)
-        if (isSelected) {
-          setSelectedData(selectedArray.filter((i) => i.id !== item.id))
-        } else {
-          setSelectedData([...selectedArray, item])
-        }
+  const handleSelect = (item: TItem) => {
+    if (isMultiSelect) {
+      const selectedArray =
+        Array.isArray(selectedData) ? selectedData
+        : selectedData ? [selectedData]
+        : []
+      const isSelected = selectedArray.some((i) => i.id === item.id)
+      if (isSelected) {
+        setSelectedData(selectedArray.filter((i) => i.id !== item.id))
       } else {
-        setSelectedData(item)
-        setOpen(false) // Close popover on single select
+        setSelectedData([...selectedArray, item])
       }
-    },
-    [isMultiSelect, selectedData, setSelectedData]
-  )
+    } else {
+      setSelectedData(item)
+      setOpen(false) // Close popover on single select
+    }
+  }
 
   // Handler for removing selected item (for multi-select)
-  const handleRemove = useCallback(
-    (item: TItem) => {
-      if (isMultiSelect && Array.isArray(selectedData)) {
-        setSelectedData(selectedData.filter((i) => i.id !== item.id))
-      } else {
-        setSelectedData(undefined)
-      }
-    },
-    [isMultiSelect, selectedData, setSelectedData]
-  )
+  const handleRemove = (item: TItem) => {
+    if (isMultiSelect && Array.isArray(selectedData)) {
+      setSelectedData(selectedData.filter((i) => i.id !== item.id))
+    } else {
+      setSelectedData(undefined)
+    }
+  }
 
   return (
     <div className='flex flex-col gap-2'>

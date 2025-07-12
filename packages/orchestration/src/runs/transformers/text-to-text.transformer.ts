@@ -1,8 +1,8 @@
 // import type { Logger } from '@archesai/core'
 // import type { LlmService } from '@archesai/intelligence'
-// import type { ArtifactEntity } from '@archesai/domain'
+// import type { ArtifactEntity } from '@archesai/schemas'
 // import { retry } from '@archesai/core'
-// import { contentEntitySchema } from '@archesai/domain'
+// import { contentEntitySchema } from '@archesai/schemas'
 
 // import type { ArtifactsService } from '#artifacts/artifacts.service'
 // import type { Transformer } from '#runs/types/transformer'

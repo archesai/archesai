@@ -1,5 +1,5 @@
 import type { EventBus, EventSubscriber } from '@archesai/core'
-import type { OrganizationCreatedEvent } from '@archesai/domain'
+import type { OrganizationCreatedEvent } from '@archesai/schemas'
 
 import { InternalServerErrorException, Logger } from '@archesai/core'
 

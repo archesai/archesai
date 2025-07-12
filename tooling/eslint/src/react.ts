@@ -1,32 +1,29 @@
 import type { ConfigArray } from 'typescript-eslint'
 
 import reactPlugin from 'eslint-plugin-react'
-// import reactCompiler from 'eslint-plugin-react-compiler'
 import hooksPlugin from 'eslint-plugin-react-hooks'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
-// ...globals.serviceworker,
-// ...globals.browswer
-const react: ConfigArray = [
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    name: 'react-version',
-    settings: { react: { version: 'detect' } }
+const react: ConfigArray = tseslint.config({
+  files: ['**/*.{ts,tsx}'],
+  name: 'react',
+  settings: { react: { version: 'detect' } },
+  extends: [
+    hooksPlugin.configs.recommended,
+    reactPlugin.configs.flat.recommended!,
+    reactPlugin.configs.flat['jsx-runtime']!
+  ],
+  rules: {
+    'react-hooks/react-compiler': 'error',
+    'react/prop-types': 'off'
   },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    ...hooksPlugin.configs['recommended-latest']
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      globals: {
-        React: 'writable'
-      }
-    },
-    name: 'react',
-    ...reactPlugin.configs.flat.recommended,
-    ...reactPlugin.configs.flat['jsx-runtime']
+  languageOptions: {
+    globals: {
+      ...globals.browser,
+      ...globals.serviceworker
+    }
   }
-]
+})
 
 export default react

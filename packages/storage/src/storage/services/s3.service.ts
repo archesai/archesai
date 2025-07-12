@@ -15,7 +15,7 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import type { ConfigService, HealthCheck, HealthStatus } from '@archesai/core'
-import type { FileEntity } from '@archesai/domain'
+import type { FileEntity } from '@archesai/schemas'
 
 import {
   ConflictException,

@@ -1,7 +1,7 @@
 import type { TSchema } from '@sinclair/typebox'
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { Type } from '@sinclair/typebox'
 import { LoaderIcon } from 'lucide-react'
@@ -13,6 +13,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from '#components/shadcn/card'
@@ -29,14 +30,13 @@ import { Separator } from '#components/shadcn/separator'
 import { cn } from '#lib/utils'
 
 export interface FormFieldConfig {
-  component: React.ComponentType
   defaultValue?: boolean | number | string | undefined
-  description: string
+  description?: string
   ignoreOnCreate?: boolean
   label: string
   name: string
   props?: Record<string, unknown>
-  renderControl?: (field: ControllerRenderProps) => React.ReactNode
+  renderControl: (field: ControllerRenderProps) => React.ReactNode
   validationRule?: TSchema
 }
 
@@ -47,122 +47,112 @@ type GenericFormProps<
   description?: string
   entityKey: string
   fields: FormFieldConfig[]
-  onSubmitCreate?: (
-    data: CreateDto,
-    mutateOptions: Record<string, unknown>
-  ) => void
+  /**
+   * When supplied, `mutateOptions` is passed straight through.
+   * Use it to wire in TanStack Query’s `useMutation` options and keep side-effects outside.
+   */
+  mutateOptions?: Record<string, unknown>
+  postContent?: React.ReactNode
+  preContent?: React.ReactNode
   showCard?: boolean
   title?: string
 } & (
   | {
       isUpdateForm: false
-      onSubmitUpdate?: (
-        data: UpdateDto,
-        mutateOptions: Record<string, unknown>
-      ) => void
+      onSubmitCreate: (d: CreateDto) => Promise<void>
+      onSubmitUpdate?: (d: UpdateDto) => Promise<void>
     }
   | {
       isUpdateForm: true
-      onSubmitUpdate: (
-        data: UpdateDto,
-        mutateOptions: Record<string, unknown>
-      ) => void
+      onSubmitCreate?: (d: CreateDto) => Promise<void>
+      onSubmitUpdate: (d: UpdateDto) => Promise<void>
     }
 )
 
 export function GenericForm<
   CreateDto extends FieldValues,
   UpdateDto extends FieldValues
->({
-  description,
-  entityKey,
-  fields,
-  isUpdateForm,
-  onSubmitCreate,
-  onSubmitUpdate,
-  showCard = false,
-  title
-}: GenericFormProps<CreateDto, UpdateDto>) {
-  const defaultValues = fields.reduce<Record<string, unknown>>((acc, field) => {
-    if (field.defaultValue !== undefined) {
-      acc[field.name] = field.defaultValue
-    }
-    return acc
-  }, {})
+>(props: GenericFormProps<CreateDto, UpdateDto>) {
+  const {
+    description,
+    entityKey,
+    fields,
+    isUpdateForm,
+    // mutateOptions,
+    onSubmitCreate,
+    onSubmitUpdate,
+    showCard = false,
+    title
+  } = props
 
-  const schema = Type.Object(
-    fields.reduce<Record<string, TSchema>>((acc, field) => {
-      if (field.validationRule) {
-        acc[field.name] = field.validationRule
-      }
+  /* ---------- memoised defaults & schema ---------- */
+  const defaultValues = useMemo(() => {
+    return fields.reduce<Record<string, unknown>>((acc, f) => {
+      if (f.defaultValue !== undefined) acc[f.name] = f.defaultValue
       return acc
     }, {})
+  }, [fields])
+
+  const schema = useMemo(
+    () =>
+      Type.Object(
+        fields.reduce<Record<string, TSchema>>((acc, f) => {
+          if (f.validationRule) acc[f.name] = f.validationRule
+          return acc
+        }, {})
+      ),
+    [fields]
   )
 
+  /* ---------- form instance ---------- */
   const form = useForm({
-    defaultValues: defaultValues,
+    defaultValues,
+    mode: 'onChange',
     resolver: typeboxResolver(schema)
   })
 
+  /* ---------- keep external defaults in sync ---------- */
   useEffect(() => {
     form.reset(defaultValues)
-  }, [fields.map((f) => f.defaultValue).join()])
+  }, [defaultValues, form])
+
+  /* ---------- submit helpers ---------- */
+  async function handleSubmit(values: FieldValues) {
+    const run =
+      isUpdateForm ?
+        async () => {
+          await onSubmitUpdate(values as UpdateDto)
+        }
+      : async () => {
+          await onSubmitCreate(values as CreateDto)
+        }
+
+    try {
+      await run()
+      toast.success(`${isUpdateForm ? 'Updated' : 'Created'} ${entityKey}!`)
+    } catch (err) {
+      toast.error(`${isUpdateForm ? 'Update' : 'Creation'} failed`, {
+        description: (err as Error).message
+      })
+    }
+  }
 
   return (
-    <Card
-      className={cn(
-        'flex flex-1 flex-col',
-        showCard ? '' : 'border-none shadow-none'
-      )}
-    >
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <Separator />
-      <Form {...form}>
-        <form
-          className='flex flex-1 flex-col'
-          noValidate
-          onSubmit={form.handleSubmit(
-            isUpdateForm ?
-              (data) => {
-                onSubmitUpdate(data as UpdateDto, {
-                  onError: (error: Error) => {
-                    toast('`Update failed`', {
-                      description: error.message
-                    })
-                  },
-                  onSuccess: () => {
-                    toast(`Update successful`, {
-                      description: `Your ${entityKey} has been updated`
-                    })
-                  }
-                })
-              }
-            : onSubmitCreate ?
-              (data) => {
-                onSubmitCreate(data as CreateDto, {
-                  onError: (error: Error) => {
-                    toast(`Create failed`, {
-                      description: error.message
-                    })
-                  },
-                  onSuccess: () => {
-                    toast(`Creation successful`, {
-                      description: `Your ${entityKey} has been created`
-                    })
-                  }
-                })
-              }
-            : () => {
-                toast(`Error`, {
-                  description: `No submit function provided`
-                })
-              }
-          )}
-        >
-          <CardContent className='flex flex-1 flex-col gap-4 p-4'>
+    <Form {...form}>
+      <form
+        noValidate
+        onSubmit={form.handleSubmit(handleSubmit)}
+      >
+        <Card className={cn(!showCard && 'border-none shadow-none')}>
+          <CardHeader>
+            {title && <CardTitle>{title}</CardTitle>}
+            {description && <CardDescription>{description}</CardDescription>}
+          </CardHeader>
+
+          <Separator />
+
+          <CardContent className='flex flex-col gap-6 p-4'>
+            {props.preContent}
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
               .map((fieldConfig) => (
@@ -170,71 +160,77 @@ export function GenericForm<
                   control={form.control}
                   key={fieldConfig.name}
                   name={fieldConfig.name}
-                  render={({ field, fieldState }) => {
-                    return (
-                      <FormItem className='col-span-1 flex flex-col'>
-                        <FormLabel>{fieldConfig.label}</FormLabel>
-                        <FormControl>
-                          {
-                            fieldConfig.renderControl ?
-                              fieldConfig.renderControl(field)
-                              // <fieldConfig.component
-                              //   {...field}
-                              //   {...fieldConfig.props}
-                              //   value={field.value}
-                              // /> // FIXME
-                            : <></>
-                          }
-                        </FormControl>
-                        {!fieldState.error?.message && (
-                          <FormDescription>
-                            {fieldConfig.description}
-                          </FormDescription>
-                        )}
-                        <FormMessage>{fieldState.error?.message}</FormMessage>
-                      </FormItem>
-                    )
-                  }}
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <FormLabel>{fieldConfig.label}</FormLabel>
+                      <FormControl>
+                        {fieldConfig.renderControl(field)}
+                      </FormControl>
+                      <FormDescription>
+                        {!fieldState.error && fieldConfig.description}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               ))}
+            {props.postContent}
           </CardContent>
-          <Separator />
-          <div className='flex justify-end rounded-xl p-4 py-2'>
-            {(onSubmitCreate ?? onSubmitUpdate) && (
-              <div className='flex w-full items-center justify-end gap-2'>
-                <Button
-                  className='flex flex-1 gap-2'
-                  disabled={
-                    form.formState.isSubmitting || !form.formState.isDirty
-                  }
-                  size='sm'
-                  type='submit'
-                >
-                  {form.formState.isSubmitting && (
-                    <LoaderIcon className='h-5 w-5 animate-spin' />
-                  )}
-                  <span className='capitalize'>
-                    {isUpdateForm ? 'Update' : 'Create'} {entityKey}
-                  </span>
-                </Button>
-                <Button
-                  className='flex-1'
-                  disabled={
-                    form.formState.isSubmitting || !form.formState.isDirty
-                  }
-                  onClick={() => {
-                    form.reset()
-                  }}
-                  size='sm'
-                  variant={'secondary'}
-                >
-                  Clear
-                </Button>
-              </div>
-            )}
-          </div>
-        </form>
-      </Form>
-    </Card>
+
+          {/* <Separator /> */}
+
+          <CardFooter className='flex items-center justify-center gap-2'>
+            <Button
+              className='flex flex-1 gap-2'
+              disabled={
+                form.formState.isSubmitting ||
+                !form.formState.isDirty ||
+                !form.formState.isValid
+              }
+              size='sm'
+              type='submit'
+            >
+              {form.formState.isSubmitting && (
+                <LoaderIcon className='h-5 w-5 animate-spin' />
+              )}
+              <span className='capitalize'>
+                {isUpdateForm ? 'Update' : 'Create'} {entityKey}
+              </span>
+            </Button>
+            <Button
+              className='flex-1'
+              disabled={form.formState.isSubmitting}
+              onClick={() => {
+                form.reset()
+              }}
+              size='sm'
+              type='button'
+              variant='secondary'
+            >
+              Clear
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   )
 }
+
+// <FormItem>
+//                 <FormControl>
+//                   <FloatingLabelInput
+//                     id={field.label}
+//                     label={field.label}
+//                     type={field.type ?? 'text'}
+//                     {...f}
+//                     value={
+//                       f.value as
+//                         | number
+//                         | readonly string[]
+//                         | string
+//                         | undefined
+//                     }
+//                   />
+//                 </FormControl>
+//                 <FormMessage />
+//               </FormItem>
