@@ -1,13 +1,9 @@
-import { Type } from '@sinclair/typebox'
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { useRequestPasswordReset } from '@archesai/client'
+import { CreatePasswordResetDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
-
-const ForgotPasswordSchema = Type.Object({
-  email: Type.String({ format: 'email' })
-})
 
 export const Route = createFileRoute('/auth/forgot-password/')({
   component: ForgotPasswordPage
@@ -19,8 +15,8 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <GenericForm<
-        typeof ForgotPasswordSchema.static,
-        typeof ForgotPasswordSchema.static
+        typeof CreatePasswordResetDtoSchema.static,
+        typeof CreatePasswordResetDtoSchema.static
       >
         description='Enter your email address to receive a password reset link'
         entityKey='auth'
@@ -35,7 +31,7 @@ export default function ForgotPasswordPage() {
                 type='email'
               />
             ),
-            validationRule: ForgotPasswordSchema.properties.email
+            validationRule: CreatePasswordResetDtoSchema.properties.email
           }
         ]}
         isUpdateForm={false}

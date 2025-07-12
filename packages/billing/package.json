@@ -21,7 +21,6 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "@sinclair/typebox": "catalog:",
     "stripe": "catalog:",
     "tslib": "catalog:"
   },

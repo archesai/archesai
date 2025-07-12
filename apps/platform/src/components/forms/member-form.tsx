@@ -1,5 +1,3 @@
-import { Type } from '@sinclair/typebox'
-
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
@@ -8,7 +6,7 @@ import {
   updateMember,
   useGetOneMemberSuspense
 } from '@archesai/client'
-import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
+import { MEMBER_ENTITY_KEY, Type } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -41,7 +39,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
         />
       ),
       validationRule: Type.String({
-        maxLength: 128,
+        format: 'email',
         minLength: 1
       })
     },
@@ -83,8 +81,8 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
             ))}
           </SelectContent>
         </Select>
-      ),
-      validationRule: Type.Union([Type.Literal('ADMIN'), Type.Literal('USER')])
+      )
+      // validationRule: Type.Union([Type.Literal('ADMIN'), Type.Literal('USER')])
     }
   ]
 

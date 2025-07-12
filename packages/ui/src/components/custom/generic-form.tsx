@@ -1,12 +1,14 @@
-import type { TSchema } from '@sinclair/typebox'
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 import { useEffect, useMemo } from 'react'
 import { typeboxResolver } from '@hookform/resolvers/typebox'
-import { Type } from '@sinclair/typebox'
 import { LoaderIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+
+import type { TSchema } from '@archesai/schemas'
+
+import { Type } from '@archesai/schemas'
 
 import { Button } from '#components/shadcn/button'
 import {
@@ -108,6 +110,7 @@ export function GenericForm<
   const form = useForm({
     defaultValues,
     mode: 'onChange',
+    //@ts-ignore
     resolver: typeboxResolver(schema)
   })
 

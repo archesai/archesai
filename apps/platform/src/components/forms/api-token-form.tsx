@@ -1,5 +1,3 @@
-import { Type } from '@sinclair/typebox'
-
 import type { CreateApiTokenBody, UpdateApiTokenBody } from '@archesai/client'
 import type { ApiTokenEntity } from '@archesai/schemas'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
@@ -9,7 +7,7 @@ import {
   useGetOneApiTokenSuspense,
   useUpdateApiToken
 } from '@archesai/client'
-import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
+import { API_TOKEN_ENTITY_KEY, Type } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -48,7 +46,6 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
         />
       ),
       validationRule: Type.String({
-        maxLength: 128,
         minLength: 1
       })
     },
@@ -89,8 +86,8 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
             ))}
           </SelectContent>
         </Select>
-      ),
-      validationRule: Type.Union([Type.Literal('ADMIN'), Type.Literal('USER')])
+      )
+      // validationRule: Type.Union([Type.Literal('ADMIN'), Type.Literal('USER')])
     }
   ]
 

@@ -1,9 +1,7 @@
-import { Type } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
-
 import type { ConfigService, FetcherService } from '@archesai/core'
 
 import { delay, Logger, retry } from '@archesai/core'
+import { Type, Value } from '@archesai/schemas'
 
 /**
  * Service for interacting with the RunPod API.

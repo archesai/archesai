@@ -1,8 +1,5 @@
 import type Stripe from 'stripe'
 
-import { Type } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
-
 import type {
   ArchesApiRequest,
   ConfigService,
@@ -112,7 +109,10 @@ export class CallbacksService {
       event.type == 'customer.subscription.deleted'
     ) {
       const data = event.data.object satisfies Stripe.Subscription
-      const priceId = Value.Parse(Type.String(), data.items.data[0]?.price.id)
+      const priceId = data.items.data[0]?.price.id
+      if (!priceId) {
+        throw new InternalServerErrorException('Missing price ID')
+      }
       const price = await this.stripeService.getPrice(priceId)
       if (typeof price.product === 'string' || price.product.deleted) {
         throw new InternalServerErrorException('Invalid price')

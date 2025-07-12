@@ -4,7 +4,6 @@ import type {
   Controller,
   HttpInstance
 } from '@archesai/core'
-import type { UserEntity } from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
@@ -24,25 +23,6 @@ import {
 export class SessionsController implements Controller {
   public readonly [IS_CONTROLLER] = true
 
-  public getSession(request: ArchesApiRequest) {
-    return { ...request.user } as UserEntity
-  }
-
-  public login(
-    request: ArchesApiRequest,
-    _reply: ArchesApiResponse
-  ): UserEntity {
-    // The LocalAuthGuard will handle the login
-    return request.user!
-  }
-
-  public async logout(
-    request: ArchesApiRequest,
-    _reply: ArchesApiResponse
-  ): Promise<void> {
-    await request.logOut()
-  }
-
   public registerRoutes(app: HttpInstance) {
     app.post(
       `/auth/login`,
@@ -60,7 +40,9 @@ export class SessionsController implements Controller {
           tags: ['Sessions']
         }
       },
-      this.login.bind(this)
+      (req) => {
+        return req.user!
+      }
     )
 
     app.post(
@@ -77,7 +59,9 @@ export class SessionsController implements Controller {
           tags: ['Sessions']
         }
       },
-      this.logout.bind(this)
+      (req) => {
+        return req.logOut()
+      }
     )
 
     app.get(
@@ -95,7 +79,9 @@ export class SessionsController implements Controller {
           tags: ['Sessions']
         }
       },
-      this.getSession.bind(this)
+      (req) => {
+        return req.user!
+      }
     )
   }
 }

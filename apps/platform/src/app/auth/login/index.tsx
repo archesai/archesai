@@ -1,17 +1,12 @@
-import type { Static } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
+import type { CreateAccountDto } from '@archesai/schemas'
+
 import { useLogin } from '@archesai/client'
+import { CreateAccountDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Input } from '@archesai/ui/components/shadcn/input'
-
-const LoginSchema = Type.Object({
-  email: Type.String({ format: 'email' }),
-  password: Type.String({ minLength: 8 })
-})
 
 export const Route = createFileRoute('/auth/login/')({
   component: LoginPage
@@ -21,7 +16,7 @@ export default function LoginPage() {
   const router = useRouter()
   const { mutateAsync: login } = useLogin()
 
-  const onSubmit = async (data: Static<typeof LoginSchema>) => {
+  const onSubmit = async (data: CreateAccountDto) => {
     await login({
       data: {
         email: data.email,
@@ -33,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <GenericForm
+      <GenericForm<CreateAccountDto, CreateAccountDto>
         description='Enter your email and password to login'
         entityKey='auth'
         fields={[
@@ -47,7 +42,7 @@ export default function LoginPage() {
                 type='email'
               />
             ),
-            validationRule: LoginSchema.properties.email
+            validationRule: CreateAccountDtoSchema.properties.email
           },
           {
             defaultValue: '',
@@ -59,12 +54,12 @@ export default function LoginPage() {
                 type='password'
               />
             ),
-            validationRule: LoginSchema.properties.password
+            validationRule: CreateAccountDtoSchema.properties.password
           }
         ]}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
-          await onSubmit(data as Static<typeof LoginSchema>)
+          await onSubmit(data)
         }}
         postContent={
           <div className='text-center text-sm'>

@@ -1,5 +1,3 @@
-import { Type } from '@sinclair/typebox'
-
 import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
@@ -8,7 +6,7 @@ import {
   useGetSessionSuspense,
   useUpdateUser
 } from '@archesai/client'
-import { USER_ENTITY_KEY } from '@archesai/schemas'
+import { Type, USER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 

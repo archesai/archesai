@@ -34,10 +34,6 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@swc-node/core": "^1.13.3",
-    "@swc-node/register": "^1.10.10",
-    "@swc/core": "^1.12.9",
-    "@swc/types": "^0.1.23",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

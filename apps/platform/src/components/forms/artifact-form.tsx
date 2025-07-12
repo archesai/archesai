@@ -1,7 +1,4 @@
-import type { TSchema } from '@sinclair/typebox'
-
 import { useState } from 'react'
-import { Type } from '@sinclair/typebox'
 
 import type { CreateArtifactBody, UpdateArtifactBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
@@ -11,7 +8,11 @@ import {
   updateArtifact,
   useGetOneArtifactSuspense
 } from '@archesai/client'
-import { ARTIFACT_ENTITY_KEY, ArtifactEntitySchema } from '@archesai/schemas'
+import {
+  ARTIFACT_ENTITY_KEY,
+  ArtifactEntitySchema,
+  Type
+} from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -50,7 +51,6 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
         />
       ),
       validationRule: Type.String({
-        maxLength: 128,
         minLength: 1
       })
     },
@@ -111,9 +111,8 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
           </TabsContent>
         </Tabs>
       ),
-      validationRule: ArtifactEntitySchema.properties[
-        tab == 'file' ? 'text' : tab
-      ] as unknown as TSchema
+      validationRule:
+        ArtifactEntitySchema.properties[tab == 'file' ? 'text' : tab]
     }
   ]
 

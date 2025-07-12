@@ -1,5 +1,3 @@
-import { Type } from '@sinclair/typebox'
-
 import type { CreateLabelBody, UpdateLabelBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
@@ -8,7 +6,7 @@ import {
   useGetOneLabelSuspense,
   useUpdateLabel
 } from '@archesai/client'
-import { LABEL_ENTITY_KEY } from '@archesai/schemas'
+import { LABEL_ENTITY_KEY, Type } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -37,7 +35,9 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
           type='text'
         />
       ),
-      validationRule: Type.String({})
+      validationRule: Type.String({
+        minLength: 1
+      })
     }
   ]
 

@@ -3,13 +3,12 @@ import { unlinkSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-import { Type } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
 import ffmpeg from 'fluent-ffmpeg'
 
 import type { FetcherService } from '@archesai/core'
 
 import { Logger, retry } from '@archesai/core'
+import { Type, Value } from '@archesai/schemas'
 
 /**
  * Service for processing audio files.

@@ -6,16 +6,16 @@
     { "pattern": "e2e/*/" }
   ],
   "files.exclude": {
-    "**/*.tsbuildinfo": true,
-    "**/.cache": true,
-    "**/.next": true,
-    "**/.nitro": true,
-    "**/.output": true,
-    "**/.tanstack": true,
-    "**/.turbo": true,
-    "**/dist": true,
-    "**/next-env.d.ts": true,
-    "**/node_modules": true
+    "**/*.tsbuildinfo": false,
+    "**/.cache": false,
+    "**/.next": false,
+    "**/.nitro": false,
+    "**/.output": false,
+    "**/.tanstack": false,
+    "**/.turbo": false,
+    "**/dist": false,
+    "**/next-env.d.ts": false,
+    "**/node_modules": false
   },
   "tailwindCSS.experimental.configFile": {
     "./apps/landing/src/styles/globals.css": "./apps/landing/src/**",

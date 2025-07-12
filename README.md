@@ -295,27 +295,3 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 Arches AI offers a versatile and powerful data processing platform designed to meet the diverse needs of businesses across various industries. By providing a comprehensive suite of tools for data management, transformation, and analysis, Arches AI empowers organizations to unlock the full potential of their data, drive innovation, and achieve strategic goals. Whether it's enhancing operational efficiency, enabling advanced analytics, or fostering data-driven decision-making, Arches AI is positioned to be an indispensable partner for businesses seeking to thrive in the data-centric landscape.
 
 ---
-
-2. Use a Post-Hoc Type Check with Conditional Types
-
-If you already have a schema and want to ensure its static type extends BaseEntity, you can do a compile-time check using a conditional type:
-
-import { Type, Static } from '@sinclair/typebox';
-
-interface BaseEntity {
-id: string;
-}
-
-const entitySchema = Type.Object({
-id: Type.String(),
-name: Type.String()
-});
-
-// Extract the static type from the schema
-type Entity = Static<typeof entitySchema>;
-
-// Use a conditional type to enforce the constraint:
-type EnsureEntity<T> = T extends BaseEntity ? T : never;
-
-// If Entity does not extend BaseEntity, EnsureEntity<Entity> will resolve to never:
-type CheckedEntity = EnsureEntity<Entity>;

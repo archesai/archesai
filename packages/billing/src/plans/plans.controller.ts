@@ -1,5 +1,3 @@
-import type { StaticDecode } from '@sinclair/typebox'
-
 import type { Controller, HttpInstance } from '@archesai/core'
 
 import {
@@ -21,8 +19,6 @@ const PlanCollectionResponseSchema = createCollectionResponseSchema(
   PLAN_ENTITY_KEY
 )
 
-type PlanPaginatedResponse = StaticDecode<typeof PlanCollectionResponseSchema>
-
 /**
  * Controller for Plans.
  */
@@ -34,7 +30,7 @@ export class PlansController implements Controller {
     this.plansService = plansService
   }
 
-  public async findMany(): Promise<PlanPaginatedResponse> {
+  public async findMany() {
     const plans = await this.plansService.findAll()
     return {
       data: plans.data.map((plan) => {

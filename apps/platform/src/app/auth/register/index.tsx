@@ -1,17 +1,11 @@
-import type { Static } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
+import type { CreateAccountDto } from '@archesai/schemas'
+
 import { useRegister } from '@archesai/client'
+import { CreateAccountDtoSchema, Type } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
-
-const RegisterSchema = Type.Object({
-  confirmPassword: Type.String({ minLength: 8 }),
-  email: Type.String({ format: 'email' }),
-  password: Type.String({ minLength: 8 })
-})
 
 export const Route = createFileRoute('/auth/register/')({
   component: RegisterPage
@@ -21,21 +15,9 @@ export default function RegisterPage() {
   const router = useRouter()
   const { mutateAsync: register } = useRegister()
 
-  const onSubmit = async (data: Static<typeof RegisterSchema>) => {
-    await register({
-      data: {
-        email: data.email,
-        password: data.password
-      }
-    })
-    await router.navigate({
-      to: '/chat'
-    })
-  }
-
   return (
     <>
-      <GenericForm
+      <GenericForm<CreateAccountDto, CreateAccountDto>
         description='Create your account by entering your email and password'
         entityKey='auth'
         fields={[
@@ -49,7 +31,7 @@ export default function RegisterPage() {
                 type='email'
               />
             ),
-            validationRule: RegisterSchema.properties.email
+            validationRule: CreateAccountDtoSchema.properties.email
           },
           {
             defaultValue: '',
@@ -61,7 +43,7 @@ export default function RegisterPage() {
                 type='password'
               />
             ),
-            validationRule: RegisterSchema.properties.password
+            validationRule: CreateAccountDtoSchema.properties.password
           },
           {
             defaultValue: '',
@@ -81,7 +63,15 @@ export default function RegisterPage() {
         ]}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
-          await onSubmit(data as Static<typeof RegisterSchema>)
+          await register({
+            data: {
+              email: data.email,
+              password: data.password
+            }
+          })
+          await router.navigate({
+            to: '/chat'
+          })
         }}
         postContent={
           <div className='text-center text-sm'>

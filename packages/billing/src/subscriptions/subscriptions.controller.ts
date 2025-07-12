@@ -1,11 +1,7 @@
-import type { Static } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
-
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
 
 import { IS_CONTROLLER } from '@archesai/core'
-import { UpdateSubscriptionDtoSchema } from '@archesai/schemas'
+import { Type, UpdateSubscriptionDtoSchema } from '@archesai/schemas'
 
 import type { SubscriptionsService } from '#subscriptions/subscriptions.service'
 
@@ -55,19 +51,9 @@ export class SubscriptionsController implements Controller {
           tags: ['Billing']
         }
       },
-      this.update.bind(this)
-    )
-  }
-
-  public async update(
-    request: ArchesApiRequest & {
-      body: Static<typeof UpdateSubscriptionDtoSchema>
-      params: { id: string }
-    }
-  ) {
-    return this.subscriptionsService.update(
-      request.params.id,
-      request.body.planId
+      (req) => {
+        return this.subscriptionsService.update(req.params.id, req.body.planId)
+      }
     )
   }
 }

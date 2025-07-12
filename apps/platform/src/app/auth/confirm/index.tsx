@@ -6,22 +6,28 @@ import { ConfirmationForm } from '@archesai/ui/components/custom/verification-to
 type ActionType = 'email-change' | 'email-verification' | 'password-reset'
 
 export const Route = createFileRoute('/auth/confirm/')({
-  component: ConfirmPage
+  component: ConfirmPage,
+  validateSearch: (search) => {
+    const { token, type } = search as {
+      token: string
+      type: '' | ActionType
+    }
+    return {
+      token,
+      type
+    }
+  }
 })
 
 export default function ConfirmPage() {
   const search = Route.useSearch()
-  const { token = '', type = '' } = search as {
-    token: string
-    type: '' | ActionType
-  }
 
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
         <ConfirmationForm
-          token={token}
-          type={type || 'password-reset'}
+          token={search.token}
+          type={search.type || 'password-reset'}
         />
       </Suspense>
     </>
