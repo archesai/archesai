@@ -19,7 +19,6 @@ export class VerificationTokenRepository extends BaseRepository<
 > {
   constructor(
     databaseService: DatabaseService<
-      VerificationTokenEntity,
       VerificationTokenInsertModel,
       VerificationTokenSelectModel
     >

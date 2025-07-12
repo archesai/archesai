@@ -12,7 +12,7 @@ export const ResourceObjectSchema = Type.Object(
     attributes: Type.Optional(Type.Record(Type.String(), Type.Unknown())),
     links: Type.Optional(
       Type.Object({
-        self: Type.Optional(LegacyRef(LinkSchema))
+        self: LegacyRef(LinkSchema)
       })
     ),
     relationships: Type.Optional(LegacyRef(RelationshipsSchema))

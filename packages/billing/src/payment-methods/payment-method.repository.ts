@@ -14,11 +14,7 @@ import type { StripeService } from '#stripe/stripe.service'
 export class PaymentMethodRepository
   implements
     Pick<
-      BaseRepository<
-        PaymentMethodEntity,
-        PaymentMethodEntity,
-        Stripe.PaymentMethod
-      >,
+      BaseRepository<PaymentMethodEntity, PaymentMethodEntity>,
       | 'create'
       | 'createMany'
       | 'delete'

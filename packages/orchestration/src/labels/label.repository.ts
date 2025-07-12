@@ -15,11 +15,7 @@ export class LabelRepository extends BaseRepository<
   LabelSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      LabelEntity,
-      LabelInsertModel,
-      LabelSelectModel
-    >
+    databaseService: DatabaseService<LabelInsertModel, LabelSelectModel>
   ) {
     super(databaseService, LabelTable, LabelEntitySchema)
   }

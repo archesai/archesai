@@ -14,6 +14,13 @@
       "tag": "0001_classy_black_crow",
       "version": "7",
       "when": 1752351477538
+    },
+    {
+      "breakpoints": true,
+      "idx": 2,
+      "tag": "0002_known_namora",
+      "version": "7",
+      "when": 1752352988454
     }
   ],
   "version": "7"

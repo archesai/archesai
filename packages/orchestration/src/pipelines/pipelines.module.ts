@@ -3,7 +3,6 @@ import type {
   PipelineInsertModel,
   PipelineSelectModel
 } from '@archesai/database'
-import type { PipelineEntity } from '@archesai/schemas'
 
 import {
   createModule,
@@ -45,7 +44,6 @@ export const PipelinesModuleDefinition: ModuleMetadata = {
       provide: PipelineRepository,
       useFactory: (
         databaseService: DatabaseService<
-          PipelineEntity,
           PipelineInsertModel,
           PipelineSelectModel
         >

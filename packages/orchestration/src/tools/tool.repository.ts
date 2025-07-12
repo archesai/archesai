@@ -15,11 +15,7 @@ export class ToolRepository extends BaseRepository<
   ToolSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      ToolEntity,
-      ToolInsertModel,
-      ToolSelectModel
-    >
+    databaseService: DatabaseService<ToolInsertModel, ToolSelectModel>
   ) {
     super(databaseService, ToolTable, ToolEntitySchema)
   }

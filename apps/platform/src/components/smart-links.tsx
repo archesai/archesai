@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { createElement, useCallback, useMemo } from 'react'
-import { Link as TanStackLink, useRouterState } from '@tanstack/react-router'
+import { Link as TanStackLink } from '@tanstack/react-router'
 
 import type { SmartLinkProps } from '@archesai/ui/hooks/use-link'
 
@@ -48,21 +48,14 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   ...restProps
 }) => {
   const { isExternalUrl, trackEvent } = useLinkContext()
-  const routerState = useRouterState()
+  // const routerState = useRouterState()
 
   // Determine if this is an external link
-  const isExternal = useMemo(
-    () => external ?? isExternalUrl(href),
-    [external, href, isExternalUrl]
-  )
+  const isExternal = external ?? isExternalUrl(href)
 
   // Check if we're currently navigating to this route
-  const isNavigating = useMemo(
-    () =>
-      routerState.status === 'pending' &&
-      routerState.location.pathname === href,
-    [routerState.status, routerState.location.pathname, href]
-  )
+  // const isNavigating =
+  //   routerState.status === 'pending' && routerState.location.pathname === href
 
   // Handle analytics tracking
   const handleClick = useCallback(
@@ -105,16 +98,20 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   const combinedClassName = useMemo(() => {
     const classes = [className]
 
-    if (isNavigating) {
-      classes.push('opacity-50', 'pointer-events-none')
-    }
+    // if (isNavigating) {
+    //   classes.push('opacity-50', 'pointer-events-none')
+    // }
 
     if (disabled) {
       classes.push('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
     }
 
     return classes.filter(Boolean).join(' ') || undefined
-  }, [className, isNavigating, disabled])
+  }, [
+    className,
+    // isNavigating,
+    disabled
+  ])
 
   // Filter out undefined values from rest props
   const safeRestProps = useMemo(() => filterUndefined(restProps), [restProps])
@@ -180,16 +177,17 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   return createElement(
     TanStackLink,
     tanstackProps,
-    isNavigating ?
-      createElement(
-        'span',
-        { className: 'flex items-center gap-2' },
-        createElement('span', {
-          className:
-            'animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full'
-        }),
-        children
-      )
-    : children
+    // isNavigating ?
+    //   createElement(
+    //     'span',
+    //     { className: 'flex items-center gap-2' },
+    //     createElement('span', {
+    //       className:
+    //         'animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full'
+    //     }),
+    //     children
+    //   )
+    // : children
+    children
   )
 }

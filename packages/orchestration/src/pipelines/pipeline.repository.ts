@@ -18,11 +18,7 @@ export class PipelineRepository extends BaseRepository<
   PipelineSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      PipelineEntity,
-      PipelineInsertModel,
-      PipelineSelectModel
-    >
+    databaseService: DatabaseService<PipelineInsertModel, PipelineSelectModel>
   ) {
     super(databaseService, PipelineTable, PipelineEntitySchema)
     // this.databaseService = databaseService

@@ -32,7 +32,7 @@ export const siteRoutes: SiteRoute[] = [
   },
   {
     description: 'Browse and manage your artifacts here.',
-    href: '/artifacts/view',
+    href: '/artifacts',
     Icon: Server,
     section: 'Data',
     title: 'Artifacts'

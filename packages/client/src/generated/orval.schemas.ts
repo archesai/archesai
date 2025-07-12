@@ -2433,6 +2433,11 @@ export type CreateArtifactBody = {
 }
 
 /**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type CreateArtifact201DataAttributesProducerId = string | null
+
+/**
  * The artifact entity
  */
 export type CreateArtifact201DataAttributes = {
@@ -2457,7 +2462,7 @@ export type CreateArtifact201DataAttributes = {
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
   previewImage: string
   /** The ID of the run that produced this artifact, if applicable */
-  producerId: string
+  producerId: CreateArtifact201DataAttributesProducerId
   /** The artifact text */
   text?: string
   /** The artifact URL */
@@ -2562,6 +2567,11 @@ export type FindManyArtifactsParams = {
 }
 
 /**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type FindManyArtifacts200DataItemAttributesProducerId = string | null
+
+/**
  * The artifact entity
  */
 export type FindManyArtifacts200DataItemAttributes = {
@@ -2586,7 +2596,7 @@ export type FindManyArtifacts200DataItemAttributes = {
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
   previewImage: string
   /** The ID of the run that produced this artifact, if applicable */
-  producerId: string
+  producerId: FindManyArtifacts200DataItemAttributesProducerId
   /** The artifact text */
   text?: string
   /** The artifact URL */
@@ -2649,6 +2659,11 @@ export type FindManyArtifacts200 = {
 }
 
 /**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type DeleteArtifact200DataAttributesProducerId = string | null
+
+/**
  * The artifact entity
  */
 export type DeleteArtifact200DataAttributes = {
@@ -2673,7 +2688,7 @@ export type DeleteArtifact200DataAttributes = {
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
   previewImage: string
   /** The ID of the run that produced this artifact, if applicable */
-  producerId: string
+  producerId: DeleteArtifact200DataAttributesProducerId
   /** The artifact text */
   text?: string
   /** The artifact URL */
@@ -2737,6 +2752,11 @@ export type DeleteArtifact200 = {
 }
 
 /**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type GetOneArtifact200DataAttributesProducerId = string | null
+
+/**
  * The artifact entity
  */
 export type GetOneArtifact200DataAttributes = {
@@ -2761,7 +2781,7 @@ export type GetOneArtifact200DataAttributes = {
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
   previewImage: string
   /** The ID of the run that produced this artifact, if applicable */
-  producerId: string
+  producerId: GetOneArtifact200DataAttributesProducerId
   /** The artifact text */
   text?: string
   /** The artifact URL */
@@ -2834,6 +2854,11 @@ export type UpdateArtifactBody = {
 }
 
 /**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type UpdateArtifact200DataAttributesProducerId = string | null
+
+/**
  * The artifact entity
  */
 export type UpdateArtifact200DataAttributes = {
@@ -2858,7 +2883,7 @@ export type UpdateArtifact200DataAttributes = {
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
   previewImage: string
   /** The ID of the run that produced this artifact, if applicable */
-  producerId: string
+  producerId: UpdateArtifact200DataAttributesProducerId
   /** The artifact text */
   text?: string
   /** The artifact URL */

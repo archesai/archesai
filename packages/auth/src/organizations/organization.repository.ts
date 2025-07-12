@@ -19,7 +19,6 @@ export class OrganizationRepository extends BaseRepository<
 > {
   constructor(
     databaseService: DatabaseService<
-      OrganizationEntity,
       OrganizationInsertModel,
       OrganizationSelectModel
     >

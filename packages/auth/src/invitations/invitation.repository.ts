@@ -19,7 +19,6 @@ export class InvitationRepository extends BaseRepository<
 > {
   constructor(
     databaseService: DatabaseService<
-      InvitationEntity,
       InvitationInsertModel,
       InvitationSelectModel
     >

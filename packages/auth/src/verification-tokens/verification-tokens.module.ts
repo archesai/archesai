@@ -3,7 +3,6 @@ import type {
   VerificationTokenInsertModel,
   VerificationTokenSelectModel
 } from '@archesai/database'
-import type { VerificationTokenEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,
@@ -50,7 +49,6 @@ export const VerificationTokensModuleDefinition: ModuleMetadata = {
       provide: VerificationTokenRepository,
       useFactory: (
         databaseService: DatabaseService<
-          VerificationTokenEntity,
           VerificationTokenInsertModel,
           VerificationTokenSelectModel
         >

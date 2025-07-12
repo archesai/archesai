@@ -3,7 +3,6 @@ import type {
   InvitationInsertModel,
   InvitationSelectModel
 } from '@archesai/database'
-import type { InvitationEntity } from '@archesai/schemas'
 
 import {
   createModule,
@@ -47,7 +46,6 @@ export const InvitationsModuleDefinition: ModuleMetadata = {
       provide: InvitationRepository,
       useFactory: (
         databaseService: DatabaseService<
-          InvitationEntity,
           InvitationInsertModel,
           InvitationSelectModel
         >

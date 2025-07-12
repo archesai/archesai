@@ -15,11 +15,7 @@ export class ApiTokenRepository extends BaseRepository<
   ApiTokenSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      ApiTokenEntity,
-      ApiTokenInsertModel,
-      ApiTokenSelectModel
-    >
+    databaseService: DatabaseService<ApiTokenInsertModel, ApiTokenSelectModel>
   ) {
     super(databaseService, ApiTokenTable, ApiTokenEntitySchema)
   }

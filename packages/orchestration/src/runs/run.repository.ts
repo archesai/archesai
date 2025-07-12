@@ -15,7 +15,7 @@ export class RunRepository extends BaseRepository<
   RunSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<RunEntity, RunInsertModel, RunSelectModel>
+    databaseService: DatabaseService<RunInsertModel, RunSelectModel>
   ) {
     super(databaseService, RunTable, RunEntitySchema)
   }

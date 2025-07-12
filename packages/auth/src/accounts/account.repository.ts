@@ -15,11 +15,7 @@ export class AccountRepository extends BaseRepository<
   AccountSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      AccountEntity,
-      AccountInsertModel,
-      AccountSelectModel
-    >
+    databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
   ) {
     super(databaseService, AccountTable, AccountEntitySchema)
   }

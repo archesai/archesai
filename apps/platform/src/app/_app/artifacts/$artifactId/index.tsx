@@ -1,23 +1,26 @@
 import { Suspense } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useParams } from '@tanstack/react-router'
 
-// import { ArtifactViewer } from '@archesai/ui/components/custom/content-viewer'
 import { Card } from '@archesai/ui/components/shadcn/card'
 
-import { ArtifactDetailsBody, ArtifactDetailsHeader } from './details'
+import { ArtifactDetailsBody, ArtifactDetailsHeader } from './-details'
 
-export const Route = createFileRoute('/_app/artifacts/single/')({
+export const Route = createFileRoute('/_app/artifacts/$artifactId/')({
   component: ArtifactDetailsPage
 })
 
 export default function ArtifactDetailsPage() {
+  const params = useParams({
+    from: Route.id
+  })
+
   return (
     <div className='flex h-full w-full gap-3'>
       {/*LEFT SIDE*/}
       <div className='flex w-1/2 flex-initial flex-col gap-3'>
         <Card>
           <Suspense fallback={<p>Loading feed...</p>}>
-            <ArtifactDetailsHeader />
+            <ArtifactDetailsHeader artifactId={params.artifactId} />
           </Suspense>
           <Suspense fallback={<p>Loading feed...</p>}>
             <ArtifactDetailsBody />

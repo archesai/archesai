@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import Playground from '#components/playground'
+import { Playground } from '#components/playground'
 import { getRouteMeta } from '#lib/site-utils'
 
 export const metadata = getRouteMeta('/playground')

@@ -1,6 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
 import type { AccountInsertModel, AccountSelectModel } from '@archesai/database'
-import type { AccountEntity } from '@archesai/schemas'
 
 import {
   createModule,
@@ -37,11 +36,7 @@ export const AccountsModuleDefinition: ModuleMetadata = {
       inject: [DatabaseService],
       provide: AccountRepository,
       useFactory: (
-        databaseService: DatabaseService<
-          AccountEntity,
-          AccountInsertModel,
-          AccountSelectModel
-        >
+        databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
       ) => new AccountRepository(databaseService)
     }
   ]

@@ -129,7 +129,7 @@
 //           useFindMany={useFindManyTools}
 //         />
 //       ),
-//       validationRule: ToolEntitySchema.properties.id as unknown as TSchema
+//       validationRule: ToolEntitySchema.properties.id
 //     },
 //     {
 //       component: Input,

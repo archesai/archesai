@@ -15,16 +15,15 @@ import { Logger } from '#logging/logger'
  */
 export abstract class BaseRepository<
   TEntity extends BaseEntity,
-  TInsert = unknown,
-  TModel = unknown,
+  TInsertModel = unknown,
+  TSelectModel extends BaseEntity = BaseEntity,
   TTables = unknown
 > {
   protected readonly entitySchema: TSchema
   protected readonly primaryKey: string = 'id'
   private readonly databaseService: DatabaseService<
-    TEntity,
-    TInsert,
-    TModel,
+    TInsertModel,
+    TSelectModel,
     unknown,
     TTables
   >
@@ -33,9 +32,8 @@ export abstract class BaseRepository<
 
   constructor(
     databaseService: DatabaseService<
-      TEntity,
-      TInsert,
-      TModel,
+      TInsertModel,
+      TSelectModel,
       unknown,
       TTables
     >,
@@ -47,7 +45,7 @@ export abstract class BaseRepository<
     this.entitySchema = entitySchema
   }
 
-  public async create(value: TInsert): Promise<TEntity> {
+  public async create(value: TInsertModel): Promise<TEntity> {
     this.logger.debug('create', { value })
     const [model] = await this.databaseService.insert(this.table, [value])
     if (!model) {
@@ -56,7 +54,7 @@ export abstract class BaseRepository<
     return this.toEntity(model)
   }
 
-  public async createMany(values: TInsert[]): Promise<{
+  public async createMany(values: TInsertModel[]): Promise<{
     count: number
     data: TEntity[]
   }> {
@@ -86,7 +84,7 @@ export abstract class BaseRepository<
   }
 
   public async deleteMany(
-    query: SearchQuery<TEntity>
+    query: SearchQuery<TSelectModel>
   ): Promise<{ count: number; data: TEntity[] }> {
     this.logger.debug('deleteMany', { query })
     const whereConditions = this.databaseService.buildWhereConditions(
@@ -103,7 +101,7 @@ export abstract class BaseRepository<
     }
   }
 
-  public async findFirst(query: SearchQuery<TEntity>): Promise<TEntity> {
+  public async findFirst(query: SearchQuery<TSelectModel>): Promise<TEntity> {
     this.logger.debug('findFirst', { query })
     const whereConditions = this.databaseService.buildWhereConditions(
       this.table,
@@ -125,7 +123,7 @@ export abstract class BaseRepository<
     return this.toEntity(model)
   }
 
-  public async findMany(query: SearchQuery<TEntity>): Promise<{
+  public async findMany(query: SearchQuery<TSelectModel>): Promise<{
     count: number
     data: TEntity[]
   }> {
@@ -162,7 +160,10 @@ export abstract class BaseRepository<
     return this.toEntity(model)
   }
 
-  public async update(id: string, value: Partial<TInsert>): Promise<TEntity> {
+  public async update(
+    id: string,
+    value: Partial<TInsertModel>
+  ): Promise<TEntity> {
     this.logger.debug('update', { id, value })
     const query = this.buildSearchQueryPrimaryKey(id)
     const whereConditions = this.databaseService.buildWhereConditions(
@@ -181,8 +182,8 @@ export abstract class BaseRepository<
   }
 
   public async updateMany(
-    value: Partial<TInsert>,
-    query: SearchQuery<TEntity>
+    value: Partial<TInsertModel>,
+    query: SearchQuery<TSelectModel>
   ): Promise<{
     count: number
     data: TEntity[]
@@ -203,7 +204,7 @@ export abstract class BaseRepository<
     }
   }
 
-  protected toEntity(model: TModel): TEntity {
+  protected toEntity(model: TSelectModel): TEntity {
     this.logger.debug('toEntity', { model })
     try {
       return Value.Parse(this.entitySchema, model)
@@ -222,14 +223,14 @@ export abstract class BaseRepository<
     }
   }
 
-  private buildSearchQueryPrimaryKey(value: string): SearchQuery<TEntity> {
+  private buildSearchQueryPrimaryKey(value: string): SearchQuery<TSelectModel> {
     this.logger.debug('buildSearchQueryPrimaryKey', { value })
-    const query: SearchQuery<TEntity> = {
+    const query: SearchQuery<TSelectModel> = {
       filter: {
         id: {
           equals: value
         }
-      } as EntityFilter<TEntity>,
+      } as EntityFilter<TSelectModel>,
       page: {
         number: 0,
         size: 1

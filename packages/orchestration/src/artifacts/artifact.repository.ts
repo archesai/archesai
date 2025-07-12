@@ -18,11 +18,7 @@ export class ArtifactRepository extends BaseRepository<
   ArtifactSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      ArtifactEntity,
-      ArtifactInsertModel,
-      ArtifactSelectModel
-    >
+    databaseService: DatabaseService<ArtifactInsertModel, ArtifactSelectModel>
   ) {
     super(databaseService, ArtifactTable, ArtifactEntitySchema)
   }

@@ -3,7 +3,6 @@ import type {
   OrganizationInsertModel,
   OrganizationSelectModel
 } from '@archesai/database'
-import type { OrganizationEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,
@@ -51,7 +50,6 @@ export const OrganizationsModuleDefinition: ModuleMetadata = {
       provide: OrganizationRepository,
       useFactory: (
         databaseService: DatabaseService<
-          OrganizationEntity,
           OrganizationInsertModel,
           OrganizationSelectModel
         >

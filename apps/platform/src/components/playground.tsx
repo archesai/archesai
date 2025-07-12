@@ -3,11 +3,13 @@
 // import { usePlayground } from '@archesai/ui/hooks/use-playground'
 // import { cn } from '@archesai/ui/lib/utils'
 
+import { ToolCards } from '#components/tool-cards'
+
 // import ArtifactDataTable from '#components/datatables/artifact-datatable'
 // import { RunForm } from '#components/forms/run-form'
 // import { ToolCards } from '#components/tool-cards'
 
-export default function Playground() {
+export function Playground() {
   // const { selectedRunId, selectedTool } = usePlayground()
 
   // const { data: runsResponse } = useFindManyRuns()
@@ -64,5 +66,5 @@ export default function Playground() {
   //     </div>
   //   : <ToolCards />
 
-  return <></>
+  return <ToolCards />
 }

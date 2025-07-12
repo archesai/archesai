@@ -3,7 +3,6 @@ import type {
   ApiTokenInsertModel,
   ApiTokenSelectModel
 } from '@archesai/database'
-import type { ApiTokenEntity } from '@archesai/schemas'
 
 import {
   ConfigModule,
@@ -57,7 +56,6 @@ export const ApiTokensModuleDefinition: ModuleMetadata = {
       provide: ApiTokenRepository,
       useFactory: (
         databaseService: DatabaseService<
-          ApiTokenEntity,
           ApiTokenInsertModel,
           ApiTokenSelectModel
         >

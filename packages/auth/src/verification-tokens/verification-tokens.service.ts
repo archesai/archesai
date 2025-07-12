@@ -72,7 +72,7 @@ export class VerificationTokensService {
   public async verify(_type: VerificationTokenType, token: string) {
     const verificationToken = await this.verificationTokenRepository.findFirst({
       filter: {
-        token: {
+        identifier: {
           equals: token
         }
       }

@@ -8,8 +8,7 @@ export const VerificationTokenEntitySchema = Type.Object(
   {
     ...BaseEntitySchema.properties,
     expires: Type.String({
-      description: 'The expiration date of the token',
-      format: 'date-time'
+      description: 'The expiration date of the token'
     }),
     identifier: Type.String({
       description: 'The identifier associated with the token'

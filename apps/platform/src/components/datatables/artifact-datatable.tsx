@@ -37,10 +37,10 @@ export default function ArtifactDataTable({
                 <ContentTypeToIcon contentType={row.original.mimeType || ''} />
                 <Link
                   className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  search={{
+                  params={{
                     artifactId: row.original.id
                   }}
-                  to={`/artifacts/single`}
+                  to={`/artifacts/$artifactId`}
                 >
                   {row.original.name}
                 </Link>
@@ -56,10 +56,10 @@ export default function ArtifactDataTable({
                 {row.original.text ?? (
                   <HoverCard openDelay={200}>
                     <Link
-                      search={{
+                      params={{
                         artifactId: row.original.id
                       }}
-                      to={`/artifacts/single`}
+                      to={`/artifacts/$artifactId`}
                     >
                       <HoverCardTrigger asChild>
                         <ScanSearch />
@@ -88,10 +88,10 @@ export default function ArtifactDataTable({
             return row.original.parentId ?
                 <Link
                   className='max-w-lg truncate text-base text-wrap md:text-sm'
-                  search={{
+                  params={{
                     artifactId: row.original.parentId
                   }}
-                  to={`/artifacts/single`}
+                  to={`/artifacts/$artifactId`}
                 >
                   {row.original.parentId}
                 </Link>
@@ -162,7 +162,10 @@ export default function ArtifactDataTable({
         )
       }}
       handleSelect={async (content) => {
-        await navigate({ to: `/artifacts/single?artifactId=${content.id}` })
+        await navigate({
+          params: { artifactId: content.id },
+          to: `/artifacts/$artifactId`
+        })
       }}
       icon={<File size={24} />}
       readonly={readonly}

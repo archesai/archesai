@@ -33,7 +33,7 @@ export const ArtifactEntitySchema = Type.Object(
       description:
         'The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'
     }),
-    producerId: Type.String({
+    producerId: Type.Union([Type.String(), Type.Null()], {
       description:
         'The ID of the run that produced this artifact, if applicable'
     }),

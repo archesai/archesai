@@ -2,20 +2,18 @@ import { Type } from '@sinclair/typebox'
 
 import { LegacyRef } from '@archesai/schemas'
 
-import { MetaSchema } from '#http/schemas/meta.schema'
-
 export const LinkSchema = Type.Union(
   [
-    Type.String({ format: 'uri' }),
-    Type.Object({
-      describedby: Type.Optional(Type.String({ format: 'uri' })),
-      href: Type.String({ format: 'uri' }),
-      hreflang: Type.Optional(Type.String()),
-      meta: Type.Optional(LegacyRef(MetaSchema)),
-      rel: Type.Optional(Type.String()),
-      title: Type.Optional(Type.String()),
-      type: Type.Optional(Type.String())
-    })
+    Type.String({ format: 'uri' })
+    // Type.Object({
+    //   describedby: Type.Optional(Type.String({ format: 'uri' })),
+    //   href: Type.String({ format: 'uri' }),
+    //   hreflang: Type.Optional(Type.String()),
+    //   meta: Type.Optional(LegacyRef(MetaSchema)),
+    //   rel: Type.Optional(Type.String()),
+    //   title: Type.Optional(Type.String()),
+    //   type: Type.Optional(Type.String())
+    // })
   ],
   {
     $id: 'Link',

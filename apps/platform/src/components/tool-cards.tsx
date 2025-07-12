@@ -8,24 +8,10 @@ import { toolBaseIcons } from '#lib/site-config'
 
 export const ToolCards = () => {
   const navigate = useNavigate()
-  const { data: toolsResponse } = useFindManyToolsSuspense()
-  // if (isPending) {
-  //   return (
-  //     <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
-  //       {new Array(6).map((_, index) => (
-  //         <Card
-  //           className='flex h-[150px] flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
-  //           key={index}
-  //         >
-  //           <Skeleton className='mx-auto h-8 w-8' />
-  //           <Skeleton className='mx-auto h-6 w-3/4' />
-  //           <Skeleton className='mx-auto h-4 w-5/6' />
-  //         </Card>
-  //       ))}
-  //     </div>
-  //   )
-  // }
-  const tools = toolsResponse.data
+  const {
+    data: { data: tools }
+  } = useFindManyToolsSuspense()
+
   if (!tools.length) {
     return (
       <div className='flex h-[150px] items-center justify-center'>
@@ -36,8 +22,7 @@ export const ToolCards = () => {
   return (
     <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
       {tools.map((tool, index) => {
-        const Icon =
-          toolBaseIcons[tool.attributes.toolBase as keyof typeof toolBaseIcons]
+        const Icon = toolBaseIcons['create-embeddings']
         const iconColor = stringToColor(tool.attributes.toolBase)
         return (
           <Card
@@ -45,7 +30,10 @@ export const ToolCards = () => {
             key={index}
             onClick={async () => {
               await navigate({
-                to: `/playground?selectedTool=${JSON.stringify(tool)}`
+                search: {
+                  selectedTool: tool.id
+                },
+                to: `/playground`
               })
             }}
           >
@@ -60,7 +48,6 @@ export const ToolCards = () => {
             />
             <div className='text-lg font-semibold'>{tool.attributes.name}</div>
             <div className='text-sm font-normal'>
-              {' '}
               {tool.attributes.description}
             </div>
           </Card>

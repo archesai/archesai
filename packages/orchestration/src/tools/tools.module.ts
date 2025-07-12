@@ -1,6 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
 import type { ToolInsertModel, ToolSelectModel } from '@archesai/database'
-import type { ToolEntity } from '@archesai/schemas'
 
 import {
   createModule,
@@ -37,11 +36,7 @@ export const ToolsModuleDefinition: ModuleMetadata = {
       inject: [DatabaseService],
       provide: ToolRepository,
       useFactory: (
-        databaseService: DatabaseService<
-          ToolEntity,
-          ToolInsertModel,
-          ToolSelectModel
-        >
+        databaseService: DatabaseService<ToolInsertModel, ToolSelectModel>
       ) => new ToolRepository(databaseService)
     }
   ]

@@ -9,20 +9,15 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 
-export const ArtifactDetailsHeader = () => {
-  const artifactId = ''
-  const { data, error } = useGetOneArtifactSuspense(artifactId)
+export const ArtifactDetailsHeader = ({
+  artifactId
+}: {
+  artifactId: string
+}) => {
+  const {
+    data: { data: artifactData }
+  } = useGetOneArtifactSuspense(artifactId)
 
-  if (error) {
-    return (
-      <CardHeader>
-        <CardTitle>Error</CardTitle>
-        <CardDescription>{error.errors[0]?.detail}</CardDescription>
-      </CardHeader>
-    )
-  }
-
-  const artifactData = data.data
   return (
     <CardHeader>
       <CardTitle className='flex items-center justify-between'>

@@ -19,8 +19,7 @@ export const RunEntitySchema = Type.Object(
     ...BaseEntitySchema.properties,
     completedAt: Type.Optional(
       Type.String({
-        description: 'The timestamp when the run completed',
-        format: 'date-time'
+        description: 'The timestamp when the run completed'
       })
     ),
     error: Type.Optional(Type.String({ description: 'The error message' })),
@@ -35,8 +34,7 @@ export const RunEntitySchema = Type.Object(
     ),
     startedAt: Type.Optional(
       Type.String({
-        description: 'The timestamp when the run started',
-        format: 'date-time'
+        description: 'The timestamp when the run started'
       })
     ),
     status: Type.String({ description: 'The status of the run' }),

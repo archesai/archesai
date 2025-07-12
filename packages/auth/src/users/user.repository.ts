@@ -15,11 +15,7 @@ export class UserRepository extends BaseRepository<
   UserSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      UserEntity,
-      UserInsertModel,
-      UserSelectModel
-    >
+    databaseService: DatabaseService<UserInsertModel, UserSelectModel>
   ) {
     super(databaseService, UserTable, UserEntitySchema)
   }

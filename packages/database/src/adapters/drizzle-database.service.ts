@@ -1,32 +1,31 @@
 import type { SQL } from 'drizzle-orm'
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
-import type { PgColumn, PgTable } from 'drizzle-orm/pg-core'
+import type { PgTable } from 'drizzle-orm/pg-core'
 
 import { sql } from 'drizzle-orm'
 import { getTableConfig } from 'drizzle-orm/pg-core'
 
 import type { SearchQuery } from '@archesai/core'
-import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
+import type { BaseEntity } from '@archesai/schemas'
 
 import { DatabaseService } from '@archesai/core'
 
+import type * as schema from '#schema/index'
+
 export class DrizzleDatabaseService<
   TEntity extends BaseEntity = BaseEntity,
-  TInsert extends BaseInsertion<TEntity> = BaseInsertion<TEntity>,
-  TModel = TEntity,
-  TDatabase extends NodePgDatabase<Record<string, unknown>> = NodePgDatabase<
-    Record<string, unknown>
-  >
-> extends DatabaseService<TEntity, TInsert, TModel, SQL, PgTable> {
-  private readonly db: TDatabase
-  constructor(db: TDatabase) {
+  TInsertModel = unknown,
+  TSelectModel extends BaseEntity = TEntity
+> extends DatabaseService<TInsertModel, TSelectModel, SQL, PgTable> {
+  private readonly db: NodePgDatabase<typeof schema>
+  constructor(db: NodePgDatabase<typeof schema>) {
     super()
     this.db = db
   }
 
   public buildWhereConditions(
     table: PgTable,
-    query: SearchQuery<TEntity>
+    query: SearchQuery<TSelectModel>
   ): SQL | undefined {
     const conditions: SQL[] = []
 
@@ -95,10 +94,9 @@ export class DrizzleDatabaseService<
   }
 
   public async count(table: PgTable, where?: SQL): Promise<number> {
-    const t = this.getTableFromName(table)
     const [count] = await this.db
       .select({ count: sql<number>`COUNT(*)` })
-      .from(t)
+      .from(table)
       .where(where)
     if (!count) {
       return 0
@@ -106,46 +104,36 @@ export class DrizzleDatabaseService<
     return count.count
   }
 
-  public async delete(table: PgTable, where?: SQL): Promise<TModel[]> {
-    const t = this.getTableFromName(table)
-    return this.db.delete(t).where(where).returning() as unknown as Promise<
-      TModel[]
-    >
+  public delete(
+    table: keyof NodePgDatabase<typeof schema>['_']['schema'],
+    where?: SQL
+  ): Promise<TSelectModel[]> {
+    return this.db.delete(table).where(where).returning()
   }
 
   public execute(query: SQL): Promise<unknown> {
     return this.db.execute(query)
   }
 
-  public getTableFromName(table: PgTable): PgTable & {
-    id: PgColumn
-  } {
-    return table as PgTable & {
-      id: PgColumn
-    }
+  public insert(
+    table: keyof NodePgDatabase<typeof schema>['_']['schema'],
+    values: TInsertModel[]
+  ): Promise<TSelectModel[]> {
+    return this.db.insert(table).values(values).returning()
   }
 
-  public insert(table: PgTable, values: TInsert[]): Promise<TModel[]> {
-    const t = this.getTableFromName(table)
-    const query = this.db.insert(t).values(values).returning()
-    return query as unknown as Promise<TModel[]>
-  }
-
-  public select(table: PgTable, where?: SQL): Promise<TModel[]> {
-    const t = this.getTableFromName(table)
-    return this.db.select().from(t).where(where) as unknown as Promise<TModel[]>
+  public select(
+    table: keyof NodePgDatabase<typeof schema>['_']['schema'],
+    where?: SQL
+  ): Promise<TSelectModel[]> {
+    return this.db.select().from(table).where(where)
   }
 
   public update(
-    table: PgTable,
-    values: Partial<TInsert>,
+    table: keyof NodePgDatabase<typeof schema>['_']['schema'],
+    values: Partial<TInsertModel>,
     where?: SQL
-  ): Promise<TModel[]> {
-    const t = this.getTableFromName(table)
-    return this.db
-      .update(t)
-      .set(values)
-      .where(where)
-      .returning() as unknown as Promise<TModel[]>
+  ): Promise<TSelectModel[]> {
+    return this.db.update(table).set(values).where(where).returning()
   }
 }

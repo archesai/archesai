@@ -22,6 +22,7 @@ import { Route as AppPlaygroundIndexRouteImport } from './app/_app/playground/in
 import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
 import { Route as AppChatIndexRouteImport } from './app/_app/chat/index'
+import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
 import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
 import { Route as AppProfileSecurityIndexRouteImport } from './app/_app/profile/security/index'
 import { Route as AppProfileGeneralIndexRouteImport } from './app/_app/profile/general/index'
@@ -31,8 +32,7 @@ import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/orga
 import { Route as AppOrganizationGeneralIndexRouteImport } from './app/_app/organization/general/index'
 import { Route as AppOrganizationBillingIndexRouteImport } from './app/_app/organization/billing/index'
 import { Route as AppOrganizationApiTokensIndexRouteImport } from './app/_app/organization/api-tokens/index'
-import { Route as AppArtifactsViewIndexRouteImport } from './app/_app/artifacts/view/index'
-import { Route as AppArtifactsSingleIndexRouteImport } from './app/_app/artifacts/single/index'
+import { Route as AppArtifactsArtifactIdIndexRouteImport } from './app/_app/artifacts/$artifactId/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -98,6 +98,11 @@ const AppChatIndexRoute = AppChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
+  id: '/artifacts/',
+  path: '/artifacts/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppRunsRunIdIndexRoute = AppRunsRunIdIndexRouteImport.update({
   id: '/runs/$runId/',
   path: '/runs/$runId/',
@@ -148,20 +153,17 @@ const AppOrganizationApiTokensIndexRoute =
     path: '/organization/api-tokens/',
     getParentRoute: () => AppRouteRoute,
   } as any)
-const AppArtifactsViewIndexRoute = AppArtifactsViewIndexRouteImport.update({
-  id: '/artifacts/view/',
-  path: '/artifacts/view/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppArtifactsSingleIndexRoute = AppArtifactsSingleIndexRouteImport.update({
-  id: '/artifacts/single/',
-  path: '/artifacts/single/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
+const AppArtifactsArtifactIdIndexRoute =
+  AppArtifactsArtifactIdIndexRouteImport.update({
+    id: '/artifacts/$artifactId/',
+    path: '/artifacts/$artifactId/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
   '/chat': typeof AppChatIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
@@ -172,8 +174,7 @@ export interface FileRoutesByFullPath {
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/single': typeof AppArtifactsSingleIndexRoute
-  '/artifacts/view': typeof AppArtifactsViewIndexRoute
+  '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
   '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
   '/organization/billing': typeof AppOrganizationBillingIndexRoute
   '/organization/general': typeof AppOrganizationGeneralIndexRoute
@@ -187,6 +188,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/artifacts': typeof AppArtifactsIndexRoute
   '/chat': typeof AppChatIndexRoute
   '/labels': typeof AppLabelsIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
@@ -197,8 +199,7 @@ export interface FileRoutesByTo {
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/single': typeof AppArtifactsSingleIndexRoute
-  '/artifacts/view': typeof AppArtifactsViewIndexRoute
+  '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
   '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
   '/organization/billing': typeof AppOrganizationBillingIndexRoute
   '/organization/general': typeof AppOrganizationGeneralIndexRoute
@@ -214,6 +215,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/_app/artifacts/': typeof AppArtifactsIndexRoute
   '/_app/chat/': typeof AppChatIndexRoute
   '/_app/labels/': typeof AppLabelsIndexRoute
   '/_app/pipelines/': typeof AppPipelinesIndexRoute
@@ -224,8 +226,7 @@ export interface FileRoutesById {
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
-  '/_app/artifacts/single/': typeof AppArtifactsSingleIndexRoute
-  '/_app/artifacts/view/': typeof AppArtifactsViewIndexRoute
+  '/_app/artifacts/$artifactId/': typeof AppArtifactsArtifactIdIndexRoute
   '/_app/organization/api-tokens/': typeof AppOrganizationApiTokensIndexRoute
   '/_app/organization/billing/': typeof AppOrganizationBillingIndexRoute
   '/_app/organization/general/': typeof AppOrganizationGeneralIndexRoute
@@ -241,6 +242,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/'
+    | '/artifacts'
     | '/chat'
     | '/labels'
     | '/pipelines'
@@ -251,8 +253,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
-    | '/artifacts/single'
-    | '/artifacts/view'
+    | '/artifacts/$artifactId'
     | '/organization/api-tokens'
     | '/organization/billing'
     | '/organization/general'
@@ -266,6 +267,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/artifacts'
     | '/chat'
     | '/labels'
     | '/pipelines'
@@ -276,8 +278,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
-    | '/artifacts/single'
-    | '/artifacts/view'
+    | '/artifacts/$artifactId'
     | '/organization/api-tokens'
     | '/organization/billing'
     | '/organization/general'
@@ -292,6 +293,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/auth'
     | '/_app/'
+    | '/_app/artifacts/'
     | '/_app/chat/'
     | '/_app/labels/'
     | '/_app/pipelines/'
@@ -302,8 +304,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/register/'
-    | '/_app/artifacts/single/'
-    | '/_app/artifacts/view/'
+    | '/_app/artifacts/$artifactId/'
     | '/_app/organization/api-tokens/'
     | '/_app/organization/billing/'
     | '/_app/organization/general/'
@@ -413,6 +414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChatIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/artifacts/': {
+      id: '/_app/artifacts/'
+      path: '/artifacts'
+      fullPath: '/artifacts'
+      preLoaderRoute: typeof AppArtifactsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/runs/$runId/': {
       id: '/_app/runs/$runId/'
       path: '/runs/$runId'
@@ -476,18 +484,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizationApiTokensIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/artifacts/view/': {
-      id: '/_app/artifacts/view/'
-      path: '/artifacts/view'
-      fullPath: '/artifacts/view'
-      preLoaderRoute: typeof AppArtifactsViewIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/artifacts/single/': {
-      id: '/_app/artifacts/single/'
-      path: '/artifacts/single'
-      fullPath: '/artifacts/single'
-      preLoaderRoute: typeof AppArtifactsSingleIndexRouteImport
+    '/_app/artifacts/$artifactId/': {
+      id: '/_app/artifacts/$artifactId/'
+      path: '/artifacts/$artifactId'
+      fullPath: '/artifacts/$artifactId'
+      preLoaderRoute: typeof AppArtifactsArtifactIdIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
   }
@@ -495,14 +496,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
+  AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
   AppChatIndexRoute: typeof AppChatIndexRoute
   AppLabelsIndexRoute: typeof AppLabelsIndexRoute
   AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
   AppPlaygroundIndexRoute: typeof AppPlaygroundIndexRoute
   AppRunsIndexRoute: typeof AppRunsIndexRoute
   AppToolsIndexRoute: typeof AppToolsIndexRoute
-  AppArtifactsSingleIndexRoute: typeof AppArtifactsSingleIndexRoute
-  AppArtifactsViewIndexRoute: typeof AppArtifactsViewIndexRoute
+  AppArtifactsArtifactIdIndexRoute: typeof AppArtifactsArtifactIdIndexRoute
   AppOrganizationApiTokensIndexRoute: typeof AppOrganizationApiTokensIndexRoute
   AppOrganizationBillingIndexRoute: typeof AppOrganizationBillingIndexRoute
   AppOrganizationGeneralIndexRoute: typeof AppOrganizationGeneralIndexRoute
@@ -516,14 +517,14 @@ interface AppRouteRouteChildren {
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
+  AppArtifactsIndexRoute: AppArtifactsIndexRoute,
   AppChatIndexRoute: AppChatIndexRoute,
   AppLabelsIndexRoute: AppLabelsIndexRoute,
   AppPipelinesIndexRoute: AppPipelinesIndexRoute,
   AppPlaygroundIndexRoute: AppPlaygroundIndexRoute,
   AppRunsIndexRoute: AppRunsIndexRoute,
   AppToolsIndexRoute: AppToolsIndexRoute,
-  AppArtifactsSingleIndexRoute: AppArtifactsSingleIndexRoute,
-  AppArtifactsViewIndexRoute: AppArtifactsViewIndexRoute,
+  AppArtifactsArtifactIdIndexRoute: AppArtifactsArtifactIdIndexRoute,
   AppOrganizationApiTokensIndexRoute: AppOrganizationApiTokensIndexRoute,
   AppOrganizationBillingIndexRoute: AppOrganizationBillingIndexRoute,
   AppOrganizationGeneralIndexRoute: AppOrganizationGeneralIndexRoute,

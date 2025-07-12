@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type {
   AccessorKeyColumnDef,

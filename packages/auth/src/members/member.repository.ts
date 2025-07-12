@@ -15,11 +15,7 @@ export class MemberRepository extends BaseRepository<
   MemberSelectModel
 > {
   constructor(
-    databaseService: DatabaseService<
-      MemberEntity,
-      MemberInsertModel,
-      MemberSelectModel
-    >
+    databaseService: DatabaseService<MemberInsertModel, MemberSelectModel>
   ) {
     super(databaseService, MemberTable, MemberEntitySchema)
   }

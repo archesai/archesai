@@ -1,6 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
 import type { LabelInsertModel, LabelSelectModel } from '@archesai/database'
-import type { LabelEntity } from '@archesai/schemas'
 
 import {
   createModule,
@@ -30,11 +29,7 @@ export const LabelsModuleDefinition: ModuleMetadata = {
       inject: [DatabaseService],
       provide: LabelRepository,
       useFactory: (
-        databaseService: DatabaseService<
-          LabelEntity,
-          LabelInsertModel,
-          LabelSelectModel
-        >
+        databaseService: DatabaseService<LabelInsertModel, LabelSelectModel>
       ) => new LabelRepository(databaseService)
     },
     {
