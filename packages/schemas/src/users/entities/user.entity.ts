@@ -39,33 +39,4 @@ export const UserEntitySchema = Type.Object(
 
 export type UserEntity = Static<typeof UserEntitySchema>
 
-export class UserRelations {
-  public accounts: { id: string; type: string }[]
-  public memberships: { id: string; type: string }[]
-
-  constructor(props: UserRelations) {
-    this.accounts = props.accounts
-    this.memberships = props.memberships
-  }
-
-  public static schema() {
-    return Type.Object({
-      accounts: Type.Array(
-        Type.Object({
-          id: Type.String(),
-          type: Type.String()
-        }),
-        { description: 'The accounts associated with the user' }
-      ),
-      memberships: Type.Array(
-        Type.Object({
-          id: Type.String(),
-          type: Type.String()
-        }),
-        { description: 'The memberships associated with the user' }
-      )
-    })
-  }
-}
-
 export const USER_ENTITY_KEY = 'users'

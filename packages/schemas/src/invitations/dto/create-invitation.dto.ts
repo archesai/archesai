@@ -6,7 +6,6 @@ import { InvitationEntitySchema } from '#invitations/entities/invitation.entity'
 
 export const CreateInvitationDtoSchema = Type.Object({
   email: InvitationEntitySchema.properties.email,
-  name: InvitationEntitySchema.properties.name,
   role: InvitationEntitySchema.properties.role
 })
 

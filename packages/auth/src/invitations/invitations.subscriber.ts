@@ -48,7 +48,6 @@ export class InvitationsSubscriber implements EventSubscriber {
           })
           const membership = await this.membersService.create({
             invitationId: invitation.id,
-            name: event.creator.name,
             orgname: event.organization.orgname,
             role: 'USER',
             userId: event.creator.id

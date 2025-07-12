@@ -34,16 +34,16 @@ export abstract class BaseController<
   TUpdateRequest extends Partial<TInsert> = Partial<TInsert>
 > implements Controller
 {
+  public readonly entityKey: string
   public readonly [IS_CONTROLLER] = true
+  protected readonly collectionResponseSchema: TObject
   protected readonly createSchema: TObject
-  protected readonly IndividualEntityResponseSchema: TObject
-  protected readonly PaginatedEntityResponseSchema: TObject
+  protected readonly invididualResponseSchema: TObject
   protected readonly service: BaseService<TEntity, TInsert>
   protected readonly updateSchema: TObject
-  private readonly entityKey: string
   private readonly entitySchema: TObject
-  private readonly ResourceObjectSchema: TObject
-  private readonly SearchQuerySchema: TObject
+  private readonly resourceObjectSchema: TObject
+  private readonly searchQuerySchema: TObject
 
   constructor(
     entityKey: string,
@@ -57,19 +57,19 @@ export abstract class BaseController<
     this.service = service
     this.createSchema = createSchema
     this.updateSchema = updateSchema
-    this.ResourceObjectSchema = createResourceObjectSchema(
+    this.resourceObjectSchema = createResourceObjectSchema(
       this.entitySchema,
       this.entityKey
     )
-    this.IndividualEntityResponseSchema = createIndividualResponseSchema(
-      this.ResourceObjectSchema,
+    this.invididualResponseSchema = createIndividualResponseSchema(
+      this.resourceObjectSchema,
       this.entityKey
     )
-    this.PaginatedEntityResponseSchema = createCollectionResponseSchema(
-      this.ResourceObjectSchema,
+    this.collectionResponseSchema = createCollectionResponseSchema(
+      this.resourceObjectSchema,
       this.entityKey
     )
-    this.SearchQuerySchema = createSearchQuerySchema(
+    this.searchQuerySchema = createSearchQuerySchema(
       this.entitySchema,
       this.entityKey
     )
@@ -86,7 +86,7 @@ export abstract class BaseController<
           operationId:
             'create' + capitalize(toCamelCase(singularize(this.entityKey))),
           response: {
-            201: this.IndividualEntityResponseSchema
+            201: this.invididualResponseSchema
           },
           summary: `Create a new ${singularize(this.entityKey)}`,
           tags: [toTitleCase(this.entityKey)]
@@ -112,7 +112,7 @@ export abstract class BaseController<
             id: Type.String()
           }),
           response: {
-            200: this.IndividualEntityResponseSchema,
+            200: this.invididualResponseSchema,
             404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Delete a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
@@ -132,9 +132,9 @@ export abstract class BaseController<
         schema: {
           description: `Find many ${this.entityKey}`,
           operationId: 'findMany' + capitalize(toCamelCase(this.entityKey)),
-          querystring: this.SearchQuerySchema,
+          querystring: this.searchQuerySchema,
           response: {
-            200: this.PaginatedEntityResponseSchema
+            200: this.collectionResponseSchema
           },
           summary: `Find many ${this.entityKey}`,
           tags: [toTitleCase(this.entityKey)]
@@ -162,7 +162,7 @@ export abstract class BaseController<
             id: Type.String()
           }),
           response: {
-            200: this.IndividualEntityResponseSchema,
+            200: this.invididualResponseSchema,
             404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Find a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
@@ -188,7 +188,7 @@ export abstract class BaseController<
             id: Type.String()
           }),
           response: {
-            200: this.IndividualEntityResponseSchema,
+            200: this.invididualResponseSchema,
             404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: `Update a${vf(this.entityKey)} ${singularize(this.entityKey)}`,
@@ -217,16 +217,16 @@ export abstract class BaseController<
 
   protected toIndividualResponse(
     input: TEntity
-  ): StaticDecode<typeof this.IndividualEntityResponseSchema> {
-    const { id, type, ...attributes } = input
+  ): StaticDecode<typeof this.invididualResponseSchema> {
+    const { id, ...attributes } = input
     return {
       data: {
         attributes: attributes,
         id: id,
-        type: type
+        type: this.entityKey
       },
       links: {
-        self: `${type}s/${input.id}`
+        self: `${this.entityKey}s/${input.id}`
       }
     }
   }
@@ -235,15 +235,15 @@ export abstract class BaseController<
     count: number
     data: TEntity[]
     query?: SearchQuery<TEntity>
-  }): StaticDecode<typeof this.PaginatedEntityResponseSchema> {
+  }): StaticDecode<typeof this.collectionResponseSchema> {
     return {
       data: input.data.map((entity) => {
-        const { id, type, ...attributes } = entity
+        const { id, ...attributes } = entity
         return {
           attributes: attributes,
           id: id,
           relationships: {},
-          type: type
+          type: this.entityKey
         }
       }),
       links: {}

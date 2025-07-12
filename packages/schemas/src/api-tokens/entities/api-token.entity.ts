@@ -13,6 +13,9 @@ export const ApiTokenEntitySchema = Type.Object(
     key: Type.String({
       description: 'The API token key. This will only be shown once'
     }),
+    name: Type.String({
+      description: 'The name of the API token'
+    }),
     orgname: Type.String({
       description: 'The name of the organization the token belongs to'
     }),

@@ -2,8 +2,8 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const ErrorsSchema = Type.Array(
-  Type.Object({
+export const ErrorObjectSchema = Type.Object(
+  {
     detail: Type.String({
       examples: ['The requested resource does not exist.']
     }),
@@ -13,12 +13,12 @@ export const ErrorsSchema = Type.Array(
     title: Type.String({
       examples: ['Not Found']
     })
-  }),
+  },
   {
-    $id: 'Errors',
+    $id: 'ErrorObject',
     description: 'A list of errors that occurred during the request',
-    title: 'Errors'
+    title: 'Error Object'
   }
 )
 
-export type Errors = Static<typeof ErrorsSchema>
+export type ErrorObject = Static<typeof ErrorObjectSchema>

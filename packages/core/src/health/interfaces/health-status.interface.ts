@@ -1,8 +1,8 @@
 import type { StatusType } from '@archesai/schemas'
 
-import type { Errors } from '#http/schemas/errors.schema'
+import type { ErrorObject } from '#http/schemas/error-object.schema'
 
 export interface HealthStatus {
-  errors?: Errors
+  errors?: ErrorObject[]
   status: StatusType
 }

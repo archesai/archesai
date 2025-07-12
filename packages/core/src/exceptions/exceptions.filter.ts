@@ -1,7 +1,6 @@
-import { Type } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
+import { Type, Value } from '@archesai/schemas'
 
-import type { Errors } from '#http/schemas/errors.schema'
+import type { ErrorObject } from '#http/schemas/error-object.schema'
 import type { ArgumentsHost } from '#types/context'
 import type { ArchesApiResponse } from '#utils/get-req.transformer'
 
@@ -66,7 +65,7 @@ export class ExceptionsFilter {
           title: exception.name
         }
       ]
-    } satisfies { errors: Errors }
+    } satisfies { errors: ErrorObject[] }
 
     if (statusCode >= 500) {
       this.logger.error(`server error`, {

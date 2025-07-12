@@ -1,9 +1,10 @@
 import type Stripe from 'stripe'
 
 import type { BaseRepository, SearchQuery } from '@archesai/core'
+import type { PaymentMethodEntity } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
-import { generateSlug, PaymentMethodEntity } from '@archesai/schemas'
+import { PaymentMethodEntitySchema, Value } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -141,15 +142,6 @@ export class PaymentMethodRepository
   }
 
   protected toEntity(model: Stripe.PaymentMethod): PaymentMethodEntity {
-    return new PaymentMethodEntity({
-      ...model,
-      createdAt: model.created.toString(),
-      customer: model.customer as string,
-      name: model.billing_details.name ?? '',
-      slug: generateSlug(model.id),
-      stripeId: model.id,
-      type: 'payment-method',
-      updatedAt: model.created.toString()
-    })
+    return Value.Parse(PaymentMethodEntitySchema, model)
   }
 }

@@ -103,7 +103,7 @@ export const DeleteItems = <TEntity extends BaseEntity>({
             <ScrollArea>
               <div className='max-h-72 p-4'>
                 {items.map((item, i) => (
-                  <p key={i}>{item.name}</p>
+                  <p key={i}>{item.id}</p>
                 ))}
               </div>
             </ScrollArea>

@@ -38,7 +38,6 @@ describe('UsersService', () => {
         deactivated: false,
         email: 'test@test.com',
         image: 'testphoto',
-        name: 'test',
         orgname: 'test-org'
       } satisfies BaseInsertion<UserEntity>
       const mockedUser = createRandomUser(createUserDto)

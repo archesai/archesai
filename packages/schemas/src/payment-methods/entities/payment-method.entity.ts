@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const PaymentMethodEntitySchema = Type.Object(
   {
@@ -124,45 +124,6 @@ export const PaymentMethodEntitySchema = Type.Object(
   }
 )
 
-export class PaymentMethodEntity
-  extends BaseEntity
-  implements Static<typeof PaymentMethodEntitySchema>
-{
-  public billing_details: null | {
-    address: null | {
-      city?: null | string
-      country?: null | string
-      line1?: null | string
-      line2?: null | string
-      postal_code?: null | string
-      state?: null | string
-    }
-    email?: null | string
-    name?: null | string
-    phone?: null | string
-  }
-  public card?: {
-    brand: string
-    country: null | string
-    exp_month: number
-    exp_year: number
-    fingerprint?: null | string
-    funding: string
-    last4: string
-  }
-  public customer: string
-  public stripeId: string
-  public type = PAYMENT_METHOD_ENTITY_KEY
-
-  constructor(props: PaymentMethodEntity) {
-    super(props)
-    this.billing_details = props.billing_details
-    this.customer = props.customer
-    this.stripeId = props.stripeId
-    if (props.card) {
-      this.card = props.card
-    }
-  }
-}
+export type PaymentMethodEntity = Static<typeof PaymentMethodEntitySchema>
 
 export const PAYMENT_METHOD_ENTITY_KEY = 'payment-methods'

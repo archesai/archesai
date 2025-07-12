@@ -5,7 +5,9 @@ import { Type } from '@sinclair/typebox'
 import { ArtifactEntitySchema } from '#artifacts/entities/artifact.entity'
 
 export const CreateArtifactDtoSchema = Type.Object({
-  name: ArtifactEntitySchema.properties.name,
+  name: Type.String({
+    description: 'The name of the artifact'
+  }),
   text: ArtifactEntitySchema.properties.text,
   url: ArtifactEntitySchema.properties.url
 })

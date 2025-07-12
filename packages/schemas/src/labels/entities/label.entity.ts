@@ -7,6 +7,9 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 export const LabelEntitySchema = Type.Object(
   {
     ...BaseEntitySchema.properties,
+    name: Type.String({
+      description: 'The name of the label'
+    }),
     orgname: Type.String({ description: 'The organization name' })
   },
   {

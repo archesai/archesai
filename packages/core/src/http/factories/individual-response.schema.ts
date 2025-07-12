@@ -2,19 +2,19 @@ import type { TObject } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { ApiResponseSchema } from '#http/schemas/api-response.schema'
+import { SuccessDocumentSchema } from '#http/schemas/success-document.schema'
 import { toTitleCaseNoSpaces } from '#utils/strings'
 
 export const createIndividualResponseSchema = (
-  ResourceObjectSchema: TObject,
+  resourceObjectSchema: TObject,
   entityKey: string
 ) => {
   return Type.Composite(
     [
       Type.Object({
-        data: ResourceObjectSchema
+        data: resourceObjectSchema
       }),
-      ApiResponseSchema
+      SuccessDocumentSchema
     ],
     {
       // $id: `${toTitleCaseNoSpaces(entityKey)}IndividualResponse`,

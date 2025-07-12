@@ -47,7 +47,7 @@ export class InvitationsController
   public override registerRoutes(app: HttpInstance) {
     super.registerRoutes(app)
     app.post(
-      `/${INVITATION_ENTITY_KEY}/:id/accept`,
+      `/${this.entityKey}/:id/accept`,
       {
         preValidation: [AuthenticatedGuard()],
         schema: {
@@ -57,13 +57,13 @@ export class InvitationsController
           //   id: Type.String()
           // }),
           response: {
-            200: this.IndividualEntityResponseSchema,
+            200: this.invididualResponseSchema,
             401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
             403: LegacyRef(ArchesApiForbiddenResponseSchema),
             404: LegacyRef(ArchesApiNotFoundResponseSchema)
           },
           summary: 'Accept an invitation',
-          tags: [toTitleCase(INVITATION_ENTITY_KEY)]
+          tags: [toTitleCase(this.entityKey)]
         }
       },
       this.accept.bind(this)

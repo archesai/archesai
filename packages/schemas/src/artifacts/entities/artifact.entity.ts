@@ -19,6 +19,9 @@ export const ArtifactEntitySchema = Type.Object(
     mimeType: Type.String({
       description: 'The MIME type of the artifact, e.g. image/png'
     }),
+    name: Type.String({
+      description: 'The name of the artifact, used for display purposes'
+    }),
     orgname: Type.String({ description: 'The organization name' }),
     parentId: Type.String({
       description:

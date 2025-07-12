@@ -99,9 +99,9 @@ export const SearchQuerySchema = Type.Object(
   }
 )
 
-const createFilterSchema = (EntitySchema: TObject) => {
+const createFilterSchema = (entitySchema: TObject) => {
   const entityFields = Type.Union(
-    Object.keys(EntitySchema.properties).map((key) => Type.Literal(key))
+    Object.keys(entitySchema.properties).map((key) => Type.Literal(key))
   )
 
   return Type.Record(entityFields, LegacyRef(FieldFilterSchema), {
@@ -112,13 +112,13 @@ const createFilterSchema = (EntitySchema: TObject) => {
 }
 
 export const createSearchQuerySchema = (
-  EntitySchema: TObject,
+  entitySchema: TObject,
   entityKey: string
 ) => {
   return Type.Composite(
     [
       Type.Object({
-        filter: Type.Optional(createFilterSchema(EntitySchema))
+        filter: Type.Optional(createFilterSchema(entitySchema))
       }),
       SearchQuerySchema
     ],

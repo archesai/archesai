@@ -4,6 +4,7 @@ import type { ModuleMetadata } from '@archesai/core'
 
 import { ConfigModule, ConfigService, createModule } from '@archesai/core'
 
+import { StripeController } from '#stripe/stripe.controller'
 import { StripeService } from '#stripe/stripe.service'
 
 export const StripeModuleDefinition: ModuleMetadata = {
@@ -38,6 +39,12 @@ export const StripeModuleDefinition: ModuleMetadata = {
         } else {
           return new StripeService(configService)
         }
+      }
+    },
+    {
+      provide: StripeController,
+      useFactory: (stripeService: StripeService) => {
+        return new StripeController(stripeService)
       }
     }
   ]

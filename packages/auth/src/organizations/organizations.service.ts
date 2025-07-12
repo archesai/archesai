@@ -74,8 +74,7 @@ export class OrganizationsService extends BaseService<OrganizationEntity> {
       ...value,
       billingEmail: value.billingEmail,
       orgname: value.orgname,
-      plan: billingEnabled ? 'FREE' : 'UNLIMITED',
-      type: ORGANIZATION_ENTITY_KEY
+      plan: billingEnabled ? 'FREE' : 'UNLIMITED'
     })
     this.eventBus.emit(
       'organization.created',

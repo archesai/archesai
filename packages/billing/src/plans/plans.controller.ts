@@ -21,8 +21,8 @@ export class PlansController implements Controller {
       `/billing/${PLAN_ENTITY_KEY}`,
       {
         schema: {
+          description: 'Get all plans',
           operationId: 'getPlans',
-          // description: 'Get all plans',
           response: {
             200: Type.Array(PlanDtoSchema)
           },

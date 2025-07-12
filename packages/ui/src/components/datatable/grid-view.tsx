@@ -77,14 +77,14 @@ export function GridView<TEntity extends BaseEntity>({
               <div className='flex min-w-0 items-center gap-2'>
                 {!readonly && (
                   <Checkbox
-                    aria-label={`Select ${item.original.name}`}
+                    aria-label={`Select ${item.original.id}`}
                     checked={item.getIsSelected()}
                     className='rounded-xs text-blue-600 focus:ring-blue-500'
                     onCheckedChange={item.getToggleSelectedHandler()}
                   />
                 )}
                 <span className='overflow-hidden text-base leading-tight text-ellipsis whitespace-nowrap'>
-                  {item.original.name}
+                  {item.original.id}
                 </span>
               </div>
               <div className='flex shrink-0 items-center gap-2'>

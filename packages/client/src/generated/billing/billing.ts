@@ -30,7 +30,7 @@ import type {
   CreatePortalBody,
   DeletePaymentMethod200,
   FindOnePaymentMethod200,
-  GetPlans200,
+  GetPlans200Item,
   UpdateSubscriptionBody
 } from '../orval.schemas'
 
@@ -38,97 +38,6 @@ import { customFetch } from '../../fetcher'
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-/**
- * Create a checkout session
- * @summary Create a checkout session
- */
-export const getCreateCheckoutSessionUrl = () => {
-  return `/billing/checkout-sessions`
-}
-
-export const createCheckoutSession = async (
-  createCheckoutSessionBody: CreateCheckoutSessionBody,
-  options?: RequestInit
-): Promise<CreateCheckoutSession200> => {
-  return customFetch<CreateCheckoutSession200>(getCreateCheckoutSessionUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createCheckoutSessionBody)
-  })
-}
-
-export const getCreateCheckoutSessionMutationOptions = <
-  TError = unknown,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createCheckoutSession>>,
-    TError,
-    { data: CreateCheckoutSessionBody },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof createCheckoutSession>>,
-  TError,
-  { data: CreateCheckoutSessionBody },
-  TContext
-> => {
-  const mutationKey = ['createCheckoutSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createCheckoutSession>>,
-    { data: CreateCheckoutSessionBody }
-  > = (props) => {
-    const { data } = props ?? {}
-
-    return createCheckoutSession(data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type CreateCheckoutSessionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createCheckoutSession>>
->
-export type CreateCheckoutSessionMutationBody = CreateCheckoutSessionBody
-export type CreateCheckoutSessionMutationError = unknown
-
-/**
- * @summary Create a checkout session
- */
-export const useCreateCheckoutSession = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createCheckoutSession>>,
-      TError,
-      { data: CreateCheckoutSessionBody },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof createCheckoutSession>>,
-  TError,
-  { data: CreateCheckoutSessionBody },
-  TContext
-> => {
-  const mutationOptions = getCreateCheckoutSessionMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
-}
 /**
  * Delete a payment method
  * @summary Delete a payment method
@@ -810,8 +719,10 @@ export const getGetPlansUrl = () => {
   return `/billing/plans`
 }
 
-export const getPlans = async (options?: RequestInit): Promise<GetPlans200> => {
-  return customFetch<GetPlans200>(getGetPlansUrl(), {
+export const getPlans = async (
+  options?: RequestInit
+): Promise<GetPlans200Item[]> => {
+  return customFetch<GetPlans200Item[]>(getGetPlansUrl(), {
     ...options,
     method: 'GET'
   })
@@ -1145,6 +1056,97 @@ export const useCreatePortal = <TError = unknown, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getCreatePortalMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
+ * Create a checkout session
+ * @summary Create a checkout session
+ */
+export const getCreateCheckoutSessionUrl = () => {
+  return `/billing/checkout-sessions`
+}
+
+export const createCheckoutSession = async (
+  createCheckoutSessionBody: CreateCheckoutSessionBody,
+  options?: RequestInit
+): Promise<CreateCheckoutSession200> => {
+  return customFetch<CreateCheckoutSession200>(getCreateCheckoutSessionUrl(), {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createCheckoutSessionBody)
+  })
+}
+
+export const getCreateCheckoutSessionMutationOptions = <
+  TError = unknown,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createCheckoutSession>>,
+    TError,
+    { data: CreateCheckoutSessionBody },
+    TContext
+  >
+  request?: SecondParameter<typeof customFetch>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createCheckoutSession>>,
+  TError,
+  { data: CreateCheckoutSessionBody },
+  TContext
+> => {
+  const mutationKey = ['createCheckoutSession']
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createCheckoutSession>>,
+    { data: CreateCheckoutSessionBody }
+  > = (props) => {
+    const { data } = props ?? {}
+
+    return createCheckoutSession(data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type CreateCheckoutSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createCheckoutSession>>
+>
+export type CreateCheckoutSessionMutationBody = CreateCheckoutSessionBody
+export type CreateCheckoutSessionMutationError = unknown
+
+/**
+ * @summary Create a checkout session
+ */
+export const useCreateCheckoutSession = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createCheckoutSession>>,
+      TError,
+      { data: CreateCheckoutSessionBody },
+      TContext
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof createCheckoutSession>>,
+  TError,
+  { data: CreateCheckoutSessionBody },
+  TContext
+> => {
+  const mutationOptions = getCreateCheckoutSessionMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }

@@ -6,7 +6,7 @@ import {
   useGetSessionSuspense,
   useUpdateUser
 } from '@archesai/client'
-import { Type, USER_ENTITY_KEY } from '@archesai/schemas'
+import { USER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -16,21 +16,6 @@ export default function UserForm() {
   const { data: user } = useGetOneUser(session.id)
 
   const formFields: FormFieldConfig[] = [
-    {
-      defaultValue: user?.data.attributes.name,
-      description: 'Your first name',
-      label: 'Name',
-      name: 'firstName',
-      renderControl: (field) => (
-        <Input
-          {...field}
-          type='text'
-        />
-      ),
-      validationRule: Type.String({
-        minLength: 1
-      })
-    },
     {
       defaultValue: user?.data.attributes.orgname,
       description: 'Your username',

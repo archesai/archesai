@@ -71,7 +71,6 @@ export class TwitterStrategy extends PassportTwitterStrategy {
             deactivated: false,
             email,
             emailVerified: new Date().toISOString(),
-            name: profile.displayName,
             orgname: username,
             ...(profile.photos && profile.photos.length > 0 ?
               { image: profile.photos[0]!.value }

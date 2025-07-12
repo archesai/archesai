@@ -147,12 +147,9 @@ export class GoogleCloudStorageService
       ).toUTCString(),
       id: file.id ?? randomUUID(),
       isDir: false,
-      name: path.split('/').pop() ?? '',
       orgname: basename(path), // FIXME
       path: file.name,
       size: Number(file.metadata.size),
-      slug: path.split('/').pop() ?? '',
-      type: 'file',
       updatedAt: new Date(file.metadata.updated ?? Date.now()).toUTCString()
     }
   }
@@ -181,12 +178,9 @@ export class GoogleCloudStorageService
           ).toUTCString(),
           id: file.id ?? randomUUID(),
           isDir: false,
-          name: relativePath,
           orgname: basename(path), // FIXME
           path: file.name,
           size: Number(file.metadata.size),
-          slug: path.split('/').pop() ?? '',
-          type: 'file',
           updatedAt: new Date(file.metadata.updated ?? Date.now()).toUTCString()
         })
       }
@@ -197,12 +191,9 @@ export class GoogleCloudStorageService
           createdAt: new Date().toUTCString(),
           id: `${fullPath}${dirName}/`,
           isDir: true,
-          name: dirName + '/',
           orgname: basename(path), // FIXME
           path: `${fullPath}${dirName}/`,
           size: 0,
-          slug: path.split('/').pop() ?? '',
-          type: 'file',
           updatedAt: new Date().toUTCString()
         }) satisfies FileEntity
     )

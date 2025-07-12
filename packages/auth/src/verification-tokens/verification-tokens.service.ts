@@ -30,17 +30,13 @@ export class VerificationTokensService {
   }
 
   public async create(
-    type: VerificationTokenType,
+    _type: VerificationTokenType,
     userId: string,
     expiresInHours: number,
     overrides?: { newEmail?: string }
   ): Promise<string> {
     await this.verificationTokenRepository.deleteMany({
-      filter: {
-        type: {
-          equals: type
-        }
-      }
+      filter: {}
     })
 
     const token = randomBytes(32).toString('hex')
@@ -73,14 +69,11 @@ export class VerificationTokensService {
     })
   }
 
-  public async verify(type: VerificationTokenType, token: string) {
+  public async verify(_type: VerificationTokenType, token: string) {
     const verificationToken = await this.verificationTokenRepository.findFirst({
       filter: {
         token: {
           equals: token
-        },
-        type: {
-          equals: type
         }
       }
     })

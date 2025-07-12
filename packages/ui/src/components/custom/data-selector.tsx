@@ -51,9 +51,8 @@ export function DataSelector<TItem extends BaseEntity>({
   const [searchTerm, setSearchTerm] = useState('')
 
   // Filter data based on search term
-  const filteredData = data.data.filter((item) =>
-    item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredData = data.data // FIXME
+  // item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
 
   // Handler for selecting/deselecting items
   const handleSelect = (item: TItem) => {
@@ -116,7 +115,7 @@ export function DataSelector<TItem extends BaseEntity>({
                   : 'Select ' + itemType.toLowerCase() + 's...'
                 : <div className='flex items-center gap-1'>
                     {icons
-                      ?.filter((x) => x.name === (selectedData as TItem).name)
+                      ?.filter((x) => x.name === (selectedData as TItem).id)
                       .map((x, i) => {
                         const iconColor = x.color
                         return (
@@ -134,7 +133,7 @@ export function DataSelector<TItem extends BaseEntity>({
                           />
                         )
                       })}
-                    {(selectedData as TItem).name}
+                    {(selectedData as TItem).id}
                   </div>
                 }
               </div>
@@ -162,7 +161,6 @@ export function DataSelector<TItem extends BaseEntity>({
                   onMouseEnter={() => {
                     setHoveredItem({
                       id: item.id,
-                      type: itemType,
                       ...item.attributes
                     } as TItem)
                   }}
@@ -172,7 +170,6 @@ export function DataSelector<TItem extends BaseEntity>({
                   onSelect={() => {
                     handleSelect({
                       id: item.id,
-                      type: itemType,
                       ...item.attributes
                     } as TItem)
                   }}
@@ -180,7 +177,7 @@ export function DataSelector<TItem extends BaseEntity>({
                   <div className='flex items-center gap-1'>
                     {/* Icon Rendering */}
                     {icons
-                      ?.filter((x) => x.name === item.attributes.name)
+                      ?.filter((x) => x.name === item.id)
                       .map((x, i) => {
                         const iconColor = x.color
                         return (
@@ -198,7 +195,7 @@ export function DataSelector<TItem extends BaseEntity>({
                           />
                         )
                       })}
-                    <p>{item.attributes.name}</p>
+                    <p>{item.id}</p>
                   </div>
                   {/* Check Icon for Selected Items */}
                   {isMultiSelect &&
@@ -234,7 +231,7 @@ export function DataSelector<TItem extends BaseEntity>({
                 className='inline-flex items-center rounded-xs bg-blue-100 px-2 py-1 text-sm text-blue-700'
                 key={item.id}
               >
-                {item.name}
+                {item.id}
                 <button
                   className='ml-1 text-red-500 hover:text-red-700'
                   onClick={() => {

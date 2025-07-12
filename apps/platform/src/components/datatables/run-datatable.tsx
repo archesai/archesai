@@ -20,7 +20,7 @@ export default function RunDataTable() {
     <DataTable<RunEntity>
       columns={[
         {
-          accessorKey: 'name',
+          accessorKey: 'id',
           cell: ({ row }) => {
             return (
               <div className='flex gap-2'>
@@ -31,7 +31,7 @@ export default function RunDataTable() {
                   }}
                   to={`/runs/$runId`}
                 >
-                  {row.original.name}
+                  {row.original.id}
                 </Link>
               </div>
             )

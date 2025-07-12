@@ -13,6 +13,9 @@ export const PipelineStepEntitySchema = Type.Object(
         pipelineStepId: Type.String()
       })
     ),
+    name: Type.String({
+      description: 'The name of the pipeline step'
+    }),
     pipelineId: Type.String(),
     prerequisites: Type.Array(
       Type.Object({
@@ -33,6 +36,9 @@ export const PipelineEntitySchema = Type.Object(
   {
     ...BaseEntitySchema.properties,
     description: Type.String({ description: 'The pipeline description' }),
+    name: Type.String({
+      description: 'The name of the pipeline'
+    }),
     orgname: Type.String({ description: 'The organization name' }),
     steps: Type.Array(PipelineStepEntitySchema, {
       description: 'The steps in the pipeline'

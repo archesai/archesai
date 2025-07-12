@@ -31,7 +31,7 @@ export default function BillingPageContent() {
     -1
   )
 
-  const { data: plansResponse } = useGetPlansSuspense()
+  const { data: plans } = useGetPlansSuspense()
 
   const { data: organizationResponse } =
     useGetOneOrganizationSuspense(defaultOrgname)
@@ -63,8 +63,6 @@ export default function BillingPageContent() {
     mutateAsync: cancelSubscription
   } = useCancelSubscription()
 
-  const plans = plansResponse.data
-
   const organization = organizationResponse.data
 
   return (
@@ -93,25 +91,20 @@ export default function BillingPageContent() {
                 <TableBody>
                   {plans.toReversed().map((plan) => (
                     <TableRow key={plan.id}>
-                      <TableCell>{plan.attributes.name}</TableCell>
+                      <TableCell>{plan.name}</TableCell>
+                      <TableCell>{plan.description ?? '-'}</TableCell>
                       <TableCell>
-                        {plan.attributes.description ?? '-'}
-                      </TableCell>
-                      <TableCell>
-                        {plan.attributes.unitAmount ?
-                          `$${(plan.attributes.unitAmount / 100).toFixed(2)} ${plan.attributes.currency.toUpperCase()}`
+                        {plan.unitAmount ?
+                          `$${(plan.unitAmount / 100).toFixed(2)} ${plan.currency.toUpperCase()}`
                         : 'Free'}
                       </TableCell>
                       <TableCell>
-                        {plan.attributes.recurring ?
-                          `${plan.attributes.recurring.interval_count.toString()} ${plan.attributes.recurring.interval}(s)`
+                        {plan.recurring ?
+                          `${plan.recurring.interval_count.toString()} ${plan.recurring.interval}(s)`
                         : 'One-time'}
                       </TableCell>
                       <TableCell>
-                        {(
-                          organization.attributes.plan ===
-                          plan.attributes.metadata.key
-                        ) ?
+                        {organization.attributes.plan === plan.metadata.key ?
                           <Button
                             className='flex gap-2'
                             disabled={

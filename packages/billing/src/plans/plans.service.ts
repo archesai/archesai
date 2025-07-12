@@ -44,8 +44,6 @@ export class PlansService {
           priceId: price.id,
           priceMetadata: price.metadata,
           recurring: price.recurring,
-          slug: price.id,
-          type: 'plan',
           unitAmount: price.unit_amount,
           updatedAt: new Date(product.updated).toISOString()
         } satisfies PlanDto

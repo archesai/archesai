@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const FileEntitySchema = Type.Object(
   {
@@ -35,31 +35,6 @@ export const FileEntitySchema = Type.Object(
   }
 )
 
-export class FileEntity
-  extends BaseEntity
-  implements Static<typeof FileEntitySchema>
-{
-  public isDir: boolean
-  public orgname: string
-  public path: string
-  public read?: string
-  public size: number
-  public type = FILE_ENTITY_KEY
-  public write?: string
-
-  constructor(props: FileEntity) {
-    super(props)
-    this.isDir = props.isDir
-    this.orgname = props.orgname
-    this.path = props.path
-    if (props.read) {
-      this.read = props.read
-    }
-    if (props.write) {
-      this.write = props.write
-    }
-    this.size = props.size
-  }
-}
+export type FileEntity = Static<typeof FileEntitySchema>
 
 export const FILE_ENTITY_KEY = 'files'

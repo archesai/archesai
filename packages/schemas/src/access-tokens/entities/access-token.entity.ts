@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { BaseInsertion } from '#base/entities/base.entity'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const AccessTokenEntitySchema = Type.Object(
   {
@@ -25,19 +23,6 @@ export const AccessTokenEntitySchema = Type.Object(
   }
 )
 
-export class AccessTokenEntity
-  extends BaseEntity
-  implements Static<typeof AccessTokenEntitySchema>
-{
-  public accessToken: string
-  public refreshToken: string
-  public type = ACCESS_TOKEN_ENTITY_KEY
-
-  constructor(props: BaseInsertion<AccessTokenEntity>) {
-    super(props)
-    this.accessToken = props.accessToken
-    this.refreshToken = props.refreshToken
-  }
-}
+export type AccessTokenEntity = Static<typeof AccessTokenEntitySchema>
 
 export const ACCESS_TOKEN_ENTITY_KEY = 'access-tokens'

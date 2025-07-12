@@ -1,7 +1,11 @@
-import type { AccessTokenDecodedJwt } from '@archesai/schemas'
+import { randomUUID } from 'node:crypto'
+
+import type {
+  AccessTokenDecodedJwt,
+  AccessTokenEntity
+} from '@archesai/schemas'
 
 import { Logger, UnauthorizedException } from '@archesai/core'
-import { AccessTokenEntity } from '@archesai/schemas'
 
 import type { AccountsService } from '#accounts/accounts.service'
 import type { JwtService } from '#jwt/jwt.service'
@@ -46,10 +50,13 @@ export class AccessTokensService {
       sub
     })
 
-    return new AccessTokenEntity({
+    return {
       accessToken,
-      refreshToken
-    })
+      createdAt: new Date().toISOString(),
+      id: randomUUID(),
+      refreshToken,
+      updatedAt: new Date().toISOString()
+    }
   }
 
   /**
@@ -77,10 +84,13 @@ export class AccessTokensService {
       refresh_token: newRefreshToken
     })
 
-    return new AccessTokenEntity({
+    return {
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken
-    })
+      createdAt: new Date().toISOString(),
+      id: randomUUID(),
+      refreshToken: newRefreshToken,
+      updatedAt: new Date().toISOString()
+    }
   }
 
   /**

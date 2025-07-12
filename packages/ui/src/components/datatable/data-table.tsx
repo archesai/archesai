@@ -221,8 +221,7 @@ export function DataTable<TEntity extends BaseEntity>(
     data: data.data.map((item) => {
       return {
         ...item.attributes,
-        id: item.id,
-        type: item.type
+        id: item.id
       } as TEntity
     }),
     enableRowSelection: true,

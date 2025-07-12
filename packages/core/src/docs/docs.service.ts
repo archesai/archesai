@@ -11,10 +11,14 @@ import { ArchesApiNoContentResponseSchema } from '#exceptions/schemas/arches-api
 import { ArchesApiNotFoundResponseSchema } from '#exceptions/schemas/arches-api-not-found-response.schema'
 import { ArchesApiUnauthorizedResponseSchema } from '#exceptions/schemas/arches-api-unauthorized-response.schema'
 import { FieldFilterSchema } from '#http/dto/search-query.dto'
-import { ApiResponseSchema } from '#http/schemas/api-response.schema'
-import { ErrorsSchema } from '#http/schemas/errors.schema'
-import { IncludedSchema } from '#http/schemas/included.schema'
+import { ErrorDocumentSchema } from '#http/schemas/error-document.schema'
+import { ErrorObjectSchema } from '#http/schemas/error-object.schema'
+import { LinkSchema, LinksSchema } from '#http/schemas/links.schema'
 import { MetaSchema } from '#http/schemas/meta.schema'
+import { RelationshipsSchema } from '#http/schemas/relationship.schema'
+import { ResourceIdentifierSchema } from '#http/schemas/resource-identifier.schema'
+import { ResourceObjectSchema } from '#http/schemas/resource-object.schema'
+import { SuccessDocumentSchema } from '#http/schemas/success-document.schema'
 import { Logger } from '#logging/logger'
 
 /**
@@ -24,10 +28,15 @@ export class DocsService {
   private readonly configService: ConfigService
   private readonly DEFAULT_MODELS = [
     FieldFilterSchema,
-    ApiResponseSchema,
-    ErrorsSchema,
-    IncludedSchema,
     MetaSchema,
+    LinkSchema,
+    LinksSchema,
+    ResourceIdentifierSchema,
+    ResourceObjectSchema,
+    ErrorObjectSchema,
+    ErrorDocumentSchema,
+    RelationshipsSchema,
+    SuccessDocumentSchema,
     ArchesApiForbiddenResponseSchema,
     ArchesApiNoContentResponseSchema,
     ArchesApiUnauthorizedResponseSchema,

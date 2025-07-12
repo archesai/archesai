@@ -70,7 +70,6 @@ describe('ApiTokensService', () => {
         username: 'test-user'
       }
       const mockedApiToken = createRandomApiToken({
-        name: createTokenDto.name,
         orgname: overrides.orgname,
         role: createTokenDto.role
       })

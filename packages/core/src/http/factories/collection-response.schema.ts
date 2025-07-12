@@ -2,22 +2,22 @@ import type { TObject } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { ApiResponseSchema } from '#http/schemas/api-response.schema'
+import { SuccessDocumentSchema } from '#http/schemas/success-document.schema'
 import { toTitleCaseNoSpaces } from '#utils/strings'
 
 export const createCollectionResponseSchema = <T extends TObject>(
-  ResourceObjectSchema: T,
+  resourceObjectSchema: T,
   entityKey: string
 ) => {
   return Type.Composite(
     [
       Type.Object({
         // data: Type.Array(
-        //   Type.Unsafe<StaticDecode<T>>(Type.Ref(ResourceObjectSchema.$id!))
+        //   Type.Unsafe<StaticDecode<T>>(Type.Ref(resourceObjectSchema.$id!))
         // )
-        data: Type.Array(ResourceObjectSchema)
+        data: Type.Array(resourceObjectSchema)
       }),
-      ApiResponseSchema
+      SuccessDocumentSchema
     ],
     {
       // $id: `${toTitleCaseNoSpaces(entityKey)}CollectionResponse`,
