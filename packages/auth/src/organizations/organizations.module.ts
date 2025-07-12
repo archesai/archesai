@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  OrganizationInsertModel,
+  OrganizationSelectModel
+} from '@archesai/database'
 import type { OrganizationEntity } from '@archesai/schemas'
 
 import {
@@ -45,8 +49,13 @@ export const OrganizationsModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: OrganizationRepository,
-      useFactory: (databaseService: DatabaseService<OrganizationEntity>) =>
-        new OrganizationRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          OrganizationEntity,
+          OrganizationInsertModel,
+          OrganizationSelectModel
+        >
+      ) => new OrganizationRepository(databaseService)
     },
     {
       inject: [OrganizationsService],

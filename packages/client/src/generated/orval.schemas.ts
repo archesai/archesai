@@ -105,43 +105,58 @@ export interface Meta {
   [key: string]: unknown
 }
 
+export type LinkAnyOf = {
+  describedby?: string
+  href: string
+  hreflang?: string
+  meta?: Meta
+  rel?: string
+  title?: string
+  type?: string
+}
+
 /**
- * A link to a related resource
+ * Link object or URI string
  */
-export type Link = string
+export type Link = string | LinkAnyOf
 
 /**
  * Collection of links
  */
 export interface Links {
-  [key: string]: Link
+  first?: Link
+  last?: Link
+  next?: Link
+  prev?: Link
+  self: Link
 }
 
 /**
  * Resource Identifier
  */
 export interface ResourceIdentifier {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
 export type ResourceObjectAttributes = { [key: string]: unknown }
 
 export type ResourceObjectLinks = {
-  describedby?: Link
   self?: Link
-  [key: string]: string
 }
 
 /**
  * Resource object
  */
 export interface ResourceObject {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
   attributes?: ResourceObjectAttributes
   links?: ResourceObjectLinks
-  meta?: Meta
   relationships?: Relationships
 }
 
@@ -159,7 +174,6 @@ export interface ErrorObject {
  */
 export interface ErrorDocument {
   errors: ErrorObject[]
-  links?: Links
   meta?: Meta
 }
 
@@ -167,7 +181,9 @@ export interface ErrorDocument {
  * Resource Identifier
  */
 export type RelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -185,7 +201,9 @@ export interface Relationships {
  * Resource Identifier
  */
 export type RelationshipData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -195,15 +213,6 @@ export type RelationshipData = {
 export interface Relationship {
   /** Resource Identifier */
   data: RelationshipData
-}
-
-/**
- * Success Document
- */
-export interface SuccessDocument {
-  included?: ResourceIdentifier[]
-  links?: Links
-  meta?: Meta
 }
 
 export type ForbiddenResponseErrorsItem = {
@@ -611,21 +620,16 @@ export type CreateFile201DataAttributes = {
 }
 
 export type CreateFile201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateFile201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateFile201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -655,10 +659,7 @@ export type CreateFile201Data = {
   attributes: CreateFile201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateFile201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateFile201DataMeta
   /** Relationships object */
   relationships?: CreateFile201DataRelationships
   type: CreateFile201DataType
@@ -670,9 +671,8 @@ export type CreateFile201Data = {
 export type CreateFile201 = {
   /** Files resource */
   data: CreateFile201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyFilesParams = {
@@ -734,21 +734,16 @@ export type FindManyFiles200DataItemAttributes = {
 }
 
 export type FindManyFiles200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyFiles200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyFiles200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -778,10 +773,7 @@ export type FindManyFiles200DataItem = {
   attributes: FindManyFiles200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyFiles200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyFiles200DataItemMeta
   /** Relationships object */
   relationships?: FindManyFiles200DataItemRelationships
   type: FindManyFiles200DataItemType
@@ -792,9 +784,8 @@ export type FindManyFiles200DataItem = {
  */
 export type FindManyFiles200 = {
   data: FindManyFiles200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -820,21 +811,16 @@ export type DeleteFile200DataAttributes = {
 }
 
 export type DeleteFile200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteFile200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteFile200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -864,10 +850,7 @@ export type DeleteFile200Data = {
   attributes: DeleteFile200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteFile200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteFile200DataMeta
   /** Relationships object */
   relationships?: DeleteFile200DataRelationships
   type: DeleteFile200DataType
@@ -879,9 +862,8 @@ export type DeleteFile200Data = {
 export type DeleteFile200 = {
   /** Files resource */
   data: DeleteFile200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -907,21 +889,16 @@ export type GetOneFile200DataAttributes = {
 }
 
 export type GetOneFile200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneFile200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneFile200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -951,10 +928,7 @@ export type GetOneFile200Data = {
   attributes: GetOneFile200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneFile200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneFile200DataMeta
   /** Relationships object */
   relationships?: GetOneFile200DataRelationships
   type: GetOneFile200DataType
@@ -966,9 +940,8 @@ export type GetOneFile200Data = {
 export type GetOneFile200 = {
   /** Files resource */
   data: GetOneFile200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -1003,21 +976,16 @@ export type UpdateFile200DataAttributes = {
 }
 
 export type UpdateFile200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateFile200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateFile200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1047,10 +1015,7 @@ export type UpdateFile200Data = {
   attributes: UpdateFile200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateFile200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateFile200DataMeta
   /** Relationships object */
   relationships?: UpdateFile200DataRelationships
   type: UpdateFile200DataType
@@ -1062,9 +1027,8 @@ export type UpdateFile200Data = {
 export type UpdateFile200 = {
   /** Files resource */
   data: UpdateFile200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreatePipelineBodyStepsItemDependentsItem = {
@@ -1104,7 +1068,7 @@ export type CreatePipelineBodyStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof CreatePipelineBodyStepsItemToolInputType)[keyof typeof CreatePipelineBodyStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1179,7 +1143,7 @@ export type CreatePipeline201DataAttributesStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof CreatePipeline201DataAttributesStepsItemToolInputType)[keyof typeof CreatePipeline201DataAttributesStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1220,28 +1184,23 @@ export type CreatePipeline201DataAttributes = {
   description: string
   /** The name of the pipeline */
   name: string
-  /** The organization name */
-  orgname: string
+  /** The organization id */
+  organizationId: string
   /** The steps in the pipeline */
   steps: CreatePipeline201DataAttributesStepsItem[]
 }
 
 export type CreatePipeline201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreatePipeline201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreatePipeline201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1271,10 +1230,7 @@ export type CreatePipeline201Data = {
   attributes: CreatePipeline201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreatePipeline201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreatePipeline201DataMeta
   /** Relationships object */
   relationships?: CreatePipeline201DataRelationships
   type: CreatePipeline201DataType
@@ -1286,9 +1242,8 @@ export type CreatePipeline201Data = {
 export type CreatePipeline201 = {
   /** Pipelines resource */
   data: CreatePipeline201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyPipelinesParams = {
@@ -1301,7 +1256,7 @@ export type FindManyPipelinesParams = {
     updatedAt?: FieldFilter
     description?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     steps?: FieldFilter
   }
   /**
@@ -1362,7 +1317,7 @@ export type FindManyPipelines200DataItemAttributesStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof FindManyPipelines200DataItemAttributesStepsItemToolInputType)[keyof typeof FindManyPipelines200DataItemAttributesStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1403,28 +1358,23 @@ export type FindManyPipelines200DataItemAttributes = {
   description: string
   /** The name of the pipeline */
   name: string
-  /** The organization name */
-  orgname: string
+  /** The organization id */
+  organizationId: string
   /** The steps in the pipeline */
   steps: FindManyPipelines200DataItemAttributesStepsItem[]
 }
 
 export type FindManyPipelines200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyPipelines200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyPipelines200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1454,10 +1404,7 @@ export type FindManyPipelines200DataItem = {
   attributes: FindManyPipelines200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyPipelines200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyPipelines200DataItemMeta
   /** Relationships object */
   relationships?: FindManyPipelines200DataItemRelationships
   type: FindManyPipelines200DataItemType
@@ -1468,9 +1415,8 @@ export type FindManyPipelines200DataItem = {
  */
 export type FindManyPipelines200 = {
   data: FindManyPipelines200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type DeletePipeline200DataAttributesStepsItemDependentsItem = {
@@ -1510,7 +1456,7 @@ export type DeletePipeline200DataAttributesStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof DeletePipeline200DataAttributesStepsItemToolInputType)[keyof typeof DeletePipeline200DataAttributesStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1551,28 +1497,23 @@ export type DeletePipeline200DataAttributes = {
   description: string
   /** The name of the pipeline */
   name: string
-  /** The organization name */
-  orgname: string
+  /** The organization id */
+  organizationId: string
   /** The steps in the pipeline */
   steps: DeletePipeline200DataAttributesStepsItem[]
 }
 
 export type DeletePipeline200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeletePipeline200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeletePipeline200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1602,10 +1543,7 @@ export type DeletePipeline200Data = {
   attributes: DeletePipeline200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeletePipeline200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeletePipeline200DataMeta
   /** Relationships object */
   relationships?: DeletePipeline200DataRelationships
   type: DeletePipeline200DataType
@@ -1617,9 +1555,8 @@ export type DeletePipeline200Data = {
 export type DeletePipeline200 = {
   /** Pipelines resource */
   data: DeletePipeline200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type GetOnePipeline200DataAttributesStepsItemDependentsItem = {
@@ -1659,7 +1596,7 @@ export type GetOnePipeline200DataAttributesStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof GetOnePipeline200DataAttributesStepsItemToolInputType)[keyof typeof GetOnePipeline200DataAttributesStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1700,28 +1637,23 @@ export type GetOnePipeline200DataAttributes = {
   description: string
   /** The name of the pipeline */
   name: string
-  /** The organization name */
-  orgname: string
+  /** The organization id */
+  organizationId: string
   /** The steps in the pipeline */
   steps: GetOnePipeline200DataAttributesStepsItem[]
 }
 
 export type GetOnePipeline200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOnePipeline200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOnePipeline200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1751,10 +1683,7 @@ export type GetOnePipeline200Data = {
   attributes: GetOnePipeline200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOnePipeline200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOnePipeline200DataMeta
   /** Relationships object */
   relationships?: GetOnePipeline200DataRelationships
   type: GetOnePipeline200DataType
@@ -1766,9 +1695,8 @@ export type GetOnePipeline200Data = {
 export type GetOnePipeline200 = {
   /** Pipelines resource */
   data: GetOnePipeline200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdatePipelineBodyStepsItemDependentsItem = {
@@ -1808,7 +1736,7 @@ export type UpdatePipelineBodyStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof UpdatePipelineBodyStepsItemToolInputType)[keyof typeof UpdatePipelineBodyStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1883,7 +1811,7 @@ export type UpdatePipeline200DataAttributesStepsItemTool = {
   /** The input type of the tool */
   inputType: (typeof UpdatePipeline200DataAttributesStepsItemToolInputType)[keyof typeof UpdatePipeline200DataAttributesStepsItemToolInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -1924,28 +1852,23 @@ export type UpdatePipeline200DataAttributes = {
   description: string
   /** The name of the pipeline */
   name: string
-  /** The organization name */
-  orgname: string
+  /** The organization id */
+  organizationId: string
   /** The steps in the pipeline */
   steps: UpdatePipeline200DataAttributesStepsItem[]
 }
 
 export type UpdatePipeline200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdatePipeline200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdatePipeline200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -1975,10 +1898,7 @@ export type UpdatePipeline200Data = {
   attributes: UpdatePipeline200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdatePipeline200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdatePipeline200DataMeta
   /** Relationships object */
   relationships?: UpdatePipeline200DataRelationships
   type: UpdatePipeline200DataType
@@ -1990,16 +1910,15 @@ export type UpdatePipeline200Data = {
 export type UpdatePipeline200 = {
   /** Pipelines resource */
   data: UpdatePipeline200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateToolBody = {
   /** The tool description */
   description: string
   /** The name of the tool */
-  name: string
+  name?: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -2029,7 +1948,7 @@ export type CreateTool201DataAttributes = {
   /** The input type of the tool */
   inputType: (typeof CreateTool201DataAttributesInputType)[keyof typeof CreateTool201DataAttributesInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -2039,21 +1958,16 @@ export type CreateTool201DataAttributes = {
 }
 
 export type CreateTool201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateTool201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateTool201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2083,10 +1997,7 @@ export type CreateTool201Data = {
   attributes: CreateTool201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateTool201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateTool201DataMeta
   /** Relationships object */
   relationships?: CreateTool201DataRelationships
   type: CreateTool201DataType
@@ -2098,9 +2009,8 @@ export type CreateTool201Data = {
 export type CreateTool201 = {
   /** Tools resource */
   data: CreateTool201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyToolsParams = {
@@ -2166,7 +2076,7 @@ export type FindManyTools200DataItemAttributes = {
   /** The input type of the tool */
   inputType: (typeof FindManyTools200DataItemAttributesInputType)[keyof typeof FindManyTools200DataItemAttributesInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -2176,21 +2086,16 @@ export type FindManyTools200DataItemAttributes = {
 }
 
 export type FindManyTools200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyTools200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyTools200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2220,10 +2125,7 @@ export type FindManyTools200DataItem = {
   attributes: FindManyTools200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyTools200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyTools200DataItemMeta
   /** Relationships object */
   relationships?: FindManyTools200DataItemRelationships
   type: FindManyTools200DataItemType
@@ -2234,9 +2136,8 @@ export type FindManyTools200DataItem = {
  */
 export type FindManyTools200 = {
   data: FindManyTools200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -2266,7 +2167,7 @@ export type DeleteTool200DataAttributes = {
   /** The input type of the tool */
   inputType: (typeof DeleteTool200DataAttributesInputType)[keyof typeof DeleteTool200DataAttributesInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -2276,21 +2177,16 @@ export type DeleteTool200DataAttributes = {
 }
 
 export type DeleteTool200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteTool200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteTool200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2320,10 +2216,7 @@ export type DeleteTool200Data = {
   attributes: DeleteTool200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteTool200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteTool200DataMeta
   /** Relationships object */
   relationships?: DeleteTool200DataRelationships
   type: DeleteTool200DataType
@@ -2335,9 +2228,8 @@ export type DeleteTool200Data = {
 export type DeleteTool200 = {
   /** Tools resource */
   data: DeleteTool200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -2367,7 +2259,7 @@ export type GetOneTool200DataAttributes = {
   /** The input type of the tool */
   inputType: (typeof GetOneTool200DataAttributesInputType)[keyof typeof GetOneTool200DataAttributesInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -2377,21 +2269,16 @@ export type GetOneTool200DataAttributes = {
 }
 
 export type GetOneTool200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneTool200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneTool200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2421,10 +2308,7 @@ export type GetOneTool200Data = {
   attributes: GetOneTool200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneTool200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneTool200DataMeta
   /** Relationships object */
   relationships?: GetOneTool200DataRelationships
   type: GetOneTool200DataType
@@ -2436,9 +2320,8 @@ export type GetOneTool200Data = {
 export type GetOneTool200 = {
   /** Tools resource */
   data: GetOneTool200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateToolBody = {
@@ -2475,7 +2358,7 @@ export type UpdateTool200DataAttributes = {
   /** The input type of the tool */
   inputType: (typeof UpdateTool200DataAttributesInputType)[keyof typeof UpdateTool200DataAttributesInputType]
   /** The name of the tool */
-  name: string
+  name?: string
   /** The organization name */
   orgname: string
   /** The output type of the tool */
@@ -2485,21 +2368,16 @@ export type UpdateTool200DataAttributes = {
 }
 
 export type UpdateTool200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateTool200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateTool200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2529,10 +2407,7 @@ export type UpdateTool200Data = {
   attributes: UpdateTool200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateTool200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateTool200DataMeta
   /** Relationships object */
   relationships?: UpdateTool200DataRelationships
   type: UpdateTool200DataType
@@ -2544,9 +2419,8 @@ export type UpdateTool200Data = {
 export type UpdateTool200 = {
   /** Tools resource */
   data: UpdateTool200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateArtifactBody = {
@@ -2591,21 +2465,16 @@ export type CreateArtifact201DataAttributes = {
 }
 
 export type CreateArtifact201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateArtifact201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateArtifact201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2635,10 +2504,7 @@ export type CreateArtifact201Data = {
   attributes: CreateArtifact201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateArtifact201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateArtifact201DataMeta
   /** Relationships object */
   relationships?: CreateArtifact201DataRelationships
   type: CreateArtifact201DataType
@@ -2650,9 +2516,8 @@ export type CreateArtifact201Data = {
 export type CreateArtifact201 = {
   /** Artifacts resource */
   data: CreateArtifact201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyArtifactsParams = {
@@ -2729,21 +2594,16 @@ export type FindManyArtifacts200DataItemAttributes = {
 }
 
 export type FindManyArtifacts200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyArtifacts200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyArtifacts200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2773,10 +2633,7 @@ export type FindManyArtifacts200DataItem = {
   attributes: FindManyArtifacts200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyArtifacts200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyArtifacts200DataItemMeta
   /** Relationships object */
   relationships?: FindManyArtifacts200DataItemRelationships
   type: FindManyArtifacts200DataItemType
@@ -2787,9 +2644,8 @@ export type FindManyArtifacts200DataItem = {
  */
 export type FindManyArtifacts200 = {
   data: FindManyArtifacts200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -2825,21 +2681,16 @@ export type DeleteArtifact200DataAttributes = {
 }
 
 export type DeleteArtifact200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteArtifact200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteArtifact200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2869,10 +2720,7 @@ export type DeleteArtifact200Data = {
   attributes: DeleteArtifact200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteArtifact200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteArtifact200DataMeta
   /** Relationships object */
   relationships?: DeleteArtifact200DataRelationships
   type: DeleteArtifact200DataType
@@ -2884,9 +2732,8 @@ export type DeleteArtifact200Data = {
 export type DeleteArtifact200 = {
   /** Artifacts resource */
   data: DeleteArtifact200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -2922,21 +2769,16 @@ export type GetOneArtifact200DataAttributes = {
 }
 
 export type GetOneArtifact200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneArtifact200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneArtifact200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -2966,10 +2808,7 @@ export type GetOneArtifact200Data = {
   attributes: GetOneArtifact200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneArtifact200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneArtifact200DataMeta
   /** Relationships object */
   relationships?: GetOneArtifact200DataRelationships
   type: GetOneArtifact200DataType
@@ -2981,9 +2820,8 @@ export type GetOneArtifact200Data = {
 export type GetOneArtifact200 = {
   /** Artifacts resource */
   data: GetOneArtifact200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateArtifactBody = {
@@ -3028,21 +2866,16 @@ export type UpdateArtifact200DataAttributes = {
 }
 
 export type UpdateArtifact200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateArtifact200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateArtifact200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3072,10 +2905,7 @@ export type UpdateArtifact200Data = {
   attributes: UpdateArtifact200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateArtifact200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateArtifact200DataMeta
   /** Relationships object */
   relationships?: UpdateArtifact200DataRelationships
   type: UpdateArtifact200DataType
@@ -3087,9 +2917,8 @@ export type UpdateArtifact200Data = {
 export type UpdateArtifact200 = {
   /** Artifacts resource */
   data: UpdateArtifact200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateRunBody = {
@@ -3131,21 +2960,16 @@ export type CreateRun201DataAttributes = {
 }
 
 export type CreateRun201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateRun201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateRun201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3175,10 +2999,7 @@ export type CreateRun201Data = {
   attributes: CreateRun201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateRun201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateRun201DataMeta
   /** Relationships object */
   relationships?: CreateRun201DataRelationships
   type: CreateRun201DataType
@@ -3190,9 +3011,8 @@ export type CreateRun201Data = {
 export type CreateRun201 = {
   /** Runs resource */
   data: CreateRun201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyRunsParams = {
@@ -3268,21 +3088,16 @@ export type FindManyRuns200DataItemAttributes = {
 }
 
 export type FindManyRuns200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyRuns200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyRuns200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3312,10 +3127,7 @@ export type FindManyRuns200DataItem = {
   attributes: FindManyRuns200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyRuns200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyRuns200DataItemMeta
   /** Relationships object */
   relationships?: FindManyRuns200DataItemRelationships
   type: FindManyRuns200DataItemType
@@ -3326,9 +3138,8 @@ export type FindManyRuns200DataItem = {
  */
 export type FindManyRuns200 = {
   data: FindManyRuns200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -3365,21 +3176,16 @@ export type DeleteRun200DataAttributes = {
 }
 
 export type DeleteRun200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteRun200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteRun200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3409,10 +3215,7 @@ export type DeleteRun200Data = {
   attributes: DeleteRun200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteRun200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteRun200DataMeta
   /** Relationships object */
   relationships?: DeleteRun200DataRelationships
   type: DeleteRun200DataType
@@ -3424,9 +3227,8 @@ export type DeleteRun200Data = {
 export type DeleteRun200 = {
   /** Runs resource */
   data: DeleteRun200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -3463,21 +3265,16 @@ export type GetOneRun200DataAttributes = {
 }
 
 export type GetOneRun200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneRun200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneRun200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3507,10 +3304,7 @@ export type GetOneRun200Data = {
   attributes: GetOneRun200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneRun200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneRun200DataMeta
   /** Relationships object */
   relationships?: GetOneRun200DataRelationships
   type: GetOneRun200DataType
@@ -3522,9 +3316,8 @@ export type GetOneRun200Data = {
 export type GetOneRun200 = {
   /** Runs resource */
   data: GetOneRun200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateRunBody = {
@@ -3566,21 +3359,16 @@ export type UpdateRun200DataAttributes = {
 }
 
 export type UpdateRun200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateRun200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateRun200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3610,10 +3398,7 @@ export type UpdateRun200Data = {
   attributes: UpdateRun200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateRun200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateRun200DataMeta
   /** Relationships object */
   relationships?: UpdateRun200DataRelationships
   type: UpdateRun200DataType
@@ -3625,9 +3410,8 @@ export type UpdateRun200Data = {
 export type UpdateRun200 = {
   /** Runs resource */
   data: UpdateRun200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateLabelBody = {
@@ -3650,21 +3434,16 @@ export type CreateLabel201DataAttributes = {
 }
 
 export type CreateLabel201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateLabel201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateLabel201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3694,10 +3473,7 @@ export type CreateLabel201Data = {
   attributes: CreateLabel201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateLabel201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateLabel201DataMeta
   /** Relationships object */
   relationships?: CreateLabel201DataRelationships
   type: CreateLabel201DataType
@@ -3709,9 +3485,8 @@ export type CreateLabel201Data = {
 export type CreateLabel201 = {
   /** Labels resource */
   data: CreateLabel201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyLabelsParams = {
@@ -3761,21 +3536,16 @@ export type FindManyLabels200DataItemAttributes = {
 }
 
 export type FindManyLabels200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyLabels200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyLabels200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3805,10 +3575,7 @@ export type FindManyLabels200DataItem = {
   attributes: FindManyLabels200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyLabels200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyLabels200DataItemMeta
   /** Relationships object */
   relationships?: FindManyLabels200DataItemRelationships
   type: FindManyLabels200DataItemType
@@ -3819,9 +3586,8 @@ export type FindManyLabels200DataItem = {
  */
 export type FindManyLabels200 = {
   data: FindManyLabels200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -3839,21 +3605,16 @@ export type DeleteLabel200DataAttributes = {
 }
 
 export type DeleteLabel200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteLabel200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteLabel200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3883,10 +3644,7 @@ export type DeleteLabel200Data = {
   attributes: DeleteLabel200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteLabel200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteLabel200DataMeta
   /** Relationships object */
   relationships?: DeleteLabel200DataRelationships
   type: DeleteLabel200DataType
@@ -3898,9 +3656,8 @@ export type DeleteLabel200Data = {
 export type DeleteLabel200 = {
   /** Labels resource */
   data: DeleteLabel200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -3918,21 +3675,16 @@ export type GetOneLabel200DataAttributes = {
 }
 
 export type GetOneLabel200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneLabel200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneLabel200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -3962,10 +3714,7 @@ export type GetOneLabel200Data = {
   attributes: GetOneLabel200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneLabel200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneLabel200DataMeta
   /** Relationships object */
   relationships?: GetOneLabel200DataRelationships
   type: GetOneLabel200DataType
@@ -3977,9 +3726,8 @@ export type GetOneLabel200Data = {
 export type GetOneLabel200 = {
   /** Labels resource */
   data: GetOneLabel200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateLabelBody = {
@@ -4002,21 +3750,16 @@ export type UpdateLabel200DataAttributes = {
 }
 
 export type UpdateLabel200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateLabel200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateLabel200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4046,10 +3789,7 @@ export type UpdateLabel200Data = {
   attributes: UpdateLabel200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateLabel200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateLabel200DataMeta
   /** Relationships object */
   relationships?: UpdateLabel200DataRelationships
   type: UpdateLabel200DataType
@@ -4061,9 +3801,8 @@ export type UpdateLabel200Data = {
 export type UpdateLabel200 = {
   /** Labels resource */
   data: UpdateLabel200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateOrganizationBody = {
@@ -4104,21 +3843,16 @@ export type CreateOrganization201DataAttributes = {
 }
 
 export type CreateOrganization201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateOrganization201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateOrganization201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4148,10 +3882,7 @@ export type CreateOrganization201Data = {
   attributes: CreateOrganization201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateOrganization201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateOrganization201DataMeta
   /** Relationships object */
   relationships?: CreateOrganization201DataRelationships
   type: CreateOrganization201DataType
@@ -4163,9 +3894,8 @@ export type CreateOrganization201Data = {
 export type CreateOrganization201 = {
   /** Organizations resource */
   data: CreateOrganization201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyOrganizationsParams = {
@@ -4235,21 +3965,16 @@ export type FindManyOrganizations200DataItemAttributes = {
 }
 
 export type FindManyOrganizations200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyOrganizations200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyOrganizations200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4279,10 +4004,7 @@ export type FindManyOrganizations200DataItem = {
   attributes: FindManyOrganizations200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyOrganizations200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyOrganizations200DataItemMeta
   /** Relationships object */
   relationships?: FindManyOrganizations200DataItemRelationships
   type: FindManyOrganizations200DataItemType
@@ -4293,9 +4015,8 @@ export type FindManyOrganizations200DataItem = {
  */
 export type FindManyOrganizations200 = {
   data: FindManyOrganizations200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -4329,21 +4050,16 @@ export type DeleteOrganization200DataAttributes = {
 }
 
 export type DeleteOrganization200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteOrganization200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteOrganization200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4373,10 +4089,7 @@ export type DeleteOrganization200Data = {
   attributes: DeleteOrganization200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteOrganization200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteOrganization200DataMeta
   /** Relationships object */
   relationships?: DeleteOrganization200DataRelationships
   type: DeleteOrganization200DataType
@@ -4388,9 +4101,8 @@ export type DeleteOrganization200Data = {
 export type DeleteOrganization200 = {
   /** Organizations resource */
   data: DeleteOrganization200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -4424,21 +4136,16 @@ export type GetOneOrganization200DataAttributes = {
 }
 
 export type GetOneOrganization200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneOrganization200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneOrganization200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4468,10 +4175,7 @@ export type GetOneOrganization200Data = {
   attributes: GetOneOrganization200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneOrganization200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneOrganization200DataMeta
   /** Relationships object */
   relationships?: GetOneOrganization200DataRelationships
   type: GetOneOrganization200DataType
@@ -4483,9 +4187,8 @@ export type GetOneOrganization200Data = {
 export type GetOneOrganization200 = {
   /** Organizations resource */
   data: GetOneOrganization200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateOrganizationBody = {
@@ -4526,21 +4229,16 @@ export type UpdateOrganization200DataAttributes = {
 }
 
 export type UpdateOrganization200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateOrganization200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateOrganization200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4570,10 +4268,7 @@ export type UpdateOrganization200Data = {
   attributes: UpdateOrganization200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateOrganization200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateOrganization200DataMeta
   /** Relationships object */
   relationships?: UpdateOrganization200DataRelationships
   type: UpdateOrganization200DataType
@@ -4585,9 +4280,8 @@ export type UpdateOrganization200Data = {
 export type UpdateOrganization200 = {
   /** Organizations resource */
   data: UpdateOrganization200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type CreateUserBody = {
@@ -4612,29 +4306,29 @@ export type CreateUser201DataAttributes = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
 
 export type CreateUser201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateUser201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateUser201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4664,10 +4358,7 @@ export type CreateUser201Data = {
   attributes: CreateUser201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateUser201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateUser201DataMeta
   /** Relationships object */
   relationships?: CreateUser201DataRelationships
   type: CreateUser201DataType
@@ -4679,9 +4370,8 @@ export type CreateUser201Data = {
 export type CreateUser201 = {
   /** Users resource */
   data: CreateUser201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyUsersParams = {
@@ -4696,6 +4386,7 @@ export type FindManyUsersParams = {
     email?: FieldFilter
     emailVerified?: FieldFilter
     image?: FieldFilter
+    name?: FieldFilter
     orgname?: FieldFilter
   }
   /**
@@ -4732,29 +4423,29 @@ export type FindManyUsers200DataItemAttributes = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
 
 export type FindManyUsers200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyUsers200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyUsers200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4784,10 +4475,7 @@ export type FindManyUsers200DataItem = {
   attributes: FindManyUsers200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyUsers200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyUsers200DataItemMeta
   /** Relationships object */
   relationships?: FindManyUsers200DataItemRelationships
   type: FindManyUsers200DataItemType
@@ -4798,9 +4486,8 @@ export type FindManyUsers200DataItem = {
  */
 export type FindManyUsers200 = {
   data: FindManyUsers200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -4816,29 +4503,29 @@ export type DeleteUser200DataAttributes = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
 
 export type DeleteUser200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteUser200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteUser200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4868,10 +4555,7 @@ export type DeleteUser200Data = {
   attributes: DeleteUser200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteUser200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteUser200DataMeta
   /** Relationships object */
   relationships?: DeleteUser200DataRelationships
   type: DeleteUser200DataType
@@ -4883,9 +4567,8 @@ export type DeleteUser200Data = {
 export type DeleteUser200 = {
   /** Users resource */
   data: DeleteUser200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -4901,29 +4584,29 @@ export type GetOneUser200DataAttributes = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
 
 export type GetOneUser200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneUser200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneUser200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -4953,10 +4636,7 @@ export type GetOneUser200Data = {
   attributes: GetOneUser200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneUser200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneUser200DataMeta
   /** Relationships object */
   relationships?: GetOneUser200DataRelationships
   type: GetOneUser200DataType
@@ -4968,9 +4648,8 @@ export type GetOneUser200Data = {
 export type GetOneUser200 = {
   /** Users resource */
   data: GetOneUser200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateUserBody = {
@@ -4995,29 +4674,29 @@ export type UpdateUser200DataAttributes = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
 
 export type UpdateUser200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateUser200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateUser200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5047,10 +4726,7 @@ export type UpdateUser200Data = {
   attributes: UpdateUser200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateUser200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateUser200DataMeta
   /** Relationships object */
   relationships?: UpdateUser200DataRelationships
   type: UpdateUser200DataType
@@ -5062,9 +4738,8 @@ export type UpdateUser200Data = {
 export type UpdateUser200 = {
   /** Users resource */
   data: UpdateUser200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5098,21 +4773,16 @@ export type CreateMember201DataAttributes = {
 }
 
 export type CreateMember201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateMember201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateMember201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5142,10 +4812,7 @@ export type CreateMember201Data = {
   attributes: CreateMember201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateMember201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateMember201DataMeta
   /** Relationships object */
   relationships?: CreateMember201DataRelationships
   type: CreateMember201DataType
@@ -5157,9 +4824,8 @@ export type CreateMember201Data = {
 export type CreateMember201 = {
   /** Members resource */
   data: CreateMember201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyMembersParams = {
@@ -5220,21 +4886,16 @@ export type FindManyMembers200DataItemAttributes = {
 }
 
 export type FindManyMembers200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyMembers200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyMembers200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5264,10 +4925,7 @@ export type FindManyMembers200DataItem = {
   attributes: FindManyMembers200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyMembers200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyMembers200DataItemMeta
   /** Relationships object */
   relationships?: FindManyMembers200DataItemRelationships
   type: FindManyMembers200DataItemType
@@ -5278,9 +4936,8 @@ export type FindManyMembers200DataItem = {
  */
 export type FindManyMembers200 = {
   data: FindManyMembers200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5307,21 +4964,16 @@ export type DeleteMember200DataAttributes = {
 }
 
 export type DeleteMember200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteMember200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteMember200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5351,10 +5003,7 @@ export type DeleteMember200Data = {
   attributes: DeleteMember200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteMember200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteMember200DataMeta
   /** Relationships object */
   relationships?: DeleteMember200DataRelationships
   type: DeleteMember200DataType
@@ -5366,9 +5015,8 @@ export type DeleteMember200Data = {
 export type DeleteMember200 = {
   /** Members resource */
   data: DeleteMember200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5395,21 +5043,16 @@ export type GetOneMember200DataAttributes = {
 }
 
 export type GetOneMember200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneMember200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneMember200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5439,10 +5082,7 @@ export type GetOneMember200Data = {
   attributes: GetOneMember200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneMember200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneMember200DataMeta
   /** Relationships object */
   relationships?: GetOneMember200DataRelationships
   type: GetOneMember200DataType
@@ -5454,9 +5094,8 @@ export type GetOneMember200Data = {
 export type GetOneMember200 = {
   /** Members resource */
   data: GetOneMember200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5490,21 +5129,16 @@ export type UpdateMember200DataAttributes = {
 }
 
 export type UpdateMember200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateMember200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateMember200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5534,10 +5168,7 @@ export type UpdateMember200Data = {
   attributes: UpdateMember200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateMember200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateMember200DataMeta
   /** Relationships object */
   relationships?: UpdateMember200DataRelationships
   type: UpdateMember200DataType
@@ -5549,9 +5180,8 @@ export type UpdateMember200Data = {
 export type UpdateMember200 = {
   /** Members resource */
   data: UpdateMember200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5590,21 +5220,16 @@ export type CreateInvitation201DataAttributes = {
 }
 
 export type CreateInvitation201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateInvitation201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateInvitation201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5634,10 +5259,7 @@ export type CreateInvitation201Data = {
   attributes: CreateInvitation201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateInvitation201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateInvitation201DataMeta
   /** Relationships object */
   relationships?: CreateInvitation201DataRelationships
   type: CreateInvitation201DataType
@@ -5649,9 +5271,8 @@ export type CreateInvitation201Data = {
 export type CreateInvitation201 = {
   /** Invitations resource */
   data: CreateInvitation201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyInvitationsParams = {
@@ -5712,21 +5333,16 @@ export type FindManyInvitations200DataItemAttributes = {
 }
 
 export type FindManyInvitations200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyInvitations200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyInvitations200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5756,10 +5372,7 @@ export type FindManyInvitations200DataItem = {
   attributes: FindManyInvitations200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyInvitations200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyInvitations200DataItemMeta
   /** Relationships object */
   relationships?: FindManyInvitations200DataItemRelationships
   type: FindManyInvitations200DataItemType
@@ -5770,9 +5383,8 @@ export type FindManyInvitations200DataItem = {
  */
 export type FindManyInvitations200 = {
   data: FindManyInvitations200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5799,21 +5411,16 @@ export type DeleteInvitation200DataAttributes = {
 }
 
 export type DeleteInvitation200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteInvitation200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteInvitation200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5843,10 +5450,7 @@ export type DeleteInvitation200Data = {
   attributes: DeleteInvitation200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteInvitation200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteInvitation200DataMeta
   /** Relationships object */
   relationships?: DeleteInvitation200DataRelationships
   type: DeleteInvitation200DataType
@@ -5858,9 +5462,8 @@ export type DeleteInvitation200Data = {
 export type DeleteInvitation200 = {
   /** Invitations resource */
   data: DeleteInvitation200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5887,21 +5490,16 @@ export type GetOneInvitation200DataAttributes = {
 }
 
 export type GetOneInvitation200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneInvitation200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneInvitation200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -5931,10 +5529,7 @@ export type GetOneInvitation200Data = {
   attributes: GetOneInvitation200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneInvitation200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneInvitation200DataMeta
   /** Relationships object */
   relationships?: GetOneInvitation200DataRelationships
   type: GetOneInvitation200DataType
@@ -5946,9 +5541,8 @@ export type GetOneInvitation200Data = {
 export type GetOneInvitation200 = {
   /** Invitations resource */
   data: GetOneInvitation200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5987,21 +5581,16 @@ export type UpdateInvitation200DataAttributes = {
 }
 
 export type UpdateInvitation200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateInvitation200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateInvitation200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6031,10 +5620,7 @@ export type UpdateInvitation200Data = {
   attributes: UpdateInvitation200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateInvitation200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateInvitation200DataMeta
   /** Relationships object */
   relationships?: UpdateInvitation200DataRelationships
   type: UpdateInvitation200DataType
@@ -6046,9 +5632,8 @@ export type UpdateInvitation200Data = {
 export type UpdateInvitation200 = {
   /** Invitations resource */
   data: UpdateInvitation200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -6075,21 +5660,16 @@ export type AcceptInvitation200DataAttributes = {
 }
 
 export type AcceptInvitation200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type AcceptInvitation200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type AcceptInvitation200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6119,10 +5699,7 @@ export type AcceptInvitation200Data = {
   attributes: AcceptInvitation200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: AcceptInvitation200DataLinks
-  /** Non-standard meta-information */
-  meta?: AcceptInvitation200DataMeta
   /** Relationships object */
   relationships?: AcceptInvitation200DataRelationships
   type: AcceptInvitation200DataType
@@ -6134,9 +5711,8 @@ export type AcceptInvitation200Data = {
 export type AcceptInvitation200 = {
   /** Invitations resource */
   data: AcceptInvitation200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 /**
@@ -6529,27 +6105,22 @@ export type CreateApiToken201DataAttributes = {
   /** The name of the API token */
   name: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the API token */
   role: (typeof CreateApiToken201DataAttributesRole)[keyof typeof CreateApiToken201DataAttributesRole]
 }
 
 export type CreateApiToken201DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type CreateApiToken201DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type CreateApiToken201DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6579,10 +6150,7 @@ export type CreateApiToken201Data = {
   attributes: CreateApiToken201DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: CreateApiToken201DataLinks
-  /** Non-standard meta-information */
-  meta?: CreateApiToken201DataMeta
   /** Relationships object */
   relationships?: CreateApiToken201DataRelationships
   type: CreateApiToken201DataType
@@ -6594,9 +6162,8 @@ export type CreateApiToken201Data = {
 export type CreateApiToken201 = {
   /** ApiTokens resource */
   data: CreateApiToken201Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type FindManyApiTokensParams = {
@@ -6609,7 +6176,7 @@ export type FindManyApiTokensParams = {
     updatedAt?: FieldFilter
     key?: FieldFilter
     name?: FieldFilter
-    orgname?: FieldFilter
+    organizationId?: FieldFilter
     role?: FieldFilter
   }
   /**
@@ -6651,27 +6218,22 @@ export type FindManyApiTokens200DataItemAttributes = {
   /** The name of the API token */
   name: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the API token */
   role: (typeof FindManyApiTokens200DataItemAttributesRole)[keyof typeof FindManyApiTokens200DataItemAttributesRole]
 }
 
 export type FindManyApiTokens200DataItemLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type FindManyApiTokens200DataItemMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type FindManyApiTokens200DataItemRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6701,10 +6263,7 @@ export type FindManyApiTokens200DataItem = {
   attributes: FindManyApiTokens200DataItemAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: FindManyApiTokens200DataItemLinks
-  /** Non-standard meta-information */
-  meta?: FindManyApiTokens200DataItemMeta
   /** Relationships object */
   relationships?: FindManyApiTokens200DataItemRelationships
   type: FindManyApiTokens200DataItemType
@@ -6715,9 +6274,8 @@ export type FindManyApiTokens200DataItem = {
  */
 export type FindManyApiTokens200 = {
   data: FindManyApiTokens200DataItem[]
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -6738,27 +6296,22 @@ export type DeleteApiToken200DataAttributes = {
   /** The name of the API token */
   name: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the API token */
   role: (typeof DeleteApiToken200DataAttributesRole)[keyof typeof DeleteApiToken200DataAttributesRole]
 }
 
 export type DeleteApiToken200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type DeleteApiToken200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type DeleteApiToken200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6788,10 +6341,7 @@ export type DeleteApiToken200Data = {
   attributes: DeleteApiToken200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: DeleteApiToken200DataLinks
-  /** Non-standard meta-information */
-  meta?: DeleteApiToken200DataMeta
   /** Relationships object */
   relationships?: DeleteApiToken200DataRelationships
   type: DeleteApiToken200DataType
@@ -6803,9 +6353,8 @@ export type DeleteApiToken200Data = {
 export type DeleteApiToken200 = {
   /** ApiTokens resource */
   data: DeleteApiToken200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -6826,27 +6375,22 @@ export type GetOneApiToken200DataAttributes = {
   /** The name of the API token */
   name: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the API token */
   role: (typeof GetOneApiToken200DataAttributesRole)[keyof typeof GetOneApiToken200DataAttributesRole]
 }
 
 export type GetOneApiToken200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type GetOneApiToken200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type GetOneApiToken200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6876,10 +6420,7 @@ export type GetOneApiToken200Data = {
   attributes: GetOneApiToken200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: GetOneApiToken200DataLinks
-  /** Non-standard meta-information */
-  meta?: GetOneApiToken200DataMeta
   /** Relationships object */
   relationships?: GetOneApiToken200DataRelationships
   type: GetOneApiToken200DataType
@@ -6891,9 +6432,8 @@ export type GetOneApiToken200Data = {
 export type GetOneApiToken200 = {
   /** ApiTokens resource */
   data: GetOneApiToken200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type UpdateApiTokenBody = { [key: string]: unknown }
@@ -6916,27 +6456,22 @@ export type UpdateApiToken200DataAttributes = {
   /** The name of the API token */
   name: string
   /** The name of the organization the token belongs to */
-  orgname: string
+  organizationId: string
   /** The role of the API token */
   role: (typeof UpdateApiToken200DataAttributesRole)[keyof typeof UpdateApiToken200DataAttributesRole]
 }
 
 export type UpdateApiToken200DataLinks = {
-  describedby?: Link
-  self?: Link
-  [key: string]: string
+  self: Link
 }
-
-/**
- * Non-standard meta-information
- */
-export type UpdateApiToken200DataMeta = { [key: string]: unknown }
 
 /**
  * Resource Identifier
  */
 export type UpdateApiToken200DataRelationshipsData = {
+  /** Unique identifier for the resource */
   id: string
+  /** Type of the resource */
   type: string
 }
 
@@ -6966,10 +6501,7 @@ export type UpdateApiToken200Data = {
   attributes: UpdateApiToken200DataAttributes
   /** The ID of the item */
   id: string
-  lid?: string
   links?: UpdateApiToken200DataLinks
-  /** Non-standard meta-information */
-  meta?: UpdateApiToken200DataMeta
   /** Relationships object */
   relationships?: UpdateApiToken200DataRelationships
   type: UpdateApiToken200DataType
@@ -6981,9 +6513,8 @@ export type UpdateApiToken200Data = {
 export type UpdateApiToken200 = {
   /** ApiTokens resource */
   data: UpdateApiToken200Data
-  included?: ResourceIdentifier[]
+  included?: ResourceObject[]
   links?: Links
-  meta?: Meta
 }
 
 export type LoginBody = {
@@ -7008,9 +6539,14 @@ export type Login201 = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }
@@ -7030,9 +6566,14 @@ export type GetSession200 = {
   /** The user's e-mail */
   email: string
   /** Whether or not the user's e-mail has been verified */
-  emailVerified?: string
+  emailVerified: boolean
   /** The user's avatar image URL */
   image?: string
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
   /** The user's organization name */
   orgname: string
 }

@@ -35,7 +35,7 @@ export class ApiTokensService extends BaseService<ApiTokenEntity> {
     const token = this.jwtService.sign(
       {
         id,
-        orgname: data.orgname,
+        organizationId: data.organizationId,
         role: data.role
       },
       {
@@ -53,8 +53,8 @@ export class ApiTokensService extends BaseService<ApiTokenEntity> {
   }
 
   protected emitMutationEvent(entity: ApiTokenEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, API_TOKEN_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, API_TOKEN_ENTITY_KEY]
     })
   }
 }

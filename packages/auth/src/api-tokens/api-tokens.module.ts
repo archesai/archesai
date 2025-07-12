@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  ApiTokenInsertModel,
+  ApiTokenSelectModel
+} from '@archesai/database'
 import type { ApiTokenEntity } from '@archesai/schemas'
 
 import {
@@ -51,8 +55,13 @@ export const ApiTokensModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: ApiTokenRepository,
-      useFactory: (databaseService: DatabaseService<ApiTokenEntity>) =>
-        new ApiTokenRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          ApiTokenEntity,
+          ApiTokenInsertModel,
+          ApiTokenSelectModel
+        >
+      ) => new ApiTokenRepository(databaseService)
     }
   ]
 }

@@ -33,7 +33,7 @@ export class EmailVerificationService {
       updateEmailVerificationDto.token
     )
     await this.usersService.update(userId, {
-      emailVerified: new Date().toISOString()
+      emailVerified: true
     })
   }
 

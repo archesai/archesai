@@ -22,6 +22,9 @@ export const LabelTable = pgTable(
   (LabelTable) => [uniqueIndex().on(LabelTable.name, LabelTable.organizationId)]
 )
 
+export type LabelInsertModel = typeof LabelTable.$inferInsert
+export type LabelSelectModel = typeof LabelTable.$inferSelect
+
 export const labelRelations = relations(LabelTable, ({ many, one }) => ({
   artifacts: many(LabelToArtifactTable),
   organization: one(OrganizationTable, {

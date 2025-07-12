@@ -1,4 +1,5 @@
 import type { DatabaseService } from '@archesai/core'
+import type { ToolInsertModel, ToolSelectModel } from '@archesai/database'
 import type { ToolEntity } from '@archesai/schemas'
 
 import { BaseRepository } from '@archesai/core'
@@ -8,12 +9,22 @@ import { ToolEntitySchema } from '@archesai/schemas'
 /**
  * Repository for tools.
  */
-export class ToolRepository extends BaseRepository<ToolEntity> {
-  constructor(databaseService: DatabaseService<ToolEntity>) {
+export class ToolRepository extends BaseRepository<
+  ToolEntity,
+  ToolInsertModel,
+  ToolSelectModel
+> {
+  constructor(
+    databaseService: DatabaseService<
+      ToolEntity,
+      ToolInsertModel,
+      ToolSelectModel
+    >
+  ) {
     super(databaseService, ToolTable, ToolEntitySchema)
   }
 
-  public async createDefaultTools(orgname: string): Promise<{
+  public async createDefaultTools(organizationId: string): Promise<{
     count: number
     data: ToolEntity[]
   }> {
@@ -23,7 +34,7 @@ export class ToolRepository extends BaseRepository<ToolEntity> {
           'Extract text from a file. This tool supports all file types.',
         inputType: 'TEXT',
         name: 'Extract Text',
-        orgname,
+        organizationId,
         outputType: 'TEXT',
         toolBase: 'extract-text'
       },
@@ -31,7 +42,7 @@ export class ToolRepository extends BaseRepository<ToolEntity> {
         description: 'Create an image from text.',
         inputType: 'TEXT',
         name: 'Text to Image',
-        orgname,
+        organizationId,
         outputType: 'IMAGE',
         toolBase: 'text-to-image'
       },
@@ -39,7 +50,7 @@ export class ToolRepository extends BaseRepository<ToolEntity> {
         description: 'Summarize text. This tool supports all languages.',
         inputType: 'TEXT',
         name: 'Summarize',
-        orgname,
+        organizationId,
         outputType: 'TEXT',
         toolBase: 'summarize'
       },
@@ -48,7 +59,7 @@ export class ToolRepository extends BaseRepository<ToolEntity> {
           'Create embeddings from text. This tool supports all languages.',
         inputType: 'TEXT',
         name: 'Create Embeddings',
-        orgname,
+        organizationId,
         outputType: 'TEXT', // FIXME make this none
         toolBase: 'create-embeddings'
       },
@@ -57,7 +68,7 @@ export class ToolRepository extends BaseRepository<ToolEntity> {
           'Convert text to speech. This tool supports all languages.',
         inputType: 'TEXT',
         name: 'Text to Speech',
-        orgname,
+        organizationId,
         outputType: 'AUDIO',
         toolBase: 'text-to-speech'
       }

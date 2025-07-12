@@ -25,6 +25,9 @@ export const AccountTable = pgTable(ACCOUNT_ENTITY_KEY, {
     })
 })
 
+export type AccountInsertModel = typeof AccountTable.$inferInsert
+export type AccountSelectModel = typeof AccountTable.$inferSelect
+
 export const accountRelations = relations(AccountTable, ({ one }) => ({
   user: one(UserTable, {
     fields: [AccountTable.userId],

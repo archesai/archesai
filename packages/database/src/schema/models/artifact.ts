@@ -37,6 +37,9 @@ export const ArtifactTable = pgTable(ARTIFACT_ENTITY_KEY, {
   url: text()
 })
 
+export type ArtifactInsertModel = typeof ArtifactTable.$inferInsert
+export type ArtifactSelectModel = typeof ArtifactTable.$inferSelect
+
 export const contentRelations = relations(ArtifactTable, ({ many, one }) => ({
   // children: many(_ParentToChild, {
   //   relationName: 'children'

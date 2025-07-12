@@ -20,6 +20,9 @@ export const InvitationTable = pgTable(INVITATION_ENTITY_KEY, {
   role: roleEnum().default('USER').notNull()
 })
 
+export type InvitationInsertModel = typeof InvitationTable.$inferInsert
+export type InvitationSelectModel = typeof InvitationTable.$inferSelect
+
 export const invitationRelations = relations(InvitationTable, ({ one }) => ({
   organization: one(OrganizationTable, {
     fields: [InvitationTable.organizationId],

@@ -55,6 +55,9 @@ export const runRelations = relations(RunTable, ({ many, one }) => ({
   })
 }))
 
+export type RunInsertModel = typeof RunTable.$inferInsert
+export type RunSelectModel = typeof RunTable.$inferSelect
+
 // MANY TO MANY
 export const _RunToArtifactTable = pgTable(
   '_runToContent',

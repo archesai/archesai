@@ -70,7 +70,6 @@ describe('ApiTokensService', () => {
         username: 'test-user'
       }
       const mockedApiToken = createRandomApiToken({
-        orgname: overrides.orgname,
         role: createTokenDto.role
       })
 
@@ -85,11 +84,12 @@ describe('ApiTokensService', () => {
       )
 
       const result = await service.create({
+        createdAt: new Date().toISOString(),
         name: createTokenDto.name,
-        orgname: overrides.orgname,
-        role: createTokenDto.role
+        organizationId: orgname,
+        role: createTokenDto.role,
+        updatedAt: new Date().toISOString()
       })
-      expect(result.orgname).toEqual(orgname)
       expect(configService.get).toHaveBeenCalledWith('jwt.expiration')
       expect(configService.get).toHaveBeenCalledWith('jwt.secret')
       expect(jwtService.sign).toHaveBeenCalledWith(
@@ -109,7 +109,7 @@ describe('ApiTokensService', () => {
         ...overrides
       })
       expect(websocketsService.broadcastEvent).toHaveBeenCalledWith('update', {
-        queryKey: ['organizations', result.orgname, API_TOKEN_ENTITY_KEY]
+        queryKey: ['organizations', result.organizationId, API_TOKEN_ENTITY_KEY]
       })
       expect(result).toEqual(
         createRandomApiToken({ ...mockedApiToken, key: 'token' })

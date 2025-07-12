@@ -28,7 +28,10 @@ export function createRouter() {
     },
     mutationCache: new MutationCache({
       onError: (error) => {
-        toast.error(error.message, { className: 'bg-red-500 text-white' })
+        toast.error(error.name, {
+          className: 'bg-red-500 text-white',
+          description: error.message
+        })
       },
       onSettled: () => {
         if (queryClient.isMutating() === 1) {
@@ -36,6 +39,9 @@ export function createRouter() {
         } else {
           return
         }
+      },
+      onSuccess: () => {
+        toast.success('Success', { className: 'bg-green-500 text-white' })
       }
     })
   })

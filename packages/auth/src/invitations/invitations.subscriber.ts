@@ -42,14 +42,18 @@ export class InvitationsSubscriber implements EventSubscriber {
           const user = await this.usersService.findOne(event.creator.id)
           const invitation = await this.invitationsService.create({
             accepted: true,
+            createdAt: new Date().toISOString(),
             email: user.email,
-            orgname: event.organization.orgname,
-            role: 'ADMIN'
+            orgname: event.organization.id,
+            role: 'ADMIN',
+            updatedAt: new Date().toISOString()
           })
           const membership = await this.membersService.create({
+            createdAt: new Date().toISOString(),
             invitationId: invitation.id,
-            orgname: event.organization.orgname,
+            orgname: event.organization.id,
             role: 'USER',
+            updatedAt: new Date().toISOString(),
             userId: event.creator.id
           })
 

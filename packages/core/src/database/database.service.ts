@@ -1,4 +1,4 @@
-import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
+import type { BaseEntity } from '@archesai/schemas'
 
 import type { SearchQuery } from '#http/dto/search-query.dto'
 
@@ -12,8 +12,8 @@ import type { SearchQuery } from '#http/dto/search-query.dto'
  */
 export abstract class DatabaseService<
   TEntity extends BaseEntity = BaseEntity,
-  TInsert extends BaseInsertion<TEntity> = BaseInsertion<TEntity>,
-  TModel = TEntity,
+  TInsert = unknown,
+  TModel = unknown,
   TFilter = unknown,
   TTables = unknown
 > {

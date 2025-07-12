@@ -4,7 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { createMock } from '@golevelup/ts-jest'
 import { Test } from '@nestjs/testing'
 
-import type { BaseInsertion, UserEntity } from '@archesai/schemas'
+import type { UserInsertModel } from '@archesai/database'
 
 import { OrganizationsService } from '#organizations/organizations.service'
 import { createRandomUser } from '#users/factories/user.factory'
@@ -38,8 +38,8 @@ describe('UsersService', () => {
         deactivated: false,
         email: 'test@test.com',
         image: 'testphoto',
-        orgname: 'test-org'
-      } satisfies BaseInsertion<UserEntity>
+        name: 'Test User'
+      } satisfies UserInsertModel
       const mockedUser = createRandomUser(createUserDto)
 
       mockedUserRepository.create.mockResolvedValue(mockedUser)

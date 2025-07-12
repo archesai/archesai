@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  ArtifactInsertModel,
+  ArtifactSelectModel
+} from '@archesai/database'
 import type { ArtifactEntity } from '@archesai/schemas'
 
 import {
@@ -35,8 +39,13 @@ export const ArtifactsModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: ArtifactRepository,
-      useFactory: (databaseService: DatabaseService<ArtifactEntity>) =>
-        new ArtifactRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          ArtifactEntity,
+          ArtifactInsertModel,
+          ArtifactSelectModel
+        >
+      ) => new ArtifactRepository(databaseService)
     },
     {
       inject: [ArtifactsService],

@@ -16,7 +16,7 @@ export const ApiTokenEntitySchema = Type.Object(
     name: Type.String({
       description: 'The name of the API token'
     }),
-    orgname: Type.String({
+    organizationId: Type.String({
       description: 'The name of the organization the token belongs to'
     }),
     role: Type.Union(

@@ -34,6 +34,9 @@ export const MemberTable = pgTable(
   ]
 )
 
+export type MemberInsertModel = typeof MemberTable.$inferInsert
+export type MemberSelectModel = typeof MemberTable.$inferSelect
+
 export const memberRelations = relations(MemberTable, ({ one }) => ({
   organization: one(OrganizationTable, {
     fields: [MemberTable.organizationId],

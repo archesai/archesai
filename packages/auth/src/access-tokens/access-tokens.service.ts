@@ -43,7 +43,7 @@ export class AccessTokensService {
     this.logger.debug('got account query result', { account })
 
     await this.accountsService.update(account.id, {
-      refresh_token: refreshToken
+      refreshToken
     })
     this.logger.debug('updated refresh token in database', {
       refreshToken,
@@ -71,7 +71,7 @@ export class AccessTokensService {
     const payload = this.jwtService.verify<AccessTokenDecodedJwt>(refreshToken)
 
     const account = await this.accountsService.findOne(payload.sub)
-    if (account.refresh_token !== refreshToken) {
+    if (account.refreshToken !== refreshToken) {
       throw new UnauthorizedException('Refresh token is invalid')
     }
 
@@ -81,7 +81,7 @@ export class AccessTokensService {
 
     // Update refresh token in the database
     await this.accountsService.update(account.id, {
-      refresh_token: newRefreshToken
+      refreshToken: newRefreshToken
     })
 
     return {

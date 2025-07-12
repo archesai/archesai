@@ -18,6 +18,9 @@ export const PipelineTable = pgTable(PIPELINE_ENTITY_KEY, {
     })
 })
 
+export type PipelineInsertModel = typeof PipelineTable.$inferInsert
+export type PipelineSelectModel = typeof PipelineTable.$inferSelect
+
 export const pipelineRelations = relations(PipelineTable, ({ many, one }) => ({
   organization: one(OrganizationTable, {
     fields: [PipelineTable.organizationId],

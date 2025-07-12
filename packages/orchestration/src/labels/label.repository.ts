@@ -1,4 +1,5 @@
 import type { DatabaseService } from '@archesai/core'
+import type { LabelInsertModel, LabelSelectModel } from '@archesai/database'
 import type { LabelEntity } from '@archesai/schemas'
 
 import { BaseRepository } from '@archesai/core'
@@ -8,8 +9,18 @@ import { LabelEntitySchema } from '@archesai/schemas'
 /**
  * Repository for labels.
  */
-export class LabelRepository extends BaseRepository<LabelEntity> {
-  constructor(databaseService: DatabaseService<LabelEntity>) {
+export class LabelRepository extends BaseRepository<
+  LabelEntity,
+  LabelInsertModel,
+  LabelSelectModel
+> {
+  constructor(
+    databaseService: DatabaseService<
+      LabelEntity,
+      LabelInsertModel,
+      LabelSelectModel
+    >
+  ) {
     super(databaseService, LabelTable, LabelEntitySchema)
   }
 }

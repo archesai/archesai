@@ -43,7 +43,7 @@ export class PasswordResetService {
       )
 
     await this.accountsService.update(account.id, {
-      hashed_password: await this.hashingService.hashPassword(
+      password: await this.hashingService.hashPassword(
         updatePasswordResetDto.newPassword
       )
     })

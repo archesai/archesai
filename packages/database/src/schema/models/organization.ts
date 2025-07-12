@@ -13,3 +13,6 @@ export const OrganizationTable = pgTable(ORGANIZATION_ENTITY_KEY, {
   plan: planType().default('FREE').notNull(),
   stripeCustomerId: text().unique()
 })
+
+export type OrganizationInsertModel = typeof OrganizationTable.$inferInsert
+export type OrganizationSelectModel = typeof OrganizationTable.$inferSelect

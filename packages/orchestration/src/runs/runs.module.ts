@@ -1,4 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type { RunInsertModel, RunSelectModel } from '@archesai/database'
 import type { RunEntity } from '@archesai/schemas'
 
 import {
@@ -49,8 +50,13 @@ export const RunsModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: RunRepository,
-      useFactory: (databaseService: DatabaseService<RunEntity>) =>
-        new RunRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          RunEntity,
+          RunInsertModel,
+          RunSelectModel
+        >
+      ) => new RunRepository(databaseService)
     },
     {
       inject: [ConfigService, RunsService],

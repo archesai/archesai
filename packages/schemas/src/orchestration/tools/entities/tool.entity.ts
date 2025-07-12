@@ -13,9 +13,11 @@ export const ToolEntitySchema = Type.Object(
       ContentBaseTypes.map((type) => Type.Literal(type)), // Using literals instead of enums
       { description: 'The input type of the tool' }
     ),
-    name: Type.String({
-      description: 'The name of the tool'
-    }),
+    name: Type.Optional(
+      Type.String({
+        description: 'The name of the tool'
+      })
+    ),
     orgname: Type.String({ description: 'The organization name' }),
     outputType: Type.Union(
       ContentBaseTypes.map((type) => Type.Literal(type)), // Using literals instead of enums

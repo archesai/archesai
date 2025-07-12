@@ -1,4 +1,4 @@
-import type { BaseEntity, BaseInsertion, TSchema } from '@archesai/schemas'
+import type { BaseEntity, TSchema } from '@archesai/schemas'
 
 import { Value } from '@archesai/schemas'
 
@@ -13,8 +13,8 @@ import { Logger } from '#logging/logger'
  */
 export abstract class BaseRepository<
   TEntity extends BaseEntity,
-  TInsert extends BaseInsertion<TEntity> = BaseInsertion<TEntity>,
-  TModel = TEntity,
+  TInsert = unknown,
+  TModel = unknown,
   TTables = unknown
 > {
   protected readonly entitySchema: TSchema

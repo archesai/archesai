@@ -33,9 +33,11 @@ describe('MembersService', () => {
     it('should create a new smember', async () => {
       const orgname = 'test-org'
       const createMemberRequest: BaseInsertion<MemberEntity> = {
+        createdAt: new Date().toISOString(),
         invitationId: 'test-invitation-id',
         orgname,
         role: 'ADMIN',
+        updatedAt: new Date().toISOString(),
         userId: 'test-user-id'
       }
       const existingUser = createRandomUser()
@@ -53,9 +55,11 @@ describe('MembersService', () => {
     it('should create a new member without existing user', async () => {
       const orgname = 'test-org'
       const createMemberRequest: BaseInsertion<MemberEntity> = {
+        createdAt: new Date().toISOString(),
         invitationId: 'test-invitation-id',
         orgname,
         role: 'ADMIN',
+        updatedAt: new Date().toISOString(),
         userId: 'test-user-id'
       }
 

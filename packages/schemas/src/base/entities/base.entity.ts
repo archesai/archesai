@@ -12,10 +12,7 @@ export const BaseEntitySchema = Type.Object({
 
 export type BaseEntity = Static<typeof BaseEntitySchema>
 
-export type BaseInsertion<TEntity extends BaseEntity> = Omit<
-  TEntity,
-  keyof BaseEntity
-> &
+export type BaseInsertion<TEntity extends BaseEntity> = Omit<TEntity, 'id'> &
   Partial<BaseEntity>
 
 export const LegacyRef = <T extends TSchema>(schema: T) =>

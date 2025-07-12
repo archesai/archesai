@@ -1,5 +1,6 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { BaseInsertion, UserEntity } from '@archesai/schemas'
+import type { UserInsertModel } from '@archesai/database'
+import type { UserEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
 import { USER_ENTITY_KEY } from '@archesai/schemas'
@@ -46,15 +47,15 @@ export class UsersService extends BaseService<UserEntity> {
     }
   }
 
-  public override async create(value: BaseInsertion<UserEntity>) {
+  public override async create(value: UserInsertModel) {
     // Create user
     const user = await this.userRepository.create({
-      ...value,
-      orgname:
-        value.orgname ||
-        (value.email.split('@')[0] ?? value.email) +
-          '-' +
-          Math.random().toString(36).substring(2, 6)
+      ...value
+      // username:
+      //   value.orgname ||
+      //   (value.email.split('@')[0] ?? value.email) +
+      //     '-' +
+      //     Math.random().toString(36).substring(2, 6)
     })
 
     // Create organization
@@ -65,9 +66,11 @@ export class UsersService extends BaseService<UserEntity> {
     const orgname = usernamePrefix + user.id.slice(0, 5)
     await this.organizationsService.create({
       billingEmail: user.email,
+      createdAt: new Date().toISOString(),
       credits: 0,
       orgname,
-      plan: 'FREE'
+      plan: 'FREE',
+      updatedAt: new Date().toISOString()
     })
     return user
   }

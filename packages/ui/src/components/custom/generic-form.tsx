@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react'
 import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { LoaderIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 import type { TSchema } from '@archesai/schemas'
 
@@ -110,6 +109,7 @@ export function GenericForm<
   const form = useForm({
     defaultValues,
     mode: 'onChange',
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     resolver: typeboxResolver(schema)
   })
@@ -130,14 +130,7 @@ export function GenericForm<
           await onSubmitCreate(values as CreateDto)
         }
 
-    try {
-      await run()
-      toast.success(`${isUpdateForm ? 'Updated' : 'Created'} ${entityKey}!`)
-    } catch (err) {
-      toast.error(`${isUpdateForm ? 'Update' : 'Creation'} failed`, {
-        description: (err as Error).message
-      })
-    }
+    await run()
   }
 
   return (

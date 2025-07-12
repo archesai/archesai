@@ -15,17 +15,19 @@ export const UserEntitySchema = Type.Object(
       description: "The user's e-mail",
       format: 'email'
     }),
-    emailVerified: Type.Optional(
-      Type.String({
-        description: "Whether or not the user's e-mail has been verified",
-        format: 'date-time'
-      })
-    ),
+    emailVerified: Type.Boolean({
+      description: "Whether or not the user's e-mail has been verified",
+      format: 'date-time'
+    }),
     image: Type.Optional(
       Type.String({
         description: "The user's avatar image URL"
       })
     ),
+    name: Type.String({
+      description: "The user's name",
+      minLength: 1
+    }),
     orgname: Type.String({
       description: "The user's organization name"
     })

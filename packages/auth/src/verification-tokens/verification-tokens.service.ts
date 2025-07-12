@@ -33,7 +33,7 @@ export class VerificationTokensService {
     _type: VerificationTokenType,
     userId: string,
     expiresInHours: number,
-    overrides?: { newEmail?: string }
+    _overrides?: { newEmail?: string }
   ): Promise<string> {
     await this.verificationTokenRepository.deleteMany({
       filter: {}
@@ -43,10 +43,10 @@ export class VerificationTokensService {
     const expiresAt = new Date()
     expiresAt.setHours(expiresAt.getHours() + expiresInHours)
     await this.verificationTokenRepository.create({
-      expires: expiresAt.toISOString(),
+      expiresAt: expiresAt.toISOString(),
       identifier: userId,
-      newEmail: overrides?.newEmail ?? '',
-      token: await this.hashingService.hashPassword(token)
+      // value: overrides?.newEmail ?? '',
+      value: await this.hashingService.hashPassword(token)
     })
 
     return token

@@ -1,4 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type { MemberInsertModel, MemberSelectModel } from '@archesai/database'
 import type { MemberEntity } from '@archesai/schemas'
 
 import {
@@ -29,8 +30,13 @@ export const MembersModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: MemberRepository,
-      useFactory: (databaseService: DatabaseService<MemberEntity>) =>
-        new MemberRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          MemberEntity,
+          MemberInsertModel,
+          MemberSelectModel
+        >
+      ) => new MemberRepository(databaseService)
     },
     {
       inject: [MembersService],

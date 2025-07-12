@@ -7,9 +7,10 @@ export function createRandomUser(overrides?: Partial<UserEntity>): UserEntity {
     createdAt: faker.date.recent().toISOString(),
     deactivated: false,
     email: faker.internet.email(),
-    emailVerified: new Date().toISOString(),
+    emailVerified: true,
     id: faker.string.uuid(),
     image: faker.image.avatar(),
+    name: faker.person.fullName(),
     orgname: faker.word.adverb(),
     updatedAt: faker.date.recent().toISOString(),
     ...overrides

@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  VerificationTokenInsertModel,
+  VerificationTokenSelectModel
+} from '@archesai/database'
 import type { VerificationTokenEntity } from '@archesai/schemas'
 
 import {
@@ -44,8 +48,13 @@ export const VerificationTokensModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: VerificationTokenRepository,
-      useFactory: (databaseService: DatabaseService<VerificationTokenEntity>) =>
-        new VerificationTokenRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          VerificationTokenEntity,
+          VerificationTokenInsertModel,
+          VerificationTokenSelectModel
+        >
+      ) => new VerificationTokenRepository(databaseService)
     }
   ]
 }

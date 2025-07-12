@@ -12,6 +12,7 @@ export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
   ...baseFields,
   description: text().notNull(),
   inputType: toolIO().notNull(),
+  name: text().notNull(),
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {
@@ -21,6 +22,9 @@ export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
   outputType: toolIO().notNull(),
   toolBase: text().notNull()
 })
+
+export type ToolInsertModel = typeof ToolTable.$inferInsert
+export type ToolSelectModel = typeof ToolTable.$inferSelect
 
 export const toolRelations = relations(ToolTable, ({ many, one }) => ({
   organization: one(OrganizationTable, {

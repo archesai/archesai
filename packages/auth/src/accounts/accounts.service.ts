@@ -37,13 +37,11 @@ export class AccountsService extends BaseService<AccountEntity> {
   public override async create(
     value: BaseInsertion<AccountEntity>
   ): Promise<AccountEntity> {
-    if (value.provider === 'LOCAL') {
-      if (!value.hashed_password) {
+    if (value.providerId === 'LOCAL') {
+      if (!value.password) {
         throw new Error('A hashed password is required for local')
       }
-      value.hashed_password = await this.hashingService.hashPassword(
-        value.hashed_password
-      )
+      value.password = await this.hashingService.hashPassword(value.password)
     }
     return this.accountRepository.create(value)
   }
@@ -60,11 +58,11 @@ export class AccountsService extends BaseService<AccountEntity> {
   ): Promise<AccountEntity> {
     return this.accountRepository.findFirst({
       filter: {
-        provider: {
-          equals: provider
-        },
-        providerAccountId: {
+        accountId: {
           equals: providerAccountId
+        },
+        providerId: {
+          equals: provider
         }
       }
     })

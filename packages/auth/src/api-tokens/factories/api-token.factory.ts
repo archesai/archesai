@@ -9,8 +9,8 @@ export const createRandomApiToken = (
     createdAt: faker.date.recent().toISOString(),
     id: faker.string.uuid(),
     key: faker.internet.password(),
-    name: faker.word.noun(),
-    orgname: faker.internet.domainName(),
+    name: faker.lorem.words(3),
+    organizationId: faker.string.uuid(),
     role: 'ADMIN',
     updatedAt: faker.date.recent().toISOString(),
     ...overrides

@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  PipelineInsertModel,
+  PipelineSelectModel
+} from '@archesai/database'
 import type { PipelineEntity } from '@archesai/schemas'
 
 import {
@@ -39,8 +43,13 @@ export const PipelinesModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: PipelineRepository,
-      useFactory: (databaseService: DatabaseService<PipelineEntity>) =>
-        new PipelineRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          PipelineEntity,
+          PipelineInsertModel,
+          PipelineSelectModel
+        >
+      ) => new PipelineRepository(databaseService)
     },
     {
       inject: [EventBus, PipelinesService],

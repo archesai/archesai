@@ -1,4 +1,8 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type {
+  InvitationInsertModel,
+  InvitationSelectModel
+} from '@archesai/database'
 import type { InvitationEntity } from '@archesai/schemas'
 
 import {
@@ -41,8 +45,13 @@ export const InvitationsModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: InvitationRepository,
-      useFactory: (databaseService: DatabaseService<InvitationEntity>) =>
-        new InvitationRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          InvitationEntity,
+          InvitationInsertModel,
+          InvitationSelectModel
+        >
+      ) => new InvitationRepository(databaseService)
     },
     {
       inject: [EventBus, InvitationsService, MembersService, UsersService],

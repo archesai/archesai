@@ -31,7 +31,7 @@ export class LocalStrategy extends LocalStrategyBase {
 
           const match = await hashingService.verifyPassword(
             password,
-            account.hashed_password ?? ''
+            account.password ?? ''
           )
 
           if (!match) {

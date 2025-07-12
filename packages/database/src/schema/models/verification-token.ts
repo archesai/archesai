@@ -10,3 +10,8 @@ export const VerificationTokenTable = pgTable(VERIFICATION_TOKEN_ENTITY_KEY, {
   identifier: text().notNull(),
   value: text().notNull()
 })
+
+export type VerificationTokenInsertModel =
+  typeof VerificationTokenTable.$inferInsert
+export type VerificationTokenSelectModel =
+  typeof VerificationTokenTable.$inferSelect

@@ -19,6 +19,9 @@ export const ApiTokenTable = pgTable(API_TOKEN_ENTITY_KEY, {
   role: roleEnum().default('USER').notNull()
 })
 
+export type ApiTokenInsertModel = typeof ApiTokenTable.$inferInsert
+export type ApiTokenSelectModel = typeof ApiTokenTable.$inferSelect
+
 export const apiTokenRelations = relations(ApiTokenTable, ({ one }) => ({
   organization: one(OrganizationTable, {
     fields: [ApiTokenTable.organizationId],

@@ -1,4 +1,5 @@
 import type { ModuleMetadata } from '@archesai/core'
+import type { UserInsertModel, UserSelectModel } from '@archesai/database'
 import type { UserEntity } from '@archesai/schemas'
 
 import {
@@ -37,8 +38,13 @@ export const UsersModuleDefinition: ModuleMetadata = {
     {
       inject: [DatabaseService],
       provide: UserRepository,
-      useFactory: (databaseService: DatabaseService<UserEntity>) =>
-        new UserRepository(databaseService)
+      useFactory: (
+        databaseService: DatabaseService<
+          UserEntity,
+          UserInsertModel,
+          UserSelectModel
+        >
+      ) => new UserRepository(databaseService)
     },
     {
       provide: DeactivatedGuard,

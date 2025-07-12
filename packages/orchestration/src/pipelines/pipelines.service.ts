@@ -1,5 +1,6 @@
 import type { WebsocketsService } from '@archesai/core'
-import type { BaseInsertion, PipelineEntity } from '@archesai/schemas'
+import type { PipelineInsertModel } from '@archesai/database'
+import type { PipelineEntity } from '@archesai/schemas'
 
 import { BaseService } from '@archesai/core'
 import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
@@ -26,10 +27,10 @@ export class PipelinesService extends BaseService<PipelineEntity> {
     this.toolsService = toolsService
   }
 
-  public override async create(value: BaseInsertion<PipelineEntity>) {
+  public override async create(value: PipelineInsertModel) {
     const pipeline = await this.pipelineRepository.create({
-      ...value,
-      steps: value.steps
+      ...value
+      // steps: value.steps
     })
     return this.findOne(pipeline.id)
   }
@@ -45,34 +46,33 @@ export class PipelinesService extends BaseService<PipelineEntity> {
     const pipeline = await this.pipelineRepository.create({
       description:
         'This is a default pipeline for indexing arbitrary documents. It extracts text from the document, creates an image from the text, summarizes the text, creates embeddings from the text, and converts the text to speech.',
-      name: 'Default',
-      orgname,
-      steps: [
-        // {
-        //   id: firstId,
-        //   name: 'extract-text',
-        //   prerequisites: [],
-        //   toolId: 'extract-text'
-        // },
-        // ...tools.data.map((tool) => ({
-        //   id: tool.toolBase,
-        //   name: tool.name,
-        //   prerequisites: [
-        //     {
-        //       pipelineStepId: firstId
-        //     }
-        //   ],
-        //   toolId: tool.id
-        // }))
-      ]
+      organizationId: orgname
+      // steps: [
+      // {
+      //   id: firstId,
+      //   name: 'extract-text',
+      //   prerequisites: [],
+      //   toolId: 'extract-text'
+      // },
+      // ...tools.data.map((tool) => ({
+      //   id: tool.toolBase,
+      //   name: tool.name,
+      //   prerequisites: [
+      //     {
+      //       pipelineStepId: firstId
+      //     }
+      //   ],
+      //   toolId: tool.id
+      // }))
+      // ]
     })
 
     return this.findOne(pipeline.id)
   }
 
   protected emitMutationEvent(entity: PipelineEntity): void {
-    this.websocketsService.broadcastEvent(entity.orgname, 'update', {
-      queryKey: ['organizations', entity.orgname, PIPELINE_ENTITY_KEY]
+    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, PIPELINE_ENTITY_KEY]
     })
   }
 }

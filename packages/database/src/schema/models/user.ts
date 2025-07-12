@@ -16,6 +16,9 @@ export const UserTable = pgTable(USER_ENTITY_KEY, {
   name: text().notNull()
 })
 
+export type UserInsertModel = typeof UserTable.$inferInsert
+export type UserSelectModel = typeof UserTable.$inferSelect
+
 export const userRelations = relations(UserTable, ({ many }) => ({
   accounts: many(AccountTable),
   memberships: many(MemberTable)

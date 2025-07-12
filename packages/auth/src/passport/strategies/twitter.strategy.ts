@@ -68,10 +68,12 @@ export class TwitterStrategy extends PassportTwitterStrategy {
         // Create a new user
         const [createUserError, user] = await catchErrorAsync(
           usersService.create({
+            createdAt: new Date().toISOString(),
             deactivated: false,
             email,
-            emailVerified: new Date().toISOString(),
-            orgname: username,
+            emailVerified: true,
+            name: username,
+            updatedAt: new Date().toISOString(),
             ...(profile.photos && profile.photos.length > 0 ?
               { image: profile.photos[0]!.value }
             : {})
@@ -88,9 +90,10 @@ export class TwitterStrategy extends PassportTwitterStrategy {
         // Create a new account
         const [createAccountError, newAccount] = await catchErrorAsync(
           accountsService.create({
-            authType: 'oauth',
-            provider: 'LOCAL',
-            providerAccountId: profile.id,
+            accountId: profile.id,
+            createdAt: new Date().toISOString(),
+            providerId: 'TWITTER',
+            updatedAt: new Date().toISOString(),
             userId: user.id
           })
         )
