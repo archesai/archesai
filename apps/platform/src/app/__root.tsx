@@ -6,8 +6,7 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
-  Scripts,
-  useRouterState
+  Scripts
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
@@ -72,19 +71,6 @@ export const Route = createRootRouteWithContext<{
   notFoundComponent: () => <NotFound />
 })
 
-export function LoadingIndicator() {
-  const isLoading = useRouterState({ select: (s) => s.isLoading })
-  return (
-    <div
-      className={`h-12 transition-all duration-300 ${
-        isLoading ? `opacity-100 delay-300` : `opacity-0 delay-0`
-      }`}
-    >
-      <Loader />
-    </div>
-  )
-}
-
 export default function RootDocument({
   children
 }: {
@@ -113,14 +99,6 @@ export default function RootDocument({
         <Scripts />
       </body>
     </html>
-  )
-}
-
-function Loader() {
-  return (
-    <div className='flex h-full'>
-      <div className='m-auto aspect-square h-20 max-h-full animate-spin rounded-full border-8 border-gray-300 border-t-slate-900' />
-    </div>
   )
 }
 

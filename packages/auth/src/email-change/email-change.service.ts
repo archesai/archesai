@@ -1,11 +1,14 @@
+import type {
+  CreateEmailChangeDto,
+  UpdateEmailChangeDto
+} from '@archesai/schemas'
+
 import {
   BadRequestException,
   getEmailChangeConfirmationHtml,
   Logger
 } from '@archesai/core'
 
-import type { CreateEmailChangeRequest } from '#email-change/dto/create-email-change-request.dto'
-import type { UpdateEmailChangeRequest } from '#email-change/dto/update-email-change-request.dto'
 import type { UsersService } from '#users/users.service'
 import type { VerificationTokensService } from '#verification-tokens/verification-tokens.service'
 
@@ -26,12 +29,12 @@ export class EmailChangeService {
   }
 
   public async confirm(
-    updateEmailChangeRequest: UpdateEmailChangeRequest
+    updateEmailChangeDto: UpdateEmailChangeDto
   ): Promise<void> {
-    this.logger.debug('req', { updateEmailChangeRequest })
+    this.logger.debug('req', { updateEmailChangeDto })
     const { newEmail, userId } = await this.verificationTokensService.verify(
       'EMAIL_CHANGE',
-      updateEmailChangeRequest.token
+      updateEmailChangeDto.token
     )
 
     if (!newEmail) {
@@ -43,20 +46,20 @@ export class EmailChangeService {
   }
 
   public async request(
-    createEmailChangeRequest: CreateEmailChangeRequest
+    createEmailChangeDto: CreateEmailChangeDto
   ): Promise<void> {
-    this.logger.debug('req', { createEmailChangeRequest })
+    this.logger.debug('req', { createEmailChangeDto })
     const token = await this.verificationTokensService.create(
       'EMAIL_CHANGE',
-      createEmailChangeRequest.userId,
+      createEmailChangeDto.userId,
       24,
       {
-        newEmail: createEmailChangeRequest.newEmail
+        newEmail: createEmailChangeDto.newEmail
       }
     )
     return this.verificationTokensService.sendNotification(
       'EMAIL_CHANGE',
-      createEmailChangeRequest.newEmail,
+      createEmailChangeDto.newEmail,
       token,
       'Confirm Your Email Change',
       getEmailChangeConfirmationHtml

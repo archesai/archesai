@@ -24,7 +24,6 @@
     "@archesai/intelligence": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@archesai/storage": "workspace:*",
-    "@sinclair/typebox": "catalog:",
     "bullmq": "catalog:",
     "tslib": "catalog:"
   },

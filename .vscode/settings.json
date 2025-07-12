@@ -9,6 +9,8 @@
     "**/*.tsbuildinfo": true,
     "**/.cache": true,
     "**/.next": true,
+    "**/.nitro": true,
+    "**/.output": true,
     "**/.tanstack": true,
     "**/.turbo": true,
     "**/dist": true,

@@ -1,6 +1,7 @@
+import type { PlanDto } from '@archesai/schemas'
+
 import { Logger } from '@archesai/core'
 
-import type { PlanResource } from '#plans/dto/plan.res.dto'
 import type { StripeService } from '#stripe/stripe.service'
 
 /**
@@ -16,7 +17,7 @@ export class PlansService {
 
   public async findAll(): Promise<{
     count: number
-    data: PlanResource[]
+    data: PlanDto[]
   }> {
     const products = await this.stripeService.stripe.products.list({
       active: true,
@@ -47,7 +48,7 @@ export class PlansService {
           type: 'plan',
           unitAmount: price.unit_amount,
           updatedAt: new Date(product.updated).toISOString()
-        } satisfies PlanResource
+        } satisfies PlanDto
       })
       .filter((val) => val !== null)
 

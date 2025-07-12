@@ -3,48 +3,60 @@ import { Type } from '@sinclair/typebox'
 import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import { useGetOneUserSuspense, useUpdateUser } from '@archesai/client'
+import {
+  useGetOneUser,
+  useGetSessionSuspense,
+  useUpdateUser
+} from '@archesai/client'
 import { USER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function UserForm() {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: userResponse } = useGetOneUserSuspense('user-form')
-
-  const user = userResponse.data
+  const { data: session } = useGetSessionSuspense()
+  const { data: user } = useGetOneUser(session.id)
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
-      defaultValue: user.attributes.name,
+      defaultValue: user?.data.attributes.name,
       description: 'Your first name',
       label: 'Name',
       name: 'firstName',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         minLength: 1
       })
     },
-
     {
-      component: Input,
-      defaultValue: user.attributes.orgname,
+      defaultValue: user?.data.attributes.orgname,
       description: 'Your username',
       label: 'Username',
       name: 'username',
-      props: {
-        disabled: true
-      }
+      renderControl: (field) => (
+        <Input
+          {...field}
+          disabled={true}
+          type='text'
+        />
+      )
     },
     {
-      component: Input,
-      defaultValue: user.attributes.email,
+      defaultValue: user?.data.attributes.email,
       description: 'Your email address',
       label: 'Email',
       name: 'email',
-      props: {
-        disabled: true
-      }
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      )
     }
   ]
 
@@ -54,14 +66,11 @@ export default function UserForm() {
       entityKey={USER_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={true}
-      onSubmitUpdate={async (data, mutateOptions) => {
-        await updateUser(
-          {
-            data,
-            id: user.id
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (data) => {
+        await updateUser({
+          data,
+          id: user?.data.id
+        })
       }}
       showCard={true}
       title='Profile'

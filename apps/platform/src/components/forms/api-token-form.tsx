@@ -34,7 +34,6 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: apiToken.attributes.name,
       description: 'This is the name that will be used for this API token.',
       label: 'Name',
@@ -42,13 +41,18 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       props: {
         placeholder: 'API Token name here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         maxLength: 128,
         minLength: 1
       })
     },
     {
-      component: Input,
       defaultValue: apiToken.attributes.role,
       description: 'This is the role that will be used for this API token.',
       label: 'RoleTypeEnum',
@@ -96,29 +100,23 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       entityKey={API_TOKEN_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!apiTokenId}
-      onSubmitCreate={async (createApiTokenDto, mutateOptions) => {
-        await createApiToken(
-          {
-            data: {
-              ...createApiTokenDto
-            },
-            id: apiTokenId!
+      onSubmitCreate={async (createApiTokenDto) => {
+        await createApiToken({
+          data: {
+            ...createApiTokenDto
           },
-          mutateOptions
-        )
+          id: apiTokenId!
+        })
       }}
-      onSubmitUpdate={async (updateApiTokenDto, mutateOptions) => {
-        await updateApiToken(
-          {
-            data: {
-              ...updateApiTokenDto,
-              name: apiToken.attributes.name,
-              orgname: apiToken.attributes.orgname,
-              role: apiToken.attributes.role
-            }
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (updateApiTokenDto) => {
+        await updateApiToken({
+          data: {
+            ...updateApiTokenDto,
+            name: apiToken.attributes.name,
+            orgname: apiToken.attributes.orgname,
+            role: apiToken.attributes.role
+          }
+        })
       }}
       title={
         !apiTokenId ? 'Create API Token' : (

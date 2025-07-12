@@ -12,9 +12,11 @@ import {
   AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef, UserEntitySchema } from '@archesai/schemas'
-
-import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto'
+import {
+  CreateAccountDtoSchema,
+  LegacyRef,
+  UserEntitySchema
+} from '@archesai/schemas'
 
 /**
  * Controller for managing authentication.
@@ -47,7 +49,7 @@ export class SessionsController implements Controller {
       {
         preValidation: [LocalAuthGuard(app)],
         schema: {
-          body: CreateAccountRequestSchema,
+          body: CreateAccountDtoSchema,
           description: `This endpoint will log you in with your e-mail and password`,
           operationId: 'login',
           response: {

@@ -1,7 +1,7 @@
 FROM node:24-alpine3.22 AS base
 
 RUN apk update
-RUN npm install -g pnpm@10.12.4
+RUN npm install -g pnpm@10.13.1
 
 USER node
 WORKDIR /usr/src/app

@@ -18,7 +18,6 @@ import { OrganizationButton } from '#layouts/app-sidebar/organization-button'
 import { SidebarLinks } from '#layouts/app-sidebar/sidebar-links'
 
 export function AppSidebar({
-  pathname,
   siteRoutes,
   ...props
 }: PageHeaderProps & React.ComponentProps<typeof Sidebar>) {
@@ -29,10 +28,7 @@ export function AppSidebar({
         {/* <SearchForm /> */}
       </SidebarHeader>
       <SidebarContent>
-        <SidebarLinks
-          pathname={pathname}
-          siteRoutes={siteRoutes}
-        />
+        <SidebarLinks siteRoutes={siteRoutes} />
       </SidebarContent>
       <SidebarFooter>
         {/* <CreditQuota /> */}

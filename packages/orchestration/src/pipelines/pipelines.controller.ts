@@ -2,12 +2,14 @@ import type { Controller } from '@archesai/core'
 import type { PipelineEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { PIPELINE_ENTITY_KEY, PipelineEntitySchema } from '@archesai/schemas'
+import {
+  CreatePipelineDtoSchema,
+  PIPELINE_ENTITY_KEY,
+  PipelineEntitySchema,
+  UpdatePipelineDtoSchema
+} from '@archesai/schemas'
 
 import type { PipelinesService } from '#pipelines/pipelines.service'
-
-import { CreatePipelineRequestSchema } from '#pipelines/dto/create-pipeline.req.dto'
-import { UpdatePipelineRequestSchema } from '#pipelines/dto/update-pipeline.req.dto'
 
 /**
  * Controller for pipelines.
@@ -20,8 +22,8 @@ export class PipelinesController
     super(
       PIPELINE_ENTITY_KEY,
       PipelineEntitySchema,
-      CreatePipelineRequestSchema,
-      UpdatePipelineRequestSchema,
+      CreatePipelineDtoSchema,
+      UpdatePipelineDtoSchema,
       pipelinesService
     )
   }

@@ -23,14 +23,17 @@ export default function OrganizationForm({ orgname }: { orgname?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: orgname,
       description: 'The name of the organization. This cannot be changed.',
       label: 'Name',
       name: 'name',
-      props: {
-        disabled: true
-      }
+      renderControl: (field) => (
+        <Input
+          {...field}
+          disabled={true}
+          type='text'
+        />
+      )
     }
   ]
 
@@ -40,22 +43,16 @@ export default function OrganizationForm({ orgname }: { orgname?: string }) {
       entityKey={ORGANIZATION_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={true}
-      onSubmitCreate={async (createOrganizationDto, mutateOptions) => {
-        await createOrganization(
-          {
-            data: createOrganizationDto
-          },
-          mutateOptions
-        )
+      onSubmitCreate={async (createOrganizationDto) => {
+        await createOrganization({
+          data: createOrganizationDto
+        })
       }}
-      onSubmitUpdate={async (updateOrganizationDto, mutateOptions) => {
-        await updateOrganization(
-          {
-            data: updateOrganizationDto,
-            id: orgname!
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (updateOrganizationDto) => {
+        await updateOrganization({
+          data: updateOrganizationDto,
+          id: orgname!
+        })
       }}
       showCard={true}
       title={ORGANIZATION_ENTITY_KEY}

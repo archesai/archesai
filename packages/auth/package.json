@@ -26,7 +26,6 @@
     "@fastify/cookie": "catalog:",
     "@fastify/passport": "catalog:",
     "@fastify/session": "catalog:",
-    "@sinclair/typebox": "catalog:",
     "fastify": "catalog:",
     "jsonwebtoken": "catalog:",
     "passport-jwt": "catalog:",

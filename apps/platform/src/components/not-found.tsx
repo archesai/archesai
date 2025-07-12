@@ -25,13 +25,10 @@ export default function NotFound({ children }: { children?: React.ReactNode }) {
         <CardContent>
           <div className='flex flex-col gap-2 sm:flex-row'>
             <Button
+              asChild
               className='flex-1'
-              onClick={() => {
-                window.history.back()
-              }}
-              variant='outline'
             >
-              Go Home
+              <Link to='/chat'>Go Home</Link>
             </Button>
             <Button
               asChild

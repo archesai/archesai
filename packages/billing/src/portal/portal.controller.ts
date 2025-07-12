@@ -1,12 +1,10 @@
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type { CreatePortalDto } from '@archesai/schemas'
 
 import { IS_CONTROLLER } from '@archesai/core'
+import { CreatePortalDtoSchema, PortalDtoSchema } from '@archesai/schemas'
 
-import type { CreatePortalRequest } from '#portal/dto/create-portal.req.dto'
 import type { PortalService } from '#portal/portal.service'
-
-import { CreatePortalRequestSchema } from '#portal/dto/create-portal.req.dto'
-import { PortalResourceSchema } from '#portal/dto/portal.res.dto'
 
 /**
  * Controller for billing portal.
@@ -19,9 +17,7 @@ export class PortalController implements Controller {
     this.portalService = portalService
   }
 
-  public async create(
-    request: ArchesApiRequest & { body: CreatePortalRequest }
-  ) {
+  public async create(request: ArchesApiRequest & { body: CreatePortalDto }) {
     return this.portalService.create(request.body)
   }
 
@@ -30,13 +26,13 @@ export class PortalController implements Controller {
       `/billing/portal`,
       {
         schema: {
-          body: CreatePortalRequestSchema,
+          body: CreatePortalDtoSchema,
           description: 'Create a new portal',
           operationId: 'createPortal',
           response: {
             201: {
               description: 'The created portal',
-              schema: PortalResourceSchema
+              schema: PortalDtoSchema
             }
           },
           summary: 'Create a new portal',

@@ -2,12 +2,14 @@ import type { Controller } from '@archesai/core'
 import type { RunEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { RUN_ENTITY_KEY, RunEntitySchema } from '@archesai/schemas'
+import {
+  CreateRunDtoSchema,
+  RUN_ENTITY_KEY,
+  RunEntitySchema,
+  UpdateRunDtoSchema
+} from '@archesai/schemas'
 
 import type { RunsService } from '#runs/runs.service'
-
-import { CreateRunRequestSchema } from '#runs/dto/create-run.req.dto'
-import { UpdateRunRequestSchema } from '#runs/dto/update-run.req.dto'
 
 /**
  * Controller for runs.
@@ -20,8 +22,8 @@ export class RunsController
     super(
       RUN_ENTITY_KEY,
       RunEntitySchema,
-      CreateRunRequestSchema,
-      UpdateRunRequestSchema,
+      CreateRunDtoSchema,
+      UpdateRunDtoSchema,
       runsService
     )
   }

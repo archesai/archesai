@@ -36,7 +36,6 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: content.attributes.name,
       description: 'This is the name that will be used for this content.',
       label: 'Name',
@@ -44,13 +43,18 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
       props: {
         placeholder: 'Content name here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({
         maxLength: 128,
         minLength: 1
       })
     },
     {
-      component: Input,
       description:
         'Select the content you would like to run the tool on. You can select multiple content items.',
       label: 'Input',
@@ -121,11 +125,11 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
       entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!artifactId}
-      onSubmitCreate={async (createArtifactDto, mutateOptions) => {
-        await createArtifact(createArtifactDto, mutateOptions)
+      onSubmitCreate={async (createArtifactDto) => {
+        await createArtifact(createArtifactDto)
       }}
-      onSubmitUpdate={async (updateContentDto, mutateOptions) => {
-        await updateArtifact(artifactId, updateContentDto, mutateOptions)
+      onSubmitUpdate={async (updateContentDto) => {
+        await updateArtifact(artifactId, updateContentDto)
       }}
       title='Configuration'
     />

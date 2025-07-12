@@ -24,7 +24,6 @@
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@google-cloud/storage": "catalog:",
-    "@sinclair/typebox": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {

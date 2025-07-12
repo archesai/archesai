@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    allowedHosts: ['platform.archesai.dev'],
+    allowedHosts: ['platform.archesai.dev', 'platform.archesai.test'],
     proxy: {}
   },
   plugins: [

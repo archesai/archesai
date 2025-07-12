@@ -1,4 +1,8 @@
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type {
+  CreatePasswordResetDto,
+  UpdatePasswordResetDto
+} from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
@@ -6,14 +10,13 @@ import {
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/schemas'
+import {
+  CreatePasswordResetDtoSchema,
+  LegacyRef,
+  UpdatePasswordResetDtoSchema
+} from '@archesai/schemas'
 
-import type { CreatePasswordResetRequest } from '#password-reset/dto/create-password-reset.req.dto'
-import type { UpdatePasswordResetRequest } from '#password-reset/dto/update-password-reset.req.dto'
 import type { PasswordResetService } from '#password-reset/password-reset.service'
-
-import { CreatePasswordResetRequestSchema } from '#password-reset/dto/create-password-reset.req.dto'
-import { UpdatePasswordResetRequestSchema } from '#password-reset/dto/update-password-reset.req.dto'
 
 /**
  * Controller for password reset.
@@ -27,7 +30,7 @@ export class PasswordResetController implements Controller {
   }
 
   public async confirm(
-    request: ArchesApiRequest & { body: UpdatePasswordResetRequest }
+    request: ArchesApiRequest & { body: UpdatePasswordResetDto }
   ): Promise<void> {
     return this.passwordResetService.confirm(request.body)
   }
@@ -37,7 +40,7 @@ export class PasswordResetController implements Controller {
       `/auth/password-reset/confirm`,
       {
         schema: {
-          body: UpdatePasswordResetRequestSchema,
+          body: UpdatePasswordResetDtoSchema,
           description:
             'This endpoint will confirm your password change with a token',
           operationId: 'confirmPasswordReset',
@@ -57,7 +60,7 @@ export class PasswordResetController implements Controller {
       `/auth/password-reset/request`,
       {
         schema: {
-          body: CreatePasswordResetRequestSchema,
+          body: CreatePasswordResetDtoSchema,
           description: 'This endpoint will request a password reset link',
           operationId: 'requestPasswordReset',
           response: {
@@ -72,7 +75,9 @@ export class PasswordResetController implements Controller {
   }
 
   public async request(
-    request: ArchesApiRequest & { body: CreatePasswordResetRequest }
+    request: ArchesApiRequest & {
+      body: CreatePasswordResetDto
+    }
   ): Promise<void> {
     return this.passwordResetService.request(request.body)
   }

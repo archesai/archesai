@@ -1,17 +1,14 @@
-import type { StaticDecode } from '@sinclair/typebox'
-
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type { CreateAccountDto } from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
   ArchesApiUnauthorizedResponseSchema,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/schemas'
+import { CreateAccountDtoSchema, LegacyRef } from '@archesai/schemas'
 
 import type { RegistrationService } from '#registration/registration.service'
-
-import { CreateAccountRequestSchema } from '#accounts/dto/create-account.req.dto'
 
 /**
  * Controller for managing registration.
@@ -26,7 +23,7 @@ export class RegistrationController implements Controller {
 
   public async register(
     request: ArchesApiRequest & {
-      body: StaticDecode<typeof CreateAccountRequestSchema>
+      body: CreateAccountDto
     }
   ): Promise<void> {
     const user = await this.registrationService.register(
@@ -41,7 +38,7 @@ export class RegistrationController implements Controller {
       `/auth/register`,
       {
         schema: {
-          body: CreateAccountRequestSchema,
+          body: CreateAccountDtoSchema,
           description: `This endpoint will register you with your e-mail and password`,
           operationId: 'register',
           response: {

@@ -1,4 +1,8 @@
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type {
+  CreateEmailChangeDto,
+  UpdateEmailChangeDto
+} from '@archesai/schemas'
 
 import {
   ArchesApiNoContentResponseSchema,
@@ -7,14 +11,13 @@ import {
   AuthenticatedGuard,
   IS_CONTROLLER
 } from '@archesai/core'
-import { LegacyRef } from '@archesai/schemas'
+import {
+  CreateEmailChangeDtoSchema,
+  LegacyRef,
+  UpdateEmailChangeDtoSchema
+} from '@archesai/schemas'
 
-import type { CreateEmailChangeRequest } from '#email-change/dto/create-email-change-request.dto'
-import type { UpdateEmailChangeRequest } from '#email-change/dto/update-email-change-request.dto'
 import type { EmailChangeService } from '#email-change/email-change.service'
-
-import { CreateEmailChangeRequestSchema } from '#email-change/dto/create-email-change-request.dto'
-import { UpdateEmailChangeRequestSchema } from '#email-change/dto/update-email-change-request.dto'
 
 /**
  * Controller for managing email changes.
@@ -28,7 +31,7 @@ export class EmailChangeController implements Controller {
   }
 
   public async confirm(
-    request: ArchesApiRequest & { body: UpdateEmailChangeRequest }
+    request: ArchesApiRequest & { body: UpdateEmailChangeDto }
   ): Promise<void> {
     await this.emailChangeService.confirm(request.body)
   }
@@ -38,7 +41,7 @@ export class EmailChangeController implements Controller {
       `/auth/email-change/confirm`,
       {
         schema: {
-          body: UpdateEmailChangeRequestSchema,
+          body: UpdateEmailChangeDtoSchema,
           description:
             'This endpoint will confirm your e-mail change with a token',
           operationId: 'confirmEmailChange',
@@ -59,7 +62,7 @@ export class EmailChangeController implements Controller {
       {
         preValidation: [AuthenticatedGuard()],
         schema: {
-          body: CreateEmailChangeRequestSchema,
+          body: CreateEmailChangeDtoSchema,
           description:
             'This endpoint will request your e-mail change with a token',
           operationId: 'requestEmailChange',
@@ -76,7 +79,7 @@ export class EmailChangeController implements Controller {
 
   public async request(
     request: ArchesApiRequest & {
-      body: CreateEmailChangeRequest
+      body: CreateEmailChangeDto
     }
   ): Promise<void> {
     return this.emailChangeService.request(request.body)

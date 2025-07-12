@@ -2,12 +2,14 @@ import type { Controller } from '@archesai/core'
 import type { ToolEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
-import { TOOL_ENTITY_KEY, ToolEntitySchema } from '@archesai/schemas'
+import {
+  CreateToolDtoSchema,
+  TOOL_ENTITY_KEY,
+  ToolEntitySchema,
+  UpdateToolDtoSchema
+} from '@archesai/schemas'
 
 import type { ToolsService } from '#tools/tools.service'
-
-import { CreateToolRequestSchema } from '#tools/dto/create-tool.req.dto'
-import { UpdateToolRequestSchema } from '#tools/dto/update-tool.req.dto'
 
 /**
  * Controller for tools.
@@ -20,8 +22,8 @@ export class ToolsController
     super(
       TOOL_ENTITY_KEY,
       ToolEntitySchema,
-      CreateToolRequestSchema,
-      UpdateToolRequestSchema,
+      CreateToolDtoSchema,
+      UpdateToolDtoSchema,
       toolsService
     )
   }

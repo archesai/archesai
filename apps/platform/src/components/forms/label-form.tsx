@@ -24,7 +24,6 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      component: Input,
       defaultValue: label.attributes.name,
       description: 'This is the name that will be used for this label.',
       label: 'Name',
@@ -32,6 +31,12 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
       props: {
         placeholder: 'Label name here...'
       },
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      ),
       validationRule: Type.String({})
     }
   ]
@@ -42,22 +47,16 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
       entityKey={LABEL_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!labelId}
-      onSubmitCreate={async (createLabelDto, mutateOptions) => {
-        await createLabel(
-          {
-            data: createLabelDto
-          },
-          mutateOptions
-        )
+      onSubmitCreate={async (createLabelDto) => {
+        await createLabel({
+          data: createLabelDto
+        })
       }}
-      onSubmitUpdate={async (data, mutateOptions) => {
-        await updateLabel(
-          {
-            data: data,
-            id: labelId!
-          },
-          mutateOptions
-        )
+      onSubmitUpdate={async (data) => {
+        await updateLabel({
+          data: data,
+          id: labelId!
+        })
       }}
       title='Configuration'
     />

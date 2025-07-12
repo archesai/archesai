@@ -5,10 +5,9 @@ import { Type } from '@sinclair/typebox'
 import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
 
 import { IS_CONTROLLER } from '@archesai/core'
+import { UpdateSubscriptionDtoSchema } from '@archesai/schemas'
 
 import type { SubscriptionsService } from '#subscriptions/subscriptions.service'
-
-import { UpdateSubscriptionRequestSchema } from '#subscriptions/dto/update-subscription.req.dto'
 
 /**
  * Controller for managing subscriptions.
@@ -46,7 +45,7 @@ export class SubscriptionsController implements Controller {
       `/billing/subscriptions/:id`,
       {
         schema: {
-          body: UpdateSubscriptionRequestSchema,
+          body: UpdateSubscriptionDtoSchema,
           description: 'Update a subscription',
           operationId: 'updateSubscription',
           params: Type.Object({
@@ -62,7 +61,7 @@ export class SubscriptionsController implements Controller {
 
   public async update(
     request: ArchesApiRequest & {
-      body: Static<typeof UpdateSubscriptionRequestSchema>
+      body: Static<typeof UpdateSubscriptionDtoSchema>
       params: { id: string }
     }
   ) {

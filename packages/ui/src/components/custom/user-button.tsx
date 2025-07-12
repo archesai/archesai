@@ -50,11 +50,11 @@ export function UserButton({
   const { isMobile } = useSidebar()
 
   const { data: memberships } = useFindManyMembersSuspense({
-    filter: {
-      userId: {
-        equals: 'Arches Platform'
-      }
-    }
+    // filter: {
+    //   userId: {
+    //     equals: 'Arches Platform'
+    //   }
+    // }
   })
 
   const { mutateAsync: updateUser } = useUpdateUser()

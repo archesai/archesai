@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useLocation
-} from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import { getGetSessionQueryOptions } from '@archesai/client'
 import {
@@ -17,6 +12,10 @@ import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
+    const isServer = typeof window === 'undefined'
+    if (isServer) {
+      return
+    }
     try {
       const session = await context.queryClient.fetchQuery(
         getGetSessionQueryOptions({
@@ -39,20 +38,13 @@ export const Route = createFileRoute('/_app')({
 })
 
 export default function AppLayout() {
-  const location = useLocation()
   return (
     <SidebarProvider>
       {/* This is the sidebar that is displayed on the left side of the screen. */}
-      <AppSidebar
-        pathname={location.pathname}
-        siteRoutes={siteRoutes}
-      />
+      <AppSidebar siteRoutes={siteRoutes} />
       {/* This is the main content area. */}
       <SidebarInset>
-        <PageHeader
-          pathname={location.pathname}
-          siteRoutes={siteRoutes}
-        />
+        <PageHeader siteRoutes={siteRoutes} />
         <div className='flex flex-1 flex-col gap-4 p-4'>
           <Outlet />
         </div>

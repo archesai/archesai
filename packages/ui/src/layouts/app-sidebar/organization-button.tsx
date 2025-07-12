@@ -26,11 +26,11 @@ import {
 export function OrganizationButton() {
   const { data: session } = useGetSessionSuspense()
   const { data: memberships } = useFindManyMembersSuspense({
-    filter: {
-      orgname: {
-        equals: 'Arches Platform'
-      }
-    }
+    // filter: {
+    //   orgname: {
+    //     equals: 'Arches Platform'
+    //   }
+    // }
   })
 
   const { mutateAsync: updateUser } = useUpdateUser()

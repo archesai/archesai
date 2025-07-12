@@ -16,15 +16,14 @@ import { cn } from '@archesai/ui/lib/utils'
 
 export default function Chat() {
   const [labelId, setLabelId] = useState<string>('')
-  const defaultOrgname = 'Arches Platform'
   const [message, setMessage] = useState<string>('')
 
   const { data } = useFindManyArtifactsSuspense({
-    filter: {
-      orgname: {
-        equals: defaultOrgname
-      }
-    }
+    // filter: {
+    //   orgname: {
+    //     equals: defaultOrgname
+    //   }
+    // }
   })
   const messages = data.data
 

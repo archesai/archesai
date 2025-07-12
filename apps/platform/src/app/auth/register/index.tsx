@@ -4,7 +4,8 @@ import { Type } from '@sinclair/typebox'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
 import { useRegister } from '@archesai/client'
-import { AuthForm } from '@archesai/ui/components/custom/auth-form'
+import { GenericForm } from '@archesai/ui/components/custom/generic-form'
+import { Input } from '@archesai/ui/components/shadcn/input'
 
 const RegisterSchema = Type.Object({
   confirmPassword: Type.String({ minLength: 8 }),
@@ -34,48 +35,68 @@ export default function RegisterPage() {
 
   return (
     <>
-      <AuthForm
+      <GenericForm
         description='Create your account by entering your email and password'
+        entityKey='auth'
         fields={[
           {
             defaultValue: '',
             label: 'Email',
             name: 'email',
-            type: 'email',
+            renderControl: (field) => (
+              <Input
+                {...field}
+                type='email'
+              />
+            ),
             validationRule: RegisterSchema.properties.email
           },
           {
             defaultValue: '',
             label: 'Password',
             name: 'password',
-            type: 'password',
+            renderControl: (field) => (
+              <Input
+                {...field}
+                type='password'
+              />
+            ),
             validationRule: RegisterSchema.properties.password
           },
           {
             defaultValue: '',
             label: 'Confirm Password',
             name: 'confirmPassword',
-            type: 'password',
+            renderControl: (field) => (
+              <Input
+                {...field}
+                type='password'
+              />
+            ),
             validationRule: Type.String({
               errorMessage: 'Passwords must match',
               minLength: 8
             })
           }
         ]}
-        onSubmit={async (data) => {
+        isUpdateForm={false}
+        onSubmitCreate={async (data) => {
           await onSubmit(data as Static<typeof RegisterSchema>)
         }}
+        postContent={
+          <div className='text-center text-sm'>
+            Already have an account?{' '}
+            <Link
+              className='underline'
+              to='/auth/login'
+            >
+              Login
+            </Link>
+          </div>
+        }
+        showCard={true}
         title='Register'
       />
-      <div className='text-center text-sm'>
-        Already have an account?{' '}
-        <Link
-          className='underline'
-          to='/auth/login'
-        >
-          Login
-        </Link>
-      </div>
     </>
   )
 }

@@ -3,14 +3,13 @@ import type { OrganizationEntity } from '@archesai/schemas'
 
 import { BaseController } from '@archesai/core'
 import {
+  CreateOrganizationDtoSchema,
   ORGANIZATION_ENTITY_KEY,
-  OrganizationEntitySchema
+  OrganizationEntitySchema,
+  UpdateOrganizationDtoSchema
 } from '@archesai/schemas'
 
 import type { OrganizationsService } from '#organizations/organizations.service'
-
-import { CreateOrganizationRequestSchema } from '#organizations/dto/create-organization.req.dto'
-import { UpdateOrganizationRequestSchema } from '#organizations/dto/update-organization.req.dto'
 
 /**
  * Controller for handling organizations.
@@ -23,8 +22,8 @@ export class OrganizationsController
     super(
       ORGANIZATION_ENTITY_KEY,
       OrganizationEntitySchema,
-      CreateOrganizationRequestSchema,
-      UpdateOrganizationRequestSchema,
+      CreateOrganizationDtoSchema,
+      UpdateOrganizationDtoSchema,
       organizationsService
     )
   }

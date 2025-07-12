@@ -1,3 +1,4 @@
+import { useRouter } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
@@ -20,7 +21,8 @@ import {
 } from '#components/shadcn/sidebar'
 import { useLinkComponent } from '#hooks/use-link'
 
-export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
+export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
+  const router = useRouter()
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
   const Link = useLinkComponent()
   return (
@@ -35,7 +37,7 @@ export function SidebarLinks({ pathname, siteRoutes }: PageHeaderProps) {
                   .filter((rootRoute) => rootRoute.section === section)
                   .map((rootRoute, i) => {
                     const isActive = rootRoute.children?.some((route) =>
-                      pathname.startsWith(route.href)
+                      router.state.location.pathname.startsWith(route.href)
                     )
                     const children = rootRoute.children ?? []
 
