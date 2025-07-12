@@ -1,6 +1,8 @@
+import type { Static } from '@sinclair/typebox'
+
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const UserEntitySchema = Type.Object(
   {
@@ -35,28 +37,7 @@ export const UserEntitySchema = Type.Object(
   }
 )
 
-export class UserEntity extends BaseEntity {
-  public deactivated: boolean
-  public email: string
-  public emailVerified?: string
-  public image?: string
-  public orgname: string
-  public type = USER_ENTITY_KEY
-
-  constructor(props: UserEntity) {
-    super(props)
-    this.deactivated = props.deactivated
-    this.email = props.email
-    if (props.emailVerified) {
-      this.emailVerified = props.emailVerified
-    }
-    if (props.image) {
-      this.image = props.image
-    }
-
-    this.orgname = props.orgname
-  }
-}
+export type UserEntity = Static<typeof UserEntitySchema>
 
 export class UserRelations {
   public accounts: { id: string; type: string }[]

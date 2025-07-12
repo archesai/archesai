@@ -22,11 +22,9 @@ import {
 } from '@archesai/auth'
 import {
   CallbacksModule,
-  CheckoutSessionsModule,
   CustomersModule,
   PaymentMethodsModule,
   PlansModule,
-  PortalModule,
   StripeModule,
   SubscriptionModule
 } from '@archesai/billing'
@@ -110,12 +108,10 @@ export const AppModuleDefinition: ModuleMetadata = {
 
     // BILLING MODULES
     CallbacksModule,
-    CheckoutSessionsModule,
     CustomersModule,
     PaymentMethodsModule,
     PlansModule,
     StripeModule,
-    PortalModule,
     SubscriptionModule,
 
     // AUTH MODULES

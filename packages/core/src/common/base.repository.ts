@@ -1,8 +1,9 @@
-import type { BaseEntity, BaseInsertion } from '@archesai/schemas'
+import type { BaseEntity, BaseInsertion, TSchema } from '@archesai/schemas'
+
+import { Value } from '@archesai/schemas'
 
 import type { DatabaseService } from '#database/database.service'
 import type { EntityFilter, SearchQuery } from '#http/dto/search-query.dto'
-import type { Type } from '#types/type'
 
 import { NotFoundException } from '#exceptions/http-errors'
 import { Logger } from '#logging/logger'
@@ -16,7 +17,7 @@ export abstract class BaseRepository<
   TModel = TEntity,
   TTables = unknown
 > {
-  protected readonly EntityCls: Type<TEntity>
+  protected readonly entitySchema: TSchema
   protected readonly primaryKey: string = 'id'
   private readonly databaseService: DatabaseService<
     TEntity,
@@ -37,11 +38,11 @@ export abstract class BaseRepository<
       TTables
     >,
     table: TTables,
-    EntityCls: Type<TEntity>
+    entitySchema: TSchema
   ) {
     this.databaseService = databaseService
     this.table = table
-    this.EntityCls = EntityCls
+    this.entitySchema = entitySchema
   }
 
   public async create(value: TInsert): Promise<TEntity> {
@@ -201,7 +202,7 @@ export abstract class BaseRepository<
   }
 
   protected toEntity(model: TModel): TEntity {
-    return new this.EntityCls(model)
+    return Value.Parse(this.entitySchema, model)
   }
 
   private buildSearchQueryPrimaryKey(value: string): SearchQuery<TEntity> {

@@ -17,6 +17,13 @@ export const StripeModuleDefinition: ModuleMetadata = {
         if (!configService.get('billing.enabled')) {
           // Return a dummy or no-op service
           return {
+            configService,
+            createCheckoutSession: () => {
+              throw new Error('Billing feature is disabled.')
+            },
+            createPortal: () => {
+              throw new Error('Billing feature is disabled.')
+            },
             createSetupIntent: () => {
               throw new Error('Billing feature is disabled.')
             },

@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { PlanType } from '#enums/role'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { PlanTypes } from '#enums/role'
 
 export const OrganizationEntitySchema = Type.Object(
@@ -42,27 +40,6 @@ export const OrganizationEntitySchema = Type.Object(
   }
 )
 
-export class OrganizationEntity
-  extends BaseEntity
-  implements Static<typeof OrganizationEntitySchema>
-{
-  public billingEmail: string
-  public credits: number
-  public customer?: string
-  public orgname: string
-  public plan: PlanType
-  public type = ORGANIZATION_ENTITY_KEY
-
-  constructor(props: OrganizationEntity) {
-    super(props)
-    this.billingEmail = props.billingEmail
-    this.credits = props.credits
-    if (props.customer) {
-      this.customer = props.customer
-    }
-    this.orgname = props.orgname
-    this.plan = props.plan
-  }
-}
+export type OrganizationEntity = Static<typeof OrganizationEntitySchema>
 
 export const ORGANIZATION_ENTITY_KEY = 'organizations'

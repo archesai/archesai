@@ -1,11 +1,8 @@
-// filepath: /home/jonathan/Projects/archesai/packages/schemas/src/pipelines/entities/pipeline.entity.ts
 import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { ToolEntity } from '#tools/entities/tool.entity'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { ToolEntitySchema } from '#tools/entities/tool.entity'
 
 export const PipelineStepEntitySchema = Type.Object(
@@ -48,43 +45,9 @@ export const PipelineEntitySchema = Type.Object(
   }
 )
 
-export class PipelineEntity
-  extends BaseEntity
-  implements Static<typeof PipelineEntitySchema>
-{
-  public description: string
-  public orgname: string
-  public steps: PipelineStepEntity[]
-  public type = PIPELINE_ENTITY_KEY
+export type PipelineEntity = Static<typeof PipelineEntitySchema>
 
-  constructor(props: PipelineEntity) {
-    super(props)
-    this.description = props.description
-    this.orgname = props.orgname
-    this.steps = props.steps
-  }
-}
-
-export class PipelineStepEntity
-  extends BaseEntity
-  implements Static<typeof PipelineStepEntitySchema>
-{
-  public dependents: { pipelineStepId: string }[]
-  public pipelineId: string
-  public prerequisites: { pipelineStepId: string }[]
-  public tool: ToolEntity
-  public toolId: string
-  public type = PIPELINE_STEP_ENTITY_KEY
-
-  constructor(props: PipelineStepEntity) {
-    super(props)
-    this.dependents = props.dependents
-    this.pipelineId = props.pipelineId
-    this.prerequisites = props.prerequisites
-    this.tool = props.tool
-    this.toolId = props.toolId
-  }
-}
+export type PipelineStepEntity = Static<typeof PipelineStepEntitySchema>
 
 export const PIPELINE_ENTITY_KEY = 'pipelines'
 

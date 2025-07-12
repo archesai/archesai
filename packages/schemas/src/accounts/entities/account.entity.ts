@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { AuthType, ProviderType } from '#enums/role'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { AuthTypes, ProviderTypes } from '#enums/role'
 
 export const AccountEntitySchema = Type.Object(
@@ -58,55 +56,6 @@ export const AccountEntitySchema = Type.Object(
   }
 )
 
-export class AccountEntity
-  extends BaseEntity
-  implements Static<typeof AccountEntitySchema>
-{
-  public access_token?: string
-  public authType: AuthType
-  public expires_at?: string
-  public hashed_password?: string
-  public id_token?: string
-  public provider: ProviderType
-  public providerAccountId: string
-  public refresh_token?: string
-  public scope?: string
-  public session_state?: string
-  public token_type?: string
-  public type = ACCOUNT_ENTITY_KEY
-  public userId: string
-
-  constructor(props: AccountEntity) {
-    super(props)
-    this.provider = props.provider
-    this.providerAccountId = props.providerAccountId
-    this.userId = props.userId
-    this.authType = props.authType
-    if (props.expires_at) {
-      this.expires_at = props.expires_at
-    }
-    if (props.id_token) {
-      this.id_token = props.id_token
-    }
-    if (props.session_state) {
-      this.session_state = props.session_state
-    }
-    if (props.token_type) {
-      this.token_type = props.token_type
-    }
-    if (props.hashed_password) {
-      this.hashed_password = props.hashed_password
-    }
-    if (props.access_token) {
-      this.access_token = props.access_token
-    }
-    if (props.scope) {
-      this.scope = props.scope
-    }
-    if (props.token_type) {
-      this.token_type = props.token_type
-    }
-  }
-}
+export type AccountEntity = Static<typeof AccountEntitySchema>
 
 export const ACCOUNT_ENTITY_KEY = 'accounts'

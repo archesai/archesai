@@ -1,14 +1,15 @@
 import type { DatabaseService } from '@archesai/core'
+import type { MemberEntity } from '@archesai/schemas'
 
 import { BaseRepository } from '@archesai/core'
 import { MemberTable } from '@archesai/database'
-import { MemberEntity } from '@archesai/schemas'
+import { MemberEntitySchema } from '@archesai/schemas'
 
 /**
  * Repository for interacting with the member entity.
  */
 export class MemberRepository extends BaseRepository<MemberEntity> {
   constructor(databaseService: DatabaseService<MemberEntity>) {
-    super(databaseService, MemberTable, MemberEntity)
+    super(databaseService, MemberTable, MemberEntitySchema)
   }
 }

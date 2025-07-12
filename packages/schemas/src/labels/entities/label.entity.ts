@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const LabelEntitySchema = Type.Object(
   {
@@ -16,17 +16,6 @@ export const LabelEntitySchema = Type.Object(
   }
 )
 
-export class LabelEntity
-  extends BaseEntity
-  implements Static<typeof LabelEntitySchema>
-{
-  public orgname: string
-  public type = LABEL_ENTITY_KEY
-
-  constructor(props: LabelEntity) {
-    super(props)
-    this.orgname = props.orgname
-  }
-}
+export type LabelEntity = Static<typeof LabelEntitySchema>
 
 export const LABEL_ENTITY_KEY = 'labels'

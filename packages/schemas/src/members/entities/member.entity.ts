@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { RoleType } from '#enums/role'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RoleTypes } from '#enums/role'
 
 export const MemberEntitySchema = Type.Object(
@@ -25,23 +23,6 @@ export const MemberEntitySchema = Type.Object(
   }
 )
 
-export class MemberEntity
-  extends BaseEntity
-  implements Static<typeof MemberEntitySchema>
-{
-  public invitationId: string
-  public orgname: string
-  public role: RoleType
-  public type = MEMBER_ENTITY_KEY
-  public userId: string
-
-  constructor(props: MemberEntity) {
-    super(props)
-    this.invitationId = props.invitationId
-    this.orgname = props.orgname
-    this.role = props.role
-    this.userId = props.userId
-  }
-}
+export type MemberEntity = Static<typeof MemberEntitySchema>
 
 export const MEMBER_ENTITY_KEY = 'members'

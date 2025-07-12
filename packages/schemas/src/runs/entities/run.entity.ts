@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { RunType } from '#enums/role'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RunTypes } from '#enums/role'
 
 // export const runRelationshipsSchema = object({
@@ -53,49 +51,6 @@ export const RunEntitySchema = Type.Object(
   }
 )
 
-export class RunEntity
-  extends BaseEntity
-  implements Static<typeof RunEntitySchema>
-{
-  // inputs: BaseEntity[]
-  // outputs: BaseEntity[]
-  // pipeline: BaseEntity
-  // tool: BaseEntity
-  public completedAt?: string
-  public error?: string
-  public orgname: string
-  public pipelineId: string
-  public progress: number
-  // relationships: RunRelationships
-  public runType: RunType
-  public startedAt?: string
-  public status: string
-  public toolId: string
-  public type = RUN_ENTITY_KEY
-
-  constructor(props: RunEntity) {
-    super(props)
-    // this.inputs = props.inputs
-    // this.outputs = props.outputs
-    // this.pipeline = props.pipeline
-    // this.tool = props.tool
-    if (props.completedAt) {
-      this.completedAt = props.completedAt
-    }
-    if (props.error) {
-      this.error = props.error
-    }
-    if (props.startedAt) {
-      this.startedAt = props.startedAt
-    }
-    this.orgname = props.orgname
-    this.pipelineId = props.pipelineId
-    this.progress = props.progress
-    // this.relationships = props.relationships
-    this.runType = props.runType
-    this.status = props.status
-    this.toolId = props.toolId
-  }
-}
+export type RunEntity = Static<typeof RunEntitySchema>
 
 export const RUN_ENTITY_KEY = 'runs'

@@ -1,6 +1,8 @@
+import type { Static } from '@sinclair/typebox'
+
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const ApiTokenRoleTypes = ['ADMIN', 'USER'] as const
 export type ApiTokenRoleType = (typeof ApiTokenRoleTypes)[number]
@@ -26,18 +28,6 @@ export const ApiTokenEntitySchema = Type.Object(
   }
 )
 
-export class ApiTokenEntity extends BaseEntity {
-  public key: string
-  public orgname: string
-  public role: ApiTokenRoleType
-  public type: string = API_TOKEN_ENTITY_KEY
-
-  constructor(props: ApiTokenEntity) {
-    super(props)
-    this.key = props.key
-    this.orgname = props.orgname
-    this.role = props.role
-  }
-}
+export type ApiTokenEntity = Static<typeof ApiTokenEntitySchema>
 
 export const API_TOKEN_ENTITY_KEY = 'api-tokens'

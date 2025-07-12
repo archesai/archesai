@@ -1,15 +1,16 @@
 import type { DatabaseService } from '@archesai/core'
+import type { PipelineEntity } from '@archesai/schemas'
 
 import { BaseRepository } from '@archesai/core'
 import { PipelineTable } from '@archesai/database'
-import { PipelineEntity } from '@archesai/schemas'
+import { PipelineEntitySchema } from '@archesai/schemas'
 
 /**
  * Repository for pipelines.
  */
 export class PipelineRepository extends BaseRepository<PipelineEntity> {
   constructor(databaseService: DatabaseService<PipelineEntity>) {
-    super(databaseService, PipelineTable, PipelineEntity)
+    super(databaseService, PipelineTable, PipelineEntitySchema)
     // this.databaseService = databaseService
   }
 

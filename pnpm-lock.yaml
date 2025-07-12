@@ -977,9 +977,6 @@ importers:
       '@hookform/resolvers':
         specifier: 'catalog:'
         version: 5.1.1(react-hook-form@7.60.0(react@19.1.0))
-      '@sinclair/typebox':
-        specifier: 'catalog:'
-        version: 0.34.37
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.83.0(react@19.1.0)

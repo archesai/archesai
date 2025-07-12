@@ -2,9 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import type { ContentBaseType } from '#enums/role'
-
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 import { ContentBaseTypes } from '#enums/role'
 
 export const ToolEntitySchema = Type.Object(
@@ -29,25 +27,6 @@ export const ToolEntitySchema = Type.Object(
   }
 )
 
-export class ToolEntity
-  extends BaseEntity
-  implements Static<typeof ToolEntitySchema>
-{
-  public description: string
-  public inputType: ContentBaseType
-  public orgname: string
-  public outputType: ContentBaseType
-  public toolBase: string
-  public type = TOOL_ENTITY_KEY
-
-  constructor(props: ToolEntity) {
-    super(props)
-    this.description = props.description
-    this.inputType = props.inputType
-    this.orgname = props.orgname
-    this.outputType = props.outputType
-    this.toolBase = props.toolBase
-  }
-}
+export type ToolEntity = Static<typeof ToolEntitySchema>
 
 export const TOOL_ENTITY_KEY = 'tools'

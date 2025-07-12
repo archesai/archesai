@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntity, BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const VerificationTokenEntitySchema = Type.Object(
   {
@@ -31,25 +31,8 @@ export const VerificationTokenEntitySchema = Type.Object(
   }
 )
 
-export class VerificationTokenEntity
-  extends BaseEntity
-  implements Static<typeof VerificationTokenEntitySchema>
-{
-  public expires: string
-  public identifier: string
-  public newEmail?: string
-  public token: string
-  public type = VERIFICATION_TOKEN_ENTITY_KEY
-
-  constructor(props: VerificationTokenEntity) {
-    super(props)
-    this.expires = props.expires
-    this.identifier = props.identifier
-    if (props.newEmail) {
-      this.newEmail = props.newEmail
-    }
-    this.token = props.token
-  }
-}
+export type VerificationTokenEntity = Static<
+  typeof VerificationTokenEntitySchema
+>
 
 export const VERIFICATION_TOKEN_ENTITY_KEY = 'verification-tokens'
