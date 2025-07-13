@@ -47,14 +47,6 @@ export default function MemberDataTable() {
           }
         }
       ]}
-      // content={() => (
-      //   <div className='flex h-full w-full items-center justify-center'>
-      //     <User
-      //       className='opacity-30'
-      //       size={100}
-      //     />
-      //   </div>
-      // )}
       createForm={<MemberForm />}
       defaultView='table'
       deleteItem={async (id) => {

@@ -18,13 +18,7 @@ export default function Chat() {
   const [labelId, setLabelId] = useState<string>('')
   const [message, setMessage] = useState<string>('')
 
-  const { data } = useFindManyArtifactsSuspense({
-    // filter: {
-    //   organizationId: {
-    //     equals: defaultOrgname
-    //   }
-    // }
-  })
+  const { data } = useFindManyArtifactsSuspense()
   const messages = data.data
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null)

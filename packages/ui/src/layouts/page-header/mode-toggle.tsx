@@ -1,18 +1,12 @@
-import * as React from 'react'
+import { useCallback } from 'react'
 import { useTheme } from 'next-themes'
 
 import { Button } from '#components/shadcn/button'
-import { useMetaColor } from '#hooks/use-meta-color'
 
 export function ModeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
-  const { metaColor, setMetaColor } = useMetaColor()
 
-  React.useEffect(() => {
-    setMetaColor(metaColor)
-  }, [metaColor, setMetaColor])
-
-  const toggleTheme = React.useCallback(() => {
+  const toggleTheme = useCallback(() => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }, [resolvedTheme, setTheme])
 

@@ -23,6 +23,7 @@ import type {
 } from '@tanstack/react-query'
 
 import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import qs from 'qs'
 
 import type {
   CreateTool201,
@@ -136,15 +137,10 @@ export const useCreateTool = <TError = unknown, TContext = unknown>(
  * @summary Find many tools
  */
 export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
-  const normalizedParams = new URLSearchParams()
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
+  const stringifiedParams = qs.stringify(params || {}, {
+    skipNulls: false,
+    strictNullHandling: true
   })
-
-  const stringifiedParams = normalizedParams.toString()
 
   return stringifiedParams.length > 0 ? `/tools?${stringifiedParams}` : `/tools`
 }

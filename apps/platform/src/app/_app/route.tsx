@@ -8,19 +8,20 @@ import {
 import { AppSidebar } from '@archesai/ui/layouts/app-sidebar/app-sidebar'
 import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 
+import { getIsomorphicHeaders } from '#lib/get-headers'
 import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
-    const isServer = typeof window === 'undefined'
-    if (isServer) {
-      return
-    }
+    const headers = getIsomorphicHeaders()
     try {
       const session = await context.queryClient.fetchQuery(
         getGetSessionQueryOptions({
           query: {
             staleTime: 5000
+          },
+          request: {
+            headers
           }
         })
       )

@@ -71,7 +71,7 @@ export default function ArtifactDataTable({
                       side='right'
                     >
                       <Suspense fallback={<Skeleton />}>
-                        <ArtifactViewer content={row.original} />
+                        <ArtifactViewer artifactId={row.original.id} />
                       </Suspense>
                     </HoverCardContent>
                   </HoverCard>

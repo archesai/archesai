@@ -105,20 +105,10 @@ export interface Meta {
   [key: string]: unknown
 }
 
-export type LinkAnyOf = {
-  describedby?: string
-  href: string
-  hreflang?: string
-  meta?: Meta
-  rel?: string
-  title?: string
-  type?: string
-}
-
 /**
  * Link object or URI string
  */
-export type Link = string | LinkAnyOf
+export type Link = string
 
 /**
  * Collection of links
@@ -144,7 +134,7 @@ export interface ResourceIdentifier {
 export type ResourceObjectAttributes = { [key: string]: unknown }
 
 export type ResourceObjectLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -620,7 +610,7 @@ export type CreateFile201DataAttributes = {
 }
 
 export type CreateFile201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -734,7 +724,7 @@ export type FindManyFiles200DataItemAttributes = {
 }
 
 export type FindManyFiles200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -811,7 +801,7 @@ export type DeleteFile200DataAttributes = {
 }
 
 export type DeleteFile200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -889,7 +879,7 @@ export type GetOneFile200DataAttributes = {
 }
 
 export type GetOneFile200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -976,7 +966,7 @@ export type UpdateFile200DataAttributes = {
 }
 
 export type UpdateFile200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1191,7 +1181,7 @@ export type CreatePipeline201DataAttributes = {
 }
 
 export type CreatePipeline201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1365,7 +1355,7 @@ export type FindManyPipelines200DataItemAttributes = {
 }
 
 export type FindManyPipelines200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1504,7 +1494,7 @@ export type DeletePipeline200DataAttributes = {
 }
 
 export type DeletePipeline200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1644,7 +1634,7 @@ export type GetOnePipeline200DataAttributes = {
 }
 
 export type GetOnePipeline200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1859,7 +1849,7 @@ export type UpdatePipeline200DataAttributes = {
 }
 
 export type UpdatePipeline200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -1958,7 +1948,7 @@ export type CreateTool201DataAttributes = {
 }
 
 export type CreateTool201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2086,7 +2076,7 @@ export type FindManyTools200DataItemAttributes = {
 }
 
 export type FindManyTools200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2177,7 +2167,7 @@ export type DeleteTool200DataAttributes = {
 }
 
 export type DeleteTool200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2269,7 +2259,7 @@ export type GetOneTool200DataAttributes = {
 }
 
 export type GetOneTool200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2368,7 +2358,7 @@ export type UpdateTool200DataAttributes = {
 }
 
 export type UpdateTool200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2470,7 +2460,7 @@ export type CreateArtifact201DataAttributes = {
 }
 
 export type CreateArtifact201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2604,7 +2594,7 @@ export type FindManyArtifacts200DataItemAttributes = {
 }
 
 export type FindManyArtifacts200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2696,7 +2686,7 @@ export type DeleteArtifact200DataAttributes = {
 }
 
 export type DeleteArtifact200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2789,7 +2779,7 @@ export type GetOneArtifact200DataAttributes = {
 }
 
 export type GetOneArtifact200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2891,7 +2881,7 @@ export type UpdateArtifact200DataAttributes = {
 }
 
 export type UpdateArtifact200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -2985,7 +2975,7 @@ export type CreateRun201DataAttributes = {
 }
 
 export type CreateRun201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3113,7 +3103,7 @@ export type FindManyRuns200DataItemAttributes = {
 }
 
 export type FindManyRuns200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3201,7 +3191,7 @@ export type DeleteRun200DataAttributes = {
 }
 
 export type DeleteRun200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3290,7 +3280,7 @@ export type GetOneRun200DataAttributes = {
 }
 
 export type GetOneRun200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3384,7 +3374,7 @@ export type UpdateRun200DataAttributes = {
 }
 
 export type UpdateRun200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3459,7 +3449,7 @@ export type CreateLabel201DataAttributes = {
 }
 
 export type CreateLabel201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3561,7 +3551,7 @@ export type FindManyLabels200DataItemAttributes = {
 }
 
 export type FindManyLabels200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3630,7 +3620,7 @@ export type DeleteLabel200DataAttributes = {
 }
 
 export type DeleteLabel200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3700,7 +3690,7 @@ export type GetOneLabel200DataAttributes = {
 }
 
 export type GetOneLabel200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3775,7 +3765,7 @@ export type UpdateLabel200DataAttributes = {
 }
 
 export type UpdateLabel200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3868,7 +3858,7 @@ export type CreateOrganization201DataAttributes = {
 }
 
 export type CreateOrganization201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -3990,7 +3980,7 @@ export type FindManyOrganizations200DataItemAttributes = {
 }
 
 export type FindManyOrganizations200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4075,7 +4065,7 @@ export type DeleteOrganization200DataAttributes = {
 }
 
 export type DeleteOrganization200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4161,7 +4151,7 @@ export type GetOneOrganization200DataAttributes = {
 }
 
 export type GetOneOrganization200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4254,7 +4244,7 @@ export type UpdateOrganization200DataAttributes = {
 }
 
 export type UpdateOrganization200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4350,7 +4340,7 @@ export type CreateUser201DataAttributes = {
 }
 
 export type CreateUser201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4469,7 +4459,7 @@ export type FindManyUsers200DataItemAttributes = {
 }
 
 export type FindManyUsers200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4552,7 +4542,7 @@ export type DeleteUser200DataAttributes = {
 }
 
 export type DeleteUser200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4636,7 +4626,7 @@ export type GetOneUser200DataAttributes = {
 }
 
 export type GetOneUser200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4732,7 +4722,7 @@ export type UpdateUser200DataAttributes = {
 }
 
 export type UpdateUser200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4818,7 +4808,7 @@ export type CreateMember201DataAttributes = {
 }
 
 export type CreateMember201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -4931,7 +4921,7 @@ export type FindManyMembers200DataItemAttributes = {
 }
 
 export type FindManyMembers200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5009,7 +4999,7 @@ export type DeleteMember200DataAttributes = {
 }
 
 export type DeleteMember200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5088,7 +5078,7 @@ export type GetOneMember200DataAttributes = {
 }
 
 export type GetOneMember200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5174,7 +5164,7 @@ export type UpdateMember200DataAttributes = {
 }
 
 export type UpdateMember200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5265,7 +5255,7 @@ export type CreateInvitation201DataAttributes = {
 }
 
 export type CreateInvitation201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5378,7 +5368,7 @@ export type FindManyInvitations200DataItemAttributes = {
 }
 
 export type FindManyInvitations200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5456,7 +5446,7 @@ export type DeleteInvitation200DataAttributes = {
 }
 
 export type DeleteInvitation200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5535,7 +5525,7 @@ export type GetOneInvitation200DataAttributes = {
 }
 
 export type GetOneInvitation200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5626,7 +5616,7 @@ export type UpdateInvitation200DataAttributes = {
 }
 
 export type UpdateInvitation200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -5705,7 +5695,7 @@ export type AcceptInvitation200DataAttributes = {
 }
 
 export type AcceptInvitation200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -6132,6 +6122,11 @@ export type UpdateSubscriptionBody = {
 
 export type CreateApiTokenBody = { [key: string]: unknown }
 
+/**
+ * The name of the API token
+ */
+export type CreateApiToken201DataAttributesName = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateApiToken201DataAttributesRole = {
   ADMIN: 'ADMIN',
@@ -6148,7 +6143,7 @@ export type CreateApiToken201DataAttributes = {
   /** The API token key. This will only be shown once */
   key: string
   /** The name of the API token */
-  name: string
+  name: CreateApiToken201DataAttributesName
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the API token */
@@ -6156,7 +6151,7 @@ export type CreateApiToken201DataAttributes = {
 }
 
 export type CreateApiToken201DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -6245,6 +6240,11 @@ export type FindManyApiTokensParams = {
   sort?: string
 }
 
+/**
+ * The name of the API token
+ */
+export type FindManyApiTokens200DataItemAttributesName = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindManyApiTokens200DataItemAttributesRole = {
   ADMIN: 'ADMIN',
@@ -6261,7 +6261,7 @@ export type FindManyApiTokens200DataItemAttributes = {
   /** The API token key. This will only be shown once */
   key: string
   /** The name of the API token */
-  name: string
+  name: FindManyApiTokens200DataItemAttributesName
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the API token */
@@ -6269,7 +6269,7 @@ export type FindManyApiTokens200DataItemAttributes = {
 }
 
 export type FindManyApiTokens200DataItemLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -6323,6 +6323,11 @@ export type FindManyApiTokens200 = {
   links?: Links
 }
 
+/**
+ * The name of the API token
+ */
+export type DeleteApiToken200DataAttributesName = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DeleteApiToken200DataAttributesRole = {
   ADMIN: 'ADMIN',
@@ -6339,7 +6344,7 @@ export type DeleteApiToken200DataAttributes = {
   /** The API token key. This will only be shown once */
   key: string
   /** The name of the API token */
-  name: string
+  name: DeleteApiToken200DataAttributesName
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the API token */
@@ -6347,7 +6352,7 @@ export type DeleteApiToken200DataAttributes = {
 }
 
 export type DeleteApiToken200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -6402,6 +6407,11 @@ export type DeleteApiToken200 = {
   links?: Links
 }
 
+/**
+ * The name of the API token
+ */
+export type GetOneApiToken200DataAttributesName = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetOneApiToken200DataAttributesRole = {
   ADMIN: 'ADMIN',
@@ -6418,7 +6428,7 @@ export type GetOneApiToken200DataAttributes = {
   /** The API token key. This will only be shown once */
   key: string
   /** The name of the API token */
-  name: string
+  name: GetOneApiToken200DataAttributesName
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the API token */
@@ -6426,7 +6436,7 @@ export type GetOneApiToken200DataAttributes = {
 }
 
 export type GetOneApiToken200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**
@@ -6483,6 +6493,11 @@ export type GetOneApiToken200 = {
 
 export type UpdateApiTokenBody = { [key: string]: unknown }
 
+/**
+ * The name of the API token
+ */
+export type UpdateApiToken200DataAttributesName = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateApiToken200DataAttributesRole = {
   ADMIN: 'ADMIN',
@@ -6499,7 +6514,7 @@ export type UpdateApiToken200DataAttributes = {
   /** The API token key. This will only be shown once */
   key: string
   /** The name of the API token */
-  name: string
+  name: UpdateApiToken200DataAttributesName
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the API token */
@@ -6507,7 +6522,7 @@ export type UpdateApiToken200DataAttributes = {
 }
 
 export type UpdateApiToken200DataLinks = {
-  self?: Link
+  self: Link
 }
 
 /**

@@ -28,6 +28,7 @@
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "@nestjs/platform-fastify": "catalog:",
+    "qs": "^6.14.0",
     "reflect-metadata": "catalog:",
     "rxjs": "catalog:",
     "tslib": "catalog:"
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
+    "@types/qs": "^6.14.0",
     "typescript": "catalog:"
   }
 }

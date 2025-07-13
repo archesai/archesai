@@ -3,13 +3,27 @@ import { FileIcon } from 'lucide-react'
 export type { LucideIcon } from 'lucide-react'
 
 export {
+  ArrowDownLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Calendar,
+  CreditCard,
+  Plus,
+  QrCode,
+  SendHorizontal,
+  ShoppingCart,
+  Wallet
+} from 'lucide-react'
+
+export {
+  AlertCircle,
   BookOpen,
   Building2,
   Check,
+  CheckCircle2,
   CheckIcon,
   Cpu,
   CpuIcon,
-  CreditCard,
   Facebook,
   File,
   FileText,
@@ -26,12 +40,15 @@ export {
   Menu,
   MessageSquareIcon,
   PackageCheck,
+  PiggyBank,
   RefreshCcw,
   ScanSearch,
   Server,
   Settings2,
   SquareTerminal,
   Tags,
+  Timer,
+  TrendingUp,
   User,
   Users,
   Volume2,

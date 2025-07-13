@@ -3,6 +3,7 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 // import helmet from '@fastify/helmet'
 import { DiscoveryService, NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
+import qs from 'qs'
 
 import type { Controller, HttpInstance } from '@archesai/core'
 
@@ -24,6 +25,7 @@ export async function setup(): Promise<NestFastifyApplication> {
     loggerInstance: LoggerService.getPinoInstance().child({
       context: 'Fastify'
     }),
+    querystringParser: qs.parse,
     trustProxy: true
   })
 

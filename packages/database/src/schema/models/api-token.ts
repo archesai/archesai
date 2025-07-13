@@ -10,6 +10,7 @@ import { OrganizationTable } from '#schema/models/organization'
 export const ApiTokenTable = pgTable(API_TOKEN_ENTITY_KEY, {
   ...baseFields,
   key: text().notNull(),
+  name: text(),
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {

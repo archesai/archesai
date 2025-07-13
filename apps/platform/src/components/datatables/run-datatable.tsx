@@ -106,7 +106,7 @@ export default function RunDataTable() {
       }}
       entityType={RUN_ENTITY_KEY}
       handleSelect={async (run) => {
-        await navigate({ to: `/run/single?runId=${run.id}` })
+        await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}
       icon={<PackageCheck />}
       useFindMany={getFindManyRunsSuspenseQueryOptions()}

@@ -23,7 +23,7 @@ export default function LoginPage() {
         password: data.password
       }
     })
-    await router.navigate({ to: '/chat' })
+    await router.navigate({ to: '/' })
   }
 
   return (

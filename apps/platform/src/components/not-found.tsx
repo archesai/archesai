@@ -28,13 +28,13 @@ export default function NotFound({ children }: { children?: React.ReactNode }) {
               asChild
               className='flex-1'
             >
-              <Link to='/chat'>Go Home</Link>
+              <Link to='/'>Go Home</Link>
             </Button>
             <Button
               asChild
               className='flex-1'
             >
-              <Link to='/chat'>Go Home</Link>
+              <Link to='/'>Go Home</Link>
             </Button>
           </div>
         </CardContent>

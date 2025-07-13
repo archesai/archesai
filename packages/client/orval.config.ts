@@ -59,7 +59,8 @@ export default defineConfig({
     },
     hooks: {
       afterAllFilesWrite: [
-        'prettier --write'
+        'prettier --write',
+        './fix-query-params.sh'
         // `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`,
         // `sed -i "s|'../fetcher'|'#fetcher'|g" ./src/generated/orval.ts`
       ]

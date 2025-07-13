@@ -70,7 +70,7 @@ export default function RegisterPage() {
             }
           })
           await router.navigate({
-            to: '/chat'
+            to: '/'
           })
         }}
         postContent={

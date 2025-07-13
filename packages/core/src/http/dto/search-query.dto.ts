@@ -104,11 +104,15 @@ const createFilterSchema = (entitySchema: TObject) => {
     Object.keys(entitySchema.properties).map((key) => Type.Literal(key))
   )
 
-  return Type.Record(entityFields, LegacyRef(FieldFilterSchema), {
-    // $id: 'Filter',
-    description: 'Filter',
-    title: 'Filter'
-  })
+  return Type.Record(
+    entityFields,
+    Type.Optional(LegacyRef(FieldFilterSchema)),
+    {
+      // $id: 'Filter',
+      description: 'Filter',
+      title: 'Filter'
+    }
+  )
 }
 
 export const createSearchQuerySchema = (

@@ -1,23 +1,19 @@
+import { useSuspenseQuery } from '@tanstack/react-query'
 import ReactPlayer from 'react-player'
 
-import type { ArtifactEntity } from '@archesai/schemas'
+import { getGetOneArtifactSuspenseQueryOptions } from '@archesai/client'
 
 // const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
-export function ArtifactViewer({ content }: { content: ArtifactEntity }) {
-  const { mimeType, text, url } = content
-
-  let hoverContent = null
-
-  if (!url) {
-    return (
-      <div className='flex h-full items-center justify-center'>
-        <p>URL was not available</p>
-      </div>
-    )
-  }
-
-  if (mimeType.startsWith('video/') || mimeType.startsWith('audio/')) {
+export function ArtifactViewer({ artifactId }: { artifactId: string }) {
+  const {
+    data: { data: artifact }
+  } = useSuspenseQuery(getGetOneArtifactSuspenseQueryOptions(artifactId))
+  let hoverContent: React.ReactNode = null
+  if (
+    artifact.attributes.mimeType.startsWith('video/') ||
+    artifact.attributes.mimeType.startsWith('audio/')
+  ) {
     hoverContent = (
       <ReactPlayer
         config={{
@@ -29,31 +25,31 @@ export function ArtifactViewer({ content }: { content: ArtifactEntity }) {
         }}
         controls
         height='100%'
-        src={url}
+        src={artifact.attributes.url ?? ''}
         width='100%'
       />
     )
-  } else if (mimeType.startsWith('image/')) {
+  } else if (artifact.attributes.mimeType.startsWith('image/')) {
     hoverContent = (
       <image
         // className='h-full w-full object-contain'
         height={516}
-        href={url}
+        href={artifact.attributes.url}
         width={516}
       />
     )
-  } else if (mimeType === 'application/pdf') {
+  } else if (artifact.attributes.mimeType === 'application/pdf') {
     hoverContent = (
       <iframe
         className='h-full w-full'
-        src={url}
+        src={artifact.attributes.url}
         title='PDF Document'
       ></iframe>
     )
-  } else if (mimeType.startsWith('text/')) {
+  } else if (artifact.attributes.mimeType.startsWith('text/')) {
     hoverContent = (
       <div className='flex h-full items-center justify-center p-4 text-center'>
-        <p>{text}</p>
+        <p>{artifact.attributes.text}</p>
       </div>
     )
   } else {

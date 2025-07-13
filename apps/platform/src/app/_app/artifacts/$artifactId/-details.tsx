@@ -15,20 +15,20 @@ export const ArtifactDetailsHeader = ({
   artifactId: string
 }) => {
   const {
-    data: { data: artifactData }
+    data: { data: artifact }
   } = useGetOneArtifactSuspense(artifactId)
 
   return (
     <CardHeader>
       <CardTitle className='flex items-center justify-between'>
-        <div>{artifactData.attributes.name}</div>
+        <div>{artifact.attributes.name}</div>
         <Button
           asChild
           size='sm'
           variant='outline'
         >
           <a
-            href={artifactData.attributes.url ?? ''}
+            href={artifact.attributes.url ?? ''}
             rel='noopener noreferrer'
             target='_blank'
           >
@@ -36,30 +36,23 @@ export const ArtifactDetailsHeader = ({
           </a>
         </Button>
       </CardTitle>
-      <CardDescription>{artifactData.attributes.description}</CardDescription>
+      <CardDescription>{artifact.attributes.description}</CardDescription>
     </CardHeader>
   )
 }
 
-export const ArtifactDetailsBody = () => {
-  const artifactId = ''
-  const { data: artifact, error } = useGetOneArtifactSuspense(artifactId)
+export const ArtifactDetailsBody = ({ artifactId }: { artifactId: string }) => {
+  const {
+    data: { data: artifact }
+  } = useGetOneArtifactSuspense(artifactId)
 
-  if (error) {
-    return (
-      <CardContent>
-        <div className='flex items-center gap-2'>Error</div>
-      </CardContent>
-    )
-  }
-  const artifactData = artifact.data
   return (
     <CardContent>
       <div className='flex items-center gap-2'>
-        <Badge>{artifactData.attributes.mimeType}</Badge>
-        {artifactData.attributes.createdAt && (
+        <Badge>{artifact.attributes.mimeType}</Badge>
+        {artifact.attributes.createdAt && (
           <Badge>
-            <Timestamp date={artifactData.attributes.createdAt} />
+            <Timestamp date={artifact.attributes.createdAt} />
           </Badge>
         )}
       </div>

@@ -1,12 +1,6 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
 
-import {
-  ErrorComponent,
-  Link,
-  rootRouteId,
-  useMatch,
-  useRouter
-} from '@tanstack/react-router'
+import { Link, rootRouteId, useMatch, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 
@@ -18,8 +12,11 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   })
 
   return (
-    <div className='flex min-w-0 flex-1 flex-col items-center justify-center gap-6 p-4'>
-      <ErrorComponent error={error} />
+    <div className='fixed inset-0 z-0 flex flex-col items-center justify-center gap-6 bg-background'>
+      <h1 className='text-2xl font-bold'>Something went wrong</h1>
+      <p className='text-destructive'>
+        {error.message || 'An unexpected error occurred.'}
+      </p>
       <div className='flex flex-wrap items-center gap-2'>
         <Button
           onClick={async () => {
@@ -31,7 +28,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
           Try Again
         </Button>
         {isRoot ?
-          <Link to='/chat'>Home</Link>
+          <Link to='/'>Home</Link>
         : <Button
             size='sm'
             variant={'ghost'}
@@ -41,7 +38,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
                 e.preventDefault()
                 window.history.back()
               }}
-              to='/chat'
+              to='/'
             >
               Go Back
             </Link>

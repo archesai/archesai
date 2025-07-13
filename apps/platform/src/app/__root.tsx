@@ -77,11 +77,14 @@ export default function RootDocument({
   children: React.ReactNode
 }) {
   return (
-    <html>
+    <html
+      lang='en'
+      suppressHydrationWarning
+    >
       <head>
         <HeadContent />
       </head>
-      <body className={`overscroll-none font-sans antialiased`}>
+      <body className={`overscroll-none bg-background font-sans antialiased`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

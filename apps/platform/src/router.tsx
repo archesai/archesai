@@ -55,15 +55,14 @@ export function createRouter() {
       defaultNotFoundComponent: () => <NotFound />,
       defaultPendingComponent: () => {
         return (
-          <div className='flex h-screen w-screen items-center justify-center bg-background'>
-            <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+          <div className='fixed inset-0 flex items-center justify-center bg-background'>
+            <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary' />
           </div>
         )
       },
       defaultPreload: 'intent',
       // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
       defaultPreloadStaleTime: 0,
-      // defaultSsr: false,
       defaultStructuralSharing: true,
       routeTree,
       scrollRestoration: true

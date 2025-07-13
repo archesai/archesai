@@ -21,26 +21,17 @@ const getUrl = (contextUrl: string): string => {
   return requestUrl.toString()
 }
 
-// NOTE: Add headers
-const getHeaders = (headers?: HeadersInit): HeadersInit => {
-  return {
-    ...headers
-    // Authorization: 'token',
-    // 'Content-Type': 'multipart/form-data'
-  }
-}
-
 export const customFetch = async <T>(
   url: string,
   options: RequestInit
 ): Promise<T> => {
+  console.log(url)
   const requestUrl = getUrl(url)
-  const requestHeaders = getHeaders(options.headers)
 
   const requestInit: RequestInit = {
     ...options,
-    credentials: 'include', // Ensure credentials are included
-    headers: requestHeaders
+    credentials: 'include',
+    headers: new Headers(options.headers)
   }
 
   const response = await fetch(requestUrl, requestInit)

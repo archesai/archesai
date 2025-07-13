@@ -32,7 +32,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: apiToken.attributes.name,
+      defaultValue: apiToken.attributes.name || '',
       description: 'This is the name that will be used for this API token.',
       label: 'Name',
       name: 'name' as keyof ApiTokenEntity,

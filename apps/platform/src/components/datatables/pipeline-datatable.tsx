@@ -72,7 +72,12 @@ export default function PipelineDataTable() {
       }}
       entityType={PIPELINE_ENTITY_KEY}
       handleSelect={async (pipeline) => {
-        await navigate({ to: `/pipelines/single?pipelineId=${pipeline.id}` })
+        await navigate({
+          params: {
+            pipelineId: pipeline.id
+          },
+          to: `/pipelines/$pipelineId`
+        })
       }}
       icon={<Workflow />}
       useFindMany={getFindManyPipelinesSuspenseQueryOptions()}
