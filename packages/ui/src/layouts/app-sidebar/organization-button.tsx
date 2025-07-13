@@ -1,5 +1,7 @@
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
+import type { UserEntity } from '@archesai/schemas'
+
 import {
   useFindManyMembersSuspense,
   useGetSessionSuspense,
@@ -39,7 +41,7 @@ export function OrganizationButton() {
 
   const handleSwitchOrganization = async (_organizationId: string) => {
     await updateUser({
-      data: {},
+      data: {} as UserEntity,
       id: 'organization'
     })
   }
@@ -84,13 +86,11 @@ export function OrganizationButton() {
                 className='gap-2 p-2'
                 key={membership.id}
                 onClick={async () => {
-                  await handleSwitchOrganization(
-                    membership.attributes.organizationId
-                  )
+                  await handleSwitchOrganization(membership.organizationId)
                 }}
               >
-                {membership.attributes.organizationId}
-                {'Arches Platform' === membership.attributes.organizationId && (
+                {membership.organizationId}
+                {'Arches Platform' === membership.organizationId && (
                   <Badge>Current</Badge>
                 )}
               </DropdownMenuItem>

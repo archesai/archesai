@@ -3,7 +3,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import type { CreateAccountDto } from '@archesai/schemas'
 
 import { useRegister } from '@archesai/client'
-import { CreateAccountDtoSchema, Type } from '@archesai/schemas'
+import { CreateAccountDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -55,10 +55,7 @@ export default function RegisterPage() {
                 type='password'
               />
             ),
-            validationRule: Type.String({
-              errorMessage: 'Passwords must match',
-              minLength: 8
-            })
+            validationRule: CreateAccountDtoSchema.properties.password
           }
         ]}
         isUpdateForm={false}

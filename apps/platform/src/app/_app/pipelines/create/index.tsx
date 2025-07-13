@@ -68,7 +68,7 @@ export const CreatePipelineContent = () => {
 
   // useEffect(() => {
   //   if (pipelines?.data[0]) {
-  //     const pipelineSteps = pipelines.data[0]?.attributes.steps
+  //     const pipelineSteps = pipelines.data[0]?.steps
   //     const nodes = pipelineSteps.map((step, index) => ({
   //       data: step,
   //       id: step.id,

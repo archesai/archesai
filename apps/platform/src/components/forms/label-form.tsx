@@ -11,35 +11,29 @@ import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function LabelForm({ labelId }: { labelId?: string }) {
-  const { mutateAsync: updateLabel } = useUpdateLabel({})
-  const { mutateAsync: createLabel } = useCreateLabel({})
-  const { data: existingLabelResponse } = useGetOneLabel(labelId, {
+  const { mutateAsync: updateLabel } = useUpdateLabel()
+  const { mutateAsync: createLabel } = useCreateLabel()
+  const { data: label } = useGetOneLabel(labelId, {
     query: {
       enabled: !!labelId,
       placeholderData: {
         data: {
-          attributes: {
-            createdAt: '',
-            name: '',
-            organizationId: '',
-            updatedAt: ''
-          },
+          createdAt: '',
           id: labelId ?? '',
-          type: LABEL_ENTITY_KEY
+          name: '',
+          organizationId: '',
+          updatedAt: ''
         }
       }
     }
   })
-
-  if (!existingLabelResponse) {
+  if (!label) {
     return null
   }
 
-  const label = existingLabelResponse.data
-
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: label.attributes.name,
+      defaultValue: label.data.name,
       description: 'This is the name that will be used for this label.',
       label: 'Name',
       name: 'name',

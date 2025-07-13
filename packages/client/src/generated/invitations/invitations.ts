@@ -26,7 +26,6 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import qs from 'qs'
 
 import type {
-  AcceptInvitation200,
   CreateInvitation201,
   CreateInvitationBody,
   DeleteInvitation200,
@@ -34,6 +33,7 @@ import type {
   FindManyInvitationsParams,
   ForbiddenResponse,
   GetOneInvitation200,
+  InvitationEntity,
   NotFoundResponse,
   UnauthorizedResponse,
   UpdateInvitation200,
@@ -949,8 +949,8 @@ export const getAcceptInvitationUrl = (id: string | undefined | null) => {
 export const acceptInvitation = async (
   id: string | undefined | null,
   options?: RequestInit
-): Promise<AcceptInvitation200> => {
-  return customFetch<AcceptInvitation200>(getAcceptInvitationUrl(id), {
+): Promise<InvitationEntity> => {
+  return customFetch<InvitationEntity>(getAcceptInvitationUrl(id), {
     ...options,
     method: 'POST'
   })

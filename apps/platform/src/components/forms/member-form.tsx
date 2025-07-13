@@ -25,7 +25,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: member.attributes.invitationId,
+      defaultValue: member.invitationId,
       description: 'This is the email that will be used for this member.',
       label: 'E-Mail',
       name: 'invitationId',
@@ -44,7 +44,7 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
       })
     },
     {
-      defaultValue: member.attributes.role,
+      defaultValue: member.role,
       description:
         'This is the role that will be used for this member. Note that different roles have different permissions.',
       label: 'RoleTypeEnum',

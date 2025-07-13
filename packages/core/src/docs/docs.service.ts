@@ -13,11 +13,6 @@ import { ArchesApiUnauthorizedResponseSchema } from '#exceptions/schemas/arches-
 import { FieldFilterSchema } from '#http/dto/search-query.dto'
 import { ErrorDocumentSchema } from '#http/schemas/error-document.schema'
 import { ErrorObjectSchema } from '#http/schemas/error-object.schema'
-import { LinkSchema, LinksSchema } from '#http/schemas/links.schema'
-import { MetaSchema } from '#http/schemas/meta.schema'
-import { RelationshipsSchema } from '#http/schemas/relationship.schema'
-import { ResourceIdentifierSchema } from '#http/schemas/resource-identifier.schema'
-import { ResourceObjectSchema } from '#http/schemas/resource-object.schema'
 import { Logger } from '#logging/logger'
 
 /**
@@ -27,14 +22,8 @@ export class DocsService {
   private readonly configService: ConfigService
   private readonly DEFAULT_MODELS = [
     FieldFilterSchema,
-    MetaSchema,
-    LinkSchema,
-    LinksSchema,
-    ResourceIdentifierSchema,
-    ResourceObjectSchema,
     ErrorObjectSchema,
     ErrorDocumentSchema,
-    RelationshipsSchema,
     ArchesApiForbiddenResponseSchema,
     ArchesApiNoContentResponseSchema,
     ArchesApiUnauthorizedResponseSchema,

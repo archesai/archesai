@@ -37,7 +37,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: content.attributes.name,
+      defaultValue: content.name,
       description: 'This is the name that will be used for this content.',
       label: 'Name',
       name: 'name',

@@ -55,7 +55,7 @@ export function Playground() {
   //         {selectedRunId && run && (
   //           <StatusTypeEnumButton
   //             run={{
-  //               ...run.attributes,
+  //               ...run,
   //               id: run.id,
   //               type: run.type
   //             }}

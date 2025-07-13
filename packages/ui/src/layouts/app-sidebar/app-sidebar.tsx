@@ -25,7 +25,7 @@ export function AppSidebar({
     <Sidebar {...props}>
       <SidebarHeader>
         <OrganizationButton />
-        {/* <SearchForm /> */}
+        <SearchForm />
       </SidebarHeader>
       <SidebarContent>
         <SidebarLinks siteRoutes={siteRoutes} />

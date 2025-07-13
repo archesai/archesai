@@ -16,16 +16,6 @@ export default function LoginPage() {
   const router = useRouter()
   const { mutateAsync: login } = useLogin()
 
-  const onSubmit = async (data: CreateAccountDto) => {
-    await login({
-      data: {
-        email: data.email,
-        password: data.password
-      }
-    })
-    await router.navigate({ to: '/' })
-  }
-
   return (
     <>
       <GenericForm<CreateAccountDto, CreateAccountDto>
@@ -59,7 +49,13 @@ export default function LoginPage() {
         ]}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
-          await onSubmit(data)
+          await login({
+            data: {
+              email: data.email,
+              password: data.password
+            }
+          })
+          await router.navigate({ to: '/' })
         }}
         postContent={
           <div className='text-center text-sm'>

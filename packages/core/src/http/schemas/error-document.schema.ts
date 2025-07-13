@@ -3,12 +3,13 @@ import { Type } from '@sinclair/typebox'
 import { LegacyRef } from '@archesai/schemas'
 
 import { ErrorObjectSchema } from '#http/schemas/error-object.schema'
-import { MetaSchema } from '#http/schemas/meta.schema'
+
+// import { MetaSchema } from '#http/schemas/meta.schema'
 
 export const ErrorDocumentSchema = Type.Object(
   {
-    errors: Type.Array(LegacyRef(ErrorObjectSchema)),
-    meta: Type.Optional(LegacyRef(MetaSchema))
+    errors: Type.Array(LegacyRef(ErrorObjectSchema))
+    // meta: Type.Optional(LegacyRef(MetaSchema))
   },
   {
     $id: 'ErrorDocument',

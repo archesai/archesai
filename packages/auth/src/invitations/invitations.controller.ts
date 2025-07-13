@@ -1,4 +1,4 @@
-import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
+import type { Controller, HttpInstance } from '@archesai/core'
 import type { InvitationEntity } from '@archesai/schemas'
 
 import {
@@ -38,12 +38,6 @@ export class InvitationsController
     this.invitationsService = invitationsService
   }
 
-  public async accept(request: ArchesApiRequest) {
-    return this.toIndividualResponse(
-      await this.invitationsService.accept('FIXME', request.user!)
-    )
-  }
-
   public override registerRoutes(app: HttpInstance) {
     super.registerRoutes(app)
     app.post(
@@ -57,7 +51,7 @@ export class InvitationsController
           //   id: Type.String()
           // }),
           response: {
-            200: this.invididualResponseSchema,
+            200: LegacyRef(InvitationEntitySchema),
             401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
             403: LegacyRef(ArchesApiForbiddenResponseSchema),
             404: LegacyRef(ArchesApiNotFoundResponseSchema)
@@ -66,7 +60,9 @@ export class InvitationsController
           tags: [toTitleCase(this.entityKey)]
         }
       },
-      this.accept.bind(this)
+      (req) => {
+        return this.invitationsService.accept('FIXME', req.user!)
+      }
     )
   }
 }

@@ -20,19 +20,15 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 
 export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
-  const { mutateAsync: createApiToken } = useUpdateApiToken({})
-  const { mutateAsync: updateApiToken } = useCreateApiToken({})
-  const { data: existingApiTokenResponse, error } =
-    useGetOneApiTokenSuspense(apiTokenId)
-
-  if (error) {
-    return <div>API Token not found</div>
-  }
-  const apiToken = existingApiTokenResponse.data
+  const { mutateAsync: createApiToken } = useUpdateApiToken()
+  const { mutateAsync: updateApiToken } = useCreateApiToken()
+  const {
+    data: { data: existingApiToken }
+  } = useGetOneApiTokenSuspense(apiTokenId)
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: apiToken.attributes.name || '',
+      defaultValue: existingApiToken.name ?? '',
       description: 'This is the name that will be used for this API token.',
       label: 'Name',
       name: 'name' as keyof ApiTokenEntity,
@@ -50,7 +46,7 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
       })
     },
     {
-      defaultValue: apiToken.attributes.role,
+      defaultValue: existingApiToken.role,
       description: 'This is the role that will be used for this API token.',
       label: 'RoleTypeEnum',
       name: 'role' as keyof ApiTokenEntity,
@@ -109,15 +105,15 @@ export default function APITokenForm({ apiTokenId }: { apiTokenId?: string }) {
         await updateApiToken({
           data: {
             ...updateApiTokenDto,
-            name: apiToken.attributes.name,
-            organizationId: apiToken.attributes.organizationId,
-            role: apiToken.attributes.role
+            name: existingApiToken.name,
+            organizationId: existingApiToken.organizationId,
+            role: existingApiToken.role
           }
         })
       }}
       title={
         !apiTokenId ? 'Create API Token' : (
-          `Update API Token: ${apiToken.attributes.name}`
+          `Update API Token: ${existingApiToken.name?.toString() ?? ''}`
         )
       }
     />

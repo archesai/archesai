@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-import { BaseEntitySchema } from '#base/entities/base.entity'
+import { BaseEntitySchema, LegacyRef } from '#base/entities/base.entity'
 import { ToolEntitySchema } from '#orchestration/tools/entities/tool.entity'
 
 export const PipelineStepEntitySchema = Type.Object(
@@ -22,7 +22,7 @@ export const PipelineStepEntitySchema = Type.Object(
         pipelineStepId: Type.String()
       })
     ),
-    tool: ToolEntitySchema,
+    tool: LegacyRef(ToolEntitySchema),
     toolId: Type.String()
   },
   {

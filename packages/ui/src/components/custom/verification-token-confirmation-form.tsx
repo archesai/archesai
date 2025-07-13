@@ -14,14 +14,6 @@ export const ConfirmationForm = ({
 }) => {
   const [operationSent, setOperationSent] = useState<boolean>(false)
 
-  // const form = useForm({
-  //   defaultValues: {
-  //     newPassword: '',
-  //     token: ''
-  //   },
-  //   resolver: typeboxResolver(UpdatePasswordResetDtoSchema)
-  // })
-
   console.log('ConfirmationForm', { token, type })
   const _handleAction = (token: string, type: ActionType) => {
     if (operationSent) {

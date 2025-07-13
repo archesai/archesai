@@ -18,14 +18,13 @@ import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-p
 import { Route as AuthConfirmIndexRouteImport } from './app/auth/confirm/index'
 import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
 import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
+import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
 import { Route as AppPlaygroundIndexRouteImport } from './app/_app/playground/index'
 import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
 import { Route as AppChatIndexRouteImport } from './app/_app/chat/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
 import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
-import { Route as AppProfileSecurityIndexRouteImport } from './app/_app/profile/security/index'
-import { Route as AppProfileGeneralIndexRouteImport } from './app/_app/profile/general/index'
 import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
 import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
 import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
@@ -78,6 +77,11 @@ const AppRunsIndexRoute = AppRunsIndexRouteImport.update({
   path: '/runs/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppPlaygroundIndexRoute = AppPlaygroundIndexRouteImport.update({
   id: '/playground/',
   path: '/playground/',
@@ -106,16 +110,6 @@ const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
 const AppRunsRunIdIndexRoute = AppRunsRunIdIndexRouteImport.update({
   id: '/runs/$runId/',
   path: '/runs/$runId/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppProfileSecurityIndexRoute = AppProfileSecurityIndexRouteImport.update({
-  id: '/profile/security/',
-  path: '/profile/security/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppProfileGeneralIndexRoute = AppProfileGeneralIndexRouteImport.update({
-  id: '/profile/general/',
-  path: '/profile/general/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppPipelinesCreateIndexRoute = AppPipelinesCreateIndexRouteImport.update({
@@ -168,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/labels': typeof AppLabelsIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
   '/playground': typeof AppPlaygroundIndexRoute
+  '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
   '/auth/confirm': typeof AuthConfirmIndexRoute
@@ -181,8 +176,6 @@ export interface FileRoutesByFullPath {
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexRoute
-  '/profile/general': typeof AppProfileGeneralIndexRoute
-  '/profile/security': typeof AppProfileSecurityIndexRoute
   '/runs/$runId': typeof AppRunsRunIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -193,6 +186,7 @@ export interface FileRoutesByTo {
   '/labels': typeof AppLabelsIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
   '/playground': typeof AppPlaygroundIndexRoute
+  '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
   '/auth/confirm': typeof AuthConfirmIndexRoute
@@ -206,8 +200,6 @@ export interface FileRoutesByTo {
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexRoute
-  '/profile/general': typeof AppProfileGeneralIndexRoute
-  '/profile/security': typeof AppProfileSecurityIndexRoute
   '/runs/$runId': typeof AppRunsRunIdIndexRoute
 }
 export interface FileRoutesById {
@@ -220,6 +212,7 @@ export interface FileRoutesById {
   '/_app/labels/': typeof AppLabelsIndexRoute
   '/_app/pipelines/': typeof AppPipelinesIndexRoute
   '/_app/playground/': typeof AppPlaygroundIndexRoute
+  '/_app/profile/': typeof AppProfileIndexRoute
   '/_app/runs/': typeof AppRunsIndexRoute
   '/_app/tools/': typeof AppToolsIndexRoute
   '/auth/confirm/': typeof AuthConfirmIndexRoute
@@ -233,8 +226,6 @@ export interface FileRoutesById {
   '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
   '/_app/pipelines/$pipelineId/': typeof AppPipelinesPipelineIdIndexRoute
   '/_app/pipelines/create/': typeof AppPipelinesCreateIndexRoute
-  '/_app/profile/general/': typeof AppProfileGeneralIndexRoute
-  '/_app/profile/security/': typeof AppProfileSecurityIndexRoute
   '/_app/runs/$runId/': typeof AppRunsRunIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -247,6 +238,7 @@ export interface FileRouteTypes {
     | '/labels'
     | '/pipelines'
     | '/playground'
+    | '/profile'
     | '/runs'
     | '/tools'
     | '/auth/confirm'
@@ -260,8 +252,6 @@ export interface FileRouteTypes {
     | '/organization/members'
     | '/pipelines/$pipelineId'
     | '/pipelines/create'
-    | '/profile/general'
-    | '/profile/security'
     | '/runs/$runId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -272,6 +262,7 @@ export interface FileRouteTypes {
     | '/labels'
     | '/pipelines'
     | '/playground'
+    | '/profile'
     | '/runs'
     | '/tools'
     | '/auth/confirm'
@@ -285,8 +276,6 @@ export interface FileRouteTypes {
     | '/organization/members'
     | '/pipelines/$pipelineId'
     | '/pipelines/create'
-    | '/profile/general'
-    | '/profile/security'
     | '/runs/$runId'
   id:
     | '__root__'
@@ -298,6 +287,7 @@ export interface FileRouteTypes {
     | '/_app/labels/'
     | '/_app/pipelines/'
     | '/_app/playground/'
+    | '/_app/profile/'
     | '/_app/runs/'
     | '/_app/tools/'
     | '/auth/confirm/'
@@ -311,8 +301,6 @@ export interface FileRouteTypes {
     | '/_app/organization/members/'
     | '/_app/pipelines/$pipelineId/'
     | '/_app/pipelines/create/'
-    | '/_app/profile/general/'
-    | '/_app/profile/security/'
     | '/_app/runs/$runId/'
   fileRoutesById: FileRoutesById
 }
@@ -386,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRunsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/profile/': {
+      id: '/_app/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/playground/': {
       id: '/_app/playground/'
       path: '/playground'
@@ -426,20 +421,6 @@ declare module '@tanstack/react-router' {
       path: '/runs/$runId'
       fullPath: '/runs/$runId'
       preLoaderRoute: typeof AppRunsRunIdIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/profile/security/': {
-      id: '/_app/profile/security/'
-      path: '/profile/security'
-      fullPath: '/profile/security'
-      preLoaderRoute: typeof AppProfileSecurityIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/profile/general/': {
-      id: '/_app/profile/general/'
-      path: '/profile/general'
-      fullPath: '/profile/general'
-      preLoaderRoute: typeof AppProfileGeneralIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/pipelines/create/': {
@@ -501,6 +482,7 @@ interface AppRouteRouteChildren {
   AppLabelsIndexRoute: typeof AppLabelsIndexRoute
   AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
   AppPlaygroundIndexRoute: typeof AppPlaygroundIndexRoute
+  AppProfileIndexRoute: typeof AppProfileIndexRoute
   AppRunsIndexRoute: typeof AppRunsIndexRoute
   AppToolsIndexRoute: typeof AppToolsIndexRoute
   AppArtifactsArtifactIdIndexRoute: typeof AppArtifactsArtifactIdIndexRoute
@@ -510,8 +492,6 @@ interface AppRouteRouteChildren {
   AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
   AppPipelinesPipelineIdIndexRoute: typeof AppPipelinesPipelineIdIndexRoute
   AppPipelinesCreateIndexRoute: typeof AppPipelinesCreateIndexRoute
-  AppProfileGeneralIndexRoute: typeof AppProfileGeneralIndexRoute
-  AppProfileSecurityIndexRoute: typeof AppProfileSecurityIndexRoute
   AppRunsRunIdIndexRoute: typeof AppRunsRunIdIndexRoute
 }
 
@@ -522,6 +502,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppLabelsIndexRoute: AppLabelsIndexRoute,
   AppPipelinesIndexRoute: AppPipelinesIndexRoute,
   AppPlaygroundIndexRoute: AppPlaygroundIndexRoute,
+  AppProfileIndexRoute: AppProfileIndexRoute,
   AppRunsIndexRoute: AppRunsIndexRoute,
   AppToolsIndexRoute: AppToolsIndexRoute,
   AppArtifactsArtifactIdIndexRoute: AppArtifactsArtifactIdIndexRoute,
@@ -531,8 +512,6 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
   AppPipelinesPipelineIdIndexRoute: AppPipelinesPipelineIdIndexRoute,
   AppPipelinesCreateIndexRoute: AppPipelinesCreateIndexRoute,
-  AppProfileGeneralIndexRoute: AppProfileGeneralIndexRoute,
-  AppProfileSecurityIndexRoute: AppProfileSecurityIndexRoute,
   AppRunsRunIdIndexRoute: AppRunsRunIdIndexRoute,
 }
 

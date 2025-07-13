@@ -7,8 +7,6 @@ import { CheckSquareIcon, PlusSquareIcon, SortAsc } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/schemas'
 
-import type { TFindManyResponse } from '#components/datatable/data-table'
-
 import { Button } from '#components/shadcn/button'
 import {
   Command,
@@ -33,7 +31,9 @@ interface DataSelectorProps<TItem extends BaseEntity> {
   organizationId?: string
   selectedData: TItem | TItem[] | undefined
   setSelectedData: (data: TItem | TItem[] | undefined) => void
-  useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TItem>>
+  useFindMany: UseSuspenseQueryOptions<{
+    data: TItem[]
+  }>
 }
 
 export function DataSelector<TItem extends BaseEntity>({
@@ -45,14 +45,14 @@ export function DataSelector<TItem extends BaseEntity>({
   setSelectedData,
   useFindMany
 }: DataSelectorProps<TItem>) {
-  const { data } = useSuspenseQuery(useFindMany)
+  const {
+    data: { data }
+  } = useSuspenseQuery(useFindMany)
   const [open, setOpen] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<TItem | undefined>()
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Filter data based on search term
-  const filteredData = data.data // FIXME
-  // item.attributes.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // item.name.toLowerCase().includes(searchTerm.toLowerCase())
 
   // Handler for selecting/deselecting items
   const handleSelect = (item: TItem) => {
@@ -154,24 +154,18 @@ export function DataSelector<TItem extends BaseEntity>({
             />
             <CommandList className='max-h-[400px] overflow-y-auto'>
               <CommandEmpty>No {itemType.toLowerCase()} found.</CommandEmpty>
-              {filteredData.map((item) => (
+              {data.map((item) => (
                 <CommandItem
                   className={cn('flex items-center justify-between')}
                   key={item.id}
                   onMouseEnter={() => {
-                    setHoveredItem({
-                      id: item.id,
-                      ...item.attributes
-                    } as TItem)
+                    setHoveredItem(item)
                   }}
                   onMouseLeave={() => {
                     setHoveredItem(undefined)
                   }}
                   onSelect={() => {
-                    handleSelect({
-                      id: item.id,
-                      ...item.attributes
-                    } as TItem)
+                    handleSelect(item)
                   }}
                 >
                   <div className='flex items-center gap-1'>

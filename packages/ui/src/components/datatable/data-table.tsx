@@ -64,16 +64,9 @@ export interface DataTableProps<TEntity extends BaseEntity> {
   readonly?: boolean
   setFinalForm?: (form: React.ReactNode) => void
   setFormOpen?: (open: boolean) => void
-  useFindMany: UseSuspenseQueryOptions<TFindManyResponse<TEntity>>
-}
-
-export interface TFindManyResponse<TEntity extends BaseEntity> {
-  data: {
-    attributes: Omit<TEntity, 'id' | 'type'>
-    id: TEntity['id']
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    type: any
-  }[]
+  useFindMany: UseSuspenseQueryOptions<{
+    data: TEntity[]
+  }>
 }
 
 export function DataTable<TEntity extends BaseEntity>(
@@ -116,7 +109,10 @@ export function DataTable<TEntity extends BaseEntity>(
     [props.columns]
   )
 
-  const { data, isFetched } = useSuspenseQuery(props.useFindMany)
+  const {
+    data: { data },
+    isFetched
+  } = useSuspenseQuery(props.useFindMany)
 
   const table = useReactTable({
     columns: [
@@ -217,12 +213,7 @@ export function DataTable<TEntity extends BaseEntity>(
         ]
       : [])
     ],
-    data: data.data.map((item) => {
-      return {
-        ...item.attributes,
-        id: item.id
-      } as TEntity
-    }),
+    data: data,
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     manualFiltering: true,
@@ -289,7 +280,7 @@ export function DataTable<TEntity extends BaseEntity>(
         <div className='self-auto'>
           <DataTablePagination<TEntity>
             table={table}
-            totalRecords={data.data.length}
+            totalRecords={data.length}
           />
         </div>
       )}

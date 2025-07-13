@@ -21,14 +21,14 @@ export const ArtifactDetailsHeader = ({
   return (
     <CardHeader>
       <CardTitle className='flex items-center justify-between'>
-        <div>{artifact.attributes.name}</div>
+        <div>{artifact.name}</div>
         <Button
           asChild
           size='sm'
           variant='outline'
         >
           <a
-            href={artifact.attributes.url ?? ''}
+            href={artifact.url ?? ''}
             rel='noopener noreferrer'
             target='_blank'
           >
@@ -36,7 +36,7 @@ export const ArtifactDetailsHeader = ({
           </a>
         </Button>
       </CardTitle>
-      <CardDescription>{artifact.attributes.description}</CardDescription>
+      <CardDescription>{artifact.description}</CardDescription>
     </CardHeader>
   )
 }
@@ -49,10 +49,10 @@ export const ArtifactDetailsBody = ({ artifactId }: { artifactId: string }) => {
   return (
     <CardContent>
       <div className='flex items-center gap-2'>
-        <Badge>{artifact.attributes.mimeType}</Badge>
-        {artifact.attributes.createdAt && (
+        <Badge>{artifact.mimeType}</Badge>
+        {artifact.createdAt && (
           <Badge>
-            <Timestamp date={artifact.attributes.createdAt} />
+            <Timestamp date={artifact.createdAt} />
           </Badge>
         )}
       </div>

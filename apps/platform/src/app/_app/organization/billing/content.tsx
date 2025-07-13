@@ -104,7 +104,7 @@ export default function BillingPageContent() {
                         : 'One-time'}
                       </TableCell>
                       <TableCell>
-                        {organization.attributes.plan === plan.metadata.key ?
+                        {organization.plan === plan.metadata.key ?
                           <Button
                             className='flex gap-2'
                             disabled={
@@ -129,7 +129,7 @@ export default function BillingPageContent() {
                               )}
                             <span>Cancel Plan</span>
                           </Button>
-                        : organization.attributes.plan === 'FREE' ?
+                        : organization.plan === 'FREE' ?
                           <Button
                             className='flex gap-2'
                             disabled={

@@ -7,6 +7,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import type { UserEntity } from '@archesai/schemas'
+
 import {
   useFindManyMembersSuspense,
   useGetSessionSuspense,
@@ -143,23 +145,22 @@ export function UserButton({
                       onClick={async () => {
                         await updateUser(
                           {
-                            data: {},
-                            id: membership.attributes.userId
+                            data: {} as UserEntity,
+                            id: user.id
                           },
                           {
                             onSuccess: () => {
                               toast('Organization changed', {
                                 description: `You have
-                              switched to ${membership.attributes.organizationId}`
+                              switched to ${membership.organizationId}`
                               })
                             }
                           }
                         )
                       }}
                     >
-                      {membership.attributes.organizationId}
-                      {defaultOrgname ===
-                        membership.attributes.organizationId && (
+                      {membership.organizationId}
+                      {defaultOrgname === membership.organizationId && (
                         <Badge>Current</Badge>
                       )}
                     </DropdownMenuItem>

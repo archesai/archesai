@@ -99,58 +99,6 @@ export interface FieldFilter {
 }
 
 /**
- * Non-standard meta-information
- */
-export interface Meta {
-  [key: string]: unknown
-}
-
-/**
- * Link object or URI string
- */
-export type Link = string
-
-/**
- * Collection of links
- */
-export interface Links {
-  first?: Link
-  last?: Link
-  next?: Link
-  prev?: Link
-  self?: Link
-}
-
-/**
- * Resource Identifier
- */
-export interface ResourceIdentifier {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-export type ResourceObjectAttributes = { [key: string]: unknown }
-
-export type ResourceObjectLinks = {
-  self: Link
-}
-
-/**
- * Resource object
- */
-export interface ResourceObject {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-  attributes?: ResourceObjectAttributes
-  links?: ResourceObjectLinks
-  relationships?: Relationships
-}
-
-/**
  * A list of errors that occurred during the request
  */
 export interface ErrorObject {
@@ -164,45 +112,6 @@ export interface ErrorObject {
  */
 export interface ErrorDocument {
   errors: ErrorObject[]
-  meta?: Meta
-}
-
-/**
- * Resource Identifier
- */
-export type RelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export interface Relationships {
-  [key: string]: {
-    /** Resource Identifier */
-    data: RelationshipsData
-  }
-}
-
-/**
- * Resource Identifier
- */
-export type RelationshipData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationship object
- */
-export interface Relationship {
-  /** Resource Identifier */
-  data: RelationshipData
 }
 
 export type ForbiddenResponseErrorsItem = {
@@ -247,6 +156,360 @@ export type NotFoundResponseErrorsItem = {
  */
 export interface NotFoundResponse {
   errors: NotFoundResponseErrorsItem[]
+}
+
+/**
+ * The file entity
+ */
+export interface FileEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not this is a directory */
+  isDir: boolean
+  /** The original name of the file */
+  organizationId: string
+  /** The path to the item */
+  path: string
+  /** The read-only URL that you can use to download the file from secure storage */
+  read?: string
+  /** The size of the item in bytes */
+  size: number
+  /** The write-only URL that you can use to upload the file to secure storage */
+  write?: string
+}
+
+export type PipelineEntityStepsItemDependentsItem = {
+  pipelineStepId: string
+}
+
+export type PipelineEntityStepsItemPrerequisitesItem = {
+  pipelineStepId: string
+}
+
+/**
+ * The pipeline step entity
+ */
+export type PipelineEntityStepsItem = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  dependents: PipelineEntityStepsItemDependentsItem[]
+  /** The name of the pipeline step */
+  name: string
+  pipelineId: string
+  prerequisites: PipelineEntityStepsItemPrerequisitesItem[]
+  tool: ToolEntity
+  toolId: string
+}
+
+/**
+ * The pipeline entity
+ */
+export interface PipelineEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The pipeline description */
+  description: string
+  /** The name of the pipeline */
+  name: string
+  /** The organization id */
+  organizationId: string
+  /** The steps in the pipeline */
+  steps: PipelineEntityStepsItem[]
+}
+
+export type PipelineStepEntityDependentsItem = {
+  pipelineStepId: string
+}
+
+export type PipelineStepEntityPrerequisitesItem = {
+  pipelineStepId: string
+}
+
+/**
+ * The pipeline step entity
+ */
+export interface PipelineStepEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  dependents: PipelineStepEntityDependentsItem[]
+  /** The name of the pipeline step */
+  name: string
+  pipelineId: string
+  prerequisites: PipelineStepEntityPrerequisitesItem[]
+  tool: ToolEntity
+  toolId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolEntityInputType = {
+  AUDIO: 'AUDIO',
+  IMAGE: 'IMAGE',
+  TEXT: 'TEXT',
+  VIDEO: 'VIDEO'
+} as const
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolEntityOutputType = {
+  AUDIO: 'AUDIO',
+  IMAGE: 'IMAGE',
+  TEXT: 'TEXT',
+  VIDEO: 'VIDEO'
+} as const
+/**
+ * The tool entity
+ */
+export interface ToolEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The tool description */
+  description: string
+  /** The input type of the tool */
+  inputType: (typeof ToolEntityInputType)[keyof typeof ToolEntityInputType]
+  /** The name of the tool */
+  name?: string
+  /** The organization name */
+  organizationId: string
+  /** The output type of the tool */
+  outputType: (typeof ToolEntityOutputType)[keyof typeof ToolEntityOutputType]
+  /** The base of the tool */
+  toolBase: string
+}
+
+/**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type ArtifactEntityProducerId = string | null
+
+/**
+ * The artifact entity
+ */
+export interface ArtifactEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
+  credits: number
+  /** The artifact's description */
+  description: string
+  /** The artifact's embedding, used for semantic search and other ML tasks */
+  embedding?: number[]
+  /** The MIME type of the artifact, e.g. image/png */
+  mimeType: string
+  /** The name of the artifact, used for display purposes */
+  name: string
+  /** The organization name */
+  organizationId: string
+  /** The ID of the parent artifact, if this artifact is a child of another artifact */
+  parentId: string
+  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
+  previewImage: string
+  /** The ID of the run that produced this artifact, if applicable */
+  producerId: ArtifactEntityProducerId
+  /** The artifact text */
+  text?: string
+  /** The artifact URL */
+  url?: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunEntityRunType = {
+  PIPELINE_RUN: 'PIPELINE_RUN',
+  TOOL_RUN: 'TOOL_RUN'
+} as const
+/**
+ * The run entity
+ */
+export interface RunEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The timestamp when the run completed */
+  completedAt?: string
+  /** The error message */
+  error?: string
+  /** The organization name */
+  organizationId: string
+  /** The pipeline ID associated with the run */
+  pipelineId: string
+  /** The percent progress of the run */
+  progress: number
+  /** The type of run */
+  runType: (typeof RunEntityRunType)[keyof typeof RunEntityRunType]
+  /** The timestamp when the run started */
+  startedAt?: string
+  /** The status of the run */
+  status: string
+  /** The tool ID associated with the run */
+  toolId: string
+}
+
+/**
+ * The label entity
+ */
+export interface LabelEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The name of the label */
+  name: string
+  /** The organization name */
+  organizationId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationEntityPlan = {
+  BASIC: 'BASIC',
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM',
+  STANDARD: 'STANDARD',
+  UNLIMITED: 'UNLIMITED'
+} as const
+/**
+ * The organization entity
+ */
+export interface OrganizationEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The billing email to use for the organization */
+  billingEmail: string
+  /** The user who created the organization */
+  creator?: string
+  /** The number of credits you have remaining for this organization */
+  credits: number
+  /** The Stripe customer ID */
+  customerId?: string
+  /** The organization name */
+  organizationId: string
+  /** The plan that the organization is subscribed to */
+  plan: (typeof OrganizationEntityPlan)[keyof typeof OrganizationEntityPlan]
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type UserEntityImage = null | string
+
+/**
+ * The user entity
+ */
+export interface UserEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /** The user's avatar image URL */
+  image: UserEntityImage
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+/**
+ * The member entity
+ */
+export interface MemberEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The invitation id */
+  invitationId: string
+  /** The organization name */
+  organizationId: string
+  /** The role of the member */
+  role: (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
+  /** The user id */
+  userId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+/**
+ * The invitation entity
+ */
+export interface InvitationEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether the invite was accepted */
+  accepted: boolean
+  /** The email of the invitated user */
+  email: string
+  /** The name of the organization the token belongs to */
+  organizationId: string
+  /** The role of the invitation */
+  role: (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ApiTokenEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+/**
+ * The API token entity
+ */
+export interface ApiTokenEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The API token key. This will only be shown once */
+  key: string
+  /** The name of the API token */
+  name?: string
+  /** The name of the organization the token belongs to */
+  organizationId: string
+  /** The role of the API token */
+  role: (typeof ApiTokenEntityRole)[keyof typeof ApiTokenEntityRole]
 }
 
 export type GetConfig200AuthFirebaseAnyOf = {
@@ -587,82 +850,8 @@ export type CreateFileBody = {
   path: string
 }
 
-/**
- * The file entity
- */
-export type CreateFile201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
-  organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
-}
-
-export type CreateFile201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateFile201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateFile201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateFile201DataRelationshipsData
-  }
-}
-
-export type CreateFile201DataType =
-  (typeof CreateFile201DataType)[keyof typeof CreateFile201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateFile201DataType = {
-  files: 'files'
-} as const
-
-/**
- * Files resource
- */
-export type CreateFile201Data = {
-  /** The file entity */
-  attributes: CreateFile201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateFile201DataLinks
-  /** Relationships object */
-  relationships?: CreateFile201DataRelationships
-  type: CreateFile201DataType
-}
-
-/**
- * Files Individual response
- */
 export type CreateFile201 = {
-  /** Files resource */
-  data: CreateFile201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: FileEntity
 }
 
 export type FindManyFilesParams = {
@@ -701,237 +890,24 @@ export type FindManyFilesParams = {
   sort?: string
 }
 
-/**
- * The file entity
- */
-export type FindManyFiles200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
-  organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
+export type FindManyFiles200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyFiles200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyFiles200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyFiles200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyFiles200DataItemRelationshipsData
-  }
-}
-
-export type FindManyFiles200DataItemType =
-  (typeof FindManyFiles200DataItemType)[keyof typeof FindManyFiles200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyFiles200DataItemType = {
-  files: 'files'
-} as const
-
-/**
- * Files resource
- */
-export type FindManyFiles200DataItem = {
-  /** The file entity */
-  attributes: FindManyFiles200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyFiles200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyFiles200DataItemRelationships
-  type: FindManyFiles200DataItemType
-}
-
-/**
- * Files collection response
- */
 export type FindManyFiles200 = {
-  data: FindManyFiles200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: FileEntity[]
+  meta?: FindManyFiles200Meta
 }
 
-/**
- * The file entity
- */
-export type DeleteFile200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
-  organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
-}
-
-export type DeleteFile200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteFile200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteFile200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteFile200DataRelationshipsData
-  }
-}
-
-export type DeleteFile200DataType =
-  (typeof DeleteFile200DataType)[keyof typeof DeleteFile200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteFile200DataType = {
-  files: 'files'
-} as const
-
-/**
- * Files resource
- */
-export type DeleteFile200Data = {
-  /** The file entity */
-  attributes: DeleteFile200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteFile200DataLinks
-  /** Relationships object */
-  relationships?: DeleteFile200DataRelationships
-  type: DeleteFile200DataType
-}
-
-/**
- * Files Individual response
- */
 export type DeleteFile200 = {
-  /** Files resource */
-  data: DeleteFile200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: FileEntity
 }
 
-/**
- * The file entity
- */
-export type GetOneFile200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
-  organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
-}
-
-export type GetOneFile200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneFile200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneFile200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneFile200DataRelationshipsData
-  }
-}
-
-export type GetOneFile200DataType =
-  (typeof GetOneFile200DataType)[keyof typeof GetOneFile200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneFile200DataType = {
-  files: 'files'
-} as const
-
-/**
- * Files resource
- */
-export type GetOneFile200Data = {
-  /** The file entity */
-  attributes: GetOneFile200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneFile200DataLinks
-  /** Relationships object */
-  relationships?: GetOneFile200DataRelationships
-  type: GetOneFile200DataType
-}
-
-/**
- * Files Individual response
- */
 export type GetOneFile200 = {
-  /** Files resource */
-  data: GetOneFile200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: FileEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -943,82 +919,8 @@ export type UpdateFileBody = {
   path: string
 }
 
-/**
- * The file entity
- */
-export type UpdateFile200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
-  organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
-}
-
-export type UpdateFile200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateFile200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateFile200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateFile200DataRelationshipsData
-  }
-}
-
-export type UpdateFile200DataType =
-  (typeof UpdateFile200DataType)[keyof typeof UpdateFile200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateFile200DataType = {
-  files: 'files'
-} as const
-
-/**
- * Files resource
- */
-export type UpdateFile200Data = {
-  /** The file entity */
-  attributes: UpdateFile200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateFile200DataLinks
-  /** Relationships object */
-  relationships?: UpdateFile200DataRelationships
-  type: UpdateFile200DataType
-}
-
-/**
- * Files Individual response
- */
 export type UpdateFile200 = {
-  /** Files resource */
-  data: UpdateFile200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: FileEntity
 }
 
 export type CreatePipelineBodyStepsItemDependentsItem = {
@@ -1027,44 +929,6 @@ export type CreatePipelineBodyStepsItemDependentsItem = {
 
 export type CreatePipelineBodyStepsItemPrerequisitesItem = {
   pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreatePipelineBodyStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreatePipelineBodyStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type CreatePipelineBodyStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof CreatePipelineBodyStepsItemToolInputType)[keyof typeof CreatePipelineBodyStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof CreatePipelineBodyStepsItemToolOutputType)[keyof typeof CreatePipelineBodyStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
 }
 
 /**
@@ -1082,8 +946,7 @@ export type CreatePipelineBodyStepsItem = {
   name: string
   pipelineId: string
   prerequisites: CreatePipelineBodyStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: CreatePipelineBodyStepsItemTool
+  tool: ToolEntity
   toolId: string
 }
 
@@ -1096,144 +959,8 @@ export type CreatePipelineBody = {
   steps: CreatePipelineBodyStepsItem[]
 }
 
-export type CreatePipeline201DataAttributesStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type CreatePipeline201DataAttributesStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreatePipeline201DataAttributesStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreatePipeline201DataAttributesStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type CreatePipeline201DataAttributesStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof CreatePipeline201DataAttributesStepsItemToolInputType)[keyof typeof CreatePipeline201DataAttributesStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof CreatePipeline201DataAttributesStepsItemToolOutputType)[keyof typeof CreatePipeline201DataAttributesStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-/**
- * The pipeline step entity
- */
-export type CreatePipeline201DataAttributesStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: CreatePipeline201DataAttributesStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: CreatePipeline201DataAttributesStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: CreatePipeline201DataAttributesStepsItemTool
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export type CreatePipeline201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: CreatePipeline201DataAttributesStepsItem[]
-}
-
-export type CreatePipeline201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreatePipeline201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreatePipeline201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreatePipeline201DataRelationshipsData
-  }
-}
-
-export type CreatePipeline201DataType =
-  (typeof CreatePipeline201DataType)[keyof typeof CreatePipeline201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreatePipeline201DataType = {
-  pipelines: 'pipelines'
-} as const
-
-/**
- * Pipelines resource
- */
-export type CreatePipeline201Data = {
-  /** The pipeline entity */
-  attributes: CreatePipeline201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreatePipeline201DataLinks
-  /** Relationships object */
-  relationships?: CreatePipeline201DataRelationships
-  type: CreatePipeline201DataType
-}
-
-/**
- * Pipelines Individual response
- */
 export type CreatePipeline201 = {
-  /** Pipelines resource */
-  data: CreatePipeline201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: PipelineEntity
 }
 
 export type FindManyPipelinesParams = {
@@ -1270,423 +997,24 @@ export type FindManyPipelinesParams = {
   sort?: string
 }
 
-export type FindManyPipelines200DataItemAttributesStepsItemDependentsItem = {
-  pipelineStepId: string
+export type FindManyPipelines200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyPipelines200DataItemAttributesStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelines200DataItemAttributesStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelines200DataItemAttributesStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type FindManyPipelines200DataItemAttributesStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof FindManyPipelines200DataItemAttributesStepsItemToolInputType)[keyof typeof FindManyPipelines200DataItemAttributesStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof FindManyPipelines200DataItemAttributesStepsItemToolOutputType)[keyof typeof FindManyPipelines200DataItemAttributesStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-/**
- * The pipeline step entity
- */
-export type FindManyPipelines200DataItemAttributesStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: FindManyPipelines200DataItemAttributesStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: FindManyPipelines200DataItemAttributesStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: FindManyPipelines200DataItemAttributesStepsItemTool
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export type FindManyPipelines200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: FindManyPipelines200DataItemAttributesStepsItem[]
-}
-
-export type FindManyPipelines200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyPipelines200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyPipelines200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyPipelines200DataItemRelationshipsData
-  }
-}
-
-export type FindManyPipelines200DataItemType =
-  (typeof FindManyPipelines200DataItemType)[keyof typeof FindManyPipelines200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelines200DataItemType = {
-  pipelines: 'pipelines'
-} as const
-
-/**
- * Pipelines resource
- */
-export type FindManyPipelines200DataItem = {
-  /** The pipeline entity */
-  attributes: FindManyPipelines200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyPipelines200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyPipelines200DataItemRelationships
-  type: FindManyPipelines200DataItemType
-}
-
-/**
- * Pipelines collection response
- */
 export type FindManyPipelines200 = {
-  data: FindManyPipelines200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: PipelineEntity[]
+  meta?: FindManyPipelines200Meta
 }
 
-export type DeletePipeline200DataAttributesStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type DeletePipeline200DataAttributesStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeletePipeline200DataAttributesStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeletePipeline200DataAttributesStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type DeletePipeline200DataAttributesStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof DeletePipeline200DataAttributesStepsItemToolInputType)[keyof typeof DeletePipeline200DataAttributesStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof DeletePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof DeletePipeline200DataAttributesStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-/**
- * The pipeline step entity
- */
-export type DeletePipeline200DataAttributesStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: DeletePipeline200DataAttributesStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: DeletePipeline200DataAttributesStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: DeletePipeline200DataAttributesStepsItemTool
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export type DeletePipeline200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: DeletePipeline200DataAttributesStepsItem[]
-}
-
-export type DeletePipeline200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeletePipeline200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeletePipeline200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeletePipeline200DataRelationshipsData
-  }
-}
-
-export type DeletePipeline200DataType =
-  (typeof DeletePipeline200DataType)[keyof typeof DeletePipeline200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeletePipeline200DataType = {
-  pipelines: 'pipelines'
-} as const
-
-/**
- * Pipelines resource
- */
-export type DeletePipeline200Data = {
-  /** The pipeline entity */
-  attributes: DeletePipeline200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeletePipeline200DataLinks
-  /** Relationships object */
-  relationships?: DeletePipeline200DataRelationships
-  type: DeletePipeline200DataType
-}
-
-/**
- * Pipelines Individual response
- */
 export type DeletePipeline200 = {
-  /** Pipelines resource */
-  data: DeletePipeline200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: PipelineEntity
 }
 
-export type GetOnePipeline200DataAttributesStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type GetOnePipeline200DataAttributesStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOnePipeline200DataAttributesStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOnePipeline200DataAttributesStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type GetOnePipeline200DataAttributesStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof GetOnePipeline200DataAttributesStepsItemToolInputType)[keyof typeof GetOnePipeline200DataAttributesStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof GetOnePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof GetOnePipeline200DataAttributesStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-/**
- * The pipeline step entity
- */
-export type GetOnePipeline200DataAttributesStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: GetOnePipeline200DataAttributesStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: GetOnePipeline200DataAttributesStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: GetOnePipeline200DataAttributesStepsItemTool
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export type GetOnePipeline200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: GetOnePipeline200DataAttributesStepsItem[]
-}
-
-export type GetOnePipeline200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOnePipeline200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOnePipeline200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOnePipeline200DataRelationshipsData
-  }
-}
-
-export type GetOnePipeline200DataType =
-  (typeof GetOnePipeline200DataType)[keyof typeof GetOnePipeline200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOnePipeline200DataType = {
-  pipelines: 'pipelines'
-} as const
-
-/**
- * Pipelines resource
- */
-export type GetOnePipeline200Data = {
-  /** The pipeline entity */
-  attributes: GetOnePipeline200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOnePipeline200DataLinks
-  /** Relationships object */
-  relationships?: GetOnePipeline200DataRelationships
-  type: GetOnePipeline200DataType
-}
-
-/**
- * Pipelines Individual response
- */
 export type GetOnePipeline200 = {
-  /** Pipelines resource */
-  data: GetOnePipeline200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: PipelineEntity
 }
 
 export type UpdatePipelineBodyStepsItemDependentsItem = {
@@ -1695,44 +1023,6 @@ export type UpdatePipelineBodyStepsItemDependentsItem = {
 
 export type UpdatePipelineBodyStepsItemPrerequisitesItem = {
   pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdatePipelineBodyStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdatePipelineBodyStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type UpdatePipelineBodyStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof UpdatePipelineBodyStepsItemToolInputType)[keyof typeof UpdatePipelineBodyStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof UpdatePipelineBodyStepsItemToolOutputType)[keyof typeof UpdatePipelineBodyStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
 }
 
 /**
@@ -1750,8 +1040,7 @@ export type UpdatePipelineBodyStepsItem = {
   name: string
   pipelineId: string
   prerequisites: UpdatePipelineBodyStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: UpdatePipelineBodyStepsItemTool
+  tool: ToolEntity
   toolId: string
 }
 
@@ -1764,144 +1053,8 @@ export type UpdatePipelineBody = {
   steps?: UpdatePipelineBodyStepsItem[]
 }
 
-export type UpdatePipeline200DataAttributesStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type UpdatePipeline200DataAttributesStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdatePipeline200DataAttributesStepsItemToolInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdatePipeline200DataAttributesStepsItemToolOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type UpdatePipeline200DataAttributesStepsItemTool = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof UpdatePipeline200DataAttributesStepsItemToolInputType)[keyof typeof UpdatePipeline200DataAttributesStepsItemToolInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof UpdatePipeline200DataAttributesStepsItemToolOutputType)[keyof typeof UpdatePipeline200DataAttributesStepsItemToolOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-/**
- * The pipeline step entity
- */
-export type UpdatePipeline200DataAttributesStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: UpdatePipeline200DataAttributesStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: UpdatePipeline200DataAttributesStepsItemPrerequisitesItem[]
-  /** The tool entity */
-  tool: UpdatePipeline200DataAttributesStepsItemTool
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export type UpdatePipeline200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: UpdatePipeline200DataAttributesStepsItem[]
-}
-
-export type UpdatePipeline200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdatePipeline200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdatePipeline200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdatePipeline200DataRelationshipsData
-  }
-}
-
-export type UpdatePipeline200DataType =
-  (typeof UpdatePipeline200DataType)[keyof typeof UpdatePipeline200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdatePipeline200DataType = {
-  pipelines: 'pipelines'
-} as const
-
-/**
- * Pipelines resource
- */
-export type UpdatePipeline200Data = {
-  /** The pipeline entity */
-  attributes: UpdatePipeline200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdatePipeline200DataLinks
-  /** Relationships object */
-  relationships?: UpdatePipeline200DataRelationships
-  type: UpdatePipeline200DataType
-}
-
-/**
- * Pipelines Individual response
- */
 export type UpdatePipeline200 = {
-  /** Pipelines resource */
-  data: UpdatePipeline200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: PipelineEntity
 }
 
 export type CreateToolBody = {
@@ -1911,96 +1064,8 @@ export type CreateToolBody = {
   name?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateTool201DataAttributesInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateTool201DataAttributesOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type CreateTool201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof CreateTool201DataAttributesInputType)[keyof typeof CreateTool201DataAttributesInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof CreateTool201DataAttributesOutputType)[keyof typeof CreateTool201DataAttributesOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-export type CreateTool201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateTool201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateTool201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateTool201DataRelationshipsData
-  }
-}
-
-export type CreateTool201DataType =
-  (typeof CreateTool201DataType)[keyof typeof CreateTool201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateTool201DataType = {
-  tools: 'tools'
-} as const
-
-/**
- * Tools resource
- */
-export type CreateTool201Data = {
-  /** The tool entity */
-  attributes: CreateTool201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateTool201DataLinks
-  /** Relationships object */
-  relationships?: CreateTool201DataRelationships
-  type: CreateTool201DataType
-}
-
-/**
- * Tools Individual response
- */
 export type CreateTool201 = {
-  /** Tools resource */
-  data: CreateTool201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ToolEntity
 }
 
 export type FindManyToolsParams = {
@@ -2039,279 +1104,24 @@ export type FindManyToolsParams = {
   sort?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyTools200DataItemAttributesInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyTools200DataItemAttributesOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type FindManyTools200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof FindManyTools200DataItemAttributesInputType)[keyof typeof FindManyTools200DataItemAttributesInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof FindManyTools200DataItemAttributesOutputType)[keyof typeof FindManyTools200DataItemAttributesOutputType]
-  /** The base of the tool */
-  toolBase: string
+export type FindManyTools200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyTools200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyTools200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyTools200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyTools200DataItemRelationshipsData
-  }
-}
-
-export type FindManyTools200DataItemType =
-  (typeof FindManyTools200DataItemType)[keyof typeof FindManyTools200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyTools200DataItemType = {
-  tools: 'tools'
-} as const
-
-/**
- * Tools resource
- */
-export type FindManyTools200DataItem = {
-  /** The tool entity */
-  attributes: FindManyTools200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyTools200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyTools200DataItemRelationships
-  type: FindManyTools200DataItemType
-}
-
-/**
- * Tools collection response
- */
 export type FindManyTools200 = {
-  data: FindManyTools200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: ToolEntity[]
+  meta?: FindManyTools200Meta
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteTool200DataAttributesInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteTool200DataAttributesOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type DeleteTool200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof DeleteTool200DataAttributesInputType)[keyof typeof DeleteTool200DataAttributesInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof DeleteTool200DataAttributesOutputType)[keyof typeof DeleteTool200DataAttributesOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-export type DeleteTool200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteTool200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteTool200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteTool200DataRelationshipsData
-  }
-}
-
-export type DeleteTool200DataType =
-  (typeof DeleteTool200DataType)[keyof typeof DeleteTool200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteTool200DataType = {
-  tools: 'tools'
-} as const
-
-/**
- * Tools resource
- */
-export type DeleteTool200Data = {
-  /** The tool entity */
-  attributes: DeleteTool200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteTool200DataLinks
-  /** Relationships object */
-  relationships?: DeleteTool200DataRelationships
-  type: DeleteTool200DataType
-}
-
-/**
- * Tools Individual response
- */
 export type DeleteTool200 = {
-  /** Tools resource */
-  data: DeleteTool200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ToolEntity
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneTool200DataAttributesInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneTool200DataAttributesOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type GetOneTool200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof GetOneTool200DataAttributesInputType)[keyof typeof GetOneTool200DataAttributesInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof GetOneTool200DataAttributesOutputType)[keyof typeof GetOneTool200DataAttributesOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-export type GetOneTool200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneTool200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneTool200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneTool200DataRelationshipsData
-  }
-}
-
-export type GetOneTool200DataType =
-  (typeof GetOneTool200DataType)[keyof typeof GetOneTool200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneTool200DataType = {
-  tools: 'tools'
-} as const
-
-/**
- * Tools resource
- */
-export type GetOneTool200Data = {
-  /** The tool entity */
-  attributes: GetOneTool200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneTool200DataLinks
-  /** Relationships object */
-  relationships?: GetOneTool200DataRelationships
-  type: GetOneTool200DataType
-}
-
-/**
- * Tools Individual response
- */
 export type GetOneTool200 = {
-  /** Tools resource */
-  data: GetOneTool200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ToolEntity
 }
 
 export type UpdateToolBody = {
@@ -2321,96 +1131,8 @@ export type UpdateToolBody = {
   name?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateTool200DataAttributesInputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateTool200DataAttributesOutputType = {
-  AUDIO: 'AUDIO',
-  IMAGE: 'IMAGE',
-  TEXT: 'TEXT',
-  VIDEO: 'VIDEO'
-} as const
-/**
- * The tool entity
- */
-export type UpdateTool200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The tool description */
-  description: string
-  /** The input type of the tool */
-  inputType: (typeof UpdateTool200DataAttributesInputType)[keyof typeof UpdateTool200DataAttributesInputType]
-  /** The name of the tool */
-  name?: string
-  /** The organization name */
-  organizationId: string
-  /** The output type of the tool */
-  outputType: (typeof UpdateTool200DataAttributesOutputType)[keyof typeof UpdateTool200DataAttributesOutputType]
-  /** The base of the tool */
-  toolBase: string
-}
-
-export type UpdateTool200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateTool200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateTool200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateTool200DataRelationshipsData
-  }
-}
-
-export type UpdateTool200DataType =
-  (typeof UpdateTool200DataType)[keyof typeof UpdateTool200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateTool200DataType = {
-  tools: 'tools'
-} as const
-
-/**
- * Tools resource
- */
-export type UpdateTool200Data = {
-  /** The tool entity */
-  attributes: UpdateTool200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateTool200DataLinks
-  /** Relationships object */
-  relationships?: UpdateTool200DataRelationships
-  type: UpdateTool200DataType
-}
-
-/**
- * Tools Individual response
- */
 export type UpdateTool200 = {
-  /** Tools resource */
-  data: UpdateTool200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ToolEntity
 }
 
 export type CreateArtifactBody = {
@@ -2422,97 +1144,8 @@ export type CreateArtifactBody = {
   url?: string
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type CreateArtifact201DataAttributesProducerId = string | null
-
-/**
- * The artifact entity
- */
-export type CreateArtifact201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: CreateArtifact201DataAttributesProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
-}
-
-export type CreateArtifact201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateArtifact201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateArtifact201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateArtifact201DataRelationshipsData
-  }
-}
-
-export type CreateArtifact201DataType =
-  (typeof CreateArtifact201DataType)[keyof typeof CreateArtifact201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateArtifact201DataType = {
-  artifacts: 'artifacts'
-} as const
-
-/**
- * Artifacts resource
- */
-export type CreateArtifact201Data = {
-  /** The artifact entity */
-  attributes: CreateArtifact201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateArtifact201DataLinks
-  /** Relationships object */
-  relationships?: CreateArtifact201DataRelationships
-  type: CreateArtifact201DataType
-}
-
-/**
- * Artifacts Individual response
- */
 export type CreateArtifact201 = {
-  /** Artifacts resource */
-  data: CreateArtifact201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ArtifactEntity
 }
 
 export type FindManyArtifactsParams = {
@@ -2556,282 +1189,24 @@ export type FindManyArtifactsParams = {
   sort?: string
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type FindManyArtifacts200DataItemAttributesProducerId = string | null
-
-/**
- * The artifact entity
- */
-export type FindManyArtifacts200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: FindManyArtifacts200DataItemAttributesProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
+export type FindManyArtifacts200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyArtifacts200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyArtifacts200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyArtifacts200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyArtifacts200DataItemRelationshipsData
-  }
-}
-
-export type FindManyArtifacts200DataItemType =
-  (typeof FindManyArtifacts200DataItemType)[keyof typeof FindManyArtifacts200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifacts200DataItemType = {
-  artifacts: 'artifacts'
-} as const
-
-/**
- * Artifacts resource
- */
-export type FindManyArtifacts200DataItem = {
-  /** The artifact entity */
-  attributes: FindManyArtifacts200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyArtifacts200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyArtifacts200DataItemRelationships
-  type: FindManyArtifacts200DataItemType
-}
-
-/**
- * Artifacts collection response
- */
 export type FindManyArtifacts200 = {
-  data: FindManyArtifacts200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: ArtifactEntity[]
+  meta?: FindManyArtifacts200Meta
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type DeleteArtifact200DataAttributesProducerId = string | null
-
-/**
- * The artifact entity
- */
-export type DeleteArtifact200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: DeleteArtifact200DataAttributesProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
-}
-
-export type DeleteArtifact200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteArtifact200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteArtifact200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteArtifact200DataRelationshipsData
-  }
-}
-
-export type DeleteArtifact200DataType =
-  (typeof DeleteArtifact200DataType)[keyof typeof DeleteArtifact200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteArtifact200DataType = {
-  artifacts: 'artifacts'
-} as const
-
-/**
- * Artifacts resource
- */
-export type DeleteArtifact200Data = {
-  /** The artifact entity */
-  attributes: DeleteArtifact200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteArtifact200DataLinks
-  /** Relationships object */
-  relationships?: DeleteArtifact200DataRelationships
-  type: DeleteArtifact200DataType
-}
-
-/**
- * Artifacts Individual response
- */
 export type DeleteArtifact200 = {
-  /** Artifacts resource */
-  data: DeleteArtifact200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ArtifactEntity
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type GetOneArtifact200DataAttributesProducerId = string | null
-
-/**
- * The artifact entity
- */
-export type GetOneArtifact200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: GetOneArtifact200DataAttributesProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
-}
-
-export type GetOneArtifact200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneArtifact200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneArtifact200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneArtifact200DataRelationshipsData
-  }
-}
-
-export type GetOneArtifact200DataType =
-  (typeof GetOneArtifact200DataType)[keyof typeof GetOneArtifact200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneArtifact200DataType = {
-  artifacts: 'artifacts'
-} as const
-
-/**
- * Artifacts resource
- */
-export type GetOneArtifact200Data = {
-  /** The artifact entity */
-  attributes: GetOneArtifact200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneArtifact200DataLinks
-  /** Relationships object */
-  relationships?: GetOneArtifact200DataRelationships
-  type: GetOneArtifact200DataType
-}
-
-/**
- * Artifacts Individual response
- */
 export type GetOneArtifact200 = {
-  /** Artifacts resource */
-  data: GetOneArtifact200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ArtifactEntity
 }
 
 export type UpdateArtifactBody = {
@@ -2843,97 +1218,8 @@ export type UpdateArtifactBody = {
   url?: string
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type UpdateArtifact200DataAttributesProducerId = string | null
-
-/**
- * The artifact entity
- */
-export type UpdateArtifact200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: UpdateArtifact200DataAttributesProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
-}
-
-export type UpdateArtifact200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateArtifact200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateArtifact200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateArtifact200DataRelationshipsData
-  }
-}
-
-export type UpdateArtifact200DataType =
-  (typeof UpdateArtifact200DataType)[keyof typeof UpdateArtifact200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateArtifact200DataType = {
-  artifacts: 'artifacts'
-} as const
-
-/**
- * Artifacts resource
- */
-export type UpdateArtifact200Data = {
-  /** The artifact entity */
-  attributes: UpdateArtifact200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateArtifact200DataLinks
-  /** Relationships object */
-  relationships?: UpdateArtifact200DataRelationships
-  type: UpdateArtifact200DataType
-}
-
-/**
- * Artifacts Individual response
- */
 export type UpdateArtifact200 = {
-  /** Artifacts resource */
-  data: UpdateArtifact200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ArtifactEntity
 }
 
 export type CreateRunBody = {
@@ -2941,93 +1227,8 @@ export type CreateRunBody = {
   pipelineId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateRun201DataAttributesRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
-/**
- * The run entity
- */
-export type CreateRun201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof CreateRun201DataAttributesRunType)[keyof typeof CreateRun201DataAttributesRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
-}
-
-export type CreateRun201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateRun201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateRun201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateRun201DataRelationshipsData
-  }
-}
-
-export type CreateRun201DataType =
-  (typeof CreateRun201DataType)[keyof typeof CreateRun201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateRun201DataType = {
-  runs: 'runs'
-} as const
-
-/**
- * Runs resource
- */
-export type CreateRun201Data = {
-  /** The run entity */
-  attributes: CreateRun201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateRun201DataLinks
-  /** Relationships object */
-  relationships?: CreateRun201DataRelationships
-  type: CreateRun201DataType
-}
-
-/**
- * Runs Individual response
- */
 export type CreateRun201 = {
-  /** Runs resource */
-  data: CreateRun201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: RunEntity
 }
 
 export type FindManyRunsParams = {
@@ -3069,270 +1270,24 @@ export type FindManyRunsParams = {
   sort?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRuns200DataItemAttributesRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
-/**
- * The run entity
- */
-export type FindManyRuns200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof FindManyRuns200DataItemAttributesRunType)[keyof typeof FindManyRuns200DataItemAttributesRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
+export type FindManyRuns200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyRuns200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyRuns200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyRuns200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyRuns200DataItemRelationshipsData
-  }
-}
-
-export type FindManyRuns200DataItemType =
-  (typeof FindManyRuns200DataItemType)[keyof typeof FindManyRuns200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRuns200DataItemType = {
-  runs: 'runs'
-} as const
-
-/**
- * Runs resource
- */
-export type FindManyRuns200DataItem = {
-  /** The run entity */
-  attributes: FindManyRuns200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyRuns200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyRuns200DataItemRelationships
-  type: FindManyRuns200DataItemType
-}
-
-/**
- * Runs collection response
- */
 export type FindManyRuns200 = {
-  data: FindManyRuns200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: RunEntity[]
+  meta?: FindManyRuns200Meta
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteRun200DataAttributesRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
-/**
- * The run entity
- */
-export type DeleteRun200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof DeleteRun200DataAttributesRunType)[keyof typeof DeleteRun200DataAttributesRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
-}
-
-export type DeleteRun200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteRun200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteRun200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteRun200DataRelationshipsData
-  }
-}
-
-export type DeleteRun200DataType =
-  (typeof DeleteRun200DataType)[keyof typeof DeleteRun200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteRun200DataType = {
-  runs: 'runs'
-} as const
-
-/**
- * Runs resource
- */
-export type DeleteRun200Data = {
-  /** The run entity */
-  attributes: DeleteRun200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteRun200DataLinks
-  /** Relationships object */
-  relationships?: DeleteRun200DataRelationships
-  type: DeleteRun200DataType
-}
-
-/**
- * Runs Individual response
- */
 export type DeleteRun200 = {
-  /** Runs resource */
-  data: DeleteRun200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: RunEntity
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneRun200DataAttributesRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
-/**
- * The run entity
- */
-export type GetOneRun200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof GetOneRun200DataAttributesRunType)[keyof typeof GetOneRun200DataAttributesRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
-}
-
-export type GetOneRun200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneRun200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneRun200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneRun200DataRelationshipsData
-  }
-}
-
-export type GetOneRun200DataType =
-  (typeof GetOneRun200DataType)[keyof typeof GetOneRun200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneRun200DataType = {
-  runs: 'runs'
-} as const
-
-/**
- * Runs resource
- */
-export type GetOneRun200Data = {
-  /** The run entity */
-  attributes: GetOneRun200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneRun200DataLinks
-  /** Relationships object */
-  relationships?: GetOneRun200DataRelationships
-  type: GetOneRun200DataType
-}
-
-/**
- * Runs Individual response
- */
 export type GetOneRun200 = {
-  /** Runs resource */
-  data: GetOneRun200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: RunEntity
 }
 
 export type UpdateRunBody = {
@@ -3340,93 +1295,8 @@ export type UpdateRunBody = {
   pipelineId?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateRun200DataAttributesRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
-/**
- * The run entity
- */
-export type UpdateRun200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof UpdateRun200DataAttributesRunType)[keyof typeof UpdateRun200DataAttributesRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
-}
-
-export type UpdateRun200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateRun200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateRun200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateRun200DataRelationshipsData
-  }
-}
-
-export type UpdateRun200DataType =
-  (typeof UpdateRun200DataType)[keyof typeof UpdateRun200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateRun200DataType = {
-  runs: 'runs'
-} as const
-
-/**
- * Runs resource
- */
-export type UpdateRun200Data = {
-  /** The run entity */
-  attributes: UpdateRun200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateRun200DataLinks
-  /** Relationships object */
-  relationships?: UpdateRun200DataRelationships
-  type: UpdateRun200DataType
-}
-
-/**
- * Runs Individual response
- */
 export type UpdateRun200 = {
-  /** Runs resource */
-  data: UpdateRun200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: RunEntity
 }
 
 export type CreateLabelBody = {
@@ -3434,74 +1304,8 @@ export type CreateLabelBody = {
   name: string
 }
 
-/**
- * The label entity
- */
-export type CreateLabel201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
-}
-
-export type CreateLabel201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateLabel201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateLabel201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateLabel201DataRelationshipsData
-  }
-}
-
-export type CreateLabel201DataType =
-  (typeof CreateLabel201DataType)[keyof typeof CreateLabel201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateLabel201DataType = {
-  labels: 'labels'
-} as const
-
-/**
- * Labels resource
- */
-export type CreateLabel201Data = {
-  /** The label entity */
-  attributes: CreateLabel201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateLabel201DataLinks
-  /** Relationships object */
-  relationships?: CreateLabel201DataRelationships
-  type: CreateLabel201DataType
-}
-
-/**
- * Labels Individual response
- */
 export type CreateLabel201 = {
-  /** Labels resource */
-  data: CreateLabel201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: LabelEntity
 }
 
 export type FindManyLabelsParams = {
@@ -3536,213 +1340,24 @@ export type FindManyLabelsParams = {
   sort?: string
 }
 
-/**
- * The label entity
- */
-export type FindManyLabels200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
+export type FindManyLabels200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyLabels200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyLabels200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyLabels200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyLabels200DataItemRelationshipsData
-  }
-}
-
-export type FindManyLabels200DataItemType =
-  (typeof FindManyLabels200DataItemType)[keyof typeof FindManyLabels200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabels200DataItemType = {
-  labels: 'labels'
-} as const
-
-/**
- * Labels resource
- */
-export type FindManyLabels200DataItem = {
-  /** The label entity */
-  attributes: FindManyLabels200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyLabels200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyLabels200DataItemRelationships
-  type: FindManyLabels200DataItemType
-}
-
-/**
- * Labels collection response
- */
 export type FindManyLabels200 = {
-  data: FindManyLabels200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: LabelEntity[]
+  meta?: FindManyLabels200Meta
 }
 
-/**
- * The label entity
- */
-export type DeleteLabel200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
-}
-
-export type DeleteLabel200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteLabel200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteLabel200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteLabel200DataRelationshipsData
-  }
-}
-
-export type DeleteLabel200DataType =
-  (typeof DeleteLabel200DataType)[keyof typeof DeleteLabel200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteLabel200DataType = {
-  labels: 'labels'
-} as const
-
-/**
- * Labels resource
- */
-export type DeleteLabel200Data = {
-  /** The label entity */
-  attributes: DeleteLabel200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteLabel200DataLinks
-  /** Relationships object */
-  relationships?: DeleteLabel200DataRelationships
-  type: DeleteLabel200DataType
-}
-
-/**
- * Labels Individual response
- */
 export type DeleteLabel200 = {
-  /** Labels resource */
-  data: DeleteLabel200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: LabelEntity
 }
 
-/**
- * The label entity
- */
-export type GetOneLabel200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
-}
-
-export type GetOneLabel200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneLabel200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneLabel200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneLabel200DataRelationshipsData
-  }
-}
-
-export type GetOneLabel200DataType =
-  (typeof GetOneLabel200DataType)[keyof typeof GetOneLabel200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneLabel200DataType = {
-  labels: 'labels'
-} as const
-
-/**
- * Labels resource
- */
-export type GetOneLabel200Data = {
-  /** The label entity */
-  attributes: GetOneLabel200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneLabel200DataLinks
-  /** Relationships object */
-  relationships?: GetOneLabel200DataRelationships
-  type: GetOneLabel200DataType
-}
-
-/**
- * Labels Individual response
- */
 export type GetOneLabel200 = {
-  /** Labels resource */
-  data: GetOneLabel200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: LabelEntity
 }
 
 export type UpdateLabelBody = {
@@ -3750,74 +1365,8 @@ export type UpdateLabelBody = {
   name?: string
 }
 
-/**
- * The label entity
- */
-export type UpdateLabel200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
-}
-
-export type UpdateLabel200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateLabel200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateLabel200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateLabel200DataRelationshipsData
-  }
-}
-
-export type UpdateLabel200DataType =
-  (typeof UpdateLabel200DataType)[keyof typeof UpdateLabel200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateLabel200DataType = {
-  labels: 'labels'
-} as const
-
-/**
- * Labels resource
- */
-export type UpdateLabel200Data = {
-  /** The label entity */
-  attributes: UpdateLabel200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateLabel200DataLinks
-  /** Relationships object */
-  relationships?: UpdateLabel200DataRelationships
-  type: UpdateLabel200DataType
-}
-
-/**
- * Labels Individual response
- */
 export type UpdateLabel200 = {
-  /** Labels resource */
-  data: UpdateLabel200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: LabelEntity
 }
 
 export type CreateOrganizationBody = {
@@ -3827,90 +1376,8 @@ export type CreateOrganizationBody = {
   organizationId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateOrganization201DataAttributesPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export type CreateOrganization201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof CreateOrganization201DataAttributesPlan)[keyof typeof CreateOrganization201DataAttributesPlan]
-}
-
-export type CreateOrganization201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateOrganization201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateOrganization201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateOrganization201DataRelationshipsData
-  }
-}
-
-export type CreateOrganization201DataType =
-  (typeof CreateOrganization201DataType)[keyof typeof CreateOrganization201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateOrganization201DataType = {
-  organizations: 'organizations'
-} as const
-
-/**
- * Organizations resource
- */
-export type CreateOrganization201Data = {
-  /** The organization entity */
-  attributes: CreateOrganization201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateOrganization201DataLinks
-  /** Relationships object */
-  relationships?: CreateOrganization201DataRelationships
-  type: CreateOrganization201DataType
-}
-
-/**
- * Organizations Individual response
- */
 export type CreateOrganization201 = {
-  /** Organizations resource */
-  data: CreateOrganization201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: OrganizationEntity
 }
 
 export type FindManyOrganizationsParams = {
@@ -3949,261 +1416,24 @@ export type FindManyOrganizationsParams = {
   sort?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizations200DataItemAttributesPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export type FindManyOrganizations200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof FindManyOrganizations200DataItemAttributesPlan)[keyof typeof FindManyOrganizations200DataItemAttributesPlan]
+export type FindManyOrganizations200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyOrganizations200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyOrganizations200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyOrganizations200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyOrganizations200DataItemRelationshipsData
-  }
-}
-
-export type FindManyOrganizations200DataItemType =
-  (typeof FindManyOrganizations200DataItemType)[keyof typeof FindManyOrganizations200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizations200DataItemType = {
-  organizations: 'organizations'
-} as const
-
-/**
- * Organizations resource
- */
-export type FindManyOrganizations200DataItem = {
-  /** The organization entity */
-  attributes: FindManyOrganizations200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyOrganizations200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyOrganizations200DataItemRelationships
-  type: FindManyOrganizations200DataItemType
-}
-
-/**
- * Organizations collection response
- */
 export type FindManyOrganizations200 = {
-  data: FindManyOrganizations200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: OrganizationEntity[]
+  meta?: FindManyOrganizations200Meta
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteOrganization200DataAttributesPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export type DeleteOrganization200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof DeleteOrganization200DataAttributesPlan)[keyof typeof DeleteOrganization200DataAttributesPlan]
-}
-
-export type DeleteOrganization200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteOrganization200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteOrganization200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteOrganization200DataRelationshipsData
-  }
-}
-
-export type DeleteOrganization200DataType =
-  (typeof DeleteOrganization200DataType)[keyof typeof DeleteOrganization200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteOrganization200DataType = {
-  organizations: 'organizations'
-} as const
-
-/**
- * Organizations resource
- */
-export type DeleteOrganization200Data = {
-  /** The organization entity */
-  attributes: DeleteOrganization200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteOrganization200DataLinks
-  /** Relationships object */
-  relationships?: DeleteOrganization200DataRelationships
-  type: DeleteOrganization200DataType
-}
-
-/**
- * Organizations Individual response
- */
 export type DeleteOrganization200 = {
-  /** Organizations resource */
-  data: DeleteOrganization200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: OrganizationEntity
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneOrganization200DataAttributesPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export type GetOneOrganization200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof GetOneOrganization200DataAttributesPlan)[keyof typeof GetOneOrganization200DataAttributesPlan]
-}
-
-export type GetOneOrganization200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneOrganization200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneOrganization200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneOrganization200DataRelationshipsData
-  }
-}
-
-export type GetOneOrganization200DataType =
-  (typeof GetOneOrganization200DataType)[keyof typeof GetOneOrganization200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneOrganization200DataType = {
-  organizations: 'organizations'
-} as const
-
-/**
- * Organizations resource
- */
-export type GetOneOrganization200Data = {
-  /** The organization entity */
-  attributes: GetOneOrganization200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneOrganization200DataLinks
-  /** Relationships object */
-  relationships?: GetOneOrganization200DataRelationships
-  type: GetOneOrganization200DataType
-}
-
-/**
- * Organizations Individual response
- */
 export type GetOneOrganization200 = {
-  /** Organizations resource */
-  data: GetOneOrganization200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: OrganizationEntity
 }
 
 export type UpdateOrganizationBody = {
@@ -4213,90 +1443,8 @@ export type UpdateOrganizationBody = {
   organizationId?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateOrganization200DataAttributesPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export type UpdateOrganization200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof UpdateOrganization200DataAttributesPlan)[keyof typeof UpdateOrganization200DataAttributesPlan]
-}
-
-export type UpdateOrganization200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateOrganization200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateOrganization200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateOrganization200DataRelationshipsData
-  }
-}
-
-export type UpdateOrganization200DataType =
-  (typeof UpdateOrganization200DataType)[keyof typeof UpdateOrganization200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateOrganization200DataType = {
-  organizations: 'organizations'
-} as const
-
-/**
- * Organizations resource
- */
-export type UpdateOrganization200Data = {
-  /** The organization entity */
-  attributes: UpdateOrganization200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateOrganization200DataLinks
-  /** Relationships object */
-  relationships?: UpdateOrganization200DataRelationships
-  type: UpdateOrganization200DataType
-}
-
-/**
- * Organizations Individual response
- */
 export type UpdateOrganization200 = {
-  /** Organizations resource */
-  data: UpdateOrganization200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: OrganizationEntity
 }
 
 /**
@@ -4311,88 +1459,8 @@ export type CreateUserBody = {
   image: CreateUserBodyImage
 }
 
-/**
- * The user's avatar image URL
- */
-export type CreateUser201DataAttributesImage = null | string
-
-/**
- * The user entity
- */
-export type CreateUser201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: CreateUser201DataAttributesImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type CreateUser201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateUser201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateUser201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateUser201DataRelationshipsData
-  }
-}
-
-export type CreateUser201DataType =
-  (typeof CreateUser201DataType)[keyof typeof CreateUser201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateUser201DataType = {
-  users: 'users'
-} as const
-
-/**
- * Users resource
- */
-export type CreateUser201Data = {
-  /** The user entity */
-  attributes: CreateUser201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateUser201DataLinks
-  /** Relationships object */
-  relationships?: CreateUser201DataRelationships
-  type: CreateUser201DataType
-}
-
-/**
- * Users Individual response
- */
 export type CreateUser201 = {
-  /** Users resource */
-  data: CreateUser201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: UserEntity
 }
 
 export type FindManyUsersParams = {
@@ -4430,255 +1498,24 @@ export type FindManyUsersParams = {
   sort?: string
 }
 
-/**
- * The user's avatar image URL
- */
-export type FindManyUsers200DataItemAttributesImage = null | string
-
-/**
- * The user entity
- */
-export type FindManyUsers200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: FindManyUsers200DataItemAttributesImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
+export type FindManyUsers200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyUsers200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyUsers200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyUsers200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyUsers200DataItemRelationshipsData
-  }
-}
-
-export type FindManyUsers200DataItemType =
-  (typeof FindManyUsers200DataItemType)[keyof typeof FindManyUsers200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsers200DataItemType = {
-  users: 'users'
-} as const
-
-/**
- * Users resource
- */
-export type FindManyUsers200DataItem = {
-  /** The user entity */
-  attributes: FindManyUsers200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyUsers200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyUsers200DataItemRelationships
-  type: FindManyUsers200DataItemType
-}
-
-/**
- * Users collection response
- */
 export type FindManyUsers200 = {
-  data: FindManyUsers200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: UserEntity[]
+  meta?: FindManyUsers200Meta
 }
 
-/**
- * The user's avatar image URL
- */
-export type DeleteUser200DataAttributesImage = null | string
-
-/**
- * The user entity
- */
-export type DeleteUser200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: DeleteUser200DataAttributesImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type DeleteUser200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteUser200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteUser200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteUser200DataRelationshipsData
-  }
-}
-
-export type DeleteUser200DataType =
-  (typeof DeleteUser200DataType)[keyof typeof DeleteUser200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteUser200DataType = {
-  users: 'users'
-} as const
-
-/**
- * Users resource
- */
-export type DeleteUser200Data = {
-  /** The user entity */
-  attributes: DeleteUser200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteUser200DataLinks
-  /** Relationships object */
-  relationships?: DeleteUser200DataRelationships
-  type: DeleteUser200DataType
-}
-
-/**
- * Users Individual response
- */
 export type DeleteUser200 = {
-  /** Users resource */
-  data: DeleteUser200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: UserEntity
 }
 
-/**
- * The user's avatar image URL
- */
-export type GetOneUser200DataAttributesImage = null | string
-
-/**
- * The user entity
- */
-export type GetOneUser200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: GetOneUser200DataAttributesImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type GetOneUser200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneUser200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneUser200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneUser200DataRelationshipsData
-  }
-}
-
-export type GetOneUser200DataType =
-  (typeof GetOneUser200DataType)[keyof typeof GetOneUser200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneUser200DataType = {
-  users: 'users'
-} as const
-
-/**
- * Users resource
- */
-export type GetOneUser200Data = {
-  /** The user entity */
-  attributes: GetOneUser200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneUser200DataLinks
-  /** Relationships object */
-  relationships?: GetOneUser200DataRelationships
-  type: GetOneUser200DataType
-}
-
-/**
- * Users Individual response
- */
 export type GetOneUser200 = {
-  /** Users resource */
-  data: GetOneUser200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: UserEntity
 }
 
 /**
@@ -4693,88 +1530,8 @@ export type UpdateUserBody = {
   image?: UpdateUserBodyImage
 }
 
-/**
- * The user's avatar image URL
- */
-export type UpdateUser200DataAttributesImage = null | string
-
-/**
- * The user entity
- */
-export type UpdateUser200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: UpdateUser200DataAttributesImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type UpdateUser200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateUser200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateUser200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateUser200DataRelationshipsData
-  }
-}
-
-export type UpdateUser200DataType =
-  (typeof UpdateUser200DataType)[keyof typeof UpdateUser200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateUser200DataType = {
-  users: 'users'
-} as const
-
-/**
- * Users resource
- */
-export type UpdateUser200Data = {
-  /** The user entity */
-  attributes: UpdateUser200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateUser200DataLinks
-  /** Relationships object */
-  relationships?: UpdateUser200DataRelationships
-  type: UpdateUser200DataType
-}
-
-/**
- * Users Individual response
- */
 export type UpdateUser200 = {
-  /** Users resource */
-  data: UpdateUser200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: UserEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -4784,83 +1541,8 @@ export type CreateMemberBody = {
   role: (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateMember201DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The member entity
- */
-export type CreateMember201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof CreateMember201DataAttributesRole)[keyof typeof CreateMember201DataAttributesRole]
-  /** The user id */
-  userId: string
-}
-
-export type CreateMember201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateMember201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateMember201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateMember201DataRelationshipsData
-  }
-}
-
-export type CreateMember201DataType =
-  (typeof CreateMember201DataType)[keyof typeof CreateMember201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateMember201DataType = {
-  members: 'members'
-} as const
-
-/**
- * Members resource
- */
-export type CreateMember201Data = {
-  /** The member entity */
-  attributes: CreateMember201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateMember201DataLinks
-  /** Relationships object */
-  relationships?: CreateMember201DataRelationships
-  type: CreateMember201DataType
-}
-
-/**
- * Members Individual response
- */
 export type CreateMember201 = {
-  /** Members resource */
-  data: CreateMember201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: MemberEntity
 }
 
 export type FindManyMembersParams = {
@@ -4897,240 +1579,24 @@ export type FindManyMembersParams = {
   sort?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembers200DataItemAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The member entity
- */
-export type FindManyMembers200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof FindManyMembers200DataItemAttributesRole)[keyof typeof FindManyMembers200DataItemAttributesRole]
-  /** The user id */
-  userId: string
+export type FindManyMembers200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyMembers200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyMembers200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyMembers200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyMembers200DataItemRelationshipsData
-  }
-}
-
-export type FindManyMembers200DataItemType =
-  (typeof FindManyMembers200DataItemType)[keyof typeof FindManyMembers200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembers200DataItemType = {
-  members: 'members'
-} as const
-
-/**
- * Members resource
- */
-export type FindManyMembers200DataItem = {
-  /** The member entity */
-  attributes: FindManyMembers200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyMembers200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyMembers200DataItemRelationships
-  type: FindManyMembers200DataItemType
-}
-
-/**
- * Members collection response
- */
 export type FindManyMembers200 = {
-  data: FindManyMembers200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: MemberEntity[]
+  meta?: FindManyMembers200Meta
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteMember200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The member entity
- */
-export type DeleteMember200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof DeleteMember200DataAttributesRole)[keyof typeof DeleteMember200DataAttributesRole]
-  /** The user id */
-  userId: string
-}
-
-export type DeleteMember200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteMember200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteMember200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteMember200DataRelationshipsData
-  }
-}
-
-export type DeleteMember200DataType =
-  (typeof DeleteMember200DataType)[keyof typeof DeleteMember200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteMember200DataType = {
-  members: 'members'
-} as const
-
-/**
- * Members resource
- */
-export type DeleteMember200Data = {
-  /** The member entity */
-  attributes: DeleteMember200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteMember200DataLinks
-  /** Relationships object */
-  relationships?: DeleteMember200DataRelationships
-  type: DeleteMember200DataType
-}
-
-/**
- * Members Individual response
- */
 export type DeleteMember200 = {
-  /** Members resource */
-  data: DeleteMember200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: MemberEntity
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneMember200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The member entity
- */
-export type GetOneMember200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof GetOneMember200DataAttributesRole)[keyof typeof GetOneMember200DataAttributesRole]
-  /** The user id */
-  userId: string
-}
-
-export type GetOneMember200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneMember200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneMember200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneMember200DataRelationshipsData
-  }
-}
-
-export type GetOneMember200DataType =
-  (typeof GetOneMember200DataType)[keyof typeof GetOneMember200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneMember200DataType = {
-  members: 'members'
-} as const
-
-/**
- * Members resource
- */
-export type GetOneMember200Data = {
-  /** The member entity */
-  attributes: GetOneMember200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneMember200DataLinks
-  /** Relationships object */
-  relationships?: GetOneMember200DataRelationships
-  type: GetOneMember200DataType
-}
-
-/**
- * Members Individual response
- */
 export type GetOneMember200 = {
-  /** Members resource */
-  data: GetOneMember200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: MemberEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5140,83 +1606,8 @@ export type UpdateMemberBody = {
   role?: (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateMember200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The member entity
- */
-export type UpdateMember200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof UpdateMember200DataAttributesRole)[keyof typeof UpdateMember200DataAttributesRole]
-  /** The user id */
-  userId: string
-}
-
-export type UpdateMember200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateMember200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateMember200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateMember200DataRelationshipsData
-  }
-}
-
-export type UpdateMember200DataType =
-  (typeof UpdateMember200DataType)[keyof typeof UpdateMember200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateMember200DataType = {
-  members: 'members'
-} as const
-
-/**
- * Members resource
- */
-export type UpdateMember200Data = {
-  /** The member entity */
-  attributes: UpdateMember200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateMember200DataLinks
-  /** Relationships object */
-  relationships?: UpdateMember200DataRelationships
-  type: UpdateMember200DataType
-}
-
-/**
- * Members Individual response
- */
 export type UpdateMember200 = {
-  /** Members resource */
-  data: UpdateMember200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: MemberEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5231,83 +1622,8 @@ export type CreateInvitationBody = {
   role: (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateInvitation201DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type CreateInvitation201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof CreateInvitation201DataAttributesRole)[keyof typeof CreateInvitation201DataAttributesRole]
-}
-
-export type CreateInvitation201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateInvitation201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateInvitation201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateInvitation201DataRelationshipsData
-  }
-}
-
-export type CreateInvitation201DataType =
-  (typeof CreateInvitation201DataType)[keyof typeof CreateInvitation201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateInvitation201DataType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type CreateInvitation201Data = {
-  /** The invitation entity */
-  attributes: CreateInvitation201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateInvitation201DataLinks
-  /** Relationships object */
-  relationships?: CreateInvitation201DataRelationships
-  type: CreateInvitation201DataType
-}
-
-/**
- * Invitations Individual response
- */
 export type CreateInvitation201 = {
-  /** Invitations resource */
-  data: CreateInvitation201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: InvitationEntity
 }
 
 export type FindManyInvitationsParams = {
@@ -5344,240 +1660,24 @@ export type FindManyInvitationsParams = {
   sort?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitations200DataItemAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type FindManyInvitations200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof FindManyInvitations200DataItemAttributesRole)[keyof typeof FindManyInvitations200DataItemAttributesRole]
+export type FindManyInvitations200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyInvitations200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyInvitations200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyInvitations200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyInvitations200DataItemRelationshipsData
-  }
-}
-
-export type FindManyInvitations200DataItemType =
-  (typeof FindManyInvitations200DataItemType)[keyof typeof FindManyInvitations200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitations200DataItemType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type FindManyInvitations200DataItem = {
-  /** The invitation entity */
-  attributes: FindManyInvitations200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyInvitations200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyInvitations200DataItemRelationships
-  type: FindManyInvitations200DataItemType
-}
-
-/**
- * Invitations collection response
- */
 export type FindManyInvitations200 = {
-  data: FindManyInvitations200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: InvitationEntity[]
+  meta?: FindManyInvitations200Meta
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteInvitation200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type DeleteInvitation200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof DeleteInvitation200DataAttributesRole)[keyof typeof DeleteInvitation200DataAttributesRole]
-}
-
-export type DeleteInvitation200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteInvitation200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteInvitation200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteInvitation200DataRelationshipsData
-  }
-}
-
-export type DeleteInvitation200DataType =
-  (typeof DeleteInvitation200DataType)[keyof typeof DeleteInvitation200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteInvitation200DataType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type DeleteInvitation200Data = {
-  /** The invitation entity */
-  attributes: DeleteInvitation200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteInvitation200DataLinks
-  /** Relationships object */
-  relationships?: DeleteInvitation200DataRelationships
-  type: DeleteInvitation200DataType
-}
-
-/**
- * Invitations Individual response
- */
 export type DeleteInvitation200 = {
-  /** Invitations resource */
-  data: DeleteInvitation200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: InvitationEntity
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneInvitation200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type GetOneInvitation200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof GetOneInvitation200DataAttributesRole)[keyof typeof GetOneInvitation200DataAttributesRole]
-}
-
-export type GetOneInvitation200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneInvitation200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneInvitation200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneInvitation200DataRelationshipsData
-  }
-}
-
-export type GetOneInvitation200DataType =
-  (typeof GetOneInvitation200DataType)[keyof typeof GetOneInvitation200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneInvitation200DataType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type GetOneInvitation200Data = {
-  /** The invitation entity */
-  attributes: GetOneInvitation200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneInvitation200DataLinks
-  /** Relationships object */
-  relationships?: GetOneInvitation200DataRelationships
-  type: GetOneInvitation200DataType
-}
-
-/**
- * Invitations Individual response
- */
 export type GetOneInvitation200 = {
-  /** Invitations resource */
-  data: GetOneInvitation200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: InvitationEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -5592,162 +1692,8 @@ export type UpdateInvitationBody = {
   role?: (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateInvitation200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type UpdateInvitation200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof UpdateInvitation200DataAttributesRole)[keyof typeof UpdateInvitation200DataAttributesRole]
-}
-
-export type UpdateInvitation200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateInvitation200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateInvitation200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateInvitation200DataRelationshipsData
-  }
-}
-
-export type UpdateInvitation200DataType =
-  (typeof UpdateInvitation200DataType)[keyof typeof UpdateInvitation200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateInvitation200DataType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type UpdateInvitation200Data = {
-  /** The invitation entity */
-  attributes: UpdateInvitation200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateInvitation200DataLinks
-  /** Relationships object */
-  relationships?: UpdateInvitation200DataRelationships
-  type: UpdateInvitation200DataType
-}
-
-/**
- * Invitations Individual response
- */
 export type UpdateInvitation200 = {
-  /** Invitations resource */
-  data: UpdateInvitation200Data
-  included?: ResourceObject[]
-  links?: Links
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AcceptInvitation200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The invitation entity
- */
-export type AcceptInvitation200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
-  email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof AcceptInvitation200DataAttributesRole)[keyof typeof AcceptInvitation200DataAttributesRole]
-}
-
-export type AcceptInvitation200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type AcceptInvitation200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type AcceptInvitation200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: AcceptInvitation200DataRelationshipsData
-  }
-}
-
-export type AcceptInvitation200DataType =
-  (typeof AcceptInvitation200DataType)[keyof typeof AcceptInvitation200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AcceptInvitation200DataType = {
-  invitations: 'invitations'
-} as const
-
-/**
- * Invitations resource
- */
-export type AcceptInvitation200Data = {
-  /** The invitation entity */
-  attributes: AcceptInvitation200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: AcceptInvitation200DataLinks
-  /** Relationships object */
-  relationships?: AcceptInvitation200DataRelationships
-  type: AcceptInvitation200DataType
-}
-
-/**
- * Invitations Individual response
- */
-export type AcceptInvitation200 = {
-  /** Invitations resource */
-  data: AcceptInvitation200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: InvitationEntity
 }
 
 /**
@@ -6122,88 +2068,8 @@ export type UpdateSubscriptionBody = {
 
 export type CreateApiTokenBody = { [key: string]: unknown }
 
-/**
- * The name of the API token
- */
-export type CreateApiToken201DataAttributesName = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateApiToken201DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The API token entity
- */
-export type CreateApiToken201DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name: CreateApiToken201DataAttributesName
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof CreateApiToken201DataAttributesRole)[keyof typeof CreateApiToken201DataAttributesRole]
-}
-
-export type CreateApiToken201DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type CreateApiToken201DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type CreateApiToken201DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: CreateApiToken201DataRelationshipsData
-  }
-}
-
-export type CreateApiToken201DataType =
-  (typeof CreateApiToken201DataType)[keyof typeof CreateApiToken201DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateApiToken201DataType = {
-  'api-tokens': 'api-tokens'
-} as const
-
-/**
- * ApiTokens resource
- */
-export type CreateApiToken201Data = {
-  /** The API token entity */
-  attributes: CreateApiToken201DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: CreateApiToken201DataLinks
-  /** Relationships object */
-  relationships?: CreateApiToken201DataRelationships
-  type: CreateApiToken201DataType
-}
-
-/**
- * ApiTokens Individual response
- */
 export type CreateApiToken201 = {
-  /** ApiTokens resource */
-  data: CreateApiToken201Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ApiTokenEntity
 }
 
 export type FindManyApiTokensParams = {
@@ -6240,341 +2106,30 @@ export type FindManyApiTokensParams = {
   sort?: string
 }
 
-/**
- * The name of the API token
- */
-export type FindManyApiTokens200DataItemAttributesName = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyApiTokens200DataItemAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The API token entity
- */
-export type FindManyApiTokens200DataItemAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name: FindManyApiTokens200DataItemAttributesName
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof FindManyApiTokens200DataItemAttributesRole)[keyof typeof FindManyApiTokens200DataItemAttributesRole]
+export type FindManyApiTokens200Meta = {
+  count: number
+  page: number
+  pageSize: number
+  total: number
 }
 
-export type FindManyApiTokens200DataItemLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type FindManyApiTokens200DataItemRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type FindManyApiTokens200DataItemRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: FindManyApiTokens200DataItemRelationshipsData
-  }
-}
-
-export type FindManyApiTokens200DataItemType =
-  (typeof FindManyApiTokens200DataItemType)[keyof typeof FindManyApiTokens200DataItemType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyApiTokens200DataItemType = {
-  'api-tokens': 'api-tokens'
-} as const
-
-/**
- * ApiTokens resource
- */
-export type FindManyApiTokens200DataItem = {
-  /** The API token entity */
-  attributes: FindManyApiTokens200DataItemAttributes
-  /** The ID of the item */
-  id: string
-  links?: FindManyApiTokens200DataItemLinks
-  /** Relationships object */
-  relationships?: FindManyApiTokens200DataItemRelationships
-  type: FindManyApiTokens200DataItemType
-}
-
-/**
- * ApiTokens collection response
- */
 export type FindManyApiTokens200 = {
-  data: FindManyApiTokens200DataItem[]
-  included?: ResourceObject[]
-  links?: Links
+  data: ApiTokenEntity[]
+  meta?: FindManyApiTokens200Meta
 }
 
-/**
- * The name of the API token
- */
-export type DeleteApiToken200DataAttributesName = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteApiToken200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The API token entity
- */
-export type DeleteApiToken200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name: DeleteApiToken200DataAttributesName
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof DeleteApiToken200DataAttributesRole)[keyof typeof DeleteApiToken200DataAttributesRole]
-}
-
-export type DeleteApiToken200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type DeleteApiToken200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type DeleteApiToken200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: DeleteApiToken200DataRelationshipsData
-  }
-}
-
-export type DeleteApiToken200DataType =
-  (typeof DeleteApiToken200DataType)[keyof typeof DeleteApiToken200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const DeleteApiToken200DataType = {
-  'api-tokens': 'api-tokens'
-} as const
-
-/**
- * ApiTokens resource
- */
-export type DeleteApiToken200Data = {
-  /** The API token entity */
-  attributes: DeleteApiToken200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: DeleteApiToken200DataLinks
-  /** Relationships object */
-  relationships?: DeleteApiToken200DataRelationships
-  type: DeleteApiToken200DataType
-}
-
-/**
- * ApiTokens Individual response
- */
 export type DeleteApiToken200 = {
-  /** ApiTokens resource */
-  data: DeleteApiToken200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ApiTokenEntity
 }
 
-/**
- * The name of the API token
- */
-export type GetOneApiToken200DataAttributesName = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneApiToken200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The API token entity
- */
-export type GetOneApiToken200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name: GetOneApiToken200DataAttributesName
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof GetOneApiToken200DataAttributesRole)[keyof typeof GetOneApiToken200DataAttributesRole]
-}
-
-export type GetOneApiToken200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type GetOneApiToken200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type GetOneApiToken200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: GetOneApiToken200DataRelationshipsData
-  }
-}
-
-export type GetOneApiToken200DataType =
-  (typeof GetOneApiToken200DataType)[keyof typeof GetOneApiToken200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetOneApiToken200DataType = {
-  'api-tokens': 'api-tokens'
-} as const
-
-/**
- * ApiTokens resource
- */
-export type GetOneApiToken200Data = {
-  /** The API token entity */
-  attributes: GetOneApiToken200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: GetOneApiToken200DataLinks
-  /** Relationships object */
-  relationships?: GetOneApiToken200DataRelationships
-  type: GetOneApiToken200DataType
-}
-
-/**
- * ApiTokens Individual response
- */
 export type GetOneApiToken200 = {
-  /** ApiTokens resource */
-  data: GetOneApiToken200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ApiTokenEntity
 }
 
 export type UpdateApiTokenBody = { [key: string]: unknown }
 
-/**
- * The name of the API token
- */
-export type UpdateApiToken200DataAttributesName = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateApiToken200DataAttributesRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-/**
- * The API token entity
- */
-export type UpdateApiToken200DataAttributes = {
-  /** The date this item was created */
-  createdAt: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name: UpdateApiToken200DataAttributesName
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof UpdateApiToken200DataAttributesRole)[keyof typeof UpdateApiToken200DataAttributesRole]
-}
-
-export type UpdateApiToken200DataLinks = {
-  self: Link
-}
-
-/**
- * Resource Identifier
- */
-export type UpdateApiToken200DataRelationshipsData = {
-  /** Unique identifier for the resource */
-  id: string
-  /** Type of the resource */
-  type: string
-}
-
-/**
- * Relationships object
- */
-export type UpdateApiToken200DataRelationships = {
-  [key: string]: {
-    /** Resource Identifier */
-    data: UpdateApiToken200DataRelationshipsData
-  }
-}
-
-export type UpdateApiToken200DataType =
-  (typeof UpdateApiToken200DataType)[keyof typeof UpdateApiToken200DataType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateApiToken200DataType = {
-  'api-tokens': 'api-tokens'
-} as const
-
-/**
- * ApiTokens resource
- */
-export type UpdateApiToken200Data = {
-  /** The API token entity */
-  attributes: UpdateApiToken200DataAttributes
-  /** The ID of the item */
-  id: string
-  links?: UpdateApiToken200DataLinks
-  /** Relationships object */
-  relationships?: UpdateApiToken200DataRelationships
-  type: UpdateApiToken200DataType
-}
-
-/**
- * ApiTokens Individual response
- */
 export type UpdateApiToken200 = {
-  /** ApiTokens resource */
-  data: UpdateApiToken200Data
-  included?: ResourceObject[]
-  links?: Links
+  data: ApiTokenEntity
 }
 
 export type LoginBody = {

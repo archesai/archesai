@@ -17,7 +17,7 @@ export default function UserForm() {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: user?.data.attributes.name,
+      defaultValue: user?.data.name,
       description: 'Your username',
       label: 'Username',
       name: 'username',
@@ -30,7 +30,7 @@ export default function UserForm() {
       )
     },
     {
-      defaultValue: user?.data.attributes.email,
+      defaultValue: user?.data.email,
       description: 'Your email address',
       label: 'Email',
       name: 'email',

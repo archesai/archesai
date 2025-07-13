@@ -23,7 +23,7 @@ export const ToolCards = () => {
     <div className='grid grid-cols-1 gap-6 p-0 md:grid-cols-3'>
       {tools.map((tool, index) => {
         const Icon = toolBaseIcons['create-embeddings']
-        const iconColor = stringToColor(tool.attributes.toolBase)
+        const iconColor = stringToColor(tool.toolBase)
         return (
           <Card
             className='flex cursor-pointer flex-col justify-between gap-2 p-4 text-center transition-shadow hover:shadow-lg'
@@ -46,10 +46,8 @@ export const ToolCards = () => {
                 ...(iconColor.startsWith('#') ? { color: iconColor } : {})
               }}
             />
-            <div className='text-lg font-semibold'>{tool.attributes.name}</div>
-            <div className='text-sm font-normal'>
-              {tool.attributes.description}
-            </div>
+            <div className='text-lg font-semibold'>{tool.name}</div>
+            <div className='text-sm font-normal'>{tool.description}</div>
           </Card>
         )
       })}

@@ -139,7 +139,7 @@ export default function Chat() {
                   {/* User Message */}
                   <div className='flex justify-end py-2'>
                     <div className='rounded-lg bg-gray-200 px-4 py-2 text-gray-800 dark:bg-gray-800 dark:text-gray-200'>
-                      {msg.attributes.text}
+                      {msg.text}
                     </div>
                   </div>
                   {/* Bot Response */}
@@ -152,7 +152,7 @@ export default function Chat() {
                         <div className='pulse h-5 w-5 rounded-full bg-black'></div>
                       </div>
                     : <div className='rounded-lg py-2'>
-                        {msg.attributes
+                        {msg
                           .text!.replaceAll(' -', '\n-')
                           .split(/(```[\s\S]*?```)/g)
                           .map((segment, index) => {

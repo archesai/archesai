@@ -8,7 +8,6 @@ import {
   CreditCard,
   FileText,
   Image,
-  KeySquare,
   Lock,
   MessageSquareIcon,
   PackageCheck,
@@ -91,24 +90,6 @@ export const siteRoutes: SiteRoute[] = [
     title: 'Chat'
   },
   {
-    children: [
-      {
-        description: 'Update your profile information.',
-        href: '/profile/general',
-        Icon: User,
-        section: 'Settings',
-        showInTabs: true,
-        title: 'Profile'
-      },
-      {
-        description: 'Update your security settings.',
-        href: '/profile/security',
-        Icon: KeySquare,
-        section: 'Settings',
-        showInTabs: true,
-        title: 'Security'
-      }
-    ],
     description: 'View your profile information.',
     href: '/profile',
     Icon: User,

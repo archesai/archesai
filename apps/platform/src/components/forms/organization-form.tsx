@@ -1,6 +1,6 @@
 import type {
   CreateOrganizationBody,
-  UpdateOrganizationBody
+  UpdateOrganizationMutationBody
 } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
@@ -42,7 +42,7 @@ export default function OrganizationForm({
   ]
 
   return (
-    <GenericForm<CreateOrganizationBody, UpdateOrganizationBody>
+    <GenericForm<CreateOrganizationBody, UpdateOrganizationMutationBody>
       description={"View your organization's details"}
       entityKey={ORGANIZATION_ENTITY_KEY}
       fields={formFields}
