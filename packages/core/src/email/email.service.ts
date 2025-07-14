@@ -14,6 +14,14 @@ export const createEmailService = (configService: ConfigService) => {
   })
 
   return {
+    ping: async (): Promise<boolean> => {
+      try {
+        await nodemailerTransport.verify()
+        return true
+      } catch {
+        return false
+      }
+    },
     sendMail: async (options: SendMailOptions): Promise<void> => {
       await nodemailerTransport.sendMail(options)
     }

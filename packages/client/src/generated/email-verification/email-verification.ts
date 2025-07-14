@@ -15,6 +15,7 @@ import type {
 import { useMutation } from '@tanstack/react-query'
 
 import type {
+  ConfirmEmailVerification204,
   ConfirmEmailVerificationBody,
   NoContentResponse,
   NotFoundResponse,
@@ -30,19 +31,22 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Confirm e-mail verification
  */
 export const getConfirmEmailVerificationUrl = () => {
-  return `/auth/email-verification/confirm`
+  return `/api/auth/verify-email`
 }
 
 export const confirmEmailVerification = async (
   confirmEmailVerificationBody: ConfirmEmailVerificationBody,
   options?: RequestInit
-): Promise<NoContentResponse> => {
-  return customFetch<NoContentResponse>(getConfirmEmailVerificationUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(confirmEmailVerificationBody)
-  })
+): Promise<ConfirmEmailVerification204> => {
+  return customFetch<ConfirmEmailVerification204>(
+    getConfirmEmailVerificationUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(confirmEmailVerificationBody)
+    }
+  )
 }
 
 export const getConfirmEmailVerificationMutationOptions = <
@@ -126,7 +130,7 @@ export const useConfirmEmailVerification = <
  * @summary Request e-mail verification
  */
 export const getRequestEmailVerificationUrl = () => {
-  return `/auth/email-verification/request`
+  return `/api/auth/send-verification-email`
 }
 
 export const requestEmailVerification = async (

@@ -31,11 +31,8 @@ import type {
   DeleteInvitation200,
   FindManyInvitations200,
   FindManyInvitationsParams,
-  ForbiddenResponse,
   GetOneInvitation200,
-  InvitationEntity,
   NotFoundResponse,
-  UnauthorizedResponse,
   UpdateInvitation200,
   UpdateInvitationBody
 } from '../orval.schemas'
@@ -935,101 +932,6 @@ export const useUpdateInvitation = <
   TContext
 > => {
   const mutationOptions = getUpdateInvitationMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
-}
-/**
- * Accept an invitation
- * @summary Accept an invitation
- */
-export const getAcceptInvitationUrl = (id: string | undefined | null) => {
-  return `/invitations/${id}/accept`
-}
-
-export const acceptInvitation = async (
-  id: string | undefined | null,
-  options?: RequestInit
-): Promise<InvitationEntity> => {
-  return customFetch<InvitationEntity>(getAcceptInvitationUrl(id), {
-    ...options,
-    method: 'POST'
-  })
-}
-
-export const getAcceptInvitationMutationOptions = <
-  TError = UnauthorizedResponse | ForbiddenResponse | NotFoundResponse,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof acceptInvitation>>,
-    TError,
-    { id: string | undefined | null },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof acceptInvitation>>,
-  TError,
-  { id: string | undefined | null },
-  TContext
-> => {
-  const mutationKey = ['acceptInvitation']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof acceptInvitation>>,
-    { id: string | undefined | null }
-  > = (props) => {
-    const { id } = props ?? {}
-
-    return acceptInvitation(id, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type AcceptInvitationMutationResult = NonNullable<
-  Awaited<ReturnType<typeof acceptInvitation>>
->
-
-export type AcceptInvitationMutationError =
-  | UnauthorizedResponse
-  | ForbiddenResponse
-  | NotFoundResponse
-
-/**
- * @summary Accept an invitation
- */
-export const useAcceptInvitation = <
-  TError = UnauthorizedResponse | ForbiddenResponse | NotFoundResponse,
-  TContext = unknown
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof acceptInvitation>>,
-      TError,
-      { id: string | undefined | null },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof acceptInvitation>>,
-  TError,
-  { id: string | undefined | null },
-  TContext
-> => {
-  const mutationOptions = getAcceptInvitationMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }

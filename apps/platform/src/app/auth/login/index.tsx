@@ -52,6 +52,7 @@ export default function LoginPage() {
           await login({
             data: {
               email: data.email,
+              name: '',
               password: data.password
             }
           })

@@ -1,22 +1,20 @@
-import type { DatabaseService } from '@archesai/core'
 import type {
-  ArtifactInsertModel,
-  ArtifactSelectModel
+  ArtifactSelectModel,
+  DrizzleDatabaseService
 } from '@archesai/database'
 import type { ArtifactEntity } from '@archesai/schemas'
 
-import { createBaseRepository } from '@archesai/core'
-import { ArtifactTable } from '@archesai/database'
+import { ArtifactTable, createBaseRepository } from '@archesai/database'
 import { ArtifactEntitySchema } from '@archesai/schemas'
 
 export const createArtifactRepository = (
-  databaseService: DatabaseService<ArtifactInsertModel, ArtifactSelectModel>
+  databaseService: DrizzleDatabaseService
 ) => {
-  return createBaseRepository<
-    ArtifactEntity,
-    ArtifactInsertModel,
-    ArtifactSelectModel
-  >(databaseService, ArtifactTable, ArtifactEntitySchema)
+  return createBaseRepository<ArtifactEntity, ArtifactSelectModel>(
+    databaseService,
+    ArtifactTable,
+    ArtifactEntitySchema
+  )
 }
 
 export type ArtifactRepository = ReturnType<typeof createArtifactRepository>

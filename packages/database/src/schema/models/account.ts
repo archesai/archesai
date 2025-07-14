@@ -24,8 +24,7 @@ export const AccountTable = pgTable(ACCOUNT_ENTITY_KEY, {
   userId: text()
     .notNull()
     .references(() => UserTable.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
+      onDelete: 'cascade'
     })
 })
 

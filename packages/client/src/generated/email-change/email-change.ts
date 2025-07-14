@@ -31,7 +31,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Confirm e-mail change
  */
 export const getConfirmEmailChangeUrl = () => {
-  return `/auth/email-change/confirm`
+  return `/api/auth/change-email`
 }
 
 export const confirmEmailChange = async (
@@ -127,7 +127,7 @@ export const useConfirmEmailChange = <
  * @summary Request e-mail change
  */
 export const getRequestEmailChangeUrl = () => {
-  return `/auth/email-change/request`
+  return `/api/auth/email-change/request`
 }
 
 export const requestEmailChange = async (

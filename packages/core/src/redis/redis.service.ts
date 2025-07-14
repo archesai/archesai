@@ -102,6 +102,10 @@ export class RedisService {
     }
   }
 
+  public async ping(): Promise<boolean> {
+    return this.healthCheck()
+  }
+
   public startHealthCheck(): void {
     if (this.healthCheckTimer) {
       return

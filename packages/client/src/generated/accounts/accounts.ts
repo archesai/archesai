@@ -26,15 +26,15 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import qs from 'qs'
 
 import type {
-  CreateApiToken201,
-  CreateApiTokenBody,
-  DeleteApiToken200,
-  FindManyApiTokens200,
-  FindManyApiTokensParams,
-  GetOneApiToken200,
+  CreateAccount201,
+  CreateAccountBody,
+  DeleteAccount200,
+  FindManyAccounts200,
+  FindManyAccountsParams,
+  GetOneAccount200,
   NotFoundResponse,
-  UpdateApiToken200,
-  UpdateApiTokenBody
+  UpdateAccount200,
+  UpdateAccountBody
 } from '../orval.schemas'
 
 import { customFetch } from '../../fetcher'
@@ -42,43 +42,43 @@ import { customFetch } from '../../fetcher'
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
- * Create a new api-token
- * @summary Create a new api-token
+ * Create a new account
+ * @summary Create a new account
  */
-export const getCreateApiTokenUrl = () => {
-  return `/api-tokens`
+export const getCreateAccountUrl = () => {
+  return `/accounts`
 }
 
-export const createApiToken = async (
-  createApiTokenBody: CreateApiTokenBody,
+export const createAccount = async (
+  createAccountBody: CreateAccountBody,
   options?: RequestInit
-): Promise<CreateApiToken201> => {
-  return customFetch<CreateApiToken201>(getCreateApiTokenUrl(), {
+): Promise<CreateAccount201> => {
+  return customFetch<CreateAccount201>(getCreateAccountUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createApiTokenBody)
+    body: JSON.stringify(createAccountBody)
   })
 }
 
-export const getCreateApiTokenMutationOptions = <
+export const getCreateAccountMutationOptions = <
   TError = unknown,
   TContext = unknown
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createApiToken>>,
+    Awaited<ReturnType<typeof createAccount>>,
     TError,
-    { data: CreateApiTokenBody },
+    { data: CreateAccountBody },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof createApiToken>>,
+  Awaited<ReturnType<typeof createAccount>>,
   TError,
-  { data: CreateApiTokenBody },
+  { data: CreateAccountBody },
   TContext
 > => {
-  const mutationKey = ['createApiToken']
+  const mutationKey = ['createAccount']
   const { mutation: mutationOptions, request: requestOptions } =
     options ?
       (
@@ -91,87 +91,87 @@ export const getCreateApiTokenMutationOptions = <
     : { mutation: { mutationKey }, request: undefined }
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createApiToken>>,
-    { data: CreateApiTokenBody }
+    Awaited<ReturnType<typeof createAccount>>,
+    { data: CreateAccountBody }
   > = (props) => {
     const { data } = props ?? {}
 
-    return createApiToken(data, requestOptions)
+    return createAccount(data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type CreateApiTokenMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createApiToken>>
+export type CreateAccountMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAccount>>
 >
-export type CreateApiTokenMutationBody = CreateApiTokenBody
-export type CreateApiTokenMutationError = unknown
+export type CreateAccountMutationBody = CreateAccountBody
+export type CreateAccountMutationError = unknown
 
 /**
- * @summary Create a new api-token
+ * @summary Create a new account
  */
-export const useCreateApiToken = <TError = unknown, TContext = unknown>(
+export const useCreateAccount = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createApiToken>>,
+      Awaited<ReturnType<typeof createAccount>>,
       TError,
-      { data: CreateApiTokenBody },
+      { data: CreateAccountBody },
       TContext
     >
     request?: SecondParameter<typeof customFetch>
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<ReturnType<typeof createApiToken>>,
+  Awaited<ReturnType<typeof createAccount>>,
   TError,
-  { data: CreateApiTokenBody },
+  { data: CreateAccountBody },
   TContext
 > => {
-  const mutationOptions = getCreateApiTokenMutationOptions(options)
+  const mutationOptions = getCreateAccountMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Find many api-tokens
- * @summary Find many api-tokens
+ * Find many accounts
+ * @summary Find many accounts
  */
-export const getFindManyApiTokensUrl = (params?: FindManyApiTokensParams) => {
+export const getFindManyAccountsUrl = (params?: FindManyAccountsParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
     strictNullHandling: true
   })
 
   return stringifiedParams.length > 0 ?
-      `/api-tokens?${stringifiedParams}`
-    : `/api-tokens`
+      `/accounts?${stringifiedParams}`
+    : `/accounts`
 }
 
-export const findManyApiTokens = async (
-  params?: FindManyApiTokensParams,
+export const findManyAccounts = async (
+  params?: FindManyAccountsParams,
   options?: RequestInit
-): Promise<FindManyApiTokens200> => {
-  return customFetch<FindManyApiTokens200>(getFindManyApiTokensUrl(params), {
+): Promise<FindManyAccounts200> => {
+  return customFetch<FindManyAccounts200>(getFindManyAccountsUrl(params), {
     ...options,
     method: 'GET'
   })
 }
 
-export const getFindManyApiTokensQueryKey = (
-  params?: FindManyApiTokensParams
+export const getFindManyAccountsQueryKey = (
+  params?: FindManyAccountsParams
 ) => {
-  return [`/api-tokens`, ...(params ? [params] : [])] as const
+  return [`/accounts`, ...(params ? [params] : [])] as const
 }
 
-export const getFindManyApiTokensQueryOptions = <
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export const getFindManyAccountsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -181,43 +181,42 @@ export const getFindManyApiTokensQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getFindManyApiTokensQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyAccountsQueryKey(params)
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof findManyApiTokens>>
-  > = ({ signal }) => findManyApiTokens(params, { signal, ...requestOptions })
+    Awaited<ReturnType<typeof findManyAccounts>>
+  > = ({ signal }) => findManyAccounts(params, { signal, ...requestOptions })
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof findManyApiTokens>>,
+    Awaited<ReturnType<typeof findManyAccounts>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyApiTokensQueryResult = NonNullable<
-  Awaited<ReturnType<typeof findManyApiTokens>>
+export type FindManyAccountsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyAccounts>>
 >
-export type FindManyApiTokensQueryError = unknown
+export type FindManyAccountsQueryError = unknown
 
-export function useFindManyApiTokens<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccounts<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params: undefined | FindManyApiTokensParams,
+  params: undefined | FindManyAccountsParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyApiTokens>>,
+          Awaited<ReturnType<typeof findManyAccounts>>,
           TError,
-          Awaited<ReturnType<typeof findManyApiTokens>>
+          Awaited<ReturnType<typeof findManyAccounts>>
         >,
         'initialData'
       >
@@ -227,24 +226,24 @@ export function useFindManyApiTokens<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useFindManyApiTokens<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccounts<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof findManyApiTokens>>,
+          Awaited<ReturnType<typeof findManyAccounts>>,
           TError,
-          Awaited<ReturnType<typeof findManyApiTokens>>
+          Awaited<ReturnType<typeof findManyAccounts>>
         >,
         'initialData'
       >
@@ -254,15 +253,15 @@ export function useFindManyApiTokens<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useFindManyApiTokens<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccounts<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -274,18 +273,18 @@ export function useFindManyApiTokens<
   queryKey: DataTag<QueryKey, TData, TError>
 }
 /**
- * @summary Find many api-tokens
+ * @summary Find many accounts
  */
 
-export function useFindManyApiTokens<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccounts<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -296,7 +295,7 @@ export function useFindManyApiTokens<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 } {
-  const queryOptions = getFindManyApiTokensQueryOptions(params, options)
+  const queryOptions = getFindManyAccountsQueryOptions(params, options)
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -308,15 +307,15 @@ export function useFindManyApiTokens<
   return query
 }
 
-export const getFindManyApiTokensSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export const getFindManyAccountsSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -326,34 +325,33 @@ export const getFindManyApiTokensSuspenseQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey =
-    queryOptions?.queryKey ?? getFindManyApiTokensQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyAccountsQueryKey(params)
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof findManyApiTokens>>
-  > = ({ signal }) => findManyApiTokens(params, { signal, ...requestOptions })
+    Awaited<ReturnType<typeof findManyAccounts>>
+  > = ({ signal }) => findManyAccounts(params, { signal, ...requestOptions })
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof findManyApiTokens>>,
+    Awaited<ReturnType<typeof findManyAccounts>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type FindManyApiTokensSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof findManyApiTokens>>
+export type FindManyAccountsSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findManyAccounts>>
 >
-export type FindManyApiTokensSuspenseQueryError = unknown
+export type FindManyAccountsSuspenseQueryError = unknown
 
-export function useFindManyApiTokensSuspense<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccountsSuspense<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params: undefined | FindManyApiTokensParams,
+  params: undefined | FindManyAccountsParams,
   options: {
     query: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -364,15 +362,15 @@ export function useFindManyApiTokensSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useFindManyApiTokensSuspense<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccountsSuspense<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -383,15 +381,15 @@ export function useFindManyApiTokensSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useFindManyApiTokensSuspense<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccountsSuspense<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -403,18 +401,18 @@ export function useFindManyApiTokensSuspense<
   queryKey: DataTag<QueryKey, TData, TError>
 }
 /**
- * @summary Find many api-tokens
+ * @summary Find many accounts
  */
 
-export function useFindManyApiTokensSuspense<
-  TData = Awaited<ReturnType<typeof findManyApiTokens>>,
+export function useFindManyAccountsSuspense<
+  TData = Awaited<ReturnType<typeof findManyAccounts>>,
   TError = unknown
 >(
-  params?: FindManyApiTokensParams,
+  params?: FindManyAccountsParams,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof findManyApiTokens>>,
+        Awaited<ReturnType<typeof findManyAccounts>>,
         TError,
         TData
       >
@@ -425,7 +423,7 @@ export function useFindManyApiTokensSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 } {
-  const queryOptions = getFindManyApiTokensSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyAccountsSuspenseQueryOptions(params, options)
 
   const query = useSuspenseQuery(
     queryOptions,
@@ -440,41 +438,41 @@ export function useFindManyApiTokensSuspense<
 }
 
 /**
- * Delete an api-token
- * @summary Delete an api-token
+ * Delete an account
+ * @summary Delete an account
  */
-export const getDeleteApiTokenUrl = (id: string | undefined | null) => {
-  return `/api-tokens/${id}`
+export const getDeleteAccountUrl = (id: string | undefined | null) => {
+  return `/accounts/${id}`
 }
 
-export const deleteApiToken = async (
+export const deleteAccount = async (
   id: string | undefined | null,
   options?: RequestInit
-): Promise<DeleteApiToken200> => {
-  return customFetch<DeleteApiToken200>(getDeleteApiTokenUrl(id), {
+): Promise<DeleteAccount200> => {
+  return customFetch<DeleteAccount200>(getDeleteAccountUrl(id), {
     ...options,
     method: 'DELETE'
   })
 }
 
-export const getDeleteApiTokenMutationOptions = <
+export const getDeleteAccountMutationOptions = <
   TError = NotFoundResponse,
   TContext = unknown
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteApiToken>>,
+    Awaited<ReturnType<typeof deleteAccount>>,
     TError,
     { id: string | undefined | null },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteApiToken>>,
+  Awaited<ReturnType<typeof deleteAccount>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteApiToken']
+  const mutationKey = ['deleteAccount']
   const { mutation: mutationOptions, request: requestOptions } =
     options ?
       (
@@ -487,33 +485,30 @@ export const getDeleteApiTokenMutationOptions = <
     : { mutation: { mutationKey }, request: undefined }
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteApiToken>>,
+    Awaited<ReturnType<typeof deleteAccount>>,
     { id: string | undefined | null }
   > = (props) => {
     const { id } = props ?? {}
 
-    return deleteApiToken(id, requestOptions)
+    return deleteAccount(id, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type DeleteApiTokenMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteApiToken>>
+export type DeleteAccountMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteAccount>>
 >
 
-export type DeleteApiTokenMutationError = NotFoundResponse
+export type DeleteAccountMutationError = NotFoundResponse
 
 /**
- * @summary Delete an api-token
+ * @summary Delete an account
  */
-export const useDeleteApiToken = <
-  TError = NotFoundResponse,
-  TContext = unknown
->(
+export const useDeleteAccount = <TError = NotFoundResponse, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteApiToken>>,
+      Awaited<ReturnType<typeof deleteAccount>>,
       TError,
       { id: string | undefined | null },
       TContext
@@ -522,56 +517,56 @@ export const useDeleteApiToken = <
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteApiToken>>,
+  Awaited<ReturnType<typeof deleteAccount>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteApiTokenMutationOptions(options)
+  const mutationOptions = getDeleteAccountMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }
 /**
- * Find an api-token
- * @summary Find an api-token
+ * Find an account
+ * @summary Find an account
  */
-export const getGetOneApiTokenUrl = (id: string | undefined | null) => {
-  return `/api-tokens/${id}`
+export const getGetOneAccountUrl = (id: string | undefined | null) => {
+  return `/accounts/${id}`
 }
 
-export const getOneApiToken = async (
+export const getOneAccount = async (
   id: string | undefined | null,
   options?: RequestInit
-): Promise<GetOneApiToken200> => {
-  return customFetch<GetOneApiToken200>(getGetOneApiTokenUrl(id), {
+): Promise<GetOneAccount200> => {
+  return customFetch<GetOneAccount200>(getGetOneAccountUrl(id), {
     ...options,
     method: 'GET'
   })
 }
 
-export const getGetOneApiTokenQueryKey = (id: string | undefined | null) => {
-  return [`/api-tokens/${id}`] as const
+export const getGetOneAccountQueryKey = (id: string | undefined | null) => {
+  return [`/accounts/${id}`] as const
 }
 
-export const getGetOneApiTokenQueryOptions = <
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export const getGetOneAccountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getOneAccount>>, TError, TData>
     >
     request?: SecondParameter<typeof customFetch>
   }
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneApiTokenQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneAccountQueryKey(id)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneApiToken>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneAccount>>> = ({
     signal
-  }) => getOneApiToken(id, { signal, ...requestOptions })
+  }) => getOneAccount(id, { signal, ...requestOptions })
 
   return {
     queryKey,
@@ -579,31 +574,31 @@ export const getGetOneApiTokenQueryOptions = <
     enabled: !!id,
     ...queryOptions
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getOneApiToken>>,
+    Awaited<ReturnType<typeof getOneAccount>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOneApiTokenQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOneApiToken>>
+export type GetOneAccountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneAccount>>
 >
-export type GetOneApiTokenQueryError = NotFoundResponse
+export type GetOneAccountQueryError = NotFoundResponse
 
-export function useGetOneApiToken<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccount<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options: {
     query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getOneAccount>>, TError, TData>
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOneApiToken>>,
+          Awaited<ReturnType<typeof getOneAccount>>,
           TError,
-          Awaited<ReturnType<typeof getOneApiToken>>
+          Awaited<ReturnType<typeof getOneAccount>>
         >,
         'initialData'
       >
@@ -613,20 +608,20 @@ export function useGetOneApiToken<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetOneApiToken<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccount<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getOneAccount>>, TError, TData>
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOneApiToken>>,
+          Awaited<ReturnType<typeof getOneAccount>>,
           TError,
-          Awaited<ReturnType<typeof getOneApiToken>>
+          Awaited<ReturnType<typeof getOneAccount>>
         >,
         'initialData'
       >
@@ -636,14 +631,14 @@ export function useGetOneApiToken<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetOneApiToken<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccount<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getOneAccount>>, TError, TData>
     >
     request?: SecondParameter<typeof customFetch>
   },
@@ -652,17 +647,17 @@ export function useGetOneApiToken<
   queryKey: DataTag<QueryKey, TData, TError>
 }
 /**
- * @summary Find an api-token
+ * @summary Find an account
  */
 
-export function useGetOneApiToken<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccount<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof getOneApiToken>>, TError, TData>
+      UseQueryOptions<Awaited<ReturnType<typeof getOneAccount>>, TError, TData>
     >
     request?: SecondParameter<typeof customFetch>
   },
@@ -670,7 +665,7 @@ export function useGetOneApiToken<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 } {
-  const queryOptions = getGetOneApiTokenQueryOptions(id, options)
+  const queryOptions = getGetOneAccountQueryOptions(id, options)
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -682,15 +677,15 @@ export function useGetOneApiToken<
   return query
 }
 
-export const getGetOneApiTokenSuspenseQueryOptions = <
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export const getGetOneAccountSuspenseQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneApiToken>>,
+        Awaited<ReturnType<typeof getOneAccount>>,
         TError,
         TData
       >
@@ -700,33 +695,33 @@ export const getGetOneApiTokenSuspenseQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {}
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneApiTokenQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneAccountQueryKey(id)
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneApiToken>>> = ({
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneAccount>>> = ({
     signal
-  }) => getOneApiToken(id, { signal, ...requestOptions })
+  }) => getOneAccount(id, { signal, ...requestOptions })
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
-    Awaited<ReturnType<typeof getOneApiToken>>,
+    Awaited<ReturnType<typeof getOneAccount>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetOneApiTokenSuspenseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getOneApiToken>>
+export type GetOneAccountSuspenseQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOneAccount>>
 >
-export type GetOneApiTokenSuspenseQueryError = NotFoundResponse
+export type GetOneAccountSuspenseQueryError = NotFoundResponse
 
-export function useGetOneApiTokenSuspense<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccountSuspense<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options: {
     query: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneApiToken>>,
+        Awaited<ReturnType<typeof getOneAccount>>,
         TError,
         TData
       >
@@ -737,15 +732,15 @@ export function useGetOneApiTokenSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetOneApiTokenSuspense<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccountSuspense<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneApiToken>>,
+        Awaited<ReturnType<typeof getOneAccount>>,
         TError,
         TData
       >
@@ -756,15 +751,15 @@ export function useGetOneApiTokenSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 }
-export function useGetOneApiTokenSuspense<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccountSuspense<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneApiToken>>,
+        Awaited<ReturnType<typeof getOneAccount>>,
         TError,
         TData
       >
@@ -776,18 +771,18 @@ export function useGetOneApiTokenSuspense<
   queryKey: DataTag<QueryKey, TData, TError>
 }
 /**
- * @summary Find an api-token
+ * @summary Find an account
  */
 
-export function useGetOneApiTokenSuspense<
-  TData = Awaited<ReturnType<typeof getOneApiToken>>,
+export function useGetOneAccountSuspense<
+  TData = Awaited<ReturnType<typeof getOneAccount>>,
   TError = NotFoundResponse
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseSuspenseQueryOptions<
-        Awaited<ReturnType<typeof getOneApiToken>>,
+        Awaited<ReturnType<typeof getOneAccount>>,
         TError,
         TData
       >
@@ -798,7 +793,7 @@ export function useGetOneApiTokenSuspense<
 ): UseSuspenseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>
 } {
-  const queryOptions = getGetOneApiTokenSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneAccountSuspenseQueryOptions(id, options)
 
   const query = useSuspenseQuery(
     queryOptions,
@@ -813,44 +808,44 @@ export function useGetOneApiTokenSuspense<
 }
 
 /**
- * Update an api-token
- * @summary Update an api-token
+ * Update an account
+ * @summary Update an account
  */
-export const getUpdateApiTokenUrl = (id: string | undefined | null) => {
-  return `/api-tokens/${id}`
+export const getUpdateAccountUrl = (id: string | undefined | null) => {
+  return `/accounts/${id}`
 }
 
-export const updateApiToken = async (
+export const updateAccount = async (
   id: string | undefined | null,
-  updateApiTokenBody: UpdateApiTokenBody,
+  updateAccountBody: UpdateAccountBody,
   options?: RequestInit
-): Promise<UpdateApiToken200> => {
-  return customFetch<UpdateApiToken200>(getUpdateApiTokenUrl(id), {
+): Promise<UpdateAccount200> => {
+  return customFetch<UpdateAccount200>(getUpdateAccountUrl(id), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateApiTokenBody)
+    body: JSON.stringify(updateAccountBody)
   })
 }
 
-export const getUpdateApiTokenMutationOptions = <
+export const getUpdateAccountMutationOptions = <
   TError = NotFoundResponse,
   TContext = unknown
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateApiToken>>,
+    Awaited<ReturnType<typeof updateAccount>>,
     TError,
-    { id: string | undefined | null; data: UpdateApiTokenBody },
+    { id: string | undefined | null; data: UpdateAccountBody },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof updateApiToken>>,
+  Awaited<ReturnType<typeof updateAccount>>,
   TError,
-  { id: string | undefined | null; data: UpdateApiTokenBody },
+  { id: string | undefined | null; data: UpdateAccountBody },
   TContext
 > => {
-  const mutationKey = ['updateApiToken']
+  const mutationKey = ['updateAccount']
   const { mutation: mutationOptions, request: requestOptions } =
     options ?
       (
@@ -863,47 +858,44 @@ export const getUpdateApiTokenMutationOptions = <
     : { mutation: { mutationKey }, request: undefined }
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateApiToken>>,
-    { id: string | undefined | null; data: UpdateApiTokenBody }
+    Awaited<ReturnType<typeof updateAccount>>,
+    { id: string | undefined | null; data: UpdateAccountBody }
   > = (props) => {
     const { id, data } = props ?? {}
 
-    return updateApiToken(id, data, requestOptions)
+    return updateAccount(id, data, requestOptions)
   }
 
   return { mutationFn, ...mutationOptions }
 }
 
-export type UpdateApiTokenMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateApiToken>>
+export type UpdateAccountMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateAccount>>
 >
-export type UpdateApiTokenMutationBody = UpdateApiTokenBody
-export type UpdateApiTokenMutationError = NotFoundResponse
+export type UpdateAccountMutationBody = UpdateAccountBody
+export type UpdateAccountMutationError = NotFoundResponse
 
 /**
- * @summary Update an api-token
+ * @summary Update an account
  */
-export const useUpdateApiToken = <
-  TError = NotFoundResponse,
-  TContext = unknown
->(
+export const useUpdateAccount = <TError = NotFoundResponse, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateApiToken>>,
+      Awaited<ReturnType<typeof updateAccount>>,
       TError,
-      { id: string | undefined | null; data: UpdateApiTokenBody },
+      { id: string | undefined | null; data: UpdateAccountBody },
       TContext
     >
     request?: SecondParameter<typeof customFetch>
   },
   queryClient?: QueryClient
 ): UseMutationResult<
-  Awaited<ReturnType<typeof updateApiToken>>,
+  Awaited<ReturnType<typeof updateAccount>>,
   TError,
-  { id: string | undefined | null; data: UpdateApiTokenBody },
+  { id: string | undefined | null; data: UpdateAccountBody },
   TContext
 > => {
-  const mutationOptions = getUpdateApiTokenMutationOptions(options)
+  const mutationOptions = getUpdateAccountMutationOptions(options)
 
   return useMutation(mutationOptions, queryClient)
 }

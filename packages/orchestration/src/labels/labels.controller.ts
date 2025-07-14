@@ -1,13 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type { LabelInsertModel, LabelSelectModel } from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreateLabelDtoSchema,
+  LABEL_ENTITY_KEY,
   LabelEntitySchema,
-  TOOL_ENTITY_KEY,
   UpdateLabelDtoSchema
 } from '@archesai/schemas'
 
@@ -15,7 +15,7 @@ import { createLabelRepository } from '#labels/label.repository'
 import { createLabelsService } from '#labels/labels.service'
 
 export interface LabelsPluginOptions {
-  databaseService: DatabaseService<LabelInsertModel, LabelSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -30,7 +30,7 @@ export const labelsController: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateLabelDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: LABEL_ENTITY_KEY,
     entitySchema: LabelEntitySchema,
     prefix: '/labels',
     service: labelsService,

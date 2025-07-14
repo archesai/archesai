@@ -47,7 +47,7 @@ export function UserButton({
   size?: 'default' | 'lg' | 'sm' | null | undefined
 }) {
   const defaultOrgname = 'Arches Platform'
-  const { data: user } = useGetSessionSuspense()
+  const { data: sessionData } = useGetSessionSuspense()
   const { mutateAsync: logout } = useLogout()
   const { isMobile } = useSidebar()
 
@@ -77,8 +77,8 @@ export function UserButton({
               >
                 <Avatar>
                   <AvatarImage
-                    alt={user.email}
-                    src={user.image ?? undefined}
+                    alt={sessionData.user.email}
+                    src={sessionData.user.image ?? undefined}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
@@ -91,14 +91,18 @@ export function UserButton({
               >
                 <Avatar>
                   <AvatarImage
-                    alt={user.email}
-                    src={user.image ?? undefined}
+                    alt={sessionData.user.email}
+                    src={sessionData.user.image ?? undefined}
                   />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>user.name</span>
-                  <span className='truncate text-xs'>user.email</span>
+                  <span className='truncate font-semibold'>
+                    {sessionData.user.name}
+                  </span>
+                  <span className='truncate text-xs'>
+                    {sessionData.user.email}
+                  </span>
                 </div>
                 <ChevronsUpDown className='ml-auto size-4' />
               </SidebarMenuButton>
@@ -114,14 +118,18 @@ export function UserButton({
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
                   <AvatarImage
-                    alt={user.email}
-                    src={user.image ?? undefined}
+                    alt={sessionData.user.email}
+                    src={sessionData.user.image ?? undefined}
                   />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>{user.email}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate font-medium'>
+                    {sessionData.user.email}
+                  </span>
+                  <span className='truncate text-xs'>
+                    {sessionData.user.email}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -146,7 +154,7 @@ export function UserButton({
                         await updateUser(
                           {
                             data: {} as UserEntity,
-                            id: user.id
+                            id: sessionData.user.id
                           },
                           {
                             onSuccess: () => {

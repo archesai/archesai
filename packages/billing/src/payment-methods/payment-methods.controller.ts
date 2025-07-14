@@ -1,17 +1,31 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
+import type { WebsocketsService } from '@archesai/core'
+
 import { PaymentMethodEntitySchema, Type } from '@archesai/schemas'
 
-import type { PaymentMethodsService } from '#payment-methods/payment-methods.service'
+import type { StripeService } from '#stripe/stripe.service'
+
+import { CustomersService } from '#customers/customers.service'
+import { PaymentMethodRepository } from '#payment-methods/payment-method.repository'
+import { PaymentMethodsService } from '#payment-methods/payment-methods.service'
 
 export interface PaymentMethodsControllerOptions {
-  paymentMethodsService: PaymentMethodsService
+  stripeService: StripeService
+  websocketsService: WebsocketsService
 }
 
 export const paymentMethodsController: FastifyPluginAsyncTypebox<
   PaymentMethodsControllerOptions
   // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { paymentMethodsService }) => {
+> = async (app, { stripeService, websocketsService }) => {
+  const paymentMethodRepository = new PaymentMethodRepository(stripeService)
+  const customersService = new CustomersService(stripeService)
+  const paymentMethodsService = new PaymentMethodsService(
+    customersService,
+    paymentMethodRepository,
+    websocketsService
+  )
   app.delete(
     `/billing/payment-methods/:id`,
     {

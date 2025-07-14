@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
 import type { UserEntity } from '@archesai/schemas'
@@ -26,13 +27,13 @@ import {
 } from '#components/shadcn/sidebar'
 
 export function OrganizationButton() {
-  const { data: session } = useGetSessionSuspense()
+  const { data: sessionData } = useGetSessionSuspense()
   const { data: memberships } = useFindManyMembersSuspense({
-    // filter: {
-    //   organizationId: {
-    //     equals: 'Arches Platform'
-    //   }
-    // }
+    filter: {
+      organizationId: {
+        equals: 'Arches Platform'
+      }
+    }
   })
 
   const { mutateAsync: updateUser } = useUpdateUser()
@@ -64,9 +65,12 @@ export function OrganizationButton() {
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>{session.email}</span>
+                <span className='truncate font-medium'>
+                  {sessionData.user.name}
+                </span>
                 <span className='truncate text-xs'>
-                  {session.email + ' Plan'}
+                  {sessionData.session.activeOrganizationId ??
+                    'No Organization'}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />

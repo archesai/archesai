@@ -15,7 +15,7 @@ import type {
 import { useMutation } from '@tanstack/react-query'
 
 import type {
-  NoContentResponse,
+  Register204,
   RegisterBody,
   UnauthorizedResponse
 } from '../orval.schemas'
@@ -29,14 +29,14 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Register
  */
 export const getRegisterUrl = () => {
-  return `/auth/register`
+  return `/api/auth/sign-up/email`
 }
 
 export const register = async (
   registerBody: RegisterBody,
   options?: RequestInit
-): Promise<NoContentResponse> => {
-  return customFetch<NoContentResponse>(getRegisterUrl(), {
+): Promise<Register204> => {
+  return customFetch<Register204>(getRegisterUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },

@@ -1,23 +1,18 @@
 import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import {
-  useGetOneUser,
-  useGetSessionSuspense,
-  useUpdateUser
-} from '@archesai/client'
+import { useGetSessionSuspense, useUpdateUser } from '@archesai/client'
 import { USER_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 export default function UserForm() {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: session } = useGetSessionSuspense()
-  const { data: user } = useGetOneUser(session.id)
+  const { data: sessionData } = useGetSessionSuspense()
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: user?.data.name,
+      defaultValue: sessionData.user.name,
       description: 'Your username',
       label: 'Username',
       name: 'username',
@@ -30,7 +25,7 @@ export default function UserForm() {
       )
     },
     {
-      defaultValue: user?.data.email,
+      defaultValue: sessionData.user.email,
       description: 'Your email address',
       label: 'Email',
       name: 'email',
@@ -52,7 +47,7 @@ export default function UserForm() {
       onSubmitUpdate={async (data) => {
         await updateUser({
           data,
-          id: user?.data.id
+          id: sessionData.user.id
         })
       }}
       showCard={true}

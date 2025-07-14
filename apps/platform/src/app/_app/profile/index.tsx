@@ -26,7 +26,7 @@ export const Route = createFileRoute('/_app/profile/')({
 })
 
 export default function ProfileSecuritySettingsPage() {
-  const { data: user } = useGetSessionSuspense()
+  const { data: sessionData } = useGetSessionSuspense()
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
   const {
@@ -55,7 +55,7 @@ export default function ProfileSecuritySettingsPage() {
                 await requestPasswordReset(
                   {
                     data: {
-                      email: user.email
+                      email: sessionData.user.email
                     }
                   },
 
@@ -99,7 +99,7 @@ export default function ProfileSecuritySettingsPage() {
               onClick={async () => {
                 await deactivateAccount(
                   {
-                    id: user.id
+                    id: sessionData.user.id
                   },
                   {
                     onError: () => {

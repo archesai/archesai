@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type { ToolInsertModel, ToolSelectModel } from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
@@ -15,7 +15,7 @@ import { createToolRepository } from '#tools/tool.repository'
 import { createToolsService } from '#tools/tools.service'
 
 export interface ToolsPluginOptions {
-  databaseService: DatabaseService<ToolInsertModel, ToolSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 

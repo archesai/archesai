@@ -14,7 +14,7 @@ import {
   Type
 } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
-import ImportCard from '@archesai/ui/components/custom/import-card'
+// import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
 import {
   Tabs,
@@ -103,11 +103,11 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
             />
           </TabsContent>
           <TabsContent value='file'>
-            <ImportCard
+            {/* <ImportCard
               cb={(content) => {
                 field.onChange(content.map((c) => c.id))
               }}
-            />
+            /> */}
           </TabsContent>
         </Tabs>
       ),

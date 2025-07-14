@@ -1,12 +1,9 @@
-export * from '#common/base-repository'
 export * from '#common/base-service'
 export * from '#common/crud.plugin'
 
 export * from '#config/config.controller'
 export * from '#config/config.service'
 export * from '#config/schemas/config.schema'
-
-export * from '#database/database.service'
 
 export * from '#email/email.service'
 export * from '#email/templates'

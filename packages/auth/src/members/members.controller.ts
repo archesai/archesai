@@ -1,13 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type { MemberInsertModel, MemberSelectModel } from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreateMemberDtoSchema,
+  MEMBER_ENTITY_KEY,
   MemberEntitySchema,
-  TOOL_ENTITY_KEY,
   UpdateMemberDtoSchema
 } from '@archesai/schemas'
 
@@ -15,7 +15,7 @@ import { createMemberRepository } from '#members/member.repository'
 import { createMembersService } from '#members/members.service'
 
 export interface MembersPluginOptions {
-  databaseService: DatabaseService<MemberInsertModel, MemberSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -33,7 +33,7 @@ export const membersPlugin: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateMemberDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: MEMBER_ENTITY_KEY,
     entitySchema: MemberEntitySchema,
     prefix: '/members',
     service: membersService,

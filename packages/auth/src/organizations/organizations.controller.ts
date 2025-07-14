@@ -1,16 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type {
-  OrganizationInsertModel,
-  OrganizationSelectModel
-} from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreateOrganizationDtoSchema,
+  ORGANIZATION_ENTITY_KEY,
   OrganizationEntitySchema,
-  TOOL_ENTITY_KEY,
   UpdateOrganizationDtoSchema
 } from '@archesai/schemas'
 
@@ -18,10 +15,7 @@ import { createOrganizationRepository } from '#organizations/organization.reposi
 import { createOrganizationsService } from '#organizations/organizations.service'
 
 export interface OrganizationsPluginOptions {
-  databaseService: DatabaseService<
-    OrganizationInsertModel,
-    OrganizationSelectModel
-  >
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -39,7 +33,7 @@ export const organizationsPlugin: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateOrganizationDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: ORGANIZATION_ENTITY_KEY,
     entitySchema: OrganizationEntitySchema,
     prefix: '/organizations',
     service: organizationsService,

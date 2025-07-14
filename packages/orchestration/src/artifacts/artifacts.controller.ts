@@ -1,10 +1,7 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type {
-  ArtifactInsertModel,
-  ArtifactSelectModel
-} from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
@@ -18,7 +15,7 @@ import { createArtifactRepository } from '#artifacts/artifact.repository'
 import { createArtifactsService } from '#artifacts/artifacts.service'
 
 export interface ArtifactsPluginOptions {
-  databaseService: DatabaseService<ArtifactInsertModel, ArtifactSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 

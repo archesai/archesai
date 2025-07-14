@@ -31,7 +31,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Confirm password reset
  */
 export const getConfirmPasswordResetUrl = () => {
-  return `/auth/password-reset/confirm`
+  return `/api/auth/forgot-password`
 }
 
 export const confirmPasswordReset = async (
@@ -127,7 +127,7 @@ export const useConfirmPasswordReset = <
  * @summary Request password reset
  */
 export const getRequestPasswordResetUrl = () => {
-  return `/auth/password-reset/request`
+  return `/api/auth/reset-password`
 }
 
 export const requestPasswordReset = async (

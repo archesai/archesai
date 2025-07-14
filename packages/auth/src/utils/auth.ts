@@ -1,18 +1,6 @@
-import type { DB } from 'better-auth/adapters/drizzle'
+import { createDrizzleDatabaseService } from '@archesai/database'
 
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { organization } from 'better-auth/plugins'
+import { createAuthService } from '#auth/auth.service'
 
-export const createAuthService = (db: DB) => {
-  const auth = betterAuth({
-    database: drizzleAdapter(db, {
-      provider: 'pg'
-    }),
-    plugins: [organization()]
-  })
-
-  return auth.api
-}
-
-export type AuthService = ReturnType<typeof createAuthService>
+const databaseService = createDrizzleDatabaseService(process.env.DATABASE_URL!)
+export const auth = createAuthService(databaseService)

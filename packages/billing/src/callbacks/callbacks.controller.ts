@@ -1,17 +1,28 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
+import type { ConfigService, WebsocketsService } from '@archesai/core'
+
 import { InternalServerErrorException } from '@archesai/core'
 
-import type { CallbacksService } from '#callbacks/callbacks.service'
+import type { StripeService } from '#stripe/stripe.service'
+
+import { CallbacksService } from '#callbacks/callbacks.service'
 
 export interface CallbacksControllerOptions {
-  callbacksService: CallbacksService
+  configService: ConfigService
+  stripeService: StripeService
+  websocketsService: WebsocketsService
 }
 
 export const callbacksController: FastifyPluginAsyncTypebox<
   CallbacksControllerOptions
   // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { callbacksService }) => {
+> = async (app, { configService, stripeService, websocketsService }) => {
+  const callbacksService = new CallbacksService(
+    configService,
+    stripeService,
+    websocketsService
+  )
   app.post(
     `/billing/stripe/callback`,
     {

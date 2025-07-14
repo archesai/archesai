@@ -1,6 +1,6 @@
 import type { BaseEntity } from '@archesai/schemas'
 
-import type { BaseRepository } from '#common/base-repository'
+// import type { BaseRepository } from '#common/base-repository'
 import type { SearchQuery } from '#http/dto/search-query.dto'
 import type { WebsocketsService } from '#websockets/websockets.service'
 
@@ -10,12 +10,34 @@ export type BaseService<
   TSelect extends BaseEntity
 > = ReturnType<typeof createBaseService<TEntity, TInsert, TSelect>>
 
+export interface IBaseRepository<
+  TEntity extends BaseEntity,
+  TInsert,
+  TModel extends BaseEntity
+> {
+  create(data: TInsert): Promise<TEntity>
+  createMany(data: TInsert[]): Promise<{ count: number; data: TEntity[] }>
+  delete(id: string): Promise<TEntity>
+  deleteMany(
+    query: SearchQuery<TModel>
+  ): Promise<{ count: number; data: TEntity[] }>
+  findMany(
+    query: SearchQuery<TModel>
+  ): Promise<{ count: number; data: TEntity[] }>
+  findOne(id: string): Promise<TEntity>
+  update(id: string, data: TInsert): Promise<TEntity>
+  updateMany(
+    data: TInsert,
+    query: SearchQuery<TModel>
+  ): Promise<{ count: number; data: TEntity[] }>
+}
+
 export function createBaseService<
   TEntity extends BaseEntity,
   TInsert,
   TSelect extends BaseEntity
 >(
-  repository: BaseRepository<TEntity, TInsert, TSelect>,
+  repository: IBaseRepository<TEntity, TInsert, TSelect>,
   websocketsService: undefined | WebsocketsService,
   emitMutationEvent: (
     entity: TEntity,
@@ -75,7 +97,7 @@ export function createBaseService<
       return found
     },
 
-    async update(id: string, data: Partial<TInsert>): Promise<TEntity> {
+    async update(id: string, data: TInsert): Promise<TEntity> {
       const entity = await repository.update(id, data)
       if (websocketsService) {
         emitMutationEvent(entity, websocketsService)
@@ -84,7 +106,7 @@ export function createBaseService<
     },
 
     async updateMany(
-      data: Partial<TInsert>,
+      data: TInsert,
       query: SearchQuery<TSelect>
     ): Promise<{ count: number; data: TEntity[] }> {
       const result = await repository.updateMany(data, query)

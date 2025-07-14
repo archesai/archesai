@@ -1,19 +1,20 @@
-import type { DatabaseService } from '@archesai/core'
-import type { MemberInsertModel, MemberSelectModel } from '@archesai/database'
+import type {
+  DrizzleDatabaseService,
+  MemberSelectModel
+} from '@archesai/database'
 import type { MemberEntity } from '@archesai/schemas'
 
-import { createBaseRepository } from '@archesai/core'
-import { MemberTable } from '@archesai/database'
+import { createBaseRepository, MemberTable } from '@archesai/database'
 import { MemberEntitySchema } from '@archesai/schemas'
 
 export const createMemberRepository = (
-  databaseService: DatabaseService<MemberInsertModel, MemberSelectModel>
+  databaseService: DrizzleDatabaseService
 ) => {
-  return createBaseRepository<
-    MemberEntity,
-    MemberInsertModel,
-    MemberSelectModel
-  >(databaseService, MemberTable, MemberEntitySchema)
+  return createBaseRepository<MemberEntity, MemberSelectModel>(
+    databaseService,
+    MemberTable,
+    MemberEntitySchema
+  )
 }
 
 export type MemberRepository = ReturnType<typeof createMemberRepository>

@@ -1,16 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type {
-  InvitationInsertModel,
-  InvitationSelectModel
-} from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreateInvitationDtoSchema,
+  INVITATION_ENTITY_KEY,
   InvitationEntitySchema,
-  TOOL_ENTITY_KEY,
   UpdateInvitationDtoSchema
 } from '@archesai/schemas'
 
@@ -18,7 +15,7 @@ import { createInvitationRepository } from '#invitations/invitation.repository'
 import { createInvitationsService } from '#invitations/invitations.service'
 
 export interface InvitationsPluginOptions {
-  databaseService: DatabaseService<InvitationInsertModel, InvitationSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -36,7 +33,7 @@ export const invitationsPlugin: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateInvitationDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: INVITATION_ENTITY_KEY,
     entitySchema: InvitationEntitySchema,
     prefix: '/invitations',
     service: invitationsService,

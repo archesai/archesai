@@ -1,15 +1,16 @@
-import type { DatabaseService } from '@archesai/core'
-import type { UserInsertModel, UserSelectModel } from '@archesai/database'
+import type {
+  DrizzleDatabaseService,
+  UserSelectModel
+} from '@archesai/database'
 import type { UserEntity } from '@archesai/schemas'
 
-import { createBaseRepository } from '@archesai/core'
-import { UserTable } from '@archesai/database'
+import { createBaseRepository, UserTable } from '@archesai/database'
 import { UserEntitySchema } from '@archesai/schemas'
 
 export const createUserRepository = (
-  databaseService: DatabaseService<UserInsertModel, UserSelectModel>
+  databaseService: DrizzleDatabaseService
 ) => {
-  return createBaseRepository<UserEntity, UserInsertModel, UserSelectModel>(
+  return createBaseRepository<UserEntity, UserSelectModel>(
     databaseService,
     UserTable,
     UserEntitySchema

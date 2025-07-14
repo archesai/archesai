@@ -9,7 +9,10 @@ import type { BaseService } from '#common/base-service'
 import { NotFoundResponseSchema } from '#exceptions/schemas/not-found-response.schema'
 import { createSearchQuerySchema } from '#http/dto/search-query.dto'
 // import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
-import { DocumentSchemaFactory } from '#http/schemas/document.schema'
+import {
+  DocumentColectionSchemaFactory,
+  DocumentSchemaFactory
+} from '#http/schemas/document.schema'
 import { capitalize } from '#utils/capitalize'
 import { singularize } from '#utils/pluralize'
 import { toCamelCase, toTitleCase, vf } from '#utils/strings'
@@ -40,7 +43,7 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     // enableBulkOperations = false,
     entityKey,
     entitySchema,
-    prefix,
+    prefix: _prefix,
     service,
     tags = [entityKey],
     updateSchema
@@ -60,9 +63,11 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     entityKey
   )
 
+  app.addSchema(entitySchema)
+
   // POST /entity - Create single entity
   app.post(
-    prefix,
+    '',
     {
       ...baseRouteOptions,
       schema: {
@@ -71,7 +76,7 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
         description: `Create a new ${singularize(entityKey)}`,
         operationId: 'create' + capitalize(toCamelCase(singularize(entityKey))),
         response: {
-          201: LegacyRef(DocumentSchemaFactory(entitySchema))
+          201: DocumentSchemaFactory(entitySchema)
           // 400: { $ref: 'error-document' },
           // 401: { $ref: 'unauthorized-response' },
           // 403: { $ref: 'forbidden-response' }
@@ -88,7 +93,7 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
 
   // GET /entity - Find many entities
   app.get(
-    prefix,
+    '',
     {
       ...baseRouteOptions,
       schema: {
@@ -97,17 +102,7 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
         operationId: 'findMany' + capitalize(toCamelCase(entityKey)),
         querystring: searchQuerySchema,
         response: {
-          200: Type.Object({
-            data: Type.Array(LegacyRef(entitySchema)),
-            meta: Type.Optional(
-              Type.Object({
-                count: Type.Number(),
-                page: Type.Number(),
-                pageSize: Type.Number(),
-                total: Type.Number()
-              })
-            )
-          })
+          200: DocumentColectionSchemaFactory(entitySchema)
         },
         summary: `Find many ${entityKey}`,
         tags: [toTitleCase(entityKey)]
@@ -118,9 +113,36 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     }
   )
 
+  // DELETE /entity/:id - Delete single entity
+  app.delete(
+    `/:id`,
+    {
+      ...baseRouteOptions,
+      schema: {
+        ...baseRouteOptions.schema,
+        description: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
+        operationId: 'delete' + capitalize(toCamelCase(singularize(entityKey))),
+        params: Type.Object({
+          id: Type.String()
+        }),
+        response: {
+          200: DocumentSchemaFactory(entitySchema),
+          404: LegacyRef(NotFoundResponseSchema)
+        },
+        summary: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
+        tags: [toTitleCase(entityKey)]
+      }
+    },
+    async (request) => {
+      return {
+        data: await service.delete(request.params.id)
+      }
+    }
+  )
+
   // GET /entity/:id - Find single entity by ID
   app.get(
-    `${prefix}/:id`,
+    `/:id`,
     {
       ...baseRouteOptions,
       schema: {
@@ -147,7 +169,7 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
 
   // PATCH /entity/:id - Update single entity
   app.patch(
-    `${prefix}/:id`,
+    `/:id`,
     {
       ...baseRouteOptions,
       schema: {
@@ -173,35 +195,6 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
       }
     }
   )
-
-  // DELETE /entity/:id - Delete single entity
-  app.delete(
-    `${prefix}/:id`,
-    {
-      ...baseRouteOptions,
-      schema: {
-        ...baseRouteOptions.schema,
-        description: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
-        operationId: 'delete' + capitalize(toCamelCase(singularize(entityKey))),
-        params: Type.Object({
-          id: Type.String()
-        }),
-        response: {
-          200: DocumentSchemaFactory(entitySchema),
-          404: LegacyRef(NotFoundResponseSchema)
-        },
-        summary: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
-        tags: [toTitleCase(entityKey)]
-      }
-    },
-    async (request) => {
-      return {
-        data: await service.delete(request.params.id)
-      }
-    }
-  )
-
-  app.addSchema(entitySchema)
 }
 
 // // POST /entity/bulk - Create multiple entities (optional)

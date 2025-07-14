@@ -2,10 +2,16 @@ import fastify from 'fastify'
 import fp from 'fastify-plugin'
 import qs from 'qs'
 
+import { errorHandlerPlugin } from '@archesai/core'
+
 import { controllersPlugin } from '#plugins/controllers.plugin'
 import { corsPlugin } from '#plugins/cors.plugin'
 import { docsPlugin } from '#plugins/docs.plugin'
 import { createContainer } from '#utils/container'
+
+// =================================================================
+// UTILITY FUNCTIONS
+// =================================================================
 
 export async function bootstrap() {
   // =================================================================
@@ -50,9 +56,90 @@ export async function bootstrap() {
     container
   })
 
+  // =================================================================
+  // 5. HEALTH CHECK & SYSTEM ROUTES
+  // =================================================================
+
+  app.get(
+    '/health',
+    {
+      schema: {
+        response: {
+          200: {
+            properties: {
+              services: {
+                properties: {
+                  database: { type: 'string' },
+                  email: { type: 'string' },
+                  redis: { type: 'string' }
+                },
+                type: 'object'
+              },
+              timestamp: { type: 'string' },
+              uptime: { type: 'number' }
+            },
+            type: 'object'
+          }
+        },
+        summary: 'Health check endpoint',
+        tags: ['System']
+      }
+    },
+    async () => {
+      // Use functional services for health checks
+      const dbStatus = await checkServiceHealth('database', () =>
+        container.databaseService.ping()
+      )
+      const redisStatus = await checkServiceHealth('redis', () =>
+        container.redisService.ping()
+      )
+      const emailStatus = await checkServiceHealth('email', () =>
+        container.emailService.ping()
+      )
+
+      return {
+        services: {
+          database: dbStatus,
+          email: emailStatus,
+          redis: redisStatus
+        },
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+      }
+    }
+  )
+
+  // =================================================================
+  // 6. ERROR HANDLING
+  // =================================================================
+
+  // Register the centralized error handler
+  await app.register(fp(errorHandlerPlugin), {
+    includeStack: container.configService.get('logging.level') === 'debug',
+    sanitizeHeaders: true
+  })
+
+  // =================================================================
+  // 7. GRACEFUL SHUTDOWN
+  // =================================================================
+
+  // const gracefulShutdown = () => {
+  //   container.loggerService.logger.log('Starting graceful shutdown...')
+
+  //   try {
+  //     // await container.databaseService.close()
+  //     // await container.redisService.close()
+  //     container.loggerService.logger.log('All services closed successfully')
+  //   } catch (error) {
+  //     container.loggerService.logger.error('Error during shutdown', { error })
+  //   }
+  // }
+
+  // process.on('SIGTERM', gracefulShutdown)
+  // process.on('SIGINT', gracefulShutdown)
+
   // Websocket Adapter
-  // const websocketsService = app.get(WebsocketsService)
-  // await websocketsService.setupWebsocketAdapter(app.getHttpServer())
+  await container.websocketsService.setupWebsocketAdapter(app.server)
 
   await app.listen({
     host: '0.0.0.0',
@@ -60,150 +147,15 @@ export async function bootstrap() {
   })
 }
 
-// // =================================================================
-// // 5. HEALTH CHECK & SYSTEM ROUTES
-// // =================================================================
-
-// app.get(
-//   '/health',
-//   {
-//     schema: {
-//       response: {
-//         200: {
-//           properties: {
-//             architecture: { type: 'string' },
-//             services: {
-//               properties: {
-//                 database: { type: 'string' },
-//                 email: { type: 'string' },
-//                 redis: { type: 'string' }
-//               },
-//               type: 'object'
-//             },
-//             status: { type: 'string' },
-//             timestamp: { type: 'string' },
-//             uptime: { type: 'number' }
-//           },
-//           type: 'object'
-//         }
-//       },
-//       summary: 'Health check endpoint',
-//       tags: ['System']
-//     }
-//   },
-//   async () => {
-//     // Use functional services for health checks
-//     const dbStatus = await checkServiceHealth('database', () =>
-//       container.databaseService.ping()
-//     )
-//     const redisStatus = await checkServiceHealth('redis', () =>
-//       container.redisService.ping()
-//     )
-//     const emailStatus = await checkServiceHealth('email', () =>
-//       container.emailService.ping()
-//     )
-
-//     return {
-//       architecture: 'Functional Programming + Fastify Plugins',
-//       services: {
-//         database: dbStatus,
-//         email: emailStatus,
-//         redis: redisStatus
-//       },
-//       status: 'healthy',
-//       timestamp: new Date().toISOString(),
-//       uptime: process.uptime()
-//     }
-//   }
-// )
-
-// =================================================================
-// 6. ERROR HANDLING
-// =================================================================
-
-//   app.setErrorHandler(async (error, request, reply) => {
-//     container.logger.error('Request error', {
-//       error: error.message,
-//       method: request.method,
-//       stack: error.stack,
-//       url: request.url
-//     })
-
-//     const errorResponse = {
-//       error: error.statusCode ? error.message : 'Internal Server Error',
-//       path: request.url,
-//       statusCode: error.statusCode || 500,
-//       timestamp: new Date().toISOString()
-//     }
-
-//     reply.status(errorResponse.statusCode).send(errorResponse)
-//   })
-
-//   // =================================================================
-//   // 7. GRACEFUL SHUTDOWN
-//   // =================================================================
-
-//   const gracefulShutdown = async () => {
-//     container.logger.info('Starting graceful shutdown...')
-
-//     try {
-//       await container.databaseService.close()
-//       await container.redisService.close()
-//       container.logger.info('All services closed successfully')
-//     } catch (error) {
-//       container.logger.error('Error during shutdown', { error })
-//     }
-//   }
-
-//   process.on('SIGTERM', gracefulShutdown)
-//   process.on('SIGINT', gracefulShutdown)
-
-//   return app
-// }
-
-// =================================================================
-// UTILITY FUNCTIONS
-// =================================================================
-
-// export async function startFunctionalApp() {
-//   try {
-//     const app = await createFunctionalApp()
-
-//     const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000
-//     const host = process.env.HOST || '0.0.0.0'
-
-//     await app.listen({ host, port })
-
-//     console.log(`🚀 Arches AI Functional API is running!`)
-//     console.log(`📍 Server: http://${host}:${port}`)
-//     console.log(`📚 API Docs: http://${host}:${port}/docs`)
-//     console.log(`💚 Health Check: http://${host}:${port}/health`)
-//     console.log(`🔧 Architecture: 100% Functional Programming`)
-//     console.log(`❌ Classes: ZERO - Completely eliminated!`)
-//     console.log(
-//       `✨ Benefits: Better performance, easier testing, pure functions`
-//     )
-
-//     return app
-//   } catch (error) {
-//     console.error('❌ Error starting functional application:', error)
-//     process.exit(1)
-//   }
-// }
-
-// // =================================================================
-// // APP STARTUP
-// // =================================================================
-
-// async function checkServiceHealth(
-//   serviceName: string,
-//   healthCheck: () => Promise<boolean>
-// ): Promise<string> {
-//   try {
-//     const isHealthy = await healthCheck()
-//     return isHealthy ? 'healthy' : 'unhealthy'
-//   } catch (error) {
-//     console.error(`Health check failed for ${serviceName}:`, error)
-//     return 'unhealthy'
-//   }
-// }
+async function checkServiceHealth(
+  serviceName: string,
+  healthCheck: () => Promise<boolean>
+): Promise<string> {
+  try {
+    const isHealthy = await healthCheck()
+    return isHealthy ? 'healthy' : 'unhealthy'
+  } catch (error) {
+    console.error(`Health check failed for ${serviceName}:`, error)
+    return 'unhealthy'
+  }
+}

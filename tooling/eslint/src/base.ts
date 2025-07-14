@@ -27,7 +27,8 @@ const base: ConfigArray = tseslint.config(
       globals: globals.node,
       parser: tseslint.parser,
       parserOptions: {
-        projectService: true
+        projectService: true,
+        tsconfigRootDir: path.join(import.meta.dirname, '../../../')
       },
       sourceType: 'module'
     },

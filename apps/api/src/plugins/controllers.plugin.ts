@@ -1,15 +1,14 @@
 import type { FastifyPluginAsync } from 'fastify'
 
-import fp from 'fastify-plugin'
-
-// import {
-//   accountsPlugin,
-//   invitationsPlugin,
-//   membersPlugin,
-//   organizationsPlugin,
-//   sessionsPlugin,
-//   usersPlugin
-// } from '@archesai/auth'
+import {
+  accountsPlugin,
+  authPlugin,
+  invitationsPlugin,
+  membersPlugin,
+  organizationsPlugin,
+  sessionsPlugin,
+  usersPlugin
+} from '@archesai/auth'
 // import {
 //   callbacksController,
 //   paymentMethodsController,
@@ -35,91 +34,94 @@ export interface ControllersPluginOptions {
 export const controllersPlugin: FastifyPluginAsync<
   ControllersPluginOptions
 > = async (app, { container }) => {
+  // Auth controllers
+  await app.register(authPlugin, {
+    authService: container.authService
+  })
+
+  await app.register(accountsPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
+  await app.register(invitationsPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
+  await app.register(membersPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
+  await app.register(organizationsPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
+  await app.register(sessionsPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
+  await app.register(usersPlugin, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
+
   // Core controllers
   await app.register(configController, {
     configService: container.configService
   })
 
-  // Auth controllers
-  // await app.register(accountsPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
-  // await app.register(invitationsPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
-  // await app.register(membersPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
-  // await app.register(organizationsPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
-  // await app.register(sessionsPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
-  // await app.register(usersPlugin, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
-
   // Billing controllers
   // await app.register(callbacksController, {
-  //   databaseService: container.databaseService,
+  //   configService: container.configService,
+  //   stripeService: container.stripeService,
   //   websocketsService: container.websocketsService
   // })
 
   // await app.register(paymentMethodsController, {
-  //   databaseService: container.databaseService,
+  //   stripeService: container.stripeService,
   //   websocketsService: container.websocketsService
   // })
 
   // await app.register(plansController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
+  //   logger: container.loggerService.logger,
+  //   stripeService: container.stripeService
   // })
 
   // await app.register(stripeController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
+  //   stripeService: container.stripeService
   // })
 
   // await app.register(subscriptionsController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
+  //   stripeService: container.stripeService
   // })
 
   // Orchestration controllers
-  await app.register(fp(artifactsController), {
+  await app.register(artifactsController, {
     databaseService: container.databaseService,
     websocketsService: container.websocketsService
   })
 
-  // await app.register(labelsController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
+  await app.register(labelsController, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
 
-  // await app.register(pipelinesController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
+  await app.register(pipelinesController, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
 
-  // await app.register(runsController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
+  await app.register(runsController, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
 
-  // await app.register(toolsController, {
-  //   databaseService: container.databaseService,
-  //   websocketsService: container.websocketsService
-  // })
+  await app.register(toolsController, {
+    databaseService: container.databaseService,
+    websocketsService: container.websocketsService
+  })
 }

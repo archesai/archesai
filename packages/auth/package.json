@@ -22,13 +22,14 @@
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "better-auth": "^1.2.12",
+    "better-auth": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@fastify/type-provider-typebox": "catalog:fastify",
     "@types/node": "catalog:",
+    "fastify": "catalog:fastify",
     "typescript": "catalog:"
   }
 }

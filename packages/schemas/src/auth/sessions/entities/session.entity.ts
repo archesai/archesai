@@ -46,3 +46,5 @@ export const SessionEntitySchema = Type.Object(
 )
 
 export type SessionEntity = Static<typeof SessionEntitySchema>
+
+export const SESSION_ENTITY_KEY = 'sessions'

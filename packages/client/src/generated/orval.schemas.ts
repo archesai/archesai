@@ -132,19 +132,6 @@ export interface ForbiddenResponse {
  */
 export type NoContentResponse = null
 
-export type UnauthorizedResponseErrorsItem = {
-  detail: string
-  status: string
-  title: string
-}
-
-/**
- * Unauthorized
- */
-export interface UnauthorizedResponse {
-  errors: UnauthorizedResponseErrorsItem[]
-}
-
 export type NotFoundResponseErrorsItem = {
   detail: string
   status: string
@@ -158,28 +145,269 @@ export interface NotFoundResponse {
   errors: NotFoundResponseErrorsItem[]
 }
 
+export type UnauthorizedResponseErrorsItem = {
+  detail: string
+  status: string
+  title: string
+}
+
 /**
- * The file entity
+ * Unauthorized
  */
-export interface FileEntity {
+export interface UnauthorizedResponse {
+  errors: UnauthorizedResponseErrorsItem[]
+}
+
+/**
+ * The access token
+ */
+export type AccountEntityAccessToken = string | null
+
+/**
+ * The expiration date
+ */
+export type AccountEntityAccessTokenExpiresAt = string | null
+
+/**
+ * The ID token
+ */
+export type AccountEntityIdToken = string | null
+
+/**
+ * The hashed password for local authentication
+ */
+export type AccountEntityPassword = string | null
+
+/**
+ * The refresh token
+ */
+export type AccountEntityRefreshToken = string | null
+
+/**
+ * The refresh token expiration date
+ */
+export type AccountEntityRefreshTokenExpiresAt = string | null
+
+/**
+ * The scope of the access token
+ */
+export type AccountEntityScope = string | null
+
+/**
+ * The account entity
+ */
+export interface AccountEntity {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** Whether or not this is a directory */
-  isDir: boolean
-  /** The original name of the file */
+  /** The access token */
+  accessToken: AccountEntityAccessToken
+  /** The expiration date */
+  accessTokenExpiresAt: AccountEntityAccessTokenExpiresAt
+  /** The unique identifier for the account */
+  accountId: string
+  /** The ID token */
+  idToken: AccountEntityIdToken
+  /** The hashed password for local authentication */
+  password: AccountEntityPassword
+  /** The provider ID associated with the auth provider */
+  providerId: string
+  /** The refresh token */
+  refreshToken: AccountEntityRefreshToken
+  /** The refresh token expiration date */
+  refreshTokenExpiresAt: AccountEntityRefreshTokenExpiresAt
+  /** The scope of the access token */
+  scope: AccountEntityScope
+  /** The user ID associated with the auth provider */
+  userId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+/**
+ * The invitation entity
+ */
+export interface InvitationEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether the invite was accepted */
+  accepted: boolean
+  /** The email of the invitated user */
+  email: string
+  /** The name of the organization the token belongs to */
   organizationId: string
-  /** The path to the item */
-  path: string
-  /** The read-only URL that you can use to download the file from secure storage */
-  read?: string
-  /** The size of the item in bytes */
-  size: number
-  /** The write-only URL that you can use to upload the file to secure storage */
-  write?: string
+  /** The role of the invitation */
+  role: (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+/**
+ * The member entity
+ */
+export interface MemberEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The invitation id */
+  invitationId: string
+  /** The organization name */
+  organizationId: string
+  /** The role of the member */
+  role: (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
+  /** The user id */
+  userId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationEntityPlan = {
+  BASIC: 'BASIC',
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM',
+  STANDARD: 'STANDARD',
+  UNLIMITED: 'UNLIMITED'
+} as const
+/**
+ * The organization entity
+ */
+export interface OrganizationEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The billing email to use for the organization */
+  billingEmail: string
+  /** The user who created the organization */
+  creator?: string
+  /** The number of credits you have remaining for this organization */
+  credits: number
+  /** The Stripe customer ID */
+  customerId?: string
+  /** The organization name */
+  organizationId: string
+  /** The plan that the organization is subscribed to */
+  plan: (typeof OrganizationEntityPlan)[keyof typeof OrganizationEntityPlan]
+}
+
+/**
+ * The session entity
+ */
+export interface SessionEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type UserEntityImage = null | string
+
+/**
+ * The user entity
+ */
+export interface UserEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /** The user's avatar image URL */
+  image: UserEntityImage
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+/**
+ * The ID of the run that produced this artifact, if applicable
+ */
+export type ArtifactEntityProducerId = string | null
+
+/**
+ * The artifact entity
+ */
+export interface ArtifactEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
+  credits: number
+  /** The artifact's description */
+  description: string
+  /** The artifact's embedding, used for semantic search and other ML tasks */
+  embedding?: number[]
+  /** The MIME type of the artifact, e.g. image/png */
+  mimeType: string
+  /** The name of the artifact, used for display purposes */
+  name: string
+  /** The organization name */
+  organizationId: string
+  /** The ID of the parent artifact, if this artifact is a child of another artifact */
+  parentId: string
+  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
+  previewImage: string
+  /** The ID of the run that produced this artifact, if applicable */
+  producerId: ArtifactEntityProducerId
+  /** The artifact text */
+  text?: string
+  /** The artifact URL */
+  url?: string
+}
+
+/**
+ * The label entity
+ */
+export interface LabelEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The name of the label */
+  name: string
+  /** The organization name */
+  organizationId: string
 }
 
 export type PipelineEntityStepsItemDependentsItem = {
@@ -205,7 +433,6 @@ export type PipelineEntityStepsItem = {
   name: string
   pipelineId: string
   prerequisites: PipelineEntityStepsItemPrerequisitesItem[]
-  tool: ToolEntity
   toolId: string
 }
 
@@ -252,7 +479,41 @@ export interface PipelineStepEntity {
   name: string
   pipelineId: string
   prerequisites: PipelineStepEntityPrerequisitesItem[]
-  tool: ToolEntity
+  toolId: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunEntityRunType = {
+  PIPELINE_RUN: 'PIPELINE_RUN',
+  TOOL_RUN: 'TOOL_RUN'
+} as const
+/**
+ * The run entity
+ */
+export interface RunEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The timestamp when the run completed */
+  completedAt?: string
+  /** The error message */
+  error?: string
+  /** The organization name */
+  organizationId: string
+  /** The pipeline ID associated with the run */
+  pipelineId: string
+  /** The percent progress of the run */
+  progress: number
+  /** The type of run */
+  runType: (typeof RunEntityRunType)[keyof typeof RunEntityRunType]
+  /** The timestamp when the run started */
+  startedAt?: string
+  /** The status of the run */
+  status: string
+  /** The tool ID associated with the run */
   toolId: string
 }
 
@@ -294,137 +555,48 @@ export interface ToolEntity {
   toolBase: string
 }
 
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type ArtifactEntityProducerId = string | null
-
-/**
- * The artifact entity
- */
-export interface ArtifactEntity {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
-  /** The artifact's description */
-  description: string
-  /** The artifact's embedding, used for semantic search and other ML tasks */
-  embedding?: number[]
-  /** The MIME type of the artifact, e.g. image/png */
-  mimeType: string
-  /** The name of the artifact, used for display purposes */
+export type LoginBody = {
+  /** The email address associated with the account */
+  email: string
+  /** The name of the user creating the account */
   name: string
-  /** The organization name */
-  organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: string
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: ArtifactEntityProducerId
-  /** The artifact text */
-  text?: string
-  /** The artifact URL */
-  url?: string
+  /** The password for the account */
+  password: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunEntityRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
-} as const
 /**
- * The run entity
+ * The session entity
  */
-export interface RunEntity {
+export type Login200Session = {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt?: string
-  /** The error message */
-  error?: string
-  /** The organization name */
-  organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: string
-  /** The percent progress of the run */
-  progress: number
-  /** The type of run */
-  runType: (typeof RunEntityRunType)[keyof typeof RunEntityRunType]
-  /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
-  /** The tool ID associated with the run */
-  toolId: string
-}
-
-/**
- * The label entity
- */
-export interface LabelEntity {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The name of the label */
-  name: string
-  /** The organization name */
-  organizationId: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationEntityPlan = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-/**
- * The organization entity
- */
-export interface OrganizationEntity {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The user who created the organization */
-  creator?: string
-  /** The number of credits you have remaining for this organization */
-  credits: number
-  /** The Stripe customer ID */
-  customerId?: string
-  /** The organization name */
-  organizationId: string
-  /** The plan that the organization is subscribed to */
-  plan: (typeof OrganizationEntityPlan)[keyof typeof OrganizationEntityPlan]
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
 }
 
 /**
  * The user's avatar image URL
  */
-export type UserEntityImage = null | string
+export type Login200UserImage = null | string
 
 /**
  * The user entity
  */
-export interface UserEntity {
+export type Login200User = {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
@@ -438,7 +610,7 @@ export interface UserEntity {
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
   /** The user's avatar image URL */
-  image: UserEntityImage
+  image: Login200UserImage
   /**
    * The user's name
    * @minLength 1
@@ -446,70 +618,771 @@ export interface UserEntity {
   name: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MemberEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export type Login200 = {
+  /** The session entity */
+  session: Login200Session
+  /** The user entity */
+  user: Login200User
+}
+
 /**
- * The member entity
+ * The session entity
  */
-export interface MemberEntity {
+export type GetSession200Session = {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The invitation id */
-  invitationId: string
-  /** The organization name */
-  organizationId: string
-  /** The role of the member */
-  role: (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
-  /** The user id */
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
   userId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
 /**
- * The invitation entity
+ * The user's avatar image URL
  */
-export interface InvitationEntity {
+export type GetSession200UserImage = null | string
+
+/**
+ * The user entity
+ */
+export type GetSession200User = {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
-  /** The email of the invitated user */
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
   email: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the invitation */
-  role: (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /** The user's avatar image URL */
+  image: GetSession200UserImage
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+export type GetSession200 = {
+  /** The session entity */
+  session: GetSession200Session
+  /** The user entity */
+  user: GetSession200User
+}
+
+export type RegisterBody = {
+  /** The email address associated with the account */
+  email: string
+  /** The name of the user creating the account */
+  name: string
+  /** The password for the account */
+  password: string
+}
+
+/**
+ * The session entity
+ */
+export type Register204Session = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type Register204UserImage = null | string
+
+/**
+ * The user entity
+ */
+export type Register204User = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /** The user's avatar image URL */
+  image: Register204UserImage
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+export type Register204 = {
+  /** The session entity */
+  session: Register204Session
+  /** The user entity */
+  user: Register204User
+}
+
+export type ConfirmEmailVerificationBody = {
+  /** The password reset token */
+  token: string
+}
+
+/**
+ * The session entity
+ */
+export type ConfirmEmailVerification204Session = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type ConfirmEmailVerification204UserImage = null | string
+
+/**
+ * The user entity
+ */
+export type ConfirmEmailVerification204User = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /** The user's avatar image URL */
+  image: ConfirmEmailVerification204UserImage
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+export type ConfirmEmailVerification204 = {
+  /** The session entity */
+  session: ConfirmEmailVerification204Session
+  /** The user entity */
+  user: ConfirmEmailVerification204User
+}
+
+export type ConfirmPasswordResetBody = {
+  /** The new password */
+  newPassword: string
+  /** The password reset token */
+  token: string
+}
+
+export type RequestPasswordResetBody = {
+  /** The e-mail to send the password reset token to */
+  email: string
+}
+
+export type ConfirmEmailChangeBody = {
+  /** The e-mail to send the confirmation token to */
+  newEmail: string
+  /** The password reset token */
+  token: string
+  /** The user ID of the user requesting the email change */
+  userId: string
+}
+
+export type RequestEmailChangeBody = {
+  /** The e-mail to send the confirmation token to */
+  newEmail: string
+  /** The user ID of the user requesting the email change */
+  userId: string
+}
+
+export type CreateAccountBody = {
+  /** The email address associated with the account */
+  email: string
+  /** The name of the user creating the account */
+  name: string
+  /** The password for the account */
+  password: string
+}
+
+export type CreateAccount201 = {
+  data: AccountEntity
+}
+
+export type FindManyAccountsParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    accessToken?: FieldFilter
+    accessTokenExpiresAt?: FieldFilter
+    accountId?: FieldFilter
+    idToken?: FieldFilter
+    password?: FieldFilter
+    providerId?: FieldFilter
+    refreshToken?: FieldFilter
+    refreshTokenExpiresAt?: FieldFilter
+    scope?: FieldFilter
+    userId?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyAccounts200 = {
+  data: AccountEntity[]
+}
+
+export type DeleteAccount200 = {
+  data: AccountEntity
+}
+
+export type GetOneAccount200 = {
+  data: AccountEntity
+}
+
+/**
+ * The access token
+ */
+export type UpdateAccountBodyAccessToken = string | null
+
+/**
+ * The expiration date
+ */
+export type UpdateAccountBodyAccessTokenExpiresAt = string | null
+
+/**
+ * The ID token
+ */
+export type UpdateAccountBodyIdToken = string | null
+
+/**
+ * The hashed password for local authentication
+ */
+export type UpdateAccountBodyPassword = string | null
+
+/**
+ * The refresh token
+ */
+export type UpdateAccountBodyRefreshToken = string | null
+
+/**
+ * The refresh token expiration date
+ */
+export type UpdateAccountBodyRefreshTokenExpiresAt = string | null
+
+/**
+ * The scope of the access token
+ */
+export type UpdateAccountBodyScope = string | null
+
+/**
+ * The account entity
+ */
+export type UpdateAccountBody = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The access token */
+  accessToken: UpdateAccountBodyAccessToken
+  /** The expiration date */
+  accessTokenExpiresAt: UpdateAccountBodyAccessTokenExpiresAt
+  /** The unique identifier for the account */
+  accountId: string
+  /** The ID token */
+  idToken: UpdateAccountBodyIdToken
+  /** The hashed password for local authentication */
+  password: UpdateAccountBodyPassword
+  /** The provider ID associated with the auth provider */
+  providerId: string
+  /** The refresh token */
+  refreshToken: UpdateAccountBodyRefreshToken
+  /** The refresh token expiration date */
+  refreshTokenExpiresAt: UpdateAccountBodyRefreshTokenExpiresAt
+  /** The scope of the access token */
+  scope: UpdateAccountBodyScope
+  /** The user ID associated with the auth provider */
+  userId: string
+}
+
+export type UpdateAccount200 = {
+  data: AccountEntity
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ApiTokenEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export const CreateInvitationBodyRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const
+export type CreateInvitationBody = {
+  /** The email of the invitated user */
+  email: string
+  /** The role of the invitation */
+  role: (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
+}
+
+export type CreateInvitation201 = {
+  data: InvitationEntity
+}
+
+export type FindManyInvitationsParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    accepted?: FieldFilter
+    email?: FieldFilter
+    organizationId?: FieldFilter
+    role?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyInvitations200 = {
+  data: InvitationEntity[]
+}
+
+export type DeleteInvitation200 = {
+  data: InvitationEntity
+}
+
+export type GetOneInvitation200 = {
+  data: InvitationEntity
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateInvitationBodyRole = {
+  ADMIN: 'ADMIN',
+  USER: 'USER'
+} as const
+export type UpdateInvitationBody = {
+  /** The email of the invitated user */
+  email?: string
+  /** The role of the invitation */
+  role?: (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
+}
+
+export type UpdateInvitation200 = {
+  data: InvitationEntity
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CreateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export type CreateMemberBody = {
+  /** The role of the member */
+  role: (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
+}
+
+export type CreateMember201 = {
+  data: MemberEntity
+}
+
+export type FindManyMembersParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    invitationId?: FieldFilter
+    organizationId?: FieldFilter
+    role?: FieldFilter
+    userId?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyMembers200 = {
+  data: MemberEntity[]
+}
+
+export type DeleteMember200 = {
+  data: MemberEntity
+}
+
+export type GetOneMember200 = {
+  data: MemberEntity
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UpdateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export type UpdateMemberBody = {
+  /** The role of the member */
+  role?: (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
+}
+
+export type UpdateMember200 = {
+  data: MemberEntity
+}
+
+export type CreateOrganizationBody = {
+  /** The billing email to use for the organization */
+  billingEmail: string
+  /** The organization name */
+  organizationId: string
+}
+
+export type CreateOrganization201 = {
+  data: OrganizationEntity
+}
+
+export type FindManyOrganizationsParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    billingEmail?: FieldFilter
+    creator?: FieldFilter
+    credits?: FieldFilter
+    customerId?: FieldFilter
+    organizationId?: FieldFilter
+    plan?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyOrganizations200 = {
+  data: OrganizationEntity[]
+}
+
+export type DeleteOrganization200 = {
+  data: OrganizationEntity
+}
+
+export type GetOneOrganization200 = {
+  data: OrganizationEntity
+}
+
+export type UpdateOrganizationBody = {
+  /** The billing email to use for the organization */
+  billingEmail?: string
+  /** The organization name */
+  organizationId?: string
+}
+
+export type UpdateOrganization200 = {
+  data: OrganizationEntity
+}
+
 /**
- * The API token entity
+ * The session entity
  */
-export interface ApiTokenEntity {
+export type CreateSessionBody = {
   /** The date this item was created */
   createdAt: string
   /** The ID of the item */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The API token key. This will only be shown once */
-  key: string
-  /** The name of the API token */
-  name?: string
-  /** The name of the organization the token belongs to */
-  organizationId: string
-  /** The role of the API token */
-  role: (typeof ApiTokenEntityRole)[keyof typeof ApiTokenEntityRole]
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+export type CreateSession201 = {
+  data: SessionEntity
+}
+
+export type FindManySessionsParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    activeOrganizationId?: FieldFilter
+    expiresAt?: FieldFilter
+    ipAddress?: FieldFilter
+    token?: FieldFilter
+    userAgent?: FieldFilter
+    userId?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManySessions200 = {
+  data: SessionEntity[]
+}
+
+export type DeleteSession200 = {
+  data: SessionEntity
+}
+
+export type GetOneSession200 = {
+  data: SessionEntity
+}
+
+/**
+ * The session entity
+ */
+export type UpdateSessionBody = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /** The IP address of the session */
+  ipAddress?: string
+  /** The session token */
+  token: string
+  /** The user agent of the session */
+  userAgent?: string
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+export type UpdateSession200 = {
+  data: SessionEntity
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type CreateUserBodyImage = null | string
+
+export type CreateUserBody = {
+  /** The user's e-mail */
+  email: string
+  /** The user's avatar image URL */
+  image: CreateUserBodyImage
+}
+
+export type CreateUser201 = {
+  data: UserEntity
+}
+
+export type FindManyUsersParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    deactivated?: FieldFilter
+    email?: FieldFilter
+    emailVerified?: FieldFilter
+    image?: FieldFilter
+    name?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyUsers200 = {
+  data: UserEntity[]
+}
+
+export type DeleteUser200 = {
+  data: UserEntity
+}
+
+export type GetOneUser200 = {
+  data: UserEntity
+}
+
+/**
+ * The user's avatar image URL
+ */
+export type UpdateUserBodyImage = null | string
+
+export type UpdateUserBody = {
+  /** The user's e-mail */
+  email?: string
+  /** The user's avatar image URL */
+  image?: UpdateUserBodyImage
+}
+
+export type UpdateUser200 = {
+  data: UserEntity
 }
 
 export type GetConfig200AuthFirebaseAnyOf = {
@@ -841,300 +1714,6 @@ export type GetConfig200 = {
   unstructured: GetConfig200Unstructured
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateFileBodyAction = { read: 'read', write: 'write' } as const
-export type CreateFileBody = {
-  /** The type of signed URL to create */
-  action: (typeof CreateFileBodyAction)[keyof typeof CreateFileBodyAction]
-  /** The path to the item */
-  path: string
-}
-
-export type CreateFile201 = {
-  data: FileEntity
-}
-
-export type FindManyFilesParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    isDir?: FieldFilter
-    organizationId?: FieldFilter
-    path?: FieldFilter
-    read?: FieldFilter
-    size?: FieldFilter
-    write?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyFiles200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyFiles200 = {
-  data: FileEntity[]
-  meta?: FindManyFiles200Meta
-}
-
-export type DeleteFile200 = {
-  data: FileEntity
-}
-
-export type GetOneFile200 = {
-  data: FileEntity
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateFileBodyAction = { read: 'read', write: 'write' } as const
-export type UpdateFileBody = {
-  /** The type of signed URL to create */
-  action: (typeof UpdateFileBodyAction)[keyof typeof UpdateFileBodyAction]
-  /** The path to the item */
-  path: string
-}
-
-export type UpdateFile200 = {
-  data: FileEntity
-}
-
-export type CreatePipelineBodyStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type CreatePipelineBodyStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-/**
- * The pipeline step entity
- */
-export type CreatePipelineBodyStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: CreatePipelineBodyStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: CreatePipelineBodyStepsItemPrerequisitesItem[]
-  tool: ToolEntity
-  toolId: string
-}
-
-export type CreatePipelineBody = {
-  /** The pipeline description */
-  description: string
-  /** The name of the pipeline */
-  name: string
-  /** The steps in the pipeline */
-  steps: CreatePipelineBodyStepsItem[]
-}
-
-export type CreatePipeline201 = {
-  data: PipelineEntity
-}
-
-export type FindManyPipelinesParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    description?: FieldFilter
-    name?: FieldFilter
-    organizationId?: FieldFilter
-    steps?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyPipelines200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyPipelines200 = {
-  data: PipelineEntity[]
-  meta?: FindManyPipelines200Meta
-}
-
-export type DeletePipeline200 = {
-  data: PipelineEntity
-}
-
-export type GetOnePipeline200 = {
-  data: PipelineEntity
-}
-
-export type UpdatePipelineBodyStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type UpdatePipelineBodyStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-/**
- * The pipeline step entity
- */
-export type UpdatePipelineBodyStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: UpdatePipelineBodyStepsItemDependentsItem[]
-  /** The name of the pipeline step */
-  name: string
-  pipelineId: string
-  prerequisites: UpdatePipelineBodyStepsItemPrerequisitesItem[]
-  tool: ToolEntity
-  toolId: string
-}
-
-export type UpdatePipelineBody = {
-  /** The pipeline description */
-  description?: string
-  /** The name of the pipeline */
-  name?: string
-  /** The steps in the pipeline */
-  steps?: UpdatePipelineBodyStepsItem[]
-}
-
-export type UpdatePipeline200 = {
-  data: PipelineEntity
-}
-
-export type CreateToolBody = {
-  /** The tool description */
-  description: string
-  /** The name of the tool */
-  name?: string
-}
-
-export type CreateTool201 = {
-  data: ToolEntity
-}
-
-export type FindManyToolsParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    description?: FieldFilter
-    inputType?: FieldFilter
-    name?: FieldFilter
-    organizationId?: FieldFilter
-    outputType?: FieldFilter
-    toolBase?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyTools200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyTools200 = {
-  data: ToolEntity[]
-  meta?: FindManyTools200Meta
-}
-
-export type DeleteTool200 = {
-  data: ToolEntity
-}
-
-export type GetOneTool200 = {
-  data: ToolEntity
-}
-
-export type UpdateToolBody = {
-  /** The tool description */
-  description?: string
-  /** The name of the tool */
-  name?: string
-}
-
-export type UpdateTool200 = {
-  data: ToolEntity
-}
-
 export type CreateArtifactBody = {
   /** The name of the artifact */
   name: string
@@ -1189,16 +1768,8 @@ export type FindManyArtifactsParams = {
   sort?: string
 }
 
-export type FindManyArtifacts200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
 export type FindManyArtifacts200 = {
   data: ArtifactEntity[]
-  meta?: FindManyArtifacts200Meta
 }
 
 export type DeleteArtifact200 = {
@@ -1220,6 +1791,192 @@ export type UpdateArtifactBody = {
 
 export type UpdateArtifact200 = {
   data: ArtifactEntity
+}
+
+export type CreateLabelBody = {
+  /** The name of the label */
+  name: string
+}
+
+export type CreateLabel201 = {
+  data: LabelEntity
+}
+
+export type FindManyLabelsParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    name?: FieldFilter
+    organizationId?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyLabels200 = {
+  data: LabelEntity[]
+}
+
+export type DeleteLabel200 = {
+  data: LabelEntity
+}
+
+export type GetOneLabel200 = {
+  data: LabelEntity
+}
+
+export type UpdateLabelBody = {
+  /** The name of the label */
+  name?: string
+}
+
+export type UpdateLabel200 = {
+  data: LabelEntity
+}
+
+export type CreatePipelineBodyStepsItemDependentsItem = {
+  pipelineStepId: string
+}
+
+export type CreatePipelineBodyStepsItemPrerequisitesItem = {
+  pipelineStepId: string
+}
+
+/**
+ * The pipeline step entity
+ */
+export type CreatePipelineBodyStepsItem = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  dependents: CreatePipelineBodyStepsItemDependentsItem[]
+  /** The name of the pipeline step */
+  name: string
+  pipelineId: string
+  prerequisites: CreatePipelineBodyStepsItemPrerequisitesItem[]
+  toolId: string
+}
+
+export type CreatePipelineBody = {
+  /** The pipeline description */
+  description: string
+  /** The name of the pipeline */
+  name: string
+  /** The steps in the pipeline */
+  steps: CreatePipelineBodyStepsItem[]
+}
+
+export type CreatePipeline201 = {
+  data: PipelineEntity
+}
+
+export type FindManyPipelinesParams = {
+  /**
+   * Filter
+   */
+  filter?: {
+    createdAt?: FieldFilter
+    id?: FieldFilter
+    updatedAt?: FieldFilter
+    description?: FieldFilter
+    name?: FieldFilter
+    organizationId?: FieldFilter
+    steps?: FieldFilter
+  }
+  /**
+   * Pagination
+   */
+  page?: {
+    /**
+     * @minimum 0
+     * @maximum 1.7976931348623157e+308
+     */
+    number?: number
+    /**
+     * @minimum 1
+     * @maximum 100
+     */
+    size?: number
+  }
+  /**
+   * Sort by name ascending and createdAt descending
+   */
+  sort?: string
+}
+
+export type FindManyPipelines200 = {
+  data: PipelineEntity[]
+}
+
+export type DeletePipeline200 = {
+  data: PipelineEntity
+}
+
+export type GetOnePipeline200 = {
+  data: PipelineEntity
+}
+
+export type UpdatePipelineBodyStepsItemDependentsItem = {
+  pipelineStepId: string
+}
+
+export type UpdatePipelineBodyStepsItemPrerequisitesItem = {
+  pipelineStepId: string
+}
+
+/**
+ * The pipeline step entity
+ */
+export type UpdatePipelineBodyStepsItem = {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  dependents: UpdatePipelineBodyStepsItemDependentsItem[]
+  /** The name of the pipeline step */
+  name: string
+  pipelineId: string
+  prerequisites: UpdatePipelineBodyStepsItemPrerequisitesItem[]
+  toolId: string
+}
+
+export type UpdatePipelineBody = {
+  /** The pipeline description */
+  description?: string
+  /** The name of the pipeline */
+  name?: string
+  /** The steps in the pipeline */
+  steps?: UpdatePipelineBodyStepsItem[]
+}
+
+export type UpdatePipeline200 = {
+  data: PipelineEntity
 }
 
 export type CreateRunBody = {
@@ -1270,16 +2027,8 @@ export type FindManyRunsParams = {
   sort?: string
 }
 
-export type FindManyRuns200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
 export type FindManyRuns200 = {
   data: RunEntity[]
-  meta?: FindManyRuns200Meta
 }
 
 export type DeleteRun200 = {
@@ -1299,88 +2048,18 @@ export type UpdateRun200 = {
   data: RunEntity
 }
 
-export type CreateLabelBody = {
-  /** The name of the label */
-  name: string
-}
-
-export type CreateLabel201 = {
-  data: LabelEntity
-}
-
-export type FindManyLabelsParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    name?: FieldFilter
-    organizationId?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyLabels200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyLabels200 = {
-  data: LabelEntity[]
-  meta?: FindManyLabels200Meta
-}
-
-export type DeleteLabel200 = {
-  data: LabelEntity
-}
-
-export type GetOneLabel200 = {
-  data: LabelEntity
-}
-
-export type UpdateLabelBody = {
-  /** The name of the label */
+export type CreateToolBody = {
+  /** The tool description */
+  description: string
+  /** The name of the tool */
   name?: string
 }
 
-export type UpdateLabel200 = {
-  data: LabelEntity
+export type CreateTool201 = {
+  data: ToolEntity
 }
 
-export type CreateOrganizationBody = {
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The organization name */
-  organizationId: string
-}
-
-export type CreateOrganization201 = {
-  data: OrganizationEntity
-}
-
-export type FindManyOrganizationsParams = {
+export type FindManyToolsParams = {
   /**
    * Filter
    */
@@ -1388,702 +2067,12 @@ export type FindManyOrganizationsParams = {
     createdAt?: FieldFilter
     id?: FieldFilter
     updatedAt?: FieldFilter
-    billingEmail?: FieldFilter
-    creator?: FieldFilter
-    credits?: FieldFilter
-    customerId?: FieldFilter
-    organizationId?: FieldFilter
-    plan?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyOrganizations200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyOrganizations200 = {
-  data: OrganizationEntity[]
-  meta?: FindManyOrganizations200Meta
-}
-
-export type DeleteOrganization200 = {
-  data: OrganizationEntity
-}
-
-export type GetOneOrganization200 = {
-  data: OrganizationEntity
-}
-
-export type UpdateOrganizationBody = {
-  /** The billing email to use for the organization */
-  billingEmail?: string
-  /** The organization name */
-  organizationId?: string
-}
-
-export type UpdateOrganization200 = {
-  data: OrganizationEntity
-}
-
-/**
- * The user's avatar image URL
- */
-export type CreateUserBodyImage = null | string
-
-export type CreateUserBody = {
-  /** The user's e-mail */
-  email: string
-  /** The user's avatar image URL */
-  image: CreateUserBodyImage
-}
-
-export type CreateUser201 = {
-  data: UserEntity
-}
-
-export type FindManyUsersParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    deactivated?: FieldFilter
-    email?: FieldFilter
-    emailVerified?: FieldFilter
-    image?: FieldFilter
-    name?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyUsers200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyUsers200 = {
-  data: UserEntity[]
-  meta?: FindManyUsers200Meta
-}
-
-export type DeleteUser200 = {
-  data: UserEntity
-}
-
-export type GetOneUser200 = {
-  data: UserEntity
-}
-
-/**
- * The user's avatar image URL
- */
-export type UpdateUserBodyImage = null | string
-
-export type UpdateUserBody = {
-  /** The user's e-mail */
-  email?: string
-  /** The user's avatar image URL */
-  image?: UpdateUserBodyImage
-}
-
-export type UpdateUser200 = {
-  data: UserEntity
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
-export type CreateMemberBody = {
-  /** The role of the member */
-  role: (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
-}
-
-export type CreateMember201 = {
-  data: MemberEntity
-}
-
-export type FindManyMembersParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    invitationId?: FieldFilter
-    organizationId?: FieldFilter
-    role?: FieldFilter
-    userId?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyMembers200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyMembers200 = {
-  data: MemberEntity[]
-  meta?: FindManyMembers200Meta
-}
-
-export type DeleteMember200 = {
-  data: MemberEntity
-}
-
-export type GetOneMember200 = {
-  data: MemberEntity
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
-export type UpdateMemberBody = {
-  /** The role of the member */
-  role?: (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
-}
-
-export type UpdateMember200 = {
-  data: MemberEntity
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateInvitationBodyRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-export type CreateInvitationBody = {
-  /** The email of the invitated user */
-  email: string
-  /** The role of the invitation */
-  role: (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
-}
-
-export type CreateInvitation201 = {
-  data: InvitationEntity
-}
-
-export type FindManyInvitationsParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    accepted?: FieldFilter
-    email?: FieldFilter
-    organizationId?: FieldFilter
-    role?: FieldFilter
-  }
-  /**
-   * Pagination
-   */
-  page?: {
-    /**
-     * @minimum 0
-     * @maximum 1.7976931348623157e+308
-     */
-    number?: number
-    /**
-     * @minimum 1
-     * @maximum 100
-     */
-    size?: number
-  }
-  /**
-   * Sort by name ascending and createdAt descending
-   */
-  sort?: string
-}
-
-export type FindManyInvitations200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
-}
-
-export type FindManyInvitations200 = {
-  data: InvitationEntity[]
-  meta?: FindManyInvitations200Meta
-}
-
-export type DeleteInvitation200 = {
-  data: InvitationEntity
-}
-
-export type GetOneInvitation200 = {
-  data: InvitationEntity
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateInvitationBodyRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
-} as const
-export type UpdateInvitationBody = {
-  /** The email of the invitated user */
-  email?: string
-  /** The role of the invitation */
-  role?: (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
-}
-
-export type UpdateInvitation200 = {
-  data: InvitationEntity
-}
-
-/**
- * City/District/Suburb/Town/Village.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfCity =
-  | string
-  | null
-
-/**
- * Two-letter country code (ISO 3166-1 alpha-2).
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfCountry =
-  | string
-  | null
-
-/**
- * Address line 1 (e.g., street, PO Box, or company name).
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine1 =
-  | string
-  | null
-
-/**
- * Address line 2 (e.g., apartment, suite, unit, or building).
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine2 =
-  | string
-  | null
-
-/**
- * ZIP or postal code.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfPostalCode =
-  | string
-  | null
-
-/**
- * State/County/Province/Region.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfState =
-  | string
-  | null
-
-export type DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOf = {
-  /** City/District/Suburb/Town/Village. */
-  city?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfCity
-  /** Two-letter country code (ISO 3166-1 alpha-2). */
-  country?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfCountry
-  /** Address line 1 (e.g., street, PO Box, or company name). */
-  line1?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine1
-  /** Address line 2 (e.g., apartment, suite, unit, or building). */
-  line2?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine2
-  /** ZIP or postal code. */
-  postal_code?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfPostalCode
-  /** State/County/Province/Region. */
-  state?: DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOfState
-}
-
-export type DeletePaymentMethod200BillingDetailsAnyOfAddress =
-  DeletePaymentMethod200BillingDetailsAnyOfAddressAnyOf | null
-
-/**
- * Email address associated with the payment method.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfEmail = string | null
-
-/**
- * Full name associated with the payment method.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfName = string | null
-
-/**
- * Phone number associated with the payment method.
- */
-export type DeletePaymentMethod200BillingDetailsAnyOfPhone = string | null
-
-export type DeletePaymentMethod200BillingDetailsAnyOf = {
-  address: DeletePaymentMethod200BillingDetailsAnyOfAddress
-  /** Email address associated with the payment method. */
-  email?: DeletePaymentMethod200BillingDetailsAnyOfEmail
-  /** Full name associated with the payment method. */
-  name?: DeletePaymentMethod200BillingDetailsAnyOfName
-  /** Phone number associated with the payment method. */
-  phone?: DeletePaymentMethod200BillingDetailsAnyOfPhone
-}
-
-export type DeletePaymentMethod200BillingDetails =
-  DeletePaymentMethod200BillingDetailsAnyOf | null
-
-/**
- * Two-letter ISO code representing the country of the card.
- */
-export type DeletePaymentMethod200CardAnyOfCountry = string | null
-
-/**
- * Unencrypted PAN tokens (optional, sensitive).
- */
-export type DeletePaymentMethod200CardAnyOfFingerprint = string | null
-
-export type DeletePaymentMethod200CardAnyOf = {
-  /** Card brand (e.g., Visa, MasterCard). */
-  brand: string
-  /** Two-letter ISO code representing the country of the card. */
-  country?: DeletePaymentMethod200CardAnyOfCountry
-  /** Two-digit number representing the card’s expiration month. */
-  exp_month: number
-  /** Four-digit number representing the card’s expiration year. */
-  exp_year: number
-  /** Unencrypted PAN tokens (optional, sensitive). */
-  fingerprint?: DeletePaymentMethod200CardAnyOfFingerprint
-  /** Card funding type (credit, debit, prepaid, unknown). */
-  funding: string
-  /** The last four digits of the card. */
-  last4: string
-}
-
-/**
- * If the PaymentMethod is a card, this contains the card details.
- */
-export type DeletePaymentMethod200Card = DeletePaymentMethod200CardAnyOf | null
-
-/**
- * The payment method entity
- */
-export type DeletePaymentMethod200 = {
-  /** The date this item was created */
-  createdAt: string
-  /** Unique identifier for the payment method. */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  billing_details: DeletePaymentMethod200BillingDetails
-  /** If the PaymentMethod is a card, this contains the card details. */
-  card?: DeletePaymentMethod200Card
-  /** ID of the customer this payment method is saved to. */
-  customer: string
-  /** The type of the PaymentMethod. An example value is "card". */
-  type: string
-}
-
-/**
- * City/District/Suburb/Town/Village.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfCity =
-  | string
-  | null
-
-/**
- * Two-letter country code (ISO 3166-1 alpha-2).
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfCountry =
-  | string
-  | null
-
-/**
- * Address line 1 (e.g., street, PO Box, or company name).
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine1 =
-  | string
-  | null
-
-/**
- * Address line 2 (e.g., apartment, suite, unit, or building).
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine2 =
-  | string
-  | null
-
-/**
- * ZIP or postal code.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfPostalCode =
-  | string
-  | null
-
-/**
- * State/County/Province/Region.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfState =
-  | string
-  | null
-
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOf = {
-  /** City/District/Suburb/Town/Village. */
-  city?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfCity
-  /** Two-letter country code (ISO 3166-1 alpha-2). */
-  country?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfCountry
-  /** Address line 1 (e.g., street, PO Box, or company name). */
-  line1?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine1
-  /** Address line 2 (e.g., apartment, suite, unit, or building). */
-  line2?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfLine2
-  /** ZIP or postal code. */
-  postal_code?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfPostalCode
-  /** State/County/Province/Region. */
-  state?: FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOfState
-}
-
-export type FindOnePaymentMethod200BillingDetailsAnyOfAddress =
-  FindOnePaymentMethod200BillingDetailsAnyOfAddressAnyOf | null
-
-/**
- * Email address associated with the payment method.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfEmail = string | null
-
-/**
- * Full name associated with the payment method.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfName = string | null
-
-/**
- * Phone number associated with the payment method.
- */
-export type FindOnePaymentMethod200BillingDetailsAnyOfPhone = string | null
-
-export type FindOnePaymentMethod200BillingDetailsAnyOf = {
-  address: FindOnePaymentMethod200BillingDetailsAnyOfAddress
-  /** Email address associated with the payment method. */
-  email?: FindOnePaymentMethod200BillingDetailsAnyOfEmail
-  /** Full name associated with the payment method. */
-  name?: FindOnePaymentMethod200BillingDetailsAnyOfName
-  /** Phone number associated with the payment method. */
-  phone?: FindOnePaymentMethod200BillingDetailsAnyOfPhone
-}
-
-export type FindOnePaymentMethod200BillingDetails =
-  FindOnePaymentMethod200BillingDetailsAnyOf | null
-
-/**
- * Two-letter ISO code representing the country of the card.
- */
-export type FindOnePaymentMethod200CardAnyOfCountry = string | null
-
-/**
- * Unencrypted PAN tokens (optional, sensitive).
- */
-export type FindOnePaymentMethod200CardAnyOfFingerprint = string | null
-
-export type FindOnePaymentMethod200CardAnyOf = {
-  /** Card brand (e.g., Visa, MasterCard). */
-  brand: string
-  /** Two-letter ISO code representing the country of the card. */
-  country?: FindOnePaymentMethod200CardAnyOfCountry
-  /** Two-digit number representing the card’s expiration month. */
-  exp_month: number
-  /** Four-digit number representing the card’s expiration year. */
-  exp_year: number
-  /** Unencrypted PAN tokens (optional, sensitive). */
-  fingerprint?: FindOnePaymentMethod200CardAnyOfFingerprint
-  /** Card funding type (credit, debit, prepaid, unknown). */
-  funding: string
-  /** The last four digits of the card. */
-  last4: string
-}
-
-/**
- * If the PaymentMethod is a card, this contains the card details.
- */
-export type FindOnePaymentMethod200Card =
-  FindOnePaymentMethod200CardAnyOf | null
-
-/**
- * The payment method entity
- */
-export type FindOnePaymentMethod200 = {
-  /** The date this item was created */
-  createdAt: string
-  /** Unique identifier for the payment method. */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  billing_details: FindOnePaymentMethod200BillingDetails
-  /** If the PaymentMethod is a card, this contains the card details. */
-  card?: FindOnePaymentMethod200Card
-  /** ID of the customer this payment method is saved to. */
-  customer: string
-  /** The type of the PaymentMethod. An example value is "card". */
-  type: string
-}
-
-/**
- * The description of the plan
- */
-export type GetPlans200ItemDescription = string | null
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetPlans200ItemMetadataKey = {
-  BASIC: 'BASIC',
-  FREE: 'FREE',
-  PREMIUM: 'PREMIUM',
-  STANDARD: 'STANDARD',
-  UNLIMITED: 'UNLIMITED'
-} as const
-export type GetPlans200ItemMetadata = {
-  /** The key of the metadata */
-  key?: (typeof GetPlans200ItemMetadataKey)[keyof typeof GetPlans200ItemMetadataKey]
-}
-
-/**
- * The metadata of the price associated with the plan
- */
-export type GetPlans200ItemPriceMetadata = { [key: string]: string }
-
-export type GetPlans200ItemRecurringAnyOfTrialPeriodDays = number | null
-
-export type GetPlans200ItemRecurringAnyOf = {
-  interval: string
-  interval_count: number
-  trial_period_days?: GetPlans200ItemRecurringAnyOfTrialPeriodDays
-}
-
-/**
- * The interval of the plan
- */
-export type GetPlans200ItemRecurring = GetPlans200ItemRecurringAnyOf | null
-
-/**
- * The amount in cents to be charged on the interval specified
- */
-export type GetPlans200ItemUnitAmount = number | null
-
-/**
- * The plan resource
- */
-export type GetPlans200Item = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the plan */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The currency of the plan */
-  currency: string
-  /** The description of the plan */
-  description?: GetPlans200ItemDescription
-  metadata: GetPlans200ItemMetadata
-  /** The name of the plan */
-  name: string
-  /** The ID of the price associated with the plan */
-  priceId: string
-  /** The metadata of the price associated with the plan */
-  priceMetadata: GetPlans200ItemPriceMetadata
-  /** The interval of the plan */
-  recurring?: GetPlans200ItemRecurring
-  /** The amount in cents to be charged on the interval specified */
-  unitAmount?: GetPlans200ItemUnitAmount
-}
-
-export type CreatePortalBody = {
-  organizationId: string
-}
-
-export type CreateCheckoutSessionBody = {
-  /**
-   * The ID of the price associated with the checkout session
-   * @minLength 1
-   * @maxLength 255
-   */
-  priceId: string
-}
-
-export type CreateCheckoutSession200 = {
-  /** The URL that will bring you to the necessary Stripe page */
-  url: string
-}
-
-export type UpdateSubscriptionBody = {
-  /** The ID of the plan */
-  planId: string
-}
-
-export type CreateApiTokenBody = { [key: string]: unknown }
-
-export type CreateApiToken201 = {
-  data: ApiTokenEntity
-}
-
-export type FindManyApiTokensParams = {
-  /**
-   * Filter
-   */
-  filter?: {
-    createdAt?: FieldFilter
-    id?: FieldFilter
-    updatedAt?: FieldFilter
-    key?: FieldFilter
+    description?: FieldFilter
+    inputType?: FieldFilter
     name?: FieldFilter
     organizationId?: FieldFilter
-    role?: FieldFilter
+    outputType?: FieldFilter
+    toolBase?: FieldFilter
   }
   /**
    * Pagination
@@ -2106,135 +2095,37 @@ export type FindManyApiTokensParams = {
   sort?: string
 }
 
-export type FindManyApiTokens200Meta = {
-  count: number
-  page: number
-  pageSize: number
-  total: number
+export type FindManyTools200 = {
+  data: ToolEntity[]
 }
 
-export type FindManyApiTokens200 = {
-  data: ApiTokenEntity[]
-  meta?: FindManyApiTokens200Meta
+export type DeleteTool200 = {
+  data: ToolEntity
 }
 
-export type DeleteApiToken200 = {
-  data: ApiTokenEntity
+export type GetOneTool200 = {
+  data: ToolEntity
 }
 
-export type GetOneApiToken200 = {
-  data: ApiTokenEntity
+export type UpdateToolBody = {
+  /** The tool description */
+  description?: string
+  /** The name of the tool */
+  name?: string
 }
 
-export type UpdateApiTokenBody = { [key: string]: unknown }
-
-export type UpdateApiToken200 = {
-  data: ApiTokenEntity
+export type UpdateTool200 = {
+  data: ToolEntity
 }
 
-export type LoginBody = {
-  /** The email address associated with the account */
-  email: string
-  /** The password for the account */
-  password: string
+export type GetHealth200Services = {
+  database?: string
+  email?: string
+  redis?: string
 }
 
-/**
- * The user's avatar image URL
- */
-export type Login201Image = null | string
-
-/**
- * The user entity
- */
-export type Login201 = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: Login201Image
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-/**
- * The user's avatar image URL
- */
-export type GetSession200Image = null | string
-
-/**
- * The user entity
- */
-export type GetSession200 = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: GetSession200Image
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type ConfirmPasswordResetBody = {
-  /** The new password */
-  newPassword: string
-  /** The password reset token */
-  token: string
-}
-
-export type RequestPasswordResetBody = {
-  /** The e-mail to send the password reset token to */
-  email: string
-}
-
-export type ConfirmEmailChangeBody = {
-  /** The e-mail to send the confirmation token to */
-  newEmail: string
-  /** The password reset token */
-  token: string
-  /** The user ID of the user requesting the email change */
-  userId: string
-}
-
-export type RequestEmailChangeBody = {
-  /** The e-mail to send the confirmation token to */
-  newEmail: string
-  /** The user ID of the user requesting the email change */
-  userId: string
-}
-
-export type ConfirmEmailVerificationBody = {
-  /** The password reset token */
-  token: string
-}
-
-export type RegisterBody = {
-  /** The email address associated with the account */
-  email: string
-  /** The password for the account */
-  password: string
+export type GetHealth200 = {
+  services?: GetHealth200Services
+  timestamp?: string
+  uptime?: number
 }

@@ -1,25 +1,27 @@
-import type { DatabaseService, EntityFilter, SearchQuery } from '@archesai/core'
+import type { PgTable } from 'drizzle-orm/pg-core'
+
+import type { EntityFilter, SearchQuery } from '@archesai/core'
 import type { BaseEntity, TSchema } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
 import { Value } from '@archesai/schemas'
 
+import type { DrizzleDatabaseService } from '#adapters/drizzle-database.service'
+
 export type BaseRepository<
   TEntity extends BaseEntity,
-  TInsert,
-  TSelect extends BaseEntity
-> = ReturnType<typeof createBaseRepository<TEntity, TInsert, TSelect>>
+  TModel extends BaseEntity
+> = ReturnType<typeof createBaseRepository<TEntity, TModel>>
 
 export function createBaseRepository<
   TEntity extends BaseEntity,
-  TInsert,
-  TSelect extends BaseEntity
+  TModel extends BaseEntity
 >(
-  databaseService: DatabaseService<TInsert, TSelect>,
-  table: unknown,
+  databaseService: DrizzleDatabaseService,
+  table: PgTable,
   entitySchema: TSchema
 ) {
-  const toEntity = (model: TSelect): TEntity => {
+  const toEntity = (model: (typeof table)['$inferSelect']): TEntity => {
     return Value.Parse(entitySchema, model)
 
     // try {
@@ -39,13 +41,13 @@ export function createBaseRepository<
     // }
   }
 
-  const buildSearchQueryPrimaryKey = (value: string): SearchQuery<TSelect> => {
-    const query: SearchQuery<TSelect> = {
+  const buildSearchQueryPrimaryKey = (value: string): SearchQuery<TModel> => {
+    const query: SearchQuery<TModel> = {
       filter: {
         id: {
           equals: value
         }
-      } as EntityFilter<TSelect>,
+      } as EntityFilter<TModel>,
       page: {
         number: 0,
         size: 1
@@ -56,7 +58,7 @@ export function createBaseRepository<
   }
 
   return {
-    async create(data: TInsert): Promise<TEntity> {
+    async create(data: (typeof table)['$inferInsert']): Promise<TEntity> {
       const [model] = await databaseService.insert(table, [data])
       if (!model) {
         throw new Error('Failed to create entity')
@@ -65,7 +67,7 @@ export function createBaseRepository<
     },
 
     async createMany(
-      data: TInsert[]
+      data: (typeof table)['$inferInsert'][]
     ): Promise<{ count: number; data: TEntity[] }> {
       const models = await databaseService.insert(table, data)
       return {
@@ -85,25 +87,25 @@ export function createBaseRepository<
     },
 
     async deleteMany(
-      query: SearchQuery<TSelect>
+      query: SearchQuery<TModel>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const models = await databaseService.delete(table, whereConditions)
       return {
         count: models.length,
-        data: models.map((res) => toEntity(res))
+        data: models.map((model) => toEntity(model))
       }
     },
 
     async findMany(
-      query: SearchQuery<TSelect>
+      query: SearchQuery<TModel>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const models = await databaseService.select(table, whereConditions)
       const count = await databaseService.count(table, whereConditions)
       return {
         count: count,
-        data: models.map((res) => toEntity(res))
+        data: models.map((model) => toEntity(model))
       }
     },
 
@@ -117,10 +119,17 @@ export function createBaseRepository<
       return toEntity(model)
     },
 
-    async update(id: string, data: Partial<TInsert>): Promise<TEntity> {
+    async update(
+      id: string,
+      data: (typeof table)['$inferInsert']
+    ): Promise<TEntity> {
       const query = buildSearchQueryPrimaryKey(id)
       const whereConditions = databaseService.buildWhereConditions(table, query)
-      const [model] = await databaseService.update(table, data, whereConditions)
+      const [model] = await databaseService.update(
+        table,
+        [data],
+        whereConditions
+      )
       if (!model) {
         throw new Error('Failed to update entity')
       }
@@ -128,8 +137,8 @@ export function createBaseRepository<
     },
 
     async updateMany(
-      data: Partial<TInsert>,
-      query: SearchQuery<TSelect>
+      data: (typeof table)['$inferInsert'][],
+      query: SearchQuery<TModel>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const models = await databaseService.update(table, data, whereConditions)

@@ -1,20 +1,20 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type { AccountInsertModel, AccountSelectModel } from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
+  ACCOUNT_ENTITY_KEY,
   AccountEntitySchema,
-  CreateAccountDtoSchema,
-  TOOL_ENTITY_KEY
+  CreateAccountDtoSchema
 } from '@archesai/schemas'
 
 import { createAccountRepository } from '#accounts/account.repository'
 import { createAccountsService } from '#accounts/accounts.service'
 
 export interface AccountsPluginOptions {
-  databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -32,7 +32,7 @@ export const accountsPlugin: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateAccountDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: ACCOUNT_ENTITY_KEY,
     entitySchema: AccountEntitySchema,
     prefix: '/accounts',
     service: accountsService,

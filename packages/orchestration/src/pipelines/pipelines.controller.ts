@@ -1,16 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type {
-  PipelineInsertModel,
-  PipelineSelectModel
-} from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreatePipelineDtoSchema,
+  PIPELINE_ENTITY_KEY,
   PipelineEntitySchema,
-  TOOL_ENTITY_KEY,
   UpdatePipelineDtoSchema
 } from '@archesai/schemas'
 
@@ -18,7 +15,7 @@ import { createPipelineRepository } from '#pipelines/pipeline.repository'
 import { createPipelinesService } from '#pipelines/pipelines.service'
 
 export interface PipelinesPluginOptions {
-  databaseService: DatabaseService<PipelineInsertModel, PipelineSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -36,7 +33,7 @@ export const pipelinesController: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreatePipelineDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: PIPELINE_ENTITY_KEY,
     entitySchema: PipelineEntitySchema,
     prefix: '/pipelines',
     service: pipelinesService,

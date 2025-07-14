@@ -23,6 +23,18 @@ export default function RegisterPage() {
         fields={[
           {
             defaultValue: '',
+            label: 'Name',
+            name: 'name',
+            renderControl: (field) => (
+              <Input
+                {...field}
+                type='text'
+              />
+            ),
+            validationRule: CreateAccountDtoSchema.properties.name
+          },
+          {
+            defaultValue: '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
@@ -63,6 +75,7 @@ export default function RegisterPage() {
           await register({
             data: {
               email: data.email,
+              name: data.name,
               password: data.password
             }
           })

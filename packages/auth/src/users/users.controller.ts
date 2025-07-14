@@ -1,13 +1,13 @@
 import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import type { DatabaseService, WebsocketsService } from '@archesai/core'
-import type { UserInsertModel, UserSelectModel } from '@archesai/database'
+import type { WebsocketsService } from '@archesai/core'
+import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
   CreateUserDtoSchema,
-  TOOL_ENTITY_KEY,
   UpdateUserDtoSchema,
+  USER_ENTITY_KEY,
   UserEntitySchema
 } from '@archesai/schemas'
 
@@ -15,7 +15,7 @@ import { createUserRepository } from '#users/user.repository'
 import { createUsersService } from '#users/users.service'
 
 export interface UsersPluginOptions {
-  databaseService: DatabaseService<UserInsertModel, UserSelectModel>
+  databaseService: DrizzleDatabaseService
   websocketsService: WebsocketsService
 }
 
@@ -30,7 +30,7 @@ export const usersPlugin: FastifyPluginAsyncTypebox<
   await app.register(crudPlugin, {
     createSchema: CreateUserDtoSchema,
     enableBulkOperations: true,
-    entityKey: TOOL_ENTITY_KEY,
+    entityKey: USER_ENTITY_KEY,
     entitySchema: UserEntitySchema,
     prefix: '/users',
     service: usersService,

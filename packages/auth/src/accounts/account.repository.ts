@@ -1,19 +1,20 @@
-import type { DatabaseService } from '@archesai/core'
-import type { AccountInsertModel, AccountSelectModel } from '@archesai/database'
+import type {
+  AccountSelectModel,
+  DrizzleDatabaseService
+} from '@archesai/database'
 import type { AccountEntity } from '@archesai/schemas'
 
-import { createBaseRepository } from '@archesai/core'
-import { AccountTable } from '@archesai/database'
+import { AccountTable, createBaseRepository } from '@archesai/database'
 import { AccountEntitySchema } from '@archesai/schemas'
 
 export const createAccountRepository = (
-  databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
+  databaseService: DrizzleDatabaseService
 ) => {
-  return createBaseRepository<
-    AccountEntity,
-    AccountInsertModel,
-    AccountSelectModel
-  >(databaseService, AccountTable, AccountEntitySchema)
+  return createBaseRepository<AccountEntity, AccountSelectModel>(
+    databaseService,
+    AccountTable,
+    AccountEntitySchema
+  )
 }
 
 export type AccountRepository = ReturnType<typeof createAccountRepository>
