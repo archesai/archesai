@@ -1,6 +1,6 @@
 import type Stripe from 'stripe'
 
-import type { BaseRepository, SearchQuery } from '@archesai/core'
+import type { SearchQuery } from '@archesai/core'
 import type { PaymentMethodEntity } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
@@ -11,20 +11,7 @@ import type { StripeService } from '#stripe/stripe.service'
 /**
  * Repository for Payment Methods.
  */
-export class PaymentMethodRepository
-  implements
-    Pick<
-      BaseRepository<PaymentMethodEntity, PaymentMethodEntity>,
-      | 'create'
-      | 'createMany'
-      | 'delete'
-      | 'deleteMany'
-      | 'findMany'
-      | 'findOne'
-      | 'update'
-      | 'updateMany'
-    >
-{
+export class PaymentMethodRepository {
   protected readonly primaryKey = 'payment-method'
   private readonly stripeService: StripeService
 

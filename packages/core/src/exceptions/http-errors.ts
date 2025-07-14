@@ -1,136 +1,59 @@
 export class AppError extends Error {
-  public readonly code?: string
-  public readonly detail: string
-  public readonly meta?: Record<string, unknown>
-  public readonly status: string = '500' // JSON:API wants string
-  public readonly title: string
+  public code?: string
+  public statusCode: number
 
-  constructor({
-    code,
-    message = 'An unexpected error occurred',
-    detail = message,
-    meta,
-    status = '500',
-    title = 'Internal Server Error'
-  }: {
-    code?: string
-    detail?: string
-    message?: string
-    meta?: Record<string, unknown>
-    status?: number | string
-    title?: string
-  } = {}) {
+  constructor(statusCode: number, message: string, code?: string) {
     super(message)
-    this.name = 'AppError'
-    this.title = title
-    this.detail = detail
-    this.status = String(status)
-    if (code) {
-      this.code = code
-    }
-    if (meta) {
-      this.meta = meta
-    }
+    this.code = code
+    this.statusCode = statusCode
+    this.name = this.constructor.name
+    Error.captureStackTrace(this, this.constructor)
   }
 }
 
 export class BadRequestException extends AppError {
-  constructor(detail = 'Bad request', meta?: Record<string, unknown>) {
-    super({
-      code: 'BAD_REQUEST',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 400,
-      title: 'Bad Request'
-    })
-    this.name = 'BadRequestException'
+  constructor(message = 'Bad Request') {
+    super(400, message, 'BAD_REQUEST')
   }
 }
 
 export class ConflictException extends AppError {
-  constructor(detail = 'Conflict', meta?: Record<string, unknown>) {
-    super({
-      code: 'CONFLICT',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 409,
-      title: 'Conflict'
-    })
-    this.name = 'ConflictException'
+  constructor(message = 'Conflict') {
+    super(403, message, 'CONFLICT')
   }
 }
 
 export class ForbiddenException extends AppError {
-  constructor(detail = 'Forbidden', meta?: Record<string, unknown>) {
-    super({
-      code: 'FORBIDDEN',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 403,
-      title: 'Forbidden'
-    })
-    this.name = 'ForbiddenException'
+  constructor(message = 'Forbidden') {
+    super(403, message, 'FORBIDDEN')
   }
 }
 
 export class InternalServerErrorException extends AppError {
-  constructor(
-    detail = 'Internal Server Error',
-    meta?: Record<string, unknown>
-  ) {
-    super({
-      code: 'INTERNAL_SERVER_ERROR',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 500,
-      title: 'Internal Server Error'
-    })
-    this.name = 'InternalServerErrorException'
+  constructor(message = 'Internal Server Error') {
+    super(404, message, 'INTERNAL_SERVER_ERROR')
   }
 }
 
 export class NotFoundException extends AppError {
-  constructor(detail = 'Not Found', meta?: Record<string, unknown>) {
-    super({
-      code: 'NOT_FOUND',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 404,
-      title: 'Not Found'
-    })
-    this.name = 'NotFoundException'
+  constructor(message = 'Not Found') {
+    super(404, message, 'NOT_FOUND')
   }
 }
 
 export class UnauthorizedException extends AppError {
-  constructor(detail = 'Unauthorized', meta?: Record<string, unknown>) {
-    super({
-      code: 'UNAUTHORIZED',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 401,
-      title: 'Unauthorized'
-    })
-    this.name = 'UnauthorizedException'
+  constructor(message = 'Unauthorized') {
+    super(401, message, 'UNAUTHORIZED')
   }
 }
 
-export class UnprocessableEntityException extends AppError {
-  constructor(detail = 'Unprocessable Entity', meta?: Record<string, unknown>) {
-    super({
-      code: 'UNPROCESSABLE_ENTITY',
-      detail,
-      message: detail,
-      ...(meta ? { meta } : {}),
-      status: 422,
-      title: 'Unprocessable Entity'
-    })
-    this.name = 'UnprocessableEntityException'
+export class ValidationException extends AppError {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public details?: any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(message = 'Validation Error', details?: any) {
+    super(422, message, 'VALIDATION_ERROR')
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this.details = details
   }
 }

@@ -2,26 +2,20 @@ import { promises } from 'node:fs'
 import os from 'node:os'
 import { basename, dirname, join } from 'node:path'
 
-import type { HealthCheck, HealthStatus } from '@archesai/core'
+import type { Logger } from '@archesai/core'
 import type { FileEntity } from '@archesai/schemas'
 
-import { ConflictException, Logger, NotFoundException } from '@archesai/core'
+import { ConflictException, NotFoundException } from '@archesai/core'
 
 import { StorageService } from '#storage/storage.service'
 
 /**
  * Service for interacting with the local file system.
  */
-export class LocalStorageService extends StorageService implements HealthCheck {
-  private readonly health: HealthStatus
-  private readonly logger = new Logger(LocalStorageService.name)
-
-  constructor() {
+export class LocalStorageService extends StorageService {
+  constructor(logger: Logger) {
     super()
-    this.health = {
-      status: 'COMPLETED'
-    }
-    this.logger.debug('local-storage initialized')
+    logger.debug('local-storage initialized')
   }
 
   public async checkExists(
@@ -104,10 +98,6 @@ export class LocalStorageService extends StorageService implements HealthCheck {
       updatedAt: stats.mtime.toUTCString(),
       write: path
     }
-  }
-
-  public getHealth(): HealthStatus {
-    return this.health
   }
 
   public async listDirectory(path: string): Promise<FileEntity[]> {

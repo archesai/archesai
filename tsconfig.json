@@ -49,9 +49,6 @@
       "path": "./tooling/eslint"
     },
     {
-      "path": "./tooling/jest"
-    },
-    {
       "path": "./tooling/prettier"
     }
   ]

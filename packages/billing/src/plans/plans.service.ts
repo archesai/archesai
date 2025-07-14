@@ -1,6 +1,5 @@
+import type { Logger } from '@archesai/core'
 import type { PlanDto } from '@archesai/schemas'
-
-import { Logger } from '@archesai/core'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -8,11 +7,12 @@ import type { StripeService } from '#stripe/stripe.service'
  * Service for Plans.
  */
 export class PlansService {
-  private readonly logger = new Logger(PlansService.name)
+  private readonly logger: Logger
   private readonly stripeService: StripeService
 
-  constructor(stripeService: StripeService) {
+  constructor(stripeService: StripeService, logger: Logger) {
     this.stripeService = stripeService
+    this.logger = logger
   }
 
   public async findAll(): Promise<{

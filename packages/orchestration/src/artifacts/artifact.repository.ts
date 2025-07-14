@@ -5,21 +5,18 @@ import type {
 } from '@archesai/database'
 import type { ArtifactEntity } from '@archesai/schemas'
 
-import { BaseRepository } from '@archesai/core'
+import { createBaseRepository } from '@archesai/core'
 import { ArtifactTable } from '@archesai/database'
 import { ArtifactEntitySchema } from '@archesai/schemas'
 
-/**
- * Repository for content.
- */
-export class ArtifactRepository extends BaseRepository<
-  ArtifactEntity,
-  ArtifactInsertModel,
-  ArtifactSelectModel
-> {
-  constructor(
-    databaseService: DatabaseService<ArtifactInsertModel, ArtifactSelectModel>
-  ) {
-    super(databaseService, ArtifactTable, ArtifactEntitySchema)
-  }
+export const createArtifactRepository = (
+  databaseService: DatabaseService<ArtifactInsertModel, ArtifactSelectModel>
+) => {
+  return createBaseRepository<
+    ArtifactEntity,
+    ArtifactInsertModel,
+    ArtifactSelectModel
+  >(databaseService, ArtifactTable, ArtifactEntitySchema)
 }
+
+export type ArtifactRepository = ReturnType<typeof createArtifactRepository>

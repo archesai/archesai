@@ -2,21 +2,18 @@ import type { DatabaseService } from '@archesai/core'
 import type { AccountInsertModel, AccountSelectModel } from '@archesai/database'
 import type { AccountEntity } from '@archesai/schemas'
 
-import { BaseRepository } from '@archesai/core'
+import { createBaseRepository } from '@archesai/core'
 import { AccountTable } from '@archesai/database'
 import { AccountEntitySchema } from '@archesai/schemas'
 
-/**
- * Repository for managing accounts.
- */
-export class AccountRepository extends BaseRepository<
-  AccountEntity,
-  AccountInsertModel,
-  AccountSelectModel
-> {
-  constructor(
-    databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
-  ) {
-    super(databaseService, AccountTable, AccountEntitySchema)
-  }
+export const createAccountRepository = (
+  databaseService: DatabaseService<AccountInsertModel, AccountSelectModel>
+) => {
+  return createBaseRepository<
+    AccountEntity,
+    AccountInsertModel,
+    AccountSelectModel
+  >(databaseService, AccountTable, AccountEntitySchema)
 }
+
+export type AccountRepository = ReturnType<typeof createAccountRepository>

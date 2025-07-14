@@ -4,12 +4,20 @@ import type { Socket } from 'socket.io'
 import { Server as WebsocketsServer } from 'socket.io'
 
 import type { ConfigService } from '#config/config.service'
+import type { Logger } from '#logging/logger'
 import type { RedisService } from '#redis/redis.service'
 
-import { Logger } from '#logging/logger'
 import { RedisIoAdapter } from '#websockets/adapters/redis-io.adapter'
 
 type ArchesWebsocketsSocket = Socket<never, never, never, { sub: string }>
+
+export const createWebsocketsService = (
+  configService: ConfigService,
+  redisService: RedisService,
+  logger: Logger
+) => {
+  return new WebsocketsService(configService, redisService, logger)
+}
 
 export class WebsocketsService {
   public io?: WebsocketsServer
@@ -17,12 +25,17 @@ export class WebsocketsService {
     return this.io
   }
   private readonly configService: ConfigService
-  private readonly logger = new Logger(WebsocketsService.name)
+  private readonly logger: Logger
   private readonly redisService: RedisService
 
-  constructor(configService: ConfigService, redisService: RedisService) {
+  constructor(
+    configService: ConfigService,
+    redisService: RedisService,
+    logger: Logger
+  ) {
     this.configService = configService
     this.redisService = redisService
+    this.logger = logger
   }
 
   public broadcastEvent(room: string, event: string, data: unknown): void {
@@ -32,7 +45,7 @@ export class WebsocketsService {
   public async handleConnection(socket: ArchesWebsocketsSocket) {
     try {
       const token = this.getTokenFromSocket(socket)
-      // const { sub } = this.jwtService.verify<AccessTokenDecodedJwt>(token)
+      // const { sub } = jwt.verify<AccessTokenDecodedJwt>(token)
       const sub = token // FIXME
 
       await socket.join(sub)

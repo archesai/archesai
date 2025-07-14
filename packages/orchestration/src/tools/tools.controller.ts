@@ -1,7 +1,9 @@
-import type { Controller } from '@archesai/core'
-import type { ToolEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type { ToolInsertModel, ToolSelectModel } from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateToolDtoSchema,
   TOOL_ENTITY_KEY,
@@ -9,22 +11,29 @@ import {
   UpdateToolDtoSchema
 } from '@archesai/schemas'
 
-import type { ToolsService } from '#tools/tools.service'
+import { createToolRepository } from '#tools/tool.repository'
+import { createToolsService } from '#tools/tools.service'
 
-/**
- * Controller for tools.
- */
-export class ToolsController
-  extends BaseController<ToolEntity>
-  implements Controller
-{
-  constructor(toolsService: ToolsService) {
-    super(
-      TOOL_ENTITY_KEY,
-      ToolEntitySchema,
-      CreateToolDtoSchema,
-      UpdateToolDtoSchema,
-      toolsService
-    )
-  }
+export interface ToolsPluginOptions {
+  databaseService: DatabaseService<ToolInsertModel, ToolSelectModel>
+  websocketsService: WebsocketsService
+}
+
+export const toolsController: FastifyPluginAsyncTypebox<
+  ToolsPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the tool repository and service
+  const toolRepository = createToolRepository(databaseService)
+  const toolsService = createToolsService(toolRepository, websocketsService)
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateToolDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: ToolEntitySchema,
+    prefix: '/tools',
+    service: toolsService,
+    updateSchema: UpdateToolDtoSchema
+  })
 }

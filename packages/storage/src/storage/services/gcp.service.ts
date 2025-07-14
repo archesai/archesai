@@ -4,10 +4,10 @@ import { Readable } from 'node:stream'
 
 import { Storage } from '@google-cloud/storage'
 
-import type { HealthCheck, HealthStatus } from '@archesai/core'
+import type { Logger } from '@archesai/core'
 import type { FileEntity } from '@archesai/schemas'
 
-import { ConflictException, Logger, NotFoundException } from '@archesai/core'
+import { ConflictException, NotFoundException } from '@archesai/core'
 
 import { StorageService } from '#storage/storage.service'
 
@@ -30,30 +30,22 @@ const archesaiSa = {
 /**
  * Service for interacting with Google Cloud Storage.
  */
-export class GoogleCloudStorageService
-  extends StorageService
-  implements HealthCheck
-{
+export class GoogleCloudStorageService extends StorageService {
   private readonly bucketName: string
   private readonly expirationTime: number
-  private readonly health: HealthStatus
-  private readonly logger = new Logger(GoogleCloudStorageService.name)
   private readonly storage: Storage
 
-  constructor() {
+  constructor(logger: Logger) {
     super()
     this.bucketName = 'archesai'
     this.expirationTime = 60 * 60 * 1000
-    this.health = {
-      status: 'COMPLETED'
-    }
     this.storage = new Storage({
       credentials: {
         ...archesaiSa
       },
       projectId: 'archesai'
     })
-    this.logger.debug('google-cloud-storage initialized')
+    logger.debug('google-cloud-storage initialized')
   }
 
   public async checkExists(
@@ -152,10 +144,6 @@ export class GoogleCloudStorageService
       size: Number(file.metadata.size),
       updatedAt: new Date(file.metadata.updated ?? Date.now()).toUTCString()
     }
-  }
-
-  public getHealth(): HealthStatus {
-    return this.health
   }
 
   public async listDirectory(path: string): Promise<FileEntity[]> {

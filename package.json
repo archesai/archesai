@@ -41,7 +41,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "only-allow": "^1.2.1",
-    "prettier": "catalog:",
+    "prettier": "catalog:prettier",
     "sherif": "^1.6.1",
     "turbo": "^2.5.4",
     "typescript": "catalog:"

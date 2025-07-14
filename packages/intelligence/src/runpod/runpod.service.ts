@@ -1,60 +1,31 @@
-import type { ConfigService, FetcherService } from '@archesai/core'
+import type { ConfigService, Logger } from '@archesai/core'
 
-import { delay, Logger, retry } from '@archesai/core'
+import { delay, retry } from '@archesai/core'
 import { Type, Value } from '@archesai/schemas'
 
-/**
- * Service for interacting with the RunPod API.
- */
-export class RunpodService {
-  private readonly configService: ConfigService
-  private readonly fetcherService: FetcherService
-  private readonly logger = new Logger(RunpodService.name)
-
-  constructor(configService: ConfigService, fetcherService: FetcherService) {
-    this.configService = configService
-    this.fetcherService = fetcherService
-  }
-
-  /**
-   * Executes a job on RunPod and monitors its status until completion.
-   * @param jobId - The unique identifier for the job to be executed.
-   * @param podId - The unique identifier for the pod where the job will run.
-   * @param input - A record containing the input parameters required for the job.
-   * @returns A promise that resolves to the output of the completed job as a string.
-   * @throws Will throw an error if the response data from RunPod is invalid or if the job fails.
-   */
-  public async run(
-    jobId: string,
-    podId: string,
-    input: Record<string, unknown>
-  ): Promise<string> {
-    this.logger.debug('Starting job', { input, jobId, podId })
-
-    const runpodJobId = await this.startJob(podId, input)
-    return this.monitorJob(podId, runpodJobId)
-  }
-
-  private async monitorJob(
+export const createRunpodService = (
+  configService: ConfigService,
+  logger: Logger
+) => {
+  const monitorJob = async (
     podId: string,
     runpodJobId: string
-  ): Promise<string> {
+  ): Promise<string> => {
     while (true) {
       await delay(5000)
 
       const response = await retry(
-        this.logger,
-        () =>
-          this.fetcherService.get(
-            `https://api.runpod.ai/v2/${podId}/status/${runpodJobId}`,
-            {
-              Authorization: `Bearer ${this.configService.get('runpod.token')}`
+        logger,
+        async () =>
+          fetch(`https://api.runpod.ai/v2/${podId}/status/${runpodJobId}`, {
+            headers: {
+              Authorization: `Bearer ${configService.get('runpod.token')}`
             }
-          ),
+          }),
         5
       )
 
-      this.logger.debug('runpod job status', { response })
+      logger.debug('runpod job status', { response })
 
       const isValidResponse = Value.Check(
         Type.Object({
@@ -66,39 +37,40 @@ export class RunpodService {
             Type.Literal('FAILED')
           ])
         }),
-        response
+        response.body
       )
 
       if (!isValidResponse) {
         throw new Error('Invalid response data')
       }
 
-      if (response.status === 'COMPLETED') {
-        return response.output
-      } else if (response.status === 'FAILED') {
+      if (response.body.status === 'COMPLETED') {
+        return response.body.output
+      } else if (response.body.status === 'FAILED') {
         throw new Error('Job failed')
       }
     }
   }
 
-  private async startJob(
+  const startJob = async (
     podId: string,
     input: Record<string, unknown>
-  ): Promise<string> {
+  ): Promise<string> => {
     const response = await retry(
-      this.logger,
+      logger,
       () =>
-        this.fetcherService.post(
-          `https://api.runpod.ai/v2/${podId}/run`,
-          input,
-          {
-            Authorization: `Bearer ${this.configService.get('runpod.token')}`
-          }
-        ),
+        fetch(`https://api.runpod.ai/v2/${podId}/run`, {
+          body: JSON.stringify(input),
+          headers: {
+            Authorization: `Bearer ${configService.get('runpod.token')}`,
+            'Content-Type': 'application/json'
+          },
+          method: 'POST'
+        }),
       5
     )
 
-    this.logger.debug('runpod job started', { response })
+    logger.debug('runpod job started', { response })
 
     const isValidResponse = Value.Check(
       Type.Object({ id: Type.String() }),
@@ -111,4 +83,19 @@ export class RunpodService {
 
     return response.id
   }
+
+  return {
+    async run(
+      jobId: string,
+      podId: string,
+      input: Record<string, unknown>
+    ): Promise<string> {
+      logger.debug('Starting job', { input, jobId, podId })
+
+      const runpodJobId = await startJob(podId, input)
+      return monitorJob(podId, runpodJobId)
+    }
+  }
 }
+
+export type RunpodService = ReturnType<typeof createRunpodService>

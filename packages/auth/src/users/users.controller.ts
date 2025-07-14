@@ -1,30 +1,39 @@
-import type { Controller } from '@archesai/core'
-import type { UserEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type { UserInsertModel, UserSelectModel } from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateUserDtoSchema,
+  TOOL_ENTITY_KEY,
   UpdateUserDtoSchema,
-  USER_ENTITY_KEY,
   UserEntitySchema
 } from '@archesai/schemas'
 
-import type { UsersService } from '#users/users.service'
+import { createUserRepository } from '#users/user.repository'
+import { createUsersService } from '#users/users.service'
 
-/**
- * Controller for handling users.
- */
-export class UsersController
-  extends BaseController<UserEntity>
-  implements Controller
-{
-  constructor(usersService: UsersService) {
-    super(
-      USER_ENTITY_KEY,
-      UserEntitySchema,
-      CreateUserDtoSchema,
-      UpdateUserDtoSchema,
-      usersService
-    )
-  }
+export interface UsersPluginOptions {
+  databaseService: DatabaseService<UserInsertModel, UserSelectModel>
+  websocketsService: WebsocketsService
+}
+
+export const usersPlugin: FastifyPluginAsyncTypebox<
+  UsersPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the user repository and service
+  const userRepository = createUserRepository(databaseService)
+  const usersService = createUsersService(userRepository, websocketsService)
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateUserDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: UserEntitySchema,
+    prefix: '/users',
+    service: usersService,
+    updateSchema: UpdateUserDtoSchema
+  })
 }

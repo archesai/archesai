@@ -1,18 +1,6 @@
-import { ConfigService } from '@archesai/core'
-
-import { setup } from '#utils/setup'
-
-async function bootstrap() {
-  const app = await setup()
-
-  const configService = app.get(ConfigService)
-  await app.listen({
-    host: '0.0.0.0',
-    port: configService.get('server.port')
-  })
-}
+import { bootstrap } from '#utils/bootstrap'
 
 bootstrap().catch((err: unknown) => {
-  console.error(err)
+  console.error('Failed to start application:', err)
   process.exit(1)
 })

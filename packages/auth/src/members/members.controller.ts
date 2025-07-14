@@ -1,30 +1,42 @@
-import type { Controller } from '@archesai/core'
-import type { MemberEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type { MemberInsertModel, MemberSelectModel } from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateMemberDtoSchema,
-  MEMBER_ENTITY_KEY,
   MemberEntitySchema,
+  TOOL_ENTITY_KEY,
   UpdateMemberDtoSchema
 } from '@archesai/schemas'
 
-import type { MembersService } from '#members/members.service'
+import { createMemberRepository } from '#members/member.repository'
+import { createMembersService } from '#members/members.service'
 
-/**
- * Controller for handling members.
- */
-export class MembersController
-  extends BaseController<MemberEntity>
-  implements Controller
-{
-  constructor(membersService: MembersService) {
-    super(
-      MEMBER_ENTITY_KEY,
-      MemberEntitySchema,
-      CreateMemberDtoSchema,
-      UpdateMemberDtoSchema,
-      membersService
-    )
-  }
+export interface MembersPluginOptions {
+  databaseService: DatabaseService<MemberInsertModel, MemberSelectModel>
+  websocketsService: WebsocketsService
+}
+
+export const membersPlugin: FastifyPluginAsyncTypebox<
+  MembersPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the member repository and service
+  const memberRepository = createMemberRepository(databaseService)
+  const membersService = createMembersService(
+    memberRepository,
+    websocketsService
+  )
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateMemberDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: MemberEntitySchema,
+    prefix: '/members',
+    service: membersService,
+    updateSchema: UpdateMemberDtoSchema
+  })
 }

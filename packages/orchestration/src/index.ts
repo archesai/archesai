@@ -1,36 +1,19 @@
 export * from '#artifacts/artifact.repository'
 export * from '#artifacts/artifacts.controller'
-export * from '#artifacts/artifacts.module'
 export * from '#artifacts/artifacts.service'
-
-export * from '#jobs/factories/queue.factory'
-export * from '#jobs/jobs.module'
-export type * from '#jobs/jobs.service'
 
 export * from '#labels/label.repository'
 export * from '#labels/labels.controller'
-export * from '#labels/labels.module'
-
 export * from '#labels/labels.service'
+
 export * from '#pipelines/pipeline.repository'
 export * from '#pipelines/pipelines.controller'
-export * from '#pipelines/pipelines.module'
 export * from '#pipelines/pipelines.service'
-export * from '#runs/run.processor'
+
 export * from '#runs/run.repository'
 export * from '#runs/runs.controller'
-export * from '#runs/runs.module'
-
-// export * from '#runs/transformers/file-to-text.transformer'
-// export * from '#runs/transformers/text-to-embeddings.transformer'
-// export * from '#runs/transformers/text-to-image.transformer'
-// export * from '#runs/transformers/text-to-speech.transformer'
-// export * from '#runs/transformers/text-to-text.transformer'
-// export type * from '#runs/types/transformer'
-
 export * from '#runs/runs.service'
+
 export * from '#tools/tool.repository'
 export * from '#tools/tools.controller'
-export * from '#tools/tools.module'
-
 export * from '#tools/tools.service'

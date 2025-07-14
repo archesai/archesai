@@ -1,30 +1,48 @@
-import type { Controller } from '@archesai/core'
-import type { OrganizationEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type {
+  OrganizationInsertModel,
+  OrganizationSelectModel
+} from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateOrganizationDtoSchema,
-  ORGANIZATION_ENTITY_KEY,
   OrganizationEntitySchema,
+  TOOL_ENTITY_KEY,
   UpdateOrganizationDtoSchema
 } from '@archesai/schemas'
 
-import type { OrganizationsService } from '#organizations/organizations.service'
+import { createOrganizationRepository } from '#organizations/organization.repository'
+import { createOrganizationsService } from '#organizations/organizations.service'
 
-/**
- * Controller for handling organizations.
- */
-export class OrganizationsController
-  extends BaseController<OrganizationEntity>
-  implements Controller
-{
-  constructor(organizationsService: OrganizationsService) {
-    super(
-      ORGANIZATION_ENTITY_KEY,
-      OrganizationEntitySchema,
-      CreateOrganizationDtoSchema,
-      UpdateOrganizationDtoSchema,
-      organizationsService
-    )
-  }
+export interface OrganizationsPluginOptions {
+  databaseService: DatabaseService<
+    OrganizationInsertModel,
+    OrganizationSelectModel
+  >
+  websocketsService: WebsocketsService
+}
+
+export const organizationsPlugin: FastifyPluginAsyncTypebox<
+  OrganizationsPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the organization repository and service
+  const organizationRepository = createOrganizationRepository(databaseService)
+  const organizationsService = createOrganizationsService(
+    organizationRepository,
+    websocketsService
+  )
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateOrganizationDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: OrganizationEntitySchema,
+    prefix: '/organizations',
+    service: organizationsService,
+    updateSchema: UpdateOrganizationDtoSchema
+  })
 }

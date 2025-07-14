@@ -1,30 +1,45 @@
-import type { Controller } from '@archesai/core'
-import type { PipelineEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type {
+  PipelineInsertModel,
+  PipelineSelectModel
+} from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreatePipelineDtoSchema,
-  PIPELINE_ENTITY_KEY,
   PipelineEntitySchema,
+  TOOL_ENTITY_KEY,
   UpdatePipelineDtoSchema
 } from '@archesai/schemas'
 
-import type { PipelinesService } from '#pipelines/pipelines.service'
+import { createPipelineRepository } from '#pipelines/pipeline.repository'
+import { createPipelinesService } from '#pipelines/pipelines.service'
 
-/**
- * Controller for pipelines.
- */
-export class PipelinesController
-  extends BaseController<PipelineEntity>
-  implements Controller
-{
-  constructor(pipelinesService: PipelinesService) {
-    super(
-      PIPELINE_ENTITY_KEY,
-      PipelineEntitySchema,
-      CreatePipelineDtoSchema,
-      UpdatePipelineDtoSchema,
-      pipelinesService
-    )
-  }
+export interface PipelinesPluginOptions {
+  databaseService: DatabaseService<PipelineInsertModel, PipelineSelectModel>
+  websocketsService: WebsocketsService
+}
+
+export const pipelinesController: FastifyPluginAsyncTypebox<
+  PipelinesPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the pipeline repository and service
+  const pipelineRepository = createPipelineRepository(databaseService)
+  const pipelinesService = createPipelinesService(
+    pipelineRepository,
+    websocketsService
+  )
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreatePipelineDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: PipelineEntitySchema,
+    prefix: '/pipelines',
+    service: pipelinesService,
+    updateSchema: UpdatePipelineDtoSchema
+  })
 }

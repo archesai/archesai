@@ -17,7 +17,7 @@
     "emitDecoratorMetadata": true,
     "erasableSyntaxOnly": true,
     "esModuleInterop": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "experimentalDecorators": true,
     "explainFiles": false,
     "forceConsistentCasingInFileNames": true,

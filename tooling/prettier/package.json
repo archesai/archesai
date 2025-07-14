@@ -15,16 +15,16 @@
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "catalog:",
-    "prettier-plugin-packagejson": "catalog:",
-    "prettier-plugin-sh": "catalog:",
-    "prettier-plugin-sort-json": "catalog:",
-    "prettier-plugin-tailwindcss": "catalog:"
+    "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
+    "prettier-plugin-packagejson": "catalog:prettier",
+    "prettier-plugin-sh": "catalog:prettier",
+    "prettier-plugin-sort-json": "catalog:prettier",
+    "prettier-plugin-tailwindcss": "catalog:prettier"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
-    "prettier": "catalog:",
+    "prettier": "catalog:prettier",
     "typescript": "catalog:"
   }
 }

@@ -49,40 +49,4 @@ export const ArtifactEntitySchema = Type.Object(
 
 export type ArtifactEntity = Static<typeof ArtifactEntitySchema>
 
-// export class artifactRelationships {
-//   children: BaseEntity[]
-//   consumers: BaseEntity[]
-//   labels: LabelEntity[]
-//   parent?: BaseEntity | null
-//   producer?: BaseEntity | null
-
-//   constructor(props: artifactRelationships) {
-//     this.children = props.children
-//     this.consumers = props.consumers
-//     this.labels = props.labels
-//     this.parent = props.parent
-//     this.producer = props.producer
-//   }
-
-//   static schema() {
-//     return Type.Object({
-//       children: Type.Array(BaseEntity.schema(), {
-//         description: 'The children of the artifact'
-//       }),
-//       consumers: Type.Array(BaseEntity.schema(), {
-//         description: 'The consumers of the artifact'
-//       }),
-//       labels: Type.Array(LabelEntity.schema(), {
-//         description: 'The labels of the artifact'
-//       }),
-//       parent: Type.Optional(BaseEntity.schema({ nullable: true }), {
-//         description: 'The parent of the artifact'
-//       }),
-//       producer: Type.Optional(BaseEntity.schema({ nullable: true }), {
-//         description: 'The producer of the artifact'
-//       })
-//     })
-//   }
-// }
-
 export const ARTIFACT_ENTITY_KEY = 'artifacts'

@@ -1,96 +1,82 @@
-import type { ArchesApiRequest, Controller, HttpInstance } from '@archesai/core'
-import type { PaymentMethodEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { IS_CONTROLLER } from '@archesai/core'
 import { PaymentMethodEntitySchema, Type } from '@archesai/schemas'
 
 import type { PaymentMethodsService } from '#payment-methods/payment-methods.service'
 
-export class PaymentMethodsController implements Controller {
-  public readonly [IS_CONTROLLER] = true
-  private readonly paymentMethodsService: PaymentMethodsService
+export interface PaymentMethodsControllerOptions {
+  paymentMethodsService: PaymentMethodsService
+}
 
-  constructor(paymentMethodsService: PaymentMethodsService) {
-    this.paymentMethodsService = paymentMethodsService
-  }
-
-  public async delete(request: ArchesApiRequest & { params: { id: string } }) {
-    return this.paymentMethodsService.delete(request.params.id)
-  }
-
-  public async findMany(request: ArchesApiRequest) {
-    return this.paymentMethodsService.findMany({
-      filter: {
-        customer: {
-          equals: request.user!.id
-        }
+export const paymentMethodsController: FastifyPluginAsyncTypebox<
+  PaymentMethodsControllerOptions
+  // eslint-disable-next-line @typescript-eslint/require-await
+> = async (app, { paymentMethodsService }) => {
+  app.delete(
+    `/billing/payment-methods/:id`,
+    {
+      schema: {
+        description: 'Delete a payment method',
+        operationId: 'deletePaymentMethod',
+        params: Type.Object({
+          id: Type.String()
+        }),
+        response: {
+          200: PaymentMethodEntitySchema
+        },
+        summary: 'Delete a payment method',
+        tags: ['Billing']
       }
-    })
-  }
+    },
+    (req) => {
+      return paymentMethodsService.delete(req.params.id)
+    }
+  )
 
-  public async findOne(
-    request: ArchesApiRequest & { params: { id: string } }
-  ): Promise<PaymentMethodEntity> {
-    return this.paymentMethodsService.findOne(request.params.id)
-  }
-
-  public registerRoutes(app: HttpInstance) {
-    app.delete(
-      `/billing/payment-methods/:id`,
-      {
-        schema: {
-          description: 'Delete a payment method',
-          operationId: 'deletePaymentMethod',
-          params: Type.Object({
-            id: Type.String()
-          }),
-          response: {
-            200: PaymentMethodEntitySchema
-          },
-          summary: 'Delete a payment method',
-          tags: ['Billing']
-        }
-      },
-      this.delete.bind(this)
-    )
-
-    app.get(
-      `/billing/payment-methods`,
-      {
-        schema: {
-          description: 'Get all payment methods',
-          operationId: 'findManyPaymentMethods',
-          response: {
-            200: {
-              description: 'The payment methods of the customer'
-            }
-          },
-          summary: 'Get all payment methods',
-          tags: ['Billing']
-        }
-      },
-      this.findMany.bind(this)
-    )
-
-    app.get(
-      `/billing/payment-methods/:id`,
-      {
-        schema: {
-          description: 'Get a payment method',
-          operationId: 'findOnePaymentMethod',
-          params: Type.Object({
-            id: Type.String()
-          }),
-          response: {
-            200: PaymentMethodEntitySchema
-          },
-          summary: 'Get a payment method',
-          tags: ['Billing']
-        }
-      },
-      (request) => {
-        return this.paymentMethodsService.findOne(request.params.id)
+  app.get(
+    `/billing/payment-methods`,
+    {
+      schema: {
+        description: 'Get all payment methods',
+        operationId: 'findManyPaymentMethods',
+        response: {
+          200: {
+            description: 'The payment methods of the customer'
+          }
+        },
+        summary: 'Get all payment methods',
+        tags: ['Billing']
       }
-    )
-  }
+    },
+    async (_req) => {
+      return paymentMethodsService.findMany({
+        // filter: {
+        //   customer: {
+        //     equals: req.user!.id
+        //   }
+        // }
+      })
+    }
+  )
+
+  app.get(
+    `/billing/payment-methods/:id`,
+    {
+      schema: {
+        description: 'Get a payment method',
+        operationId: 'findOnePaymentMethod',
+        params: Type.Object({
+          id: Type.String()
+        }),
+        response: {
+          200: PaymentMethodEntitySchema
+        },
+        summary: 'Get a payment method',
+        tags: ['Billing']
+      }
+    },
+    async (req) => {
+      return paymentMethodsService.findOne(req.params.id)
+    }
+  )
 }

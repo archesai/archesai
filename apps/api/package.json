@@ -5,7 +5,8 @@
   "type": "module",
   "imports": {
     "#app/*": "./src/app/*.ts",
-    "#utils/*": "./src/utils/*.ts"
+    "#utils/*": "./src/utils/*.ts",
+    "#plugins/*": "./src/plugins/*.ts"
   },
   "scripts": {
     "build": "tsc --build",
@@ -25,18 +26,19 @@
     "@archesai/intelligence": "workspace:*",
     "@archesai/orchestration": "workspace:*",
     "@archesai/storage": "workspace:*",
-    "@nestjs/common": "catalog:",
-    "@nestjs/core": "catalog:",
-    "@nestjs/platform-fastify": "catalog:",
+    "@fastify/cors": "catalog:fastify",
+    "@fastify/helmet": "catalog:fastify",
+    "@fastify/swagger": "catalog:fastify",
+    "@scalar/fastify-api-reference": "catalog:fastify",
+    "fastify": "catalog:fastify",
     "qs": "^6.14.0",
-    "reflect-metadata": "catalog:",
-    "rxjs": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
     "@types/qs": "^6.14.0",
+    "fastify-plugin": "^5.0.1",
     "typescript": "catalog:"
   }
 }

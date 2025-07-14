@@ -1,28 +1,24 @@
 import type { WebsocketsService } from '@archesai/core'
 import type { LabelEntity } from '@archesai/schemas'
 
-import { BaseService } from '@archesai/core'
-import { LABEL_ENTITY_KEY } from '@archesai/schemas'
+import { createBaseService } from '@archesai/core'
+import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
 import type { LabelRepository } from '#labels/label.repository'
 
-/**
- * Service for labels.
- */
-export class LabelsService extends BaseService<LabelEntity> {
-  private readonly websocketsService: WebsocketsService
+export const createLabelsService = (
+  labelRepository: LabelRepository,
+  websocketsService: WebsocketsService
+) =>
+  createBaseService(labelRepository, websocketsService, emitLabelMutationEvent)
 
-  constructor(
-    labelRepository: LabelRepository,
-    websocketsService: WebsocketsService
-  ) {
-    super(labelRepository)
-    this.websocketsService = websocketsService
-  }
-
-  protected emitMutationEvent(entity: LabelEntity): void {
-    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
-      queryKey: ['organizations', entity.organizationId, LABEL_ENTITY_KEY]
-    })
-  }
+const emitLabelMutationEvent = (
+  entity: LabelEntity,
+  websocketsService: WebsocketsService
+): void => {
+  websocketsService.broadcastEvent(entity.organizationId, 'update', {
+    queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
+  })
 }
+
+export type LabelsService = ReturnType<typeof createLabelsService>

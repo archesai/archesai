@@ -5,15 +5,11 @@ import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'
-import { InvitationTable } from '#schema/models/invitations'
 import { OrganizationTable } from '#schema/models/organization'
 import { UserTable } from '#schema/models/user'
 
 export const MemberTable = pgTable(MEMBER_ENTITY_KEY, {
   ...baseFields,
-  invitationId: text('invitationId').references(() => InvitationTable.id, {
-    onDelete: 'cascade'
-  }),
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {
@@ -21,7 +17,7 @@ export const MemberTable = pgTable(MEMBER_ENTITY_KEY, {
       onUpdate: 'cascade'
     }),
   role: roleEnum().default('USER').notNull(),
-  userId: text('userId')
+  userId: text()
     .notNull()
     .references(() => UserTable.id, { onDelete: 'cascade' })
 })

@@ -1,6 +1,5 @@
-import type { Controller, HttpInstance } from '@archesai/core'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { IS_CONTROLLER } from '@archesai/core'
 import {
   CheckoutSessionDtoSchema,
   CreateCheckoutSessionDtoSchema,
@@ -10,64 +9,61 @@ import {
 
 import type { StripeService } from '#stripe/stripe.service'
 
-/**
- * Controller for billing portal.
- */
-export class StripeController implements Controller {
-  public readonly [IS_CONTROLLER] = true
-  private readonly stripeService: StripeService
+export interface StripeControllerOptions {
+  stripeService: StripeService
+}
 
-  constructor(stripeService: StripeService) {
-    this.stripeService = stripeService
-  }
-
-  public registerRoutes(app: HttpInstance) {
-    app.post(
-      `/billing/portal`,
-      {
-        schema: {
-          body: CreatePortalDtoSchema,
-          description: 'Create a new portal',
-          operationId: 'createPortal',
-          response: {
-            201: {
-              description: 'The created portal',
-              schema: PortalDtoSchema
-            }
-          },
-          summary: 'Create a new portal',
-          tags: ['Billing']
-        }
-      },
-      (req) => {
-        return this.stripeService.createPortal(req.body)
+export const stripeController: FastifyPluginAsyncTypebox<
+  StripeControllerOptions
+  // eslint-disable-next-line @typescript-eslint/require-await
+> = async (app, { stripeService }) => {
+  app.post(
+    `/billing/portal`,
+    {
+      schema: {
+        body: CreatePortalDtoSchema,
+        description: 'Create a new portal',
+        operationId: 'createPortal',
+        response: {
+          201: {
+            description: 'The created portal',
+            schema: PortalDtoSchema
+          }
+        },
+        summary: 'Create a new portal',
+        tags: ['Billing']
       }
-    )
+    },
+    (req) => {
+      return stripeService.createPortal({
+        organizationId: req.body.organizationId
+      })
+    }
+  )
 
-    app.post(
-      `/billing/checkout-sessions`,
-      {
-        schema: {
-          body: CreateCheckoutSessionDtoSchema,
-          description: 'Create a checkout session',
-          operationId: 'createCheckoutSession',
-          response: {
-            200: CheckoutSessionDtoSchema
-          },
-          summary: 'Create a checkout session',
-          tags: ['Billing']
-        }
-      },
-      (req) => {
-        return this.stripeService.createCheckoutSession(
-          '', // FIXME should be req.user!.organizationId,
-          {
-            price: req.body.priceId,
-            quantity: 1
-          },
-          false
-        )
+  app.post(
+    `/billing/checkout-sessions`,
+    {
+      schema: {
+        body: CreateCheckoutSessionDtoSchema,
+        description: 'Create a checkout session',
+        operationId: 'createCheckoutSession',
+        response: {
+          200: CheckoutSessionDtoSchema
+        },
+        summary: 'Create a checkout session',
+        tags: ['Billing']
       }
-    )
-  }
+    },
+    (req) => {
+      return stripeService.createCheckoutSession(
+        '',
+        {
+          price: req.body.priceId,
+          quantity: 1
+        },
+        false
+      )
+    }
+  )
 }

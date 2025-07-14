@@ -6,6 +6,7 @@ import { UserTable } from '#schema/models/user'
 
 export const SessionTable = pgTable('session', {
   ...baseFields,
+  activeOrganizationId: text(),
   expiresAt: timestamp({
     mode: 'string'
   }).notNull(),
@@ -23,3 +24,6 @@ export const sessionRelations = relations(SessionTable, ({ one }) => ({
     references: [UserTable.id]
   })
 }))
+
+export type SessionInsertModel = typeof SessionTable.$inferInsert
+export type SessionSelectModel = typeof SessionTable.$inferSelect

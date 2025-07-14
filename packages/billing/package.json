@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
+    "@fastify/type-provider-typebox": "catalog:fastify",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

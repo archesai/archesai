@@ -1,121 +1,37 @@
-import type {
-  ArchesApiRequest,
-  ArchesApiResponse,
-  Controller,
-  HttpInstance
-} from '@archesai/core'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import {
-  ArchesApiNoContentResponseSchema,
-  ArchesApiUnauthorizedResponseSchema,
-  AuthenticatedGuard,
-  IS_CONTROLLER,
-  UnauthorizedException
-} from '@archesai/core'
-import {
-  CreateAccountDtoSchema,
-  LegacyRef,
-  UserEntitySchema
-} from '@archesai/schemas'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type { SessionInsertModel, SessionSelectModel } from '@archesai/database'
 
-/**
- * Controller for managing authentication.
- */
-export class SessionsController implements Controller {
-  public readonly [IS_CONTROLLER] = true
+import { crudPlugin } from '@archesai/core'
+import { SessionEntitySchema, TOOL_ENTITY_KEY } from '@archesai/schemas'
 
-  public registerRoutes(app: HttpInstance) {
-    app.post(
-      `/auth/login`,
-      {
-        preValidation: [LocalAuthGuard(app)],
-        schema: {
-          body: CreateAccountDtoSchema,
-          description: `This endpoint will log you in with your e-mail and password`,
-          operationId: 'login',
-          response: {
-            201: UserEntitySchema,
-            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
-          },
-          summary: `Login`,
-          tags: ['Sessions']
-        }
-      },
-      (req) => {
-        return req.user!
-      }
-    )
+import { createSessionRepository } from '#sessions/session.repository'
+import { createSessionsService } from '#sessions/sessions.service'
 
-    app.post(
-      `/auth/logout`,
-      {
-        schema: {
-          description: `This endpoint will log you out of the current session`,
-          operationId: 'logout',
-          response: {
-            204: LegacyRef(ArchesApiNoContentResponseSchema),
-            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
-          },
-          summary: `Logout`,
-          tags: ['Sessions']
-        }
-      },
-      (req) => {
-        return req.logOut()
-      }
-    )
-
-    app.get(
-      `/auth/session`,
-      {
-        preValidation: [AuthenticatedGuard()],
-        schema: {
-          description: `This endpoint will return the current session information`,
-          operationId: 'getSession',
-          response: {
-            200: UserEntitySchema,
-            401: LegacyRef(ArchesApiUnauthorizedResponseSchema)
-          },
-          summary: `Get Session`,
-          tags: ['Sessions']
-        }
-      },
-      (req) => {
-        return req.user!
-      }
-    )
-  }
+export interface SessionsPluginOptions {
+  databaseService: DatabaseService<SessionInsertModel, SessionSelectModel>
+  websocketsService: WebsocketsService
 }
 
-export function LocalAuthGuard(app: HttpInstance) {
-  return async function (
-    req: ArchesApiRequest,
-    reply: ArchesApiResponse
-  ): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      const handler = req.passport.authenticate(
-        ['local'],
-        { session: true },
-        async (authReq, _authRes, err, user) => {
-          if (err) {
-            reject(err)
-            return
-          }
-          if (!user) {
-            reject(new Error('Unauthorized'))
-            return
-          }
+export const sessionsPlugin: FastifyPluginAsyncTypebox<
+  SessionsPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the session repository and service
+  const sessionRepository = createSessionRepository(databaseService)
+  const sessionsService = createSessionsService(
+    sessionRepository,
+    websocketsService
+  )
 
-          try {
-            await authReq.logIn(user)
-            resolve()
-          } catch {
-            reject(new UnauthorizedException())
-          }
-        }
-      )
-
-      handler.call(app, req, reply)
-    })
-  }
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: SessionEntitySchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: SessionEntitySchema,
+    prefix: '/sessions',
+    service: sessionsService,
+    updateSchema: SessionEntitySchema
+  })
 }

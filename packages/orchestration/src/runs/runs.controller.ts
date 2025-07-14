@@ -1,30 +1,39 @@
-import type { Controller } from '@archesai/core'
-import type { RunEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { BaseController } from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type { RunInsertModel, RunSelectModel } from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateRunDtoSchema,
-  RUN_ENTITY_KEY,
   RunEntitySchema,
+  TOOL_ENTITY_KEY,
   UpdateRunDtoSchema
 } from '@archesai/schemas'
 
-import type { RunsService } from '#runs/runs.service'
+import { createRunRepository } from '#runs/run.repository'
+import { createRunsService } from '#runs/runs.service'
 
-/**
- * Controller for runs.
- */
-export class RunsController
-  extends BaseController<RunEntity>
-  implements Controller
-{
-  constructor(runsService: RunsService) {
-    super(
-      RUN_ENTITY_KEY,
-      RunEntitySchema,
-      CreateRunDtoSchema,
-      UpdateRunDtoSchema,
-      runsService
-    )
-  }
+export interface RunsPluginOptions {
+  databaseService: DatabaseService<RunInsertModel, RunSelectModel>
+  websocketsService: WebsocketsService
+}
+
+export const runsController: FastifyPluginAsyncTypebox<
+  RunsPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the run repository and service
+  const runRepository = createRunRepository(databaseService)
+  const runsService = createRunsService(runRepository, websocketsService)
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateRunDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: RunEntitySchema,
+    prefix: '/runs',
+    service: runsService,
+    updateSchema: UpdateRunDtoSchema
+  })
 }

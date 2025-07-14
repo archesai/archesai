@@ -1,15 +1,8 @@
+import type { IncomingMessage } from 'http'
 import type Stripe from 'stripe'
 
-import type {
-  ArchesApiRequest,
-  ConfigService,
-  EventBus,
-  WebsocketsService
-} from '@archesai/core'
-import type {
-  OrganizationCustomerSubscriptionUpdatedEvent,
-  PlanType
-} from '@archesai/schemas'
+import type { ConfigService, WebsocketsService } from '@archesai/core'
+import type { PlanType } from '@archesai/schemas'
 
 import { InternalServerErrorException } from '@archesai/core'
 import { PlanTypes } from '@archesai/schemas'
@@ -21,30 +14,27 @@ import type { StripeService } from '#stripe/stripe.service'
  */
 export class CallbacksService {
   private readonly configService: ConfigService
-  private readonly eventBus: EventBus
   private readonly stripeService: StripeService
   private readonly websocketsService: WebsocketsService
 
   constructor(
     configService: ConfigService,
-    eventBus: EventBus,
     stripeService: StripeService,
     websocketsService: WebsocketsService
   ) {
     this.configService = configService
-    this.eventBus = eventBus
     this.stripeService = stripeService
     this.websocketsService = websocketsService
   }
 
-  public async handle(signature: string, req: ArchesApiRequest) {
+  public async handle(signature: string, req: IncomingMessage) {
     if (!signature) {
       throw new InternalServerErrorException('Missing stripe-signature header')
     }
 
     const event = this.constructEventFromPayload(
       signature,
-      Buffer.from(await req.raw.toArray())
+      Buffer.from(await req.toArray())
     )
 
     const eventObj = event.data.object
@@ -63,7 +53,7 @@ export class CallbacksService {
     ) {
       throw new InternalServerErrorException('Invalid event object')
     }
-    const customer = eventObj.customer
+    // const customer = eventObj.customer
     const organizationId = eventObj.metadata.organizationId
 
     if (event.type == 'invoice.paid') {
@@ -87,14 +77,14 @@ export class CallbacksService {
           ) {
             throw new InternalServerErrorException('Invalid product')
           }
-          const credits = product.metadata.credits
-          const quantity = lineItem.quantity ?? 1
+          // const credits = product.metadata.credits
+          // const quantity = lineItem.quantity ?? 1
 
-          this.eventBus.emit('organization.customer.subscription.updated', {
-            credits: Number(credits) * quantity,
-            customer: customer,
-            organizationId: organizationId
-          } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
+          // this.eventBus.emit('organization.customer.subscription.updated', {
+          //   credits: Number(credits) * quantity,
+          //   customer: customer,
+          //   organizationId: organizationId
+          // } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
 
           this.websocketsService.broadcastEvent(organizationId, 'update', {
             queryKey: ['organizations', organizationId]
@@ -122,11 +112,11 @@ export class CallbacksService {
         throw new InternalServerErrorException('Invalid plan type')
       }
 
-      this.eventBus.emit('organization.customer.subscription.updated', {
-        customer: customer,
-        organizationId: organizationId,
-        planType: event.data.object.status == 'active' ? planType : 'FREE'
-      } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
+      // this.eventBus.emit('organization.customer.subscription.updated', {
+      //   customer: customer,
+      //   organizationId: organizationId,
+      //   planType: event.data.object.status == 'active' ? planType : 'FREE'
+      // } satisfies OrganizationCustomerSubscriptionUpdatedEvent)
 
       this.websocketsService.broadcastEvent(organizationId, 'update', {
         queryKey: ['organizations', organizationId]

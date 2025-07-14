@@ -1,12 +1,11 @@
-export * from '#audio/audio.module'
 export * from '#audio/audio.service'
-export * from '#keyframes/keyframes.module'
+
 export * from '#keyframes/keyframes.service'
-export * from '#llm/llm.module'
+
 export * from '#llm/llm.service'
-export * from '#runpod/runpod.module'
+
 export * from '#runpod/runpod.service'
-export * from '#scraper/scraper.module'
+
 export * from '#scraper/scraper.service'
-export * from '#speech/speech.module'
+
 export * from '#speech/speech.service'

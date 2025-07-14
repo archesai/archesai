@@ -1,11 +1,11 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
-import { API_TOKEN_ENTITY_KEY } from '@archesai/schemas'
-
 import { roleEnum } from '#schema/enums'
 import { baseFields } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
+
+const API_TOKEN_ENTITY_KEY = 'api_token'
 
 export const ApiTokenTable = pgTable(API_TOKEN_ENTITY_KEY, {
   ...baseFields,

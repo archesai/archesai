@@ -1,40 +1,32 @@
-import type { ConfigService } from '#config/config.service'
-import type { Controller } from '#http/interfaces/controller.interface'
-import type { HttpInstance } from '#http/interfaces/http-instance.interface'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { IS_CONTROLLER } from '#common/base.controller'
+import type { ConfigService } from '#config/config.service'
+
 import { ArchesConfigSchema } from '#config/schemas/config.schema'
 
-/**
- * Controller for managing the application configuration.
- */
-export class ConfigController implements Controller {
-  public readonly [IS_CONTROLLER] = true
-  private readonly configService: ConfigService
+export interface ConfigControllerOptions {
+  configService: ConfigService
+}
 
-  constructor(configService: ConfigService) {
-    this.configService = configService
-  }
-
-  public config() {
-    return this.configService.getConfig()
-  }
-
-  public registerRoutes(app: HttpInstance) {
-    app.get(
-      `/config`,
-      {
-        schema: {
-          description: `Get the configuration of the application`,
-          operationId: 'getConfig',
-          response: {
-            200: ArchesConfigSchema
-          },
-          summary: `Get the configuration`,
-          tags: ['Configuration']
-        }
-      },
-      this.config.bind(this)
-    )
-  }
+export const configController: FastifyPluginAsyncTypebox<
+  ConfigControllerOptions
+  // eslint-disable-next-line @typescript-eslint/require-await
+> = async (app, { configService }) => {
+  app.get(
+    `/config`,
+    {
+      schema: {
+        description: `Get the configuration of the application`,
+        operationId: 'getConfig',
+        response: {
+          200: ArchesConfigSchema
+        },
+        summary: `Get the configuration`,
+        tags: ['Configuration']
+      }
+    },
+    () => {
+      return configService.getConfig()
+    }
+  )
 }

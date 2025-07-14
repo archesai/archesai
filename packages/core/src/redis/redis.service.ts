@@ -4,8 +4,7 @@ import type { RedisClientType } from '@redis/client'
 import { createClient } from '@redis/client'
 
 import type { ConfigService } from '#config/config.service'
-
-import { Logger } from '#logging/logger'
+import type { Logger } from '#logging/logger'
 
 export interface RedisConnectionOptions {
   healthCheckInterval?: number
@@ -15,17 +14,27 @@ export interface RedisConnectionOptions {
   retryFactor?: number
 }
 
+export const createRedisService = (
+  configService: ConfigService,
+  logger: Logger,
+  options: RedisConnectionOptions = {}
+) => {
+  return new RedisService(configService, logger, options)
+}
+
 export class RedisService {
   private clients: RedisClientType[] = []
   private readonly configService: ConfigService
   private healthCheckTimer?: NodeJS.Timeout
-  private readonly logger = new Logger(RedisService.name)
+  private readonly logger: Logger
   private readonly options: Required<RedisConnectionOptions>
 
   constructor(
     configService: ConfigService,
+    logger: Logger,
     options: RedisConnectionOptions = {}
   ) {
+    this.logger = logger
     this.configService = configService
     this.options = {
       healthCheckInterval: options.healthCheckInterval ?? 30000,

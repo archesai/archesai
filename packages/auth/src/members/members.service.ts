@@ -1,27 +1,28 @@
 import type { WebsocketsService } from '@archesai/core'
 import type { MemberEntity } from '@archesai/schemas'
 
-import { BaseService } from '@archesai/core'
+import { createBaseService } from '@archesai/core'
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
 import type { MemberRepository } from '#members/member.repository'
 
-/**
- * Service for handling members.
- */
-export class MembersService extends BaseService<MemberEntity> {
-  private readonly websocketsService: WebsocketsService
-  constructor(
-    memberRepository: MemberRepository,
-    websocketsService: WebsocketsService
-  ) {
-    super(memberRepository)
-    this.websocketsService = websocketsService
-  }
+export const createMembersService = (
+  memberRepository: MemberRepository,
+  websocketsService: WebsocketsService
+) =>
+  createBaseService(
+    memberRepository,
+    websocketsService,
+    emitMemberMutationEvent
+  )
 
-  protected emitMutationEvent(entity: MemberEntity): void {
-    this.websocketsService.broadcastEvent(entity.organizationId, 'update', {
-      queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]
-    })
-  }
+const emitMemberMutationEvent = (
+  entity: MemberEntity,
+  websocketsService: WebsocketsService
+): void => {
+  websocketsService.broadcastEvent(entity.organizationId, 'update', {
+    queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]
+  })
 }
+
+export type MembersService = ReturnType<typeof createMembersService>

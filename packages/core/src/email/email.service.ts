@@ -4,25 +4,20 @@ import nodemailer from 'nodemailer'
 
 import type { ConfigService } from '#config/config.service'
 
-/**
- * Service to send emails
- */
-export class EmailService {
-  private readonly configService: ConfigService
-  private readonly nodemailerTransport: nodemailer.Transporter
+export const createEmailService = (configService: ConfigService) => {
+  const nodemailerTransport = nodemailer.createTransport({
+    auth: {
+      pass: configService.get('email.password'),
+      user: configService.get('email.user')
+    },
+    service: configService.get('email.service')
+  })
 
-  constructor(configService: ConfigService) {
-    this.configService = configService
-    this.nodemailerTransport = nodemailer.createTransport({
-      auth: {
-        pass: this.configService.get('email.password'),
-        user: this.configService.get('email.user')
-      },
-      service: this.configService.get('email.service')
-    })
-  }
-
-  public async sendMail(options: SendMailOptions): Promise<void> {
-    await this.nodemailerTransport.sendMail(options)
+  return {
+    sendMail: async (options: SendMailOptions): Promise<void> => {
+      await nodemailerTransport.sendMail(options)
+    }
   }
 }
+
+export type EmailService = ReturnType<typeof createEmailService>

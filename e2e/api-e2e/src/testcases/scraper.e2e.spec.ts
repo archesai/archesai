@@ -1,8 +1,5 @@
 // import fs from 'fs'
 // import path from 'path'
-// import type { TestingModule } from '@nestjs/testing'
-
-// import { Test } from '@nestjs/testing'
 
 // describe('ScraperService - Integration Tests', () => {
 //   let service: ScraperService

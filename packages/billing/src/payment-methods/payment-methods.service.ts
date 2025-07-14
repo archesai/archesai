@@ -1,8 +1,4 @@
-import type {
-  BaseService,
-  SearchQuery,
-  WebsocketsService
-} from '@archesai/core'
+import type { SearchQuery, WebsocketsService } from '@archesai/core'
 import type { PaymentMethodEntity } from '@archesai/schemas'
 
 import { BadRequestException, NotFoundException } from '@archesai/core'
@@ -13,10 +9,7 @@ import type { PaymentMethodRepository } from '#payment-methods/payment-method.re
 /**
  * Service for Payment Methods.
  */
-export class PaymentMethodsService
-  implements
-    Pick<BaseService<PaymentMethodEntity>, 'delete' | 'findMany' | 'findOne'>
-{
+export class PaymentMethodsService {
   private readonly customersService: CustomersService
   private readonly paymentMethodRepository: PaymentMethodRepository
   private readonly websocketsService: WebsocketsService

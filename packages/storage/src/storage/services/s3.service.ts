@@ -4,7 +4,7 @@ import { basename } from 'node:path'
 import { Readable } from 'node:stream'
 
 import {
-  CreateBucketCommand,
+  // CreateBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
@@ -14,13 +14,12 @@ import {
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-import type { ConfigService, HealthCheck, HealthStatus } from '@archesai/core'
+import type { ConfigService, Logger } from '@archesai/core'
 import type { FileEntity } from '@archesai/schemas'
 
 import {
   ConflictException,
   InternalServerErrorException,
-  Logger,
   NotFoundException
 } from '@archesai/core'
 
@@ -29,19 +28,15 @@ import { StorageService } from '#storage/storage.service'
 /**
  * Service for interacting with the S3 storage service.
  */
-export class S3StorageProvider extends StorageService implements HealthCheck {
+export class S3StorageProvider extends StorageService {
   private readonly bucketName: string
   private readonly expirationTime = 60 * 60 * 1000
-  private readonly health: HealthStatus
-  private readonly logger = new Logger(S3StorageProvider.name)
   private readonly s3Client: S3Client
 
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigService, logger: Logger) {
     super()
     this.bucketName = configService.get('storage.bucket')
-    this.health = {
-      status: 'COMPLETED'
-    }
+
     this.s3Client = new S3Client({
       credentials: {
         accessKeyId: configService.get('storage.accesskey'),
@@ -51,7 +46,7 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
       forcePathStyle: true,
       region: 'us-east-1'
     })
-    this.logger.debug('s3-storage initialized')
+    logger.debug('s3-storage initialized')
   }
 
   public async checkExists(
@@ -176,10 +171,6 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
     }
   }
 
-  public getHealth(): HealthStatus {
-    return this.health
-  }
-
   public async listDirectory(path: string): Promise<FileEntity[]> {
     const prefix = path.replace(/\/?$/, '/') + '/'
     const result = await this.s3Client.send(
@@ -227,28 +218,6 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
     return items
   }
 
-  public async onModuleInit() {
-    try {
-      this.logger.log('initializing s3 service')
-      this.health.status = 'PROCESSING'
-      await this.createBucketIfNotExists()
-      this.logger.log('initialized s3 service')
-      this.health.status = 'COMPLETED'
-    } catch (err) {
-      this.logger.error('falied', { err })
-      this.health.status = 'FAILED'
-      if (err instanceof Error) {
-        this.health.errors = [
-          {
-            detail: err.message,
-            status: '500',
-            title: 'Failed to initialize S3 service'
-          }
-        ]
-      }
-    }
-  }
-
   public async uploadFromFile(
     path: string,
     file: {
@@ -284,19 +253,19 @@ export class S3StorageProvider extends StorageService implements HealthCheck {
     })
   }
 
-  private async createBucketIfNotExists() {
-    try {
-      await this.s3Client.send(
-        new CreateBucketCommand({ Bucket: this.bucketName })
-      )
-      this.logger.debug(
-        `Bucket '${this.bucketName}' created or already exists.`
-      )
-    } catch (error: unknown) {
-      if (error instanceof Error && error.name !== 'BucketAlreadyOwnedByYou') {
-        throw error
-      }
-      this.logger.debug(`Bucket '${this.bucketName}' already owned by you.`)
-    }
-  }
+  // private async createBucketIfNotExists() {
+  //   try {
+  //     await this.s3Client.send(
+  //       new CreateBucketCommand({ Bucket: this.bucketName })
+  //     )
+  //     this.logger.debug(
+  //       `Bucket '${this.bucketName}' created or already exists.`
+  //     )
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error && error.name !== 'BucketAlreadyOwnedByYou') {
+  //       throw error
+  //     }
+  //     this.logger.debug(`Bucket '${this.bucketName}' already owned by you.`)
+  //   }
+  // }
 }

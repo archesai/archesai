@@ -30,12 +30,8 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@golevelup/ts-jest": "catalog:",
-    "@nestjs/testing": "catalog:",
     "@types/fluent-ffmpeg": "catalog:",
-    "@types/jest": "catalog:",
     "@types/node": "catalog:",
-    "jest": "catalog:",
     "typescript": "catalog:"
   }
 }

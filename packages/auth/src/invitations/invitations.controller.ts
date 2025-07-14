@@ -1,68 +1,45 @@
-import type { Controller, HttpInstance } from '@archesai/core'
-import type { InvitationEntity } from '@archesai/schemas'
+import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import {
-  ArchesApiForbiddenResponseSchema,
-  ArchesApiNotFoundResponseSchema,
-  ArchesApiUnauthorizedResponseSchema,
-  AuthenticatedGuard,
-  BaseController,
-  toTitleCase
-} from '@archesai/core'
+import type { DatabaseService, WebsocketsService } from '@archesai/core'
+import type {
+  InvitationInsertModel,
+  InvitationSelectModel
+} from '@archesai/database'
+
+import { crudPlugin } from '@archesai/core'
 import {
   CreateInvitationDtoSchema,
-  INVITATION_ENTITY_KEY,
   InvitationEntitySchema,
-  LegacyRef,
+  TOOL_ENTITY_KEY,
   UpdateInvitationDtoSchema
 } from '@archesai/schemas'
 
-import type { InvitationsService } from '#invitations/invitations.service'
+import { createInvitationRepository } from '#invitations/invitation.repository'
+import { createInvitationsService } from '#invitations/invitations.service'
 
-/**
- * Controller for handling invitations.
- */
-export class InvitationsController
-  extends BaseController<InvitationEntity>
-  implements Controller
-{
-  private readonly invitationsService: InvitationsService
-  constructor(invitationsService: InvitationsService) {
-    super(
-      INVITATION_ENTITY_KEY,
-      InvitationEntitySchema,
-      CreateInvitationDtoSchema,
-      UpdateInvitationDtoSchema,
-      invitationsService
-    )
-    this.invitationsService = invitationsService
-  }
+export interface InvitationsPluginOptions {
+  databaseService: DatabaseService<InvitationInsertModel, InvitationSelectModel>
+  websocketsService: WebsocketsService
+}
 
-  public override registerRoutes(app: HttpInstance) {
-    super.registerRoutes(app)
-    app.post(
-      `/${this.entityKey}/:id/accept`,
-      {
-        preValidation: [AuthenticatedGuard()],
-        schema: {
-          description: 'Accept an invitation',
-          operationId: 'acceptInvitation',
-          // params: Type.Object({
-          //   id: Type.String()
-          // }),
-          response: {
-            200: LegacyRef(InvitationEntitySchema),
-            401: LegacyRef(ArchesApiUnauthorizedResponseSchema),
-            403: LegacyRef(ArchesApiForbiddenResponseSchema),
-            404: LegacyRef(ArchesApiNotFoundResponseSchema)
-          },
-          summary: 'Accept an invitation',
-          tags: [toTitleCase(this.entityKey)]
-        }
-      },
-      (req) => {
-        return this.invitationsService.accept('FIXME', req.user!)
-      }
-    )
-  }
+export const invitationsPlugin: FastifyPluginAsyncTypebox<
+  InvitationsPluginOptions
+> = async (app, { databaseService, websocketsService }) => {
+  // Create the invitation repository and service
+  const invitationRepository = createInvitationRepository(databaseService)
+  const invitationsService = createInvitationsService(
+    invitationRepository,
+    websocketsService
+  )
+
+  // Register CRUD routes
+  await app.register(crudPlugin, {
+    createSchema: CreateInvitationDtoSchema,
+    enableBulkOperations: true,
+    entityKey: TOOL_ENTITY_KEY,
+    entitySchema: InvitationEntitySchema,
+    prefix: '/invitations',
+    service: invitationsService,
+    updateSchema: UpdateInvitationDtoSchema
+  })
 }

@@ -22,29 +22,13 @@
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "@faker-js/faker": "catalog:",
-    "@fastify/cookie": "catalog:",
-    "@fastify/passport": "catalog:",
-    "@fastify/session": "catalog:",
-    "fastify": "catalog:",
-    "jsonwebtoken": "catalog:",
-    "passport-jwt": "catalog:",
-    "passport-local": "catalog:",
-    "passport-twitter": "catalog:",
+    "better-auth": "^1.2.12",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@golevelup/ts-jest": "catalog:",
-    "@nestjs/testing": "catalog:",
-    "@types/jest": "catalog:",
-    "@types/jsonwebtoken": "catalog:",
+    "@fastify/type-provider-typebox": "catalog:fastify",
     "@types/node": "catalog:",
-    "@types/passport": "catalog:",
-    "@types/passport-jwt": "catalog:",
-    "@types/passport-local": "catalog:",
-    "@types/passport-twitter": "catalog:",
-    "jest": "catalog:",
     "typescript": "catalog:"
   }
 }
