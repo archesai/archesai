@@ -180,7 +180,7 @@ export function GenericForm<
               className='flex flex-1 gap-2'
               disabled={
                 form.formState.isSubmitting ||
-                !form.formState.isDirty ||
+                // !form.formState.isDirty ||
                 !form.formState.isValid
               }
               size='sm'
@@ -195,7 +195,7 @@ export function GenericForm<
             </Button>
             <Button
               className='flex-1'
-              disabled={form.formState.isSubmitting}
+              disabled={form.formState.isSubmitting || !form.formState.isDirty}
               onClick={() => {
                 form.reset()
               }}

@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
 import type { CreateAccountDto } from '@archesai/schemas'
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/auth/login/')({
 
 export default function LoginPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const { mutateAsync: login } = useLogin()
 
   return (
@@ -56,6 +58,8 @@ export default function LoginPage() {
               password: data.password
             }
           })
+          await router.invalidate()
+          queryClient.clear()
           await router.navigate({ to: '/' })
         }}
         postContent={

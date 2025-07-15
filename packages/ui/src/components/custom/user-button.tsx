@@ -1,3 +1,5 @@
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -50,6 +52,9 @@ export function UserButton({
   const { data: sessionData } = useGetSessionSuspense()
   const { mutateAsync: logout } = useLogout()
   const { isMobile } = useSidebar()
+  const navigation = useNavigate()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { data: memberships } = useFindManyMembersSuspense({
     filter: {
@@ -197,10 +202,14 @@ export function UserButton({
             <DropdownMenuItem
               onClick={async () => {
                 await logout()
+                await navigation({
+                  to: '/auth/login'
+                })
+                await router.invalidate()
+                await queryClient.invalidateQueries()
                 toast('Logged out successfully', {
                   description: 'You have been logged out.'
                 })
-                window.location.href = '/'
               }}
             >
               <LogOut />

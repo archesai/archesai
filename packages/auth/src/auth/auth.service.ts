@@ -9,6 +9,14 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
     account: {
       modelName: 'AccountTable'
     },
+    advanced: {
+      crossSubDomainCookies: {
+        domain: '.archesai.test', // your domain
+        enabled: true
+      },
+      useSecureCookies: true
+    },
+
     database: drizzleAdapter(databaseService.db, {
       provider: 'pg'
     }),
@@ -32,12 +40,20 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
           }
         }
       })
+      // reactStartCookies()
     ],
     session: {
+      cookieCache: {
+        enabled: false
+      },
       modelName: 'SessionTable'
     },
-
-    trustedOrigins: ['https://platform.archesai.test'],
+    trustedOrigins: [
+      'https://platform.archesai.test',
+      'http://platform.archesai.test',
+      'http://api.archesai.test',
+      'https://api.archesai.test'
+    ],
     user: {
       additionalFields: {
         deactivated: {

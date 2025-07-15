@@ -25,7 +25,6 @@ export const customFetch = async <T>(
   url: string,
   options: RequestInit
 ): Promise<T> => {
-  console.log(url)
   const requestUrl = getUrl(url)
 
   const requestInit: RequestInit = {

@@ -1,11 +1,13 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
 
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, rootRouteId, useMatch, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 
 export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const isRoot = useMatch({
     select: (state) => state.id === rootRouteId,
     strict: false
@@ -21,6 +23,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
         <Button
           onClick={async () => {
             await router.invalidate()
+            await queryClient.invalidateQueries()
           }}
           size='sm'
           variant={'ghost'}

@@ -1,4 +1,6 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { createIsomorphicFn, createServerFn } from '@tanstack/react-start'
+import { getHeaders as getServerHeaders } from '@tanstack/react-start/server'
 
 import { getGetSessionSuspenseQueryOptions } from '@archesai/client'
 import {
@@ -10,12 +12,28 @@ import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 
 import { siteRoutes } from '#lib/site-config'
 
+export const getHeaders = createServerFn({ method: 'GET' }).handler(() => {
+  return getServerHeaders()
+})
+
+export const getHeadersIsomorphic = createIsomorphicFn()
+  .client(() => {
+    return getHeaders()
+  })
+  .server(() => {
+    return getServerHeaders()
+  })
+
 export const Route = createFileRoute('/_app')({
-  component: AppLayout,
-  loader: async ({ context, location }) => {
+  beforeLoad: async ({ context, location }) => {
     try {
+      const headers = await getHeadersIsomorphic()
       await context.queryClient.ensureQueryData(
-        getGetSessionSuspenseQueryOptions()
+        getGetSessionSuspenseQueryOptions({
+          request: {
+            headers: [['cookie', headers.cookie ?? '']]
+          }
+        })
       )
     } catch (error) {
       console.error('Error fetching session:', error)
@@ -25,7 +43,8 @@ export const Route = createFileRoute('/_app')({
         to: '/auth/login'
       })
     }
-  }
+  },
+  component: AppLayout
 })
 
 export default function AppLayout() {
