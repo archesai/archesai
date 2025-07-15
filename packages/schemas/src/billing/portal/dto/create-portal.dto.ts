@@ -1,8 +1,10 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const CreatePortalDtoSchema = Type.Object({
+export const CreatePortalDtoSchema: TObject<{
+  organizationId: TString
+}> = Type.Object({
   organizationId: Type.String()
 })
 

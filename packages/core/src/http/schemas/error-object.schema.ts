@@ -1,8 +1,12 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const ErrorObjectSchema = Type.Object(
+export const ErrorObjectSchema: TObject<{
+  detail: TString
+  status: TString
+  title: TString
+}> = Type.Object(
   {
     detail: Type.String({
       examples: ['The requested resource does not exist.']

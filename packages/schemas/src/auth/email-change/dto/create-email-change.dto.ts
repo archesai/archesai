@@ -1,8 +1,11 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const CreateEmailChangeDtoSchema = Type.Object({
+export const CreateEmailChangeDtoSchema: TObject<{
+  newEmail: TString
+  userId: TString
+}> = Type.Object({
   newEmail: Type.String({
     description: 'The e-mail to send the confirmation token to',
     format: 'email'

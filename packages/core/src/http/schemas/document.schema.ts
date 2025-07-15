@@ -1,8 +1,14 @@
-import type { TSchema } from '@archesai/schemas'
+import type { TArray, TUnsafe } from '@sinclair/typebox'
+
+import type { TObject, TSchema } from '@archesai/schemas'
 
 import { LegacyRef, Type } from '@archesai/schemas'
 
-export const DocumentSchemaFactory = (documentSchema: TSchema) => {
+export const DocumentSchemaFactory = (
+  documentSchema: TSchema
+): TObject<{
+  data: TUnsafe<unknown>
+}> => {
   return Type.Object({
     data: LegacyRef(documentSchema)
     //   errors: Type.Optional(Type.Array(LegacyRef(ErrorObjectSchema))),
@@ -13,7 +19,9 @@ export const DocumentSchemaFactory = (documentSchema: TSchema) => {
 export const DocumentColectionSchemaFactory = (
   documentSchema: TSchema
   //   metaSchema?: TSchema
-) => {
+): TObject<{
+  data: TArray<TUnsafe<unknown>>
+}> => {
   return Type.Object({
     data: Type.Array(LegacyRef(documentSchema))
     // meta: metaSchema ? LegacyRef(metaSchema) : Type.Optional(Type.Any())

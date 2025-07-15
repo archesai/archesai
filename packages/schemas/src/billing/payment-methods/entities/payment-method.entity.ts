@@ -1,10 +1,63 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TNull,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const PaymentMethodEntitySchema = Type.Object(
+export const PaymentMethodEntitySchema: TObject<{
+  billing_details: TUnion<
+    [
+      TObject<{
+        address: TUnion<
+          [
+            TObject<{
+              city: TOptional<TUnion<[TString, TNull]>>
+              country: TOptional<TUnion<[TString, TNull]>>
+              line1: TOptional<TUnion<[TString, TNull]>>
+              line2: TOptional<TUnion<[TString, TNull]>>
+              postal_code: TOptional<TUnion<[TString, TNull]>>
+              state: TOptional<TUnion<[TString, TNull]>>
+            }>,
+            TNull
+          ]
+        >
+        email: TOptional<TUnion<[TString, TNull]>>
+        name: TOptional<TUnion<[TString, TNull]>>
+        phone: TOptional<TUnion<[TString, TNull]>>
+      }>,
+      TNull
+    ]
+  >
+  card: TOptional<
+    TUnion<
+      [
+        TObject<{
+          brand: TString
+          country: TOptional<TUnion<[TString, TNull]>>
+          exp_month: TNumber
+          exp_year: TNumber
+          fingerprint: TOptional<TUnion<[TString, TNull]>>
+          funding: TString
+          last4: TString
+        }>,
+        TNull
+      ]
+    >
+  >
+  createdAt: TString
+  customer: TString
+  id: TString
+  type: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     billing_details: Type.Union([

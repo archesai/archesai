@@ -1,8 +1,10 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const PortalDtoSchema = Type.Object({
+export const PortalDtoSchema: TObject<{
+  url: TString
+}> = Type.Object({
   url: Type.String({
     description: 'The URL that will bring you to the necessary Stripe page'
   })

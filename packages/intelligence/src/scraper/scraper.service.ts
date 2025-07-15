@@ -10,7 +10,17 @@ import { BadRequestException, catchErrorAsync, isString } from '@archesai/core'
 export const createScraperService = (
   configService: ConfigService,
   logger: Logger
-) => {
+): {
+  detectMimeTypeFromUrl(url: string): Promise<string>
+  generateThumbnail(
+    url: null | string,
+    text: null | string,
+    mimeType: null | string
+  ): Promise<Buffer>
+  onDestroy(): Promise<void>
+  onInit(): Promise<void>
+  screenshot(url: string): Promise<Buffer>
+} => {
   let browser: Browser | undefined
 
   const escapeXml = (unsafe: string): string => {

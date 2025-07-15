@@ -1,10 +1,16 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const LabelEntitySchema = Type.Object(
+export const LabelEntitySchema: TObject<{
+  createdAt: TString
+  id: TString
+  name: TString
+  organizationId: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     name: Type.String({

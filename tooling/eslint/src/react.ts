@@ -11,7 +11,7 @@ const react: ConfigArray = tseslint.config({
   settings: { react: { version: 'detect' } },
   extends: [
     hooksPlugin.configs.recommended,
-    reactPlugin.configs.flat.recommended!,
+    reactPlugin.configs.flat['recommended']!,
     reactPlugin.configs.flat['jsx-runtime']!
   ],
   rules: {

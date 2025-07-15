@@ -13,7 +13,7 @@ export const retry = async <T>(
   logger: Logger,
   fn: () => Promise<T>,
   maxAttempts: number
-) => {
+): Promise<T> => {
   const execute = async (attempt: number): Promise<T> => {
     try {
       return await fn()

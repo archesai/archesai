@@ -1,4 +1,11 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -7,7 +14,15 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 export const ApiTokenRoleTypes = ['ADMIN', 'USER'] as const
 export type ApiTokenRoleType = (typeof ApiTokenRoleTypes)[number]
 
-export const ApiTokenEntitySchema = Type.Object(
+export const ApiTokenEntitySchema: TObject<{
+  createdAt: TString
+  id: TString
+  key: TString
+  name: TOptional<TString>
+  organizationId: TString
+  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     key: Type.String({

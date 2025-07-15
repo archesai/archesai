@@ -1,10 +1,12 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { SubscriptionDtoSchema } from '#billing/subscriptions/dto/subscription.dto'
 
-export const CreateSubscriptionDtoSchema = Type.Object({
+export const CreateSubscriptionDtoSchema: TObject<{
+  planId: TString
+}> = Type.Object({
   planId: SubscriptionDtoSchema.properties.planId
 })
 

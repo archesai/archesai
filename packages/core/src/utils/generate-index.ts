@@ -1,7 +1,7 @@
 import { readdirSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-export const generateExports = (projectSrc: string) => {
+export const generateExports = (projectSrc: string): void => {
   const INDEX_FILE = join(projectSrc, 'index.ts') // Output file
 
   const files = getAllFiles(projectSrc)
@@ -18,7 +18,7 @@ export const generateExports = (projectSrc: string) => {
   )
 }
 
-export const getAllFiles = (dir: string, fileList: string[] = []) => {
+export const getAllFiles = (dir: string, fileList: string[] = []): string[] => {
   const files = readdirSync(dir)
 
   files.forEach((file) => {

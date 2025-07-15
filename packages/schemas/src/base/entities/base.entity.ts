@@ -1,8 +1,18 @@
-import type { Static, TSchema } from '@sinclair/typebox'
+import type {
+  Static,
+  TObject,
+  TSchema,
+  TString,
+  TUnsafe
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const BaseEntitySchema = Type.Object({
+export const BaseEntitySchema: TObject<{
+  createdAt: TString
+  id: TString
+  updatedAt: TString
+}> = Type.Object({
   createdAt: Type.String({ description: 'The date this item was created' }),
   id: Type.String({ description: 'The ID of the item' }),
   updatedAt: Type.String({
@@ -15,5 +25,10 @@ export type BaseEntity = Static<typeof BaseEntitySchema>
 export type BaseInsertion<TEntity extends BaseEntity> = Omit<TEntity, 'id'> &
   Partial<BaseEntity>
 
-export const LegacyRef = <T extends TSchema>(schema: T) =>
-  Type.Unsafe<Static<T>>(Type.Ref(schema.$id!))
+export const LegacyRef = <T extends TSchema>(
+  schema: T
+): TUnsafe<
+  (T & {
+    params: []
+  })['static']
+> => Type.Unsafe<Static<T>>(Type.Ref(schema.$id!))

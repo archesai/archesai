@@ -20,7 +20,8 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@sinclair/typebox": "catalog:",
-    "tslib": "catalog:"
+    "tslib": "catalog:",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",

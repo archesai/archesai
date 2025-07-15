@@ -1,8 +1,11 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const UpdatePasswordResetDtoSchema = Type.Object({
+export const UpdatePasswordResetDtoSchema: TObject<{
+  newPassword: TString
+  token: TString
+}> = Type.Object({
   newPassword: Type.String({
     description: 'The new password'
   }),

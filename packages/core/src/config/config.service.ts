@@ -36,7 +36,13 @@ export type Leaves<T> =
     }[keyof T & string]
   : never
 
-export const createConfigService = () => {
+export const createConfigService = (): {
+  get<Path extends Leaves<ArchesConfig>>(
+    propertyPath: Path
+  ): LeafTypes<ArchesConfig, Path>
+  getConfig(): ArchesConfig
+  load: <T extends TObject>(schema: T) => StaticDecode<T>
+} => {
   const loadEnvConfig = (): Record<string, unknown> => {
     const envConfig: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(process.env)) {

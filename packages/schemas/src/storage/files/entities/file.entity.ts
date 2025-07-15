@@ -1,10 +1,27 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TBoolean,
+  TNumber,
+  TObject,
+  TOptional,
+  TString
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const FileEntitySchema = Type.Object(
+export const FileEntitySchema: TObject<{
+  createdAt: TString
+  id: TString
+  isDir: TBoolean
+  organizationId: TString
+  path: TString
+  read: TOptional<TString>
+  size: TNumber
+  updatedAt: TString
+  write: TOptional<TString>
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     isDir: Type.Boolean({

@@ -1,4 +1,13 @@
-import type { TObject } from '@sinclair/typebox'
+import type {
+  TArray,
+  TBoolean,
+  TInteger,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -30,7 +39,9 @@ export type FilterOperationType = (typeof FilterOperation)[number]
  * - a boolean
  * - an array of [string|number|boolean]
  */
-export const FilterValue = Type.Union([
+export const FilterValue: TUnion<
+  [TString, TNumber, TBoolean, TArray<TUnion<[TString, TNumber, TBoolean]>>]
+> = Type.Union([
   Type.String(),
   Type.Number(),
   Type.Boolean(),
@@ -42,7 +53,7 @@ export const FilterValue = Type.Union([
  * (like equals, GT, GTE, etc.) to a FilterValue.
  *
  */
-export const FieldFilterSchema = Type.Partial(
+export const FieldFilterSchema: TObject = Type.Partial(
   Type.Record(
     Type.Union(FilterOperation.map((op) => Type.Literal(op))),
     FilterValue
@@ -61,7 +72,10 @@ export const FieldFilterSchema = Type.Partial(
   }
 )
 
-export const PageSchema = Type.Object(
+export const PageSchema: TObject<{
+  number: TOptional<TInteger>
+  size: TOptional<TInteger>
+}> = Type.Object(
   {
     number: Type.Optional(
       Type.Integer({ default: 1, maximum: Number.MAX_VALUE, minimum: 0 })
@@ -80,14 +94,22 @@ export const PageSchema = Type.Object(
   }
 )
 
-export const SortSchema = Type.String({
+export const SortSchema: TString = Type.String({
   $id: 'Sort',
   description: 'Sort by name ascending and createdAt descending',
   examples: ['name,-createdAt'],
   title: 'Sort'
 })
 
-export const SearchQuerySchema = Type.Object(
+export const SearchQuerySchema: TObject<{
+  page: TOptional<
+    TObject<{
+      number: TOptional<TInteger>
+      size: TOptional<TInteger>
+    }>
+  >
+  sort: TOptional<TString>
+}> = Type.Object(
   {
     page: Type.Optional(PageSchema),
     sort: Type.Optional(SortSchema)
@@ -118,7 +140,16 @@ const createFilterSchema = (entitySchema: TObject) => {
 export const createSearchQuerySchema = (
   entitySchema: TObject,
   entityKey: string
-) => {
+): TObject<{
+  filter: TOptional<TObject>
+  page: TOptional<
+    TObject<{
+      number: TOptional<TInteger>
+      size: TOptional<TInteger>
+    }>
+  >
+  sort: TOptional<TString>
+}> => {
   return Type.Composite(
     [
       Type.Object({

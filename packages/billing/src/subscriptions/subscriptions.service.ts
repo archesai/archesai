@@ -1,3 +1,5 @@
+import type Stripe from 'stripe'
+
 import type { StripeService } from '#stripe/stripe.service'
 
 /**
@@ -10,7 +12,7 @@ export class SubscriptionsService {
     this.stripeService = stripeService
   }
 
-  public async cancel(id: string) {
+  public async cancel(id: string): Promise<void> {
     const subscription =
       await this.stripeService.stripe.subscriptions.retrieve(id)
     if (subscription.status === 'canceled') {
@@ -20,7 +22,10 @@ export class SubscriptionsService {
     await this.stripeService.stripe.subscriptions.cancel(id)
   }
 
-  public async update(id: string, priceId: string) {
+  public async update(
+    id: string,
+    priceId: string
+  ): Promise<Stripe.Response<Stripe.Subscription>> {
     const subscription =
       await this.stripeService.stripe.subscriptions.retrieve(id)
 

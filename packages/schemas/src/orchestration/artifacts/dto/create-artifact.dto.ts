@@ -1,10 +1,14 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { ArtifactEntitySchema } from '#orchestration/artifacts/entities/artifact.entity'
 
-export const CreateArtifactDtoSchema = Type.Object({
+export const CreateArtifactDtoSchema: TObject<{
+  name: TString
+  text: TOptional<TString>
+  url: TOptional<TString>
+}> = Type.Object({
   name: Type.String({
     description: 'The name of the artifact'
   }),

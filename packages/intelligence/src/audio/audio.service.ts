@@ -12,7 +12,10 @@ import { Type, Value } from '@archesai/schemas'
 
 export const createAudioService = (logger: Logger) => {
   return {
-    async splitAudio(url: string) {
+    async splitAudio(url: string): Promise<{
+      bassSrc: string
+      drumsSrc: string
+    }> {
       logger.debug("Hitting moises' API...")
       const response = await retry(
         logger,

@@ -1,10 +1,18 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const VerificationTokenEntitySchema = Type.Object(
+export const VerificationTokenEntitySchema: TObject<{
+  createdAt: TString
+  expires: TString
+  id: TString
+  identifier: TString
+  newEmail: TOptional<TString>
+  token: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     expires: Type.String({

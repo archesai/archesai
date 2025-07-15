@@ -1,10 +1,24 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const AccountEntitySchema = Type.Object(
+export const AccountEntitySchema: TObject<{
+  accessToken: TUnion<[TString, TNull]>
+  accessTokenExpiresAt: TUnion<[TString, TNull]>
+  accountId: TString
+  createdAt: TString
+  id: TString
+  idToken: TUnion<[TString, TNull]>
+  password: TUnion<[TString, TNull]>
+  providerId: TString
+  refreshToken: TUnion<[TString, TNull]>
+  refreshTokenExpiresAt: TUnion<[TString, TNull]>
+  scope: TUnion<[TString, TNull]>
+  updatedAt: TString
+  userId: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     accessToken: Type.Union([Type.String(), Type.Null()], {

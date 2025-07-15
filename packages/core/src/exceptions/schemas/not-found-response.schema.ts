@@ -1,6 +1,16 @@
+import type { TArray, TObject, TString } from '@sinclair/typebox'
+
 import { Type } from '@sinclair/typebox'
 
-export const NotFoundResponseSchema = Type.Object(
+export const NotFoundResponseSchema: TObject<{
+  errors: TArray<
+    TObject<{
+      detail: TString
+      status: TString
+      title: TString
+    }>
+  >
+}> = Type.Object(
   {
     errors: Type.Array(
       Type.Object({

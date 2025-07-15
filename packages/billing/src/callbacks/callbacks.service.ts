@@ -27,7 +27,7 @@ export class CallbacksService {
     this.websocketsService = websocketsService
   }
 
-  public async handle(signature: string, req: IncomingMessage) {
+  public async handle(signature: string, req: IncomingMessage): Promise<void> {
     if (!signature) {
       throw new InternalServerErrorException('Missing stripe-signature header')
     }

@@ -1,4 +1,12 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -14,7 +22,20 @@ import { RunTypes } from '#enums/role'
 //   tool: baseEntitySchema.nullable().describe('The tool associated with the run')
 // })
 
-export const RunEntitySchema = Type.Object(
+export const RunEntitySchema: TObject<{
+  completedAt: TOptional<TString>
+  createdAt: TString
+  error: TOptional<TString>
+  id: TString
+  organizationId: TString
+  pipelineId: TString
+  progress: TNumber
+  runType: TUnion<TLiteral<'PIPELINE_RUN' | 'TOOL_RUN'>[]>
+  startedAt: TOptional<TString>
+  status: TString
+  toolId: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     completedAt: Type.Optional(

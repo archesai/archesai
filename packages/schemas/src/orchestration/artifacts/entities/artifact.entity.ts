@@ -1,10 +1,34 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TArray,
+  TNull,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const ArtifactEntitySchema = Type.Object(
+export const ArtifactEntitySchema: TObject<{
+  createdAt: TString
+  credits: TNumber
+  description: TString
+  embedding: TOptional<TArray<TNumber>>
+  id: TString
+  mimeType: TString
+  name: TString
+  organizationId: TString
+  parentId: TString
+  previewImage: TString
+  producerId: TUnion<[TString, TNull]>
+  text: TOptional<TString>
+  updatedAt: TString
+  url: TOptional<TString>
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     credits: Type.Number({

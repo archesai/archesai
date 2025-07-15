@@ -13,14 +13,16 @@ import type * as schema from '#schema/index'
 
 import { createPooledClient } from '#helpers/clients'
 
-export const createDrizzleDatabaseService = (connectionString: string) => {
+export const createDrizzleDatabaseService = (
+  connectionString: string
+): DrizzleDatabaseService => {
   const pool = new pg.Pool({ connectionString })
   const db = createPooledClient(pool)
   return new DrizzleDatabaseService(db)
 }
 
 export class DrizzleDatabaseService {
-  public readonly db: NodePgDatabase<typeof schema>
+  readonly db: NodePgDatabase<typeof schema>
   constructor(db: NodePgDatabase<typeof schema>) {
     this.db = db
   }

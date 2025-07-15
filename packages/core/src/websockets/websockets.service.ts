@@ -15,7 +15,7 @@ export const createWebsocketsService = (
   configService: ConfigService,
   redisService: RedisService,
   logger: Logger
-) => {
+): WebsocketsService => {
   return new WebsocketsService(configService, redisService, logger)
 }
 
@@ -42,7 +42,7 @@ export class WebsocketsService {
     this.io?.to(room).emit(event, data)
   }
 
-  public async handleConnection(socket: ArchesWebsocketsSocket) {
+  public async handleConnection(socket: ArchesWebsocketsSocket): Promise<void> {
     try {
       const token = this.getTokenFromSocket(socket)
       // const { sub } = jwt.verify<AccessTokenDecodedJwt>(token)
@@ -61,7 +61,10 @@ export class WebsocketsService {
     }
   }
 
-  public handleDisconnect(socket: ArchesWebsocketsSocket, reason: string) {
+  public handleDisconnect(
+    socket: ArchesWebsocketsSocket,
+    reason: string
+  ): void {
     this.logger.log(`websocket disconnected`, {
       reason,
       rooms: socket.rooms,

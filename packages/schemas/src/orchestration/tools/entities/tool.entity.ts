@@ -1,11 +1,28 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { ContentBaseTypes } from '#enums/role'
 
-export const ToolEntitySchema = Type.Object(
+export const ToolEntitySchema: TObject<{
+  createdAt: TString
+  description: TString
+  id: TString
+  inputType: TUnion<TLiteral<'AUDIO' | 'IMAGE' | 'TEXT' | 'VIDEO'>[]>
+  name: TOptional<TString>
+  organizationId: TString
+  outputType: TUnion<TLiteral<'AUDIO' | 'IMAGE' | 'TEXT' | 'VIDEO'>[]>
+  toolBase: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     description: Type.String({ description: 'The tool description' }),

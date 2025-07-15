@@ -1,8 +1,12 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const CreateAccountDtoSchema = Type.Object({
+export const CreateAccountDtoSchema: TObject<{
+  email: TString
+  name: TString
+  password: TString
+}> = Type.Object({
   email: Type.String({
     description: 'The email address associated with the account'
   }),

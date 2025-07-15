@@ -1,11 +1,31 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { PlanTypes } from '#enums/role'
 
-export const OrganizationEntitySchema = Type.Object(
+export const OrganizationEntitySchema: TObject<{
+  billingEmail: TString
+  createdAt: TString
+  creator: TOptional<TString>
+  credits: TNumber
+  customerId: TOptional<TString>
+  id: TString
+  organizationId: TString
+  plan: TUnion<
+    TLiteral<'BASIC' | 'FREE' | 'PREMIUM' | 'STANDARD' | 'UNLIMITED'>[]
+  >
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     billingEmail: Type.String({

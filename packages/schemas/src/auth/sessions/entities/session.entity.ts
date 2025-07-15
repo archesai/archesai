@@ -1,4 +1,4 @@
-import type { Static } from '@sinclair/typebox'
+import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -18,7 +18,17 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 //     .references(() => UserTable.id, { onDelete: 'cascade' })
 // })
 
-export const SessionEntitySchema = Type.Object(
+export const SessionEntitySchema: TObject<{
+  activeOrganizationId: TString
+  createdAt: TString
+  expiresAt: TString
+  id: TString
+  ipAddress: TOptional<TString>
+  token: TString
+  updatedAt: TString
+  userAgent: TOptional<TString>
+  userId: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     activeOrganizationId: Type.String({

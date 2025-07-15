@@ -1,4 +1,4 @@
-import type { TransportTargetOptions } from 'pino'
+import type { Logger, TransportTargetOptions } from 'pino'
 
 import { pino } from 'pino'
 
@@ -6,7 +6,12 @@ import type { ConfigService } from '#config/config.service'
 
 import { PinoLoggerAdapter } from '#logging/adapters/pino-logger-adapter'
 
-export const createLogger = (configService: ConfigService) => {
+export const createLogger = (
+  configService: ConfigService
+): {
+  logger: PinoLoggerAdapter
+  pinoLogger: Logger
+} => {
   const defaultOptions = {
     level: 'info',
     messageKey: 'message',

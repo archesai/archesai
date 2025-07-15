@@ -1,10 +1,19 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TObject,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { InvitationEntitySchema } from '#auth/invitations/entities/invitation.entity'
 
-export const CreateInvitationDtoSchema = Type.Object({
+export const CreateInvitationDtoSchema: TObject<{
+  email: TString
+  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+}> = Type.Object({
   email: InvitationEntitySchema.properties.email,
   role: InvitationEntitySchema.properties.role
 })

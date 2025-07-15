@@ -23,7 +23,9 @@ export class StripeService {
     customerId: string,
     lineItem: { price: string; quantity: number },
     isOneTime: boolean
-  ) {
+  ): Promise<{
+    url: string
+  }> {
     const session = await this.stripe.checkout.sessions.create({
       ...(isOneTime ? { allow_promotion_codes: true } : {}),
       cancel_url: `${this.configService.get('platform.host')}/organization/billing`,
@@ -65,20 +67,24 @@ export class StripeService {
     })
   }
 
-  public async createSetupIntent(customerId: string) {
+  public async createSetupIntent(
+    customerId: string
+  ): Promise<Stripe.Response<Stripe.SetupIntent>> {
     return this.stripe.setupIntents.create({
       customer: customerId,
       payment_method_types: ['card']
     })
   }
 
-  public async getPrice(id: string) {
+  public async getPrice(id: string): Promise<Stripe.Response<Stripe.Price>> {
     return this.stripe.prices.retrieve(id, {
       expand: ['product']
     })
   }
 
-  public async getProduct(id: string) {
+  public async getProduct(
+    id: string
+  ): Promise<Stripe.Response<Stripe.Product>> {
     return this.stripe.products.retrieve(id)
   }
 }

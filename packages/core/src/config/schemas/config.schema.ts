@@ -1,8 +1,27 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TBoolean,
+  TLiteral,
+  TNumber,
+  TObject,
+  TOptional,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const RunpodConfigSchema = Type.Union([
+export const RunpodConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      token: TString
+    }>
+  ]
+> = Type.Union([
   Type.Object({
     enabled: Type.Literal(false)
   }),
@@ -13,7 +32,18 @@ export const RunpodConfigSchema = Type.Union([
 ])
 export type RunpodConfig = Static<typeof RunpodConfigSchema>
 
-export const ServerConfigSchema = Type.Object({
+export const ServerConfigSchema: TObject<{
+  cors: TObject<{
+    enabled: TBoolean
+    origins: TString
+  }>
+  docs: TObject<{
+    enabled: TBoolean
+    export: TBoolean
+  }>
+  host: TString
+  port: TNumber
+}> = Type.Object({
   cors: Type.Object({
     enabled: Type.Boolean({ default: true }),
     origins: Type.String({ default: 'localhost' })
@@ -27,23 +57,35 @@ export const ServerConfigSchema = Type.Object({
 })
 export type ServerConfig = Static<typeof ServerConfigSchema>
 
-export const ConfigConfigSchema = Type.Object({
+export const ConfigConfigSchema: TObject<{
+  validate: TBoolean
+}> = Type.Object({
   validate: Type.Boolean({ default: true })
 })
 export type ConfigConfig = Static<typeof ConfigConfigSchema>
 
-export const PlatformConfigSchema = Type.Object({
+export const PlatformConfigSchema: TObject<{
+  enabled: TBoolean
+  host: TString
+}> = Type.Object({
   enabled: Type.Boolean({ default: false }),
   host: Type.String({ default: 'localhost' })
 })
 export type PlatformConfig = Static<typeof PlatformConfigSchema>
 
-export const TlsConfigSchema = Type.Object({
+export const TlsConfigSchema: TObject<{
+  enabled: TBoolean
+}> = Type.Object({
   enabled: Type.Boolean({ default: false })
 })
 export type TlsConfig = Static<typeof TlsConfigSchema>
 
-export const DatabaseConfigSchema = Type.Object({
+export const DatabaseConfigSchema: TObject<{
+  type: TUnion<
+    [TLiteral<'postgres'>, TLiteral<'sqlite'>, TLiteral<'in-memory'>]
+  >
+  url: TString
+}> = Type.Object({
   type: Type.Union(
     [
       Type.Literal('postgres'),
@@ -58,7 +100,19 @@ export const DatabaseConfigSchema = Type.Object({
 })
 export type DatabaseConfig = Static<typeof DatabaseConfigSchema>
 
-export const EmailConfigSchema = Type.Union([
+export const EmailConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      password: TString
+      service: TString
+      user: TString
+    }>
+  ]
+> = Type.Union([
   Type.Object({
     enabled: Type.Literal(false)
   }),
@@ -71,14 +125,26 @@ export const EmailConfigSchema = Type.Union([
 ])
 export type EmailConfig = Static<typeof EmailConfigSchema>
 
-export const EmbeddingConfigSchema = Type.Object({
+export const EmbeddingConfigSchema: TObject<{
+  type: TUnion<[TLiteral<'openai'>, TLiteral<'ollama'>]>
+}> = Type.Object({
   type: Type.Union([Type.Literal('openai'), Type.Literal('ollama')], {
     default: 'ollama'
   })
 })
 export type EmbeddingConfig = Static<typeof EmbeddingConfigSchema>
 
-export const SpeechConfigSchema = Type.Union([
+export const SpeechConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      token: TString
+    }>
+  ]
+> = Type.Union([
   Type.Object({ enabled: Type.Literal(false) }),
   Type.Object({
     enabled: Type.Literal(true),
@@ -87,13 +153,29 @@ export const SpeechConfigSchema = Type.Union([
 ])
 export type SpeechConfig = Static<typeof SpeechConfigSchema>
 
-export const JwtConfigSchema = Type.Object({
+export const JwtConfigSchema: TObject<{
+  expiration: TString
+  secret: TString
+}> = Type.Object({
   expiration: Type.String({ default: (60 * 60 * 24).toString() }),
   secret: Type.String({ default: 'secret-scary-stuff' })
 })
 export type JwtConfig = Static<typeof JwtConfigSchema>
 
-export const BillingConfigSchema = Type.Union([
+export const BillingConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      stripe: TObject<{
+        token: TString
+        whsec: TString
+      }>
+    }>
+  ]
+> = Type.Union([
   Type.Object({ enabled: Type.Literal(false) }),
   Type.Object({
     enabled: Type.Literal(true),
@@ -102,7 +184,20 @@ export const BillingConfigSchema = Type.Union([
 ])
 export type BillingConfig = Static<typeof BillingConfigSchema>
 
-export const LlmConfigSchema = Type.Union([
+export const LlmConfigSchema: TUnion<
+  [
+    TObject<{
+      endpoint: TString
+      token: TOptional<TString>
+      type: TLiteral<'ollama'>
+    }>,
+    TObject<{
+      endpoint: TOptional<TString>
+      token: TString
+      type: TLiteral<'openai'>
+    }>
+  ]
+> = Type.Union([
   Type.Object({
     endpoint: Type.String({ default: 'http://localhost:11434' }),
     token: Type.Optional(Type.String()),
@@ -116,7 +211,23 @@ export const LlmConfigSchema = Type.Union([
 ])
 export type LlmConfig = Static<typeof LlmConfigSchema>
 
-export const StorageConfigSchema = Type.Union([
+export const StorageConfigSchema: TUnion<
+  [
+    TObject<{
+      type: TLiteral<'local'>
+    }>,
+    TObject<{
+      type: TLiteral<'google-cloud'>
+    }>,
+    TObject<{
+      accesskey: TString
+      bucket: TString
+      endpoint: TString
+      secretkey: TString
+      type: TLiteral<'minio'>
+    }>
+  ]
+> = Type.Union([
   Type.Object({ type: Type.Literal('local') }),
   Type.Object({ type: Type.Literal('google-cloud') }),
   Type.Object({
@@ -129,7 +240,20 @@ export const StorageConfigSchema = Type.Union([
 ])
 export type StorageConfig = Static<typeof StorageConfigSchema>
 
-export const RedisConfigSchema = Type.Union([
+export const RedisConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      auth: TOptional<TString>
+      ca: TOptional<TString>
+      enabled: TLiteral<true>
+      host: TString
+      port: TNumber
+    }>
+  ]
+> = Type.Union([
   Type.Object({ enabled: Type.Literal(false) }),
   Type.Object({
     auth: Type.Optional(Type.String()),
@@ -141,13 +265,22 @@ export const RedisConfigSchema = Type.Union([
 ])
 export type RedisConfig = Static<typeof RedisConfigSchema>
 
-export const SessionConfigSchema = Type.Object({
+export const SessionConfigSchema: TObject<{
+  enabled: TBoolean
+  secret: TString
+}> = Type.Object({
   enabled: Type.Boolean({ default: true }),
   secret: Type.String({ default: 'session-scary-stuff' })
 })
 export type SessionConfig = Static<typeof SessionConfigSchema>
 
-export const MonitoringConfigSchema = Type.Object({
+export const MonitoringConfigSchema: TObject<{
+  enabled: TBoolean
+  loki: TObject<{
+    enabled: TBoolean
+    host: TOptional<TString>
+  }>
+}> = Type.Object({
   enabled: Type.Boolean({ default: false }),
   loki: Type.Object({
     enabled: Type.Boolean({ default: false }),
@@ -156,7 +289,21 @@ export const MonitoringConfigSchema = Type.Object({
 })
 export type MonitoringConfig = Static<typeof MonitoringConfigSchema>
 
-export const LoggingConfigSchema = Type.Object({
+export const LoggingConfigSchema: TObject<{
+  gcpfix: TBoolean
+  level: TUnion<
+    [
+      TLiteral<'fatal'>,
+      TLiteral<'error'>,
+      TLiteral<'warn'>,
+      TLiteral<'info'>,
+      TLiteral<'debug'>,
+      TLiteral<'trace'>,
+      TLiteral<'silent'>
+    ]
+  >
+  pretty: TBoolean
+}> = Type.Object({
   gcpfix: Type.Boolean({ default: false }),
   level: Type.Union(
     [
@@ -174,7 +321,17 @@ export const LoggingConfigSchema = Type.Object({
 })
 export type LoggingConfig = Static<typeof LoggingConfigSchema>
 
-export const ScraperConfigSchema = Type.Union([
+export const ScraperConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      endpoint: TString
+    }>
+  ]
+> = Type.Union([
   Type.Object({ enabled: Type.Literal(false) }),
   Type.Object({
     enabled: Type.Literal(true),
@@ -183,7 +340,17 @@ export const ScraperConfigSchema = Type.Union([
 ])
 export type ScraperConfig = Static<typeof ScraperConfigSchema>
 
-export const UnstructuredConfigSchema = Type.Union([
+export const UnstructuredConfigSchema: TUnion<
+  [
+    TObject<{
+      enabled: TLiteral<false>
+    }>,
+    TObject<{
+      enabled: TLiteral<true>
+      endpoint: TString
+    }>
+  ]
+> = Type.Union([
   Type.Object({ enabled: Type.Literal(false) }),
   Type.Object({
     enabled: Type.Literal(true),
@@ -192,7 +359,37 @@ export const UnstructuredConfigSchema = Type.Union([
 ])
 export type UnstructuredConfig = Static<typeof UnstructuredConfigSchema>
 
-export const AuthConfigSchema = Type.Object({
+export const AuthConfigSchema: TObject<{
+  firebase: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        clientEmail: TString
+        enabled: TLiteral<true>
+        privateKey: TString
+        projectId: TString
+      }>
+    ]
+  >
+  local: TObject<{
+    enabled: TBoolean
+  }>
+  twitter: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        callbackURL: TString
+        consumerKey: TString
+        consumerSecret: TString
+        enabled: TLiteral<true>
+      }>
+    ]
+  >
+}> = Type.Object({
   firebase: Type.Union([
     Type.Object({ enabled: Type.Literal(false) }),
     Type.Object({
@@ -217,7 +414,216 @@ export const AuthConfigSchema = Type.Object({
 })
 export type AuthConfig = Static<typeof AuthConfigSchema>
 
-export const ArchesConfigSchema = Type.Object(
+export const ArchesConfigSchema: TObject<{
+  auth: TObject<{
+    firebase: TUnion<
+      [
+        TObject<{
+          enabled: TLiteral<false>
+        }>,
+        TObject<{
+          clientEmail: TString
+          enabled: TLiteral<true>
+          privateKey: TString
+          projectId: TString
+        }>
+      ]
+    >
+    local: TObject<{
+      enabled: TBoolean
+    }>
+    twitter: TUnion<
+      [
+        TObject<{
+          enabled: TLiteral<false>
+        }>,
+        TObject<{
+          callbackURL: TString
+          consumerKey: TString
+          consumerSecret: TString
+          enabled: TLiteral<true>
+        }>
+      ]
+    >
+  }>
+  billing: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        stripe: TObject<{
+          token: TString
+          whsec: TString
+        }>
+      }>
+    ]
+  >
+  config: TObject<{
+    validate: TBoolean
+  }>
+  database: TObject<{
+    type: TUnion<
+      [TLiteral<'postgres'>, TLiteral<'sqlite'>, TLiteral<'in-memory'>]
+    >
+    url: TString
+  }>
+  email: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        password: TString
+        service: TString
+        user: TString
+      }>
+    ]
+  >
+  embedding: TObject<{
+    type: TUnion<[TLiteral<'openai'>, TLiteral<'ollama'>]>
+  }>
+  jwt: TObject<{
+    expiration: TString
+    secret: TString
+  }>
+  llm: TUnion<
+    [
+      TObject<{
+        endpoint: TString
+        token: TOptional<TString>
+        type: TLiteral<'ollama'>
+      }>,
+      TObject<{
+        endpoint: TOptional<TString>
+        token: TString
+        type: TLiteral<'openai'>
+      }>
+    ]
+  >
+  logging: TObject<{
+    gcpfix: TBoolean
+    level: TUnion<
+      [
+        TLiteral<'fatal'>,
+        TLiteral<'error'>,
+        TLiteral<'warn'>,
+        TLiteral<'info'>,
+        TLiteral<'debug'>,
+        TLiteral<'trace'>,
+        TLiteral<'silent'>
+      ]
+    >
+    pretty: TBoolean
+  }>
+  monitoring: TObject<{
+    enabled: TBoolean
+    loki: TObject<{
+      enabled: TBoolean
+      host: TOptional<TString>
+    }>
+  }>
+  platform: TObject<{
+    enabled: TBoolean
+    host: TString
+  }>
+  redis: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        auth: TOptional<TString>
+        ca: TOptional<TString>
+        enabled: TLiteral<true>
+        host: TString
+        port: TNumber
+      }>
+    ]
+  >
+  runpod: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        token: TString
+      }>
+    ]
+  >
+  scraper: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        endpoint: TString
+      }>
+    ]
+  >
+  server: TObject<{
+    cors: TObject<{
+      enabled: TBoolean
+      origins: TString
+    }>
+    docs: TObject<{
+      enabled: TBoolean
+      export: TBoolean
+    }>
+    host: TString
+    port: TNumber
+  }>
+  session: TObject<{
+    enabled: TBoolean
+    secret: TString
+  }>
+  speech: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        token: TString
+      }>
+    ]
+  >
+  storage: TUnion<
+    [
+      TObject<{
+        type: TLiteral<'local'>
+      }>,
+      TObject<{
+        type: TLiteral<'google-cloud'>
+      }>,
+      TObject<{
+        accesskey: TString
+        bucket: TString
+        endpoint: TString
+        secretkey: TString
+        type: TLiteral<'minio'>
+      }>
+    ]
+  >
+  tls: TObject<{
+    enabled: TBoolean
+  }>
+  unstructured: TUnion<
+    [
+      TObject<{
+        enabled: TLiteral<false>
+      }>,
+      TObject<{
+        enabled: TLiteral<true>
+        endpoint: TString
+      }>
+    ]
+  >
+}> = Type.Object(
   {
     auth: AuthConfigSchema,
     billing: BillingConfigSchema,

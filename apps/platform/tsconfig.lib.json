@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "noEmit": true
+    "isolatedDeclarations": false,
     // "types": ["vite/client"]
+    "noEmit": true
   },
   "extends": [
     "../../tooling/typescript/src/base.json",

@@ -18,7 +18,7 @@ export const createRedisService = (
   configService: ConfigService,
   logger: Logger,
   options: RedisConnectionOptions = {}
-) => {
+): RedisService => {
   return new RedisService(configService, logger, options)
 }
 

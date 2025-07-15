@@ -1,12 +1,18 @@
 import type { LibSQLDatabase } from 'drizzle-orm/libsql'
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import type pg from 'pg'
+import type { Pool } from 'pg'
 
 import { drizzle as libsqlDrizzle } from 'drizzle-orm/libsql/node'
 import { drizzle as pgDrizzle } from 'drizzle-orm/node-postgres'
 
 import * as schema from '#schema/index'
 
-export const createClient = (url: string) => {
+export const createClient = (
+  url: string
+): NodePgDatabase<typeof schema> & {
+  $client: Pool
+} => {
   const db = pgDrizzle({
     // casing: 'snake_case',
     connection: url,
@@ -17,7 +23,11 @@ export const createClient = (url: string) => {
   return db
 }
 
-export const createPooledClient = (pool: pg.Pool) => {
+export const createPooledClient = (
+  pool: pg.Pool
+): NodePgDatabase<typeof schema> & {
+  $client: Pool
+} => {
   const db = pgDrizzle(pool, {
     // connection: databaseUrl,
     // casing: 'snake_case',

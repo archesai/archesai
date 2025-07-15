@@ -1,10 +1,26 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TBoolean,
+  TNull,
+  TObject,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const UserEntitySchema = Type.Object(
+export const UserEntitySchema: TObject<{
+  createdAt: TString
+  deactivated: TBoolean
+  email: TString
+  emailVerified: TBoolean
+  id: TString
+  image: TUnion<[TNull, TString]>
+  name: TString
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     deactivated: Type.Boolean({

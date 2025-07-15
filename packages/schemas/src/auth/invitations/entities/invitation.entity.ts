@@ -1,11 +1,26 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TBoolean,
+  TLiteral,
+  TObject,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RoleTypes } from '#enums/role'
 
-export const InvitationEntitySchema = Type.Object(
+export const InvitationEntitySchema: TObject<{
+  accepted: TBoolean
+  createdAt: TString
+  email: TString
+  id: TString
+  organizationId: TString
+  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     accepted: Type.Boolean({

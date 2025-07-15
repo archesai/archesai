@@ -18,7 +18,7 @@ export const createLlmService = (
     async createChatCompletion(
       createChatCompletionDto: ChatCompletionCreateParamsStreaming,
       emitAnswer: (answer: string) => void
-    ) {
+    ): Promise<string> {
       logger.debug('Sending messages to OpenAI', { createChatCompletionDto })
 
       let answer = ''
@@ -41,7 +41,12 @@ export const createLlmService = (
       return answer
     },
 
-    async createEmbeddings(texts: string[]) {
+    async createEmbeddings(texts: string[]): Promise<
+      {
+        embedding: number[]
+        tokens: number
+      }[]
+    > {
       const start = Date.now()
       const { data, usage } = await openai.embeddings.create({
         input: texts,
@@ -62,7 +67,9 @@ export const createLlmService = (
       return response
     },
 
-    async createImageSummary(url: string) {
+    async createImageSummary(
+      url: string
+    ): Promise<OpenAI.Chat.Completions.ChatCompletion.Choice | undefined> {
       const response = await openai.chat.completions.create({
         messages: [
           {
@@ -83,7 +90,10 @@ export const createLlmService = (
       return response.choices[0]
     },
 
-    async createSummary(text: string) {
+    async createSummary(text: string): Promise<{
+      summary: string
+      tokens: number
+    }> {
       const { choices, usage } = await openai.completions.create({
         frequency_penalty: 0,
         max_tokens: 80,

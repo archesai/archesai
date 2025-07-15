@@ -13,7 +13,7 @@ import { createContainer } from '#utils/container'
 // UTILITY FUNCTIONS
 // =================================================================
 
-export async function bootstrap() {
+export async function bootstrap(): Promise<void> {
   // =================================================================
   // 1. DEPENDENCY INJECTION - Completely functional, no classes!
   // =================================================================

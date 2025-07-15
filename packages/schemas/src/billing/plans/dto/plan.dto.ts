@@ -1,4 +1,14 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TNull,
+  TNumber,
+  TObject,
+  TOptional,
+  TRecord,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -7,7 +17,36 @@ import { PlanTypes } from '#enums/role'
 
 export const PLAN_ENTITY_KEY = 'plans'
 
-export const PlanDtoSchema = Type.Object(
+export const PlanDtoSchema: TObject<{
+  createdAt: TString
+  currency: TString
+  description: TOptional<TUnion<[TString, TNull]>>
+  id: TString
+  metadata: TObject<{
+    key: TOptional<
+      TUnion<
+        TLiteral<'BASIC' | 'FREE' | 'PREMIUM' | 'STANDARD' | 'UNLIMITED'>[]
+      >
+    >
+  }>
+  name: TString
+  priceId: TString
+  priceMetadata: TRecord<TString, TString>
+  recurring: TOptional<
+    TUnion<
+      [
+        TObject<{
+          interval: TString
+          interval_count: TNumber
+          trial_period_days: TOptional<TUnion<[TNumber, TNull]>>
+        }>,
+        TNull
+      ]
+    >
+  >
+  unitAmount: TOptional<TUnion<[TNumber, TNull]>>
+  updatedAt: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     currency: Type.String({ description: 'The currency of the plan' }),

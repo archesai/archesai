@@ -78,18 +78,8 @@ const base: ConfigArray = tseslint.config(
         { fixMixedExportsWithInlineTypeSpecifier: true }
       ],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-member-accessibility': [
-        'error',
-        {
-          accessibility: 'explicit',
-          overrides: {
-            constructors: 'no-public'
-          }
-        }
-      ],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-deprecated': 'off',
-      '@typescript-eslint/no-extraneous-class': 'off',
+      '@typescript-eslint/no-deprecated': 'warn',
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-misused-spread': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off'
@@ -111,7 +101,7 @@ const base: ConfigArray = tseslint.config(
       'import/no-relative-packages': 'error',
       'import/no-unresolved': 'off',
       'import/extensions': 'off',
-      ...(process.env.CI !== 'true' && {
+      ...(process.env['CI'] !== 'true' && {
         'import/no-cycle': 'off',
         'import/no-deprecated': 'off',
         'import/no-named-as-default': 'off',

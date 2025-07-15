@@ -1,11 +1,25 @@
-import type { Static } from '@sinclair/typebox'
+import type {
+  Static,
+  TLiteral,
+  TObject,
+  TString,
+  TUnion
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RoleTypes } from '#enums/role'
 
-export const MemberEntitySchema = Type.Object(
+export const MemberEntitySchema: TObject<{
+  createdAt: TString
+  id: TString
+  invitationId: TString
+  organizationId: TString
+  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  updatedAt: TString
+  userId: TString
+}> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     invitationId: Type.String({ description: 'The invitation id' }),
