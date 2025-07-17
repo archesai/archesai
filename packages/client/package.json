@@ -21,12 +21,14 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@tanstack/react-query": "catalog:",
+    "qs": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@ibm-cloud/openapi-ruleset": "catalog:",
     "@types/node": "catalog:",
+    "@types/qs": "catalog:",
     "orval": "catalog:",
     "typescript": "catalog:"
   }

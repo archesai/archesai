@@ -1,15 +1,41 @@
 export class AppError extends Error {
-  public code?: string
+  public code: string
   public statusCode: number
+  public title: string
 
-  constructor(statusCode: number, message: string, code?: string) {
+  constructor(
+    statusCode: number,
+    message: string,
+    code: string,
+    title?: string
+  ) {
     super(message)
     this.statusCode = statusCode
+    this.code = code
+    this.title = title ?? this.getDefaultTitle(statusCode)
     this.name = this.constructor.name
-    if (code) {
-      this.code = code
-    }
     Error.captureStackTrace(this, this.constructor)
+  }
+
+  private getDefaultTitle(statusCode: number): string {
+    switch (statusCode) {
+      case 400:
+        return 'Bad Request'
+      case 401:
+        return 'Unauthorized'
+      case 403:
+        return 'Forbidden'
+      case 404:
+        return 'Not Found'
+      case 409:
+        return 'Conflict'
+      case 422:
+        return 'Validation Error'
+      case 500:
+        return 'Internal Server Error'
+      default:
+        return 'Error'
+    }
   }
 }
 
@@ -33,7 +59,7 @@ export class ForbiddenException extends AppError {
 
 export class InternalServerErrorException extends AppError {
   constructor(message = 'Internal Server Error') {
-    super(502, message, 'INTERNAL_SERVER_ERROR')
+    super(500, message, 'INTERNAL_SERVER_ERROR')
   }
 }
 

@@ -11,6 +11,7 @@ import {
   ErrorObjectSchema,
   FilterConditionSchema,
   FilterNodeSchema,
+  OperatorSchema,
   PageSchema
 } from '@archesai/schemas'
 
@@ -19,6 +20,7 @@ export const docsPlugin: FastifyPluginAsync<{
   logger: Logger
 }> = async (app, { configService, logger }) => {
   const DEFAULT_MODELS = [
+    OperatorSchema,
     FilterConditionSchema,
     FilterNodeSchema,
     PageSchema,

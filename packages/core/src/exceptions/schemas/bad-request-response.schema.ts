@@ -2,7 +2,7 @@ import type { TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
-export const UnauthorizedResponseSchema: TObject<{
+export const BadRequestResponseSchema: TObject<{
   error: TObject<{
     detail: TString
     status: TString
@@ -12,19 +12,19 @@ export const UnauthorizedResponseSchema: TObject<{
   {
     error: Type.Object({
       detail: Type.String({
-        examples: ['You are not authrozied to reach this endpoint.']
+        examples: ['The request is invalid or malformed.']
       }),
       status: Type.String({
-        examples: ['401']
+        examples: ['400']
       }),
       title: Type.String({
-        examples: ['Unauthorized']
+        examples: ['Bad Request']
       })
     })
   },
   {
-    $id: 'UnauthorizedResponse',
-    description: 'Unauthorized',
-    title: 'Unauthorized'
+    $id: 'BadRequestResponse',
+    description: 'Bad Request',
+    title: 'Bad Request'
   }
 )

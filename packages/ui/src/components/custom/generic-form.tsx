@@ -36,7 +36,6 @@ export interface FormFieldConfig {
   ignoreOnCreate?: boolean
   label: string
   name: string
-  props?: Record<string, unknown>
   renderControl: (field: ControllerRenderProps) => React.ReactNode
   validationRule?: TSchema
 }
@@ -178,7 +177,7 @@ export function GenericForm<
             <Button
               disabled={
                 form.formState.isSubmitting ||
-                // !form.formState.isDirty ||
+                !form.formState.isDirty ||
                 !form.formState.isValid
               }
               size='sm'
@@ -192,7 +191,9 @@ export function GenericForm<
               </span>
             </Button>
             <Button
-              disabled={form.formState.isSubmitting || !form.formState.isDirty}
+              disabled={
+                (form.formState.isSubmitting || !form.formState.isDirty) && true
+              }
               onClick={() => {
                 form.reset()
               }}

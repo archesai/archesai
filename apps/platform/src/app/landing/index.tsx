@@ -116,7 +116,7 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className='flex min-h-[100dvh] flex-col bg-black'>
+    <div className='flex min-h-[100dvh] flex-col'>
       <header
         className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? 'bg-background/80 shadow-sm' : 'bg-transparent'}`}
       >

@@ -1,10 +1,16 @@
 import type { FastifyPluginCallback, FastifyRequest } from 'fastify'
 
-import { AppError, ValidationException } from '#exceptions/http-errors'
+import type { ErrorDocument } from '@archesai/schemas'
+
+import { AppError } from '#exceptions/http-errors'
+import { BadRequestResponseSchema } from '#exceptions/schemas/bad-request-response.schema'
+import { ConflictResponseSchema } from '#exceptions/schemas/conflict-response.schema'
 import { ForbiddenResponseSchema } from '#exceptions/schemas/forbidden-response.schema'
+import { InternalServerErrorResponseSchema } from '#exceptions/schemas/internal-server-error-response.schema'
 import { NoContentResponseSchema } from '#exceptions/schemas/no-content-response.schema'
 import { NotFoundResponseSchema } from '#exceptions/schemas/not-found-response.schema'
 import { UnauthorizedResponseSchema } from '#exceptions/schemas/unauthorized-response.schema'
+import { ValidationErrorResponseSchema } from '#exceptions/schemas/validation-error-response.schema'
 
 // Plugin options
 interface ErrorHandlerOptions {
@@ -18,13 +24,17 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
   options = {},
   done
 ) => {
-  const { includeStack = false, sanitizeHeaders = true } = options
+  const { includeStack = true, sanitizeHeaders = true } = options
 
-  // Add error schema to app instance for reuse
+  // Add error schemas to app instance for reuse
+  app.addSchema(BadRequestResponseSchema)
+  app.addSchema(ConflictResponseSchema)
   app.addSchema(ForbiddenResponseSchema)
+  app.addSchema(InternalServerErrorResponseSchema)
   app.addSchema(NoContentResponseSchema)
   app.addSchema(NotFoundResponseSchema)
   app.addSchema(UnauthorizedResponseSchema)
+  app.addSchema(ValidationErrorResponseSchema)
 
   // Helper function to sanitize request data for logging
   const sanitizeRequest = (request: FastifyRequest) => {
@@ -51,30 +61,83 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
 
   // Helper function to create error response
   const createErrorResponse = (
-    error: {
-      message: string
-    },
+    message: string,
     statusCode: number,
-    code?: string,
-    details?: unknown,
-    path?: string
-  ) => ({
+    title?: string,
+    validation: { field: string; message: string }[] = []
+  ): ErrorDocument => ({
     error: {
-      code,
-      details,
-      message: error.message,
-      path: path ?? 'unknown',
-      statusCode,
-      timestamp: new Date().toISOString()
+      detail: message,
+      status: statusCode.toString(),
+      title: title ?? getDefaultTitle(statusCode),
+      ...(validation.length > 0 && { validation })
     }
   })
+
+  // Helper function to get default error titles
+  const getDefaultTitle = (statusCode: number): string => {
+    switch (statusCode) {
+      case 400:
+        return 'Bad Request'
+      case 401:
+        return 'Unauthorized'
+      case 403:
+        return 'Forbidden'
+      case 404:
+        return 'Not Found'
+      case 409:
+        return 'Conflict'
+      case 422:
+        return 'Validation Error'
+      case 500:
+        return 'Internal Server Error'
+      default:
+        return 'Error'
+    }
+  }
+
+  // Helper function to log errors based on status code
+  const logError = (
+    request: FastifyRequest,
+    error: { statusCode?: number },
+    logData: Record<string, unknown>
+  ) => {
+    const statusCode = error.statusCode ?? 500
+
+    if (statusCode >= 500) {
+      request.log.error(logData)
+    } else if (statusCode >= 400) {
+      request.log.warn(logData)
+    } else {
+      request.log.info(logData)
+    }
+  }
 
   // Set up the global error handler
   app.setErrorHandler(async (error, request, reply) => {
     const requestContext = sanitizeRequest(request)
-    const path = request.url
 
-    // Handle custom application errors
+    // Handle validation errors from TypeBox/Ajv FIRST (highest priority)
+    if (error.validation) {
+      const logData = {
+        error: error.message,
+        request: requestContext,
+        validation: error.validation
+      }
+      logError(request, { statusCode: 400 }, logData)
+      const responseData = createErrorResponse(
+        error.message,
+        400,
+        error.name,
+        error.validation.map((v) => ({
+          field: v.instancePath.replace(/^\//, ''),
+          message: v.message ?? 'Invalid value'
+        }))
+      )
+      return reply.status(400).send(responseData)
+    }
+
+    // Handle custom application errors (after validation)
     if (error instanceof AppError) {
       const logData = {
         code: error.code,
@@ -83,54 +146,13 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
         statusCode: error.statusCode,
         ...(includeStack && { stack: error.stack })
       }
-
-      // Log based on error type
-      if (error.statusCode >= 500) {
-        request.log.error(logData)
-      } else if (error.statusCode >= 400) {
-        request.log.warn(logData)
-      } else {
-        request.log.info(logData)
-      }
-
+      logError(request, error, logData)
       const responseData = createErrorResponse(
-        error,
+        error.message,
         error.statusCode,
-        error.code,
-        error instanceof ValidationException ?
-          (error as ValidationException).details
-        : undefined,
-        path
+        error.title
       )
-
       return reply.status(error.statusCode).send(responseData)
-    }
-
-    // Handle validation errors from TypeBox/Ajv
-    if (error.validation) {
-      // const formattedErrors = error.validation.map((err) => ({
-      //   field: err.instancePath || err.schemaPath,
-      //   message: err.message,
-      //   value: err.data
-      // }))
-
-      const logData = {
-        error: 'Validation failed',
-        request: requestContext,
-        validation: error.validation
-      }
-
-      request.log.warn(logData)
-
-      const responseData = createErrorResponse(
-        { message: 'Validation failed' },
-        400,
-        'VALIDATION_ERROR',
-        error.validation,
-        path
-      )
-
-      return reply.status(400).send(responseData)
     }
 
     // Handle other known Fastify errors
@@ -141,21 +163,8 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
         statusCode: error.statusCode,
         ...(includeStack && { stack: error.stack })
       }
-
-      if (error.statusCode >= 500) {
-        request.log.error(logData)
-      } else {
-        request.log.warn(logData)
-      }
-
-      const responseData = createErrorResponse(
-        error,
-        error.statusCode,
-        undefined,
-        undefined,
-        path
-      )
-
+      logError(request, error, logData)
+      const responseData = createErrorResponse(error.message, error.statusCode)
       return reply.status(error.statusCode).send(responseData)
     }
 
@@ -166,17 +175,8 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
       stack: error.stack,
       type: 'UNEXPECTED_ERROR'
     }
-
     request.log.error(logData)
-
-    const responseData = createErrorResponse(
-      { message: 'Internal Server Error' },
-      500,
-      'INTERNAL_ERROR',
-      undefined,
-      path
-    )
-
+    const responseData = createErrorResponse('Internal Server Error', 500)
     return reply.status(500).send(responseData)
   })
 

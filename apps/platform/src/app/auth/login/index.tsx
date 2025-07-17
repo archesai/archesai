@@ -25,7 +25,6 @@ export default function LoginPage() {
         entityKey='auth'
         fields={[
           {
-            defaultValue: '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
@@ -37,7 +36,6 @@ export default function LoginPage() {
             validationRule: CreateAccountDtoSchema.properties.email
           },
           {
-            defaultValue: '',
             label: 'Password',
             name: 'password',
             renderControl: (field) => (

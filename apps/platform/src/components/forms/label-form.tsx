@@ -37,11 +37,9 @@ export default function LabelForm({ id }: { id?: string }) {
       description: 'This is the name that will be used for this label.',
       label: 'Name',
       name: 'name',
-      props: {
-        placeholder: 'Label name here...'
-      },
       renderControl: (field) => (
         <Input
+          placeholder='Label name here...'
           {...field}
           type='text'
         />

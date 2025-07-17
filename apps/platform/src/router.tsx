@@ -30,9 +30,9 @@ export function createRouter() {
     },
     mutationCache: new MutationCache({
       onError: (error) => {
-        toast.error(error.name, {
+        toast.error('An error occurred', {
           className: 'bg-red-500 text-white',
-          description: error.message
+          description: error.message.replaceAll(':', '')
         })
       },
       onSettled: () => {

@@ -1,6 +1,11 @@
 import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
-import type { BaseEntity, TObject, TSchema } from '@archesai/schemas'
+import type {
+  BaseEntity,
+  SearchQuery,
+  TObject,
+  TSchema
+} from '@archesai/schemas'
 
 // import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
 import {
@@ -8,8 +13,7 @@ import {
   DocumentColectionSchemaFactory,
   DocumentSchemaFactory,
   LegacyRef,
-  Type,
-  Value
+  Type
 } from '@archesai/schemas'
 
 import type { BaseService } from '#common/base-service'
@@ -110,8 +114,9 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
       }
     },
     async (request) => {
-      const parsedQuery = Value.Parse(searchQuerySchema, request.query)
-      const results = await service.findMany(parsedQuery)
+      const results = await service.findMany(
+        request.query as SearchQuery<BaseEntity>
+      )
       return {
         data: results.data,
         meta: {

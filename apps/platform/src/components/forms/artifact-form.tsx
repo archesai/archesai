@@ -40,12 +40,10 @@ export default function ArtifactForm({ id }: { id?: string }) {
       description: 'This is the name that will be used for this content.',
       label: 'Name',
       name: 'name',
-      props: {
-        placeholder: 'Content name here...'
-      },
       renderControl: (field) => (
         <Input
           {...field}
+          placeholder='Content name here...'
           type='text'
         />
       ),

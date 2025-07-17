@@ -28,6 +28,12 @@ export async function bootstrap(): Promise<void> {
     trustProxy: true
   })
 
+  // Register the centralized error handler
+  await app.register(fp(errorHandlerPlugin), {
+    includeStack: container.configService.get('logging.level') === 'debug',
+    sanitizeHeaders: true
+  })
+
   // =================================================================
   // 3. MIDDLEWARE SETUP
   // =================================================================
@@ -112,12 +118,6 @@ export async function bootstrap(): Promise<void> {
   // =================================================================
   // 6. ERROR HANDLING
   // =================================================================
-
-  // Register the centralized error handler
-  await app.register(fp(errorHandlerPlugin), {
-    includeStack: container.configService.get('logging.level') === 'debug',
-    sanitizeHeaders: true
-  })
 
   // =================================================================
   // 7. GRACEFUL SHUTDOWN
