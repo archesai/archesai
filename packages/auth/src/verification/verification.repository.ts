@@ -1,22 +1,20 @@
 import type {
   DrizzleDatabaseService,
-  VerificationTokenSelectModel
+  VerificationSelectModel
 } from '@archesai/database'
-import type { VerificationTokenEntity } from '@archesai/schemas'
+import type { VerificationEntity } from '@archesai/schemas'
 
-import {
-  createBaseRepository,
-  VerificationTokenTable
-} from '@archesai/database'
-import { VerificationTokenEntitySchema } from '@archesai/schemas'
+import { createBaseRepository, VerificationTable } from '@archesai/database'
+import { VerificationEntitySchema } from '@archesai/schemas'
 
 export const createVerificationRepository = (
   databaseService: DrizzleDatabaseService
 ) => {
-  return createBaseRepository<
-    VerificationTokenEntity,
-    VerificationTokenSelectModel
-  >(databaseService, VerificationTokenTable, VerificationTokenEntitySchema)
+  return createBaseRepository<VerificationEntity, VerificationSelectModel>(
+    databaseService,
+    VerificationTable,
+    VerificationEntitySchema
+  )
 }
 
 export type VerificationRepository = ReturnType<

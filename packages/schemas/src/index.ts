@@ -62,5 +62,6 @@ export * from '#storage/files/entities/file.entity'
 
 export type { TObject, TSchema } from '@sinclair/typebox'
 export { Type } from '@sinclair/typebox'
+export type { TProperties } from '@sinclair/typebox'
 export { TypeCompiler } from '@sinclair/typebox/compiler'
 export { Value } from '@sinclair/typebox/value'

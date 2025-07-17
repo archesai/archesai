@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
+import type { PipelineEntity } from '@archesai/schemas'
+
 import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
@@ -19,9 +21,6 @@ export const PipelineTable = pgTable(PIPELINE_ENTITY_KEY, {
     })
 })
 
-export type PipelineInsertModel = typeof PipelineTable.$inferInsert
-export type PipelineSelectModel = typeof PipelineTable.$inferSelect
-
 export const pipelineRelations = relations(PipelineTable, ({ many, one }) => ({
   organization: one(OrganizationTable, {
     fields: [PipelineTable.organizationId],
@@ -29,3 +28,9 @@ export const pipelineRelations = relations(PipelineTable, ({ many, one }) => ({
   }),
   steps: many(PipelineStepTable)
 }))
+
+export type PipelineInsertModel = typeof PipelineTable.$inferInsert
+export type PipelineSelectModel = typeof PipelineTable.$inferSelect
+
+export type zPipelineCheck =
+  PipelineEntity extends PipelineSelectModel ? true : false

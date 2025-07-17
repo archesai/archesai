@@ -1,10 +1,9 @@
 import { useRef, useState } from 'react'
 import { CloudUpload, Loader2, Trash, Upload } from 'lucide-react'
-import { toast } from 'sonner'
 
-import type { ArtifactEntity } from '@archesai/schemas'
+// import { toast } from 'sonner'
 
-import { createFile } from '@archesai/client'
+// import type { ArtifactEntity } from '@archesai/schemas'
 
 import { Badge } from '#components/shadcn/badge'
 import { Button } from '#components/shadcn/button'
@@ -12,11 +11,13 @@ import { Card } from '#components/shadcn/card'
 import { Progress } from '#components/shadcn/progress'
 import { cn } from '#lib/utils'
 
-export default function ImportCard({
-  cb
-}: {
-  cb?: (content: ArtifactEntity[]) => void
-}) {
+export default function ImportCard() {
+  //   {
+  //   cb
+  // }: {
+  //   cb?: (content: ArtifactEntity[]) => void
+
+  // }
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState<boolean>(false)
   const [dragActive, setDragActive] = useState<boolean>(false)
@@ -59,93 +60,91 @@ export default function ImportCard({
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const uploadFile = (
-    file: File,
-    writeUrl: string
-  ): Promise<ArtifactEntity> => {
-    return new Promise((resolve, reject) => {
-      // Create a new XMLHttpRequest
-      const xhr = new XMLHttpRequest()
+  // const uploadFile = (
+  //   file: File,
+  //   writeUrl: string
+  // ): Promise<ArtifactEntity> => {
+  //   return new Promise((resolve, reject) => {
+  //     // Create a new XMLHttpRequest
+  //     const xhr = new XMLHttpRequest()
 
-      // Add progress event listener
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const percentCompleted = Math.round(
-            (event.loaded * 100) / event.total
-          )
-          setUploadProgress((prev) => Math.max(prev, percentCompleted))
-        }
-      })
+  //     // Add progress event listener
+  //     xhr.upload.addEventListener('progress', (event) => {
+  //       if (event.lengthComputable) {
+  //         const percentCompleted = Math.round(
+  //           (event.loaded * 100) / event.total
+  //         )
+  //         setUploadProgress((prev) => Math.max(prev, percentCompleted))
+  //       }
+  //     })
 
-      // Add onload event listener
-      xhr.onload = async () => {
-        if (xhr.status === 200 || xhr.status === 201) {
-          try {
-            // const readUrlResponse = await createFile({
-            //   action: 'read',
-            //   path: `uploads/${file.name}`
-            // })
-            console.log('readUrlResponse', readUrlResponse)
+  //     // Add onload event listener
+  //     xhr.onload = async () => {
+  //       if (xhr.status === 200 || xhr.status === 201) {
+  //         try {
+  //           // const readUrlResponse = await createFile({
+  //           //   action: 'read',
+  //           //   path: `uploads/${file.name}`
+  //           // })
+  //           resolve('' as unknown as ArtifactEntity) // FIXME
+  //         } catch (error) {
+  //           console.error(error)
+  //           reject(new Error(`Failed to create content`))
+  //         }
+  //       } else {
+  //         reject(new Error(`Upload failed: ${xhr.responseText}`))
+  //       }
+  //     }
 
-            resolve('' as unknown as ArtifactEntity) // FIXME
-          } catch (error) {
-            console.error(error)
-            reject(new Error(`Failed to create content`))
-          }
-        } else {
-          reject(new Error(`Upload failed: ${xhr.responseText}`))
-        }
-      }
+  //     // Add onerror event listener
+  //     xhr.onerror = () => {
+  //       reject(new Error('Network error'))
+  //     }
 
-      // Add onerror event listener
-      xhr.onerror = () => {
-        reject(new Error('Network error'))
-      }
+  //     // Open the request and send the file
+  //     xhr.open('PUT', writeUrl)
+  //     xhr.setRequestHeader('Content-Type', file.type)
+  //     xhr.send(file)
+  //   })
+  // }
 
-      // Open the request and send the file
-      xhr.open('PUT', writeUrl)
-      xhr.setRequestHeader('Content-Type', file.type)
-      xhr.send(file)
-    })
-  }
-
-  const uploadFiles = async () => {
+  const uploadFiles = () => {
     if (selectedFiles.length === 0) return
     setUploading(true)
     setUploadProgress(0)
 
-    try {
-      const urls = await Promise.all(
-        selectedFiles.map(async (file) => {
-          const response = await createFile({
-            action: 'write',
-            path: `uploads/${file.name}`
-          })
-          const writeUrl = response.data.write
-          // if (response.status !== 201) {
-          //   throw new Error('Failed to create file.')
-          // }
-          if (!writeUrl) {
-            throw new Error('Failed to get write URL for file upload.')
-          }
+    // try {
+    //   const urls = await Promise.all(
+    //     selectedFiles.map(async (file) => {
+    //       const response = await createFile({
+    //         action: 'write',
+    //         path: `uploads/${file.name}`
+    //       })
+    //       const writeUrl = response.data.write
+    //       // if (response.status !== 201) {
+    //       //   throw new Error('Failed to create file.')
+    //       // }
+    //       if (!writeUrl) {
+    //         throw new Error('Failed to get write URL for file upload.')
+    //       }
 
-          return uploadFile(file, writeUrl)
-        })
-      )
-      setUploading(false)
-      setSelectedFiles([])
-      setUploadProgress(100)
-      toast('Upload Complete', {})
-      if (cb) {
-        cb(urls)
-      }
-    } catch (error) {
-      console.error(error)
-      toast('Upload Failed', {
-        description: 'An error occurred while uploading files.'
-      })
-      setUploading(false)
-    }
+    //       return uploadFile(file, writeUrl)
+    //     })
+    //   )
+    //   setUploading(false)
+    //   setSelectedFiles([])
+    //   setUploadProgress(100)
+    //   toast('Upload Complete', {})
+    //   if (cb) {
+    //     cb(urls)
+    //   }
+    // } catch (error) {
+    //   console.error(error)
+    //   toast('Upload Failed', {
+    //     description: 'An error occurred while uploading files.'
+    //   })
+    //   setUploading(false)
+    // }
   }
 
   return (

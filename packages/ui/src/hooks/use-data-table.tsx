@@ -14,9 +14,10 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import type { FilterActions, FilterState } from '#hooks/use-filter-state'
+
 import { DataTableColumnHeader } from '#components/datatable/components/data-table-column-header'
 import { Checkbox } from '#components/shadcn/checkbox'
-import { useFilterState } from '#hooks/use-filter-state'
 import { toSentenceCase } from '#lib/utils'
 
 interface useDataTableProps<TEntity extends BaseEntity>
@@ -31,16 +32,14 @@ interface useDataTableProps<TEntity extends BaseEntity>
     | 'state'
   > {
   columns: AccessorKeyColumnDef<TEntity>[]
+  filterState: FilterActions<TEntity> & FilterState<TEntity>
   pageCount?: number
 }
 
 export function useDataTable<TData extends BaseEntity>(
   props: useDataTableProps<TData>
 ) {
-  const { columns, pageCount, ...tableProps } = props
-
-  // Get filter state management
-  const filterState = useFilterState<TData>()
+  const { columns, filterState, pageCount = -1, ...tableProps } = props
 
   // Local table state
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
@@ -59,10 +58,10 @@ export function useDataTable<TData extends BaseEntity>(
     (updaterOrValue: Updater<PaginationState>) => {
       if (typeof updaterOrValue === 'function') {
         const newPagination = updaterOrValue(pagination)
-        filterState.setPage(newPagination.pageIndex + 1)
+        filterState.setPage(newPagination.pageIndex)
         filterState.setPageSize(newPagination.pageSize)
       } else {
-        filterState.setPage(updaterOrValue.pageIndex + 1)
+        filterState.setPage(updaterOrValue.pageIndex)
         filterState.setPageSize(updaterOrValue.pageSize)
       }
     },

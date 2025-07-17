@@ -40,19 +40,22 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
     return [values[0], values[1]]
   }, [column])
 
-  const formatValue = useCallback((value: number | string | undefined) => {
-    if (value === undefined || value === '') return ''
-    const numValue = Number(value)
-    return Number.isNaN(numValue) ? '' : (
-        numValue.toLocaleString(undefined, {
-          maximumFractionDigits: 0
-        })
-      )
-  }, [])
+  const formatValue = useCallback(
+    (value: boolean | number | string | undefined) => {
+      if (value === undefined || value === '') return ''
+      const numValue = Number(value)
+      return Number.isNaN(numValue) ? '' : (
+          numValue.toLocaleString(undefined, {
+            maximumFractionDigits: 0
+          })
+        )
+    },
+    []
+  )
 
   const value = useMemo(() => {
     if (Array.isArray(filter.value)) return filter.value.map(formatValue)
-    return [formatValue(filter.value), '']
+    return [formatValue(filter.value as number | string | undefined), '']
   }, [filter.value, formatValue])
 
   const onRangeValueChange = useCallback(
@@ -85,7 +88,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
       {...props}
     >
       <Input
-        aria-label={`${meta?.label} minimum value`}
+        aria-label={`${meta?.label ?? ''} minimum value`}
         aria-valuemax={max}
         aria-valuemin={min}
         className='h-8 w-full rounded'
@@ -103,7 +106,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
       />
       <span className='sr-only shrink-0 text-muted-foreground'>to</span>
       <Input
-        aria-label={`${meta?.label} maximum value`}
+        aria-label={`${meta?.label ?? ''} maximum value`}
         aria-valuemax={max}
         aria-valuemin={min}
         className='h-8 w-full rounded'

@@ -3,8 +3,9 @@
 import type { Table } from '@tanstack/react-table'
 
 import * as React from 'react'
-import { ArrowUp, CheckCircle2, Download, Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { Download, Trash2 } from 'lucide-react'
+
+// import { toast } from 'sonner'
 
 import type { BaseEntity } from '@archesai/schemas'
 
@@ -13,19 +14,12 @@ import {
   DataTableActionBarAction,
   DataTableActionBarSelection
 } from '#components/datatable/components/data-table-action-bar'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger
-} from '#components/shadcn/select'
 import { Separator } from '#components/shadcn/separator'
 import { exportTableToCSV } from '#lib/export'
 
-const actions = ['export', 'delete'] as const
+const _actions = ['export', 'delete'] as const
 
-type Action = (typeof actions)[number]
+type Action = (typeof _actions)[number]
 
 interface TableActionBarProps<TEntity extends BaseEntity> {
   table: Table<TEntity>
@@ -43,30 +37,30 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
     [isPending, currentAction]
   )
 
-  const onUpdate = React.useCallback(
-    ({
-      field,
-      value
-    }: {
-      field: 'priority' | 'status'
-      value: Task['priority'] | Task['status']
-    }) => {
-      setCurrentAction(field === 'status' ? 'update-status' : 'update-priority')
-      startTransition(async () => {
-        const { error } = await updateTasks({
-          [field]: value,
-          ids: rows.map((row) => row.original.id)
-        })
+  // const onUpdate = React.useCallback(
+  //   ({
+  //     field,
+  //     value
+  //   }: {
+  //     field: 'priority' | 'status'
+  //     value: Task['priority'] | Task['status']
+  //   }) => {
+  //     setCurrentAction(field === 'status' ? 'update-status' : 'update-priority')
+  //     startTransition(async () => {
+  //       const { error } = await updateTasks({
+  //         [field]: value,
+  //         ids: rows.map((row) => row.original.id)
+  //       })
 
-        if (error) {
-          toast.error(error)
-          return
-        }
-        toast.success('Tasks updated')
-      })
-    },
-    [rows]
-  )
+  //       if (error) {
+  //         toast.error(error)
+  //         return
+  //       }
+  //       toast.success('Tasks updated')
+  //     })
+  //   },
+  //   [rows]
+  // )
 
   const onExport = React.useCallback(() => {
     setCurrentAction('export')
@@ -78,20 +72,20 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
     })
   }, [table])
 
-  const onDelete = React.useCallback(() => {
-    setCurrentAction('delete')
-    startTransition(async () => {
-      const { error } = await deleteTasks({
-        ids: rows.map((row) => row.original.id)
-      })
+  // const onDelete = React.useCallback(() => {
+  //   setCurrentAction('delete')
+  //   startTransition(async () => {
+  //     const { error } = await deleteTasks({
+  //       ids: rows.map((row) => row.original.id)
+  //     })
 
-      if (error) {
-        toast.error(error)
-        return
-      }
-      table.toggleAllRowsSelected(false)
-    })
-  }, [rows, table])
+  //     if (error) {
+  //       toast.error(error)
+  //       return
+  //     }
+  //     table.toggleAllRowsSelected(false)
+  //   })
+  // }, [rows, table])
 
   return (
     <DataTableActionBar
@@ -170,7 +164,7 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
         </DataTableActionBarAction>
         <DataTableActionBarAction
           isPending={getIsActionPending('delete')}
-          onClick={onDelete}
+          // onClick={onDelete}
           size='icon'
           tooltip='Delete'
         >

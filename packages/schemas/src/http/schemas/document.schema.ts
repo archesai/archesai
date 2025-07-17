@@ -23,7 +23,12 @@ export const DocumentColectionSchemaFactory = (
   data: TArray<TUnsafe<unknown>>
 }> => {
   return Type.Object({
-    data: Type.Array(LegacyRef(documentSchema))
+    data: Type.Array(LegacyRef(documentSchema)),
+    meta: Type.Object({
+      total: Type.Number({
+        description: 'Total number of items in the collection'
+      })
+    })
     // meta: metaSchema ? LegacyRef(metaSchema) : Type.Optional(Type.Any())
   })
 }

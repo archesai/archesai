@@ -23,9 +23,9 @@ export const StatusTypeEnumButton = ({
 
   const renderIcon = () => {
     switch (run.status) {
-      case 'COMPLETE':
+      case 'COMPLETED':
         return <CheckCircle2 className='text-green-600' />
-      case 'ERROR':
+      case 'FAILED':
         return <Ban className='text-red-600' />
       case 'PROCESSING':
         return (

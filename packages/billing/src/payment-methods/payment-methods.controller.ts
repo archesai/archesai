@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import type { WebsocketsService } from '@archesai/core'
 
@@ -15,10 +15,9 @@ export interface PaymentMethodsControllerOptions {
   websocketsService: WebsocketsService
 }
 
-export const paymentMethodsController: FastifyPluginAsyncTypebox<
+export const paymentMethodsController: FastifyPluginCallbackTypebox<
   PaymentMethodsControllerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { stripeService, websocketsService }) => {
+> = (app, { stripeService, websocketsService }, done) => {
   const paymentMethodRepository = new PaymentMethodRepository(stripeService)
   const customersService = new CustomersService(stripeService)
   const paymentMethodsService = new PaymentMethodsService(
@@ -93,4 +92,6 @@ export const paymentMethodsController: FastifyPluginAsyncTypebox<
       return paymentMethodsService.findOne(req.params.id)
     }
   )
+
+  done()
 }

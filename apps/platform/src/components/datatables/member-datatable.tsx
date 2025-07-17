@@ -1,9 +1,6 @@
 import type { MemberEntity } from '@archesai/schemas'
 
-import {
-  deleteMember,
-  getFindManyMembersSuspenseQueryOptions
-} from '@archesai/client'
+import { deleteMember, getFindManyMembersQueryOptions } from '@archesai/client'
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { CheckIcon, User, XIcon } from '@archesai/ui/components/custom/icons'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -47,20 +44,18 @@ export default function MemberDataTable() {
           }
         }
       ]}
-      createForm={<MemberForm />}
+      createForm={MemberForm}
       defaultView='table'
       deleteItem={async (id) => {
         await deleteMember(id)
       }}
       entityKey={MEMBER_ENTITY_KEY}
-      getEditFormFromItem={(member) => {
-        return <MemberForm memberId={member.id} />
-      }}
       handleSelect={() => {
         console.log('handleSelect')
       }}
       icon={<User />}
-      useFindMany={getFindManyMembersSuspenseQueryOptions}
+      updateForm={MemberForm}
+      useFindMany={getFindManyMembersQueryOptions}
     />
   )
 }

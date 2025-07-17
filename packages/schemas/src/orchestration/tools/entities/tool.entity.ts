@@ -12,7 +12,6 @@ export const ToolEntitySchema: TObject<{
   name: TString
   organizationId: TString
   outputMimeType: TString
-  toolBase: TString
   updatedAt: TString
 }> = Type.Object(
   {
@@ -27,8 +26,7 @@ export const ToolEntitySchema: TObject<{
     organizationId: Type.String({ description: 'The organization name' }),
     outputMimeType: Type.String({
       description: 'The MIME type of the output for the tool, e.g. text/plain'
-    }),
-    toolBase: Type.String({ description: 'The base of the tool' })
+    })
   },
   {
     $id: 'ToolEntity',

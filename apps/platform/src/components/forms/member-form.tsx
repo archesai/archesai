@@ -18,28 +18,25 @@ import {
   SelectValue
 } from '@archesai/ui/components/shadcn/select'
 
-export default function MemberForm({ memberId }: { memberId?: string }) {
-  const { data: existingMemberResponse } = useGetOneMemberSuspense(memberId)
+export default function MemberForm({ id }: { id?: string }) {
+  const { data: existingMemberResponse } = useGetOneMemberSuspense(id)
 
   const member = existingMemberResponse.data
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: member.invitationId,
+      defaultValue: member.userId,
       description: 'This is the email that will be used for this member.',
-      label: 'E-Mail',
-      name: 'invitationId',
-      props: {
-        placeholder: 'Member email here...'
-      },
+      label: 'User ID',
+      name: 'userId',
       renderControl: (field) => (
         <Input
           {...field}
+          disabled={true}
           type='text'
         />
       ),
       validationRule: Type.String({
-        format: 'email',
         minLength: 1
       })
     },
@@ -88,17 +85,15 @@ export default function MemberForm({ memberId }: { memberId?: string }) {
 
   return (
     <GenericForm<CreateMemberBody, UpdateMemberBody>
-      description={
-        !memberId ? 'Invite a new member' : 'Update an existing member'
-      }
+      description={!id ? 'Invite a new member' : 'Update an existing member'}
       entityKey={MEMBER_ENTITY_KEY}
       fields={formFields}
-      isUpdateForm={!!memberId}
+      isUpdateForm={!!id}
       onSubmitCreate={async (createMemberDto) => {
         await createMember(createMemberDto)
       }}
       onSubmitUpdate={async (data) => {
-        await updateMember(memberId, data)
+        await updateMember(id, data)
       }}
       title='Configuration'
     />

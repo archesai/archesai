@@ -26,12 +26,8 @@ export const ProviderTypes = [
 export type ProviderType = (typeof ProviderTypes)[number]
 
 // ROLE TYPES
-export const RoleTypes = ['ADMIN', 'USER'] as const
+export const RoleTypes = ['admin', 'owner', 'member'] as const
 export type RoleType = (typeof RoleTypes)[number]
-
-// RUN TYPES
-export const RunTypes = ['PIPELINE_RUN', 'TOOL_RUN'] as const
-export type RunType = (typeof RunTypes)[number]
 
 // STATUS TYPES
 export const StatusTypes = [
@@ -41,11 +37,3 @@ export const StatusTypes = [
   'QUEUED'
 ] as const
 export type StatusType = (typeof StatusTypes)[number]
-
-// VERIFICATION TOKEN TYPES
-export const VerificationTokenTypes = [
-  'EMAIL_CHANGE',
-  'EMAIL_VERIFICATION',
-  'PASSWORD_RESET'
-] as const
-export type VerificationTokenType = (typeof VerificationTokenTypes)[number]

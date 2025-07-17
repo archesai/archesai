@@ -12,7 +12,8 @@ export function toCamelCase(str: string): string {
   if (words.length === 0) return ''
 
   // Lowercase the first word entirely
-  const first = words[0]!.toLowerCase()
+  const first = words[0]?.toLowerCase()
+  if (!first) return ''
 
   // Capitalize first letter of each subsequent word and lowercase the rest
   const rest = words

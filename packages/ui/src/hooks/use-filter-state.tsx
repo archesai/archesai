@@ -53,7 +53,7 @@ export interface FilterActions<TEntity extends BaseEntity> {
 
 export interface FilterState<TEntity extends BaseEntity> {
   // Convenience accessors
-  filter?: FilterNode<TEntity>
+  filter?: FilterNode<TEntity> | undefined
 
   // Computed state
   hasFilters: boolean
@@ -110,7 +110,7 @@ export function useFilterState<
           ({
             ...prev,
             ...updates
-          }) as SearchQuery<BaseEntity>
+          }) as never
       })
     },
     [navigate]
@@ -121,7 +121,7 @@ export function useFilterState<
     (query: SearchQuery<TEntity>) => {
       void navigate({
         replace: true,
-        search: () => query as SearchQuery<BaseEntity>
+        search: () => query as never
       })
     },
     [navigate]
@@ -130,6 +130,11 @@ export function useFilterState<
   // Filter operations
   const setFilter = useCallback(
     (newFilter: FilterNode<TEntity> | undefined) => {
+      if (!newFilter) {
+        const { filter: _, ...rest } = searchQuery
+        updateSearch(rest)
+        return
+      }
       updateSearch({ filter: newFilter })
     },
     [updateSearch]
@@ -296,7 +301,8 @@ export function useFilterState<
 
   // Reset operations
   const resetFilters = useCallback(() => {
-    updateSearch({ filter: undefined })
+    const { filter: _, ...rest } = searchQuery
+    updateSearch(rest)
   }, [updateSearch])
 
   const resetPagination = useCallback(() => {

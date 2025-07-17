@@ -90,7 +90,7 @@ export class WebsocketsService {
         this.redisService
       )
       await redisIoAdapter.connectToRedis()
-      this.io.adapter(redisIoAdapter.adapterConstructor!)
+      this.io.adapter(redisIoAdapter.adapterConstructor)
       this.logger.debug('redis adapter attached to socket.io')
     }
 

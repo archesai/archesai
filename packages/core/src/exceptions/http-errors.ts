@@ -4,9 +4,11 @@ export class AppError extends Error {
 
   constructor(statusCode: number, message: string, code?: string) {
     super(message)
-    this.code = code
     this.statusCode = statusCode
     this.name = this.constructor.name
+    if (code) {
+      this.code = code
+    }
     Error.captureStackTrace(this, this.constructor)
   }
 }
@@ -19,7 +21,7 @@ export class BadRequestException extends AppError {
 
 export class ConflictException extends AppError {
   constructor(message = 'Conflict') {
-    super(403, message, 'CONFLICT')
+    super(409, message, 'CONFLICT')
   }
 }
 
@@ -31,7 +33,7 @@ export class ForbiddenException extends AppError {
 
 export class InternalServerErrorException extends AppError {
   constructor(message = 'Internal Server Error') {
-    super(404, message, 'INTERNAL_SERVER_ERROR')
+    super(502, message, 'INTERNAL_SERVER_ERROR')
   }
 }
 
@@ -48,12 +50,11 @@ export class UnauthorizedException extends AppError {
 }
 
 export class ValidationException extends AppError {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public details?: any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message = 'Validation Error', details?: any) {
+  public details?: Record<string, unknown>
+  constructor(message = 'Validation Error', details?: Record<string, unknown>) {
     super(422, message, 'VALIDATION_ERROR')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.details = details
+    if (details) {
+      this.details = details
+    }
   }
 }

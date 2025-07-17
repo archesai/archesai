@@ -1,5 +1,5 @@
 export * from '#adapters/drizzle-database.service'
-export * from '#helpers/clients'
+export * from '#lib/clients'
 export * from '#repositories/base-repository'
 export * from '#schema/index'
 export * from '#types/types'

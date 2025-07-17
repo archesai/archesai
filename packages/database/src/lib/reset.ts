@@ -1,6 +1,6 @@
 import { reset as resetDb } from 'drizzle-seed'
 
-import { createClient } from '#helpers/clients'
+import { createClient } from '#lib/clients'
 import * as schema from '#schema/index'
 
 if (!('DATABASE_URL' in process.env))

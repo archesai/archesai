@@ -8,6 +8,7 @@
     "clean": "pnpm clean:dist && pnpm clean:node_modules",
     "clean:dist": "pnpm -r exec sh -c 'rm -rf .cache .turbo .tanstack dist .nitro .out'",
     "clean:node_modules": "pnpm -r exec sh -c 'rm -rf node_modules'",
+    "db:clean": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:clean",
     "db:generate": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:generate",
     "db:migreate": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:migreate",
     "db:push": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:push",

@@ -1,6 +1,5 @@
 import type { CrudTestCases, HttpOperations } from '#types/crud-test-cases'
 
-// eslint-disable-next-line jest/no-export
 export function runCrudTestSuite<
   Entity extends { id: string },
   CreateDto,

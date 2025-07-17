@@ -11,7 +11,7 @@ import { Type } from '@sinclair/typebox'
 import { CreateMemberDtoSchema } from '#auth/members/dto/create-member.dto'
 
 export const UpdateMemberDtoSchema: TObject<{
-  role: TOptional<TUnion<TLiteral<'ADMIN' | 'USER'>[]>>
+  role: TOptional<TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>>
 }> = Type.Partial(CreateMemberDtoSchema)
 
 export type UpdateMemberDto = Static<typeof UpdateMemberDtoSchema>

@@ -1,9 +1,10 @@
 import type {
   Static,
   TArray,
+  TNull,
   TObject,
-  TOptional,
-  TString
+  TString,
+  TUnion
 } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
@@ -51,9 +52,9 @@ export const PipelineStepEntitySchema: TObject<{
 
 export const PipelineEntitySchema: TObject<{
   createdAt: TString
-  description: TOptional<TString>
+  description: TUnion<[TString, TNull]>
   id: TString
-  name: TOptional<TString>
+  name: TUnion<[TString, TNull]>
   organizationId: TString
   steps: TArray<
     TObject<{
@@ -78,10 +79,12 @@ export const PipelineEntitySchema: TObject<{
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    description: Type.Optional(
-      Type.String({ description: 'The pipeline description' })
-    ),
-    name: Type.Optional(Type.String({ description: 'The pipeline name' })),
+    description: Type.Union([Type.String(), Type.Null()], {
+      description: 'The pipeline description'
+    }),
+    name: Type.Union([Type.String(), Type.Null()], {
+      description: 'The pipeline name'
+    }),
     organizationId: Type.String({ description: 'The organization id' }),
     steps: Type.Array(PipelineStepEntitySchema, {
       description: 'The steps in the pipeline'

@@ -5,7 +5,7 @@ import { Type } from '@sinclair/typebox'
 import { MemberEntitySchema } from '#auth/members/entities/member.entity'
 
 export const CreateMemberDtoSchema: TObject<{
-  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
 }> = Type.Object({
   role: MemberEntitySchema.properties.role
 })

@@ -7,7 +7,6 @@ import { flexRender } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/schemas'
 
-import { Card } from '#components/shadcn/card'
 import { cn } from '#lib/utils'
 
 export interface GridViewProps<TEntity extends BaseEntity> {
@@ -32,6 +31,12 @@ export function GridView<TEntity extends BaseEntity>({
       {data.length > 0 ?
         data.map((item, i) => {
           const isItemSelected = item.getIsSelected()
+          const checkbox = item.getAllCells().at(0)?.column.columnDef.cell
+          const context = item.getAllCells().at(0)?.getContext()
+
+          const actions = item.getAllCells().at(-1)?.column.columnDef.cell
+          const actionContext = item.getAllCells().at(-1)?.getContext()
+
           return (
             <div
               className={cn(
@@ -63,18 +68,10 @@ export function GridView<TEntity extends BaseEntity>({
               {/* Footer */}
               <div className='flex items-center justify-between bg-card p-4'>
                 <div className='flex min-w-0 items-center gap-2'>
-                  {flexRender(
-                    item.getAllCells().at(0)?.column.columnDef.cell,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-                    item.getAllCells().at(0)?.getContext()!
-                  )}
+                  {context && flexRender(checkbox, context)}
                   {item.original.id}
                 </div>
-                {flexRender(
-                  item.getAllCells().at(-1)?.column.columnDef.cell,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-                  item.getAllCells().at(-1)?.getContext()!
-                )}
+                {actionContext && flexRender(actions, actionContext)}
               </div>
               {gridHover && hover === i && gridHover(item.original)}
             </div>

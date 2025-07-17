@@ -70,16 +70,9 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
             }}
           >
             <DeleteItems
-              deleteItem={async (id) => {
-                if (!props.deleteItem) {
-                  throw new Error('deleteItem function is not defined')
-                }
-                await props.deleteItem(id)
-                props.table.toggleAllRowsSelected(false)
-              }}
+              deleteItem={props.deleteItem}
               entityKey={props.table.options.meta?.entityKey ?? 'Entity'}
               items={[props.row.original]}
-              variant='md'
             />
           </DropdownMenuItem>
         : null}

@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import type { BaseEntity, TObject, TSchema } from '@archesai/schemas'
 
@@ -8,7 +8,8 @@ import {
   DocumentColectionSchemaFactory,
   DocumentSchemaFactory,
   LegacyRef,
-  Type
+  Type,
+  Value
 } from '@archesai/schemas'
 
 import type { BaseService } from '#common/base-service'
@@ -28,16 +29,16 @@ export interface CrudPluginOptions<
   createSchema: TCreateSchema
   enableBulkOperations?: boolean
   entityKey: string
-  entitySchema: TSchema
+  entitySchema: TObject
   prefix: string
   service: BaseService<TEntity, TInsert, TSelect>
   tags?: string[]
   updateSchema: TUpdateSchema
 }
 
-export const crudPlugin: FastifyPluginAsyncTypebox<
+export const crudPlugin: FastifyPluginCallbackTypebox<
   CrudPluginOptions<BaseEntity, unknown, BaseEntity>
-> = async (
+> = (
   app,
   {
     createSchema,
@@ -48,8 +49,8 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     service,
     tags = [entityKey],
     updateSchema
-  }
-  // eslint-disable-next-line @typescript-eslint/require-await
+  },
+  done
 ) => {
   const baseRouteOptions = {
     // preValidation: [AuthenticatedGuard()],
@@ -59,12 +60,10 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     }
   }
 
-  const searchQuerySchema = createSearchQuerySchema(
-    entitySchema as TObject,
-    entityKey
-  )
+  const searchQuerySchema = createSearchQuerySchema(entitySchema, entityKey)
 
   app.addSchema(entitySchema)
+  app.addSchema(searchQuerySchema)
 
   // POST /entity - Create single entity
   app.post(
@@ -86,9 +85,10 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
         tags: [toTitleCase(entityKey)]
       }
     },
-    //@ts-ignore
     async (req) => {
-      return service.create(req.body)
+      return {
+        data: await service.create(req.body)
+      }
     }
   )
 
@@ -110,8 +110,14 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
       }
     },
     async (request) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      return service.findMany(request.query as unknown as any)
+      const parsedQuery = Value.Parse(searchQuerySchema, request.query)
+      const results = await service.findMany(parsedQuery)
+      return {
+        data: results.data,
+        meta: {
+          total: results.count
+        }
+      }
     }
   )
 
@@ -192,13 +198,12 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
     },
     async (request) => {
       return {
-        //@ts-ignore
         data: await service.update(request.params.id, request.body)
       }
     }
   )
 
-  app.addSchema(searchQuerySchema)
+  done()
 }
 
 // // POST /entity/bulk - Create multiple entities (optional)

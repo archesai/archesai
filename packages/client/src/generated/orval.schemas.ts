@@ -587,7 +587,11 @@ export interface AccountsSort {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export const InvitationEntityRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
 /**
  * The invitation entity
  */
@@ -598,14 +602,18 @@ export interface InvitationEntity {
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** Whether the invite was accepted */
-  accepted: boolean
   /** The email of the invitated user */
   email: string
+  /** The date and time when the invitation expires */
+  expiresAt: string
+  /** The user id of the inviter */
+  inviterId: string
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the invitation */
   role: (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+  /** The status of the invitation, e.g., pending, accepted, declined */
+  status: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -613,10 +621,12 @@ export const SearchInvitationsQueryFilterAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 export type SearchInvitationsQueryFilterAnyOfType =
   (typeof SearchInvitationsQueryFilterAnyOfType)[keyof typeof SearchInvitationsQueryFilterAnyOfType]
@@ -661,10 +671,12 @@ export const SearchInvitationsQuerySortItemField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SearchInvitationsQuerySortItemOrder = {
@@ -690,10 +702,12 @@ export const InvitationsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 export type InvitationsFilterNodeAnyOfType =
   (typeof InvitationsFilterNodeAnyOfType)[keyof typeof InvitationsFilterNodeAnyOfType]
@@ -738,10 +752,12 @@ export const InvitationsFilterConditionField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 export type InvitationsFilterConditionType =
   (typeof InvitationsFilterConditionType)[keyof typeof InvitationsFilterConditionType]
@@ -763,10 +779,12 @@ export const InvitationsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortOrder = { asc: 'asc', desc: 'desc' } as const
@@ -776,7 +794,11 @@ export interface InvitationsSort {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MemberEntityRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export const MemberEntityRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
 /**
  * The member entity
  */
@@ -958,9 +980,14 @@ export interface MembersSort {
 }
 
 /**
+ * The URL of the organization logo
+ */
+export type OrganizationEntityLogo = string | null
+
+/**
  * The metadata for the organization, used for custom data
  */
-export type OrganizationEntityMetadata = { [key: string]: string }
+export type OrganizationEntityMetadata = string | null
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationEntityPlan = {
@@ -970,6 +997,11 @@ export const OrganizationEntityPlan = {
   STANDARD: 'STANDARD',
   UNLIMITED: 'UNLIMITED'
 } as const
+/**
+ * The Stripe customer ID
+ */
+export type OrganizationEntityStripeCustomerId = string | null
+
 /**
  * The organization entity
  */
@@ -985,9 +1017,9 @@ export interface OrganizationEntity {
   /** The number of credits you have remaining for this organization */
   credits: number
   /** The URL of the organization logo */
-  logo?: string
+  logo: OrganizationEntityLogo
   /** The metadata for the organization, used for custom data */
-  metadata?: OrganizationEntityMetadata
+  metadata: OrganizationEntityMetadata
   /** The name of the organization */
   name: string
   /** The plan that the organization is subscribed to */
@@ -995,7 +1027,7 @@ export interface OrganizationEntity {
   /** The unique slug for the organization, used in URLs */
   slug: string
   /** The Stripe customer ID */
-  stripeCustomerId?: string
+  stripeCustomerId: OrganizationEntityStripeCustomerId
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -1186,6 +1218,16 @@ export interface OrganizationsSort {
 }
 
 /**
+ * The IP address of the session
+ */
+export type SessionEntityIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type SessionEntityUserAgent = string | null
+
+/**
  * The session entity
  */
 export interface SessionEntity {
@@ -1200,11 +1242,11 @@ export interface SessionEntity {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: SessionEntityIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: SessionEntityUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -1587,9 +1629,34 @@ export interface UsersSort {
 }
 
 /**
+ * The artifact's description
+ */
+export type ArtifactEntityDescription = null | string
+
+/**
+ * The name of the artifact, used for display purposes
+ */
+export type ArtifactEntityName = null | string
+
+/**
+ * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+ */
+export type ArtifactEntityPreviewImage = null | string
+
+/**
  * The ID of the run that produced this artifact, if applicable
  */
-export type ArtifactEntityProducerId = string | null
+export type ArtifactEntityProducerId = null | string
+
+/**
+ * The artifact text
+ */
+export type ArtifactEntityText = null | string
+
+/**
+ * The artifact URL
+ */
+export type ArtifactEntityUrl = null | string
 
 /**
  * The artifact entity
@@ -1604,23 +1671,21 @@ export interface ArtifactEntity {
   /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
   credits: number
   /** The artifact's description */
-  description?: string
+  description: ArtifactEntityDescription
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
   /** The name of the artifact, used for display purposes */
-  name?: string
+  name: ArtifactEntityName
   /** The organization name */
   organizationId: string
-  /** The ID of the parent artifact, if this artifact is a child of another artifact */
-  parentId: string
   /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage?: string
+  previewImage: ArtifactEntityPreviewImage
   /** The ID of the run that produced this artifact, if applicable */
   producerId: ArtifactEntityProducerId
   /** The artifact text */
-  text?: string
+  text: ArtifactEntityText
   /** The artifact URL */
-  url?: string
+  url: ArtifactEntityUrl
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -1633,7 +1698,6 @@ export const SearchArtifactsQueryFilterAnyOfField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -1687,7 +1751,6 @@ export const SearchArtifactsQuerySortItemField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -1722,7 +1785,6 @@ export const ArtifactsFilterNodeAnyOfField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -1776,7 +1838,6 @@ export const ArtifactsFilterConditionField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -1807,7 +1868,6 @@ export const ArtifactsSortField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -1991,6 +2051,16 @@ export interface LabelsSort {
   order: (typeof LabelsSortOrder)[keyof typeof LabelsSortOrder]
 }
 
+/**
+ * The pipeline description
+ */
+export type PipelineEntityDescription = string | null
+
+/**
+ * The pipeline name
+ */
+export type PipelineEntityName = string | null
+
 export type PipelineEntityStepsItemDependentsItem = {
   pipelineStepId: string
 }
@@ -2026,9 +2096,9 @@ export interface PipelineEntity {
   /** The date this item was last updated */
   updatedAt: string
   /** The pipeline description */
-  description?: string
+  description: PipelineEntityDescription
   /** The pipeline name */
-  name?: string
+  name: PipelineEntityName
   /** The organization id */
   organizationId: string
   /** The steps in the pipeline */
@@ -2226,10 +2296,32 @@ export interface PipelinesSort {
   order: (typeof PipelinesSortOrder)[keyof typeof PipelinesSortOrder]
 }
 
+/**
+ * The timestamp when the run completed
+ */
+export type RunEntityCompletedAt = string | null
+
+/**
+ * The error message
+ */
+export type RunEntityError = string | null
+
+/**
+ * The pipeline ID associated with the run
+ */
+export type RunEntityPipelineId = string | null
+
+/**
+ * The timestamp when the run started
+ */
+export type RunEntityStartedAt = string | null
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunEntityRunType = {
-  PIPELINE_RUN: 'PIPELINE_RUN',
-  TOOL_RUN: 'TOOL_RUN'
+export const RunEntityStatus = {
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  PROCESSING: 'PROCESSING',
+  QUEUED: 'QUEUED'
 } as const
 /**
  * The run entity
@@ -2242,21 +2334,18 @@ export interface RunEntity {
   /** The date this item was last updated */
   updatedAt: string
   /** The timestamp when the run completed */
-  completedAt?: string
+  completedAt: RunEntityCompletedAt
   /** The error message */
-  error?: string
+  error: RunEntityError
   /** The organization name */
   organizationId: string
   /** The pipeline ID associated with the run */
-  pipelineId?: string
+  pipelineId: RunEntityPipelineId
   /** The percent progress of the run */
   progress: number
-  /** The type of run */
-  runType: (typeof RunEntityRunType)[keyof typeof RunEntityRunType]
   /** The timestamp when the run started */
-  startedAt?: string
-  /** The status of the run */
-  status: string
+  startedAt: RunEntityStartedAt
+  status: (typeof RunEntityStatus)[keyof typeof RunEntityStatus]
   /** The tool ID associated with the run */
   toolId: string
 }
@@ -2271,7 +2360,6 @@ export const SearchRunsQueryFilterAnyOfField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -2324,7 +2412,6 @@ export const SearchRunsQuerySortItemField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -2358,7 +2445,6 @@ export const RunsFilterNodeAnyOfField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -2406,7 +2492,6 @@ export const RunsFilterConditionField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -2436,7 +2521,6 @@ export const RunsSortField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -2468,8 +2552,6 @@ export interface ToolEntity {
   organizationId: string
   /** The MIME type of the output for the tool, e.g. text/plain */
   outputMimeType: string
-  /** The base of the tool */
-  toolBase: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -2481,8 +2563,7 @@ export const SearchToolsQueryFilterAnyOfField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 export type SearchToolsQueryFilterAnyOfType =
   (typeof SearchToolsQueryFilterAnyOfType)[keyof typeof SearchToolsQueryFilterAnyOfType]
@@ -2531,8 +2612,7 @@ export const SearchToolsQuerySortItemField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SearchToolsQuerySortItemOrder = {
@@ -2562,8 +2642,7 @@ export const ToolsFilterNodeAnyOfField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 export type ToolsFilterNodeAnyOfType =
   (typeof ToolsFilterNodeAnyOfType)[keyof typeof ToolsFilterNodeAnyOfType]
@@ -2610,8 +2689,7 @@ export const ToolsFilterConditionField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 export type ToolsFilterConditionType =
   (typeof ToolsFilterConditionType)[keyof typeof ToolsFilterConditionType]
@@ -2637,8 +2715,7 @@ export const ToolsSortField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortOrder = { asc: 'asc', desc: 'desc' } as const
@@ -2650,11 +2727,24 @@ export interface ToolsSort {
 export type LoginBody = {
   /** The email address associated with the account */
   email: string
-  /** The name of the user creating the account */
+  /**
+   * The name of the user creating the account
+   * @minLength 1
+   */
   name: string
   /** The password for the account */
   password: string
 }
+
+/**
+ * The IP address of the session
+ */
+export type Login200SessionIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type Login200SessionUserAgent = string | null
 
 /**
  * The session entity
@@ -2671,11 +2761,11 @@ export type Login200Session = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: Login200SessionIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: Login200SessionUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -2718,6 +2808,16 @@ export type Login200 = {
 }
 
 /**
+ * The IP address of the session
+ */
+export type GetSession200SessionIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type GetSession200SessionUserAgent = string | null
+
+/**
  * The session entity
  */
 export type GetSession200Session = {
@@ -2732,11 +2832,11 @@ export type GetSession200Session = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: GetSession200SessionIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: GetSession200SessionUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -2781,11 +2881,24 @@ export type GetSession200 = {
 export type RegisterBody = {
   /** The email address associated with the account */
   email: string
-  /** The name of the user creating the account */
+  /**
+   * The name of the user creating the account
+   * @minLength 1
+   */
   name: string
   /** The password for the account */
   password: string
 }
+
+/**
+ * The IP address of the session
+ */
+export type Register204SessionIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type Register204SessionUserAgent = string | null
 
 /**
  * The session entity
@@ -2802,11 +2915,11 @@ export type Register204Session = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: Register204SessionIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: Register204SessionUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -2854,6 +2967,16 @@ export type ConfirmEmailVerificationBody = {
 }
 
 /**
+ * The IP address of the session
+ */
+export type ConfirmEmailVerification204SessionIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type ConfirmEmailVerification204SessionUserAgent = string | null
+
+/**
  * The session entity
  */
 export type ConfirmEmailVerification204Session = {
@@ -2868,11 +2991,11 @@ export type ConfirmEmailVerification204Session = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: ConfirmEmailVerification204SessionIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: ConfirmEmailVerification204SessionUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -2945,7 +3068,10 @@ export type RequestEmailChangeBody = {
 export type CreateAccountBody = {
   /** The email address associated with the account */
   email: string
-  /** The name of the user creating the account */
+  /**
+   * The name of the user creating the account
+   * @minLength 1
+   */
   name: string
   /** The password for the account */
   password: string
@@ -3037,8 +3163,14 @@ export type FindManyAccountsSortItem = {
   order: (typeof FindManyAccountsSortItemOrder)[keyof typeof FindManyAccountsSortItemOrder]
 }
 
+export type FindManyAccounts200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyAccounts200 = {
   data: AccountEntity[]
+  meta: FindManyAccounts200Meta
 }
 
 export type DeleteAccount200 = {
@@ -3122,8 +3254,9 @@ export type UpdateAccount200 = {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateInvitationBodyRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
 } as const
 export type CreateInvitationBody = {
   /** The email of the invitated user */
@@ -3147,10 +3280,12 @@ export const FindManyInvitationsFilterAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 export type FindManyInvitationsFilterAnyOfType =
   (typeof FindManyInvitationsFilterAnyOfType)[keyof typeof FindManyInvitationsFilterAnyOfType]
@@ -3191,10 +3326,12 @@ export const FindManyInvitationsSortItemField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  accepted: 'accepted',
   email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
   organizationId: 'organizationId',
-  role: 'role'
+  role: 'role',
+  status: 'status'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindManyInvitationsSortItemOrder = {
@@ -3206,8 +3343,14 @@ export type FindManyInvitationsSortItem = {
   order: (typeof FindManyInvitationsSortItemOrder)[keyof typeof FindManyInvitationsSortItemOrder]
 }
 
+export type FindManyInvitations200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyInvitations200 = {
   data: InvitationEntity[]
+  meta: FindManyInvitations200Meta
 }
 
 export type DeleteInvitation200 = {
@@ -3220,8 +3363,9 @@ export type GetOneInvitation200 = {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateInvitationBodyRole = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
 } as const
 export type UpdateInvitationBody = {
   /** The email of the invitated user */
@@ -3235,7 +3379,11 @@ export type UpdateInvitation200 = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export const CreateMemberBodyRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
 export type CreateMemberBody = {
   /** The role of the member */
   role: (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
@@ -3313,8 +3461,14 @@ export type FindManyMembersSortItem = {
   order: (typeof FindManyMembersSortItemOrder)[keyof typeof FindManyMembersSortItemOrder]
 }
 
+export type FindManyMembers200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyMembers200 = {
   data: MemberEntity[]
+  meta: FindManyMembers200Meta
 }
 
 export type DeleteMember200 = {
@@ -3326,7 +3480,11 @@ export type GetOneMember200 = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateMemberBodyRole = { ADMIN: 'ADMIN', USER: 'USER' } as const
+export const UpdateMemberBodyRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
 export type UpdateMemberBody = {
   /** The role of the member */
   role?: (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
@@ -3427,8 +3585,14 @@ export type FindManyOrganizationsSortItem = {
   order: (typeof FindManyOrganizationsSortItemOrder)[keyof typeof FindManyOrganizationsSortItemOrder]
 }
 
+export type FindManyOrganizations200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyOrganizations200 = {
   data: OrganizationEntity[]
+  meta: FindManyOrganizations200Meta
 }
 
 export type DeleteOrganization200 = {
@@ -3451,6 +3615,16 @@ export type UpdateOrganization200 = {
 }
 
 /**
+ * The IP address of the session
+ */
+export type CreateSessionBodyIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type CreateSessionBodyUserAgent = string | null
+
+/**
  * The session entity
  */
 export type CreateSessionBody = {
@@ -3465,11 +3639,11 @@ export type CreateSessionBody = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: CreateSessionBodyIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: CreateSessionBodyUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -3552,8 +3726,14 @@ export type FindManySessionsSortItem = {
   order: (typeof FindManySessionsSortItemOrder)[keyof typeof FindManySessionsSortItemOrder]
 }
 
+export type FindManySessions200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManySessions200 = {
   data: SessionEntity[]
+  meta: FindManySessions200Meta
 }
 
 export type DeleteSession200 = {
@@ -3563,6 +3743,16 @@ export type DeleteSession200 = {
 export type GetOneSession200 = {
   data: SessionEntity
 }
+
+/**
+ * The IP address of the session
+ */
+export type UpdateSessionBodyIpAddress = string | null
+
+/**
+ * The user agent of the session
+ */
+export type UpdateSessionBodyUserAgent = string | null
 
 /**
  * The session entity
@@ -3579,11 +3769,11 @@ export type UpdateSessionBody = {
   /** The expiration date of the session */
   expiresAt: string
   /** The IP address of the session */
-  ipAddress?: string
+  ipAddress: UpdateSessionBodyIpAddress
   /** The session token */
   token: string
   /** The user agent of the session */
-  userAgent?: string
+  userAgent: UpdateSessionBodyUserAgent
   /** The ID of the user associated with the session */
   userId: string
 }
@@ -3677,8 +3867,14 @@ export type FindManyUsersSortItem = {
   order: (typeof FindManyUsersSortItemOrder)[keyof typeof FindManyUsersSortItemOrder]
 }
 
+export type FindManyUsers200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyUsers200 = {
   data: UserEntity[]
+  meta: FindManyUsers200Meta
 }
 
 export type DeleteUser200 = {
@@ -4034,13 +4230,23 @@ export type GetConfig200 = {
   unstructured: GetConfig200Unstructured
 }
 
+/**
+ * The artifact text
+ */
+export type CreateArtifactBodyText = null | string
+
+/**
+ * The artifact URL
+ */
+export type CreateArtifactBodyUrl = null | string
+
 export type CreateArtifactBody = {
   /** The name of the artifact */
   name: string
   /** The artifact text */
-  text?: string
+  text: CreateArtifactBodyText
   /** The artifact URL */
-  url?: string
+  url: CreateArtifactBodyUrl
 }
 
 export type CreateArtifact201 = {
@@ -4063,7 +4269,6 @@ export const FindManyArtifactsFilterAnyOfField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -4113,7 +4318,6 @@ export const FindManyArtifactsSortItemField = {
   mimeType: 'mimeType',
   name: 'name',
   organizationId: 'organizationId',
-  parentId: 'parentId',
   previewImage: 'previewImage',
   producerId: 'producerId',
   text: 'text',
@@ -4129,8 +4333,14 @@ export type FindManyArtifactsSortItem = {
   order: (typeof FindManyArtifactsSortItemOrder)[keyof typeof FindManyArtifactsSortItemOrder]
 }
 
+export type FindManyArtifacts200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyArtifacts200 = {
   data: ArtifactEntity[]
+  meta: FindManyArtifacts200Meta
 }
 
 export type DeleteArtifact200 = {
@@ -4141,13 +4351,23 @@ export type GetOneArtifact200 = {
   data: ArtifactEntity
 }
 
+/**
+ * The artifact text
+ */
+export type UpdateArtifactBodyText = null | string
+
+/**
+ * The artifact URL
+ */
+export type UpdateArtifactBodyUrl = null | string
+
 export type UpdateArtifactBody = {
   /** The name of the artifact */
   name?: string
   /** The artifact text */
-  text?: string
+  text?: UpdateArtifactBodyText
   /** The artifact URL */
-  url?: string
+  url?: UpdateArtifactBodyUrl
 }
 
 export type UpdateArtifact200 = {
@@ -4226,8 +4446,14 @@ export type FindManyLabelsSortItem = {
   order: (typeof FindManyLabelsSortItemOrder)[keyof typeof FindManyLabelsSortItemOrder]
 }
 
+export type FindManyLabels200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyLabels200 = {
   data: LabelEntity[]
+  meta: FindManyLabels200Meta
 }
 
 export type DeleteLabel200 = {
@@ -4246,6 +4472,16 @@ export type UpdateLabelBody = {
 export type UpdateLabel200 = {
   data: LabelEntity
 }
+
+/**
+ * The pipeline description
+ */
+export type CreatePipelineBodyDescription = string | null
+
+/**
+ * The pipeline name
+ */
+export type CreatePipelineBodyName = string | null
 
 export type CreatePipelineBodyStepsItemDependentsItem = {
   pipelineStepId: string
@@ -4273,9 +4509,9 @@ export type CreatePipelineBodyStepsItem = {
 
 export type CreatePipelineBody = {
   /** The pipeline description */
-  description?: string
+  description: CreatePipelineBodyDescription
   /** The pipeline name */
-  name?: string
+  name: CreatePipelineBodyName
   /** The steps in the pipeline */
   steps: CreatePipelineBodyStepsItem[]
 }
@@ -4354,8 +4590,14 @@ export type FindManyPipelinesSortItem = {
   order: (typeof FindManyPipelinesSortItemOrder)[keyof typeof FindManyPipelinesSortItemOrder]
 }
 
+export type FindManyPipelines200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyPipelines200 = {
   data: PipelineEntity[]
+  meta: FindManyPipelines200Meta
 }
 
 export type DeletePipeline200 = {
@@ -4365,6 +4607,16 @@ export type DeletePipeline200 = {
 export type GetOnePipeline200 = {
   data: PipelineEntity
 }
+
+/**
+ * The pipeline description
+ */
+export type UpdatePipelineBodyDescription = string | null
+
+/**
+ * The pipeline name
+ */
+export type UpdatePipelineBodyName = string | null
 
 export type UpdatePipelineBodyStepsItemDependentsItem = {
   pipelineStepId: string
@@ -4392,9 +4644,9 @@ export type UpdatePipelineBodyStepsItem = {
 
 export type UpdatePipelineBody = {
   /** The pipeline description */
-  description?: string
+  description?: UpdatePipelineBodyDescription
   /** The pipeline name */
-  name?: string
+  name?: UpdatePipelineBodyName
   /** The steps in the pipeline */
   steps?: UpdatePipelineBodyStepsItem[]
 }
@@ -4403,9 +4655,14 @@ export type UpdatePipeline200 = {
   data: PipelineEntity
 }
 
+/**
+ * The pipeline ID associated with the run
+ */
+export type CreateRunBodyPipelineId = string | null
+
 export type CreateRunBody = {
   /** The pipeline ID associated with the run */
-  pipelineId?: string
+  pipelineId: CreateRunBodyPipelineId
 }
 
 export type CreateRun201 = {
@@ -4428,7 +4685,6 @@ export const FindManyRunsFilterAnyOfField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -4477,7 +4733,6 @@ export const FindManyRunsSortItemField = {
   organizationId: 'organizationId',
   pipelineId: 'pipelineId',
   progress: 'progress',
-  runType: 'runType',
   startedAt: 'startedAt',
   status: 'status',
   toolId: 'toolId'
@@ -4489,8 +4744,14 @@ export type FindManyRunsSortItem = {
   order: (typeof FindManyRunsSortItemOrder)[keyof typeof FindManyRunsSortItemOrder]
 }
 
+export type FindManyRuns200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyRuns200 = {
   data: RunEntity[]
+  meta: FindManyRuns200Meta
 }
 
 export type DeleteRun200 = {
@@ -4501,9 +4762,14 @@ export type GetOneRun200 = {
   data: RunEntity
 }
 
+/**
+ * The pipeline ID associated with the run
+ */
+export type UpdateRunBodyPipelineId = string | null
+
 export type UpdateRunBody = {
   /** The pipeline ID associated with the run */
-  pipelineId?: string
+  pipelineId?: UpdateRunBodyPipelineId
 }
 
 export type UpdateRun200 = {
@@ -4536,8 +4802,7 @@ export const FindManyToolsFilterAnyOfField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 export type FindManyToolsFilterAnyOfType =
   (typeof FindManyToolsFilterAnyOfType)[keyof typeof FindManyToolsFilterAnyOfType]
@@ -4582,8 +4847,7 @@ export const FindManyToolsSortItemField = {
   inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType',
-  toolBase: 'toolBase'
+  outputMimeType: 'outputMimeType'
 } as const
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FindManyToolsSortItemOrder = { asc: 'asc', desc: 'desc' } as const
@@ -4592,8 +4856,14 @@ export type FindManyToolsSortItem = {
   order: (typeof FindManyToolsSortItemOrder)[keyof typeof FindManyToolsSortItemOrder]
 }
 
+export type FindManyTools200Meta = {
+  /** Total number of items in the collection */
+  total: number
+}
+
 export type FindManyTools200 = {
   data: ToolEntity[]
+  meta: FindManyTools200Meta
 }
 
 export type DeleteTool200 = {

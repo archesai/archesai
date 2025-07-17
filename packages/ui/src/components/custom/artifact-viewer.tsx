@@ -29,7 +29,7 @@ export function ArtifactViewer({ artifactId }: { artifactId: string }) {
         width='100%'
       />
     )
-  } else if (artifact.mimeType.startsWith('image/')) {
+  } else if (artifact.mimeType.startsWith('image/') && artifact.url) {
     hoverContent = (
       <image
         // className='h-full w-full object-contain'
@@ -38,7 +38,7 @@ export function ArtifactViewer({ artifactId }: { artifactId: string }) {
         width={516}
       />
     )
-  } else if (artifact.mimeType === 'application/pdf') {
+  } else if (artifact.mimeType === 'application/pdf' && artifact.url) {
     hoverContent = (
       <iframe
         className='h-full w-full'
@@ -46,7 +46,7 @@ export function ArtifactViewer({ artifactId }: { artifactId: string }) {
         title='PDF Document'
       ></iframe>
     )
-  } else if (artifact.mimeType.startsWith('text/')) {
+  } else if (artifact.mimeType.startsWith('text/') && artifact.text) {
     hoverContent = (
       <div className='flex h-full items-center justify-center p-4 text-center'>
         <p>{artifact.text}</p>

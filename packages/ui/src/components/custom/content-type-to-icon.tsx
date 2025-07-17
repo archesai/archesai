@@ -15,7 +15,17 @@ import { cn, stringToColor } from '#lib/utils'
 
 export const ContentTypeToIcon = ({ contentType }: { contentType: string }) => {
   const sharedClass = cn('h-5 w-5')
-  const mediaType = contentType.split('/')[0]!
+  const mediaType = contentType.split('/')[0]
+  if (!mediaType) {
+    return (
+      <LetterText
+        className={cn(sharedClass)}
+        style={{
+          color: stringToColor(contentType)
+        }}
+      />
+    )
+  }
   const color = stringToColor(contentType)
   const getLabel = (mediaType: string) => {
     switch (mediaType) {

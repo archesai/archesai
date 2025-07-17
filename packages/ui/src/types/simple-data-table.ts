@@ -2,38 +2,33 @@ import type { Row, RowData } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+export type FilterVariant =
+  | 'boolean'
+  | 'date'
+  | 'dateRange'
+  | 'multiSelect'
+  | 'number'
+  | 'range'
+  | 'select'
+  | 'text'
+
+export interface Option {
+  count?: number
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>
+  label: string
+  value: string
+}
+
 // Extend TanStack Table column meta for filter configuration
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    filterOperators?: string[]
-    // Filter configuration
-    filterVariant:
-      | 'boolean'
-      | 'date'
-      | 'dateRange'
-      | 'multiSelect'
-      | 'number'
-      | 'range'
-      | 'select'
-      | 'text'
-
-    icon: React.FC<React.SVGProps<SVGSVGElement>>
-    // Display options
+    filterVariant?: FilterVariant
+    icon?: React.FC<React.SVGProps<SVGSVGElement>>
     label?: string
-
-    max?: number
-
-    // Number/Date range
-    min?: number
-    // Select/MultiSelect options
-    options?: {
-      count?: number
-      icon?: React.FC<React.SVGProps<SVGSVGElement>>
-      label: string
-      value: string
-    }[]
-    step?: number
+    options?: Option[]
+    placeholder?: string
+    range?: [number, number]
     unit?: string
   }
 }
@@ -44,7 +39,7 @@ export interface DataTableRowAction<TData> {
   label?: string
   onClick?: (row: Row<TData>) => void
   row: Row<TData>
-  variant: 'custom' | 'delete' | 'update' | 'view'
+  variant: 'create' | 'custom' | 'delete' | 'update' | 'view'
 }
 
 // Filter operators mapped to your SearchQuery DTO
@@ -90,9 +85,8 @@ export interface DataTableConfig {
   pageSizeOptions: number[]
 }
 
-export type FilterOperator = (typeof FILTER_OPERATORS)[FilterVariant][number]
-
-export type FilterVariant = keyof typeof FILTER_OPERATORS
+export type FilterOperator =
+  (typeof FILTER_OPERATORS)[keyof typeof FILTER_OPERATORS][number]
 
 // Simple filter condition interface (matches your DTO)
 export interface SimpleFilterCondition<TEntity extends BaseEntity> {
@@ -147,6 +141,7 @@ export function getFilterOperators(
       { label: 'is between', value: 'isBetween' },
       { label: 'is relative to today', value: 'isRelativeToToday' }
     ],
+    dateRange: [],
     multiSelect: [
       { label: 'is in', value: 'inArray' },
       { label: 'is not in', value: 'notInArray' }
@@ -160,6 +155,7 @@ export function getFilterOperators(
       { label: 'greater than or equal', value: 'gte' },
       { label: 'is between', value: 'isBetween' }
     ],
+    range: [],
     select: [
       { label: 'equals', value: 'eq' },
       { label: 'does not equal', value: 'ne' },
@@ -176,5 +172,5 @@ export function getFilterOperators(
     ]
   }
 
-  return operatorMap[filterVariant] || operatorMap.text
+  return operatorMap[filterVariant]
 }

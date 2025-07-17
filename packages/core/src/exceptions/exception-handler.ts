@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify'
+import type { FastifyPluginCallback, FastifyRequest } from 'fastify'
 
 import { AppError, ValidationException } from '#exceptions/http-errors'
 import { ForbiddenResponseSchema } from '#exceptions/schemas/forbidden-response.schema'
@@ -13,10 +13,11 @@ interface ErrorHandlerOptions {
   sanitizeHeaders?: boolean
 }
 
-export const errorHandlerPlugin: FastifyPluginAsync<
-  ErrorHandlerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, options = {}) => {
+export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
+  app,
+  options = {},
+  done
+) => {
   const { includeStack = false, sanitizeHeaders = true } = options
 
   // Add error schema to app instance for reuse
@@ -107,6 +108,12 @@ export const errorHandlerPlugin: FastifyPluginAsync<
 
     // Handle validation errors from TypeBox/Ajv
     if (error.validation) {
+      // const formattedErrors = error.validation.map((err) => ({
+      //   field: err.instancePath || err.schemaPath,
+      //   message: err.message,
+      //   value: err.data
+      // }))
+
       const logData = {
         error: 'Validation failed',
         request: requestContext,
@@ -179,4 +186,6 @@ export const errorHandlerPlugin: FastifyPluginAsync<
     // You can add additional processing here if needed
     return
   })
+
+  done()
 }

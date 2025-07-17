@@ -11,7 +11,8 @@ export const CreateAccountDtoSchema: TObject<{
     description: 'The email address associated with the account'
   }),
   name: Type.String({
-    description: 'The name of the user creating the account'
+    description: 'The name of the user creating the account',
+    minLength: 1
   }),
   password: Type.String({ description: 'The password for the account' })
 })

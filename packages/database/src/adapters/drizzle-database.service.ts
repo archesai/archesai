@@ -14,9 +14,12 @@ import type {
   SearchQuery
 } from '@archesai/schemas'
 
+import { BadRequestException } from '@archesai/core'
+import { Type, Value } from '@archesai/schemas'
+
 import type * as schema from '#schema/index'
 
-import { createPooledClient } from '#helpers/clients'
+import { createPooledClient } from '#lib/clients'
 
 export const createDrizzleDatabaseService = (
   connectionString: string
@@ -100,7 +103,6 @@ export class DrizzleDatabaseService {
         case 'isBetween':
           if (
             typeof value !== 'object' ||
-            value === null ||
             !('from' in value) ||
             !('to' in value)
           ) {
@@ -108,11 +110,22 @@ export class DrizzleDatabaseService {
               `Value for isBetween operator must be an object with 'from' and 'to' properties`
             )
           }
-          const rangeValue = value as {
-            from: number | string
-            to: number | string
+
+          if (
+            Value.Check(
+              Type.Object({
+                from: Type.Union([Type.Number(), Type.String()]),
+                to: Type.Union([Type.Number(), Type.String()])
+              }),
+              value
+            )
+          ) {
+            return sql`${columnRef} BETWEEN ${value.from} AND ${value.to}`
+          } else {
+            throw new Error(
+              `Value for isBetween operator must be an object with 'from' and 'to' properties`
+            )
           }
-          return sql`${columnRef} BETWEEN ${rangeValue.from} AND ${rangeValue.to}`
 
         case 'isEmpty':
           return sql`${columnRef} IS NULL`
@@ -123,7 +136,6 @@ export class DrizzleDatabaseService {
         case 'isRelativeToToday':
           if (
             typeof value !== 'object' ||
-            value === null ||
             !('value' in value) ||
             !('unit' in value)
           ) {
@@ -131,16 +143,31 @@ export class DrizzleDatabaseService {
               `Value for isRelativeToToday operator must be an object with 'value' and 'unit' properties`
             )
           }
-          const relativeValue = value as {
-            unit: 'days' | 'months' | 'weeks' | 'years'
-            value: number
+
+          if (
+            Value.Check(
+              Type.Object({
+                unit: Type.Union([
+                  Type.Literal('days'),
+                  Type.Literal('months'),
+                  Type.Literal('weeks'),
+                  Type.Literal('years')
+                ]),
+                value: Type.Number()
+              }),
+              value
+            )
+          ) {
+            // Build the interval string
+            const intervalStr = `${value.value.toString()} ${value.unit}`
+
+            // Calculate the date relative to today
+            return sql`${columnRef} >= (CURRENT_DATE - INTERVAL '${sql.raw(intervalStr)}')`
+          } else {
+            throw new BadRequestException(
+              `Value for isRelativeToToday operator must be an object with 'value' and 'unit' properties`
+            )
           }
-
-          // Build the interval string
-          const intervalStr = `${relativeValue.value} ${relativeValue.unit}`
-
-          // Calculate the date relative to today
-          return sql`${columnRef} >= (CURRENT_DATE - INTERVAL '${sql.raw(intervalStr)}')`
 
         case 'lt':
           return sql`${columnRef} < ${value}`
@@ -167,13 +194,13 @@ export class DrizzleDatabaseService {
           )})`
 
         default:
-          throw new Error(`Unknown operator: ${operator}`)
+          throw new Error(`Unknown operator`)
       }
     }
 
     // Build a group of conditions
     const buildGroup = (group: FilterGroup<TData>): SQL => {
-      if (!group.children || group.children.length === 0) {
+      if (!group.children.length || group.children.length === 0) {
         throw new Error('Filter group must have at least one child')
       }
 
@@ -181,8 +208,8 @@ export class DrizzleDatabaseService {
         buildFilterNode(child)
       )
 
-      if (childConditions.length === 1) {
-        return childConditions[0]!
+      if (childConditions.length === 1 && childConditions[0]) {
+        return childConditions[0]
       }
 
       const joinOperator = group.operator === 'and' ? sql` AND ` : sql` OR `
@@ -223,19 +250,12 @@ export class DrizzleDatabaseService {
     }
   }
 
-  public select<T extends PgTable>(table: T, where?: SQL, orderBy?: any[]) {
-    //@ts-ignore
-    let query = this.db.select().from(table)
-
-    if (where) {
-      //@ts-ignore
-      query = query.where(where)
-    }
-
-    if (orderBy && orderBy.length > 0) {
-      //@ts-ignore
-      query = query.orderBy(...orderBy)
-    }
+  public select(table: PgTable, where?: SQL, orderBy?: SQL[]) {
+    const query = this.db
+      .select()
+      .from(table)
+      .where(where)
+      .orderBy(...(orderBy ?? []))
 
     return query
   }

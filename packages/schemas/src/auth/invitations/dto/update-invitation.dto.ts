@@ -13,7 +13,7 @@ import { CreateInvitationDtoSchema } from '#auth/invitations/dto/create-invitati
 
 export const UpdateInvitationDtoSchema: TObject<{
   email: TOptional<TString>
-  role: TOptional<TUnion<TLiteral<'ADMIN' | 'USER'>[]>>
+  role: TOptional<TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>>
 }> = Type.Partial(CreateInvitationDtoSchema)
 
 export type UpdateInvitationDto = Static<typeof UpdateInvitationDtoSchema>

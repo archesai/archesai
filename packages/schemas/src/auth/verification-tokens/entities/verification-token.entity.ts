@@ -1,45 +1,36 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const VerificationTokenEntitySchema: TObject<{
+export const VerificationEntitySchema: TObject<{
   createdAt: TString
-  expires: TString
+  expiresAt: TString
   id: TString
   identifier: TString
-  newEmail: TOptional<TString>
-  token: TString
   updatedAt: TString
+  value: TString
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    expires: Type.String({
+    expiresAt: Type.String({
       description: 'The expiration date of the token'
     }),
     identifier: Type.String({
       description: 'The identifier associated with the token'
     }),
-    newEmail: Type.Optional(
-      Type.String({
-        description: 'The new email address (if applicable)',
-        format: 'email'
-      })
-    ),
-    token: Type.String({
+    value: Type.String({
       description: 'The token string'
     })
   },
   {
-    $id: 'VerificationTokenEntity',
+    $id: 'VerificationEntity',
     description: 'The verification token entity',
     title: 'Verification Token Entity'
   }
 )
 
-export type VerificationTokenEntity = Static<
-  typeof VerificationTokenEntitySchema
->
+export type VerificationEntity = Static<typeof VerificationEntitySchema>
 
 export const VERIFICATION_TOKEN_ENTITY_KEY = 'verification-tokens'

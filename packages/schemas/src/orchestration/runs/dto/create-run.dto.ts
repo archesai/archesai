@@ -1,11 +1,11 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
+import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { RunEntitySchema } from '#orchestration/runs/entities/run.entity'
 
 export const CreateRunDtoSchema: TObject<{
-  pipelineId: TOptional<TString>
+  pipelineId: TUnion<[TString, TNull]>
 }> = Type.Object({
   pipelineId: RunEntitySchema.properties.pipelineId
 })

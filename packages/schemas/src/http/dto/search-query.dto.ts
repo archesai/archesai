@@ -573,8 +573,8 @@ export const createSearchQuerySchema = (
   >
   page: TOptional<
     TUnsafe<{
-      number?: number | undefined
-      size?: number | undefined
+      number?: number
+      size?: number
     }>
   >
   sort: TOptional<
@@ -722,48 +722,4 @@ export function validateFilterTree<TEntity extends BaseEntity>(
 
   validate(filter)
   return { errors, valid: errors.length === 0 }
-}
-
-// ==========================================
-// BACKEND MAPPING (if needed for legacy support)
-// ==========================================
-
-export const operatorMapping = {
-  eq: 'equals',
-  gt: 'gt',
-  gte: 'gte',
-  iLike: 'like',
-  inArray: 'in',
-  isBetween: 'between',
-  isEmpty: 'is_null',
-  isNotEmpty: 'is_not_null',
-  isRelativeToToday: 'relative_date',
-  lt: 'lt',
-  lte: 'lte',
-  ne: 'not_equals',
-  notILike: 'not_like',
-  notInArray: 'not_in'
-} as const
-
-export type BackendOperator =
-  (typeof operatorMapping)[keyof typeof operatorMapping]
-
-// Convert frontend filter to backend format
-export function convertToBackendFormat<TEntity extends BaseEntity>(
-  filter: FilterNode<TEntity>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
-  if (filter.type === 'condition') {
-    return {
-      field: filter.field,
-      operator: operatorMapping[filter.operator] || filter.operator,
-      value: filter.value
-    }
-  } else {
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      conditions: filter.children.map((child) => convertToBackendFormat(child)),
-      operator: filter.operator
-    }
-  }
 }

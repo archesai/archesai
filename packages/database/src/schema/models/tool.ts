@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
+import type { ToolEntity } from '@archesai/schemas'
+
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
@@ -18,12 +20,8 @@ export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-  outputMimeType: text().default('application/octet-stream').notNull(),
-  toolBase: text().notNull()
+  outputMimeType: text().default('application/octet-stream').notNull()
 })
-
-export type ToolInsertModel = typeof ToolTable.$inferInsert
-export type ToolSelectModel = typeof ToolTable.$inferSelect
 
 export const toolRelations = relations(ToolTable, ({ many, one }) => ({
   organization: one(OrganizationTable, {
@@ -32,3 +30,8 @@ export const toolRelations = relations(ToolTable, ({ many, one }) => ({
   }),
   runs: many(RunTable)
 }))
+
+export type ToolInsertModel = typeof ToolTable.$inferInsert
+export type ToolSelectModel = typeof ToolTable.$inferSelect
+
+export type zToolCheck = ToolEntity extends ToolSelectModel ? true : false

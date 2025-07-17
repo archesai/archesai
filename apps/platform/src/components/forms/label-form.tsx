@@ -10,16 +10,16 @@ import { LABEL_ENTITY_KEY, Type } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
-export default function LabelForm({ labelId }: { labelId?: string }) {
+export default function LabelForm({ id }: { id?: string }) {
   const { mutateAsync: updateLabel } = useUpdateLabel()
   const { mutateAsync: createLabel } = useCreateLabel()
-  const { data: label } = useGetOneLabel(labelId, {
+  const { data: label } = useGetOneLabel(id, {
     query: {
-      enabled: !!labelId,
+      enabled: !!id,
       placeholderData: {
         data: {
           createdAt: '',
-          id: labelId ?? '',
+          id: id ?? '',
           name: '',
           organizationId: '',
           updatedAt: ''
@@ -54,10 +54,10 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
 
   return (
     <GenericForm<CreateLabelBody, UpdateLabelBody>
-      description={!labelId ? 'Invite a new label' : 'Update an existing label'}
+      description={!id ? 'Invite a new label' : 'Update an existing label'}
       entityKey={LABEL_ENTITY_KEY}
       fields={formFields}
-      isUpdateForm={!!labelId}
+      isUpdateForm={!!id}
       onSubmitCreate={async (createLabelDto) => {
         await createLabel({
           data: createLabelDto
@@ -66,7 +66,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
       onSubmitUpdate={async (data) => {
         await updateLabel({
           data: data,
-          id: labelId
+          id: id
         })
       }}
       title='Configuration'

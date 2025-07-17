@@ -15,7 +15,7 @@ export const MemberEntitySchema: TObject<{
   createdAt: TString
   id: TString
   organizationId: TString
-  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
   updatedAt: TString
   userId: TString
 }> = Type.Object(

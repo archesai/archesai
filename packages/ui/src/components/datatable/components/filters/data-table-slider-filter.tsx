@@ -51,7 +51,11 @@ export function DataTableSliderFilter<TData>({
       ;[minValue, maxValue] = defaultRange
     } else {
       const values = column.getFacetedMinMaxValues()
-      if (values && Array.isArray(values) && values.length === 2) {
+      if (
+        values &&
+        Array.isArray(values) &&
+        (values as number[]).length === 2
+      ) {
         const [facetMinValue, facetMaxValue] = values
         if (
           typeof facetMinValue === 'number' &&
@@ -102,7 +106,7 @@ export function DataTableSliderFilter<TData>({
 
   const onSliderValueChange = useCallback(
     (value: RangeValue) => {
-      if (Array.isArray(value) && value.length === 2) {
+      if (Array.isArray(value) && (value as number[]).length === 2) {
         column.setFilterValue(value)
       }
     },
@@ -129,7 +133,7 @@ export function DataTableSliderFilter<TData>({
         >
           {columnFilterValue ?
             <div
-              aria-label={`Clear ${title} filter`}
+              aria-label={`Clear ${title ?? ''} filter`}
               className='rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none'
               onClick={onReset}
               role='button'
@@ -180,7 +184,7 @@ export function DataTableSliderFilter<TData>({
                 pattern='[0-9]*'
                 placeholder={min.toString()}
                 type='number'
-                value={range[0]?.toString()}
+                value={range[0].toString()}
               />
               {unit && (
                 <span className='absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-sm text-muted-foreground'>
@@ -207,7 +211,7 @@ export function DataTableSliderFilter<TData>({
                 pattern='[0-9]*'
                 placeholder={max.toString()}
                 type='number'
-                value={range[1]?.toString()}
+                value={range[1].toString()}
               />
               {unit && (
                 <span className='absolute top-0 right-0 bottom-0 flex items-center rounded-r-md bg-accent px-2 text-sm text-muted-foreground'>
@@ -232,7 +236,7 @@ export function DataTableSliderFilter<TData>({
           />
         </div>
         <Button
-          aria-label={`Clear ${title} filter`}
+          aria-label={`Clear ${title ?? ''} filter`}
           onClick={onReset}
           size='sm'
           variant='outline'

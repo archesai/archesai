@@ -14,7 +14,7 @@ import {
   ScanSearch
 } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { TasksTableActionBar } from '@archesai/ui/components/datatable/components/tasks-table-action-bar'
+// import { TasksTableActionBar } from '@archesai/ui/components/datatable/components/tasks-table-action-bar'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import {
   HoverCard,
@@ -23,13 +23,9 @@ import {
 } from '@archesai/ui/components/shadcn/hover-card'
 import { Skeleton } from '@archesai/ui/components/shadcn/skeleton'
 
-import ContentForm from '#components/forms/artifact-form'
+import ArtifactForm from '#components/forms/artifact-form'
 
-export default function ArtifactDataTable({
-  readonly = false
-}: {
-  readonly?: boolean
-}) {
+export default function ArtifactDataTable() {
   const navigate = useNavigate()
 
   return (
@@ -40,7 +36,7 @@ export default function ArtifactDataTable({
           cell: ({ row }) => {
             return (
               <div className='flex gap-2'>
-                <ContentTypeToIcon contentType={row.original.mimeType ?? ''} />
+                <ContentTypeToIcon contentType={row.original.mimeType} />
                 <Link
                   className='text-primary hover:underline'
                   params={{
@@ -107,30 +103,6 @@ export default function ArtifactDataTable({
           }
         },
         {
-          accessorKey: 'parent',
-          cell: ({ row }) => {
-            return row.original.parentId ?
-                <Link
-                  className='text-primary hover:underline'
-                  params={{
-                    artifactId: row.original.parentId
-                  }}
-                  to={`/artifacts/$artifactId`}
-                >
-                  {row.original.parentId}
-                </Link>
-              : <div className='text-muted-foreground'>None</div>
-          },
-          enableColumnFilter: true,
-          enableSorting: true,
-          id: 'parent',
-          meta: {
-            filterVariant: 'text',
-            icon: LetterText,
-            label: 'Parent'
-          }
-        },
-        {
           accessorKey: 'producer',
           cell: ({ row }) => {
             return row.original.producerId ?
@@ -172,10 +144,9 @@ export default function ArtifactDataTable({
           }
         }
       ]}
-      createForm={<ContentForm />}
+      createForm={ArtifactForm}
       defaultView='table'
       entityKey={ARTIFACT_ENTITY_KEY}
-      getEditFormFromItem={(content) => <ContentForm artifactId={content.id} />}
       grid={(_item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>
@@ -188,14 +159,14 @@ export default function ArtifactDataTable({
           </div>
         )
       }}
-      handleSelect={async (content) => {
+      handleSelect={async (artifact) => {
         await navigate({
-          params: { artifactId: content.id },
+          params: { artifactId: artifact.id },
           to: `/artifacts/$artifactId`
         })
       }}
       icon={<File size={24} />}
-      readonly={readonly}
+      updateForm={ArtifactForm}
       useFindMany={getFindManyArtifactsQueryOptions}
     />
   )

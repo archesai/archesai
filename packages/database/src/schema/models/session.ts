@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
+import type { SessionEntity } from '@archesai/schemas'
+
 import { baseFields } from '#schema/models/base'
 import { UserTable } from '#schema/models/user'
 
@@ -27,3 +29,6 @@ export const sessionRelations = relations(SessionTable, ({ one }) => ({
 
 export type SessionInsertModel = typeof SessionTable.$inferInsert
 export type SessionSelectModel = typeof SessionTable.$inferSelect
+
+export type zSessionCheck =
+  SessionEntity extends SessionSelectModel ? true : false

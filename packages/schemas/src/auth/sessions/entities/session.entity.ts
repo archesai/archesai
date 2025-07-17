@@ -1,4 +1,4 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
+import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -23,10 +23,10 @@ export const SessionEntitySchema: TObject<{
   createdAt: TString
   expiresAt: TString
   id: TString
-  ipAddress: TOptional<TString>
+  ipAddress: TUnion<[TString, TNull]>
   token: TString
   updatedAt: TString
-  userAgent: TOptional<TString>
+  userAgent: TUnion<[TString, TNull]>
   userId: TString
 }> = Type.Object(
   {
@@ -37,13 +37,13 @@ export const SessionEntitySchema: TObject<{
     expiresAt: Type.String({
       description: 'The expiration date of the session'
     }),
-    ipAddress: Type.Optional(
-      Type.String({ description: 'The IP address of the session' })
-    ),
+    ipAddress: Type.Union([Type.String(), Type.Null()], {
+      description: 'The IP address of the session'
+    }),
     token: Type.String({ description: 'The session token' }),
-    userAgent: Type.Optional(
-      Type.String({ description: 'The user agent of the session' })
-    ),
+    userAgent: Type.Union([Type.String(), Type.Null()], {
+      description: 'The user agent of the session'
+    }),
     userId: Type.String({
       description: 'The ID of the user associated with the session'
     })

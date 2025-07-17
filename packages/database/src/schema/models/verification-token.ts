@@ -1,10 +1,12 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
+import type { VerificationEntity } from '@archesai/schemas'
+
 import { VERIFICATION_TOKEN_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
 
-export const VerificationTokenTable = pgTable(VERIFICATION_TOKEN_ENTITY_KEY, {
+export const VerificationTable = pgTable(VERIFICATION_TOKEN_ENTITY_KEY, {
   ...baseFields,
   expiresAt: timestamp({
     mode: 'string'
@@ -13,7 +15,8 @@ export const VerificationTokenTable = pgTable(VERIFICATION_TOKEN_ENTITY_KEY, {
   value: text().notNull()
 })
 
-export type VerificationTokenInsertModel =
-  typeof VerificationTokenTable.$inferInsert
-export type VerificationTokenSelectModel =
-  typeof VerificationTokenTable.$inferSelect
+export type VerificationInsertModel = typeof VerificationTable.$inferInsert
+export type VerificationSelectModel = typeof VerificationTable.$inferSelect
+
+export type zVerificationCheck =
+  VerificationEntity extends VerificationSelectModel ? true : false

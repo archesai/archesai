@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import type { ConfigService } from '#config/config.service'
 
@@ -8,10 +8,9 @@ export interface ConfigControllerOptions {
   configService: ConfigService
 }
 
-export const configController: FastifyPluginAsyncTypebox<
+export const configController: FastifyPluginCallbackTypebox<
   ConfigControllerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { configService }) => {
+> = (app, { configService }, done) => {
   app.get(
     `/config`,
     {
@@ -29,4 +28,6 @@ export const configController: FastifyPluginAsyncTypebox<
       return configService.getConfig()
     }
   )
+
+  done()
 }

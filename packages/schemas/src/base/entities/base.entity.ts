@@ -31,4 +31,9 @@ export const LegacyRef = <T extends TSchema>(
   (T & {
     params: []
   })['static']
-> => Type.Unsafe<Static<T>>(Type.Ref(schema.$id!))
+> => {
+  if (!schema.$id) {
+    throw new Error('Schema must have an $id property')
+  }
+  return Type.Unsafe<Static<T>>(Type.Ref(schema.$id))
+}

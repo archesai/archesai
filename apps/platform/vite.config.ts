@@ -9,6 +9,9 @@ export default defineConfig({
     allowedHosts: ['platform.archesai.dev', 'platform.archesai.test'],
     proxy: {}
   },
+  optimizeDeps: {
+    include: ['@archesai/schemas', '@archesai/client'] // your monorepo packages
+  },
   plugins: [
     tailwindcss(),
     // Enables Vite to resolve imports using path aliases.

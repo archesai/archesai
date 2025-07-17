@@ -1,9 +1,11 @@
 import { relations } from 'drizzle-orm'
 import { doublePrecision, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
+import type { RunEntity } from '@archesai/schemas'
+
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
-import { runStatus, runType } from '#schema/enums'
+import { runStatus } from '#schema/enums'
 import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
@@ -26,7 +28,6 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
     onUpdate: 'cascade'
   }),
   progress: doublePrecision().default(0).notNull(),
-  runType: runType().notNull(),
   startedAt: timestamp({ mode: 'string', precision: 3 }),
   status: runStatus().default('QUEUED').notNull(),
   toolId: text()
@@ -35,9 +36,6 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
       onDelete: 'set null',
       onUpdate: 'cascade'
     })
-
-  // pipelineRunId: text().notNull(),
-  // pipelineStepId: text().notNull()
 })
 
 export const runRelations = relations(RunTable, ({ many, one }) => ({
@@ -55,3 +53,5 @@ export const runRelations = relations(RunTable, ({ many, one }) => ({
 
 export type RunInsertModel = typeof RunTable.$inferInsert
 export type RunSelectModel = typeof RunTable.$inferSelect
+
+export type zRunCheck = RunEntity extends RunSelectModel ? true : false

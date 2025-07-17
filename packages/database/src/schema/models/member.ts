@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text } from 'drizzle-orm/pg-core'
 
+import type { MemberEntity } from '@archesai/schemas'
+
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 
 import { roleEnum } from '#schema/enums'
@@ -16,14 +18,11 @@ export const MemberTable = pgTable(MEMBER_ENTITY_KEY, {
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-  role: roleEnum().default('USER').notNull(),
+  role: roleEnum().default('member').notNull(),
   userId: text()
     .notNull()
     .references(() => UserTable.id, { onDelete: 'cascade' })
 })
-
-export type MemberInsertModel = typeof MemberTable.$inferInsert
-export type MemberSelectModel = typeof MemberTable.$inferSelect
 
 export const memberRelations = relations(MemberTable, ({ one }) => ({
   organization: one(OrganizationTable, {
@@ -35,3 +34,8 @@ export const memberRelations = relations(MemberTable, ({ one }) => ({
     references: [UserTable.id]
   })
 }))
+
+export type MemberInsertModel = typeof MemberTable.$inferInsert
+export type MemberSelectModel = typeof MemberTable.$inferSelect
+
+export type zMemberCheck = MemberEntity extends MemberSelectModel ? true : false

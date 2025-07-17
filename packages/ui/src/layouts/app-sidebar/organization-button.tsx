@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { ChevronsUpDown, Plus } from 'lucide-react'
 
 import type { UserEntity } from '@archesai/schemas'
@@ -70,8 +69,7 @@ export function OrganizationButton() {
                   {sessionData.user.name}
                 </span>
                 <span className='truncate text-xs'>
-                  {sessionData.session.activeOrganizationId ??
-                    'No Organization'}
+                  {sessionData.session.activeOrganizationId}
                 </span>
               </div>
               <ChevronsUpDown className='ml-auto' />

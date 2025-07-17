@@ -8,18 +8,18 @@
   },
   "exports": {
     "./package.json": "./package.json",
-    ".": "./src/index.ts",
-    "./schema": "./src/schema/index.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "build": "tsc --build",
     "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
+    "db:clean": "node ./src/lib/clean.ts",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:reset": "node ./src/helpers/reset.ts",
-    "db:seed": "node ./src/helpers/seed.ts",
+    "db:reset": "node ./src/lib/reset.ts",
+    "db:seed": "node ./src/lib/seed.ts",
     "db:studio": "drizzle-kit studio",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",

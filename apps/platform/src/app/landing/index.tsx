@@ -39,7 +39,7 @@ export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [_mounted, setMounted] = useState(false)
 
   // const toggleTheme = useCallback(() => {
   //   setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')

@@ -5,7 +5,7 @@ import { typeboxResolver } from '@hookform/resolvers/typebox'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
-import type { TSchema } from '@archesai/schemas'
+import type { TProperties, TSchema } from '@archesai/schemas'
 
 import { Type } from '@archesai/schemas'
 
@@ -97,7 +97,7 @@ export function GenericForm<
   const schema = useMemo(
     () =>
       Type.Object(
-        fields.reduce<Record<string, TSchema>>((acc, f) => {
+        fields.reduce<TProperties>((acc, f) => {
           if (f.validationRule) acc[f.name] = f.validationRule
           return acc
         }, {})
@@ -109,8 +109,7 @@ export function GenericForm<
   const form = useForm({
     defaultValues,
     mode: 'onChange',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
+    // @ts-ignore
     resolver: typeboxResolver(schema)
   })
 

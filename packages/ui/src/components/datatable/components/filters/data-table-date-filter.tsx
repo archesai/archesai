@@ -190,8 +190,7 @@ export function DataTableDateFilter<TData>({
 }
 
 function getIsDateRange(value: DateSelection): value is DateRange {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  return value && typeof value === 'object' && !Array.isArray(value)
+  return typeof value === 'object' && !Array.isArray(value)
 }
 
 function parseAsDate(timestamp: number | string | undefined): Date | undefined {

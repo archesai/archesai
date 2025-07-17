@@ -1,6 +1,8 @@
 import { reset, seed } from 'drizzle-seed'
 
-import { createClient } from '#helpers/clients'
+import type { ArtifactEntity } from '@archesai/schemas'
+
+import { createClient } from '#lib/clients'
 import * as schema from '#schema/index'
 
 async function main() {
@@ -9,7 +11,9 @@ async function main() {
     throw new Error('DATABASE_URL is required')
   }
   const db = createClient(url)
-  await reset(db, schema)
+  if (process.env.DRIZZLE_RESET) {
+    await reset(db, schema)
+  }
 
   // Step 2: Seed main tables
   console.log('🌱 Seeding main tables...')
@@ -27,7 +31,9 @@ async function main() {
     tools: schema.ToolTable,
     users: schema.UserTable
   }
-  await seed(db, mainTables).refine((f) => ({
+  await seed(db, mainTables, {
+    count: 100
+  }).refine((f) => ({
     artifacts: {
       columns: {
         description: f.loremIpsum(),
@@ -80,12 +86,10 @@ async function main() {
   console.log('🌿 Seeding junction tables...')
   const junctionTables = {
     labelsToArtifacts: schema.LabelToArtifactTable,
-    parentToChild: schema.ParentToChildTable,
-    // parentToChild: schema.,
     pipelineStepToDependency: schema.PipelineStepToDependency
   }
   const labelToArtifactData = labels.map((label) => ({
-    artifactId: artifacts[0]!.id, // Assuming you want to link to the first artifact
+    artifactId: (artifacts[0] as ArtifactEntity).id, // Assuming you want to link to the first artifact
     labelId: label.id
   }))
   await db.insert(junctionTables.labelsToArtifacts).values(labelToArtifactData)

@@ -30,13 +30,13 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
       organization({
         schema: {
           invitation: {
-            modelName: 'invitations'
+            modelName: 'InvitationTable'
           },
           member: {
-            modelName: 'members'
+            modelName: 'MemberTable'
           },
           organization: {
-            modelName: 'organizations'
+            modelName: 'OrganizationTable'
           }
         }
       })
@@ -64,12 +64,14 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
       modelName: 'UserTable'
     },
     verification: {
-      modelName: 'VerificationTokenTable'
+      modelName: 'VerificationTable'
     }
   })
 
   return {
-    handler: auth.handler
+    createOrganization: auth.api.createOrganization,
+    handler: auth.handler,
+    setActiveOrganization: auth.api.setActiveOrganization
   }
 }
 

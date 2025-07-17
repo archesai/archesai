@@ -4,7 +4,7 @@ import type { ConfigService } from '#config/config.service'
 import type { RedisService } from '#redis/redis.service'
 
 export class RedisIoAdapter {
-  public adapterConstructor?: ReturnType<typeof createAdapter>
+  public adapterConstructor!: ReturnType<typeof createAdapter>
   private readonly configService: ConfigService
   private readonly redisService: RedisService
 

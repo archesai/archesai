@@ -24,11 +24,10 @@ import {
 } from '@archesai/ui/components/shadcn/tabs'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 
-export default function ContentForm({ artifactId }: { artifactId?: string }) {
+export default function ArtifactForm({ id }: { id?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
-  const { data: existingContentResponse, error } =
-    useGetOneArtifactSuspense(artifactId)
+  const { data: existingContentResponse, error } = useGetOneArtifactSuspense(id)
 
   if (error) {
     return <div>Content not found</div>
@@ -37,7 +36,7 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: content.name,
+      defaultValue: content.name ?? undefined,
       description: 'This is the name that will be used for this content.',
       label: 'Name',
       name: 'name',
@@ -118,17 +117,15 @@ export default function ContentForm({ artifactId }: { artifactId?: string }) {
 
   return (
     <GenericForm<CreateArtifactBody, UpdateArtifactBody>
-      description={
-        !artifactId ? 'Invite a new content' : 'Update an existing content'
-      }
+      description={!id ? 'Invite a new content' : 'Update an existing content'}
       entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
-      isUpdateForm={!!artifactId}
+      isUpdateForm={!!id}
       onSubmitCreate={async (createArtifactDto) => {
         await createArtifact(createArtifactDto)
       }}
       onSubmitUpdate={async (updateContentDto) => {
-        await updateArtifact(artifactId, updateContentDto)
+        await updateArtifact(id, updateContentDto)
       }}
       title='Configuration'
     />

@@ -2,10 +2,7 @@ import { useNavigate } from '@tanstack/react-router'
 
 import type { LabelEntity } from '@archesai/schemas'
 
-import {
-  deleteLabel,
-  getFindManyLabelsSuspenseQueryOptions
-} from '@archesai/client'
+import { deleteLabel, getFindManyLabelsQueryOptions } from '@archesai/client'
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 import { ListMinus } from '@archesai/ui/components/custom/icons'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -39,18 +36,18 @@ export default function LabelDataTable() {
           }
         }
       ]}
-      createForm={<LabelForm />}
+      createForm={LabelForm}
       defaultView='table'
       deleteItem={async (id) => {
         await deleteLabel(id)
       }}
       entityKey={LABEL_ENTITY_KEY}
-      getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}
       icon={<ListMinus />}
-      useFindMany={getFindManyLabelsSuspenseQueryOptions}
+      updateForm={LabelForm}
+      useFindMany={getFindManyLabelsQueryOptions}
     />
   )
 }

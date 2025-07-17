@@ -200,41 +200,57 @@ function SortableRoot<T>(props: SortableRootProps<T>) {
   const announcements: Announcements = React.useMemo(
     () => ({
       onDragCancel({ active }) {
-        const activeIndex = active.data.current?.sortable.index ?? 0
+        const activeIndex =
+          (active.data.current as null | { sortable: { index: number } })
+            ?.sortable.index ?? 0
         const activeValue = active.id.toString()
-        return `Sorting cancelled. Sortable item "${activeValue}" returned to position ${activeIndex + 1} of ${value.length}.`
+        return `Sorting cancelled. Sortable item "${activeValue}" returned to position ${(activeIndex + 1).toString()} of ${value.length.toString()}.`
       },
       onDragEnd({ active, over }) {
         const activeValue = active.id.toString()
         if (over) {
-          const overIndex = over.data.current?.sortable.index ?? 0
-          return `Sortable item "${activeValue}" dropped at position ${overIndex + 1} of ${value.length}.`
+          const overIndex =
+            (over.data.current as null | { sortable: { index: number } })
+              ?.sortable.index ?? 0
+          return `Sortable item "${activeValue}" dropped at position ${(overIndex + 1).toString()} of ${value.length.toString()}.`
         }
         return `Sortable item "${activeValue}" dropped. No changes were made.`
       },
       onDragMove({ active, over }) {
         if (over) {
-          const overIndex = over.data.current?.sortable.index ?? 0
-          const activeIndex = active.data.current?.sortable.index ?? 0
+          const overIndex =
+            (over.data.current as null | { sortable?: { index: number } })
+              ?.sortable?.index ?? 0
+          const activeIndex =
+            (active.data.current as null | { sortable?: { index: number } })
+              ?.sortable?.index ?? 0
           const moveDirection = overIndex > activeIndex ? 'down' : 'up'
           const activeValue = active.id.toString()
-          return `Sortable item "${activeValue}" is moving ${moveDirection} to position ${overIndex + 1} of ${value.length}.`
+          return `Sortable item "${activeValue}" is moving ${moveDirection} to position ${(overIndex + 1).toString()} of ${value.length.toString()}.`
         }
         return 'Sortable item is no longer over a droppable area. Press escape to cancel.'
       },
       onDragOver({ active, over }) {
         if (over) {
-          const overIndex = over.data.current?.sortable.index ?? 0
-          const activeIndex = active.data.current?.sortable.index ?? 0
+          const overIndex =
+            (over.data.current as null | { sortable?: { index: number } })
+              ?.sortable?.index ?? 0
+          const activeIndex =
+            (active.data.current as null | { sortable?: { index: number } })
+              ?.sortable?.index ?? 0
           const moveDirection = overIndex > activeIndex ? 'down' : 'up'
           const activeValue = active.id.toString()
-          return `Sortable item "${activeValue}" moved ${moveDirection} to position ${overIndex + 1} of ${value.length}.`
+          return `Sortable item "${activeValue}" moved ${moveDirection} to position ${(overIndex + 1).toString()} of ${value.length.toString()}.`
         }
         return 'Sortable item is no longer over a droppable area. Press escape to cancel.'
       },
       onDragStart({ active }) {
         const activeValue = active.id.toString()
-        return `Grabbed sortable item "${activeValue}". Current position is ${active.data.current?.sortable.index + 1} of ${value.length}. Use arrow keys to move, space to drop.`
+        const sortableData = active.data.current as null | {
+          sortable?: { index: number }
+        }
+        const currentIndex = sortableData?.sortable?.index ?? 0
+        return `Grabbed sortable item "${activeValue}". Current position is ${(currentIndex + 1).toString()} of ${value.length.toString()}. Use arrow keys to move, space to drop.`
       }
     }),
     [value]
@@ -283,6 +299,7 @@ function SortableRoot<T>(props: SortableRootProps<T>) {
     <SortableRootContext.Provider
       value={contextValue as SortableRootContextValue<unknown>}
     >
+      {/* @ts-ignore */}
       <DndContext
         collisionDetection={collisionDetection ?? config.collisionDetection}
         modifiers={modifiers ?? config.modifiers}
@@ -336,6 +353,7 @@ const SortableContent = React.forwardRef<HTMLDivElement, SortableContentProps>(
 
     return (
       <SortableContentContext.Provider value={true}>
+        {/* @ts-ignore */}
         <SortableContext
           items={context.items}
           strategy={strategyProp ?? context.strategy}
@@ -420,6 +438,7 @@ const SortableItem = React.forwardRef<HTMLDivElement, SortableItemProps>(
       setNodeRef,
       transform,
       transition
+      // @ts-ignore
     } = useSortable({ disabled, id: value })
 
     const composedRef = useComposedRefs(forwardedRef, (node) => {
@@ -437,6 +456,7 @@ const SortableItem = React.forwardRef<HTMLDivElement, SortableItemProps>(
     }, [transform, transition, style])
 
     const itemContext = React.useMemo<SortableItemContextValue>(
+      // @ts-ignore
       () => ({
         attributes,
         disabled,
@@ -564,6 +584,7 @@ function SortableOverlay(props: SortableOverlayProps) {
   if (!container) return null
 
   return ReactDOM.createPortal(
+    // @ts-ignore
     <DragOverlay
       className={cn(!context.flatCursor && 'cursor-grabbing')}
       dropAnimation={dropAnimation}

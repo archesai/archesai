@@ -844,7 +844,9 @@ function onFilterInputRender<TData extends BaseEntity>({
                               selectedValues.filter((v) => v !== option.value)
                             : [...selectedValues, option.value]
                           : option.value
-                        onFilterUpdate(filter.id, { value })
+                        onFilterUpdate(filter.id, {
+                          value: value as string | string[]
+                        })
                       }}
                       value={option.value}
                     >

@@ -9,6 +9,8 @@ import { VisuallyHidden } from 'radix-ui'
 
 import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 
+import type { DataTableRowAction } from '#types/simple-data-table'
+
 import { DataTablePagination } from '#components/datatable/components/data-table-pagination'
 import { GridView } from '#components/datatable/components/grid-view'
 import { TableView } from '#components/datatable/components/table-view'
@@ -16,6 +18,7 @@ import { TasksTableActionBar } from '#components/datatable/components/tasks-tabl
 import { DataTableAdvancedToolbar } from '#components/datatable/components/toolbar/data-table-advanced-toolbar'
 import { DataTableFilterMenu } from '#components/datatable/components/toolbar/data-table-filter-menu'
 import { DataTableSortList } from '#components/datatable/components/toolbar/data-table-sort-list'
+// import { DataTableToolbar } from '#components/datatable/components/toolbar/data-table-toolbar'
 import {
   Dialog,
   DialogContent,
@@ -23,6 +26,7 @@ import {
   DialogTitle
 } from '#components/shadcn/dialog'
 import { useDataTable } from '#hooks/use-data-table'
+import { useFilterState } from '#hooks/use-filter-state'
 import { useToggleView } from '#hooks/use-toggle-view'
 
 declare module '@tanstack/table-core' {
@@ -36,19 +40,21 @@ declare module '@tanstack/table-core' {
 export interface DataTableProps<TEntity extends BaseEntity> {
   actionBar?: React.ReactNode
   columns: AccessorKeyColumnDef<TEntity>[]
-  createForm?: React.ReactNode
+  createForm?: React.ComponentType
   defaultView?: 'grid' | 'table'
   deleteItem?: (id: string) => Promise<void>
   entityKey?: string
-  getEditFormFromItem?: (item: TEntity) => React.ReactNode
   grid?: (item: TEntity) => React.ReactNode
   gridHover?: (item: TEntity) => React.ReactNode
   handleSelect: (item: TEntity) => void
   icon: React.ReactNode
   minimal?: boolean
-  readonly?: boolean
+  updateForm?: React.ComponentType<{ id: string }>
   useFindMany: (query: SearchQuery<TEntity>) => UseQueryOptions<{
     data: TEntity[]
+    meta: {
+      total: number
+    }
   }>
 }
 
@@ -57,33 +63,28 @@ export function DataTable<TEntity extends BaseEntity>(
 ) {
   // Use the useDebounce hook to debounce the query
   // const debouncedQuery = useDebounce(query, 200) // 500ms delay
-
-  const [formOpen, setFormOpen] = useState(false)
-  const [finalForm, setFinalForm] = useState<React.ReactNode | undefined>(
-    props.createForm
-  )
+  const [rowAction, setRowAction] =
+    useState<DataTableRowAction<TEntity> | null>(null)
 
   const { setView, view } = useToggleView()
   useEffect(() => {
     setView(props.defaultView ?? 'table')
   }, [props.defaultView, setView])
 
-  const dataTableResult = useDataTable<TEntity>({
-    columns: props.columns,
-    data: [], // Will be filled from query
-    pageCount: -1 // Placeholder, should come from backend response
-  })
+  const filterState = useFilterState<TEntity>()
 
-  const { searchQuery } = dataTableResult
-
-  const { data: queryData } = useQuery(props.useFindMany(searchQuery))
+  const { data: queryData } = useQuery(
+    props.useFindMany(filterState.searchQuery)
+  )
   const data = queryData?.data ?? []
+  const total = queryData?.meta.total ?? 0
 
   // Update table with fresh data
   const { table } = useDataTable<TEntity>({
     columns: props.columns,
     data: data,
-    pageCount: Math.ceil(1000 / (searchQuery.page?.size ?? 10)) // Should come from backend
+    filterState,
+    pageCount: Math.ceil(total / (filterState.searchQuery.page?.size ?? 10)) // Should come from backend
   })
 
   return (
@@ -117,18 +118,17 @@ export function DataTable<TEntity extends BaseEntity>(
 
       {/* THIS IS THE FORM DIALOG */}
       <Dialog
-        onOpenChange={(o) => {
-          setFormOpen(o)
-          if (!o) {
-            setFinalForm(props.createForm)
-          }
+        onOpenChange={() => {
+          setRowAction(null)
         }}
-        open={formOpen}
+        open={
+          rowAction?.variant === 'update' || rowAction?.variant === 'custom'
+        }
       >
         <VisuallyHidden.Root>
           <DialogDescription />
           <DialogTitle>
-            {finalForm ? 'Edit' : 'Create'}{' '}
+            {rowAction?.variant === 'update' ? 'Edit' : 'Create'}{' '}
             {table.options.meta?.entityKey ?? 'Entity'}
           </DialogTitle>
         </VisuallyHidden.Root>
@@ -137,12 +137,16 @@ export function DataTable<TEntity extends BaseEntity>(
           className='p-0'
           title='Create/Edit'
         >
-          {finalForm}
+          {rowAction?.variant === 'update' && props.updateForm && (
+            <props.updateForm id={rowAction.row.original.id} />
+          )}
+
+          {rowAction?.variant === 'create' && props.createForm && (
+            <props.createForm />
+          )}
         </DialogContent>
       </Dialog>
-      {table.getFilteredSelectedRowModel().rows.length > 0 && (
-        <TasksTableActionBar table={table} />
-      )}
+      {<TasksTableActionBar table={table} />}
     </div>
   )
 }

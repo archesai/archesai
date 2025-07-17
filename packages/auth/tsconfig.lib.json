@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
     "isolatedDeclarations": false
   },
   "extends": [

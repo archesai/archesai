@@ -1,6 +1,5 @@
 import type {
   Static,
-  TBoolean,
   TLiteral,
   TObject,
   TString,
@@ -12,22 +11,29 @@ import { Type } from '@sinclair/typebox'
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RoleTypes } from '#enums/role'
 
+export const INVITATION_ENTITY_KEY = 'invitations'
+
 export const InvitationEntitySchema: TObject<{
-  accepted: TBoolean
   createdAt: TString
   email: TString
+  expiresAt: TString
   id: TString
+  inviterId: TString
   organizationId: TString
-  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
+  status: TString
   updatedAt: TString
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    accepted: Type.Boolean({
-      description: 'Whether the invite was accepted'
-    }),
     email: Type.String({
       description: 'The email of the invitated user'
+    }),
+    expiresAt: Type.String({
+      description: 'The date and time when the invitation expires'
+    }),
+    inviterId: Type.String({
+      description: 'The user id of the inviter'
     }),
     organizationId: Type.String({
       description: 'The name of the organization the token belongs to'
@@ -35,7 +41,11 @@ export const InvitationEntitySchema: TObject<{
     role: Type.Union(
       RoleTypes.map((role) => Type.Literal(role)), // Using literals instead of enums
       { description: 'The role of the invitation' }
-    )
+    ),
+    status: Type.String({
+      description:
+        'The status of the invitation, e.g., pending, accepted, declined'
+    })
   },
   {
     $id: 'InvitationEntity',
@@ -45,5 +55,3 @@ export const InvitationEntitySchema: TObject<{
 )
 
 export type InvitationEntity = Static<typeof InvitationEntitySchema>
-
-export const INVITATION_ENTITY_KEY = 'invitations'

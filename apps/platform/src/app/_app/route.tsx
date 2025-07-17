@@ -2,7 +2,9 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { createIsomorphicFn, createServerFn } from '@tanstack/react-start'
 import { getHeaders as getServerHeaders } from '@tanstack/react-start/server'
 
-import { getGetSessionSuspenseQueryOptions } from '@archesai/client'
+import type { GetSession200 } from '@archesai/client'
+
+import { getGetSessionQueryOptions } from '@archesai/client'
 import {
   SidebarInset,
   SidebarProvider
@@ -28,18 +30,21 @@ export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {
     try {
       const headers = await getHeadersIsomorphic()
-      await context.queryClient.ensureQueryData(
-        getGetSessionSuspenseQueryOptions({
+      const res = (await context.queryClient.fetchQuery(
+        getGetSessionQueryOptions({
           request: {
             headers: [['cookie', headers.cookie ?? '']]
           }
         })
-      )
+      )) as GetSession200 | null | undefined
+      if (!res) {
+        throw new Error('Session not found')
+      }
     } catch (error) {
       console.error('Error fetching session:', error)
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw redirect({
+      redirect({
         search: location.search,
+        throw: true,
         to: '/auth/login'
       })
     }

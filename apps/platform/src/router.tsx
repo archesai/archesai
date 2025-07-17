@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   MutationCache,
   notifyManager,
   QueryClient
@@ -20,10 +21,11 @@ export function createRouter() {
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
       queries: {
+        placeholderData: keepPreviousData,
         refetchOnReconnect: () => !queryClient.isMutating(),
         refetchOnWindowFocus: false,
         retry: 0,
-        staleTime: 1000 * 60 * 2 // 2 minutes
+        staleTime: 1000 * 60 * 2 // 2 minutes,
       }
     },
     mutationCache: new MutationCache({

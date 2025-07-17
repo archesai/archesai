@@ -1,9 +1,11 @@
 import type {
   Static,
   TArray,
+  TNull,
   TObject,
   TOptional,
-  TString
+  TString,
+  TUnion
 } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
@@ -11,8 +13,8 @@ import { Type } from '@sinclair/typebox'
 import { CreatePipelineDtoSchema } from '#orchestration/pipelines/dto/create-pipeline.dto'
 
 export const UpdatePipelineDtoSchema: TObject<{
-  description: TOptional<TString>
-  name: TOptional<TString>
+  description: TOptional<TUnion<[TString, TNull]>>
+  name: TOptional<TUnion<[TString, TNull]>>
   steps: TOptional<
     TArray<
       TObject<{

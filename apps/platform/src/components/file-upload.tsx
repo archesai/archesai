@@ -3,10 +3,7 @@ import type { DragEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 
-import {
-  File as FileIcon,
-  UploadCloud
-} from '@archesai/ui/components/custom/icons'
+import { UploadCloud } from '@archesai/ui/components/custom/icons'
 import { cn } from '@archesai/ui/lib/utils'
 
 interface FileError {
@@ -318,9 +315,9 @@ export default function FileUpload({
   className,
   currentFile: initialFile = null,
   maxFileSize = DEFAULT_MAX_FILE_SIZE,
-  onFileRemove = () => {},
-  onUploadError = () => {},
-  onUploadSuccess = () => {},
+  onFileRemove = () => ({}),
+  onUploadError = () => ({}),
+  onUploadSuccess = () => ({}),
   uploadDelay = 2000,
   validateFile = () => null
 }: FileUploadProps) {
@@ -354,7 +351,7 @@ export default function FileUpload({
 
   const validateFileType = useCallback(
     (file: File): FileError | null => {
-      if (!acceptedFileTypes?.length) return null
+      if (!acceptedFileTypes.length) return null
 
       const fileType = file.type.toLowerCase()
       if (
@@ -374,7 +371,7 @@ export default function FileUpload({
     (error: FileError) => {
       setError(error)
       setStatus('error')
-      onUploadError?.(error)
+      onUploadError(error)
 
       setTimeout(() => {
         setError(null)
@@ -402,7 +399,7 @@ export default function FileUpload({
             setProgress(0)
             setStatus('idle')
             setFile(null)
-            onUploadSuccess?.(uploadingFile)
+            onUploadSuccess(uploadingFile)
           } else {
             setStatus((prevStatus) => {
               if (prevStatus === 'uploading') {
@@ -442,7 +439,7 @@ export default function FileUpload({
         return
       }
 
-      const customError = validateFile?.(selectedFile)
+      const customError = validateFile(selectedFile)
       if (customError) {
         handleError(customError)
         return
@@ -480,7 +477,7 @@ export default function FileUpload({
       e.stopPropagation()
       if (status === 'uploading') return
       setStatus('idle')
-      const droppedFile = e.dataTransfer.files?.[0]
+      const droppedFile = e.dataTransfer.files[0]
       if (droppedFile) handleFileSelect(droppedFile)
     },
     [status, handleFileSelect]
@@ -489,8 +486,8 @@ export default function FileUpload({
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const selectedFile = e.target.files?.[0]
-      handleFileSelect(selectedFile || null)
-      if (e.target) e.target.value = ''
+      handleFileSelect(selectedFile ?? null)
+      e.target.value = ''
     },
     [handleFileSelect]
   )
@@ -504,13 +501,13 @@ export default function FileUpload({
     setFile(null)
     setStatus('idle')
     setProgress(0)
-    if (onFileRemove) onFileRemove()
+    onFileRemove()
   }, [onFileRemove])
 
   return (
     <div
       aria-label='File upload'
-      className={cn('relative mx-auto w-full max-w-sm', className || '')}
+      className={cn('relative mx-auto w-full max-w-sm', className ?? '')}
       role='complementary'
     >
       <div className='group relative w-full rounded-xl bg-white p-0.5 ring-1 ring-gray-200 dark:bg-black dark:ring-white/10'>
@@ -565,7 +562,7 @@ export default function FileUpload({
                         Drag and drop or
                       </h3>
                       <p className='text-xs text-gray-500 dark:text-gray-400'>
-                        {acceptedFileTypes?.length ?
+                        {acceptedFileTypes.length ?
                           acceptedFileTypes
                             .map((t) => t.split('/')[1])
                             .join(', ')
@@ -589,7 +586,7 @@ export default function FileUpload({
                     </p>
 
                     <input
-                      accept={acceptedFileTypes?.join(',')}
+                      accept={acceptedFileTypes.join(',')}
                       aria-label='File input'
                       className='sr-only'
                       onChange={handleFileInputChange}
@@ -615,7 +612,7 @@ export default function FileUpload({
                       </h3>
                       <div className='flex items-center justify-center gap-2 text-xs'>
                         <span className='text-gray-500 dark:text-gray-400'>
-                          {formatBytes(file?.size || 0)}
+                          {formatBytes(file?.size ?? 0)}
                         </span>
                         <span className='font-medium text-blue-500'>
                           {Math.round(progress)}%

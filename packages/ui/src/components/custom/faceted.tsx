@@ -7,6 +7,8 @@ import {
 } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
+import { Type, Value } from '@archesai/schemas'
+
 import { Badge } from '#components/shadcn/badge'
 import {
   Command,
@@ -27,7 +29,7 @@ import { cn } from '#lib/utils'
 interface FacetedContextValue<Multiple extends boolean = boolean> {
   multiple?: Multiple
   onItemSelect?: (value: string) => void
-  value?: FacetedValue<Multiple>
+  value?: FacetedValue<Multiple> | undefined
 }
 
 type FacetedValue<Multiple extends boolean> =
@@ -82,7 +84,10 @@ function Faceted<Multiple extends boolean = false>(
       if (!onValueChange) return
 
       if (multiple) {
-        const currentValue = Array.isArray(value) ? value : []
+        const currentValue = Value.Parse(
+          Type.Array(Type.String()),
+          Array.isArray(value) ? value : []
+        )
         const newValue =
           currentValue.includes(selectedValue) ?
             currentValue.filter((v) => v !== selectedValue)
@@ -134,7 +139,7 @@ function FacetedBadgeList(props: FacetedBadgeListProps) {
   const context = useFacetedContext('FacetedBadgeList')
   const values =
     Array.isArray(context.value) ?
-      context.value
+      (context.value as string[] | undefined)
     : ([context.value].filter(Boolean) as string[])
 
   const getLabel = useCallback(

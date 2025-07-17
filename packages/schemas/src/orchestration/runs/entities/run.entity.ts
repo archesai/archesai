@@ -1,9 +1,9 @@
 import type {
   Static,
   TLiteral,
+  TNull,
   TNumber,
   TObject,
-  TOptional,
   TString,
   TUnion
 } from '@sinclair/typebox'
@@ -11,7 +11,7 @@ import type {
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
-import { RunTypes } from '#enums/role'
+import { StatusTypes } from '#enums/role'
 
 // export const runRelationshipsSchema = object({
 //   inputs: z.array(baseEntitySchema).describe('The inputs to the run'),
@@ -23,44 +23,35 @@ import { RunTypes } from '#enums/role'
 // })
 
 export const RunEntitySchema: TObject<{
-  completedAt: TOptional<TString>
+  completedAt: TUnion<[TString, TNull]>
   createdAt: TString
-  error: TOptional<TString>
+  error: TUnion<[TString, TNull]>
   id: TString
   organizationId: TString
-  pipelineId: TOptional<TString>
+  pipelineId: TUnion<[TString, TNull]>
   progress: TNumber
-  runType: TUnion<TLiteral<'PIPELINE_RUN' | 'TOOL_RUN'>[]>
-  startedAt: TOptional<TString>
-  status: TString
+  startedAt: TUnion<[TString, TNull]>
+  status: TUnion<TLiteral<'COMPLETED' | 'FAILED' | 'PROCESSING' | 'QUEUED'>[]>
   toolId: TString
   updatedAt: TString
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    completedAt: Type.Optional(
-      Type.String({
-        description: 'The timestamp when the run completed'
-      })
-    ),
-    error: Type.Optional(Type.String({ description: 'The error message' })),
+    completedAt: Type.Union([Type.String(), Type.Null()], {
+      description: 'The timestamp when the run completed'
+    }),
+    error: Type.Union([Type.String(), Type.Null()], {
+      description: 'The error message'
+    }),
     organizationId: Type.String({ description: 'The organization name' }),
-    pipelineId: Type.Optional(
-      Type.String({
-        description: 'The pipeline ID associated with the run'
-      })
-    ),
+    pipelineId: Type.Union([Type.String(), Type.Null()], {
+      description: 'The pipeline ID associated with the run'
+    }),
     progress: Type.Number({ description: 'The percent progress of the run' }),
-    runType: Type.Union(
-      RunTypes.map((type) => Type.Literal(type)),
-      { description: 'The type of run' }
-    ),
-    startedAt: Type.Optional(
-      Type.String({
-        description: 'The timestamp when the run started'
-      })
-    ),
-    status: Type.String({ description: 'The status of the run' }),
+    startedAt: Type.Union([Type.String(), Type.Null()], {
+      description: 'The timestamp when the run started'
+    }),
+    status: Type.Union(StatusTypes.map((status) => Type.Literal(status))),
     toolId: Type.String({
       description: 'The tool ID associated with the run'
     })

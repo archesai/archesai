@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import {
   CheckoutSessionDtoSchema,
@@ -13,10 +13,9 @@ export interface StripeControllerOptions {
   stripeService: StripeService
 }
 
-export const stripeController: FastifyPluginAsyncTypebox<
+export const stripeController: FastifyPluginCallbackTypebox<
   StripeControllerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { stripeService }) => {
+> = (app, { stripeService }, done) => {
   app.post(
     `/billing/portal`,
     {
@@ -66,4 +65,6 @@ export const stripeController: FastifyPluginAsyncTypebox<
       )
     }
   )
+
+  done()
 }

@@ -2,10 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { ToolEntity } from '@archesai/schemas'
 
-import {
-  deleteTool,
-  getFindManyToolsSuspenseQueryOptions
-} from '@archesai/client'
+import { deleteTool, getFindManyToolsQueryOptions } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { PackageCheck, Text } from '@archesai/ui/components/custom/icons'
@@ -107,7 +104,7 @@ export default function ToolDataTable() {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
       icon={<PackageCheck />}
-      useFindMany={getFindManyToolsSuspenseQueryOptions}
+      useFindMany={getFindManyToolsQueryOptions}
     />
   )
 }

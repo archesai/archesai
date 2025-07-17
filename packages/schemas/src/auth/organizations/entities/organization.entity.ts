@@ -1,10 +1,9 @@
 import type {
   Static,
   TLiteral,
+  TNull,
   TNumber,
   TObject,
-  TOptional,
-  TRecord,
   TString,
   TUnion
 } from '@sinclair/typebox'
@@ -19,14 +18,14 @@ export const OrganizationEntitySchema: TObject<{
   createdAt: TString
   credits: TNumber
   id: TString
-  logo: TOptional<TString>
-  metadata: TOptional<TRecord<TString, TString>>
+  logo: TUnion<[TString, TNull]>
+  metadata: TUnion<[TString, TNull]>
   name: TString
   plan: TUnion<
     TLiteral<'BASIC' | 'FREE' | 'PREMIUM' | 'STANDARD' | 'UNLIMITED'>[]
   >
   slug: TString
-  stripeCustomerId: TOptional<TString>
+  stripeCustomerId: TUnion<[TString, TNull]>
   updatedAt: TString
 }> = Type.Object(
   {
@@ -38,16 +37,12 @@ export const OrganizationEntitySchema: TObject<{
       description:
         'The number of credits you have remaining for this organization'
     }),
-    logo: Type.Optional(
-      Type.String({
-        description: 'The URL of the organization logo'
-      })
-    ),
-    metadata: Type.Optional(
-      Type.Record(Type.String(), Type.String(), {
-        description: 'The metadata for the organization, used for custom data'
-      })
-    ),
+    logo: Type.Union([Type.String(), Type.Null()], {
+      description: 'The URL of the organization logo'
+    }),
+    metadata: Type.Union([Type.String(), Type.Null()], {
+      description: 'The metadata for the organization, used for custom data'
+    }),
     name: Type.String({
       description: 'The name of the organization'
     }),
@@ -58,11 +53,9 @@ export const OrganizationEntitySchema: TObject<{
     slug: Type.String({
       description: 'The unique slug for the organization, used in URLs'
     }),
-    stripeCustomerId: Type.Optional(
-      Type.String({
-        description: 'The Stripe customer ID'
-      })
-    )
+    stripeCustomerId: Type.Union([Type.String(), Type.Null()], {
+      description: 'The Stripe customer ID'
+    })
   },
   {
     $id: 'OrganizationEntity',

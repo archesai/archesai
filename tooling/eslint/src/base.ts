@@ -70,11 +70,18 @@ const base: ConfigArray = tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
-      '@typescript-eslint/no-import-type-side-effects': 'error'
+      '@typescript-eslint/no-import-type-side-effects': 'error',
       // '@typescript-eslint/consistent-type-assertions': [
       //   'error',
       //   { assertionStyle: 'never' }
       // ],
+      // allow while true
+      '@typescript-eslint/no-unnecessary-condition': [
+        'error',
+        {
+          allowConstantLoopConditions: true
+        }
+      ]
     }
   },
   // Import plugin config

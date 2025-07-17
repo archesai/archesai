@@ -12,7 +12,7 @@ import { InvitationEntitySchema } from '#auth/invitations/entities/invitation.en
 
 export const CreateInvitationDtoSchema: TObject<{
   email: TString
-  role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
+  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
 }> = Type.Object({
   email: InvitationEntitySchema.properties.email,
   role: InvitationEntitySchema.properties.role

@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
 import {
@@ -16,7 +16,8 @@ import {
   UpdateEmailChangeDtoSchema,
   UpdateEmailVerificationDtoSchema,
   UpdatePasswordResetDtoSchema,
-  UserEntitySchema
+  UserEntitySchema,
+  Value
 } from '@archesai/schemas'
 
 import type { AuthService } from '#auth/auth.service'
@@ -27,19 +28,33 @@ export interface AuthPluginOptions {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    authHandler: (req: FastifyRequest, reply: FastifyReply) => Promise<void>
+    authHandler: (
+      req: FastifyRequest,
+      reply: FastifyReply,
+      beforeSend?: (
+        response: Response,
+        responseText: null | string
+      ) => Promise<void>
+    ) => Promise<void>
   }
 }
 
-export const authPlugin: FastifyPluginAsyncTypebox<AuthPluginOptions> = async (
+export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
   app,
-  { authService }
-  // eslint-disable-next-line @typescript-eslint/require-await
+  { authService },
+  done
 ) => {
   // Optional: Add helper methods to fastify instance
   app.decorate(
     'authHandler',
-    async (req: FastifyRequest, reply: FastifyReply) => {
+    async (
+      req: FastifyRequest,
+      reply: FastifyReply,
+      beforeSend?: (
+        response: Response,
+        responseText: null | string
+      ) => Promise<void>
+    ) => {
       try {
         // Reusable auth handler logic that can be called from other routes
         const url = new URL(
@@ -60,11 +75,21 @@ export const authPlugin: FastifyPluginAsyncTypebox<AuthPluginOptions> = async (
 
         const response = await authService.handler(formattedRequest)
 
+        // Get response text once
+        const responseText = response.body ? await response.text() : null
+
         // Forward response to client
         reply.status(response.status)
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        response.headers.forEach((value, key) => reply.header(key, value))
-        reply.send(response.body ? await response.text() : null)
+        response.headers.forEach((value, key) => {
+          reply.header(key, value)
+        })
+
+        // Run callback if provided
+        if (beforeSend) {
+          await beforeSend(response, responseText)
+        }
+
+        reply.send(responseText)
       } catch (err) {
         app.log.error('Authentication Error:', err)
         reply.status(500).send({
@@ -158,7 +183,41 @@ export const authPlugin: FastifyPluginAsyncTypebox<AuthPluginOptions> = async (
       }
     },
     (req, res) => {
-      return app.authHandler(req, res)
+      return app.authHandler(req, res, async (response, responseText) => {
+        // Create organization after successful signup
+        if (response.status === 200 && responseText) {
+          try {
+            const userData = Value.Parse(
+              Type.Object({
+                user: UserEntitySchema
+              }),
+              JSON.parse(responseText)
+            )
+            if (userData.user.id) {
+              const organization = await authService.createOrganization({
+                body: {
+                  name: `${userData.user.email}'s Organization`,
+                  slug: userData.user.email,
+                  userId: userData.user.id
+                }
+              })
+              if (!organization) {
+                throw new Error('Failed to create organization')
+              }
+              await authService.setActiveOrganization({
+                body: {
+                  organizationId: organization.id
+                }
+              })
+            }
+          } catch (orgError) {
+            console.error(
+              'Failed to create organization after signup:',
+              orgError
+            )
+          }
+        }
+      })
     }
   )
 
@@ -288,4 +347,6 @@ export const authPlugin: FastifyPluginAsyncTypebox<AuthPluginOptions> = async (
       return app.authHandler(req, res)
     }
   )
+
+  done()
 }

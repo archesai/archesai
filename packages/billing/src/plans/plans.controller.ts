@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import type { Logger } from '@archesai/core'
 
@@ -13,10 +13,9 @@ export interface PlansControllerOptions {
   stripeService: StripeService
 }
 
-export const plansController: FastifyPluginAsyncTypebox<
+export const plansController: FastifyPluginCallbackTypebox<
   PlansControllerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { logger, stripeService }) => {
+> = (app, { logger, stripeService }, done) => {
   const plansService = new PlansService(stripeService, logger)
   app.get(
     `/billing/${PLAN_ENTITY_KEY}`,
@@ -36,4 +35,6 @@ export const plansController: FastifyPluginAsyncTypebox<
       return plans.data
     }
   )
+
+  done()
 }

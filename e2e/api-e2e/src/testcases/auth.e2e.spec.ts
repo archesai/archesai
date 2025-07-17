@@ -6,7 +6,7 @@ describe('Auth Module E2E Tests', () => {
   let app: HttpInstance
   let accessToken: string
   let emailChangeToken = ''
-  let emailVerificationToken: null | string = null
+  let emailVerification: null | string = null
   let passwordResetToken: null | string = null
 
   const userCredentials = {
@@ -34,7 +34,7 @@ describe('Auth Module E2E Tests', () => {
           if (html.toString().includes('email-change')) {
             emailChangeToken = token
           } else if (html.toString().includes('email-verification')) {
-            emailVerificationToken = token
+            emailVerification = token
           } else if (html.toString().includes('password-reset')) {
             passwordResetToken = token
           }
@@ -104,7 +104,7 @@ describe('Auth Module E2E Tests', () => {
     })
 
     it('Should throw an error if email change token is invalid', async () => {
-      const invalidTokenDto: VerificationTokenDto = {
+      const invalidTokenDto: VerificationDto = {
         token: 'invalid-token'
       }
       const res = await request(app.getHttpServer())
@@ -115,7 +115,7 @@ describe('Auth Module E2E Tests', () => {
 
     it('Should confirm the email change', async () => {
       expect(emailChangeToken).not.toBeNull()
-      const validTokenDto: VerificationTokenDto = {
+      const validTokenDto: VerificationDto = {
         token: emailChangeToken
       }
       const res = await request(app.getHttpServer())
@@ -145,13 +145,13 @@ describe('Auth Module E2E Tests', () => {
 
       expect(res.status).toBe(201)
       expect(res).toSatisfyApiSpec()
-      expect(emailVerificationToken).not.toBeNull()
+      expect(emailVerification).not.toBeNull()
     })
 
     it('Should confirm email verification', async () => {
-      expect(emailVerificationToken).not.toBeNull()
-      const validTokenDto: VerificationTokenDto = {
-        token: emailVerificationToken ?? ''
+      expect(emailVerification).not.toBeNull()
+      const validTokenDto: VerificationDto = {
+        token: emailVerification ?? ''
       }
       const res = await request(app.getHttpServer())
         .post('/auth/email-verification/confirm')
@@ -166,7 +166,7 @@ describe('Auth Module E2E Tests', () => {
     })
 
     it('Should throw 400 if email verification token is invalid', async () => {
-      const invalidTokenDto: VerificationTokenDto = {
+      const invalidTokenDto: VerificationDto = {
         token: 'invalid-token'
       }
       const res = await request(app.getHttpServer())
@@ -205,7 +205,7 @@ describe('Auth Module E2E Tests', () => {
     })
 
     it('Should throw an error if password reset token is invalid', async () => {
-      const invalidTokenDto: VerificationTokenDto & { newPassword: string } = {
+      const invalidTokenDto: VerificationDto & { newPassword: string } = {
         newPassword: 'NewPassword123!',
         token: 'invalid-token'
       }
@@ -218,7 +218,7 @@ describe('Auth Module E2E Tests', () => {
 
     it('Should confirm the password reset', async () => {
       expect(passwordResetToken).not.toBeNull()
-      const validResetDto: VerificationTokenDto & { newPassword: string } = {
+      const validResetDto: VerificationDto & { newPassword: string } = {
         newPassword: 'NewPassword123!',
         token: passwordResetToken ?? ''
       }
@@ -243,7 +243,7 @@ describe('Auth Module E2E Tests', () => {
 
     it('Should prevent token reuse after successful password reset', async () => {
       expect(passwordResetToken).not.toBeNull()
-      const validResetDto: VerificationTokenDto & { newPassword: string } = {
+      const validResetDto: VerificationDto & { newPassword: string } = {
         newPassword: 'AnotherNewPassword123!',
         token: passwordResetToken ?? ''
       }
@@ -267,12 +267,12 @@ describe('Auth Module E2E Tests', () => {
       expect(passwordResetToken).not.toBeNull()
 
       // Manually expire the token
-      const verificationTokenRepository = app.get(VerificationTokenRepository)
-      await verificationTokenRepository.update('id', {
+      const VerificationRepository = app.get(VerificationRepository)
+      await VerificationRepository.update('id', {
         expires: new Date(Date.now() - 1000) // Set to past
       })
 
-      const expiredResetDto: VerificationTokenDto & { newPassword: string } = {
+      const expiredResetDto: VerificationDto & { newPassword: string } = {
         newPassword: 'ExpiredPassword123!',
         token: passwordResetToken ?? ''
       }
@@ -283,7 +283,7 @@ describe('Auth Module E2E Tests', () => {
       expect(res.status).toBe(400)
 
       // Clean up: remove the expired token
-      await verificationTokenRepository.delete('id')
+      await VerificationRepository.delete('id')
 
       passwordResetToken = null
     })

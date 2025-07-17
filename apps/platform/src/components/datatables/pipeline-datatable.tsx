@@ -4,7 +4,7 @@ import type { PipelineEntity } from '@archesai/schemas'
 
 import {
   deletePipeline,
-  getFindManyPipelinesSuspenseQueryOptions
+  getFindManyPipelinesQueryOptions
 } from '@archesai/client'
 import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { Workflow } from '@archesai/ui/components/custom/icons'
@@ -39,7 +39,7 @@ export default function PipelineDataTable() {
           cell: ({ row }) => {
             return (
               <span>
-                {(row.original.description || 'No Description').toString()}
+                {(row.original.description ?? 'No Description').toString()}
               </span>
             )
           },
@@ -80,7 +80,7 @@ export default function PipelineDataTable() {
         })
       }}
       icon={<Workflow />}
-      useFindMany={getFindManyPipelinesSuspenseQueryOptions}
+      useFindMany={getFindManyPipelinesQueryOptions}
     />
   )
 }

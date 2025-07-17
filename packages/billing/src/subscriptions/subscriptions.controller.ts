@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 
 import { Type, UpdateSubscriptionDtoSchema } from '@archesai/schemas'
 
@@ -10,10 +10,9 @@ export interface SubscriptionsControllerOptions {
   stripeService: StripeService
 }
 
-export const subscriptionsController: FastifyPluginAsyncTypebox<
+export const subscriptionsController: FastifyPluginCallbackTypebox<
   SubscriptionsControllerOptions
-  // eslint-disable-next-line @typescript-eslint/require-await
-> = async (app, { stripeService }) => {
+> = (app, { stripeService }, done) => {
   const subscriptionsService = new SubscriptionsService(stripeService)
   app.delete(
     `/billing/subscriptions/:id`,
@@ -51,4 +50,6 @@ export const subscriptionsController: FastifyPluginAsyncTypebox<
       return subscriptionsService.update(req.params.id, req.body.planId)
     }
   )
+
+  done()
 }

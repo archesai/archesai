@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core'
 
+import type { LabelEntity } from '@archesai/schemas'
+
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
@@ -22,9 +24,6 @@ export const LabelTable = pgTable(
   (LabelTable) => [uniqueIndex().on(LabelTable.name, LabelTable.organizationId)]
 )
 
-export type LabelInsertModel = typeof LabelTable.$inferInsert
-export type LabelSelectModel = typeof LabelTable.$inferSelect
-
 export const labelRelations = relations(LabelTable, ({ many, one }) => ({
   artifacts: many(LabelToArtifactTable),
   organization: one(OrganizationTable, {
@@ -32,3 +31,8 @@ export const labelRelations = relations(LabelTable, ({ many, one }) => ({
     references: [OrganizationTable.id]
   })
 }))
+
+export type LabelInsertModel = typeof LabelTable.$inferInsert
+export type LabelSelectModel = typeof LabelTable.$inferSelect
+
+export type zLabelCheck = LabelEntity extends LabelSelectModel ? true : false
