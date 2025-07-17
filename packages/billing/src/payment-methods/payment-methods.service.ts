@@ -1,5 +1,5 @@
-import type { SearchQuery, WebsocketsService } from '@archesai/core'
-import type { PaymentMethodEntity } from '@archesai/schemas'
+import type { WebsocketsService } from '@archesai/core'
+import type { PaymentMethodEntity, SearchQuery } from '@archesai/schemas'
 
 import { BadRequestException, NotFoundException } from '@archesai/core'
 
@@ -28,9 +28,10 @@ export class PaymentMethodsService {
     const paymentToDelete = await this.findOne(id)
     const paymentMethods = await this.findMany({
       filter: {
-        customer: {
-          equals: paymentToDelete.customer
-        }
+        field: 'id',
+        operator: 'eq',
+        type: 'condition',
+        value: paymentToDelete.customer
       }
     })
     if (paymentMethods.data.length <= 1) {

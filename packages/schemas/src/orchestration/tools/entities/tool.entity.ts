@@ -1,45 +1,33 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TOptional,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
+import type { Static, TObject, TString } from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
-import { ContentBaseTypes } from '#enums/role'
 
 export const ToolEntitySchema: TObject<{
   createdAt: TString
   description: TString
   id: TString
-  inputType: TUnion<TLiteral<'AUDIO' | 'IMAGE' | 'TEXT' | 'VIDEO'>[]>
-  name: TOptional<TString>
+  inputMimeType: TString
+  name: TString
   organizationId: TString
-  outputType: TUnion<TLiteral<'AUDIO' | 'IMAGE' | 'TEXT' | 'VIDEO'>[]>
+  outputMimeType: TString
   toolBase: TString
   updatedAt: TString
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
     description: Type.String({ description: 'The tool description' }),
-    inputType: Type.Union(
-      ContentBaseTypes.map((type) => Type.Literal(type)), // Using literals instead of enums
-      { description: 'The input type of the tool' }
-    ),
-    name: Type.Optional(
-      Type.String({
-        description: 'The name of the tool'
-      })
-    ),
+    inputMimeType: Type.String({
+      description: 'The MIME type of the input for the tool, e.g. text/plain'
+    }),
+    name: Type.String({
+      description: 'The name of the tool'
+    }),
     organizationId: Type.String({ description: 'The organization name' }),
-    outputType: Type.Union(
-      ContentBaseTypes.map((type) => Type.Literal(type)), // Using literals instead of enums
-      { description: 'The output type of the tool' }
-    ),
+    outputMimeType: Type.String({
+      description: 'The MIME type of the output for the tool, e.g. text/plain'
+    }),
     toolBase: Type.String({ description: 'The base of the tool' })
   },
   {

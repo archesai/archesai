@@ -14,7 +14,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
   })
 
   return (
-    <div className='fixed inset-0 z-0 flex flex-col items-center justify-center gap-6 bg-background'>
+    <div className='z-0 mb-16 flex h-full flex-col items-center justify-center gap-6 bg-primary/0 dark:bg-primary/0'>
       <h1 className='text-2xl font-bold'>Something went wrong</h1>
       <p className='text-destructive'>
         {error.message || 'An unexpected error occurred.'}

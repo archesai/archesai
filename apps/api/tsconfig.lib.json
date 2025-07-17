@@ -23,6 +23,9 @@
       "path": "../../packages/storage/tsconfig.lib.json"
     },
     {
+      "path": "../../packages/schemas/tsconfig.lib.json"
+    },
+    {
       "path": "../../packages/orchestration/tsconfig.lib.json"
     }
   ]

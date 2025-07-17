@@ -3,12 +3,18 @@ import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { ArtifactEntity } from '@archesai/schemas'
 
-import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
+import { getFindManyArtifactsQueryOptions } from '@archesai/client'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 import { ArtifactViewer } from '@archesai/ui/components/custom/artifact-viewer'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
-import { File, ScanSearch } from '@archesai/ui/components/custom/icons'
+import {
+  Calendar,
+  File,
+  LetterText,
+  ScanSearch
+} from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
+import { TasksTableActionBar } from '@archesai/ui/components/datatable/components/tasks-table-action-bar'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import {
   HoverCard,
@@ -34,9 +40,9 @@ export default function ArtifactDataTable({
           cell: ({ row }) => {
             return (
               <div className='flex gap-2'>
-                <ContentTypeToIcon contentType={row.original.mimeType || ''} />
+                <ContentTypeToIcon contentType={row.original.mimeType ?? ''} />
                 <Link
-                  className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
+                  className='text-primary hover:underline'
                   params={{
                     artifactId: row.original.id
                   }}
@@ -46,48 +52,66 @@ export default function ArtifactDataTable({
                 </Link>
               </div>
             )
+          },
+          enableColumnFilter: true,
+          id: 'name',
+          meta: {
+            filterVariant: 'text',
+            icon: LetterText,
+            label: 'Name'
           }
         },
         {
-          accessorKey: 'value',
+          accessorKey: 'mimeType',
           cell: ({ row }) => {
             return (
-              <div className='truncate text-base text-wrap md:text-sm'>
-                {row.original.text ?? (
-                  <HoverCard openDelay={200}>
-                    <Link
-                      params={{
-                        artifactId: row.original.id
-                      }}
-                      to={`/artifacts/$artifactId`}
-                    >
-                      <HoverCardTrigger asChild>
-                        <ScanSearch />
-                      </HoverCardTrigger>
-                    </Link>
+              <div className='flex items-center gap-2'>
+                <HoverCard openDelay={200}>
+                  <Link
+                    params={{
+                      artifactId: row.original.id
+                    }}
+                    to={`/artifacts/$artifactId`}
+                  >
+                    <HoverCardTrigger asChild>
+                      <ScanSearch />
+                    </HoverCardTrigger>
+                  </Link>
 
-                    <HoverCardContent
-                      className='h-[500px] w-[500px]'
-                      side='right'
-                    >
-                      <Suspense fallback={<Skeleton />}>
-                        <ArtifactViewer artifactId={row.original.id} />
-                      </Suspense>
-                    </HoverCardContent>
-                  </HoverCard>
-                )}
+                  <HoverCardContent
+                    className='h-min-[200] w-min-[200]'
+                    side='right'
+                  >
+                    <Suspense fallback={<Skeleton />}>
+                      <ArtifactViewer artifactId={row.original.id} />
+                    </Suspense>
+                  </HoverCardContent>
+                </HoverCard>
+                {row.original.mimeType}
               </div>
             )
           },
+          enableColumnFilter: true,
           enableHiding: false,
-          enableSorting: false
+          id: 'mimeType',
+          meta: {
+            filterVariant: 'multiSelect',
+            icon: LetterText,
+            label: 'Artifact Type',
+            options: [
+              { label: 'Text', value: 'text' },
+              { label: 'Image', value: 'image' },
+              { label: 'Audio', value: 'audio' },
+              { label: 'Video', value: 'video' }
+            ]
+          }
         },
         {
           accessorKey: 'parent',
           cell: ({ row }) => {
             return row.original.parentId ?
                 <Link
-                  className='max-w-lg truncate text-base text-wrap md:text-sm'
+                  className='text-primary hover:underline'
                   params={{
                     artifactId: row.original.parentId
                   }}
@@ -97,57 +121,60 @@ export default function ArtifactDataTable({
                 </Link>
               : <div className='text-muted-foreground'>None</div>
           },
-          enableSorting: false
+          enableColumnFilter: true,
+          enableSorting: true,
+          id: 'parent',
+          meta: {
+            filterVariant: 'text',
+            icon: LetterText,
+            label: 'Parent'
+          }
         },
         {
           accessorKey: 'producer',
           cell: ({ row }) => {
             return row.original.producerId ?
                 <Link
-                  className='max-w-lg truncate text-base text-wrap md:text-sm'
+                  className='text-primary hover:underline'
+                  params={{
+                    artifactId: row.original.id
+                  }}
                   search={{
                     selectedRunId: row.original.producerId
                   }}
-                  to={`/playground`}
+                  to={`/artifacts/$artifactId`}
                 >
                   {row.original.producerId}
                 </Link>
               : <div className='text-muted-foreground'>None</div>
           },
-          enableSorting: false
+          enableColumnFilter: true,
+          enableSorting: true,
+          id: 'producer',
+          meta: {
+            filterVariant: 'text',
+            icon: LetterText,
+            label: 'Producer'
+          }
         },
-        // {
-        //   accessorKey: 'labels',
-        //   cell: ({ row }) => {
-        //     return (
-        //       <div className='flex gap-1'>
-        //         {row.original.labels.length ? (
-        //           row.original.labels.map((label, index) => (
-        //             <Badge
-        //               key={index}
-        //               variant={'secondary'}
-        //             >
-        //               {label.name}
-        //             </Badge>
-        //           ))
-        //         ) : (
-        //           <div className='text-muted-foreground'>None</div>
-        //         )}
-        //       </div>
-        //     )
-        //   },
-        //   enableSorting: false
-        // },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
+          },
+          enableColumnFilter: true,
+          enableSorting: true,
+          id: 'createdAt',
+          meta: {
+            filterVariant: 'date',
+            icon: Calendar,
+            label: 'Created'
           }
         }
       ]}
       createForm={<ContentForm />}
       defaultView='table'
-      entityType={ARTIFACT_ENTITY_KEY}
+      entityKey={ARTIFACT_ENTITY_KEY}
       getEditFormFromItem={(content) => <ContentForm artifactId={content.id} />}
       grid={(_item) => {
         return (
@@ -169,7 +196,7 @@ export default function ArtifactDataTable({
       }}
       icon={<File size={24} />}
       readonly={readonly}
-      useFindMany={getFindManyArtifactsSuspenseQueryOptions()}
+      useFindMany={getFindManyArtifactsQueryOptions}
     />
   )
 }

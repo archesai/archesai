@@ -52,7 +52,7 @@ export default function MemberDataTable() {
       deleteItem={async (id) => {
         await deleteMember(id)
       }}
-      entityType={MEMBER_ENTITY_KEY}
+      entityKey={MEMBER_ENTITY_KEY}
       getEditFormFromItem={(member) => {
         return <MemberForm memberId={member.id} />
       }}
@@ -60,7 +60,7 @@ export default function MemberDataTable() {
         console.log('handleSelect')
       }}
       icon={<User />}
-      useFindMany={getFindManyMembersSuspenseQueryOptions()}
+      useFindMany={getFindManyMembersSuspenseQueryOptions}
     />
   )
 }

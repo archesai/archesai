@@ -30,9 +30,10 @@ export function OrganizationButton() {
   const { data: sessionData } = useGetSessionSuspense()
   const { data: memberships } = useFindManyMembersSuspense({
     filter: {
-      organizationId: {
-        equals: 'Arches Platform'
-      }
+      field: 'organizationId',
+      operator: 'eq',
+      type: 'condition',
+      value: sessionData.session.activeOrganizationId
     }
   })
 

@@ -12,11 +12,11 @@ export function ModeToggle() {
 
   return (
     <Button
-      className='group/toggle extend-touch-target'
+      className='group/toggle extend-touch-target text-muted-foreground'
       onClick={toggleTheme}
       size='sm'
       title='Toggle theme'
-      variant='ghost'
+      variant='outline'
     >
       <svg
         className='size-4.5'

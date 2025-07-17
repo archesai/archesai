@@ -44,13 +44,13 @@ export default function LabelDataTable() {
       deleteItem={async (id) => {
         await deleteLabel(id)
       }}
-      entityType={LABEL_ENTITY_KEY}
+      entityKey={LABEL_ENTITY_KEY}
       getEditFormFromItem={(label) => <LabelForm labelId={label.id} />}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}
       icon={<ListMinus />}
-      useFindMany={getFindManyLabelsSuspenseQueryOptions()}
+      useFindMany={getFindManyLabelsSuspenseQueryOptions}
     />
   )
 }

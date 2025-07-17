@@ -1,4 +1,10 @@
-import type { Static, TArray, TObject, TString } from '@sinclair/typebox'
+import type {
+  Static,
+  TArray,
+  TObject,
+  TOptional,
+  TString
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
@@ -12,7 +18,6 @@ export const PipelineStepEntitySchema: TObject<{
     }>
   >
   id: TString
-  name: TString
   pipelineId: TString
   prerequisites: TArray<
     TObject<{
@@ -29,9 +34,6 @@ export const PipelineStepEntitySchema: TObject<{
         pipelineStepId: Type.String()
       })
     ),
-    name: Type.String({
-      description: 'The name of the pipeline step'
-    }),
     pipelineId: Type.String(),
     prerequisites: Type.Array(
       Type.Object({
@@ -49,9 +51,9 @@ export const PipelineStepEntitySchema: TObject<{
 
 export const PipelineEntitySchema: TObject<{
   createdAt: TString
-  description: TString
+  description: TOptional<TString>
   id: TString
-  name: TString
+  name: TOptional<TString>
   organizationId: TString
   steps: TArray<
     TObject<{
@@ -62,7 +64,6 @@ export const PipelineEntitySchema: TObject<{
         }>
       >
       id: TString
-      name: TString
       pipelineId: TString
       prerequisites: TArray<
         TObject<{
@@ -77,10 +78,10 @@ export const PipelineEntitySchema: TObject<{
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    description: Type.String({ description: 'The pipeline description' }),
-    name: Type.String({
-      description: 'The name of the pipeline'
-    }),
+    description: Type.Optional(
+      Type.String({ description: 'The pipeline description' })
+    ),
+    name: Type.Optional(Type.String({ description: 'The pipeline name' })),
     organizationId: Type.String({ description: 'The organization id' }),
     steps: Type.Array(PipelineStepEntitySchema, {
       description: 'The steps in the pipeline'

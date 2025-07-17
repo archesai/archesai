@@ -9,15 +9,19 @@ import type { ConfigService, Logger } from '@archesai/core'
 import {
   ErrorDocumentSchema,
   ErrorObjectSchema,
-  FieldFilterSchema
-} from '@archesai/core'
+  FilterConditionSchema,
+  FilterNodeSchema,
+  PageSchema
+} from '@archesai/schemas'
 
 export const docsPlugin: FastifyPluginAsync<{
   configService: ConfigService
   logger: Logger
 }> = async (app, { configService, logger }) => {
   const DEFAULT_MODELS = [
-    FieldFilterSchema,
+    FilterConditionSchema,
+    FilterNodeSchema,
+    PageSchema,
     ErrorObjectSchema,
     ErrorDocumentSchema
   ]

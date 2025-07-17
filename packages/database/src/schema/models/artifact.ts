@@ -19,7 +19,7 @@ export const ArtifactTable = pgTable(ARTIFACT_ENTITY_KEY, {
   // embedding: vector({
   //   dimensions: 1536
   // }),
-  mimeType: text(),
+  mimeType: text().default('application/octet-stream').notNull(),
   name: text(),
   organizationId: text()
     .notNull()

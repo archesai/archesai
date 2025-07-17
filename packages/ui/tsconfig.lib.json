@@ -12,9 +12,6 @@
       "path": "../../packages/client/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/core/tsconfig.lib.json"
-    },
-    {
       "path": "../../packages/schemas/tsconfig.lib.json"
     }
   ]

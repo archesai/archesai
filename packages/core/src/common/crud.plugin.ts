@@ -2,17 +2,18 @@ import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
 import type { BaseEntity, TObject, TSchema } from '@archesai/schemas'
 
-import { LegacyRef, Type } from '@archesai/schemas'
+// import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
+import {
+  createSearchQuerySchema,
+  DocumentColectionSchemaFactory,
+  DocumentSchemaFactory,
+  LegacyRef,
+  Type
+} from '@archesai/schemas'
 
 import type { BaseService } from '#common/base-service'
 
 import { NotFoundResponseSchema } from '#exceptions/schemas/not-found-response.schema'
-import { createSearchQuerySchema } from '#http/dto/search-query.dto'
-// import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
-import {
-  DocumentColectionSchemaFactory,
-  DocumentSchemaFactory
-} from '#http/schemas/document.schema'
 import { capitalize } from '#utils/capitalize'
 import { singularize } from '#utils/pluralize'
 import { toCamelCase, toTitleCase, vf } from '#utils/strings'
@@ -109,7 +110,8 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
       }
     },
     async (request) => {
-      return service.findMany(request.query)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      return service.findMany(request.query as unknown as any)
     }
   )
 
@@ -195,6 +197,8 @@ export const crudPlugin: FastifyPluginAsyncTypebox<
       }
     }
   )
+
+  app.addSchema(searchQuerySchema)
 }
 
 // // POST /entity/bulk - Create multiple entities (optional)

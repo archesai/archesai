@@ -7,27 +7,27 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import {
   useCreateOrganization,
   useGetOneOrganizationSuspense,
+  useGetSessionSuspense,
   useUpdateOrganization
 } from '@archesai/client'
 import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
-export default function OrganizationForm({
-  organizationId
-}: {
-  organizationId?: string
-}) {
+export default function OrganizationForm() {
+  const {
+    data: { session }
+  } = useGetSessionSuspense()
   const { mutateAsync: createOrganization } = useCreateOrganization({})
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
-  const { error } = useGetOneOrganizationSuspense(organizationId)
+  const { error } = useGetOneOrganizationSuspense(session.activeOrganizationId)
   if (error) {
     return <div>Organization not found</div>
   }
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: organizationId,
+      defaultValue: session.activeOrganizationId,
       description: 'The name of the organization. This cannot be changed.',
       label: 'Name',
       name: 'name',
@@ -55,7 +55,7 @@ export default function OrganizationForm({
       onSubmitUpdate={async (updateOrganizationDto) => {
         await updateOrganization({
           data: updateOrganizationDto,
-          id: organizationId!
+          id: session.activeOrganizationId
         })
       }}
       showCard={true}

@@ -84,7 +84,7 @@ export default function RootDocument({
       <head>
         <HeadContent />
       </head>
-      <body className={`overscroll-none bg-background font-sans antialiased`}>
+      <body className={`font-sans antialiased`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
@@ -97,8 +97,12 @@ export default function RootDocument({
             <Toaster />
           </LinkProvider>
         </ThemeProvider>
-        <TanStackRouterDevtools position='bottom-right' />
-        <ReactQueryDevtools buttonPosition='bottom-left' />
+        {process.env.NODE_ENV === 'prod' && (
+          <>
+            <TanStackRouterDevtools position='bottom-right' />
+            <ReactQueryDevtools buttonPosition='bottom-left' />
+          </>
+        )}
         <Scripts />
       </body>
     </html>

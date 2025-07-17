@@ -28,6 +28,9 @@
       "path": "../../packages/storage"
     },
     {
+      "path": "../../packages/schemas"
+    },
+    {
       "path": "../../packages/orchestration"
     },
     {

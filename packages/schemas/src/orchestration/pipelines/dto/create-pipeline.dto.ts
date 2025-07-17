@@ -1,12 +1,18 @@
-import type { Static, TArray, TObject, TString } from '@sinclair/typebox'
+import type {
+  Static,
+  TArray,
+  TObject,
+  TOptional,
+  TString
+} from '@sinclair/typebox'
 
 import { Type } from '@sinclair/typebox'
 
 import { PipelineEntitySchema } from '#orchestration/pipelines/entities/pipeline.entity'
 
 export const CreatePipelineDtoSchema: TObject<{
-  description: TString
-  name: TString
+  description: TOptional<TString>
+  name: TOptional<TString>
   steps: TArray<
     TObject<{
       createdAt: TString
@@ -16,7 +22,6 @@ export const CreatePipelineDtoSchema: TObject<{
         }>
       >
       id: TString
-      name: TString
       pipelineId: TString
       prerequisites: TArray<
         TObject<{

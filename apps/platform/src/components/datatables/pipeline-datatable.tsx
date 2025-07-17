@@ -70,7 +70,7 @@ export default function PipelineDataTable() {
       deleteItem={async (id) => {
         await deletePipeline(id)
       }}
-      entityType={PIPELINE_ENTITY_KEY}
+      entityKey={PIPELINE_ENTITY_KEY}
       handleSelect={async (pipeline) => {
         await navigate({
           params: {
@@ -80,7 +80,7 @@ export default function PipelineDataTable() {
         })
       }}
       icon={<Workflow />}
-      useFindMany={getFindManyPipelinesSuspenseQueryOptions()}
+      useFindMany={getFindManyPipelinesSuspenseQueryOptions}
     />
   )
 }

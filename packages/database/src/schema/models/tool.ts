@@ -3,7 +3,6 @@ import { pgTable, text } from 'drizzle-orm/pg-core'
 
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 
-import { toolIO } from '#schema/enums'
 import { baseFields } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
 import { RunTable } from '#schema/models/run'
@@ -11,7 +10,7 @@ import { RunTable } from '#schema/models/run'
 export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
   ...baseFields,
   description: text().notNull(),
-  inputType: toolIO().notNull(),
+  inputMimeType: text().default('application/octet-stream').notNull(),
   name: text().notNull(),
   organizationId: text()
     .notNull()
@@ -19,7 +18,7 @@ export const ToolTable = pgTable(TOOL_ENTITY_KEY, {
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-  outputType: toolIO().notNull(),
+  outputMimeType: text().default('application/octet-stream').notNull(),
   toolBase: text().notNull()
 })
 

@@ -8,7 +8,7 @@ import {
 } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
-import { PackageCheck } from '@archesai/ui/components/custom/icons'
+import { PackageCheck, Text } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
@@ -24,16 +24,22 @@ export default function ToolDataTable() {
             return (
               <div className='flex gap-2'>
                 <Link
-                  className='shrink truncate text-wrap text-blue-600 underline md:text-sm'
-                  search={{
-                    selectedTool: JSON.stringify(row.original)
+                  className='shrink truncate text-wrap text-primary hover:underline md:text-sm'
+                  params={{
+                    artifactId: row.original.id
                   }}
-                  to={`/playground`}
+                  to={`/artifacts/$artifactId`}
                 >
                   {row.original.name}
                 </Link>
               </div>
             )
+          },
+          enableColumnFilter: true,
+          meta: {
+            filterVariant: 'text',
+            icon: Text,
+            label: 'Name'
           }
         },
         {
@@ -41,33 +47,49 @@ export default function ToolDataTable() {
           cell: ({ row }) => {
             return <span>{row.original.description || 'No Description'}</span>
           },
-          enableHiding: false
+          enableColumnFilter: true,
+          enableHiding: false,
+          meta: {
+            filterVariant: 'text',
+            icon: Text,
+            label: 'Description'
+          }
         },
         {
-          accessorKey: 'inputType',
+          accessorKey: 'inputMimeType',
           cell: ({ row }) => {
             return (
-              <div className='flex h-full items-center justify-center'>
-                <ContentTypeToIcon
-                  contentType={row.original.inputType.toLowerCase()}
-                />
+              <div className='flex items-center gap-2'>
+                <ContentTypeToIcon contentType={row.original.inputMimeType} />
+                {row.original.inputMimeType}
               </div>
             )
           },
-          enableHiding: false
+          enableColumnFilter: true,
+          enableHiding: false,
+          meta: {
+            filterVariant: 'text',
+            icon: Text,
+            label: 'Input'
+          }
         },
         {
-          accessorKey: 'outputType',
+          accessorKey: 'outputMimeType',
           cell: ({ row }) => {
             return (
-              <div className='flex h-full items-center justify-center'>
-                <ContentTypeToIcon
-                  contentType={row.original.outputType.toLowerCase()}
-                />
+              <div className='flex items-center gap-2'>
+                <ContentTypeToIcon contentType={row.original.outputMimeType} />
+                {row.original.outputMimeType}
               </div>
             )
           },
-          enableHiding: false
+          enableColumnFilter: true,
+          enableHiding: false,
+          meta: {
+            filterVariant: 'multiSelect',
+            icon: Text,
+            label: 'Output'
+          }
         },
         {
           accessorKey: 'createdAt',
@@ -80,12 +102,12 @@ export default function ToolDataTable() {
       deleteItem={async (id) => {
         await deleteTool(id)
       }}
-      entityType={TOOL_ENTITY_KEY}
+      entityKey={TOOL_ENTITY_KEY}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
       icon={<PackageCheck />}
-      useFindMany={getFindManyToolsSuspenseQueryOptions()}
+      useFindMany={getFindManyToolsSuspenseQueryOptions}
     />
   )
 }

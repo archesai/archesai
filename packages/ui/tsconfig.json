@@ -24,9 +24,6 @@
       "path": "../../packages/client"
     },
     {
-      "path": "../../packages/core"
-    },
-    {
       "path": "../../packages/schemas"
     },
     {

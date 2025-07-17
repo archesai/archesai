@@ -6,13 +6,25 @@ export {
   ArrowDownLeft,
   ArrowRight,
   ArrowUpRight,
+  BarChart,
   Calendar,
+  ChevronRight,
   CreditCard,
+  Layers,
+  LetterText,
+  Moon,
   Plus,
   QrCode,
   SendHorizontal,
+  Shield,
   ShoppingCart,
-  Wallet
+  Star,
+  Sun,
+  Text,
+  UploadCloud,
+  Wallet,
+  X,
+  Zap
 } from 'lucide-react'
 
 export {

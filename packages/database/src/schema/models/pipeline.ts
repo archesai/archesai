@@ -10,6 +10,7 @@ import { PipelineStepTable } from '#schema/models/pipeline-step'
 export const PipelineTable = pgTable(PIPELINE_ENTITY_KEY, {
   ...baseFields,
   description: text(),
+  name: text(),
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {

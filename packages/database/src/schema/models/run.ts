@@ -29,10 +29,13 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
   runType: runType().notNull(),
   startedAt: timestamp({ mode: 'string', precision: 3 }),
   status: runStatus().default('QUEUED').notNull(),
-  toolId: text().references(() => ToolTable.id, {
-    onDelete: 'set null',
-    onUpdate: 'cascade'
-  })
+  toolId: text()
+    .notNull()
+    .references(() => ToolTable.id, {
+      onDelete: 'set null',
+      onUpdate: 'cascade'
+    })
+
   // pipelineRunId: text().notNull(),
   // pipelineStepId: text().notNull()
 })

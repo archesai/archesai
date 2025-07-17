@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './app/__root'
 import { Route as AuthRouteRouteImport } from './app/auth/route'
 import { Route as AppRouteRouteImport } from './app/_app/route'
+import { Route as LandingIndexRouteImport } from './app/landing/index'
 import { Route as AppIndexRouteImport } from './app/_app/index'
 import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
@@ -19,18 +20,14 @@ import { Route as AuthConfirmIndexRouteImport } from './app/auth/confirm/index'
 import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
 import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
 import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
-import { Route as AppPlaygroundIndexRouteImport } from './app/_app/playground/index'
 import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
+import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
 import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
-import { Route as AppChatIndexRouteImport } from './app/_app/chat/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
 import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
 import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
 import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
 import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
-import { Route as AppOrganizationGeneralIndexRouteImport } from './app/_app/organization/general/index'
-import { Route as AppOrganizationBillingIndexRouteImport } from './app/_app/organization/billing/index'
-import { Route as AppOrganizationApiTokensIndexRouteImport } from './app/_app/organization/api-tokens/index'
 import { Route as AppArtifactsArtifactIdIndexRouteImport } from './app/_app/artifacts/$artifactId/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
@@ -40,6 +37,11 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 } as any)
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingIndexRoute = LandingIndexRouteImport.update({
+  id: '/landing/',
+  path: '/landing/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -82,24 +84,19 @@ const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppPlaygroundIndexRoute = AppPlaygroundIndexRouteImport.update({
-  id: '/playground/',
-  path: '/playground/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppPipelinesIndexRoute = AppPipelinesIndexRouteImport.update({
   id: '/pipelines/',
   path: '/pipelines/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppOrganizationIndexRoute = AppOrganizationIndexRouteImport.update({
+  id: '/organization/',
+  path: '/organization/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
   id: '/labels/',
   path: '/labels/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppChatIndexRoute = AppChatIndexRouteImport.update({
-  id: '/chat/',
-  path: '/chat/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
@@ -129,24 +126,6 @@ const AppOrganizationMembersIndexRoute =
     path: '/organization/members/',
     getParentRoute: () => AppRouteRoute,
   } as any)
-const AppOrganizationGeneralIndexRoute =
-  AppOrganizationGeneralIndexRouteImport.update({
-    id: '/organization/general/',
-    path: '/organization/general/',
-    getParentRoute: () => AppRouteRoute,
-  } as any)
-const AppOrganizationBillingIndexRoute =
-  AppOrganizationBillingIndexRouteImport.update({
-    id: '/organization/billing/',
-    path: '/organization/billing/',
-    getParentRoute: () => AppRouteRoute,
-  } as any)
-const AppOrganizationApiTokensIndexRoute =
-  AppOrganizationApiTokensIndexRouteImport.update({
-    id: '/organization/api-tokens/',
-    path: '/organization/api-tokens/',
-    getParentRoute: () => AppRouteRoute,
-  } as any)
 const AppArtifactsArtifactIdIndexRoute =
   AppArtifactsArtifactIdIndexRouteImport.update({
     id: '/artifacts/$artifactId/',
@@ -157,11 +136,11 @@ const AppArtifactsArtifactIdIndexRoute =
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/landing': typeof LandingIndexRoute
   '/artifacts': typeof AppArtifactsIndexRoute
-  '/chat': typeof AppChatIndexRoute
   '/labels': typeof AppLabelsIndexRoute
+  '/organization': typeof AppOrganizationIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
-  '/playground': typeof AppPlaygroundIndexRoute
   '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
@@ -170,9 +149,6 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
   '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
-  '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
-  '/organization/billing': typeof AppOrganizationBillingIndexRoute
-  '/organization/general': typeof AppOrganizationGeneralIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexRoute
@@ -181,11 +157,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof AppIndexRoute
+  '/landing': typeof LandingIndexRoute
   '/artifacts': typeof AppArtifactsIndexRoute
-  '/chat': typeof AppChatIndexRoute
   '/labels': typeof AppLabelsIndexRoute
+  '/organization': typeof AppOrganizationIndexRoute
   '/pipelines': typeof AppPipelinesIndexRoute
-  '/playground': typeof AppPlaygroundIndexRoute
   '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
@@ -194,9 +170,6 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
   '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
-  '/organization/api-tokens': typeof AppOrganizationApiTokensIndexRoute
-  '/organization/billing': typeof AppOrganizationBillingIndexRoute
-  '/organization/general': typeof AppOrganizationGeneralIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
   '/pipelines/create': typeof AppPipelinesCreateIndexRoute
@@ -207,11 +180,11 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/landing/': typeof LandingIndexRoute
   '/_app/artifacts/': typeof AppArtifactsIndexRoute
-  '/_app/chat/': typeof AppChatIndexRoute
   '/_app/labels/': typeof AppLabelsIndexRoute
+  '/_app/organization/': typeof AppOrganizationIndexRoute
   '/_app/pipelines/': typeof AppPipelinesIndexRoute
-  '/_app/playground/': typeof AppPlaygroundIndexRoute
   '/_app/profile/': typeof AppProfileIndexRoute
   '/_app/runs/': typeof AppRunsIndexRoute
   '/_app/tools/': typeof AppToolsIndexRoute
@@ -220,9 +193,6 @@ export interface FileRoutesById {
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
   '/_app/artifacts/$artifactId/': typeof AppArtifactsArtifactIdIndexRoute
-  '/_app/organization/api-tokens/': typeof AppOrganizationApiTokensIndexRoute
-  '/_app/organization/billing/': typeof AppOrganizationBillingIndexRoute
-  '/_app/organization/general/': typeof AppOrganizationGeneralIndexRoute
   '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
   '/_app/pipelines/$pipelineId/': typeof AppPipelinesPipelineIdIndexRoute
   '/_app/pipelines/create/': typeof AppPipelinesCreateIndexRoute
@@ -233,11 +203,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/'
+    | '/landing'
     | '/artifacts'
-    | '/chat'
     | '/labels'
+    | '/organization'
     | '/pipelines'
-    | '/playground'
     | '/profile'
     | '/runs'
     | '/tools'
@@ -246,9 +216,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/artifacts/$artifactId'
-    | '/organization/api-tokens'
-    | '/organization/billing'
-    | '/organization/general'
     | '/organization/members'
     | '/pipelines/$pipelineId'
     | '/pipelines/create'
@@ -257,11 +224,11 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/landing'
     | '/artifacts'
-    | '/chat'
     | '/labels'
+    | '/organization'
     | '/pipelines'
-    | '/playground'
     | '/profile'
     | '/runs'
     | '/tools'
@@ -270,9 +237,6 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/artifacts/$artifactId'
-    | '/organization/api-tokens'
-    | '/organization/billing'
-    | '/organization/general'
     | '/organization/members'
     | '/pipelines/$pipelineId'
     | '/pipelines/create'
@@ -282,11 +246,11 @@ export interface FileRouteTypes {
     | '/_app'
     | '/auth'
     | '/_app/'
+    | '/landing/'
     | '/_app/artifacts/'
-    | '/_app/chat/'
     | '/_app/labels/'
+    | '/_app/organization/'
     | '/_app/pipelines/'
-    | '/_app/playground/'
     | '/_app/profile/'
     | '/_app/runs/'
     | '/_app/tools/'
@@ -295,9 +259,6 @@ export interface FileRouteTypes {
     | '/auth/login/'
     | '/auth/register/'
     | '/_app/artifacts/$artifactId/'
-    | '/_app/organization/api-tokens/'
-    | '/_app/organization/billing/'
-    | '/_app/organization/general/'
     | '/_app/organization/members/'
     | '/_app/pipelines/$pipelineId/'
     | '/_app/pipelines/create/'
@@ -307,6 +268,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  LandingIndexRoute: typeof LandingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -323,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/landing/': {
+      id: '/landing/'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -381,13 +350,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/playground/': {
-      id: '/_app/playground/'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof AppPlaygroundIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/_app/pipelines/': {
       id: '/_app/pipelines/'
       path: '/pipelines'
@@ -395,18 +357,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPipelinesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/organization/': {
+      id: '/_app/organization/'
+      path: '/organization'
+      fullPath: '/organization'
+      preLoaderRoute: typeof AppOrganizationIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/labels/': {
       id: '/_app/labels/'
       path: '/labels'
       fullPath: '/labels'
       preLoaderRoute: typeof AppLabelsIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/chat/': {
-      id: '/_app/chat/'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof AppChatIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/artifacts/': {
@@ -444,27 +406,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizationMembersIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/organization/general/': {
-      id: '/_app/organization/general/'
-      path: '/organization/general'
-      fullPath: '/organization/general'
-      preLoaderRoute: typeof AppOrganizationGeneralIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/organization/billing/': {
-      id: '/_app/organization/billing/'
-      path: '/organization/billing'
-      fullPath: '/organization/billing'
-      preLoaderRoute: typeof AppOrganizationBillingIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/organization/api-tokens/': {
-      id: '/_app/organization/api-tokens/'
-      path: '/organization/api-tokens'
-      fullPath: '/organization/api-tokens'
-      preLoaderRoute: typeof AppOrganizationApiTokensIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
     '/_app/artifacts/$artifactId/': {
       id: '/_app/artifacts/$artifactId/'
       path: '/artifacts/$artifactId'
@@ -478,17 +419,13 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppArtifactsIndexRoute: typeof AppArtifactsIndexRoute
-  AppChatIndexRoute: typeof AppChatIndexRoute
   AppLabelsIndexRoute: typeof AppLabelsIndexRoute
+  AppOrganizationIndexRoute: typeof AppOrganizationIndexRoute
   AppPipelinesIndexRoute: typeof AppPipelinesIndexRoute
-  AppPlaygroundIndexRoute: typeof AppPlaygroundIndexRoute
   AppProfileIndexRoute: typeof AppProfileIndexRoute
   AppRunsIndexRoute: typeof AppRunsIndexRoute
   AppToolsIndexRoute: typeof AppToolsIndexRoute
   AppArtifactsArtifactIdIndexRoute: typeof AppArtifactsArtifactIdIndexRoute
-  AppOrganizationApiTokensIndexRoute: typeof AppOrganizationApiTokensIndexRoute
-  AppOrganizationBillingIndexRoute: typeof AppOrganizationBillingIndexRoute
-  AppOrganizationGeneralIndexRoute: typeof AppOrganizationGeneralIndexRoute
   AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
   AppPipelinesPipelineIdIndexRoute: typeof AppPipelinesPipelineIdIndexRoute
   AppPipelinesCreateIndexRoute: typeof AppPipelinesCreateIndexRoute
@@ -498,17 +435,13 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppArtifactsIndexRoute: AppArtifactsIndexRoute,
-  AppChatIndexRoute: AppChatIndexRoute,
   AppLabelsIndexRoute: AppLabelsIndexRoute,
+  AppOrganizationIndexRoute: AppOrganizationIndexRoute,
   AppPipelinesIndexRoute: AppPipelinesIndexRoute,
-  AppPlaygroundIndexRoute: AppPlaygroundIndexRoute,
   AppProfileIndexRoute: AppProfileIndexRoute,
   AppRunsIndexRoute: AppRunsIndexRoute,
   AppToolsIndexRoute: AppToolsIndexRoute,
   AppArtifactsArtifactIdIndexRoute: AppArtifactsArtifactIdIndexRoute,
-  AppOrganizationApiTokensIndexRoute: AppOrganizationApiTokensIndexRoute,
-  AppOrganizationBillingIndexRoute: AppOrganizationBillingIndexRoute,
-  AppOrganizationGeneralIndexRoute: AppOrganizationGeneralIndexRoute,
   AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
   AppPipelinesPipelineIdIndexRoute: AppPipelinesPipelineIdIndexRoute,
   AppPipelinesCreateIndexRoute: AppPipelinesCreateIndexRoute,
@@ -540,6 +473,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
+  LandingIndexRoute: LandingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

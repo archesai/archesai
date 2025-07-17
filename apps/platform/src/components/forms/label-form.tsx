@@ -66,7 +66,7 @@ export default function LabelForm({ labelId }: { labelId?: string }) {
       onSubmitUpdate={async (data) => {
         await updateLabel({
           data: data,
-          id: labelId!
+          id: labelId
         })
       }}
       title='Configuration'

@@ -21,7 +21,27 @@ const base: ConfigArray = tseslint.config(
     ignores: ['*.config.ts', '*.config.js'],
     name: 'ignore config files'
   },
+  // Base JavaScript config
   {
+    files: ['**/*.{js,mjs,cjs}'],
+    name: 'javascript-base',
+    extends: [eslint.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      globals: globals.node,
+      sourceType: 'module'
+    },
+    linterOptions: { reportUnusedDisableDirectives: true }
+  },
+  // TypeScript config
+  {
+    files: ['**/*.{ts,tsx}'],
+    name: 'typescript',
+    extends: [
+      eslint.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: globals.node,
@@ -33,58 +53,31 @@ const base: ConfigArray = tseslint.config(
       sourceType: 'module'
     },
     linterOptions: { reportUnusedDisableDirectives: true },
-    name: 'typescript-base',
-    plugins: { '@typescript-eslint': tseslint.plugin }
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    name: 'typescript',
-    extends: [
-      eslint.configs.recommended,
-      tseslint.configs.strictTypeChecked,
-      tseslint.configs.stylisticTypeChecked
-    ],
     rules: {
       '@typescript-eslint/consistent-type-imports': [
         'warn',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
       ],
-      '@typescript-eslint/no-misused-promises': [
-        2,
-        { checksVoidReturn: { attributes: false } }
-      ],
-      '@typescript-eslint/no-unnecessary-condition': [
-        'error',
-        {
-          allowConstantLoopConditions: true
-        }
-      ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-      ]
-    }
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    name: 'custom',
-    rules: {
-      // '@typescript-eslint/consistent-type-assertions': [
-      //   'error',
-      //   { assertionStyle: 'never' }
-      // ],
       '@typescript-eslint/consistent-type-exports': [
         'error',
         { fixMixedExportsWithInlineTypeSpecifier: true }
       ],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-deprecated': 'warn',
-      '@typescript-eslint/no-import-type-side-effects': 'error',
-      '@typescript-eslint/no-misused-spread': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'off'
+      '@typescript-eslint/no-misused-promises': [
+        2,
+        { checksVoidReturn: { attributes: false } }
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error'
+      // '@typescript-eslint/consistent-type-assertions': [
+      //   'error',
+      //   { assertionStyle: 'never' }
+      // ],
     }
   },
+  // Import plugin config
   {
     files: ['**/*.{ts,tsx}'],
     name: 'import plugin',

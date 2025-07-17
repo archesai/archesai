@@ -20,8 +20,8 @@ const emitOrganizationMutationEvent = (
   entity: OrganizationEntity,
   websocketsService: WebsocketsService
 ): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, ORGANIZATION_ENTITY_KEY]
+  websocketsService.broadcastEvent(entity.id, 'update', {
+    queryKey: ['organizations', entity.id, ORGANIZATION_ENTITY_KEY]
   })
 }
 

@@ -13,11 +13,11 @@ import { Button } from '@archesai/ui/components/shadcn/button'
 import {
   Card,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 import { Separator } from '@archesai/ui/components/shadcn/separator'
-import { toast } from '@archesai/ui/components/shadcn/sonner'
 
 import UserForm from '#components/forms/user-form'
 
@@ -48,41 +48,25 @@ export default function ProfileSecuritySettingsPage() {
             </CardDescription>
           </CardHeader>
           <Separator />
-          <div className='flex justify-end rounded-xl p-4 py-2'>
+          <CardFooter>
             <Button
               disabled={requestPasswordResetPending}
               onClick={async () => {
-                await requestPasswordReset(
-                  {
-                    data: {
-                      email: sessionData.user.email
-                    }
-                  },
-
-                  {
-                    onError: () => {
-                      toast('Error', {
-                        description:
-                          'An error occurred while trying to reset your password.'
-                      })
-                    },
-                    onSuccess: () => {
-                      toast('Email Sent', {
-                        description:
-                          'We have sent you an email with instructions on how to reset your password.'
-                      })
-                    }
+                await requestPasswordReset({
+                  data: {
+                    email: sessionData.user.email
                   }
-                )
+                })
               }}
               size={'sm'}
+              type='submit'
             >
               {requestPasswordResetPending && (
-                <LoaderIcon className='h-5 w-5 animate-spin' />
+                <LoaderIcon className='animate-spin' />
               )}
-              <span> Reset Password</span>
+              Reset Password
             </Button>
-          </div>
+          </CardFooter>
         </Card>
         <Card>
           <CardHeader>
@@ -93,36 +77,21 @@ export default function ProfileSecuritySettingsPage() {
             </CardDescription>
           </CardHeader>
           <Separator />
-          <div className='flex justify-end rounded-xl p-4 py-2'>
+          <CardFooter>
             <Button
               disabled={deactivatePending}
               onClick={async () => {
-                await deactivateAccount(
-                  {
-                    id: sessionData.user.id
-                  },
-                  {
-                    onError: () => {
-                      toast('Error', {
-                        description:
-                          'An error occurred while trying to deactivate your account.'
-                      })
-                    },
-                    onSuccess: () => {
-                      console.log('FIXME')
-                    }
-                  }
-                )
+                await deactivateAccount({
+                  id: sessionData.user.id
+                })
               }}
               size='sm'
               variant={'destructive'}
             >
-              {deactivatePending && (
-                <LoaderPinwheel className='h-5 w-5 animate-spin' />
-              )}
-              <span>Delete Account</span>
+              {deactivatePending && <LoaderPinwheel className='animate-spin' />}
+              Delete Account
             </Button>
-          </div>
+          </CardFooter>
         </Card>
       </div>
     </div>

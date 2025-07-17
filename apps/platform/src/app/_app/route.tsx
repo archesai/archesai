@@ -53,9 +53,9 @@ export default function AppLayout() {
       {/* This is the sidebar that is displayed on the left side of the screen. */}
       <AppSidebar siteRoutes={siteRoutes} />
       {/* This is the main content area. */}
-      <SidebarInset>
+      <SidebarInset className='max-h-screen bg-primary/5 dark:bg-black/70'>
         <PageHeader siteRoutes={siteRoutes} />
-        <div className='flex flex-1 flex-col gap-4 p-4'>
+        <div className='flex flex-1 flex-col gap-4 overflow-y-auto p-4'>
           <Outlet />
         </div>
       </SidebarInset>

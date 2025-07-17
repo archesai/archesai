@@ -58,12 +58,10 @@ export default function RunDataTable() {
           accessorKey: 'status',
           cell: ({ row }) => {
             return (
-              <div className='pl-3'>
-                <StatusTypeEnumButton
-                  run={row.original}
-                  size='sm'
-                />
-              </div>
+              <StatusTypeEnumButton
+                run={row.original}
+                size='sm'
+              />
             )
           },
           enableHiding: false
@@ -104,12 +102,12 @@ export default function RunDataTable() {
       deleteItem={async (id) => {
         await deleteRun(id)
       }}
-      entityType={RUN_ENTITY_KEY}
+      entityKey={RUN_ENTITY_KEY}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}
       icon={<PackageCheck />}
-      useFindMany={getFindManyRunsSuspenseQueryOptions()}
+      useFindMany={getFindManyRunsSuspenseQueryOptions}
     />
   )
 }

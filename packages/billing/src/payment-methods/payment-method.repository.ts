@@ -1,9 +1,8 @@
 import type Stripe from 'stripe'
 
-import type { SearchQuery } from '@archesai/core'
-import type { PaymentMethodEntity } from '@archesai/schemas'
+import type { PaymentMethodEntity, SearchQuery } from '@archesai/schemas'
 
-import { NotFoundException } from '@archesai/core'
+import { BadRequestException, NotFoundException } from '@archesai/core'
 import { PaymentMethodEntitySchema, Value } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
@@ -71,7 +70,10 @@ export class PaymentMethodRepository {
   public async findMany(
     query: SearchQuery<PaymentMethodEntity>
   ): Promise<{ count: number; data: PaymentMethodEntity[] }> {
-    const customerId = query.filter?.customer?.equals
+    if (query.filter?.type !== 'condition' || query.filter.field !== 'id') {
+      throw new BadRequestException('Invalid query filter type')
+    }
+    const customerId = query.filter
     const results = await this.stripeService.stripe.paymentMethods.list({
       customer: typeof customerId === 'string' ? customerId : '',
       type: 'card'

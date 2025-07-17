@@ -25,6 +25,7 @@
     "@archesai/database": "workspace:*",
     "@archesai/intelligence": "workspace:*",
     "@archesai/orchestration": "workspace:*",
+    "@archesai/schemas": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@fastify/cors": "catalog:fastify",
     "@fastify/helmet": "catalog:fastify",

@@ -1,7 +1,6 @@
-import type { BaseEntity } from '@archesai/schemas'
-
 // import type { BaseRepository } from '#common/base-repository'
-import type { SearchQuery } from '#http/dto/search-query.dto'
+import type { BaseEntity, SearchQuery } from '@archesai/schemas'
+
 import type { WebsocketsService } from '#websockets/websockets.service'
 
 export type BaseService<

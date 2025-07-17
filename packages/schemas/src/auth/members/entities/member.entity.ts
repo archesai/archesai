@@ -14,7 +14,6 @@ import { RoleTypes } from '#enums/role'
 export const MemberEntitySchema: TObject<{
   createdAt: TString
   id: TString
-  invitationId: TString
   organizationId: TString
   role: TUnion<TLiteral<'ADMIN' | 'USER'>[]>
   updatedAt: TString
@@ -22,7 +21,6 @@ export const MemberEntitySchema: TObject<{
 }> = Type.Object(
   {
     ...BaseEntitySchema.properties,
-    invitationId: Type.String({ description: 'The invitation id' }),
     organizationId: Type.String({ description: 'The organization name' }),
     role: Type.Union(
       RoleTypes.map((role) => Type.Literal(role)),

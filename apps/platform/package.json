@@ -30,6 +30,7 @@
     "@tanstack/react-router-with-query": "catalog:",
     "@tanstack/react-start": "catalog:",
     "@xyflow/react": "catalog:",
+    "motion": "^12.23.6",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "vite": "catalog:"

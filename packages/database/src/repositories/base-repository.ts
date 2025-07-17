@@ -1,7 +1,6 @@
 import type { PgTable } from 'drizzle-orm/pg-core'
 
-import type { EntityFilter, SearchQuery } from '@archesai/core'
-import type { BaseEntity, TSchema } from '@archesai/schemas'
+import type { BaseEntity, SearchQuery, TSchema } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
 import { Value } from '@archesai/schemas'
@@ -44,15 +43,21 @@ export function createBaseRepository<
   const buildSearchQueryPrimaryKey = (value: string): SearchQuery<TModel> => {
     const query: SearchQuery<TModel> = {
       filter: {
-        id: {
-          equals: value
-        }
-      } as EntityFilter<TModel>,
+        field: 'id',
+        operator: 'eq',
+        type: 'condition',
+        value: value
+      },
       page: {
         number: 0,
         size: 1
       },
-      sort: '-createdAt'
+      sort: [
+        {
+          field: 'createdAt',
+          order: 'desc'
+        }
+      ]
     }
     return query
   }
@@ -101,7 +106,11 @@ export function createBaseRepository<
       query: SearchQuery<TModel>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
-      const models = await databaseService.select(table, whereConditions)
+      const orderBy = databaseService.buildOrderBy(table, query)
+      const models = await databaseService
+        .select(table, whereConditions, orderBy)
+        .limit(query.page?.size ?? 10)
+        .offset(query.page?.number ?? 0)
       const count = await databaseService.count(table, whereConditions)
       return {
         count: count,
@@ -112,7 +121,12 @@ export function createBaseRepository<
     async findOne(id: string): Promise<TEntity> {
       const query = buildSearchQueryPrimaryKey(id)
       const whereConditions = databaseService.buildWhereConditions(table, query)
-      const [model] = await databaseService.select(table, whereConditions)
+      const orderBy = databaseService.buildOrderBy(table, query)
+      const [model] = await databaseService.select(
+        table,
+        whereConditions,
+        orderBy
+      )
       if (!model) {
         throw new NotFoundException(`${id} not found`)
       }

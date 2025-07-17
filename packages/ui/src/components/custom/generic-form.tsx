@@ -2,7 +2,7 @@ import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 import { useEffect, useMemo } from 'react'
 import { typeboxResolver } from '@hookform/resolvers/typebox'
-import { LoaderIcon } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 
 import type { TSchema } from '@archesai/schemas'
@@ -173,11 +173,10 @@ export function GenericForm<
             {props.postContent}
           </CardContent>
 
-          {/* <Separator /> */}
+          <Separator />
 
-          <CardFooter className='flex items-center justify-center gap-2'>
+          <CardFooter>
             <Button
-              className='flex flex-1 gap-2'
               disabled={
                 form.formState.isSubmitting ||
                 // !form.formState.isDirty ||
@@ -187,14 +186,13 @@ export function GenericForm<
               type='submit'
             >
               {form.formState.isSubmitting && (
-                <LoaderIcon className='h-5 w-5 animate-spin' />
+                <Loader2Icon className='animate-spin' />
               )}
               <span className='capitalize'>
                 {isUpdateForm ? 'Update' : 'Create'} {entityKey}
               </span>
             </Button>
             <Button
-              className='flex-1'
               disabled={form.formState.isSubmitting || !form.formState.isDirty}
               onClick={() => {
                 form.reset()
@@ -203,7 +201,7 @@ export function GenericForm<
               type='button'
               variant='secondary'
             >
-              Clear
+              Reset
             </Button>
           </CardFooter>
         </Card>

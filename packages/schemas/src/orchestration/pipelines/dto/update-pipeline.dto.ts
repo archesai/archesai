@@ -23,7 +23,6 @@ export const UpdatePipelineDtoSchema: TObject<{
           }>
         >
         id: TString
-        name: TString
         pipelineId: TString
         prerequisites: TArray<
           TObject<{

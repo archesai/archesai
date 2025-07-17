@@ -28,7 +28,7 @@ export const RunEntitySchema: TObject<{
   error: TOptional<TString>
   id: TString
   organizationId: TString
-  pipelineId: TString
+  pipelineId: TOptional<TString>
   progress: TNumber
   runType: TUnion<TLiteral<'PIPELINE_RUN' | 'TOOL_RUN'>[]>
   startedAt: TOptional<TString>
@@ -45,9 +45,11 @@ export const RunEntitySchema: TObject<{
     ),
     error: Type.Optional(Type.String({ description: 'The error message' })),
     organizationId: Type.String({ description: 'The organization name' }),
-    pipelineId: Type.String({
-      description: 'The pipeline ID associated with the run'
-    }),
+    pipelineId: Type.Optional(
+      Type.String({
+        description: 'The pipeline ID associated with the run'
+      })
+    ),
     progress: Type.Number({ description: 'The percent progress of the run' }),
     runType: Type.Union(
       RunTypes.map((type) => Type.Literal(type)),

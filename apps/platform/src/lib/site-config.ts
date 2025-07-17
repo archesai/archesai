@@ -5,11 +5,8 @@ import {
   Building2,
   Cpu,
   CpuIcon,
-  CreditCard,
   FileText,
   Image,
-  Lock,
-  MessageSquareIcon,
   PackageCheck,
   Server,
   Settings2,
@@ -24,10 +21,10 @@ import {
 export const siteRoutes: SiteRoute[] = [
   {
     description: 'Try out your tools here.',
-    href: '/playground',
+    href: '/',
     Icon: SquareTerminal,
-    section: 'Build',
-    title: 'Playground'
+    section: 'Home',
+    title: 'Dashboard'
   },
   {
     description: 'Browse and manage your artifacts here.',
@@ -44,28 +41,11 @@ export const siteRoutes: SiteRoute[] = [
     title: 'Tools'
   },
   {
-    children: [
-      {
-        description: 'View and manage your pipelines.',
-        href: '/pipelines',
-        Icon: Workflow,
-        section: 'Build',
-        showInTabs: true,
-        title: 'Pipelines'
-      },
-      {
-        description: 'Create a new pipeline.',
-        href: '/pipelines/create',
-        Icon: Workflow,
-        section: 'Build',
-        showInTabs: false,
-        title: 'Create'
-      }
-    ],
-    description: 'Create and manage pipelines.',
+    description: 'View and manage your pipelines.',
     href: '/pipelines',
     Icon: Workflow,
     section: 'Build',
+    showInTabs: true,
     title: 'Pipelines'
   },
   {
@@ -82,13 +62,7 @@ export const siteRoutes: SiteRoute[] = [
     section: 'Data',
     title: 'Labels'
   },
-  {
-    description: 'Chat with your data and tools.',
-    href: '/chat',
-    Icon: MessageSquareIcon,
-    section: 'Chat',
-    title: 'Chat'
-  },
+
   {
     description: 'View your profile information.',
     href: '/profile',
@@ -100,20 +74,11 @@ export const siteRoutes: SiteRoute[] = [
     children: [
       {
         description: "View and update your organization's general information.",
-        href: '/organization/general',
+        href: '/organization',
         Icon: Building2,
         section: 'Settings',
         showInTabs: true,
         title: 'General'
-      },
-      {
-        description:
-          "View and update your organization's billing information. Upgrade your plan.",
-        href: '/organization/billing',
-        Icon: CreditCard,
-        section: 'Settings',
-        showInTabs: true,
-        title: 'Billing'
       },
       {
         description: "View and manage your organization's members.",
@@ -122,14 +87,6 @@ export const siteRoutes: SiteRoute[] = [
         section: 'Settings',
         showInTabs: true,
         title: 'Members'
-      },
-      {
-        description: "View and manage your organization's API tokens.",
-        href: '/organization/api-tokens',
-        Icon: Lock,
-        section: 'Settings',
-        showInTabs: true,
-        title: 'API Tokens'
       }
     ],
     href: '/organization',

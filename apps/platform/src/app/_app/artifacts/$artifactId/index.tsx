@@ -14,18 +14,17 @@ export default function ArtifactDetailsPage() {
   const params = Route.useParams()
 
   return (
-    <div className='flex h-full w-full gap-3'>
+    <div className='flex h-full w-full gap-4'>
       {/*LEFT SIDE*/}
-      <div className='flex w-1/2 flex-initial flex-col gap-3'>
-        <Card>
-          <Suspense>
-            <ArtifactDetailsHeader artifactId={params.artifactId} />
-          </Suspense>
-          <Suspense>
-            <ArtifactDetailsBody artifactId={params.artifactId} />
-          </Suspense>
-        </Card>
-      </div>
+      <Card>
+        <Suspense>
+          <ArtifactDetailsHeader artifactId={params.artifactId} />
+        </Suspense>
+        <Suspense>
+          <ArtifactDetailsBody artifactId={params.artifactId} />
+        </Suspense>
+      </Card>
+
       {/*RIGHT SIDE*/}
       <Card className='w-1/2 overflow-hidden'>
         <Suspense>

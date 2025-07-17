@@ -58,9 +58,10 @@ export function UserButton({
 
   const { data: memberships } = useFindManyMembersSuspense({
     filter: {
-      userId: {
-        equals: 'Arches Platform'
-      }
+      field: 'organizationId',
+      operator: 'eq',
+      type: 'condition',
+      value: sessionData.session.activeOrganizationId
     }
   })
 

@@ -22,44 +22,44 @@ export const createToolsService = (
         {
           description:
             'Extract text from a file. This tool supports all file types.',
-          inputType: 'TEXT',
+          inputMimeType: 'text/plain',
           name: 'Extract Text',
           organizationId,
-          outputType: 'TEXT',
+          outputMimeType: 'text/plain',
           toolBase: 'extract-text'
         },
         {
           description: 'Create an image from text.',
-          inputType: 'TEXT',
+          inputMimeType: 'text/plain',
           name: 'Text to Image',
           organizationId,
-          outputType: 'IMAGE',
+          outputMimeType: 'image/png',
           toolBase: 'text-to-image'
         },
         {
           description: 'Summarize text. This tool supports all languages.',
-          inputType: 'TEXT',
+          inputMimeType: 'text/plain',
           name: 'Summarize',
           organizationId,
-          outputType: 'TEXT',
+          outputMimeType: 'text/plain',
           toolBase: 'summarize'
         },
         {
           description:
             'Create embeddings from text. This tool supports all languages.',
-          inputType: 'TEXT',
+          inputMimeType: 'text/plain',
           name: 'Create Embeddings',
           organizationId,
-          outputType: 'TEXT', // FIXME make this none
+          outputMimeType: 'text/plain', // FIXME make this none
           toolBase: 'create-embeddings'
         },
         {
           description:
             'Convert text to speech. This tool supports all languages.',
-          inputType: 'TEXT',
+          inputMimeType: 'text/plain',
           name: 'Text to Speech',
           organizationId,
-          outputType: 'AUDIO',
+          outputMimeType: 'audio/mpeg',
           toolBase: 'text-to-speech'
         }
       ]

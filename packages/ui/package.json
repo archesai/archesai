@@ -13,7 +13,8 @@
     "#hooks/*": "./src/hooks/*.tsx",
     "#layouts/*": "./src/layouts/*.tsx",
     "#lib/*": "./src/lib/*.ts",
-    "#providers/*": "./src/providers/*.tsx"
+    "#providers/*": "./src/providers/*.tsx",
+    "#types/*": "./src/types/*.ts"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -35,9 +36,13 @@
   "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/client": "workspace:*",
-    "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "catalog:",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "catalog:",
     "class-variance-authority": "catalog:",
@@ -46,6 +51,7 @@
     "date-fns": "^4.1.0",
     "jotai": "^2.12.5",
     "lucide-react": "catalog:",
+    "motion": "^12.23.6",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.2",
     "react": "catalog:react19",

@@ -33,7 +33,7 @@ export const ToolCards = () => {
                 search: {
                   selectedTool: tool.id
                 },
-                to: `/playground`
+                to: `/tools`
               })
             }}
           >

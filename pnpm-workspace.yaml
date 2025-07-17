@@ -38,7 +38,7 @@ catalog:
   '@types/node': 24.0.14
   '@types/nodemailer': ^6.4.17
   '@types/pg': ^8.15.4
-  '@types/qs': ^6.14.0
+  '@types/qs': 6.14.0
   '@types/supertest': ^6.0.3
   '@vitejs/plugin-react': ^4.6.0
   '@xyflow/react': ^12.8.2
@@ -72,7 +72,7 @@ catalog:
   pino: ^9.7.0
   pino-pretty: ^13.0.0
   playwright-core: ^1.54.1
-  qs: ^6.14.0
+  qs: 6.14.0
   react-hook-form: ^7.60.0
   rxjs: ^7.8.2
   sharp: ^0.34.3
@@ -117,6 +117,8 @@ color: always
 disallowWorkspaceCycles: true
 
 engineStrict: true
+
+includeWorkspaceRoot: true
 
 onlyBuiltDependencies:
   - '@parcel/watcher'

@@ -9,7 +9,7 @@ export const CreateOrganizationDtoSchema: TObject<{
   organizationId: TString
 }> = Type.Object({
   billingEmail: OrganizationEntitySchema.properties.billingEmail,
-  organizationId: OrganizationEntitySchema.properties.organizationId
+  organizationId: OrganizationEntitySchema.properties.id
 })
 
 export type CreateOrganizationDto = Static<typeof CreateOrganizationDtoSchema>

@@ -15,11 +15,6 @@ export * from '#exceptions/schemas/no-content-response.schema'
 export * from '#exceptions/schemas/not-found-response.schema'
 export * from '#exceptions/schemas/unauthorized-response.schema'
 
-export * from '#http/dto/search-query.dto'
-export * from '#http/schemas/document.schema'
-export * from '#http/schemas/error-document.schema'
-export * from '#http/schemas/error-object.schema'
-
 export * from '#logging/adapters/pino-logger-adapter'
 export type * from '#logging/logger'
 export * from '#logging/logger.service'

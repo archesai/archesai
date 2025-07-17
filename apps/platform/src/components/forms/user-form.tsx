@@ -25,6 +25,18 @@ export default function UserForm() {
       )
     },
     {
+      defaultValue: sessionData.user.name,
+      description: 'Your full name',
+      label: 'Name',
+      name: 'name',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      )
+    },
+    {
       defaultValue: sessionData.user.email,
       description: 'Your email address',
       label: 'Email',
