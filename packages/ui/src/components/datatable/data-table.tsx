@@ -12,12 +12,12 @@ import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 import type { DataTableRowAction } from '#types/simple-data-table'
 
 import { DataTablePagination } from '#components/datatable/components/data-table-pagination'
-import { GridView } from '#components/datatable/components/grid-view'
-import { TableView } from '#components/datatable/components/table-view'
 import { TasksTableActionBar } from '#components/datatable/components/tasks-table-action-bar'
 import { DataTableAdvancedToolbar } from '#components/datatable/components/toolbar/data-table-advanced-toolbar'
 import { DataTableFilterMenu } from '#components/datatable/components/toolbar/data-table-filter-menu'
 import { DataTableSortList } from '#components/datatable/components/toolbar/data-table-sort-list'
+import { GridView } from '#components/datatable/components/views/grid-view'
+import { TableView } from '#components/datatable/components/views/table-view'
 // import { DataTableToolbar } from '#components/datatable/components/toolbar/data-table-toolbar'
 import {
   Dialog,

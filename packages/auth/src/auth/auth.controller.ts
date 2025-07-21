@@ -8,13 +8,15 @@ import {
   CreateAccountDtoSchema,
   CreateEmailChangeDtoSchema,
   CreatePasswordResetDtoSchema,
+  DocumentSchemaFactory,
   NoContentResponseSchema,
   NotFoundResponseSchema,
   // SessionEntitySchema,
   UnauthorizedResponseSchema,
   UpdateEmailChangeDtoSchema,
   UpdateEmailVerificationDtoSchema,
-  UpdatePasswordResetDtoSchema
+  UpdatePasswordResetDtoSchema,
+  UserEntitySchema
   // UserEntitySchema
 } from '@archesai/schemas'
 
@@ -31,10 +33,35 @@ declare module 'fastify' {
       reply: FastifyReply,
       beforeSend?: (
         response: Response,
-        responseText: null | string
+        responseBody: null | Record<string, unknown>
       ) => Promise<void>
     ) => Promise<void>
   }
+}
+
+const getHeaders = (
+  headers: Record<string, string | string[] | undefined>
+): Headers => {
+  const headersObj = new Headers()
+  Object.entries(headers).forEach(([key, value]) => {
+    if (value) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => {
+          headersObj.append(key, v)
+        })
+      } else {
+        headersObj.append(key, value)
+      }
+    }
+  })
+
+  return headersObj
+}
+
+const setHeaders = (headers: Headers, response: FastifyReply): void => {
+  headers.forEach((value, key) => {
+    response.header(key, value)
+  })
 }
 
 export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
@@ -50,51 +77,44 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
       reply: FastifyReply,
       beforeSend?: (
         response: Response,
-        responseText: null | string
+        responseText: null | Record<string, unknown>
       ) => Promise<void>
     ) => {
-      try {
-        // Reusable auth handler logic that can be called from other routes
-        const url = new URL(
-          req.url,
-          `http://${req.headers.host?.toString() ?? ''}`
-        )
+      // Reusable auth handler logic that can be called from other routes
+      const url = new URL(
+        req.url,
+        `http://${req.headers.host?.toString() ?? ''}`
+      )
 
-        const headers = new Headers()
-        Object.entries(req.headers).forEach(([key, value]) => {
-          if (value) headers.append(key, value.toString())
-        })
+      const headers = new Headers()
+      Object.entries(req.headers).forEach(([key, value]) => {
+        if (value) headers.append(key, value.toString())
+      })
 
-        const formattedRequest = new Request(url.toString(), {
-          body: req.body ? JSON.stringify(req.body) : undefined,
-          headers,
-          method: req.method
-        })
+      const formattedRequest = new Request(url.toString(), {
+        body: req.body ? JSON.stringify(req.body) : undefined,
+        headers,
+        method: req.method
+      })
 
-        const response = await authService.handler(formattedRequest)
+      const response = await authService.handler(formattedRequest)
 
-        // Get response text once
-        const responseText = response.body ? await response.text() : null
+      // Get response text once
+      const responseText = response.body ? await response.text() : null
 
-        // Forward response to client
-        reply.status(response.status)
-        response.headers.forEach((value, key) => {
-          reply.header(key, value)
-        })
+      // Forward response to client
+      reply.status(response.status)
+      response.headers.forEach((value, key) => {
+        reply.header(key, value)
+      })
 
-        // Run callback if provided
-        if (beforeSend) {
-          await beforeSend(response, responseText)
-        }
-
-        reply.send(responseText)
-      } catch (err) {
-        app.log.error('Authentication Error:', err)
-        reply.status(500).send({
-          errocode: 'AUTH_FAILURE',
-          error: 'Internal authentication error'
-        })
+      // Run callback if provided
+      if (beforeSend) {
+        const responseJson = (await response.json()) as Record<string, unknown>
+        await beforeSend(response, responseJson)
       }
+
+      reply.send(responseText)
     }
   )
 
@@ -102,19 +122,33 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
     `/api/auth/sign-in/email`,
     {
       schema: {
-        body: CreateAccountDtoSchema,
+        body: CreateAccountDtoSchema.pick({
+          email: true,
+          password: true
+        }),
         description: `This endpoint will log you in with your e-mail and password`,
         operationId: 'login',
         response: {
-          200: BetterAuthSessionSchema,
+          200: DocumentSchemaFactory(UserEntitySchema),
           401: UnauthorizedResponseSchema
         },
         summary: `Login`,
         tags: ['Authentication']
       }
     },
-    (req, res) => {
-      return app.authHandler(req, res)
+    async (req, res) => {
+      const { headers, response } = await authService.signInEmail({
+        body: {
+          email: req.body.email,
+          password: req.body.password
+        },
+        headers: req.headers,
+        returnHeaders: true
+      })
+      setHeaders(headers, res)
+      return {
+        data: response.user
+      }
     }
   )
 
@@ -151,8 +185,12 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
         tags: ['Authentication']
       }
     },
-    (req, res) => {
-      return app.authHandler(req, res)
+    async (req) => {
+      const headers = getHeaders(req.headers)
+      const response = await authService.getSession({
+        headers
+      })
+      return response
     }
   )
 
@@ -172,11 +210,11 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
       }
     },
     (req, res) => {
-      return app.authHandler(req, res, async (response, responseText) => {
+      return app.authHandler(req, res, async (response, responseBody) => {
         // Create organization after successful signup
-        if (response.status === 200 && responseText) {
+        if (response.status === 200 && responseBody) {
           try {
-            const userData = JSON.parse(responseText) as {
+            const userData = responseBody as {
               session: SessionEntity
               user: UserEntity
             }

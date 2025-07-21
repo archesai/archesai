@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const SessionEntitySchema: z.ZodObject<{
-  activeOrganizationId: z.ZodString
+  activeOrganizationId: z.ZodNullable<z.ZodString>
   createdAt: z.ZodString
   expiresAt: z.ZodString
   id: z.ZodString
@@ -13,7 +13,10 @@ export const SessionEntitySchema: z.ZodObject<{
   userAgent: z.ZodNullable<z.ZodString>
   userId: z.ZodString
 }> = BaseEntitySchema.extend({
-  activeOrganizationId: z.string().describe('The active organization ID'),
+  activeOrganizationId: z
+    .string()
+    .nullable()
+    .describe('The active organization ID'),
   expiresAt: z.string().describe('The expiration date of the session'),
   ipAddress: z.string().nullable().describe('The IP address of the session'),
   token: z.string().describe('The session token'),

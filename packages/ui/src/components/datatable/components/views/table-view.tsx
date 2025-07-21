@@ -34,8 +34,8 @@ export function TableView<TEntity extends BaseEntity>(
             >
               {headerGroup.headers.map((header) => (
                 <TableHead
-                  colSpan={header.colSpan}
                   key={header.id}
+                  style={{ width: header.getSize() }}
                 >
                   {header.isPlaceholder ? null : (
                     flexRender(

@@ -47,9 +47,7 @@ export default function MemberForm({ id }: { id?: string }) {
       renderControl: (field) => (
         <Select
           defaultValue={field.value as string}
-          onValueChange={(value) => {
-            field.onChange(value)
-          }}
+          onValueChange={field.onChange}
         >
           <FormControl>
             <SelectTrigger>

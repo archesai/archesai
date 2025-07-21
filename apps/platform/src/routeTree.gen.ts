@@ -16,7 +16,6 @@ import { Route as AppIndexRouteImport } from './app/_app/index'
 import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AuthConfirmIndexRouteImport } from './app/auth/confirm/index'
 import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
 import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
 import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
@@ -62,11 +61,6 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
 const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
   id: '/forgot-password/',
   path: '/forgot-password/',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthConfirmIndexRoute = AuthConfirmIndexRouteImport.update({
-  id: '/confirm/',
-  path: '/confirm/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 const AppToolsIndexRoute = AppToolsIndexRouteImport.update({
@@ -144,7 +138,6 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
-  '/auth/confirm': typeof AuthConfirmIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
@@ -165,7 +158,6 @@ export interface FileRoutesByTo {
   '/profile': typeof AppProfileIndexRoute
   '/runs': typeof AppRunsIndexRoute
   '/tools': typeof AppToolsIndexRoute
-  '/auth/confirm': typeof AuthConfirmIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
@@ -188,7 +180,6 @@ export interface FileRoutesById {
   '/_app/profile/': typeof AppProfileIndexRoute
   '/_app/runs/': typeof AppRunsIndexRoute
   '/_app/tools/': typeof AppToolsIndexRoute
-  '/auth/confirm/': typeof AuthConfirmIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
@@ -211,7 +202,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/runs'
     | '/tools'
-    | '/auth/confirm'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -232,7 +222,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/runs'
     | '/tools'
-    | '/auth/confirm'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/register'
@@ -254,7 +243,6 @@ export interface FileRouteTypes {
     | '/_app/profile/'
     | '/_app/runs/'
     | '/_app/tools/'
-    | '/auth/confirm/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/register/'
@@ -320,13 +308,6 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/auth/forgot-password'
       preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/auth/confirm/': {
-      id: '/auth/confirm/'
-      path: '/confirm'
-      fullPath: '/auth/confirm'
-      preLoaderRoute: typeof AuthConfirmIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/_app/tools/': {
@@ -453,14 +434,12 @@ const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
 )
 
 interface AuthRouteRouteChildren {
-  AuthConfirmIndexRoute: typeof AuthConfirmIndexRoute
   AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthConfirmIndexRoute: AuthConfirmIndexRoute,
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,

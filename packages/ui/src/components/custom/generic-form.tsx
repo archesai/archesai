@@ -1,6 +1,6 @@
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -150,10 +150,11 @@ export function GenericForm<
                       <FormControl>
                         {fieldConfig.renderControl(field)}
                       </FormControl>
-                      <FormDescription>
-                        {!fieldState.error && fieldConfig.description}
-                        {fieldState.error?.message}
-                      </FormDescription>
+                      {!fieldState.error && (
+                        <FormDescription>
+                          {fieldConfig.description}
+                        </FormDescription>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}

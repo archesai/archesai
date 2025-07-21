@@ -25,10 +25,13 @@ export default function LoginPage() {
         entityKey='auth'
         fields={[
           {
+            defaultValue: '',
+            description: CreateAccountDtoSchema.shape.email.description ?? '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
               <Input
+                placeholder='Enter your email...'
                 {...field}
                 type='email'
               />
@@ -36,11 +39,15 @@ export default function LoginPage() {
             validationRule: CreateAccountDtoSchema.shape.email
           },
           {
+            defaultValue: '',
+            description:
+              CreateAccountDtoSchema.shape.password.description ?? '',
             label: 'Password',
             name: 'password',
             renderControl: (field) => (
               <Input
                 {...field}
+                placeholder='Enter your password...'
                 type='password'
               />
             ),
@@ -52,7 +59,6 @@ export default function LoginPage() {
           await login({
             data: {
               email: data.email,
-              name: '',
               password: data.password
             }
           })

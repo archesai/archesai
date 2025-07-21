@@ -70,8 +70,10 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
 
   return {
     createOrganization: auth.api.createOrganization,
+    getSession: auth.api.getSession,
     handler: auth.handler,
-    setActiveOrganization: auth.api.setActiveOrganization
+    setActiveOrganization: auth.api.setActiveOrganization,
+    signInEmail: auth.api.signInEmail
   }
 }
 

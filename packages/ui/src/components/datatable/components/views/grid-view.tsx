@@ -7,6 +7,12 @@ import { flexRender } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader
+} from '#components/shadcn/card'
 import { cn } from '#lib/utils'
 
 export interface GridViewProps<TEntity extends BaseEntity> {
@@ -26,7 +32,7 @@ export function GridView<TEntity extends BaseEntity>({
   const [hover, setHover] = useState(-1)
 
   return (
-    <div className='grid w-full grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4'>
+    <div className='grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4'>
       {/* Data Cards */}
       {data.length > 0 ?
         data.map((item, i) => {
@@ -38,16 +44,13 @@ export function GridView<TEntity extends BaseEntity>({
           const actionContext = item.getAllCells().at(-1)?.getContext()
 
           return (
-            <div
-              className={cn(
-                `relative flex h-64 flex-col overflow-hidden rounded-xl bg-card/100 shadow-xs transition-all`,
-                isItemSelected && 'bg-secondary/50'
-              )}
+            <Card
+              className={cn(`h-64`, isItemSelected && 'bg-primary/10')}
               key={item.id}
             >
               {/* Top Content */}
-              <div
-                className='h-full cursor-pointer transition-all hover:bg-secondary'
+              <CardContent
+                className='h-full cursor-pointer transition-all hover:bg-primary/10'
                 onClick={item.getToggleSelectedHandler()}
                 onMouseEnter={() => {
                   setHover(i)
@@ -62,19 +65,17 @@ export function GridView<TEntity extends BaseEntity>({
                     {icon}
                   </div>
                 }
-              </div>
+              </CardContent>
+
               <hr />
 
               {/* Footer */}
-              <div className='flex items-center justify-between bg-card p-4'>
-                <div className='flex min-w-0 items-center gap-2'>
-                  {context && flexRender(checkbox, context)}
-                  {item.original.id}
-                </div>
-                {actionContext && flexRender(actions, actionContext)}
-              </div>
+              <CardFooter className='justify-start'>
+                {context && flexRender(checkbox, context)}
+                {item.original.id}
+              </CardFooter>
               {gridHover && hover === i && gridHover(item.original)}
-            </div>
+            </Card>
           )
         })
       : <div className='col-span-4 row-span-4 flex items-center justify-center pt-20 text-sm'>

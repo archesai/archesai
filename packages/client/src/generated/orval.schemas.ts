@@ -275,8 +275,11 @@ export interface SessionEntityInput {
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
+  /**
+   * The active organization ID
+   * @nullable
+   */
+  activeOrganizationId: string | null
   /** The expiration date of the session */
   expiresAt: string
   /**
@@ -1942,8 +1945,11 @@ export interface SessionEntity {
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
+  /**
+   * The active organization ID
+   * @nullable
+   */
+  activeOrganizationId: string | null
   /** The expiration date of the session */
   expiresAt: string
   /**
@@ -3336,18 +3342,12 @@ export type LoginBody = {
    * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
    */
   email: string
-  /**
-   * The name of the user creating the account
-   * @minLength 1
-   */
-  name: string
   /** The password for the account */
   password: string
 }
 
 export type Login200 = {
-  session: SessionEntity
-  user: UserEntity
+  data: UserEntity
 }
 
 export type GetSession200 = {

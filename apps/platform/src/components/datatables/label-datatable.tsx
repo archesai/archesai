@@ -19,20 +19,7 @@ export default function LabelDataTable() {
         {
           accessorKey: 'name',
           cell: ({ row }) => {
-            return (
-              <div className='flex gap-2'>
-                <span
-                  className='max-w-[500px] truncate font-medium'
-                  onClick={async () => {
-                    await navigate({
-                      to: `/chatbots/chat?labelId=${row.original.id}`
-                    })
-                  }}
-                >
-                  <Badge variant={'secondary'}>{row.original.name}</Badge>
-                </span>
-              </div>
-            )
+            return <Badge>{row.original.name}</Badge>
           }
         }
       ]}
