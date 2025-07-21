@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react'
-import { CloudUpload, Loader2, Trash, Upload } from 'lucide-react'
 
+import {
+  CloudUploadIcon,
+  Loader2Icon,
+  TrashIcon,
+  UploadIcon
+} from '#components/custom/icons'
 // import { toast } from 'sonner'
 
 // import type { ArtifactEntity } from '@archesai/schemas'
@@ -164,7 +169,7 @@ export default function ImportCard() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <CloudUpload className='h-5 w-5 text-muted-foreground' />
+        <CloudUploadIcon className='h-5 w-5 text-muted-foreground' />
         <p className='text-sm text-muted-foreground'>
           Drag and drop files here, or click to select files
         </p>
@@ -204,7 +209,7 @@ export default function ImportCard() {
                     removeFile(idx)
                   }}
                 >
-                  <Trash className='h-5 w-5' />
+                  <TrashIcon className='h-5 w-5' />
                 </button>
               </li>
             ))}
@@ -218,11 +223,11 @@ export default function ImportCard() {
           >
             {uploading ?
               <div className='flex gap-2'>
-                <Loader2 className='h-5 w-5 animate-spin text-white' />
+                <Loader2Icon className='h-5 w-5 animate-spin text-white' />
                 <span>Uploading...</span>
               </div>
             : <div className='flex gap-2'>
-                <Upload className='h-5 w-5' />
+                <UploadIcon className='h-5 w-5' />
                 <span>Upload</span>
               </div>
             }

@@ -3,8 +3,13 @@
 import type { ColumnSort, SortDirection, Table } from '@tanstack/react-table'
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { ArrowDownUp, ChevronsUpDown, GripVertical, Trash2 } from 'lucide-react'
 
+import {
+  ArrowDownUpIcon,
+  ChevronsUpDownIcon,
+  GripVerticalIcon,
+  TrashIcon
+} from '#components/custom/icons'
 import {
   Sortable,
   SortableContent,
@@ -187,7 +192,7 @@ export function DataTableSortList<TData>({
             size='sm'
             variant='outline'
           >
-            <ArrowDownUp />
+            <ArrowDownUpIcon />
             Sort
             {sorting.length > 0 && (
               <Badge
@@ -336,7 +341,7 @@ function DataTableSortItem({
               variant='outline'
             >
               <span className='truncate'>{columnLabels.get(sort.id)}</span>
-              <ChevronsUpDown className='opacity-50' />
+              <ChevronsUpDownIcon className='opacity-50' />
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -404,7 +409,7 @@ function DataTableSortItem({
           size='icon'
           variant='outline'
         >
-          <Trash2 />
+          <TrashIcon />
         </Button>
         <SortableItemHandle asChild>
           <Button
@@ -412,7 +417,7 @@ function DataTableSortItem({
             size='icon'
             variant='outline'
           >
-            <GripVertical />
+            <GripVerticalIcon />
           </Button>
         </SortableItemHandle>
       </li>

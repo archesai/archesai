@@ -3,10 +3,10 @@
 import type { Column, Table } from '@tanstack/react-table'
 
 import { useCallback, useMemo } from 'react'
-import { X } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import { XCircleIcon } from '#components/custom/icons'
 import { DataTableViewOptions } from '#components/datatable/components/data-table-view-options'
 import { DataTableDateFilter } from '#components/datatable/components/filters/data-table-date-filter'
 import { DataTableFacetedFilter } from '#components/datatable/components/filters/data-table-faceted-filter'
@@ -58,7 +58,7 @@ export function DataTableToolbar<TEntity extends BaseEntity>(
             size='sm'
             variant='outline'
           >
-            <X />
+            <XCircleIcon />
             Reset
           </Button>
         )}

@@ -1,35 +1,34 @@
 import type { SiteRoute } from '@archesai/ui/lib/site-config.interface'
 
 import {
-  BookOpen,
-  Building2,
-  Cpu,
+  BookOpenIcon,
+  Building2Icon,
   CpuIcon,
-  FileText,
-  Image,
-  PackageCheck,
-  Server,
-  Settings2,
-  SquareTerminal,
-  Tags,
-  User,
-  Users,
-  Volume2,
-  Workflow
+  ImageIcon,
+  PackageCheckIcon,
+  ServerIcon,
+  Settings2Icon,
+  SquareTerminalIcon,
+  TagsIcon,
+  TextIcon,
+  UserIcon,
+  UsersIcon,
+  Volume2Icon,
+  WorkflowIcon
 } from '@archesai/ui/components/custom/icons'
 
 export const siteRoutes: SiteRoute[] = [
   {
     description: 'Try out your tools here.',
     href: '/',
-    Icon: SquareTerminal,
+    Icon: SquareTerminalIcon,
     section: 'Home',
     title: 'Dashboard'
   },
   {
     description: 'Browse and manage your artifacts here.',
     href: '/artifacts',
-    Icon: Server,
+    Icon: ServerIcon,
     section: 'Data',
     title: 'Artifacts'
   },
@@ -43,7 +42,7 @@ export const siteRoutes: SiteRoute[] = [
   {
     description: 'View and manage your pipelines.',
     href: '/pipelines',
-    Icon: Workflow,
+    Icon: WorkflowIcon,
     section: 'Build',
     showInTabs: true,
     title: 'Pipelines'
@@ -51,14 +50,14 @@ export const siteRoutes: SiteRoute[] = [
   {
     description: 'View your previous runs.',
     href: '/runs',
-    Icon: PackageCheck,
+    Icon: PackageCheckIcon,
     section: 'Build',
     title: 'History'
   },
   {
     description: 'Create and manage labels.',
     href: '/labels',
-    Icon: Tags,
+    Icon: TagsIcon,
     section: 'Data',
     title: 'Labels'
   },
@@ -66,7 +65,7 @@ export const siteRoutes: SiteRoute[] = [
   {
     description: 'View your profile information.',
     href: '/profile',
-    Icon: User,
+    Icon: UserIcon,
     section: 'Settings',
     title: 'Account'
   },
@@ -75,7 +74,7 @@ export const siteRoutes: SiteRoute[] = [
       {
         description: "View and update your organization's general information.",
         href: '/organization',
-        Icon: Building2,
+        Icon: Building2Icon,
         section: 'Settings',
         showInTabs: true,
         title: 'General'
@@ -83,14 +82,14 @@ export const siteRoutes: SiteRoute[] = [
       {
         description: "View and manage your organization's members.",
         href: '/organization/members',
-        Icon: Users,
+        Icon: UsersIcon,
         section: 'Settings',
         showInTabs: true,
         title: 'Members'
       }
     ],
     href: '/organization',
-    Icon: Settings2,
+    Icon: Settings2Icon,
     section: 'Settings',
     title: 'Settings'
   }
@@ -104,11 +103,11 @@ export const toolBaseIcons: Record<
   | 'text-to-speech',
   SiteRoute['Icon']
 > = {
-  'create-embeddings': Cpu,
-  'extract-text': FileText,
-  summarize: BookOpen,
-  'text-to-image': Image,
-  'text-to-speech': Volume2
+  'create-embeddings': CpuIcon,
+  'extract-text': TextIcon,
+  summarize: BookOpenIcon,
+  'text-to-image': ImageIcon,
+  'text-to-speech': Volume2Icon
 }
 
 export const siteMetadata = {

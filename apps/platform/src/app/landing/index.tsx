@@ -3,17 +3,17 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 
 import {
-  ArrowRight,
-  BarChart,
-  Check,
-  ChevronRight,
-  Layers,
-  Menu,
-  Shield,
-  Star,
-  Users,
-  X,
-  Zap
+  ArrowRightIcon,
+  BarChartIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  LayersIcon,
+  MenuIcon,
+  ShieldIcon,
+  StarIcon,
+  UsersIcon,
+  XCircleIcon,
+  ZapIcon
 } from '@archesai/ui/components/custom/icons'
 import {
   Accordion,
@@ -80,37 +80,37 @@ export default function LandingPage() {
     {
       description:
         'Automate repetitive tasks and workflows to save time and reduce errors.',
-      icon: <Zap className='size-5' />,
+      icon: <ZapIcon className='size-5' />,
       title: 'Smart Automation'
     },
     {
       description:
         'Gain valuable insights with real-time data visualization and reporting.',
-      icon: <BarChart className='size-5' />,
+      icon: <BarChartIcon className='size-5' />,
       title: 'Advanced Analytics'
     },
     {
       description:
         'Work together seamlessly with integrated communication tools.',
-      icon: <Users className='size-5' />,
+      icon: <UsersIcon className='size-5' />,
       title: 'Team Collaboration'
     },
     {
       description:
         'Keep your data safe with end-to-end encryption and compliance features.',
-      icon: <Shield className='size-5' />,
+      icon: <ShieldIcon className='size-5' />,
       title: 'Enterprise Security'
     },
     {
       description:
         'Connect with your favorite tools through our extensive API ecosystem.',
-      icon: <Layers className='size-5' />,
+      icon: <LayersIcon className='size-5' />,
       title: 'Seamless Integration'
     },
     {
       description:
         'Get help whenever you need it with our dedicated support team.',
-      icon: <Star className='size-5' />,
+      icon: <StarIcon className='size-5' />,
       title: '24/7 Support'
     }
   ]
@@ -177,7 +177,7 @@ export default function LandingPage() {
             </Link>
             <Button className='rounded-full'>
               Get Started
-              <ChevronRight className='ml-1 size-4' />
+              <ChevronRightIcon className='ml-1 size-4' />
             </Button>
           </div>
           <div className='flex items-center gap-4 md:hidden'>
@@ -199,8 +199,8 @@ export default function LandingPage() {
               variant='ghost'
             >
               {mobileMenuOpen ?
-                <X className='size-5' />
-              : <Menu className='size-5' />}
+                <XCircleIcon className='size-5' />
+              : <MenuIcon className='size-5' />}
               <span className='sr-only'>Toggle menu</span>
             </Button>
           </div>
@@ -266,7 +266,7 @@ export default function LandingPage() {
                 </Link>
                 <Button className='rounded-full'>
                   Get Started
-                  <ChevronRight className='ml-1 size-4' />
+                  <ChevronRightIcon className='ml-1 size-4' />
                 </Button>
               </div>
             </div>
@@ -305,7 +305,7 @@ export default function LandingPage() {
                   size='lg'
                 >
                   Start Free Trial
-                  <ArrowRight className='ml-2 size-4' />
+                  <ArrowRightIcon className='ml-2 size-4' />
                 </Button>
                 <Button
                   className='h-12 rounded-full px-8 text-base'
@@ -317,15 +317,15 @@ export default function LandingPage() {
               </div>
               <div className='mt-6 flex items-center justify-center gap-4 text-sm text-muted-foreground'>
                 <div className='flex items-center gap-1'>
-                  <Check className='size-4 text-primary' />
+                  <CheckIcon className='size-4 text-primary' />
                   <span>No credit card</span>
                 </div>
                 <div className='flex items-center gap-1'>
-                  <Check className='size-4 text-primary' />
+                  <CheckIcon className='size-4 text-primary' />
                   <span>14-day trial</span>
                 </div>
                 <div className='flex items-center gap-1'>
-                  <Check className='size-4 text-primary' />
+                  <CheckIcon className='size-4 text-primary' />
                   <span>Cancel anytime</span>
                 </div>
               </div>
@@ -591,7 +591,7 @@ export default function LandingPage() {
                         {Array(testimonial.rating)
                           .fill(0)
                           .map((_, j) => (
-                            <Star
+                            <StarIcon
                               className='size-4 fill-yellow-500 text-yellow-500'
                               key={j}
                             />
@@ -749,7 +749,7 @@ export default function LandingPage() {
                                   className='flex items-center'
                                   key={j}
                                 >
-                                  <Check className='mr-2 size-4 text-primary' />
+                                  <CheckIcon className='mr-2 size-4 text-primary' />
                                   <span>{feature}</span>
                                 </li>
                               ))}
@@ -845,7 +845,7 @@ export default function LandingPage() {
                                   className='flex items-center'
                                   key={j}
                                 >
-                                  <Check className='mr-2 size-4 text-primary' />
+                                  <CheckIcon className='mr-2 size-4 text-primary' />
                                   <span>{feature}</span>
                                 </li>
                               ))}
@@ -913,8 +913,9 @@ export default function LandingPage() {
                   },
                   {
                     answer:
-                      'The number of users depends on your plan. The Starter plan allows up to 5 team members, the Professional plan allows up to 20, and the Enterprise plan has no limit on team members.',
-                    question: 'Is there a limit to how many users I can add?'
+                      'The number of usersIcon depends on your plan. The Starter plan allows up to 5 team members, the Professional plan allows up to 20, and the Enterprise plan has no limit on team members.',
+                    question:
+                      'Is there a limit to how many usersIcon I can add?'
                   },
                   {
                     answer:
@@ -986,7 +987,7 @@ export default function LandingPage() {
                   variant='secondary'
                 >
                   Start Free Trial
-                  <ArrowRight className='ml-2 size-4' />
+                  <ArrowRightIcon className='ml-2 size-4' />
                 </Button>
                 <Button
                   className='h-12 rounded-full border-white bg-transparent px-8 text-base text-white hover:bg-white/10'

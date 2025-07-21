@@ -1,12 +1,17 @@
 import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
-import type { LucideIcon } from 'lucide-react'
 
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { CheckSquareIcon, PlusSquareIcon, SortAsc } from 'lucide-react'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import type { LucideIcon } from '#components/custom/icons'
+
+import {
+  CheckSquareIcon,
+  PlusSquareIcon,
+  SortAscIcon
+} from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Command,
@@ -140,7 +145,7 @@ export function DataSelector<TItem extends BaseEntity>({
             </div>
             {isMultiSelect ?
               <PlusSquareIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-            : <SortAsc className='ml-2 h-4 w-4 shrink-0 opacity-50' />}
+            : <SortAscIcon className='ml-2 h-4 w-4 shrink-0 opacity-50' />}
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-[300px] p-0'>

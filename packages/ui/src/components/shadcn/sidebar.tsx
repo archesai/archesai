@@ -2,9 +2,9 @@ import type { VariantProps } from 'class-variance-authority'
 
 import * as React from 'react'
 import { cva } from 'class-variance-authority'
-import { PanelLeftIcon } from 'lucide-react'
 import { Slot as SlotPrimitive } from 'radix-ui'
 
+import { PanelLeftIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { Input } from '#components/shadcn/input'
 import { Separator } from '#components/shadcn/separator'

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Laptop, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import type { SiteRoute } from '#lib/site-config.interface'
 
+import { LaptopIcon, MoonIcon, SunIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   CommandDialog,
@@ -134,9 +134,9 @@ export function CommandMenu({
                   })
                 }}
               >
-                {theme === 'light' && <Sun className='h-5 w-5' />}
-                {theme === 'dark' && <Moon className='h-5 w-5' />}
-                {theme === 'system' && <Laptop className='h-5 w-5' />}
+                {theme === 'light' && <SunIcon className='h-5 w-5' />}
+                {theme === 'dark' && <MoonIcon className='h-5 w-5' />}
+                {theme === 'system' && <LaptopIcon className='h-5 w-5' />}
                 <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
               </CommandItem>
             ))}

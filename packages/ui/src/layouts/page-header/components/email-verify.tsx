@@ -1,10 +1,10 @@
-import { RocketIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { UserEntity } from '@archesai/schemas'
 
 import { requestEmailVerification } from '@archesai/client'
 
+import { RocketIcon } from '#components/custom/icons'
 import { Alert, AlertTitle } from '#components/shadcn/alert'
 
 export interface VerifyEmailAlertProps {

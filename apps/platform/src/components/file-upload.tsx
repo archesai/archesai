@@ -3,7 +3,7 @@ import type { DragEvent } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 
-import { UploadCloud } from '@archesai/ui/components/custom/icons'
+import { UploadCloudIcon } from '@archesai/ui/components/custom/icons'
 import { cn } from '@archesai/ui/lib/utils'
 
 interface FileError {
@@ -578,7 +578,7 @@ export default function FileUpload({
                       type='button'
                     >
                       <span>Upload File</span>
-                      <UploadCloud className='h-4 w-4 transition-transform duration-200 group-hover:scale-110' />
+                      <UploadCloudIcon className='h-4 w-4 transition-transform duration-200 group-hover:scale-110' />
                     </button>
 
                     <p className='mt-3 text-xs text-gray-500 dark:text-gray-400'>

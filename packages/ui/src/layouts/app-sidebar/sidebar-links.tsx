@@ -1,8 +1,8 @@
 import { useLocation, useRouter } from '@tanstack/react-router'
-import { ChevronRight } from 'lucide-react'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
+import { ChevronRightIcon } from '#components/custom/icons'
 import {
   Collapsible,
   CollapsibleContent,
@@ -71,7 +71,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                             <SidebarMenuButton tooltip={rootRoute.title}>
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
-                              <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                              <ChevronRightIcon className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>

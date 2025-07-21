@@ -3,10 +3,10 @@
 import type { Table } from '@tanstack/react-table'
 
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { Loader, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import * as ReactDOM from 'react-dom'
 
+import { Loader2Icon, XCircleIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { Separator } from '#components/shadcn/separator'
 import {
@@ -113,7 +113,7 @@ function DataTableActionBarAction({
       {...props}
     >
       {isPending ?
-        <Loader className='animate-spin' />
+        <Loader2Icon className='animate-spin' />
       : children}
     </Button>
   )
@@ -157,7 +157,7 @@ function DataTableActionBarSelection<TData>({
             size='icon'
             variant='ghost'
           >
-            <X className='size-3.5' />
+            <XCircleIcon className='size-3.5' />
           </Button>
         </TooltipTrigger>
         <TooltipContent

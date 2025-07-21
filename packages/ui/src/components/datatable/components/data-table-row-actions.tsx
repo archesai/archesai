@@ -2,11 +2,10 @@
 
 import type { Table } from '@tanstack/table-core'
 
-import { MoreHorizontal } from 'lucide-react'
-
 import type { BaseEntity } from '@archesai/schemas'
 
 import { DeleteItems } from '#components/custom/delete-items'
+import { MoreHorizontalIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   DropdownMenu,
@@ -36,7 +35,7 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
           variant='ghost'
         >
-          <MoreHorizontal className='h-5 w-5' />
+          <MoreHorizontalIcon className='h-5 w-5' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

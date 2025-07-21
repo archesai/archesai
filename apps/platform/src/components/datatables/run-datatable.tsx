@@ -4,7 +4,7 @@ import type { RunEntity } from '@archesai/schemas'
 
 import { deleteRun, getFindManyRunsQueryOptions } from '@archesai/client'
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
-import { PackageCheck } from '@archesai/ui/components/custom/icons'
+import { PackageCheckIcon } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -19,19 +19,18 @@ export default function RunDataTable() {
           accessorKey: 'id',
           cell: ({ row }) => {
             return (
-              <div className='flex gap-2'>
-                <Link
-                  className='max-w-[200px] shrink truncate font-medium'
-                  params={{
-                    runId: row.original.id
-                  }}
-                  to={`/runs/$runId`}
-                >
-                  {row.original.id}
-                </Link>
-              </div>
+              <Link
+                className='max-w-[200px] shrink truncate font-medium'
+                params={{
+                  runId: row.original.id
+                }}
+                to={`/runs/$runId`}
+              >
+                {row.original.id}
+              </Link>
             )
-          }
+          },
+          id: 'id'
         },
         {
           accessorKey: 'status',
@@ -43,7 +42,7 @@ export default function RunDataTable() {
               />
             )
           },
-          enableHiding: false
+          id: 'status'
         },
         {
           accessorKey: 'duration',
@@ -57,8 +56,7 @@ export default function RunDataTable() {
                 />
               : 'N/A'
           },
-          enableHiding: false,
-          enableSorting: false
+          id: 'duration'
         },
         {
           accessorKey: 'startedAt',
@@ -66,7 +64,8 @@ export default function RunDataTable() {
             return row.original.startedAt ?
                 <Timestamp date={row.original.startedAt} />
               : 'N/A'
-          }
+          },
+          id: 'startedAt'
         },
         {
           accessorKey: 'completedAt',
@@ -74,7 +73,8 @@ export default function RunDataTable() {
             return row.original.completedAt ?
                 <Timestamp date={row.original.completedAt} />
               : 'N/A'
-          }
+          },
+          id: 'completedAt'
         }
       ]}
       defaultView='table'
@@ -85,7 +85,7 @@ export default function RunDataTable() {
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}
-      icon={<PackageCheck />}
+      icon={<PackageCheckIcon />}
       useFindMany={getFindManyRunsQueryOptions}
     />
   )

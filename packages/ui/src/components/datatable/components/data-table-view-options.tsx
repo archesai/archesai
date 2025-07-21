@@ -2,10 +2,13 @@
 
 import type { Table } from '@tanstack/react-table'
 
-import { Check, ChevronsUpDown, Settings2 } from 'lucide-react'
-
 import type { BaseEntity } from '@archesai/schemas'
 
+import {
+  CheckIcon,
+  ChevronsUpDownIcon,
+  Settings2Icon
+} from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Command,
@@ -46,9 +49,9 @@ export function DataTableViewOptions<TEntity extends BaseEntity>(
           size='sm'
           variant='outline'
         >
-          <Settings2 />
+          <Settings2Icon />
           View
-          <ChevronsUpDown className='ml-auto opacity-50' />
+          <ChevronsUpDownIcon className='ml-auto opacity-50' />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -72,7 +75,7 @@ export function DataTableViewOptions<TEntity extends BaseEntity>(
                       {column.columnDef.meta?.label ??
                         toSentenceCase(column.id)}
                     </span>
-                    <Check
+                    <CheckIcon
                       className={cn(
                         'ml-auto size-4 shrink-0',
                         column.getIsVisible() ? 'opacity-100' : 'opacity-0'

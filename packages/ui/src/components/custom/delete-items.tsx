@@ -1,9 +1,9 @@
 import { useTransition } from 'react'
-import { Loader2, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import { Loader2Icon, TrashIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Dialog,
@@ -62,7 +62,7 @@ export const DeleteItems = <TEntity extends BaseEntity>(
             size='sm'
             variant='outline'
           >
-            <Trash
+            <TrashIcon
               aria-hidden='true'
               className='mr-2 size-4'
             />
@@ -81,7 +81,7 @@ export const DeleteItems = <TEntity extends BaseEntity>(
           </DialogDescription>
         </DialogHeader>
         <div className='flex flex-col items-center justify-center gap-3 p-4'>
-          <Trash className='text-destructive' />
+          <TrashIcon className='text-destructive' />
           <p className='text-center'>
             {t(
               `Are you sure you want to permanently delete the following ${props.entityKey}${props.items.length > 1 ? 's' : ''}?`
@@ -107,7 +107,7 @@ export const DeleteItems = <TEntity extends BaseEntity>(
             variant='destructive'
           >
             {isDeletePending && (
-              <Loader2
+              <Loader2Icon
                 aria-hidden='true'
                 className='mr-2 size-4 animate-spin'
               />

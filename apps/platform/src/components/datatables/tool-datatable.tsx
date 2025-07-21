@@ -4,7 +4,11 @@ import type { ToolEntity } from '@archesai/schemas'
 
 import { deleteTool, getFindManyToolsQueryOptions } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
-import { PackageCheck, Text } from '@archesai/ui/components/custom/icons'
+import {
+  CalendarIcon,
+  PackageCheckIcon,
+  TextIcon
+} from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
@@ -19,36 +23,35 @@ export default function ToolDataTable() {
           accessorKey: 'name',
           cell: ({ row }) => {
             return (
-              <div className='flex gap-2'>
-                <Link
-                  className='shrink truncate text-wrap text-primary hover:underline md:text-sm'
-                  params={{
-                    artifactId: row.original.id
-                  }}
-                  to={`/artifacts/$artifactId`}
-                >
-                  {row.original.name}
-                </Link>
-              </div>
+              <Link
+                className='shrink truncate text-wrap text-primary hover:underline md:text-sm'
+                params={{
+                  artifactId: row.original.id
+                }}
+                to={`/artifacts/$artifactId`}
+              >
+                {row.original.name}
+              </Link>
             )
           },
           enableColumnFilter: true,
+          id: 'name',
           meta: {
             filterVariant: 'text',
-            icon: Text,
+            icon: TextIcon,
             label: 'Name'
           }
         },
         {
           accessorKey: 'description',
           cell: ({ row }) => {
-            return <span>{row.original.description || 'No Description'}</span>
+            return row.original.description || 'No Description'
           },
           enableColumnFilter: true,
-          enableHiding: false,
+          id: 'description',
           meta: {
             filterVariant: 'text',
-            icon: Text,
+            icon: TextIcon,
             label: 'Description'
           }
         },
@@ -60,10 +63,10 @@ export default function ToolDataTable() {
             )
           },
           enableColumnFilter: true,
-          enableHiding: false,
+          id: 'inputMimeType',
           meta: {
             filterVariant: 'text',
-            icon: Text,
+            icon: TextIcon,
             label: 'Input'
           }
         },
@@ -75,10 +78,10 @@ export default function ToolDataTable() {
             )
           },
           enableColumnFilter: true,
-          enableHiding: false,
+          id: 'outputMimeType',
           meta: {
             filterVariant: 'multiSelect',
-            icon: Text,
+            icon: TextIcon,
             label: 'Output'
           }
         },
@@ -86,6 +89,13 @@ export default function ToolDataTable() {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
+          },
+          enableColumnFilter: true,
+          id: 'createdAt',
+          meta: {
+            filterVariant: 'dateRange',
+            icon: CalendarIcon,
+            label: 'Created at'
           }
         }
       ]}
@@ -97,7 +107,7 @@ export default function ToolDataTable() {
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
-      icon={<PackageCheck />}
+      icon={<PackageCheckIcon />}
       useFindMany={getFindManyToolsQueryOptions}
     />
   )

@@ -2,7 +2,8 @@ import type { MemberEntity } from '@archesai/schemas'
 
 import { deleteMember, getFindManyMembersQueryOptions } from '@archesai/client'
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
-import { CheckIcon, User, XIcon } from '@archesai/ui/components/custom/icons'
+import { UserIcon } from '@archesai/ui/components/custom/icons'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
@@ -16,32 +17,26 @@ export default function MemberDataTable() {
           accessorKey: 'role',
           cell: ({ row }) => {
             return (
-              <Badge
-                className='capitalize'
-                variant={'secondary'}
-              >
+              <Badge variant={'secondary'}>
                 {row.original.role.toLowerCase()}
               </Badge>
             )
-          }
+          },
+          id: 'role'
         },
         {
           accessorKey: 'userId',
           cell: ({ row }) => {
-            return <span className='font-medium'>{row.original.userId}</span>
-          }
+            return row.original.userId
+          },
+          id: 'userId'
         },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
-            return (
-              <span className='max-w-[500px] truncate font-medium'>
-                {row.original.createdAt ?
-                  <CheckIcon className='text-primary' />
-                : <XIcon className='text-red-950' />}
-              </span>
-            )
-          }
+            return <Timestamp date={row.original.createdAt} />
+          },
+          id: 'createdAt'
         }
       ]}
       createForm={MemberForm}
@@ -53,7 +48,7 @@ export default function MemberDataTable() {
       handleSelect={() => {
         console.log('handleSelect')
       }}
-      icon={<User />}
+      icon={<UserIcon />}
       updateForm={MemberForm}
       useFindMany={getFindManyMembersQueryOptions}
     />

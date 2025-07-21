@@ -1,5 +1,4 @@
-import { GridIcon, ListIcon } from 'lucide-react'
-
+import { GridIcon, ListIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { useToggleView } from '#hooks/use-toggle-view'
 import { cn } from '#lib/utils'

@@ -1,7 +1,6 @@
-import { Search } from 'lucide-react'
-
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
+import { SearchIcon } from '#components/custom/icons'
 import { UserButton } from '#components/custom/user-button'
 import { Label } from '#components/shadcn/label'
 import {
@@ -55,7 +54,7 @@ export function SearchForm({ ...props }: React.ComponentProps<'form'>) {
             id='search'
             placeholder='Search the docs...'
           />
-          <Search className='pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none' />
+          <SearchIcon className='pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none' />
         </SidebarGroupContent>
       </SidebarGroup>
     </form>

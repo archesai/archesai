@@ -1,5 +1,3 @@
-import { ChevronsUpDown, Plus } from 'lucide-react'
-
 import type { UserEntity } from '@archesai/schemas'
 
 import {
@@ -9,6 +7,7 @@ import {
 } from '@archesai/client'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
+import { ChevronsUpDownIcon, PlusIcon } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
 import {
   DropdownMenu,
@@ -65,7 +64,7 @@ export function OrganizationButton() {
                   {sessionData.session.activeOrganizationId}
                 </span>
               </div>
-              <ChevronsUpDown className='ml-auto' />
+              <ChevronsUpDownIcon className='ml-auto' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -93,7 +92,7 @@ export function OrganizationButton() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className='gap-2 p-2'>
               <div className='flex size-6 items-center justify-center rounded-md border bg-transparent'>
-                <Plus className='size-4' />
+                <PlusIcon className='size-4' />
               </div>
               <div className='font-medium text-muted-foreground'>
                 New Organization

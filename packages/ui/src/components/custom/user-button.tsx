@@ -1,12 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useRouter } from '@tanstack/react-router'
-import {
-  BadgeCheck,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles
-} from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { UserEntity } from '@archesai/schemas'
@@ -18,6 +11,13 @@ import {
   useUpdateUser
 } from '@archesai/client'
 
+import {
+  BadgeCheckIcon,
+  ChevronsUpDownIcon,
+  CreditCardIcon,
+  LogOutIcon,
+  SparklesIcon
+} from '#components/custom/icons'
 import { Avatar, AvatarFallback, AvatarImage } from '#components/shadcn/avatar'
 import { Badge } from '#components/shadcn/badge'
 import { Button } from '#components/shadcn/button'
@@ -110,7 +110,7 @@ export function UserButton({
                     {sessionData.user.email}
                   </span>
                 </div>
-                <ChevronsUpDown className='ml-auto size-4' />
+                <ChevronsUpDownIcon className='ml-auto size-4' />
               </SidebarMenuButton>
             }
           </DropdownMenuTrigger>
@@ -142,7 +142,7 @@ export function UserButton({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck />
+                <BadgeCheckIcon />
                 Profile
                 <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
@@ -189,13 +189,13 @@ export function UserButton({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
+                <SparklesIcon />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <CreditCard />
+                <CreditCardIcon />
                 Billing
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -213,7 +213,7 @@ export function UserButton({
                 })
               }}
             >
-              <LogOut />
+              <LogOutIcon />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

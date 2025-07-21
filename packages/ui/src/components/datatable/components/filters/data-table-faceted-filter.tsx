@@ -3,10 +3,14 @@
 import type { Column } from '@tanstack/react-table'
 
 import * as React from 'react'
-import { Check, PlusCircle, XCircle } from 'lucide-react'
 
 import type { Option } from '#types/simple-data-table'
 
+import {
+  CheckIcon,
+  PlusCircleIcon,
+  XCircleIcon
+} from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
 import { Button } from '#components/shadcn/button'
 import {
@@ -94,9 +98,9 @@ export function DataTableFacetedFilter<TData, TValue>({
               role='button'
               tabIndex={0}
             >
-              <XCircle />
+              <XCircleIcon />
             </div>
-          : <PlusCircle />}
+          : <PlusCircleIcon />}
           {title}
           {selectedValues.size > 0 && (
             <>
@@ -162,7 +166,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         )
                       )}
                     >
-                      <Check />
+                      <CheckIcon />
                     </div>
                     {option.icon && <option.icon />}
                     <span className='truncate'>{option.label}</span>

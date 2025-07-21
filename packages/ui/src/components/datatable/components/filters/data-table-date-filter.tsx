@@ -4,8 +4,8 @@ import type { Column } from '@tanstack/react-table'
 import type { DateRange } from 'react-day-picker'
 
 import { useCallback, useMemo } from 'react'
-import { CalendarIcon, XCircle } from 'lucide-react'
 
+import { CalendarIcon, XCircleIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { Calendar } from '#components/shadcn/calendar'
 import {
@@ -154,7 +154,7 @@ export function DataTableDateFilter<TData>({
               role='button'
               tabIndex={0}
             >
-              <XCircle />
+              <XCircleIcon />
             </div>
           : <CalendarIcon />}
           {label}

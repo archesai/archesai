@@ -3,12 +3,11 @@
 import type { Table } from '@tanstack/react-table'
 
 import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight
-} from 'lucide-react'
-
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon
+} from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Select,
@@ -81,7 +80,7 @@ export function DataTablePagination<TData>({
             size='icon'
             variant='outline'
           >
-            <ChevronsLeft />
+            <ChevronsLeftIcon />
           </Button>
           <Button
             aria-label='Go to previous page'
@@ -93,7 +92,7 @@ export function DataTablePagination<TData>({
             size='icon'
             variant='outline'
           >
-            <ChevronLeft />
+            <ChevronLeftIcon />
           </Button>
           <Button
             aria-label='Go to next page'
@@ -105,7 +104,7 @@ export function DataTablePagination<TData>({
             size='icon'
             variant='outline'
           >
-            <ChevronRight />
+            <ChevronRightIcon />
           </Button>
           <Button
             aria-label='Go to last page'
@@ -117,7 +116,7 @@ export function DataTablePagination<TData>({
             size='icon'
             variant='outline'
           >
-            <ChevronsRight />
+            <ChevronsRightIcon />
           </Button>
         </div>
       </div>

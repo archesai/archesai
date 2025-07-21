@@ -5,10 +5,7 @@ import {
   useGetSessionSuspense,
   useRequestPasswordReset
 } from '@archesai/client'
-import {
-  LoaderIcon,
-  LoaderPinwheel
-} from '@archesai/ui/components/custom/icons'
+import { Loader2Icon } from '@archesai/ui/components/custom/icons'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import {
   Card,
@@ -62,7 +59,7 @@ export default function ProfileSecuritySettingsPage() {
               type='submit'
             >
               {requestPasswordResetPending && (
-                <LoaderIcon className='animate-spin' />
+                <Loader2Icon className='animate-spin' />
               )}
               Reset Password
             </Button>
@@ -88,7 +85,7 @@ export default function ProfileSecuritySettingsPage() {
               size='sm'
               variant={'destructive'}
             >
-              {deactivatePending && <LoaderPinwheel className='animate-spin' />}
+              {deactivatePending && <Loader2Icon className='animate-spin' />}
               Delete Account
             </Button>
           </CardFooter>

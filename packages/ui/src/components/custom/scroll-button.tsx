@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ArrowUpToLine } from 'lucide-react'
 
+import { ArrowUpToLineIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 
 export const ScrollButton = () => {
@@ -31,7 +31,7 @@ export const ScrollButton = () => {
           onClick={goToTop}
           size='icon'
         >
-          <ArrowUpToLine className='h-4 w-4' />
+          <ArrowUpToLineIcon className='h-4 w-4' />
         </Button>
       )}
     </>

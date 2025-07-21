@@ -2,8 +2,13 @@
 
 import type { Column } from '@tanstack/react-table'
 
-import { ChevronDown, ChevronsUpDown, ChevronUp, EyeOff, X } from 'lucide-react'
-
+import {
+  ChevronDownIcon,
+  ChevronsUpDownIcon,
+  ChevronUpIcon,
+  EyeOffIcon,
+  XCircleIcon
+} from '#components/custom/icons'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -42,9 +47,9 @@ export function DataTableColumnHeader<TData, TValue>({
       >
         {title}
         {column.getCanSort() &&
-          (column.getIsSorted() === 'desc' ? <ChevronDown />
-          : column.getIsSorted() === 'asc' ? <ChevronUp />
-          : <ChevronsUpDown />)}
+          (column.getIsSorted() === 'desc' ? <ChevronDownIcon />
+          : column.getIsSorted() === 'asc' ? <ChevronUpIcon />
+          : <ChevronsUpDownIcon />)}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align='start'
@@ -59,7 +64,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 column.toggleSorting(false)
               }}
             >
-              <ChevronUp />
+              <ChevronUpIcon />
               Asc
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -69,7 +74,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 column.toggleSorting(true)
               }}
             >
-              <ChevronDown />
+              <ChevronDownIcon />
               Desc
             </DropdownMenuCheckboxItem>
             {column.getIsSorted() && (
@@ -79,7 +84,7 @@ export function DataTableColumnHeader<TData, TValue>({
                   column.clearSorting()
                 }}
               >
-                <X />
+                <XCircleIcon />
                 Reset
               </DropdownMenuItem>
             )}
@@ -93,7 +98,7 @@ export function DataTableColumnHeader<TData, TValue>({
               column.toggleVisibility(false)
             }}
           >
-            <EyeOff />
+            <EyeOffIcon />
             Hide
           </DropdownMenuCheckboxItem>
         )}

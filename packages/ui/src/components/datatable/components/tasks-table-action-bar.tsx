@@ -3,12 +3,12 @@
 import type { Table } from '@tanstack/react-table'
 
 import * as React from 'react'
-import { Download, Trash2 } from 'lucide-react'
 
 // import { toast } from 'sonner'
 
 import type { BaseEntity } from '@archesai/schemas'
 
+import { DownloadIcon, TrashIcon } from '#components/custom/icons'
 import {
   DataTableActionBar,
   DataTableActionBarAction,
@@ -160,7 +160,7 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
           size='icon'
           tooltip='Export'
         >
-          <Download />
+          <DownloadIcon />
         </DataTableActionBarAction>
         <DataTableActionBarAction
           isPending={getIsActionPending('delete')}
@@ -168,7 +168,7 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
           size='icon'
           tooltip='Delete'
         >
-          <Trash2 />
+          <TrashIcon />
         </DataTableActionBarAction>
       </div>
     </DataTableActionBar>

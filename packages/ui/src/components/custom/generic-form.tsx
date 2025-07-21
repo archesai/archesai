@@ -2,10 +2,10 @@ import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { Loader2Icon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Card,

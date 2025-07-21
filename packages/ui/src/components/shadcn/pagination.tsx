@@ -1,10 +1,10 @@
 import * as React from 'react'
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MoreHorizontalIcon
-} from 'lucide-react'
-
+} from '#components/custom/icons'
 import { Button, buttonVariants } from '#components/shadcn/button'
 import { cn } from '#lib/utils'
 

@@ -4,7 +4,8 @@ import type { LabelEntity } from '@archesai/schemas'
 
 import { deleteLabel, getFindManyLabelsQueryOptions } from '@archesai/client'
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
-import { ListMinus } from '@archesai/ui/components/custom/icons'
+import { ListIcon } from '@archesai/ui/components/custom/icons'
+import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
 
@@ -19,8 +20,23 @@ export default function LabelDataTable() {
         {
           accessorKey: 'name',
           cell: ({ row }) => {
-            return <Badge>{row.original.name}</Badge>
-          }
+            return <Badge variant={'secondary'}>{row.original.name}</Badge>
+          },
+          id: 'name'
+        },
+        {
+          accessorKey: 'createdAt',
+          cell: ({ row }) => {
+            return <Timestamp date={row.original.createdAt} />
+          },
+          id: 'createdAt'
+        },
+        {
+          accessorKey: 'updatedAt',
+          cell: ({ row }) => {
+            return <Timestamp date={row.original.updatedAt} />
+          },
+          id: 'updatedAt'
         }
       ]}
       createForm={LabelForm}
@@ -32,7 +48,7 @@ export default function LabelDataTable() {
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}
-      icon={<ListMinus />}
+      icon={<ListIcon />}
       updateForm={LabelForm}
       useFindMany={getFindManyLabelsQueryOptions}
     />

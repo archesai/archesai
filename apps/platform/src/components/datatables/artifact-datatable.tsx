@@ -5,9 +5,9 @@ import type { ArtifactEntity } from '@archesai/schemas'
 import { getFindManyArtifactsQueryOptions } from '@archesai/client'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 import {
-  Calendar,
-  File,
-  LetterText
+  CalendarIcon,
+  FileIcon,
+  TextIcon
 } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
@@ -42,7 +42,7 @@ export default function ArtifactDataTable() {
           id: 'name',
           meta: {
             filterVariant: 'text',
-            icon: LetterText,
+            icon: TextIcon,
             label: 'Name'
           }
         },
@@ -56,7 +56,7 @@ export default function ArtifactDataTable() {
           id: 'mimeType',
           meta: {
             filterVariant: 'multiSelect',
-            icon: LetterText,
+            icon: TextIcon,
             label: 'Artifact Type',
             options: [
               { label: 'Text', value: 'text' },
@@ -89,7 +89,7 @@ export default function ArtifactDataTable() {
           id: 'producer',
           meta: {
             filterVariant: 'text',
-            icon: LetterText,
+            icon: TextIcon,
             label: 'Producer'
           }
         },
@@ -103,7 +103,7 @@ export default function ArtifactDataTable() {
           id: 'createdAt',
           meta: {
             filterVariant: 'date',
-            icon: Calendar,
+            icon: CalendarIcon,
             label: 'Created'
           }
         }
@@ -129,7 +129,7 @@ export default function ArtifactDataTable() {
           to: `/artifacts/$artifactId`
         })
       }}
-      icon={<File size={24} />}
+      icon={<FileIcon size={24} />}
       updateForm={ArtifactForm}
       useFindMany={getFindManyArtifactsQueryOptions}
     />

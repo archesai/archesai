@@ -1,8 +1,13 @@
 import { useState } from 'react'
-import { Ban, CheckCircle2, ClockArrowUpIcon, Loader2Icon } from 'lucide-react'
 
 import type { RunEntity } from '@archesai/schemas'
 
+import {
+  BanIcon,
+  CheckCircle2Icon,
+  ClockArrowUpIcon,
+  Loader2Icon
+} from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import {
   Popover,
@@ -24,9 +29,9 @@ export const StatusTypeEnumButton = ({
   const renderIcon = () => {
     switch (run.status) {
       case 'COMPLETED':
-        return <CheckCircle2 className='text-green-600' />
+        return <CheckCircle2Icon className='text-green-600' />
       case 'FAILED':
-        return <Ban className='text-red-600' />
+        return <BanIcon className='text-red-600' />
       case 'PROCESSING':
         return (
           <div className='flex items-center gap-2'>

@@ -7,7 +7,7 @@ import {
   getFindManyPipelinesQueryOptions
 } from '@archesai/client'
 import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
-import { Workflow } from '@archesai/ui/components/custom/icons'
+import { WorkflowIcon } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 
@@ -31,24 +31,22 @@ export default function PipelineDataTable() {
                 </Link>
               </div>
             )
-          }
+          },
+          id: 'name'
         },
         {
           accessorKey: 'description',
           cell: ({ row }) => {
-            return (
-              <span>
-                {(row.original.description ?? 'No Description').toString()}
-              </span>
-            )
+            return (row.original.description ?? 'No Description').toString()
           },
-          enableHiding: false
+          id: 'description'
         },
         {
           accessorKey: 'createdAt',
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
-          }
+          },
+          id: 'createdAt'
         }
       ]}
       defaultView='table'
@@ -64,7 +62,7 @@ export default function PipelineDataTable() {
           to: `/pipelines/$pipelineId`
         })
       }}
-      icon={<Workflow />}
+      icon={<WorkflowIcon />}
       useFindMany={getFindManyPipelinesQueryOptions}
     />
   )

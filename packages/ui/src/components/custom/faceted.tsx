@@ -5,8 +5,8 @@ import {
   useMemo,
   useState
 } from 'react'
-import { Check, ChevronsUpDown } from 'lucide-react'
 
+import { CheckIcon, ChevronsUpDownIcon } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
 import {
   Command,
@@ -152,7 +152,7 @@ function FacetedBadgeList(props: FacetedBadgeListProps) {
         className='flex w-full items-center gap-1 text-muted-foreground'
       >
         {placeholder}
-        <ChevronsUpDown className='ml-auto size-4 shrink-0 opacity-50' />
+        <ChevronsUpDownIcon className='ml-auto size-4 shrink-0 opacity-50' />
       </div>
     )
   }
@@ -271,7 +271,7 @@ function FacetedItem(props: FacetedItemProps) {
           : 'opacity-50 [&_svg]:invisible'
         )}
       >
-        <Check className='size-4' />
+        <CheckIcon className='size-4' />
       </span>
       {children}
     </CommandItem>

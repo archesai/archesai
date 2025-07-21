@@ -3,19 +3,19 @@
 import type { Column, Table } from '@tanstack/react-table'
 
 import * as React from 'react'
-import {
-  BadgeCheck,
-  CalendarIcon,
-  Check,
-  ListFilter,
-  Text,
-  X
-} from 'lucide-react'
 
 import type { BaseEntity, FilterCondition } from '@archesai/schemas'
 
 import type { FilterOperator } from '#types/simple-data-table'
 
+import {
+  BadgeCheckIcon,
+  CalendarIcon,
+  CheckIcon,
+  ListFilterIcon,
+  TextIcon,
+  XCircleIcon
+} from '#components/custom/icons'
 import { DataTableRangeFilter } from '#components/datatable/components/filters/data-table-range-filter'
 import { Button } from '#components/shadcn/button'
 import { Calendar } from '#components/shadcn/calendar'
@@ -268,7 +268,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
           size='icon'
           variant='outline'
         >
-          <X />
+          <XCircleIcon />
         </Button>
       )}
       <Popover
@@ -284,7 +284,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
             size={filters.length > 0 ? 'icon' : 'sm'}
             variant='outline'
           >
-            <ListFilter />
+            <ListFilterIcon />
             {filters.length > 0 ? null : 'Filter'}
           </Button>
         </PopoverTrigger>
@@ -461,7 +461,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
                     <span className='truncate'>
                       {column.columnDef.meta?.label ?? column.id}
                     </span>
-                    <Check
+                    <CheckIcon
                       className={cn(
                         'ml-auto',
                         column.id === filter.field ? 'opacity-100' : 'opacity-0'
@@ -524,7 +524,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
         size='sm'
         variant='ghost'
       >
-        <X className='size-3.5' />
+        <XCircleIcon className='size-3.5' />
       </Button>
     </div>
   )
@@ -610,11 +610,11 @@ function FilterValueSelector<TData>({
           >
             {isEmpty ?
               <>
-                <Text />
+                <TextIcon />
                 <span>Type to add filter...</span>
               </>
             : <>
-                <BadgeCheck />
+                <BadgeCheckIcon />
                 <span className='truncate'>Filter by &quot;{value}&quot;</span>
               </>
             }
@@ -853,7 +853,7 @@ function onFilterInputRender<TData extends BaseEntity>({
                       {option.icon && <option.icon />}
                       <span className='truncate'>{option.label}</span>
                       {variant === 'multiSelect' && (
-                        <Check
+                        <CheckIcon
                           className={cn(
                             'ml-auto',
                             selectedValues.includes(option.value) ?
