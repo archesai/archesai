@@ -3336,25 +3336,6 @@ export interface ToolsSort {
   order: ToolsSortOrder
 }
 
-export type LoginBody = {
-  /**
-   * The email address associated with the account
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string
-  /** The password for the account */
-  password: string
-}
-
-export type Login200 = {
-  data: UserEntity
-}
-
-export type GetSession200 = {
-  session: SessionEntity
-  user: UserEntity
-}
-
 export type RegisterBody = {
   /**
    * The email address associated with the account
@@ -3371,6 +3352,25 @@ export type RegisterBody = {
 }
 
 export type Register201 = {
+  session: SessionEntity
+  user: UserEntity
+}
+
+export type LoginBody = {
+  /**
+   * The email address associated with the account
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
+  email: string
+  /** The password for the account */
+  password: string
+}
+
+export type Login200 = {
+  data: UserEntity
+}
+
+export type GetSession200 = {
   session: SessionEntity
   user: UserEntity
 }
@@ -3425,25 +3425,6 @@ export type RequestEmailChangeBody = {
   userId: string
 }
 
-export type CreateAccountBody = {
-  /**
-   * The email address associated with the account
-   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
-   */
-  email: string
-  /**
-   * The name of the user creating the account
-   * @minLength 1
-   */
-  name: string
-  /** The password for the account */
-  password: string
-}
-
-export type CreateAccount201 = {
-  data: AccountEntity
-}
-
 export type FindManyAccountsParams = {
   filter?: AccountsFilterNodeInput
   page?: PageInput
@@ -3465,10 +3446,6 @@ export type DeleteAccount200 = {
 }
 
 export type GetOneAccount200 = {
-  data: AccountEntity
-}
-
-export type UpdateAccount200 = {
   data: AccountEntity
 }
 
@@ -3658,10 +3635,6 @@ export type UpdateOrganization200 = {
   data: OrganizationEntity
 }
 
-export type CreateSession201 = {
-  data: SessionEntity
-}
-
 export type FindManySessionsParams = {
   filter?: SessionsFilterNodeInput
   page?: PageInput
@@ -3684,24 +3657,6 @@ export type DeleteSession200 = {
 
 export type GetOneSession200 = {
   data: SessionEntity
-}
-
-export type UpdateSession200 = {
-  data: SessionEntity
-}
-
-export type CreateUserBody = {
-  /** The user's e-mail */
-  email: string
-  /**
-   * The user's avatar image URL
-   * @nullable
-   */
-  image: string | null
-}
-
-export type CreateUser201 = {
-  data: UserEntity
 }
 
 export type FindManyUsersParams = {

@@ -61,7 +61,7 @@ export function UserButton({
       field: 'organizationId',
       operator: 'eq',
       type: 'condition',
-      value: sessionData.session.activeOrganizationId
+      value: sessionData.session.activeOrganizationId ?? ''
     }
   })
 

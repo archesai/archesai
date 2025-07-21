@@ -26,12 +26,9 @@ export const sessionsPlugin: FastifyPluginAsyncZod<
 
   // Register CRUD routes
   await app.register(crudPlugin, {
-    createSchema: SessionEntitySchema,
-    enableBulkOperations: true,
     entityKey: SESSION_ENTITY_KEY,
     entitySchema: SessionEntitySchema,
     prefix: '/sessions',
-    service: sessionsService,
-    updateSchema: SessionEntitySchema
+    service: sessionsService
   })
 }

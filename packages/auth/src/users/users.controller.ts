@@ -5,7 +5,6 @@ import type { DrizzleDatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
-  CreateUserDtoSchema,
   UpdateUserDtoSchema,
   USER_ENTITY_KEY,
   UserEntitySchema
@@ -29,7 +28,6 @@ export const usersPlugin: FastifyPluginAsyncZod<UsersPluginOptions> = async (
 
   // Register CRUD routes
   await app.register(crudPlugin, {
-    createSchema: CreateUserDtoSchema,
     enableBulkOperations: true,
     entityKey: USER_ENTITY_KEY,
     entitySchema: UserEntitySchema,

@@ -25,14 +25,14 @@ export interface CrudPluginOptions<
   TCreateSchema = z.ZodType,
   TUpdateSchema = z.ZodType
 > {
-  createSchema: TCreateSchema
+  createSchema?: TCreateSchema
   enableBulkOperations?: boolean
   entityKey: string
   entitySchema: z.ZodObject
   prefix: string
   service: BaseService<TEntity, TInsert, TSelect>
   tags?: string[]
-  updateSchema: TUpdateSchema
+  updateSchema?: TUpdateSchema
 }
 
 export const crudPlugin: FastifyPluginAsyncZod<
@@ -41,10 +41,8 @@ export const crudPlugin: FastifyPluginAsyncZod<
   app,
   {
     createSchema,
-    // enableBulkOperations = false,
     entityKey,
     entitySchema,
-    prefix: _prefix,
     service,
     tags = [entityKey],
     updateSchema
@@ -60,32 +58,35 @@ export const crudPlugin: FastifyPluginAsyncZod<
 
   const searchQuerySchema = createSearchQuerySchema(entitySchema, entityKey)
 
-  // POST /entity - Create single entity
-  app.post(
-    '',
-    {
-      ...baseRouteOptions,
-      schema: {
-        ...baseRouteOptions.schema,
-        body: createSchema,
-        description: `Create a new ${singularize(entityKey)}`,
-        operationId: 'create' + capitalize(toCamelCase(singularize(entityKey))),
-        response: {
-          201: DocumentSchemaFactory(entitySchema)
-          // 400: { $ref: 'error-document' },
-          // 401: { $ref: 'unauthorized-response' },
-          // 403: { $ref: 'forbidden-response' }
-        },
-        summary: `Create a new ${singularize(entityKey)}`,
-        tags: [toTitleCase(entityKey)]
+  if (createSchema) {
+    // POST /entity - Create single entity
+    app.post(
+      '',
+      {
+        ...baseRouteOptions,
+        schema: {
+          ...baseRouteOptions.schema,
+          body: createSchema,
+          description: `Create a new ${singularize(entityKey)}`,
+          operationId:
+            'create' + capitalize(toCamelCase(singularize(entityKey))),
+          response: {
+            201: DocumentSchemaFactory(entitySchema)
+            // 400: { $ref: 'error-document' },
+            // 401: { $ref: 'unauthorized-response' },
+            // 403: { $ref: 'forbidden-response' }
+          },
+          summary: `Create a new ${singularize(entityKey)}`,
+          tags: [toTitleCase(entityKey)]
+        }
+      },
+      async (req) => {
+        return {
+          data: await service.create(req.body)
+        }
       }
-    },
-    async (req) => {
-      return {
-        data: await service.create(req.body)
-      }
-    }
-  )
+    )
+  }
 
   // GET /entity - Find many entities
   app.get(
@@ -168,30 +169,33 @@ export const crudPlugin: FastifyPluginAsyncZod<
   )
 
   // PATCH /entity/:id - Update single entity
-  app.patch(
-    `/:id`,
-    {
-      ...baseRouteOptions,
-      schema: {
-        ...baseRouteOptions.schema,
-        body: updateSchema,
-        description: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
-        operationId: 'update' + capitalize(toCamelCase(singularize(entityKey))),
-        params: IdParamsSchema,
-        response: {
-          200: DocumentSchemaFactory(entitySchema),
-          404: NotFoundResponseSchema
-        },
-        summary: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
-        tags: [toTitleCase(entityKey)]
+  if (updateSchema) {
+    app.patch(
+      `/:id`,
+      {
+        ...baseRouteOptions,
+        schema: {
+          ...baseRouteOptions.schema,
+          body: updateSchema,
+          description: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
+          operationId:
+            'update' + capitalize(toCamelCase(singularize(entityKey))),
+          params: IdParamsSchema,
+          response: {
+            200: DocumentSchemaFactory(entitySchema),
+            404: NotFoundResponseSchema
+          },
+          summary: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
+          tags: [toTitleCase(entityKey)]
+        }
+      },
+      async (request) => {
+        return {
+          data: await service.update(request.params.id, request.body)
+        }
       }
-    },
-    async (request) => {
-      return {
-        data: await service.update(request.params.id, request.body)
-      }
-    }
-  )
+    )
+  }
 
   await Promise.resolve()
 }

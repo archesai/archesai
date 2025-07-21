@@ -27,7 +27,7 @@ export default function OrganizationForm() {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: session.activeOrganizationId,
+      defaultValue: session.activeOrganizationId ?? '',
       description: 'The name of the organization. This cannot be changed.',
       label: 'Name',
       name: 'name',

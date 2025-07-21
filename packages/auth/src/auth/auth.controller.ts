@@ -119,6 +119,58 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
   )
 
   app.post(
+    `/api/auth/sign-up/email`,
+    {
+      schema: {
+        body: CreateAccountDtoSchema,
+        description: `This endpoint will register you with your e-mail and password`,
+        operationId: 'register',
+        response: {
+          201: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema
+        },
+        summary: `Register`,
+        tags: ['Authentication']
+      }
+    },
+    (req, res) => {
+      return app.authHandler(req, res, async (response, responseBody) => {
+        // Create organization after successful signup
+        if (response.status === 200 && responseBody) {
+          try {
+            const userData = responseBody as {
+              session: SessionEntity
+              user: UserEntity
+            }
+            if (userData.user.id) {
+              const organization = await authService.createOrganization({
+                body: {
+                  name: `${userData.user.email}'s Organization`,
+                  slug: userData.user.email,
+                  userId: userData.user.id
+                }
+              })
+              if (!organization) {
+                throw new Error('Failed to create organization')
+              }
+              await authService.setActiveOrganization({
+                body: {
+                  organizationId: organization.id
+                }
+              })
+            }
+          } catch (orgError) {
+            console.error(
+              'Failed to create organization after signup:',
+              orgError
+            )
+          }
+        }
+      })
+    }
+  )
+
+  app.post(
     `/api/auth/sign-in/email`,
     {
       schema: {
@@ -191,58 +243,6 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
         headers
       })
       return response
-    }
-  )
-
-  app.post(
-    `/api/auth/sign-up/email`,
-    {
-      schema: {
-        body: CreateAccountDtoSchema,
-        description: `This endpoint will register you with your e-mail and password`,
-        operationId: 'register',
-        response: {
-          201: BetterAuthSessionSchema,
-          401: UnauthorizedResponseSchema
-        },
-        summary: `Register`,
-        tags: ['Registration']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res, async (response, responseBody) => {
-        // Create organization after successful signup
-        if (response.status === 200 && responseBody) {
-          try {
-            const userData = responseBody as {
-              session: SessionEntity
-              user: UserEntity
-            }
-            if (userData.user.id) {
-              const organization = await authService.createOrganization({
-                body: {
-                  name: `${userData.user.email}'s Organization`,
-                  slug: userData.user.email,
-                  userId: userData.user.id
-                }
-              })
-              if (!organization) {
-                throw new Error('Failed to create organization')
-              }
-              await authService.setActiveOrganization({
-                body: {
-                  organizationId: organization.id
-                }
-              })
-            }
-          } catch (orgError) {
-            console.error(
-              'Failed to create organization after signup:',
-              orgError
-            )
-          }
-        }
-      })
     }
   )
 

@@ -26,112 +26,17 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import qs from 'qs'
 
 import type {
-  AccountEntityInput,
-  CreateAccount201,
-  CreateAccountBody,
   DeleteAccount200,
   FindManyAccounts200,
   FindManyAccountsParams,
   GetOneAccount200,
-  NotFoundResponse,
-  UpdateAccount200
+  NotFoundResponse
 } from '../orval.schemas'
 
 import { customFetch } from '../../fetcher'
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-/**
- * Create a new account
- * @summary Create a new account
- */
-export const getCreateAccountUrl = () => {
-  return `/accounts`
-}
-
-export const createAccount = async (
-  createAccountBody: CreateAccountBody,
-  options?: RequestInit
-): Promise<CreateAccount201> => {
-  return customFetch<CreateAccount201>(getCreateAccountUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createAccountBody)
-  })
-}
-
-export const getCreateAccountMutationOptions = <
-  TError = unknown,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createAccount>>,
-    TError,
-    { data: CreateAccountBody },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof createAccount>>,
-  TError,
-  { data: CreateAccountBody },
-  TContext
-> => {
-  const mutationKey = ['createAccount']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createAccount>>,
-    { data: CreateAccountBody }
-  > = (props) => {
-    const { data } = props ?? {}
-
-    return createAccount(data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type CreateAccountMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createAccount>>
->
-export type CreateAccountMutationBody = CreateAccountBody
-export type CreateAccountMutationError = unknown
-
-/**
- * @summary Create a new account
- */
-export const useCreateAccount = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createAccount>>,
-      TError,
-      { data: CreateAccountBody },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof createAccount>>,
-  TError,
-  { data: CreateAccountBody },
-  TContext
-> => {
-  const mutationOptions = getCreateAccountMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
-}
 /**
  * Find many accounts
  * @summary Find many accounts
@@ -805,97 +710,4 @@ export function useGetOneAccountSuspense<
   query.queryKey = queryOptions.queryKey
 
   return query
-}
-
-/**
- * Update an account
- * @summary Update an account
- */
-export const getUpdateAccountUrl = (id: string | undefined | null) => {
-  return `/accounts/${id}`
-}
-
-export const updateAccount = async (
-  id: string | undefined | null,
-  accountEntityInput: AccountEntityInput,
-  options?: RequestInit
-): Promise<UpdateAccount200> => {
-  return customFetch<UpdateAccount200>(getUpdateAccountUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(accountEntityInput)
-  })
-}
-
-export const getUpdateAccountMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateAccount>>,
-    TError,
-    { id: string | undefined | null; data: AccountEntityInput },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof updateAccount>>,
-  TError,
-  { id: string | undefined | null; data: AccountEntityInput },
-  TContext
-> => {
-  const mutationKey = ['updateAccount']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateAccount>>,
-    { id: string | undefined | null; data: AccountEntityInput }
-  > = (props) => {
-    const { id, data } = props ?? {}
-
-    return updateAccount(id, data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type UpdateAccountMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateAccount>>
->
-export type UpdateAccountMutationBody = AccountEntityInput
-export type UpdateAccountMutationError = NotFoundResponse
-
-/**
- * @summary Update an account
- */
-export const useUpdateAccount = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateAccount>>,
-      TError,
-      { id: string | undefined | null; data: AccountEntityInput },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof updateAccount>>,
-  TError,
-  { id: string | undefined | null; data: AccountEntityInput },
-  TContext
-> => {
-  const mutationOptions = getUpdateAccountMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
 }

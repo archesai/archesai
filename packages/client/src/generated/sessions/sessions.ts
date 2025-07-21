@@ -26,111 +26,17 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import qs from 'qs'
 
 import type {
-  CreateSession201,
   DeleteSession200,
   FindManySessions200,
   FindManySessionsParams,
   GetOneSession200,
-  NotFoundResponse,
-  SessionEntityInput,
-  UpdateSession200
+  NotFoundResponse
 } from '../orval.schemas'
 
 import { customFetch } from '../../fetcher'
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
-/**
- * Create a new session
- * @summary Create a new session
- */
-export const getCreateSessionUrl = () => {
-  return `/sessions`
-}
-
-export const createSession = async (
-  sessionEntityInput: SessionEntityInput,
-  options?: RequestInit
-): Promise<CreateSession201> => {
-  return customFetch<CreateSession201>(getCreateSessionUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(sessionEntityInput)
-  })
-}
-
-export const getCreateSessionMutationOptions = <
-  TError = unknown,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof createSession>>,
-    TError,
-    { data: SessionEntityInput },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof createSession>>,
-  TError,
-  { data: SessionEntityInput },
-  TContext
-> => {
-  const mutationKey = ['createSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof createSession>>,
-    { data: SessionEntityInput }
-  > = (props) => {
-    const { data } = props ?? {}
-
-    return createSession(data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type CreateSessionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof createSession>>
->
-export type CreateSessionMutationBody = SessionEntityInput
-export type CreateSessionMutationError = unknown
-
-/**
- * @summary Create a new session
- */
-export const useCreateSession = <TError = unknown, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof createSession>>,
-      TError,
-      { data: SessionEntityInput },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof createSession>>,
-  TError,
-  { data: SessionEntityInput },
-  TContext
-> => {
-  const mutationOptions = getCreateSessionMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
-}
 /**
  * Find many sessions
  * @summary Find many sessions
@@ -804,97 +710,4 @@ export function useGetOneSessionSuspense<
   query.queryKey = queryOptions.queryKey
 
   return query
-}
-
-/**
- * Update a session
- * @summary Update a session
- */
-export const getUpdateSessionUrl = (id: string | undefined | null) => {
-  return `/sessions/${id}`
-}
-
-export const updateSession = async (
-  id: string | undefined | null,
-  sessionEntityInput: SessionEntityInput,
-  options?: RequestInit
-): Promise<UpdateSession200> => {
-  return customFetch<UpdateSession200>(getUpdateSessionUrl(id), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(sessionEntityInput)
-  })
-}
-
-export const getUpdateSessionMutationOptions = <
-  TError = NotFoundResponse,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateSession>>,
-    TError,
-    { id: string | undefined | null; data: SessionEntityInput },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof updateSession>>,
-  TError,
-  { id: string | undefined | null; data: SessionEntityInput },
-  TContext
-> => {
-  const mutationKey = ['updateSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateSession>>,
-    { id: string | undefined | null; data: SessionEntityInput }
-  > = (props) => {
-    const { id, data } = props ?? {}
-
-    return updateSession(id, data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type UpdateSessionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateSession>>
->
-export type UpdateSessionMutationBody = SessionEntityInput
-export type UpdateSessionMutationError = NotFoundResponse
-
-/**
- * @summary Update a session
- */
-export const useUpdateSession = <TError = NotFoundResponse, TContext = unknown>(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateSession>>,
-      TError,
-      { id: string | undefined | null; data: SessionEntityInput },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof updateSession>>,
-  TError,
-  { id: string | undefined | null; data: SessionEntityInput },
-  TContext
-> => {
-  const mutationOptions = getUpdateSessionMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
 }

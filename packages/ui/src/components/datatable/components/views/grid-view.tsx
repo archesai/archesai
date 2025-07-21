@@ -7,12 +7,7 @@ import { flexRender } from '@tanstack/react-table'
 
 import type { BaseEntity } from '@archesai/schemas'
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader
-} from '#components/shadcn/card'
+import { Card, CardContent, CardFooter } from '#components/shadcn/card'
 import { cn } from '#lib/utils'
 
 export interface GridViewProps<TEntity extends BaseEntity> {
@@ -39,9 +34,6 @@ export function GridView<TEntity extends BaseEntity>({
           const isItemSelected = item.getIsSelected()
           const checkbox = item.getAllCells().at(0)?.column.columnDef.cell
           const context = item.getAllCells().at(0)?.getContext()
-
-          const actions = item.getAllCells().at(-1)?.column.columnDef.cell
-          const actionContext = item.getAllCells().at(-1)?.getContext()
 
           return (
             <Card

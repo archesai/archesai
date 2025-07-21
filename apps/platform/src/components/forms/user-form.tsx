@@ -1,4 +1,4 @@
-import type { CreateUserBody, UpdateUserBody } from '@archesai/client'
+import type { UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { useGetSessionSuspense, useUpdateUser } from '@archesai/client'
@@ -51,7 +51,7 @@ export default function UserForm() {
   ]
 
   return (
-    <GenericForm<CreateUserBody, UpdateUserBody>
+    <GenericForm<never, UpdateUserBody>
       description='View and update your user details'
       entityKey={USER_ENTITY_KEY}
       fields={formFields}
