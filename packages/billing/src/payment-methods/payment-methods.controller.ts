@@ -1,8 +1,8 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 
-import { PaymentMethodEntitySchema, Type } from '@archesai/schemas'
+import { IdParamsSchema, PaymentMethodEntitySchema } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -15,9 +15,9 @@ export interface PaymentMethodsControllerOptions {
   websocketsService: WebsocketsService
 }
 
-export const paymentMethodsController: FastifyPluginCallbackTypebox<
+export const paymentMethodsController: FastifyPluginAsyncZod<
   PaymentMethodsControllerOptions
-> = (app, { stripeService, websocketsService }, done) => {
+> = async (app, { stripeService, websocketsService }) => {
   const paymentMethodRepository = new PaymentMethodRepository(stripeService)
   const customersService = new CustomersService(stripeService)
   const paymentMethodsService = new PaymentMethodsService(
@@ -31,9 +31,7 @@ export const paymentMethodsController: FastifyPluginCallbackTypebox<
       schema: {
         description: 'Delete a payment method',
         operationId: 'deletePaymentMethod',
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         response: {
           200: PaymentMethodEntitySchema
         },
@@ -78,9 +76,7 @@ export const paymentMethodsController: FastifyPluginCallbackTypebox<
       schema: {
         description: 'Get a payment method',
         operationId: 'findOnePaymentMethod',
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         response: {
           200: PaymentMethodEntitySchema
         },
@@ -93,5 +89,5 @@ export const paymentMethodsController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

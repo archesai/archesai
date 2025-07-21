@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import type { PaymentMethodEntity, SearchQuery } from '@archesai/schemas'
 
 import { BadRequestException, NotFoundException } from '@archesai/core'
-import { PaymentMethodEntitySchema, Value } from '@archesai/schemas'
+import { PaymentMethodEntitySchema } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -127,6 +127,6 @@ export class PaymentMethodRepository {
   }
 
   protected toEntity(model: Stripe.PaymentMethod): PaymentMethodEntity {
-    return Value.Parse(PaymentMethodEntitySchema, model)
+    return PaymentMethodEntitySchema.parse(model)
   }
 }

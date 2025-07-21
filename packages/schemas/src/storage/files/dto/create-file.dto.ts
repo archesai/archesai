@@ -1,15 +1,13 @@
-import type { Static, TBoolean, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { FileEntitySchema } from '#storage/files/entities/file.entity'
 
-export const CreateFileDtoSchema: TObject<{
-  isDir: TBoolean
-  path: TString
-}> = Type.Object({
-  isDir: FileEntitySchema.properties.isDir,
-  path: FileEntitySchema.properties.path
+export const CreateFileDtoSchema: z.ZodObject<{
+  isDir: z.ZodBoolean
+  path: z.ZodString
+}> = FileEntitySchema.pick({
+  isDir: true,
+  path: true
 })
 
-export type CreateFileDto = Static<typeof CreateFileDtoSchema>
+export type CreateFileDto = z.infer<typeof CreateFileDtoSchema>

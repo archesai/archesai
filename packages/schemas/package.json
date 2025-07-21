@@ -12,16 +12,14 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@sinclair/typebox": "catalog:",
     "tslib": "catalog:",
-    "zod": "^4.0.5"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",

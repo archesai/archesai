@@ -26,6 +26,7 @@ import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import qs from 'qs'
 
 import type {
+  AccountEntityInput,
   CreateAccount201,
   CreateAccountBody,
   DeleteAccount200,
@@ -33,8 +34,7 @@ import type {
   FindManyAccountsParams,
   GetOneAccount200,
   NotFoundResponse,
-  UpdateAccount200,
-  UpdateAccountBody
+  UpdateAccount200
 } from '../orval.schemas'
 
 import { customFetch } from '../../fetcher'
@@ -817,14 +817,14 @@ export const getUpdateAccountUrl = (id: string | undefined | null) => {
 
 export const updateAccount = async (
   id: string | undefined | null,
-  updateAccountBody: UpdateAccountBody,
+  accountEntityInput: AccountEntityInput,
   options?: RequestInit
 ): Promise<UpdateAccount200> => {
   return customFetch<UpdateAccount200>(getUpdateAccountUrl(id), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateAccountBody)
+    body: JSON.stringify(accountEntityInput)
   })
 }
 
@@ -835,14 +835,14 @@ export const getUpdateAccountMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateAccount>>,
     TError,
-    { id: string | undefined | null; data: UpdateAccountBody },
+    { id: string | undefined | null; data: AccountEntityInput },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateAccount>>,
   TError,
-  { id: string | undefined | null; data: UpdateAccountBody },
+  { id: string | undefined | null; data: AccountEntityInput },
   TContext
 > => {
   const mutationKey = ['updateAccount']
@@ -859,7 +859,7 @@ export const getUpdateAccountMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateAccount>>,
-    { id: string | undefined | null; data: UpdateAccountBody }
+    { id: string | undefined | null; data: AccountEntityInput }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -872,7 +872,7 @@ export const getUpdateAccountMutationOptions = <
 export type UpdateAccountMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateAccount>>
 >
-export type UpdateAccountMutationBody = UpdateAccountBody
+export type UpdateAccountMutationBody = AccountEntityInput
 export type UpdateAccountMutationError = NotFoundResponse
 
 /**
@@ -883,7 +883,7 @@ export const useUpdateAccount = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateAccount>>,
       TError,
-      { id: string | undefined | null; data: UpdateAccountBody },
+      { id: string | undefined | null; data: AccountEntityInput },
       TContext
     >
     request?: SecondParameter<typeof customFetch>
@@ -892,7 +892,7 @@ export const useUpdateAccount = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateAccount>>,
   TError,
-  { id: string | undefined | null; data: UpdateAccountBody },
+  { id: string | undefined | null; data: AccountEntityInput },
   TContext
 > => {
   const mutationOptions = getUpdateAccountMutationOptions(options)

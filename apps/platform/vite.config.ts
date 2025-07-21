@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
+import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -20,17 +21,18 @@ export default defineConfig({
         // Specifies the directory TanStack Router uses for your routes.
         routesDirectory: 'src/app' // Defaults to "src/routes"
       },
-      react: {
-        babel: {
-          plugins: [
-            [
-              'babel-plugin-react-compiler',
-              {
-                target: '19'
-              }
-            ]
+      customViteReactPlugin: true
+    }),
+    viteReact({
+      babel: {
+        plugins: [
+          [
+            'babel-plugin-react-compiler',
+            {
+              target: '19'
+            }
           ]
-        }
+        ]
       }
     })
   ]

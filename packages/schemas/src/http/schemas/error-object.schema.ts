@@ -1,28 +1,13 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
+export const ErrorObjectSchema: z.ZodObject<{
+  detail: z.ZodString
+  status: z.ZodString
+  title: z.ZodString
+}> = z.object({
+  detail: z.string().describe('The requested resource does not exist.'),
+  status: z.string().describe('404'),
+  title: z.string().describe('Not Found')
+})
 
-export const ErrorObjectSchema: TObject<{
-  detail: TString
-  status: TString
-  title: TString
-}> = Type.Object(
-  {
-    detail: Type.String({
-      examples: ['The requested resource does not exist.']
-    }),
-    status: Type.String({
-      examples: ['404']
-    }),
-    title: Type.String({
-      examples: ['Not Found']
-    })
-  },
-  {
-    $id: 'ErrorObject',
-    description: 'A list of errors that occurred during the request',
-    title: 'Error Object'
-  }
-)
-
-export type ErrorObject = Static<typeof ErrorObjectSchema>
+export type ErrorObject = z.infer<typeof ErrorObjectSchema>

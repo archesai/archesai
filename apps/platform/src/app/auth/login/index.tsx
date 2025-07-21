@@ -33,7 +33,7 @@ export default function LoginPage() {
                 type='email'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.email
+            validationRule: CreateAccountDtoSchema.shape.email
           },
           {
             label: 'Password',
@@ -44,7 +44,7 @@ export default function LoginPage() {
                 type='password'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.password
+            validationRule: CreateAccountDtoSchema.shape.password
           }
         ]}
         isUpdateForm={false}

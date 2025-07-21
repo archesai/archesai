@@ -22,7 +22,6 @@ export default function RegisterPage() {
         entityKey='auth'
         fields={[
           {
-            defaultValue: '',
             label: 'Name',
             name: 'name',
             renderControl: (field) => (
@@ -31,10 +30,9 @@ export default function RegisterPage() {
                 type='text'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.name
+            validationRule: CreateAccountDtoSchema.shape.name
           },
           {
-            defaultValue: '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
@@ -43,10 +41,9 @@ export default function RegisterPage() {
                 type='email'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.email
+            validationRule: CreateAccountDtoSchema.shape.email
           },
           {
-            defaultValue: '',
             label: 'Password',
             name: 'password',
             renderControl: (field) => (
@@ -55,10 +52,9 @@ export default function RegisterPage() {
                 type='password'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.password
+            validationRule: CreateAccountDtoSchema.shape.password
           },
           {
-            defaultValue: '',
             label: 'Confirm Password',
             name: 'confirmPassword',
             renderControl: (field) => (
@@ -67,7 +63,7 @@ export default function RegisterPage() {
                 type='password'
               />
             ),
-            validationRule: CreateAccountDtoSchema.properties.password
+            validationRule: CreateAccountDtoSchema.shape.password
           }
         ]}
         isUpdateForm={false}

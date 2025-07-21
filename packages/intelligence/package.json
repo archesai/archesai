@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -21,16 +20,16 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "@elevenlabs/elevenlabs-js": "catalog:",
-    "fluent-ffmpeg": "catalog:",
-    "openai": "catalog:",
-    "playwright-core": "catalog:",
-    "sharp": "catalog:",
+    "@elevenlabs/elevenlabs-js": "catalog:intelligence",
+    "fluent-ffmpeg": "catalog:intelligence",
+    "openai": "catalog:intelligence",
+    "playwright-core": "catalog:intelligence",
+    "sharp": "catalog:intelligence",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@types/fluent-ffmpeg": "catalog:",
+    "@types/fluent-ffmpeg": "catalog:intelligence",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

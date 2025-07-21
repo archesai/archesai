@@ -1,24 +1,19 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
+import type { z } from 'zod'
 
-import type {
-  BaseEntity,
-  SearchQuery,
-  TObject,
-  TSchema
-} from '@archesai/schemas'
+import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 
 // import { AuthenticatedGuard } from '#http/guards/authenticated.guard'
 import {
   createSearchQuerySchema,
-  DocumentColectionSchemaFactory,
+  DocumentCollectionSchemaFactory,
   DocumentSchemaFactory,
-  LegacyRef,
-  Type
+  IdParamsSchema,
+  NotFoundResponseSchema
 } from '@archesai/schemas'
 
 import type { BaseService } from '#common/base-service'
 
-import { NotFoundResponseSchema } from '#exceptions/schemas/not-found-response.schema'
 import { capitalize } from '#utils/capitalize'
 import { singularize } from '#utils/pluralize'
 import { toCamelCase, toTitleCase, vf } from '#utils/strings'
@@ -27,22 +22,22 @@ export interface CrudPluginOptions<
   TEntity extends BaseEntity,
   TInsert,
   TSelect extends BaseEntity,
-  TCreateSchema extends TSchema = TSchema,
-  TUpdateSchema extends TSchema = TSchema
+  TCreateSchema = z.ZodType,
+  TUpdateSchema = z.ZodType
 > {
   createSchema: TCreateSchema
   enableBulkOperations?: boolean
   entityKey: string
-  entitySchema: TObject
+  entitySchema: z.ZodObject
   prefix: string
   service: BaseService<TEntity, TInsert, TSelect>
   tags?: string[]
   updateSchema: TUpdateSchema
 }
 
-export const crudPlugin: FastifyPluginCallbackTypebox<
+export const crudPlugin: FastifyPluginAsyncZod<
   CrudPluginOptions<BaseEntity, unknown, BaseEntity>
-> = (
+> = async (
   app,
   {
     createSchema,
@@ -53,8 +48,7 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
     service,
     tags = [entityKey],
     updateSchema
-  },
-  done
+  }
 ) => {
   const baseRouteOptions = {
     // preValidation: [AuthenticatedGuard()],
@@ -65,9 +59,6 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
   }
 
   const searchQuerySchema = createSearchQuerySchema(entitySchema, entityKey)
-
-  app.addSchema(entitySchema)
-  app.addSchema(searchQuerySchema)
 
   // POST /entity - Create single entity
   app.post(
@@ -107,7 +98,7 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
         operationId: 'findMany' + capitalize(toCamelCase(entityKey)),
         querystring: searchQuerySchema,
         response: {
-          200: DocumentColectionSchemaFactory(entitySchema)
+          200: DocumentCollectionSchemaFactory(entitySchema)
         },
         summary: `Find many ${entityKey}`,
         tags: [toTitleCase(entityKey)]
@@ -135,12 +126,10 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
         ...baseRouteOptions.schema,
         description: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
         operationId: 'delete' + capitalize(toCamelCase(singularize(entityKey))),
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         response: {
           200: DocumentSchemaFactory(entitySchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          404: NotFoundResponseSchema
         },
         summary: `Delete a${vf(entityKey)} ${singularize(entityKey)}`,
         tags: [toTitleCase(entityKey)]
@@ -162,12 +151,10 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
         ...baseRouteOptions.schema,
         description: `Find a${vf(entityKey)} ${singularize(entityKey)}`,
         operationId: 'getOne' + capitalize(toCamelCase(singularize(entityKey))),
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         response: {
           200: DocumentSchemaFactory(entitySchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          404: NotFoundResponseSchema
         },
         summary: `Find a${vf(entityKey)} ${singularize(entityKey)}`,
         tags: [toTitleCase(entityKey)]
@@ -190,12 +177,10 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
         body: updateSchema,
         description: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
         operationId: 'update' + capitalize(toCamelCase(singularize(entityKey))),
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         response: {
           200: DocumentSchemaFactory(entitySchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          404: NotFoundResponseSchema
         },
         summary: `Update a${vf(entityKey)} ${singularize(entityKey)}`,
         tags: [toTitleCase(entityKey)]
@@ -208,7 +193,7 @@ export const crudPlugin: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }
 
 // // POST /entity/bulk - Create multiple entities (optional)

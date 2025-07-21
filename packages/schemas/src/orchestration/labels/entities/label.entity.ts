@@ -1,30 +1,21 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const LabelEntitySchema: TObject<{
-  createdAt: TString
-  id: TString
-  name: TString
-  organizationId: TString
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    name: Type.String({
-      description: 'The name of the label'
-    }),
-    organizationId: Type.String({ description: 'The organization name' })
-  },
-  {
-    $id: 'LabelEntity',
-    description: 'The label entity',
-    title: 'Label Entity'
-  }
-)
+export const LabelEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  id: z.ZodString
+  name: z.ZodString
+  organizationId: z.ZodString
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  name: z.string().describe('The name of the label'),
+  organizationId: z.string().describe('The organization name')
+}).meta({
+  description: 'Schema for Label entity',
+  id: 'LabelEntity'
+})
 
-export type LabelEntity = Static<typeof LabelEntitySchema>
+export type LabelEntity = z.infer<typeof LabelEntitySchema>
 
 export const LABEL_ENTITY_KEY = 'labels'

@@ -7,8 +7,6 @@ import {
 } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 
-import { Type, Value } from '@archesai/schemas'
-
 import { Badge } from '#components/shadcn/badge'
 import {
   Command,
@@ -84,10 +82,7 @@ function Faceted<Multiple extends boolean = false>(
       if (!onValueChange) return
 
       if (multiple) {
-        const currentValue = Value.Parse(
-          Type.Array(Type.String()),
-          Array.isArray(value) ? value : []
-        )
+        const currentValue: unknown[] = Array.isArray(value) ? value : []
         const newValue =
           currentValue.includes(selectedValue) ?
             currentValue.filter((v) => v !== selectedValue)

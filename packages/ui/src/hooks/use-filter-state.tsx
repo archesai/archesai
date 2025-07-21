@@ -3,15 +3,15 @@ import type { SortingState } from '@tanstack/react-table'
 import { useCallback, useMemo } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 
-import type { FilterValueSchema } from '@archesai/client'
 import type {
   BaseEntity,
   FilterCondition,
   FilterNode,
+  FilterValue,
   SearchQuery
 } from '@archesai/schemas'
 
-import { SearchQuerySchema, Value } from '@archesai/schemas'
+import { SearchQuerySchema } from '@archesai/schemas'
 
 import type { FilterOperator } from '#types/simple-data-table'
 
@@ -35,7 +35,7 @@ export interface FilterActions<TEntity extends BaseEntity> {
   setCondition: (
     field: keyof TEntity,
     operator: FilterOperator,
-    value: FilterValueSchema
+    value: FilterValue
   ) => void
 
   // Filter operations
@@ -79,7 +79,7 @@ export function useFilterState<
 
   // Parse current search query
   const searchQuery = useMemo<SearchQuery<TEntity>>(() => {
-    const validated = Value.Parse(SearchQuerySchema, search ?? {})
+    const validated = SearchQuerySchema.parse(search)
     return validated as SearchQuery<TEntity>
   }, [search])
 
@@ -199,11 +199,7 @@ export function useFilterState<
   )
 
   const setCondition = useCallback(
-    (
-      field: keyof TEntity,
-      operator: FilterOperator,
-      value: FilterValueSchema
-    ) => {
+    (field: keyof TEntity, operator: FilterOperator, value: FilterValue) => {
       const condition: FilterCondition<TEntity> = {
         field,
         operator: operator,

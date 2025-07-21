@@ -4,11 +4,11 @@ export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
       <div className='text-primary'>
         <SmallLogo scale={scale} />
       </div>
-    : <div className='flex items-center gap-0.5'>
-        <div className='mt-[5px] bg-foreground'>
-          <SmallLogo scale={scale / 8} />
+    : <div className='flex items-center gap-1'>
+        <div className='mt-[5px]'>
+          <SmallLogo scale={scale / 6} />
         </div>
-        <LargeLogo scale={scale} />
+        <LargeLogo scale={scale * 1.25} />
       </div>
 
   return content

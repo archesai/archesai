@@ -1,23 +1,18 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { FileEntitySchema } from '#storage/files/entities/file.entity'
 
-export const CreateSignedUrlDtoSchema: TObject<{
-  action: TUnion<[TLiteral<'read'>, TLiteral<'write'>]>
-  path: TString
-}> = Type.Object({
-  action: Type.Union([Type.Literal('read'), Type.Literal('write')], {
-    description: 'The type of signed URL to create'
-  }),
-  path: FileEntitySchema.properties.path
+export const CreateSignedUrlDtoSchema: z.ZodObject<{
+  action: z.ZodEnum<{
+    read: 'read'
+    write: 'write'
+  }>
+  path: z.ZodString
+}> = z.object({
+  action: z
+    .enum(['read', 'write'])
+    .describe('The type of signed URL to create'),
+  path: FileEntitySchema.shape.path
 })
 
-export type CreateSignedUrlDto = Static<typeof CreateSignedUrlDtoSchema>
+export type CreateSignedUrlDto = z.infer<typeof CreateSignedUrlDtoSchema>

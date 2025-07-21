@@ -1,13 +1,10 @@
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 import { useEffect, useMemo } from 'react'
-import { typeboxResolver } from '@hookform/resolvers/typebox'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-
-import type { TProperties, TSchema } from '@archesai/schemas'
-
-import { Type } from '@archesai/schemas'
+import { z } from 'zod'
 
 import { Button } from '#components/shadcn/button'
 import {
@@ -37,7 +34,7 @@ export interface FormFieldConfig {
   label: string
   name: string
   renderControl: (field: ControllerRenderProps) => React.ReactNode
-  validationRule?: TSchema
+  validationRule?: z.ZodType
 }
 
 type GenericFormProps<
@@ -86,30 +83,23 @@ export function GenericForm<
   } = props
 
   /* ---------- memoised defaults & schema ---------- */
-  const defaultValues = useMemo(() => {
-    return fields.reduce<Record<string, unknown>>((acc, f) => {
-      if (f.defaultValue !== undefined) acc[f.name] = f.defaultValue
+  const defaultValues = fields.reduce<Record<string, unknown>>((acc, f) => {
+    if (f.defaultValue !== undefined) acc[f.name] = f.defaultValue
+    return acc
+  }, {})
+
+  const schema = z.object(
+    fields.reduce<Record<string, z.ZodType>>((acc, f) => {
+      if (f.validationRule) acc[f.name] = f.validationRule
       return acc
     }, {})
-  }, [fields])
-
-  const schema = useMemo(
-    () =>
-      Type.Object(
-        fields.reduce<TProperties>((acc, f) => {
-          if (f.validationRule) acc[f.name] = f.validationRule
-          return acc
-        }, {})
-      ),
-    [fields]
   )
 
   /* ---------- form instance ---------- */
   const form = useForm({
     defaultValues,
     mode: 'onChange',
-    // @ts-ignore
-    resolver: typeboxResolver(schema)
+    resolver: zodResolver(schema)
   })
 
   /* ---------- keep external defaults in sync ---------- */
@@ -162,6 +152,7 @@ export function GenericForm<
                       </FormControl>
                       <FormDescription>
                         {!fieldState.error && fieldConfig.description}
+                        {fieldState.error?.message}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -175,11 +166,13 @@ export function GenericForm<
 
           <CardFooter>
             <Button
-              disabled={
-                form.formState.isSubmitting ||
-                !form.formState.isDirty ||
-                !form.formState.isValid
-              }
+              // disabled={
+              //   !!(
+              //     form.formState.isSubmitting ||
+              //     !form.formState.isDirty ||
+              //     !form.formState.isValid
+              //   )
+              // }
               size='sm'
               type='submit'
             >
@@ -191,9 +184,9 @@ export function GenericForm<
               </span>
             </Button>
             <Button
-              disabled={
-                (form.formState.isSubmitting || !form.formState.isDirty) && true
-              }
+              // disabled={
+              //   !!(form.formState.isSubmitting || !form.formState.isDirty)
+              // }
               onClick={() => {
                 form.reset()
               }}

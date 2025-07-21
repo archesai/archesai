@@ -1,12 +1,10 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateToolDtoSchema } from '#orchestration/tools/dto/create-tool.dto'
 
-export const UpdateToolDtoSchema: TObject<{
-  description: TOptional<TString>
-  name: TOptional<TString>
-}> = Type.Partial(CreateToolDtoSchema)
+export const UpdateToolDtoSchema: z.ZodObject<{
+  description: z.ZodOptional<z.ZodString>
+  name: z.ZodOptional<z.ZodString>
+}> = CreateToolDtoSchema.partial()
 
-export type UpdateToolDto = Static<typeof UpdateToolDtoSchema>
+export type UpdateToolDto = z.infer<typeof UpdateToolDtoSchema>

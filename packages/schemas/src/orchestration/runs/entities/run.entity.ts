@@ -1,68 +1,48 @@
-import type {
-  Static,
-  TLiteral,
-  TNull,
-  TNumber,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { StatusTypes } from '#enums/role'
 
-// export const runRelationshipsSchema = object({
-//   inputs: z.array(baseEntitySchema).describe('The inputs to the run'),
-//   outputs: z.array(baseEntitySchema).describe('The outputs of the run'),
-//   pipeline: baseEntitySchema
-//     .nullable()
-//     .describe('The pipeline associated with the run'),
-//   tool: baseEntitySchema.nullable().describe('The tool associated with the run')
-// })
+export const RunEntitySchema: z.ZodObject<{
+  completedAt: z.ZodNullable<z.ZodString>
+  createdAt: z.ZodString
+  error: z.ZodNullable<z.ZodString>
+  id: z.ZodString
+  organizationId: z.ZodString
+  pipelineId: z.ZodNullable<z.ZodString>
+  progress: z.ZodNumber
+  startedAt: z.ZodNullable<z.ZodString>
+  status: z.ZodEnum<{
+    COMPLETED: 'COMPLETED'
+    FAILED: 'FAILED'
+    PROCESSING: 'PROCESSING'
+    QUEUED: 'QUEUED'
+  }>
+  toolId: z.ZodString
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  completedAt: z
+    .string()
+    .nullable()
+    .describe('The timestamp when the run completed'),
+  error: z.string().nullable().describe('The error message'),
+  organizationId: z.string().describe('The organization name'),
+  pipelineId: z
+    .string()
+    .nullable()
+    .describe('The pipeline ID associated with the run'),
+  progress: z.number().describe('The percent progress of the run'),
+  startedAt: z
+    .string()
+    .nullable()
+    .describe('The timestamp when the run started'),
+  status: z.enum(StatusTypes),
+  toolId: z.string().describe('The tool ID associated with the run')
+}).meta({
+  description: 'Schema for Run entity',
+  id: 'RunEntity'
+})
 
-export const RunEntitySchema: TObject<{
-  completedAt: TUnion<[TString, TNull]>
-  createdAt: TString
-  error: TUnion<[TString, TNull]>
-  id: TString
-  organizationId: TString
-  pipelineId: TUnion<[TString, TNull]>
-  progress: TNumber
-  startedAt: TUnion<[TString, TNull]>
-  status: TUnion<TLiteral<'COMPLETED' | 'FAILED' | 'PROCESSING' | 'QUEUED'>[]>
-  toolId: TString
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    completedAt: Type.Union([Type.String(), Type.Null()], {
-      description: 'The timestamp when the run completed'
-    }),
-    error: Type.Union([Type.String(), Type.Null()], {
-      description: 'The error message'
-    }),
-    organizationId: Type.String({ description: 'The organization name' }),
-    pipelineId: Type.Union([Type.String(), Type.Null()], {
-      description: 'The pipeline ID associated with the run'
-    }),
-    progress: Type.Number({ description: 'The percent progress of the run' }),
-    startedAt: Type.Union([Type.String(), Type.Null()], {
-      description: 'The timestamp when the run started'
-    }),
-    status: Type.Union(StatusTypes.map((status) => Type.Literal(status))),
-    toolId: Type.String({
-      description: 'The tool ID associated with the run'
-    })
-  },
-  {
-    $id: 'RunEntity',
-    description: 'The run entity',
-    title: 'Run Entity'
-  }
-)
-
-export type RunEntity = Static<typeof RunEntitySchema>
+export type RunEntity = z.infer<typeof RunEntitySchema>
 
 export const RUN_ENTITY_KEY = 'runs'

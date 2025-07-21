@@ -1,104 +1,69 @@
-import type {
-  Static,
-  TLiteral,
-  TNull,
-  TNumber,
-  TObject,
-  TOptional,
-  TRecord,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { PlanTypes } from '#enums/role'
 
 export const PLAN_ENTITY_KEY = 'plans'
 
-export const PlanDtoSchema: TObject<{
-  createdAt: TString
-  currency: TString
-  description: TOptional<TUnion<[TString, TNull]>>
-  id: TString
-  metadata: TObject<{
-    key: TOptional<
-      TUnion<
-        TLiteral<'BASIC' | 'FREE' | 'PREMIUM' | 'STANDARD' | 'UNLIMITED'>[]
-      >
+export const PlanDtoSchema: z.ZodObject<{
+  createdAt: z.ZodString
+  currency: z.ZodString
+  description: z.ZodOptional<z.ZodNullable<z.ZodString>>
+  id: z.ZodString
+  metadata: z.ZodObject<{
+    key: z.ZodOptional<
+      z.ZodEnum<{
+        BASIC: 'BASIC'
+        FREE: 'FREE'
+        PREMIUM: 'PREMIUM'
+        STANDARD: 'STANDARD'
+        UNLIMITED: 'UNLIMITED'
+      }>
     >
   }>
-  name: TString
-  priceId: TString
-  priceMetadata: TRecord<TString, TString>
-  recurring: TOptional<
-    TUnion<
-      [
-        TObject<{
-          interval: TString
-          interval_count: TNumber
-          trial_period_days: TOptional<TUnion<[TNumber, TNull]>>
-        }>,
-        TNull
-      ]
+  name: z.ZodString
+  priceId: z.ZodString
+  priceMetadata: z.ZodRecord<z.ZodString, z.ZodString>
+  recurring: z.ZodOptional<
+    z.ZodNullable<
+      z.ZodObject<{
+        interval: z.ZodString
+        interval_count: z.ZodNumber
+        trial_period_days: z.ZodOptional<z.ZodNullable<z.ZodNumber>>
+      }>
     >
   >
-  unitAmount: TOptional<TUnion<[TNumber, TNull]>>
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    currency: Type.String({ description: 'The currency of the plan' }),
-    description: Type.Optional(
-      Type.Union([Type.String(), Type.Null()], {
-        description: 'The description of the plan'
-      })
-    ),
-    id: Type.String({ description: 'The ID of the plan' }),
-    metadata: Type.Object({
-      key: Type.Optional(
-        Type.Union(
-          PlanTypes.map((plan) => Type.Literal(plan)),
-          { description: 'The key of the metadata' }
-        )
-      )
-    }),
-    name: Type.String({ description: 'The name of the plan' }),
-    priceId: Type.String({
-      description: 'The ID of the price associated with the plan'
-    }),
-    priceMetadata: Type.Record(Type.String(), Type.String(), {
-      description: 'The metadata of the price associated with the plan'
-    }),
-    recurring: Type.Optional(
-      Type.Union(
-        [
-          Type.Object({
-            interval: Type.String(),
-            interval_count: Type.Number(),
-            trial_period_days: Type.Optional(
-              Type.Union([Type.Number(), Type.Null()])
-            )
-          }),
-          Type.Null()
-        ],
-        { description: 'The interval of the plan' }
-      )
-    ),
+  unitAmount: z.ZodOptional<z.ZodNullable<z.ZodNumber>>
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  currency: z.string().describe('The currency of the plan'),
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('The description of the plan'),
+  metadata: z.object({
+    key: z.enum(PlanTypes).optional().describe('The key of the metadata')
+  }),
+  name: z.string().describe('The name of the plan'),
+  priceId: z.string().describe('The ID of the price associated with the plan'),
+  priceMetadata: z
+    .record(z.string(), z.string())
+    .describe('The metadata of the price associated with the plan'),
+  recurring: z
+    .object({
+      interval: z.string(),
+      interval_count: z.number(),
+      trial_period_days: z.number().nullable().optional()
+    })
+    .nullable()
+    .optional()
+    .describe('The interval of the plan'),
+  unitAmount: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('The amount in cents to be charged on the interval specified')
+})
 
-    unitAmount: Type.Optional(
-      Type.Union([Type.Number(), Type.Null()], {
-        description:
-          'The amount in cents to be charged on the interval specified'
-      })
-    )
-  },
-  {
-    $id: 'PlanDto',
-    description: 'The plan resource',
-    title: 'Plan Resource'
-  }
-)
-
-export type PlanDto = Static<typeof PlanDtoSchema>
+export type PlanDto = z.infer<typeof PlanDtoSchema>

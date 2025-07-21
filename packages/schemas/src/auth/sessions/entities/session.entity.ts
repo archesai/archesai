@@ -1,60 +1,29 @@
-import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-// export const SessionTable = pgTable('session', {
-//   ...baseFields,
-//   activeOrganizationId: text(),
-//   expiresAt: timestamp({
-//     mode: 'string'
-//   }).notNull(),
-//   ipAddress: text(),
-//   token: text().notNull(),
-//   userAgent: text(),
-//   userId: text('userId')
-//     .notNull()
-//     .references(() => UserTable.id, { onDelete: 'cascade' })
-// })
+export const SessionEntitySchema: z.ZodObject<{
+  activeOrganizationId: z.ZodString
+  createdAt: z.ZodString
+  expiresAt: z.ZodString
+  id: z.ZodString
+  ipAddress: z.ZodNullable<z.ZodString>
+  token: z.ZodString
+  updatedAt: z.ZodString
+  userAgent: z.ZodNullable<z.ZodString>
+  userId: z.ZodString
+}> = BaseEntitySchema.extend({
+  activeOrganizationId: z.string().describe('The active organization ID'),
+  expiresAt: z.string().describe('The expiration date of the session'),
+  ipAddress: z.string().nullable().describe('The IP address of the session'),
+  token: z.string().describe('The session token'),
+  userAgent: z.string().nullable().describe('The user agent of the session'),
+  userId: z.string().describe('The ID of the user associated with the session')
+}).meta({
+  description: 'Schema for Session entity',
+  id: 'SessionEntity'
+})
 
-export const SessionEntitySchema: TObject<{
-  activeOrganizationId: TString
-  createdAt: TString
-  expiresAt: TString
-  id: TString
-  ipAddress: TUnion<[TString, TNull]>
-  token: TString
-  updatedAt: TString
-  userAgent: TUnion<[TString, TNull]>
-  userId: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    activeOrganizationId: Type.String({
-      description: 'The active organization ID'
-    }),
-    expiresAt: Type.String({
-      description: 'The expiration date of the session'
-    }),
-    ipAddress: Type.Union([Type.String(), Type.Null()], {
-      description: 'The IP address of the session'
-    }),
-    token: Type.String({ description: 'The session token' }),
-    userAgent: Type.Union([Type.String(), Type.Null()], {
-      description: 'The user agent of the session'
-    }),
-    userId: Type.String({
-      description: 'The ID of the user associated with the session'
-    })
-  },
-  {
-    $id: 'SessionEntity',
-    description: 'The session entity',
-    title: 'Session Entity'
-  }
-)
-
-export type SessionEntity = Static<typeof SessionEntitySchema>
+export type SessionEntity = z.infer<typeof SessionEntitySchema>
 
 export const SESSION_ENTITY_KEY = 'sessions'

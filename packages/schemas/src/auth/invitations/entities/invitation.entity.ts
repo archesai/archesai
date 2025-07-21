@@ -1,57 +1,40 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 import { RoleTypes } from '#enums/role'
 
+export const InvitationEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  email: z.ZodString
+  expiresAt: z.ZodString
+  id: z.ZodString
+  inviterId: z.ZodString
+  organizationId: z.ZodString
+  role: z.ZodEnum<{
+    admin: 'admin'
+    member: 'member'
+    owner: 'owner'
+  }>
+  status: z.ZodString
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  email: z.string().describe('The email of the invitated user'),
+  expiresAt: z
+    .string()
+    .describe('The date and time when the invitation expires'),
+  inviterId: z.string().describe('The user id of the inviter'),
+  organizationId: z
+    .string()
+    .describe('The name of the organization the token belongs to'),
+  role: z.enum(RoleTypes).describe('The role of the invitation'),
+  status: z
+    .string()
+    .describe('The status of the invitation, e.g., pending, accepted, declined')
+}).meta({
+  description: 'Schema for Invitation entity',
+  id: 'InvitationEntity'
+})
+
+export type InvitationEntity = z.infer<typeof InvitationEntitySchema>
+
 export const INVITATION_ENTITY_KEY = 'invitations'
-
-export const InvitationEntitySchema: TObject<{
-  createdAt: TString
-  email: TString
-  expiresAt: TString
-  id: TString
-  inviterId: TString
-  organizationId: TString
-  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
-  status: TString
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    email: Type.String({
-      description: 'The email of the invitated user'
-    }),
-    expiresAt: Type.String({
-      description: 'The date and time when the invitation expires'
-    }),
-    inviterId: Type.String({
-      description: 'The user id of the inviter'
-    }),
-    organizationId: Type.String({
-      description: 'The name of the organization the token belongs to'
-    }),
-    role: Type.Union(
-      RoleTypes.map((role) => Type.Literal(role)), // Using literals instead of enums
-      { description: 'The role of the invitation' }
-    ),
-    status: Type.String({
-      description:
-        'The status of the invitation, e.g., pending, accepted, declined'
-    })
-  },
-  {
-    $id: 'InvitationEntity',
-    description: 'The invitation entity',
-    title: 'Invitation Entity'
-  }
-)
-
-export type InvitationEntity = Static<typeof InvitationEntitySchema>

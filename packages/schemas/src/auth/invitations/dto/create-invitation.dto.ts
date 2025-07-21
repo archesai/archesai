@@ -1,21 +1,17 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { InvitationEntitySchema } from '#auth/invitations/entities/invitation.entity'
 
-export const CreateInvitationDtoSchema: TObject<{
-  email: TString
-  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
-}> = Type.Object({
-  email: InvitationEntitySchema.properties.email,
-  role: InvitationEntitySchema.properties.role
+export const CreateInvitationDtoSchema: z.ZodObject<{
+  email: z.ZodString
+  role: z.ZodEnum<{
+    admin: 'admin'
+    member: 'member'
+    owner: 'owner'
+  }>
+}> = InvitationEntitySchema.pick({
+  email: true,
+  role: true
 })
 
-export type CreateInvitationDto = Static<typeof CreateInvitationDtoSchema>
+export type CreateInvitationDto = z.infer<typeof CreateInvitationDtoSchema>

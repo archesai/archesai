@@ -1,20 +1,11 @@
-import type {
-  Static,
-  TNull,
-  TObject,
-  TOptional,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateArtifactDtoSchema } from '#orchestration/artifacts/dto/create-artifact.dto'
 
-export const UpdateArtifactDtoSchema: TObject<{
-  name: TOptional<TString>
-  text: TOptional<TUnion<[TNull, TString]>>
-  url: TOptional<TUnion<[TNull, TString]>>
-}> = Type.Partial(CreateArtifactDtoSchema)
+export const UpdateArtifactDtoSchema: z.ZodObject<{
+  name: z.ZodOptional<z.ZodString>
+  text: z.ZodOptional<z.ZodNullable<z.ZodString>>
+  url: z.ZodOptional<z.ZodNullable<z.ZodString>>
+}> = CreateArtifactDtoSchema.partial()
 
-export type UpdateArtifactDto = Static<typeof UpdateArtifactDtoSchema>
+export type UpdateArtifactDto = z.infer<typeof UpdateArtifactDtoSchema>

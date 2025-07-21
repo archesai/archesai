@@ -1,17 +1,15 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const CreateCheckoutSessionDtoSchema: TObject<{
-  priceId: TString
-}> = Type.Object({
-  priceId: Type.String({
-    description: 'The ID of the price associated with the checkout session',
-    maxLength: 255,
-    minLength: 1
-  })
+export const CreateCheckoutSessionDtoSchema: z.ZodObject<{
+  priceId: z.ZodString
+}> = z.object({
+  priceId: z
+    .string()
+    .min(1)
+    .max(255)
+    .describe('The ID of the price associated with the checkout session')
 })
 
-export type CreateCheckoutSessionDto = Static<
+export type CreateCheckoutSessionDto = z.infer<
   typeof CreateCheckoutSessionDtoSchema
 >

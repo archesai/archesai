@@ -1,13 +1,11 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const CheckoutSessionDtoSchema: TObject<{
-  url: TString
-}> = Type.Object({
-  url: Type.String({
-    description: 'The URL that will bring you to the necessary Stripe page'
-  })
+export const CheckoutSessionDtoSchema: z.ZodObject<{
+  url: z.ZodString
+}> = z.object({
+  url: z
+    .string()
+    .describe('The URL that will bring you to the necessary Stripe page')
 })
 
-export type CheckoutSessionDto = Static<typeof CheckoutSessionDtoSchema>
+export type CheckoutSessionDto = z.infer<typeof CheckoutSessionDtoSchema>

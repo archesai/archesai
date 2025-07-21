@@ -1,13 +1,11 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const PortalDtoSchema: TObject<{
-  url: TString
-}> = Type.Object({
-  url: Type.String({
-    description: 'The URL that will bring you to the necessary Stripe page'
-  })
+export const PortalDtoSchema: z.ZodObject<{
+  url: z.ZodString
+}> = z.object({
+  url: z
+    .string()
+    .describe('The URL that will bring you to the necessary Stripe page')
 })
 
-export type PortalDto = Static<typeof PortalDtoSchema>
+export type PortalDto = z.infer<typeof PortalDtoSchema>

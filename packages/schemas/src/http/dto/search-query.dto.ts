@@ -1,36 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import type {
-  TArray,
-  TBoolean,
-  TInteger,
-  TLiteral,
-  TNumber,
-  TObject,
-  TOptional,
-  TRecursive,
-  TString,
-  TThis,
-  TUnion,
-  TUnsafe
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import type { BaseEntity } from '@archesai/schemas'
-
-import { LegacyRef } from '@archesai/schemas'
-
-function toTitleCaseNoSpaces(str: string): string {
-  return (
-    str
-      // Replace underscores/dashes with spaces
-      .replace(/[_-]+/g, ' ')
-      .trim()
-      .split(/\s+/)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join('')
-  )
-}
 
 // ==========================================
 // FILTER OPERATORS FROM YOUR DATATABLECONFIG
@@ -55,427 +25,232 @@ export const FilterOperation = [
 
 export type FilterOperationType = (typeof FilterOperation)[number]
 
-// ==========================================
-// FILTER VALUES WITH FULL SUPPORT
-// ==========================================
-
-export const FilterValueSchema: TUnion<
-  [
-    TString,
-    TNumber,
-    TBoolean,
-    TArray<TUnion<[TString, TNumber, TBoolean]>>,
-    TObject<{
-      from: TUnion<[TString, TNumber]>
-      to: TUnion<[TString, TNumber]>
+export const FilterValueSchema: z.ZodUnion<
+  readonly [
+    z.ZodString,
+    z.ZodNumber,
+    z.ZodBoolean,
+    z.ZodArray<z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>,
+    z.ZodObject<{
+      from: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>
+      to: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>
     }>,
-    TObject<{
-      unit: TUnion<
-        [
-          TLiteral<'days'>,
-          TLiteral<'weeks'>,
-          TLiteral<'months'>,
-          TLiteral<'years'>
-        ]
-      >
-      value: TNumber
+    z.ZodObject<{
+      unit: z.ZodEnum<{
+        days: 'days'
+        months: 'months'
+        weeks: 'weeks'
+        years: 'years'
+      }>
+      value: z.ZodNumber
     }>
   ]
-> = Type.Union(
-  [
-    Type.String(),
-    Type.Number(),
-    Type.Boolean(),
-    Type.Array(Type.Union([Type.String(), Type.Number(), Type.Boolean()])),
+> = z
+  .union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(z.union([z.string(), z.number(), z.boolean()])),
     // Range object for isBetween
-    Type.Object({
-      from: Type.Union([Type.String(), Type.Number()]),
-      to: Type.Union([Type.String(), Type.Number()])
+    z.object({
+      from: z.union([z.string(), z.number()]),
+      to: z.union([z.string(), z.number()])
     }),
     // Relative date object for isRelativeToToday
-    Type.Object({
-      unit: Type.Union([
-        Type.Literal('days'),
-        Type.Literal('weeks'),
-        Type.Literal('months'),
-        Type.Literal('years')
-      ]),
-      value: Type.Number()
+    z.object({
+      unit: z.enum(['days', 'weeks', 'months', 'years']),
+      value: z.number()
     })
-  ],
-  {
-    $id: 'FilterValueSchema',
+  ])
+  .meta({
     description:
       'Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates',
-    examples: [
-      'John%',
-      25,
-      true,
-      ['apple', 'banana'],
-      { from: 10, to: 20 },
-      { unit: 'days', value: 7 }
-    ],
-    title: 'Filter Value'
-  }
-)
+    id: 'FilterValue'
+  })
 
-export const OperatorSchema: TUnion<
-  TLiteral<
-    | 'eq'
-    | 'gt'
-    | 'gte'
-    | 'iLike'
-    | 'inArray'
-    | 'isBetween'
-    | 'isEmpty'
-    | 'isNotEmpty'
-    | 'isRelativeToToday'
-    | 'lt'
-    | 'lte'
-    | 'ne'
-    | 'notILike'
-    | 'notInArray'
-  >[]
-> = Type.Union(
-  FilterOperation.map((op) => Type.Literal(op)),
-  {
-    $id: 'Operator',
-    description: 'Supported filter operators',
-    examples: FilterOperation
-  }
-)
+export type FilterValue = z.infer<typeof FilterValueSchema>
+
+export const OperatorSchema: z.ZodEnum<{
+  eq: 'eq'
+  gt: 'gt'
+  gte: 'gte'
+  iLike: 'iLike'
+  inArray: 'inArray'
+  isBetween: 'isBetween'
+  isEmpty: 'isEmpty'
+  isNotEmpty: 'isNotEmpty'
+  isRelativeToToday: 'isRelativeToToday'
+  lt: 'lt'
+  lte: 'lte'
+  ne: 'ne'
+  notILike: 'notILike'
+  notInArray: 'notInArray'
+}> = z.enum(FilterOperation).meta({
+  description: 'Supported filter operations',
+  id: 'Operator'
+})
 
 // ==========================================
 // FILTER CONDITION SCHEMA
 // ==========================================
 
-export const FilterConditionSchema: TObject<{
-  field: TString
-  operator: TUnsafe<
-    | 'eq'
-    | 'gt'
-    | 'gte'
-    | 'iLike'
-    | 'inArray'
-    | 'isBetween'
-    | 'isEmpty'
-    | 'isNotEmpty'
-    | 'isRelativeToToday'
-    | 'lt'
-    | 'lte'
-    | 'ne'
-    | 'notILike'
-    | 'notInArray'
+export const FilterConditionSchema: z.ZodObject<{
+  field: z.ZodString
+  operator: z.ZodEnum<{
+    eq: 'eq'
+    gt: 'gt'
+    gte: 'gte'
+    iLike: 'iLike'
+    inArray: 'inArray'
+    isBetween: 'isBetween'
+    isEmpty: 'isEmpty'
+    isNotEmpty: 'isNotEmpty'
+    isRelativeToToday: 'isRelativeToToday'
+    lt: 'lt'
+    lte: 'lte'
+    ne: 'ne'
+    notILike: 'notILike'
+    notInArray: 'notInArray'
+  }>
+  type: z.ZodLiteral<'condition'>
+  value: z.ZodUnion<
+    readonly [
+      z.ZodString,
+      z.ZodNumber,
+      z.ZodBoolean,
+      z.ZodArray<z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>,
+      z.ZodObject<{
+        from: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>
+        to: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>
+      }>,
+      z.ZodObject<{
+        unit: z.ZodEnum<{
+          days: 'days'
+          months: 'months'
+          weeks: 'weeks'
+          years: 'years'
+        }>
+        value: z.ZodNumber
+      }>
+    ]
   >
-  type: TLiteral<'condition'>
-  value: TUnsafe<
-    | (boolean | number | string)[]
-    | boolean
-    | number
-    | string
-    | {
-        from: number | string
-        to: number | string
-      }
-    | {
-        unit: 'days' | 'months' | 'weeks' | 'years'
-        value: number
-      }
-  >
-}> = Type.Object(
-  {
-    field: Type.String(),
+}> = z
+  .object({
+    field: z.string(),
     operator: OperatorSchema,
-    type: Type.Literal('condition'),
+    type: z.literal('condition'),
     value: FilterValueSchema
-  },
-  {
-    $id: 'FilterCondition',
+  })
+  .meta({
     description: 'A single filter condition with field, operator, and value',
-    examples: [
-      {
-        field: 'name',
-        operator: 'iLike',
-        type: 'condition',
-        value: 'John%'
-      },
-      {
-        field: 'age',
-        operator: 'isBetween',
-        type: 'condition',
-        value: { from: 25, to: 35 }
-      }
-    ],
-    title: 'Filter Condition'
-  }
-)
+    id: 'FilterCondition'
+  })
 
 // ==========================================
 // RECURSIVE FILTER NODE SCHEMA
 // ==========================================
 
-export const FilterNodeSchema: TRecursive<
-  TUnion<
-    [
-      TUnsafe<{
-        field: string
-        operator:
-          | 'eq'
-          | 'gt'
-          | 'gte'
-          | 'iLike'
-          | 'inArray'
-          | 'isBetween'
-          | 'isEmpty'
-          | 'isNotEmpty'
-          | 'isRelativeToToday'
-          | 'lt'
-          | 'lte'
-          | 'ne'
-          | 'notILike'
-          | 'notInArray'
-        type: 'condition'
-        value:
-          | (boolean | number | string)[]
-          | boolean
-          | number
-          | string
-          | {
-              from: number | string
-              to: number | string
-            }
-          | {
-              unit: 'days' | 'months' | 'weeks' | 'years'
-              value: number
-            }
-      }>,
-      TObject<{
-        children: TArray<TThis>
-        operator: TUnion<[TLiteral<'and'>, TLiteral<'or'>]>
-        type: TLiteral<'group'>
-      }>
-    ]
-  >
-> = Type.Recursive(
-  (This) =>
-    Type.Union([
-      FilterConditionSchema,
-      Type.Object(
-        {
-          children: Type.Array(This),
-          operator: Type.Union([Type.Literal('and'), Type.Literal('or')]),
-          type: Type.Literal('group')
+export type FilterConditionType = z.infer<typeof FilterConditionSchema>
+
+export interface FilterGroupType {
+  children: FilterNodeType[]
+  operator: 'and' | 'or'
+  type: 'group'
+}
+
+export type FilterNodeType = FilterConditionType | FilterGroupType
+
+export const FilterNodeSchema: z.ZodType<FilterNodeType> = z
+  .discriminatedUnion('type', [
+    FilterConditionSchema,
+    z
+      .object({
+        get children() {
+          return z.array(FilterNodeSchema)
         },
-        {
-          $id: 'FilterGroup',
-          description: 'A logical group of filter conditions or other groups',
-          examples: [
-            {
-              children: [
-                {
-                  field: 'name',
-                  operator: 'iLike',
-                  type: 'condition',
-                  value: 'John%'
-                },
-                {
-                  field: 'age',
-                  operator: 'gt',
-                  type: 'condition',
-                  value: 25
-                }
-              ],
-              operator: 'and',
-              type: 'group'
-            }
-          ],
-          title: 'Filter Group'
-        }
-      )
-    ]),
-  {
-    $id: 'FilterNode',
+        operator: z.enum(['and', 'or']),
+        type: z.literal('group')
+      })
+      .describe('A logical group of filter conditions or other groups')
+  ])
+  .meta({
     description: 'A recursive filter node that can be a condition or group',
-    title: 'Filter Node'
-  }
-)
+    id: 'FilterNode'
+  })
 
 // ==========================================
 // PAGINATION SCHEMA
 // ==========================================
 
-export const PageSchema: TObject<{
-  number: TOptional<TInteger>
-  size: TOptional<TInteger>
-}> = Type.Object(
-  {
-    number: Type.Optional(
-      Type.Integer({ default: 1, maximum: Number.MAX_VALUE, minimum: 1 })
-    ),
-    size: Type.Optional(Type.Integer({ default: 10, maximum: 100, minimum: 1 }))
-  },
-  {
-    $id: 'Page',
-    description: 'Pagination configuration',
-    examples: [
-      {
-        number: 1,
-        size: 10
-      }
-    ],
-    title: 'Page'
-  }
-)
+export const PageSchema: z.ZodObject<{
+  number: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+  size: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+}> = z
+  .object({
+    number: z.number().int().min(1).max(Number.MAX_VALUE).default(1).optional(),
+    size: z.number().int().min(1).max(100).default(10).optional()
+  })
+  .meta({
+    description: 'Pagination configuration with page number and size',
+    id: 'Page'
+  })
 
 // ==========================================
 // SORT SCHEMA
 // ==========================================
 
-export const SortSchema: TObject<{
-  field: TString
-  order: TUnion<[TLiteral<'asc'>, TLiteral<'desc'>]>
-}> = Type.Object(
-  {
-    field: Type.String(),
-    order: Type.Union([Type.Literal('asc'), Type.Literal('desc')])
-  },
-  {
-    $id: 'Sort',
-    description: 'Sort configuration',
-    examples: [
-      { field: 'name', order: 'asc' },
-      { field: 'createdAt', order: 'desc' }
-    ],
-    title: 'Sort'
-  }
-)
+export const SortSchema: z.ZodObject<{
+  field: z.ZodString
+  order: z.ZodEnum<{
+    asc: 'asc'
+    desc: 'desc'
+  }>
+}> = z
+  .object({
+    field: z.string(),
+    order: z.enum(['asc', 'desc'])
+  })
+  .meta({
+    description: 'Sorting configuration with field and order',
+    id: 'Sort'
+  })
 
 // ==========================================
 // MAIN SEARCH QUERY SCHEMA
 // ==========================================
 
-export const SearchQuerySchema: TObject<{
-  filter: TOptional<
-    TRecursive<
-      TUnion<
-        [
-          TObject<{
-            field: TString
-            operator: TUnion<
-              TLiteral<
-                | 'eq'
-                | 'gt'
-                | 'gte'
-                | 'iLike'
-                | 'inArray'
-                | 'isBetween'
-                | 'isEmpty'
-                | 'isNotEmpty'
-                | 'isRelativeToToday'
-                | 'lt'
-                | 'lte'
-                | 'ne'
-                | 'notILike'
-                | 'notInArray'
-              >[]
-            >
-            type: TLiteral<'condition'>
-            value: TUnion<
-              [
-                TString,
-                TNumber,
-                TBoolean,
-                TArray<TUnion<[TString, TNumber, TBoolean]>>,
-                TObject<{
-                  from: TUnion<[TString, TNumber]>
-                  to: TUnion<[TString, TNumber]>
-                }>,
-                TObject<{
-                  unit: TUnion<
-                    [
-                      TLiteral<'days'>,
-                      TLiteral<'weeks'>,
-                      TLiteral<'months'>,
-                      TLiteral<'years'>
-                    ]
-                  >
-                  value: TNumber
-                }>
-              ]
-            >
-          }>,
-          TObject<{
-            children: TArray<TThis>
-            operator: TUnion<[TLiteral<'and'>, TLiteral<'or'>]>
-            type: TLiteral<'group'>
-          }>
-        ]
-      >
-    >
+export const SearchQuerySchema: z.ZodObject<{
+  filter: z.ZodOptional<
+    z.ZodType<FilterNodeType, unknown, z.core.$ZodTypeInternals<FilterNodeType>>
   >
-  page: TOptional<
-    TObject<{
-      number: TOptional<TInteger>
-      size: TOptional<TInteger>
+  page: z.ZodOptional<
+    z.ZodObject<{
+      number: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+      size: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
     }>
   >
-  sort: TOptional<
-    TArray<
-      TObject<{
-        field: TString
-        order: TUnion<[TLiteral<'asc'>, TLiteral<'desc'>]>
+  sort: z.ZodOptional<
+    z.ZodArray<
+      z.ZodObject<{
+        field: z.ZodString
+        order: z.ZodEnum<{
+          asc: 'asc'
+          desc: 'desc'
+        }>
       }>
     >
   >
-}> = Type.Object(
-  {
-    filter: Type.Optional(FilterNodeSchema),
-    page: Type.Optional(PageSchema),
-    sort: Type.Optional(Type.Array(SortSchema))
-  },
-  {
-    $id: 'SearchQuery',
+}> = z
+  .object({
+    filter: FilterNodeSchema.optional(),
+    page: PageSchema.optional(),
+    sort: z.array(SortSchema).optional()
+  })
+  .meta({
     description:
       'Complete search query with nested filters, pagination, and sorting',
-    examples: [
-      {
-        filter: {
-          children: [
-            {
-              field: 'name',
-              operator: 'iLike',
-              type: 'condition',
-              value: 'John%'
-            },
-            {
-              children: [
-                {
-                  field: 'age',
-                  operator: 'gt',
-                  type: 'condition',
-                  value: 25
-                },
-                {
-                  field: 'department',
-                  operator: 'eq',
-                  type: 'condition',
-                  value: 'Engineering'
-                }
-              ],
-              operator: 'or',
-              type: 'group'
-            }
-          ],
-          operator: 'and',
-          type: 'group'
-        },
-        page: { number: 1, size: 10 },
-        sort: [{ field: 'name', order: 'asc' }]
-      }
-    ],
-    title: 'Search Query'
-  }
-)
+    id: 'SearchQuery'
+  })
 
 // ==========================================
 // TYPESCRIPT INTERFACES
@@ -521,16 +296,50 @@ export interface SearchQuery<TEntity extends BaseEntity> {
 // ==========================================
 
 export const createSearchQuerySchema = (
-  entitySchema: TObject,
+  entitySchema: z.ZodObject,
   entityKey: string
-): TObject<{
-  filter: TOptional<
-    TRecursive<
-      TUnion<
-        [
-          TObject<{
-            field: TUnion<TLiteral<string>[]>
-            operator: TUnsafe<
+): z.ZodObject<{
+  filter: z.ZodOptional<
+    z.ZodType<
+      | FilterGroupType
+      | {
+          field: string
+          operator:
+            | 'eq'
+            | 'gt'
+            | 'gte'
+            | 'iLike'
+            | 'inArray'
+            | 'isBetween'
+            | 'isEmpty'
+            | 'isNotEmpty'
+            | 'isRelativeToToday'
+            | 'lt'
+            | 'lte'
+            | 'ne'
+            | 'notILike'
+            | 'notInArray'
+          type: 'condition'
+          value:
+            | (boolean | number | string)[]
+            | boolean
+            | number
+            | string
+            | {
+                from: number | string
+                to: number | string
+              }
+            | {
+                unit: 'days' | 'months' | 'weeks' | 'years'
+                value: number
+              }
+        },
+      unknown,
+      z.core.$ZodTypeInternals<
+        | FilterGroupType
+        | {
+            field: string
+            operator:
               | 'eq'
               | 'gt'
               | 'gte'
@@ -545,9 +354,8 @@ export const createSearchQuerySchema = (
               | 'ne'
               | 'notILike'
               | 'notInArray'
-            >
-            type: TLiteral<'condition'>
-            value: TUnsafe<
+            type: 'condition'
+            value:
               | (boolean | number | string)[]
               | boolean
               | number
@@ -560,166 +368,88 @@ export const createSearchQuerySchema = (
                   unit: 'days' | 'months' | 'weeks' | 'years'
                   value: number
                 }
-            >
-          }>,
-          TObject<{
-            children: TArray<TThis>
-            operator: TUnion<[TLiteral<'and'>, TLiteral<'or'>]>
-            type: TLiteral<'group'>
-          }>
-        ]
+          }
       >
     >
   >
-  page: TOptional<
-    TUnsafe<{
-      number?: number
-      size?: number
+  page: z.ZodOptional<
+    z.ZodObject<{
+      number: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+      size: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
     }>
   >
-  sort: TOptional<
-    TArray<
-      TObject<{
-        field: TUnion<TLiteral<string>[]>
-        order: TUnion<[TLiteral<'asc'>, TLiteral<'desc'>]>
+  sort: z.ZodOptional<
+    z.ZodArray<
+      z.ZodObject<{
+        field: z.ZodEnum<Record<string, string>>
+        order: z.ZodEnum<{
+          asc: 'asc'
+          desc: 'desc'
+        }>
       }>
     >
   >
 }> => {
-  // Create entity-specific field validation
-  const entityFields = Object.keys(entitySchema.properties)
+  // Extract field names from Zod schema
+  const entityFields = Object.keys(entitySchema.shape)
 
   // Create entity-specific filter condition
-  const EntityFilterConditionSchema = Type.Object(
-    {
-      field: Type.Union(entityFields.map((field) => Type.Literal(field))),
-      operator: LegacyRef(OperatorSchema),
-      type: Type.Literal('condition'),
-      value: LegacyRef(FilterValueSchema)
-    },
-    {
-      $id: `${toTitleCaseNoSpaces(entityKey)}FilterCondition`,
-      title: `${toTitleCaseNoSpaces(entityKey)} Filter Condition`
-    }
-  )
+  const EntityFilterConditionSchema = z.object({
+    field: z.enum(entityFields),
+    operator: OperatorSchema,
+    type: z.literal('condition'),
+    value: FilterValueSchema
+  })
+
+  // Create entity-specific filter node type
+  type EntityFilterConditionType = z.infer<typeof EntityFilterConditionSchema>
+
+  interface EntityFilterGroupType {
+    children: EntityFilterNodeType[]
+    operator: 'and' | 'or'
+    type: 'group'
+  }
+
+  type EntityFilterNodeType = EntityFilterConditionType | EntityFilterGroupType
 
   // Create entity-specific recursive filter node
-  const EntityFilterNodeSchema = Type.Recursive(
-    (This) =>
-      Type.Union([
-        EntityFilterConditionSchema,
-        Type.Object({
-          children: Type.Array(This),
-          operator: Type.Union([Type.Literal('and'), Type.Literal('or')]),
-          type: Type.Literal('group')
-        })
-      ]),
-    {
-      $id: `${toTitleCaseNoSpaces(entityKey)}FilterNode`,
-      title: `${toTitleCaseNoSpaces(entityKey)} Filter Node`
-    }
-  )
+  const EntityFilterNodeSchema: z.ZodType<EntityFilterNodeType> = z
+    .discriminatedUnion('type', [
+      EntityFilterConditionSchema,
+      z.object({
+        get children() {
+          return z.array(EntityFilterNodeSchema)
+        },
+        operator: z.enum(['and', 'or']),
+        type: z.literal('group')
+      })
+    ])
+    .meta({
+      description: `A recursive filter node for ${entityKey} entity that can be a condition or group`,
+      id: `${entityKey}FilterNode`
+    })
 
   // Create entity-specific sort schema
-  const EntitySortSchema = Type.Object(
-    {
-      field: Type.Union(entityFields.map((field) => Type.Literal(field))),
-      order: Type.Union([Type.Literal('asc'), Type.Literal('desc')])
-    },
-    {
-      $id: `${toTitleCaseNoSpaces(entityKey)}Sort`,
-      title: `${toTitleCaseNoSpaces(entityKey)} Sort`
-    }
-  )
+  const EntitySortSchema = z
+    .object({
+      field: z.enum(entityFields),
+      order: z.enum(['asc', 'desc'])
+    })
+    .meta({
+      description: `Sorting configuration for ${entityKey} entity with field and order`,
+      id: `${entityKey}Sort`
+    })
 
-  return Type.Object(
-    {
-      filter: Type.Optional(EntityFilterNodeSchema),
-      page: Type.Optional(LegacyRef(PageSchema)),
-      sort: Type.Optional(Type.Array(EntitySortSchema))
-    },
-    {
-      $id: `Search${toTitleCaseNoSpaces(entityKey)}Query`,
-      description: `Complete search query for ${entityKey} with nested filters, pagination, and sorting`,
-      title: `Search ${toTitleCaseNoSpaces(entityKey)} Query`
-    }
-  )
-}
+  const searchQuerySchema = z
+    .object({
+      filter: EntityFilterNodeSchema.optional(),
+      page: PageSchema.optional(),
+      sort: z.array(EntitySortSchema).optional()
+    })
+    .meta({
+      description: `Search query schema for ${entityKey} entity`
+      // id: `${entityKey}SearchQuery`
+    })
 
-// ==========================================
-// UTILITY FUNCTIONS
-// ==========================================
-
-// Count total conditions in a filter tree
-export function countConditions<TEntity extends BaseEntity>(
-  filter: FilterNode<TEntity>
-): number {
-  if (filter.type === 'condition') {
-    return 1
-  } else {
-    return filter.children.reduce(
-      (sum, child) => sum + countConditions(child),
-      0
-    )
-  }
-}
-
-// Convert filter tree to SQL-like string (for debugging)
-export function filterToSqlString<TEntity extends BaseEntity>(
-  filter: FilterNode<TEntity>
-): string {
-  if (filter.type === 'condition') {
-    const { field, operator, value } = filter
-    return `${String(field)} ${operator} ${JSON.stringify(value)}`
-  } else {
-    const childStrings = filter.children.map((child) =>
-      filterToSqlString(child)
-    )
-    const joinedChildren = childStrings.join(
-      ` ${filter.operator.toUpperCase()} `
-    )
-    return `(${joinedChildren})`
-  }
-}
-
-// Get all unique fields used in a filter tree
-export function getUsedFields<TEntity extends BaseEntity>(
-  filter: FilterNode<TEntity>
-): (keyof TEntity)[] {
-  if (filter.type === 'condition') {
-    return [filter.field]
-  } else {
-    const fields = filter.children.flatMap((child) => getUsedFields(child))
-    return [...new Set(fields)]
-  }
-}
-
-// Validate filter tree structure
-export function validateFilterTree<TEntity extends BaseEntity>(
-  filter: FilterNode<TEntity>
-): { errors: string[]; valid: boolean } {
-  const errors: string[] = []
-
-  function validate(node: FilterNode<TEntity>, depth = 0): void {
-    if (depth > 10) {
-      errors.push('Filter tree too deep (max 10 levels)')
-      return
-    }
-
-    if (node.type === 'condition') {
-      if (!node.field) errors.push('Condition missing field')
-      if (!node.operator) errors.push('Condition missing operator')
-      if (node.value === undefined) errors.push('Condition missing value')
-    } else {
-      if (!node.children || node.children.length === 0) {
-        errors.push('Group must have at least one child')
-      }
-      node.children.forEach((child) => {
-        validate(child, depth + 1)
-      })
-    }
-  }
-
-  validate(filter)
-  return { errors, valid: errors.length === 0 }
+  return searchQuerySchema
 }

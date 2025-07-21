@@ -15,7 +15,7 @@ import type {
 import { useMutation } from '@tanstack/react-query'
 
 import type {
-  Register204,
+  Register201,
   RegisterBody,
   UnauthorizedResponse
 } from '../orval.schemas'
@@ -35,8 +35,8 @@ export const getRegisterUrl = () => {
 export const register = async (
   registerBody: RegisterBody,
   options?: RequestInit
-): Promise<Register204> => {
-  return customFetch<Register204>(getRegisterUrl(), {
+): Promise<Register201> => {
+  return customFetch<Register201>(getRegisterUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },

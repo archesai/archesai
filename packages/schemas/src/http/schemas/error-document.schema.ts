@@ -1,29 +1,15 @@
-import type { Static, TObject, TUnsafe } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
-
-import { LegacyRef } from '@archesai/schemas'
+import { z } from 'zod'
 
 import { ErrorObjectSchema } from '#http/schemas/error-object.schema'
 
-// import { MetaSchema } from '#http/schemas/meta.schema'
-
-export const ErrorDocumentSchema: TObject<{
-  error: TUnsafe<{
-    detail: string
-    status: string
-    title: string
+export const ErrorDocumentSchema: z.ZodObject<{
+  error: z.ZodObject<{
+    detail: z.ZodString
+    status: z.ZodString
+    title: z.ZodString
   }>
-}> = Type.Object(
-  {
-    error: LegacyRef(ErrorObjectSchema)
-    // meta: Type.Optional(LegacyRef(MetaSchema))
-  },
-  {
-    $id: 'ErrorDocument',
-    description: 'Error Document',
-    title: 'Error Document'
-  }
-)
+}> = z.object({
+  error: ErrorObjectSchema
+})
 
-export type ErrorDocument = Static<typeof ErrorDocumentSchema>
+export type ErrorDocument = z.infer<typeof ErrorDocumentSchema>

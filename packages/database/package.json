@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "db:clean": "node ./src/lib/clean.ts",
     "db:generate": "drizzle-kit generate",
     "db:inspect": "drizzle-kit inspect",
@@ -29,17 +28,17 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "@libsql/client": "catalog:",
-    "drizzle-orm": "catalog:",
-    "pg": "catalog:",
+    "@libsql/client": "catalog:database",
+    "drizzle-orm": "catalog:database",
+    "pg": "catalog:database",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
-    "drizzle-kit": "catalog:",
-    "drizzle-seed": "catalog:",
+    "@types/pg": "catalog:database",
+    "drizzle-kit": "catalog:database",
+    "drizzle-seed": "catalog:database",
     "typescript": "catalog:"
   }
 }

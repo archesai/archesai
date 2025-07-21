@@ -3,17 +3,12 @@ export * from '#common/crud.plugin'
 
 export * from '#config/config.controller'
 export * from '#config/config.service'
-export * from '#config/schemas/config.schema'
 
 export * from '#email/email.service'
 export * from '#email/templates'
 
 export * from '#exceptions/exception-handler'
 export * from '#exceptions/http-errors'
-export * from '#exceptions/schemas/forbidden-response.schema'
-export * from '#exceptions/schemas/no-content-response.schema'
-export * from '#exceptions/schemas/not-found-response.schema'
-export * from '#exceptions/schemas/unauthorized-response.schema'
 
 export * from '#logging/adapters/pino-logger-adapter'
 export type * from '#logging/logger'

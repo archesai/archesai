@@ -1,23 +1,15 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const UpdateEmailChangeDtoSchema: TObject<{
-  newEmail: TString
-  token: TString
-  userId: TString
-}> = Type.Object({
-  newEmail: Type.String({
-    description: 'The e-mail to send the confirmation token to',
-    format: 'email'
-  }),
-  token: Type.String({
-    description: 'The password reset token'
-  }),
-  userId: Type.String({
-    description: 'The user ID of the user requesting the email change',
-    format: 'uuid'
-  })
+export const UpdateEmailChangeDtoSchema: z.ZodObject<{
+  newEmail: z.ZodEmail
+  token: z.ZodString
+  userId: z.ZodUUID
+}> = z.object({
+  newEmail: z.email().describe('The e-mail to send the confirmation token to'),
+  token: z.string().describe('The password reset token'),
+  userId: z
+    .uuid()
+    .describe('The user ID of the user requesting the email change')
 })
 
-export type UpdateEmailChangeDto = Static<typeof UpdateEmailChangeDtoSchema>
+export type UpdateEmailChangeDto = z.infer<typeof UpdateEmailChangeDtoSchema>

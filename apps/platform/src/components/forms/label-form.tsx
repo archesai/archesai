@@ -6,7 +6,7 @@ import {
   useGetOneLabel,
   useUpdateLabel
 } from '@archesai/client'
-import { LABEL_ENTITY_KEY, Type } from '@archesai/schemas'
+import { LABEL_ENTITY_KEY, StringSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -44,9 +44,7 @@ export default function LabelForm({ id }: { id?: string }) {
           type='text'
         />
       ),
-      validationRule: Type.String({
-        minLength: 1
-      })
+      validationRule: StringSchema
     }
   ]
 

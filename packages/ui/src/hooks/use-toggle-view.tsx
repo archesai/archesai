@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useAtom } from 'jotai'
-
-import { viewAtom } from '#atoms/view'
 
 export const useToggleView = () => {
-  const [view, setView] = useAtom(viewAtom)
+  const [view, setView] = useState<'grid' | 'table'>('grid')
   const [width, setWidth] = useState(0)
 
   const toggleView = () => {

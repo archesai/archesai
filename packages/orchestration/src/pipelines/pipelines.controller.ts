@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 import type { DrizzleDatabaseService } from '@archesai/database'
@@ -19,7 +19,7 @@ export interface PipelinesPluginOptions {
   websocketsService: WebsocketsService
 }
 
-export const pipelinesController: FastifyPluginAsyncTypebox<
+export const pipelinesController: FastifyPluginAsyncZod<
   PipelinesPluginOptions
 > = async (app, { databaseService, websocketsService }) => {
   // Create the pipeline repository and service

@@ -1,41 +1,31 @@
-import type {
-  Static,
-  TArray,
-  TNull,
-  TObject,
-  TOptional,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreatePipelineDtoSchema } from '#orchestration/pipelines/dto/create-pipeline.dto'
 
-export const UpdatePipelineDtoSchema: TObject<{
-  description: TOptional<TUnion<[TString, TNull]>>
-  name: TOptional<TUnion<[TString, TNull]>>
-  steps: TOptional<
-    TArray<
-      TObject<{
-        createdAt: TString
-        dependents: TArray<
-          TObject<{
-            pipelineStepId: TString
+export const UpdatePipelineDtoSchema: z.ZodObject<{
+  description: z.ZodOptional<z.ZodNullable<z.ZodString>>
+  name: z.ZodOptional<z.ZodNullable<z.ZodString>>
+  steps: z.ZodOptional<
+    z.ZodArray<
+      z.ZodObject<{
+        createdAt: z.ZodString
+        dependents: z.ZodArray<
+          z.ZodObject<{
+            pipelineStepId: z.ZodString
           }>
         >
-        id: TString
-        pipelineId: TString
-        prerequisites: TArray<
-          TObject<{
-            pipelineStepId: TString
+        id: z.ZodString
+        pipelineId: z.ZodString
+        prerequisites: z.ZodArray<
+          z.ZodObject<{
+            pipelineStepId: z.ZodString
           }>
         >
-        toolId: TString
-        updatedAt: TString
+        toolId: z.ZodString
+        updatedAt: z.ZodString
       }>
     >
   >
-}> = Type.Partial(CreatePipelineDtoSchema)
+}> = CreatePipelineDtoSchema.partial()
 
-export type UpdatePipelineDto = Static<typeof UpdatePipelineDtoSchema>
+export type UpdatePipelineDto = z.infer<typeof UpdatePipelineDtoSchema>

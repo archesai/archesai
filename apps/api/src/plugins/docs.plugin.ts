@@ -3,36 +3,18 @@ import type { FastifyPluginAsync } from 'fastify'
 
 import fastifySwagger from '@fastify/swagger'
 import scalarUi from '@scalar/fastify-api-reference'
+import {
+  jsonSchemaTransform,
+  jsonSchemaTransformObject
+} from 'fastify-type-provider-zod'
 
 import type { ConfigService, Logger } from '@archesai/core'
-
-import {
-  ErrorDocumentSchema,
-  ErrorObjectSchema,
-  FilterConditionSchema,
-  FilterNodeSchema,
-  OperatorSchema,
-  PageSchema
-} from '@archesai/schemas'
 
 export const docsPlugin: FastifyPluginAsync<{
   configService: ConfigService
   logger: Logger
 }> = async (app, { configService, logger }) => {
-  const DEFAULT_MODELS = [
-    OperatorSchema,
-    FilterConditionSchema,
-    FilterNodeSchema,
-    PageSchema,
-    ErrorObjectSchema,
-    ErrorDocumentSchema
-  ]
   if (configService.get('server.docs.enabled')) {
-    // Register Default Schemas
-    for (const model of DEFAULT_MODELS) {
-      app.addSchema(model)
-    }
-
     // Register fastify plugin
     await app.register(fastifySwagger, {
       openapi: {
@@ -77,7 +59,9 @@ export const docsPlugin: FastifyPluginAsync<{
 
           return json.$id
         }
-      }
+      },
+      transform: jsonSchemaTransform,
+      transformObject: jsonSchemaTransformObject
     } satisfies SwaggerOptions)
 
     // Register scalar-ui plugin

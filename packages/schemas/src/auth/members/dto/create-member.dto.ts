@@ -1,13 +1,15 @@
-import type { Static, TLiteral, TObject, TUnion } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { MemberEntitySchema } from '#auth/members/entities/member.entity'
 
-export const CreateMemberDtoSchema: TObject<{
-  role: TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>
-}> = Type.Object({
-  role: MemberEntitySchema.properties.role
+export const CreateMemberDtoSchema: z.ZodObject<{
+  role: z.ZodEnum<{
+    admin: 'admin'
+    member: 'member'
+    owner: 'owner'
+  }>
+}> = MemberEntitySchema.pick({
+  role: true
 })
 
-export type CreateMemberDto = Static<typeof CreateMemberDtoSchema>
+export type CreateMemberDto = z.infer<typeof CreateMemberDtoSchema>

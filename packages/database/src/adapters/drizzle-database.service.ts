@@ -14,9 +14,6 @@ import type {
   SearchQuery
 } from '@archesai/schemas'
 
-import { BadRequestException } from '@archesai/core'
-import { Type, Value } from '@archesai/schemas'
-
 import type * as schema from '#schema/index'
 
 import { createPooledClient } from '#lib/clients'
@@ -111,21 +108,7 @@ export class DrizzleDatabaseService {
             )
           }
 
-          if (
-            Value.Check(
-              Type.Object({
-                from: Type.Union([Type.Number(), Type.String()]),
-                to: Type.Union([Type.Number(), Type.String()])
-              }),
-              value
-            )
-          ) {
-            return sql`${columnRef} BETWEEN ${value.from} AND ${value.to}`
-          } else {
-            throw new Error(
-              `Value for isBetween operator must be an object with 'from' and 'to' properties`
-            )
-          }
+          return sql`${columnRef} BETWEEN ${value.from} AND ${value.to}`
 
         case 'isEmpty':
           return sql`${columnRef} IS NULL`
@@ -144,31 +127,8 @@ export class DrizzleDatabaseService {
             )
           }
 
-          if (
-            Value.Check(
-              Type.Object({
-                unit: Type.Union([
-                  Type.Literal('days'),
-                  Type.Literal('months'),
-                  Type.Literal('weeks'),
-                  Type.Literal('years')
-                ]),
-                value: Type.Number()
-              }),
-              value
-            )
-          ) {
-            // Build the interval string
-            const intervalStr = `${value.value.toString()} ${value.unit}`
-
-            // Calculate the date relative to today
-            return sql`${columnRef} >= (CURRENT_DATE - INTERVAL '${sql.raw(intervalStr)}')`
-          } else {
-            throw new BadRequestException(
-              `Value for isRelativeToToday operator must be an object with 'value' and 'unit' properties`
-            )
-          }
-
+          // Calculate the date relative to today
+          return sql`${columnRef} >= (CURRENT_DATE - INTERVAL '${sql.raw(`${value.value.toString()} ${value.unit}`)}')`
         case 'lt':
           return sql`${columnRef} < ${value}`
 

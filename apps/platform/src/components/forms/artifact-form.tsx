@@ -11,7 +11,7 @@ import {
 import {
   ARTIFACT_ENTITY_KEY,
   ArtifactEntitySchema,
-  Type
+  StringSchema
 } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 // import ImportCard from '@archesai/ui/components/custom/import-card'
@@ -47,9 +47,7 @@ export default function ArtifactForm({ id }: { id?: string }) {
           type='text'
         />
       ),
-      validationRule: Type.String({
-        minLength: 1
-      })
+      validationRule: StringSchema
     },
     {
       description:
@@ -108,8 +106,7 @@ export default function ArtifactForm({ id }: { id?: string }) {
           </TabsContent>
         </Tabs>
       ),
-      validationRule:
-        ArtifactEntitySchema.properties[tab == 'file' ? 'text' : tab]
+      validationRule: ArtifactEntitySchema.shape[tab == 'file' ? 'text' : tab]
     }
   ]
 

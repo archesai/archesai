@@ -1,13 +1,9 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const SubscriptionDtoSchema: TObject<{
-  planId: TString
-}> = Type.Object({
-  planId: Type.String({
-    description: 'The ID of the plan'
-  })
+export const SubscriptionDtoSchema: z.ZodObject<{
+  planId: z.ZodString
+}> = z.object({
+  planId: z.string().describe('The ID of the plan')
 })
 
-export type SubscriptionDto = Static<typeof SubscriptionDtoSchema>
+export type SubscriptionDto = z.infer<typeof SubscriptionDtoSchema>

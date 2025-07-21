@@ -1,106 +1,90 @@
-import type {
-  Static,
-  TBoolean,
-  TNull,
-  TNumber,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
+export const ApiTokenEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  enabled: z.ZodBoolean
+  expiresAt: z.ZodNullable<z.ZodString>
+  id: z.ZodString
+  key: z.ZodString
+  lastRefill: z.ZodNullable<z.ZodString>
+  lastRequest: z.ZodNullable<z.ZodString>
+  metadata: z.ZodNullable<z.ZodString>
+  name: z.ZodNullable<z.ZodString>
+  permissions: z.ZodNullable<z.ZodString>
+  prefix: z.ZodNullable<z.ZodString>
+  rateLimitEnabled: z.ZodBoolean
+  rateLimitMax: z.ZodNullable<z.ZodNumber>
+  rateLimitTimeWindow: z.ZodNullable<z.ZodNumber>
+  refillAmount: z.ZodNullable<z.ZodNumber>
+  refillInterval: z.ZodNullable<z.ZodNumber>
+  remaining: z.ZodNullable<z.ZodNumber>
+  requestCount: z.ZodNumber
+  start: z.ZodNullable<z.ZodString>
+  updatedAt: z.ZodString
+  userId: z.ZodString
+}> = BaseEntitySchema.extend({
+  enabled: z.boolean().describe('Whether the API token is enabled or not'),
+  expiresAt: z
+    .string()
+    .nullable()
+    .describe('The date and time when the API token expires'),
+  key: z.string().describe('The API token key. This will only be shown once'),
+  lastRefill: z
+    .string()
+    .nullable()
+    .describe('The date and time when the API token was last refilled'),
+  lastRequest: z
+    .string()
+    .nullable()
+    .describe('The date and time when the API token was last used'),
+  metadata: z
+    .string()
+    .nullable()
+    .describe('The metadata for the API token, used for custom data'),
+  name: z.string().nullable().describe('The name of the API token'),
+  permissions: z.string().nullable().describe('The name of the API token'),
+  prefix: z
+    .string()
+    .nullable()
+    .describe('TThe prefix for the API token, used for routing requests'),
+  rateLimitEnabled: z
+    .boolean()
+    .describe('Whether the API token has rate limiting enabled'),
+  rateLimitMax: z
+    .number()
+    .nullable()
+    .describe('The maximum number of requests allowed per time window'),
+  rateLimitTimeWindow: z
+    .number()
+    .nullable()
+    .describe('The time window in seconds for the rate limit'),
+  refillAmount: z
+    .number()
+    .nullable()
+    .describe('The amount of requests to refill the token with'),
+  refillInterval: z
+    .number()
+    .nullable()
+    .describe('The interval in seconds to refill the token'),
+  remaining: z
+    .number()
+    .nullable()
+    .describe('The number of requests remaining for the token'),
+  requestCount: z
+    .number()
+    .describe('The number of requests made with the token'),
+  start: z
+    .string()
+    .nullable()
+    .describe('The number of requests remaining for the token'),
+  userId: z.string().describe('The id of the user the token belongs to')
+}).meta({
+  description: 'Schema for API Token entity',
+  id: 'ApiTokenEntity'
+})
+
+export type ApiTokenEntity = z.infer<typeof ApiTokenEntitySchema>
+
 export const API_TOKEN_ENTITY_KEY = 'api-tokens'
-
-export const ApiTokenEntitySchema: TObject<{
-  createdAt: TString
-  enabled: TBoolean
-  // use unions instaed of optional
-  expiresAt: TUnion<[TString, TNull]>
-  id: TString
-  key: TString
-  lastRefill: TUnion<[TString, TNull]>
-  lastRequest: TUnion<[TString, TNull]>
-  metadata: TUnion<[TString, TNull]>
-  name: TUnion<[TString, TNull]>
-  permissions: TUnion<[TString, TNull]>
-  prefix: TUnion<[TString, TNull]>
-  rateLimitEnabled: TBoolean
-  rateLimitMax: TUnion<[TNumber, TNull]>
-  rateLimitTimeWindow: TUnion<[TNumber, TNull]>
-  refillAmount: TUnion<[TNumber, TNull]>
-  refillInterval: TUnion<[TNumber, TNull]>
-  remaining: TUnion<[TNumber, TNull]>
-  requestCount: TNumber
-  start: TUnion<[TString, TNull]>
-  updatedAt: TString
-  userId: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    enabled: Type.Boolean({
-      description: 'Whether the API token is enabled or not'
-    }),
-    // use unions instaed of optional
-    expiresAt: Type.Union([Type.String(), Type.Null()], {
-      description: 'The date and time when the API token expires'
-    }),
-    key: Type.String({
-      description: 'The API token key. This will only be shown once'
-    }),
-    lastRefill: Type.Union([Type.String(), Type.Null()], {
-      description: 'The date and time when the API token was last refilled'
-    }),
-    lastRequest: Type.Union([Type.String(), Type.Null()], {
-      description: 'The date and time when the API token was last used'
-    }),
-    metadata: Type.Union([Type.String(), Type.Null()], {
-      description: 'The metadata for the API token, used for custom data'
-    }),
-    name: Type.Union([Type.String(), Type.Null()], {
-      description: 'The name of the API token'
-    }),
-    permissions: Type.Union([Type.String(), Type.Null()], {
-      description: 'The name of the API token'
-    }),
-    prefix: Type.Union([Type.String(), Type.Null()], {
-      description: 'TThe prefix for the API token, used for routing requests'
-    }),
-    rateLimitEnabled: Type.Boolean({
-      description: 'Whether the API token has rate limiting enabled'
-    }),
-    rateLimitMax: Type.Union([Type.Number(), Type.Null()], {
-      description: 'The maximum number of requests allowed per time window'
-    }),
-    rateLimitTimeWindow: Type.Union([Type.Number(), Type.Null()], {
-      description: 'The time window in seconds for the rate limit'
-    }),
-    refillAmount: Type.Union([Type.Number(), Type.Null()], {
-      description: 'The amount of requests to refill the token with'
-    }),
-    refillInterval: Type.Union([Type.Number(), Type.Null()], {
-      description: 'The interval in seconds to refill the token'
-    }),
-    remaining: Type.Union([Type.Number(), Type.Null()], {
-      description: 'The number of requests remaining for the token'
-    }),
-    requestCount: Type.Number({
-      description: 'The number of requests made with the token'
-    }),
-    start: Type.Union([Type.String(), Type.Null()], {
-      description: 'The number of requests remaining for the token'
-    }),
-    userId: Type.String({
-      description: 'The id of the user the token belongs to'
-    })
-  },
-  {
-    $id: 'ApiTokenEntity',
-    description: 'The API token entity',
-    title: 'API Token Entity'
-  }
-)
-
-export type ApiTokenEntity = Static<typeof ApiTokenEntitySchema>

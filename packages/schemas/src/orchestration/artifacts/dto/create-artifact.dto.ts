@@ -1,19 +1,15 @@
-import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { ArtifactEntitySchema } from '#orchestration/artifacts/entities/artifact.entity'
 
-export const CreateArtifactDtoSchema: TObject<{
-  name: TString
-  text: TUnion<[TNull, TString]>
-  url: TUnion<[TNull, TString]>
-}> = Type.Object({
-  name: Type.String({
-    description: 'The name of the artifact'
-  }),
-  text: ArtifactEntitySchema.properties.text,
-  url: ArtifactEntitySchema.properties.url
+export const CreateArtifactDtoSchema: z.ZodObject<{
+  name: z.ZodString
+  text: z.ZodNullable<z.ZodString>
+  url: z.ZodNullable<z.ZodString>
+}> = z.object({
+  name: z.string().describe('The name of the artifact'),
+  text: ArtifactEntitySchema.shape.text,
+  url: ArtifactEntitySchema.shape.url
 })
 
-export type CreateArtifactDto = Static<typeof CreateArtifactDtoSchema>
+export type CreateArtifactDto = z.infer<typeof CreateArtifactDtoSchema>

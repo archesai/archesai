@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 import type { DrizzleDatabaseService } from '@archesai/database'
@@ -14,7 +14,7 @@ export interface SessionsPluginOptions {
   websocketsService: WebsocketsService
 }
 
-export const sessionsPlugin: FastifyPluginAsyncTypebox<
+export const sessionsPlugin: FastifyPluginAsyncZod<
   SessionsPluginOptions
 > = async (app, { databaseService, websocketsService }) => {
   // Create the session repository and service

@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 import type { DrizzleDatabaseService } from '@archesai/database'
@@ -19,7 +19,7 @@ export interface LabelsPluginOptions {
   websocketsService: WebsocketsService
 }
 
-export const labelsController: FastifyPluginAsyncTypebox<
+export const labelsController: FastifyPluginAsyncZod<
   LabelsPluginOptions
 > = async (app, { databaseService, websocketsService }) => {
   // Create the label repository and service

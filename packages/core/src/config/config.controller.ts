@@ -1,16 +1,16 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
+
+import { ArchesConfigSchema } from '@archesai/schemas'
 
 import type { ConfigService } from '#config/config.service'
-
-import { ArchesConfigSchema } from '#config/schemas/config.schema'
 
 export interface ConfigControllerOptions {
   configService: ConfigService
 }
 
-export const configController: FastifyPluginCallbackTypebox<
+export const configController: FastifyPluginAsyncZod<
   ConfigControllerOptions
-> = (app, { configService }, done) => {
+> = async (app, { configService }) => {
   app.get(
     `/config`,
     {
@@ -29,5 +29,5 @@ export const configController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

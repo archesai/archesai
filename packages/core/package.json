@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -22,7 +21,6 @@
     "@archesai/schemas": "workspace:*",
     "@fastify/deepmerge": "catalog:fastify",
     "@redis/client": "catalog:",
-    "@sinclair/typebox": "catalog:",
     "@socket.io/redis-adapter": "catalog:",
     "nodemailer": "catalog:",
     "pino": "catalog:",
@@ -32,11 +30,12 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@fastify/type-provider-typebox": "catalog:fastify",
     "@types/node": "catalog:",
     "@types/nodemailer": "catalog:",
     "fastify": "catalog:fastify",
+    "fastify-type-provider-zod": "catalog:fastify",
     "pino-pretty": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "zod": "catalog:"
   }
 }

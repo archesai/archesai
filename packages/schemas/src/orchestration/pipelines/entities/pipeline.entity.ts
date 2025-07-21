@@ -1,105 +1,80 @@
-import type {
-  Static,
-  TArray,
-  TNull,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const PipelineStepEntitySchema: TObject<{
-  createdAt: TString
-  dependents: TArray<
-    TObject<{
-      pipelineStepId: TString
+export const PipelineStepEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  dependents: z.ZodArray<
+    z.ZodObject<{
+      pipelineStepId: z.ZodString
     }>
   >
-  id: TString
-  pipelineId: TString
-  prerequisites: TArray<
-    TObject<{
-      pipelineStepId: TString
+  id: z.ZodString
+  pipelineId: z.ZodString
+  prerequisites: z.ZodArray<
+    z.ZodObject<{
+      pipelineStepId: z.ZodString
     }>
   >
-  toolId: TString
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    dependents: Type.Array(
-      Type.Object({
-        pipelineStepId: Type.String()
-      })
-    ),
-    pipelineId: Type.String(),
-    prerequisites: Type.Array(
-      Type.Object({
-        pipelineStepId: Type.String()
-      })
-    ),
-    toolId: Type.String()
-  },
-  {
-    $id: 'PipelineStepEntity',
-    description: 'The pipeline step entity',
-    title: 'Pipeline Step Entity'
-  }
-)
-
-export const PipelineEntitySchema: TObject<{
-  createdAt: TString
-  description: TUnion<[TString, TNull]>
-  id: TString
-  name: TUnion<[TString, TNull]>
-  organizationId: TString
-  steps: TArray<
-    TObject<{
-      createdAt: TString
-      dependents: TArray<
-        TObject<{
-          pipelineStepId: TString
-        }>
-      >
-      id: TString
-      pipelineId: TString
-      prerequisites: TArray<
-        TObject<{
-          pipelineStepId: TString
-        }>
-      >
-      toolId: TString
-      updatedAt: TString
-    }>
-  >
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    description: Type.Union([Type.String(), Type.Null()], {
-      description: 'The pipeline description'
-    }),
-    name: Type.Union([Type.String(), Type.Null()], {
-      description: 'The pipeline name'
-    }),
-    organizationId: Type.String({ description: 'The organization id' }),
-    steps: Type.Array(PipelineStepEntitySchema, {
-      description: 'The steps in the pipeline'
+  toolId: z.ZodString
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  dependents: z.array(
+    z.object({
+      pipelineStepId: z.string()
     })
-  },
-  {
-    $id: 'PipelineEntity',
-    description: 'The pipeline entity',
-    title: 'Pipeline Entity'
-  }
-)
+  ),
+  pipelineId: z.string(),
+  prerequisites: z.array(
+    z.object({
+      pipelineStepId: z.string()
+    })
+  ),
+  toolId: z.string()
+}).meta({
+  description: 'Schema for Pipeline Step entity',
+  id: 'PipelineStepEntity'
+})
 
-export type PipelineEntity = Static<typeof PipelineEntitySchema>
+export const PipelineEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  description: z.ZodNullable<z.ZodString>
+  id: z.ZodString
+  name: z.ZodNullable<z.ZodString>
+  organizationId: z.ZodString
+  steps: z.ZodArray<
+    z.ZodObject<{
+      createdAt: z.ZodString
+      dependents: z.ZodArray<
+        z.ZodObject<{
+          pipelineStepId: z.ZodString
+        }>
+      >
+      id: z.ZodString
+      pipelineId: z.ZodString
+      prerequisites: z.ZodArray<
+        z.ZodObject<{
+          pipelineStepId: z.ZodString
+        }>
+      >
+      toolId: z.ZodString
+      updatedAt: z.ZodString
+    }>
+  >
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  description: z.string().nullable().describe('The pipeline description'),
+  name: z.string().nullable().describe('The pipeline name'),
+  organizationId: z.string().describe('The organization id'),
+  steps: z.array(PipelineStepEntitySchema).describe('The steps in the pipeline')
+}).meta({
+  description: 'Schema for Pipeline entity',
+  id: 'PipelineEntity'
+})
 
-export type PipelineStepEntity = Static<typeof PipelineStepEntitySchema>
+export type PipelineEntity = z.infer<typeof PipelineEntitySchema>
+
+export type PipelineStepEntity = z.infer<typeof PipelineStepEntitySchema>
 
 export const PIPELINE_ENTITY_KEY = 'pipelines'
 

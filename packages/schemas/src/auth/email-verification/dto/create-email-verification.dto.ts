@@ -1,21 +1,15 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const CreateEmailVerificationDtoSchema: TObject<{
-  email: TString
-  userId: TString
-}> = Type.Object({
-  email: Type.String({
-    description: 'The e-mail to send the confirmation token to',
-    format: 'email'
-  }),
-  userId: Type.String({
-    description: 'The user ID of the user requesting the email verification',
-    format: 'uuid'
-  })
+export const CreateEmailVerificationDtoSchema: z.ZodObject<{
+  email: z.ZodEmail
+  userId: z.ZodUUID
+}> = z.object({
+  email: z.email().describe('The e-mail to send the confirmation token to'),
+  userId: z
+    .uuid()
+    .describe('The user ID of the user requesting the email verification')
 })
 
-export type CreateEmailVerificationDto = Static<
+export type CreateEmailVerificationDto = z.infer<
   typeof CreateEmailVerificationDtoSchema
 >

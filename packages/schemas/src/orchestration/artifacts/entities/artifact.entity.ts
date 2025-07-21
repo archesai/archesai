@@ -1,74 +1,52 @@
-import type {
-  Static,
-  TNull,
-  TNumber,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const ArtifactEntitySchema: TObject<{
-  createdAt: TString
-  credits: TNumber
-  description: TUnion<[TNull, TString]>
-  id: TString
-  mimeType: TString
-  name: TUnion<[TNull, TString]>
-  organizationId: TString
-  previewImage: TUnion<[TNull, TString]>
-  producerId: TUnion<[TNull, TString]>
-  text: TUnion<[TNull, TString]>
-  updatedAt: TString
-  url: TUnion<[TNull, TString]>
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    credits: Type.Number({
-      description:
-        'The number of credits required to access this artifact. This is used for metering and billing purposes.'
-    }),
-    description: Type.Union([Type.Null(), Type.String()], {
-      description: "The artifact's description"
-    }),
-    // embedding: Type.Optional(
-    //   Type.Array(Type.Number(), {
-    //     description:
-    //       "The artifact's embedding, used for semantic search and other ML tasks"
-    //   })
-    // ),
-    mimeType: Type.String({
-      description: 'The MIME type of the artifact, e.g. image/png'
-    }),
-    name: Type.Union([Type.Null(), Type.String()], {
-      description: 'The name of the artifact, used for display purposes'
-    }),
-    organizationId: Type.String({ description: 'The organization name' }),
-    previewImage: Type.Union([Type.Null(), Type.String()], {
-      description:
-        'The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'
-    }),
-    producerId: Type.Union([Type.Null(), Type.String()], {
-      description:
-        'The ID of the run that produced this artifact, if applicable'
-    }),
-    text: Type.Union([Type.Null(), Type.String()], {
-      description: 'The artifact text'
-    }),
-    url: Type.Union([Type.Null(), Type.String()], {
-      description: 'The artifact URL'
-    })
-  },
-  {
-    $id: 'ArtifactEntity',
-    description: 'The artifact entity',
-    title: 'Artifact Entity'
-  }
-)
+export const ArtifactEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  credits: z.ZodNumber
+  description: z.ZodNullable<z.ZodString>
+  id: z.ZodString
+  mimeType: z.ZodString
+  name: z.ZodNullable<z.ZodString>
+  organizationId: z.ZodString
+  previewImage: z.ZodNullable<z.ZodString>
+  producerId: z.ZodNullable<z.ZodString>
+  text: z.ZodNullable<z.ZodString>
+  updatedAt: z.ZodString
+  url: z.ZodNullable<z.ZodString>
+}> = BaseEntitySchema.extend({
+  credits: z
+    .number()
+    .describe(
+      'The number of credits required to access this artifact. This is used for metering and billing purposes.'
+    ),
+  description: z.string().nullable().describe("The artifact's description"),
+  mimeType: z
+    .string()
+    .describe('The MIME type of the artifact, e.g. image/png'),
+  name: z
+    .string()
+    .nullable()
+    .describe('The name of the artifact, used for display purposes'),
+  organizationId: z.string().describe('The organization name'),
+  previewImage: z
+    .string()
+    .nullable()
+    .describe(
+      'The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.'
+    ),
+  producerId: z
+    .string()
+    .nullable()
+    .describe('The ID of the run that produced this artifact, if applicable'),
+  text: z.string().nullable().describe('The artifact text'),
+  url: z.string().nullable().describe('The artifact URL')
+}).meta({
+  description: 'Schema for Artifact entity',
+  id: 'ArtifactEntity'
+})
 
-export type ArtifactEntity = Static<typeof ArtifactEntitySchema>
+export type ArtifactEntity = z.infer<typeof ArtifactEntitySchema>
 
 export const ARTIFACT_ENTITY_KEY = 'artifacts'

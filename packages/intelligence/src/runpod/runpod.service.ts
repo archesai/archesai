@@ -1,7 +1,6 @@
 import type { ConfigService, Logger } from '@archesai/core'
 
 import { delay, retry } from '@archesai/core'
-import { Type, Value } from '@archesai/schemas'
 
 export const createRunpodService = (
   configService: ConfigService,
@@ -27,26 +26,16 @@ export const createRunpodService = (
 
       logger.debug('runpod job status', { response })
 
-      const isValidResponse = Value.Check(
-        Type.Object({
-          id: Type.String(),
-          output: Type.String(),
-          status: Type.Union([
-            Type.Literal('IN_PROGRESS'),
-            Type.Literal('COMPLETED'),
-            Type.Literal('FAILED')
-          ])
-        }),
-        response.body
-      )
-
-      if (!isValidResponse) {
-        throw new Error('Invalid response data')
+      // fixme: add better error handling
+      const responseData = (await response.json()) as {
+        id: string
+        output: string
+        status: 'COMPLETED' | 'FAILED' | 'IN_PROGRESS'
       }
 
-      if (response.body.status === 'COMPLETED') {
-        return response.body.output
-      } else if (response.body.status === 'FAILED') {
+      if (responseData.status === 'COMPLETED') {
+        return responseData.output
+      } else if (responseData.status === 'FAILED') {
         throw new Error('Job failed')
       }
     }
@@ -72,16 +61,9 @@ export const createRunpodService = (
 
     logger.debug('runpod job started', { response })
 
-    const isValidResponse = Value.Check(
-      Type.Object({ id: Type.String() }),
-      response
-    )
+    const responseData = (await response.json()) as { id: string }
 
-    if (!isValidResponse) {
-      throw new Error('Invalid response data')
-    }
-
-    return response.id
+    return responseData.id
   }
 
   return {

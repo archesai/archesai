@@ -1,8 +1,8 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { Logger } from '@archesai/core'
 
-import { PLAN_ENTITY_KEY, PlanDtoSchema, Type } from '@archesai/schemas'
+import { PLAN_ENTITY_KEY, PlanDtoSchema } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -13,9 +13,9 @@ export interface PlansControllerOptions {
   stripeService: StripeService
 }
 
-export const plansController: FastifyPluginCallbackTypebox<
+export const plansController: FastifyPluginAsyncZod<
   PlansControllerOptions
-> = (app, { logger, stripeService }, done) => {
+> = async (app, { logger, stripeService }) => {
   const plansService = new PlansService(stripeService, logger)
   app.get(
     `/billing/${PLAN_ENTITY_KEY}`,
@@ -24,7 +24,7 @@ export const plansController: FastifyPluginCallbackTypebox<
         description: 'Get all plans',
         operationId: 'getPlans',
         response: {
-          200: Type.Array(PlanDtoSchema)
+          200: PlanDtoSchema.array()
         },
         summary: 'Get all plans',
         tags: ['Billing']
@@ -36,5 +36,5 @@ export const plansController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

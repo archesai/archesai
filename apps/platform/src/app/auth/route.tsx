@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-import { CpuIcon } from '@archesai/ui/components/custom/icons'
+import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
 import { useLinkComponent } from '@archesai/ui/hooks/use-link'
 
 export const Route = createFileRoute('/auth')({
@@ -16,10 +16,7 @@ export default function AuthenticationLayout() {
           className='flex items-center gap-2 self-center font-medium'
           href='/'
         >
-          <div className='flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground'>
-            <CpuIcon className='size-4' />
-          </div>
-          Acme Inc.
+          <ArchesLogo size='lg' />
         </Link>
         <Outlet />
       </div>

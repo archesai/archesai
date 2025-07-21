@@ -1,4 +1,4 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import {
   CheckoutSessionDtoSchema,
@@ -13,9 +13,9 @@ export interface StripeControllerOptions {
   stripeService: StripeService
 }
 
-export const stripeController: FastifyPluginCallbackTypebox<
+export const stripeController: FastifyPluginAsyncZod<
   StripeControllerOptions
-> = (app, { stripeService }, done) => {
+> = async (app, { stripeService }) => {
   app.post(
     `/billing/portal`,
     {
@@ -66,5 +66,5 @@ export const stripeController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

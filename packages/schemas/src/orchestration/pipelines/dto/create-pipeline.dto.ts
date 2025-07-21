@@ -1,42 +1,33 @@
-import type {
-  Static,
-  TArray,
-  TNull,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { PipelineEntitySchema } from '#orchestration/pipelines/entities/pipeline.entity'
 
-export const CreatePipelineDtoSchema: TObject<{
-  description: TUnion<[TString, TNull]>
-  name: TUnion<[TString, TNull]>
-  steps: TArray<
-    TObject<{
-      createdAt: TString
-      dependents: TArray<
-        TObject<{
-          pipelineStepId: TString
+export const CreatePipelineDtoSchema: z.ZodObject<{
+  description: z.ZodNullable<z.ZodString>
+  name: z.ZodNullable<z.ZodString>
+  steps: z.ZodArray<
+    z.ZodObject<{
+      createdAt: z.ZodString
+      dependents: z.ZodArray<
+        z.ZodObject<{
+          pipelineStepId: z.ZodString
         }>
       >
-      id: TString
-      pipelineId: TString
-      prerequisites: TArray<
-        TObject<{
-          pipelineStepId: TString
+      id: z.ZodString
+      pipelineId: z.ZodString
+      prerequisites: z.ZodArray<
+        z.ZodObject<{
+          pipelineStepId: z.ZodString
         }>
       >
-      toolId: TString
-      updatedAt: TString
+      toolId: z.ZodString
+      updatedAt: z.ZodString
     }>
   >
-}> = Type.Object({
-  description: PipelineEntitySchema.properties.description,
-  name: PipelineEntitySchema.properties.name,
-  steps: PipelineEntitySchema.properties.steps
+}> = PipelineEntitySchema.pick({
+  description: true,
+  name: true,
+  steps: true
 })
 
-export type CreatePipelineDto = Static<typeof CreatePipelineDtoSchema>
+export type CreatePipelineDto = z.infer<typeof CreatePipelineDtoSchema>

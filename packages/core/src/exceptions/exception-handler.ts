@@ -3,14 +3,6 @@ import type { FastifyPluginCallback, FastifyRequest } from 'fastify'
 import type { ErrorDocument } from '@archesai/schemas'
 
 import { AppError } from '#exceptions/http-errors'
-import { BadRequestResponseSchema } from '#exceptions/schemas/bad-request-response.schema'
-import { ConflictResponseSchema } from '#exceptions/schemas/conflict-response.schema'
-import { ForbiddenResponseSchema } from '#exceptions/schemas/forbidden-response.schema'
-import { InternalServerErrorResponseSchema } from '#exceptions/schemas/internal-server-error-response.schema'
-import { NoContentResponseSchema } from '#exceptions/schemas/no-content-response.schema'
-import { NotFoundResponseSchema } from '#exceptions/schemas/not-found-response.schema'
-import { UnauthorizedResponseSchema } from '#exceptions/schemas/unauthorized-response.schema'
-import { ValidationErrorResponseSchema } from '#exceptions/schemas/validation-error-response.schema'
 
 // Plugin options
 interface ErrorHandlerOptions {
@@ -25,16 +17,6 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
   done
 ) => {
   const { includeStack = true, sanitizeHeaders = true } = options
-
-  // Add error schemas to app instance for reuse
-  app.addSchema(BadRequestResponseSchema)
-  app.addSchema(ConflictResponseSchema)
-  app.addSchema(ForbiddenResponseSchema)
-  app.addSchema(InternalServerErrorResponseSchema)
-  app.addSchema(NoContentResponseSchema)
-  app.addSchema(NotFoundResponseSchema)
-  app.addSchema(UnauthorizedResponseSchema)
-  app.addSchema(ValidationErrorResponseSchema)
 
   // Helper function to sanitize request data for logging
   const sanitizeRequest = (request: FastifyRequest) => {

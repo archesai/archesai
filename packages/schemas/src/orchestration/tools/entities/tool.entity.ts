@@ -1,40 +1,31 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const ToolEntitySchema: TObject<{
-  createdAt: TString
-  description: TString
-  id: TString
-  inputMimeType: TString
-  name: TString
-  organizationId: TString
-  outputMimeType: TString
-  updatedAt: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    description: Type.String({ description: 'The tool description' }),
-    inputMimeType: Type.String({
-      description: 'The MIME type of the input for the tool, e.g. text/plain'
-    }),
-    name: Type.String({
-      description: 'The name of the tool'
-    }),
-    organizationId: Type.String({ description: 'The organization name' }),
-    outputMimeType: Type.String({
-      description: 'The MIME type of the output for the tool, e.g. text/plain'
-    })
-  },
-  {
-    $id: 'ToolEntity',
-    description: 'The tool entity',
-    title: 'Tool Entity'
-  }
-)
+export const ToolEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  description: z.ZodString
+  id: z.ZodString
+  inputMimeType: z.ZodString
+  name: z.ZodString
+  organizationId: z.ZodString
+  outputMimeType: z.ZodString
+  updatedAt: z.ZodString
+}> = BaseEntitySchema.extend({
+  description: z.string().describe('The tool description'),
+  inputMimeType: z
+    .string()
+    .describe('The MIME type of the input for the tool, e.g. text/plain'),
+  name: z.string().describe('The name of the tool'),
+  organizationId: z.string().describe('The organization name'),
+  outputMimeType: z
+    .string()
+    .describe('The MIME type of the output for the tool, e.g. text/plain')
+}).meta({
+  description: 'Schema for Tool entity',
+  id: 'ToolEntity'
+})
 
-export type ToolEntity = Static<typeof ToolEntitySchema>
+export type ToolEntity = z.infer<typeof ToolEntitySchema>
 
 export const TOOL_ENTITY_KEY = 'tools'

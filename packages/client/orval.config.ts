@@ -32,6 +32,7 @@ export default defineConfig({
       target: 'https://api.archesai.test/docs/openapi.json'
     },
     output: {
+      prettier: true,
       override: {
         fetch: {
           includeHttpResponseReturnType: false

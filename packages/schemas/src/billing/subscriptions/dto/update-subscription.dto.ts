@@ -1,9 +1,9 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateSubscriptionDtoSchema } from '#billing/subscriptions/dto/create-subscription.dto'
 
-export const UpdateSubscriptionDtoSchema: TObject<{
-  planId: TString
+export const UpdateSubscriptionDtoSchema: z.ZodObject<{
+  planId: z.ZodString
 }> = CreateSubscriptionDtoSchema
 
-export type UpdateSubscriptionDto = Static<typeof UpdateSubscriptionDtoSchema>
+export type UpdateSubscriptionDto = z.infer<typeof UpdateSubscriptionDtoSchema>

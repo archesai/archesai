@@ -15,7 +15,7 @@ import type {
 import { useMutation } from '@tanstack/react-query'
 
 import type {
-  ConfirmEmailVerification204,
+  ConfirmEmailVerification200,
   ConfirmEmailVerificationBody,
   NoContentResponse,
   NotFoundResponse,
@@ -37,8 +37,8 @@ export const getConfirmEmailVerificationUrl = () => {
 export const confirmEmailVerification = async (
   confirmEmailVerificationBody: ConfirmEmailVerificationBody,
   options?: RequestInit
-): Promise<ConfirmEmailVerification204> => {
-  return customFetch<ConfirmEmailVerification204>(
+): Promise<ConfirmEmailVerification200> => {
+  return customFetch<ConfirmEmailVerification200>(
     getConfirmEmailVerificationUrl(),
     {
       ...options,

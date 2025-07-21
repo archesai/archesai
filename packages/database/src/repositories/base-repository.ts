@@ -1,9 +1,8 @@
 import type { PgTable } from 'drizzle-orm/pg-core'
 
-import type { BaseEntity, SearchQuery, TSchema } from '@archesai/schemas'
+import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
-import { Value } from '@archesai/schemas'
 
 import type { DrizzleDatabaseService } from '#adapters/drizzle-database.service'
 
@@ -18,10 +17,12 @@ export function createBaseRepository<
 >(
   databaseService: DrizzleDatabaseService,
   table: PgTable,
-  entitySchema: TSchema
+  entitySchema: {
+    parse: (data: unknown) => TEntity
+  }
 ) {
   const toEntity = (model: (typeof table)['$inferSelect']): TEntity => {
-    return Value.Parse(entitySchema, model)
+    return entitySchema.parse(model)
 
     // try {
     //   return Value.Parse(this.entitySchema, model)

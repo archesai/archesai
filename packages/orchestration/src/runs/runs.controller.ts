@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 import type { DrizzleDatabaseService } from '@archesai/database'
@@ -19,9 +19,10 @@ export interface RunsPluginOptions {
   websocketsService: WebsocketsService
 }
 
-export const runsController: FastifyPluginAsyncTypebox<
-  RunsPluginOptions
-> = async (app, { databaseService, websocketsService }) => {
+export const runsController: FastifyPluginAsyncZod<RunsPluginOptions> = async (
+  app,
+  { databaseService, websocketsService }
+) => {
   // Create the run repository and service
   const runRepository = createRunRepository(databaseService)
   const runsService = createRunsService(runRepository, websocketsService)

@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
+import type { CreatePasswordResetDto } from '@archesai/schemas'
+
 import { useRequestPasswordReset } from '@archesai/client'
 import { CreatePasswordResetDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
@@ -14,15 +16,11 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <GenericForm<
-        typeof CreatePasswordResetDtoSchema.static,
-        typeof CreatePasswordResetDtoSchema.static
-      >
+      <GenericForm<CreatePasswordResetDto, CreatePasswordResetDto>
         description='Enter your email address to receive a password reset link'
         entityKey='auth'
         fields={[
           {
-            defaultValue: '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
@@ -31,7 +29,7 @@ export default function ForgotPasswordPage() {
                 type='email'
               />
             ),
-            validationRule: CreatePasswordResetDtoSchema.properties.email
+            validationRule: CreatePasswordResetDtoSchema.shape.email
           }
         ]}
         isUpdateForm={false}

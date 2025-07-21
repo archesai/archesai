@@ -1,36 +1,23 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const VerificationEntitySchema: TObject<{
-  createdAt: TString
-  expiresAt: TString
-  id: TString
-  identifier: TString
-  updatedAt: TString
-  value: TString
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    expiresAt: Type.String({
-      description: 'The expiration date of the token'
-    }),
-    identifier: Type.String({
-      description: 'The identifier associated with the token'
-    }),
-    value: Type.String({
-      description: 'The token string'
-    })
-  },
-  {
-    $id: 'VerificationEntity',
-    description: 'The verification token entity',
-    title: 'Verification Token Entity'
-  }
-)
+export const VerificationEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  expiresAt: z.ZodString
+  id: z.ZodString
+  identifier: z.ZodString
+  updatedAt: z.ZodString
+  value: z.ZodString
+}> = BaseEntitySchema.extend({
+  expiresAt: z.string().describe('The expiration date of the token'),
+  identifier: z.string().describe('The identifier associated with the token'),
+  value: z.string().describe('The token string')
+}).meta({
+  description: 'Schema for Verification Token entity',
+  id: 'VerificationTokenEntity'
+})
 
-export type VerificationEntity = Static<typeof VerificationEntitySchema>
+export type VerificationEntity = z.infer<typeof VerificationEntitySchema>
 
 export const VERIFICATION_TOKEN_ENTITY_KEY = 'verification-tokens'

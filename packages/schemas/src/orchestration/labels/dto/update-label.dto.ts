@@ -1,11 +1,9 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateLabelDtoSchema } from '#orchestration/labels/dto/create-label.dto'
 
-export const UpdateLabelDtoSchema: TObject<{
-  name: TOptional<TString>
-}> = Type.Partial(CreateLabelDtoSchema)
+export const UpdateLabelDtoSchema: z.ZodObject<{
+  name: z.ZodOptional<z.ZodString>
+}> = CreateLabelDtoSchema.partial()
 
-export type UpdateLabelDto = Static<typeof UpdateLabelDtoSchema>
+export type UpdateLabelDto = z.infer<typeof UpdateLabelDtoSchema>

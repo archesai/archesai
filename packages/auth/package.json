@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
@@ -27,9 +26,9 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@fastify/type-provider-typebox": "catalog:fastify",
     "@types/node": "catalog:",
     "fastify": "catalog:fastify",
+    "fastify-type-provider-zod": "catalog:fastify",
     "typescript": "catalog:"
   }
 }

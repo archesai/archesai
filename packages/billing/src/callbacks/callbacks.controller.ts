@@ -1,4 +1,4 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { ConfigService, WebsocketsService } from '@archesai/core'
 
@@ -14,9 +14,9 @@ export interface CallbacksControllerOptions {
   websocketsService: WebsocketsService
 }
 
-export const callbacksController: FastifyPluginCallbackTypebox<
+export const callbacksController: FastifyPluginAsyncZod<
   CallbacksControllerOptions
-> = (app, { configService, stripeService, websocketsService }, done) => {
+> = async (app, { configService, stripeService, websocketsService }) => {
   const callbacksService = new CallbacksService(
     configService,
     stripeService,
@@ -49,5 +49,5 @@ export const callbacksController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

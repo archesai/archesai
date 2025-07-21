@@ -1,17 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { StaticDecode } from '@sinclair/typebox'
 
 import { deepmerge } from '@fastify/deepmerge'
 import { parse } from 'yaml'
 
-import type { TObject } from '@archesai/schemas'
+import type { ArchesConfig } from '@archesai/schemas'
 
-import { Type, Value } from '@archesai/schemas'
-
-import type { ArchesConfig } from '#config/schemas/config.schema'
-
-import { ArchesConfigSchema } from '#config/schemas/config.schema'
+import { ArchesConfigSchema, RecordSchema } from '@archesai/schemas'
 
 export type LeafTypes<T, S extends string> =
   T extends (
@@ -41,7 +36,7 @@ export const createConfigService = (): {
     propertyPath: Path
   ): LeafTypes<ArchesConfig, Path>
   getConfig(): ArchesConfig
-  load: <T extends TObject>(schema: T) => StaticDecode<T>
+  load: () => ArchesConfig
 } => {
   const loadEnvConfig = (): Record<string, unknown> => {
     const envConfig: Record<string, unknown> = {}
@@ -68,9 +63,7 @@ export const createConfigService = (): {
 
     let baseConfig: Record<string, unknown> = {}
     if (fs.existsSync(baseConfigPath) && fs.statSync(baseConfigPath).isFile()) {
-      const yamlValidation = Type.Record(Type.String(), Type.Unknown())
-      baseConfig = Value.Parse(
-        yamlValidation,
+      baseConfig = RecordSchema.parse(
         parse(fs.readFileSync(baseConfigPath, 'utf8'))
       )
     }
@@ -87,9 +80,7 @@ export const createConfigService = (): {
         .map((file) => path.join(configDropInDir, file))
 
       for (const file of files) {
-        const yamlValidation = Type.Record(Type.String(), Type.Unknown())
-        const fileConfig = Value.Parse(
-          yamlValidation,
+        const fileConfig = RecordSchema.parse(
           parse(fs.readFileSync(file, 'utf8'))
         )
         baseConfig = deepmerge({ all: true })({
@@ -101,17 +92,17 @@ export const createConfigService = (): {
     return baseConfig
   }
 
-  const load = <T extends TObject>(schema: T): StaticDecode<T> => {
+  const load = (): ArchesConfig => {
     const yamlConfig = loadYamlConfig()
     const envConfig = loadEnvConfig()
     const mergedConfig = deepmerge({ all: true })({
       ...envConfig,
       ...yamlConfig
     })
-    return Value.Parse(schema, mergedConfig)
+    return ArchesConfigSchema.parse(mergedConfig)
   }
 
-  const config = load(ArchesConfigSchema)
+  const config = load()
 
   return {
     get<Path extends Leaves<ArchesConfig>>(

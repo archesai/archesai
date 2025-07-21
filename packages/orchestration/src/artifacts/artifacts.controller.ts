@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
 import type { DrizzleDatabaseService } from '@archesai/database'
@@ -19,7 +19,7 @@ export interface ArtifactsPluginOptions {
   websocketsService: WebsocketsService
 }
 
-export const artifactsController: FastifyPluginAsyncTypebox<
+export const artifactsController: FastifyPluginAsyncZod<
   ArtifactsPluginOptions
 > = async (app, { databaseService, websocketsService }) => {
   app.log.info('Registering artifacts controller')
@@ -40,6 +40,4 @@ export const artifactsController: FastifyPluginAsyncTypebox<
     service: artifactsService,
     updateSchema: UpdateArtifactDtoSchema
   })
-
-  // app.addSchema(ArtifactEntitySchema)
 }

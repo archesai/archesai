@@ -1,27 +1,17 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const RunpodResponseDtoSchema: TObject<{
-  id: TString
-  output: TString
-  status: TUnion<
-    [TLiteral<'IN_PROGRESS'>, TLiteral<'COMPLETED'>, TLiteral<'FAILED'>]
-  >
-}> = Type.Object({
-  id: Type.String(),
-  output: Type.String(),
-  status: Type.Union([
-    Type.Literal('IN_PROGRESS'),
-    Type.Literal('COMPLETED'),
-    Type.Literal('FAILED')
-  ])
+export const RunpodResponseDtoSchema: z.ZodObject<{
+  id: z.ZodString
+  output: z.ZodString
+  status: z.ZodEnum<{
+    COMPLETED: 'COMPLETED'
+    FAILED: 'FAILED'
+    IN_PROGRESS: 'IN_PROGRESS'
+  }>
+}> = z.object({
+  id: z.string(),
+  output: z.string(),
+  status: z.enum(['IN_PROGRESS', 'COMPLETED', 'FAILED'])
 })
 
-export type RunpodResponseDto = Static<typeof RunpodResponseDtoSchema>
+export type RunpodResponseDto = z.infer<typeof RunpodResponseDtoSchema>

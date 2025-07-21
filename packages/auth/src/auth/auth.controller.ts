@@ -1,23 +1,21 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
 import type { FastifyReply, FastifyRequest } from 'fastify'
+import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
+
+import type { SessionEntity, UserEntity } from '@archesai/schemas'
 
 import {
-  NoContentResponseSchema,
-  NotFoundResponseSchema,
-  UnauthorizedResponseSchema
-} from '@archesai/core'
-import {
+  BetterAuthSessionSchema,
   CreateAccountDtoSchema,
   CreateEmailChangeDtoSchema,
   CreatePasswordResetDtoSchema,
-  LegacyRef,
-  SessionEntitySchema,
-  Type,
+  NoContentResponseSchema,
+  NotFoundResponseSchema,
+  // SessionEntitySchema,
+  UnauthorizedResponseSchema,
   UpdateEmailChangeDtoSchema,
   UpdateEmailVerificationDtoSchema,
-  UpdatePasswordResetDtoSchema,
-  UserEntitySchema,
-  Value
+  UpdatePasswordResetDtoSchema
+  // UserEntitySchema
 } from '@archesai/schemas'
 
 import type { AuthService } from '#auth/auth.service'
@@ -39,7 +37,7 @@ declare module 'fastify' {
   }
 }
 
-export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
+export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
   app,
   { authService },
   done
@@ -108,11 +106,8 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: `This endpoint will log you in with your e-mail and password`,
         operationId: 'login',
         response: {
-          200: Type.Object({
-            session: SessionEntitySchema,
-            user: UserEntitySchema
-          }),
-          401: LegacyRef(UnauthorizedResponseSchema)
+          200: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema
         },
         summary: `Login`,
         tags: ['Authentication']
@@ -130,8 +125,8 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: `This endpoint will log you out of the current session`,
         operationId: 'logout',
         response: {
-          204: LegacyRef(NoContentResponseSchema),
-          401: LegacyRef(UnauthorizedResponseSchema)
+          204: NoContentResponseSchema,
+          401: UnauthorizedResponseSchema
         },
         summary: `Logout`,
         tags: ['Authentication']
@@ -149,11 +144,8 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: `This endpoint will return the current session information`,
         operationId: 'getSession',
         response: {
-          200: Type.Object({
-            session: SessionEntitySchema,
-            user: UserEntitySchema
-          }),
-          401: LegacyRef(UnauthorizedResponseSchema)
+          200: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema
         },
         summary: `Get Session`,
         tags: ['Authentication']
@@ -172,11 +164,8 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: `This endpoint will register you with your e-mail and password`,
         operationId: 'register',
         response: {
-          204: Type.Object({
-            session: SessionEntitySchema,
-            user: UserEntitySchema
-          }),
-          401: LegacyRef(UnauthorizedResponseSchema)
+          201: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema
         },
         summary: `Register`,
         tags: ['Registration']
@@ -187,12 +176,10 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         // Create organization after successful signup
         if (response.status === 200 && responseText) {
           try {
-            const userData = Value.Parse(
-              Type.Object({
-                user: UserEntitySchema
-              }),
-              JSON.parse(responseText)
-            )
+            const userData = JSON.parse(responseText) as {
+              session: SessionEntity
+              user: UserEntity
+            }
             if (userData.user.id) {
               const organization = await authService.createOrganization({
                 body: {
@@ -229,12 +216,9 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: 'This endpoint will confirm your e-mail with a token',
         operationId: 'confirmEmailVerification',
         response: {
-          204: Type.Object({
-            session: SessionEntitySchema,
-            user: UserEntitySchema
-          }),
-          401: LegacyRef(UnauthorizedResponseSchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          200: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema,
+          404: NotFoundResponseSchema
         },
         summary: 'Confirm e-mail verification',
         tags: ['Email Verification']
@@ -253,7 +237,7 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
           'This endpoint will send an e-mail verification link to you. ADMIN ONLY.',
         operationId: 'requestEmailVerification',
         response: {
-          204: LegacyRef(NoContentResponseSchema)
+          204: NoContentResponseSchema
         },
         security: [{ bearerAuth: [] }], // ✅ add this line
         summary: 'Request e-mail verification',
@@ -274,9 +258,9 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
           'This endpoint will confirm your password change with a token',
         operationId: 'confirmPasswordReset',
         response: {
-          204: LegacyRef(NoContentResponseSchema),
-          401: LegacyRef(UnauthorizedResponseSchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          204: NoContentResponseSchema,
+          401: UnauthorizedResponseSchema,
+          404: NotFoundResponseSchema
         },
         summary: 'Confirm password reset',
         tags: ['Password Reset']
@@ -295,7 +279,7 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
         description: 'This endpoint will request a password reset link',
         operationId: 'requestPasswordReset',
         response: {
-          204: LegacyRef(NoContentResponseSchema)
+          204: NoContentResponseSchema
         },
         summary: 'Request password reset',
         tags: ['Password Reset']
@@ -315,9 +299,9 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
           'This endpoint will confirm your e-mail change with a token',
         operationId: 'confirmEmailChange',
         response: {
-          204: LegacyRef(NoContentResponseSchema),
-          401: LegacyRef(UnauthorizedResponseSchema),
-          404: LegacyRef(NotFoundResponseSchema)
+          204: NoContentResponseSchema,
+          401: UnauthorizedResponseSchema,
+          404: NotFoundResponseSchema
         },
         summary: 'Confirm e-mail change',
         tags: ['Email Change']
@@ -337,7 +321,7 @@ export const authPlugin: FastifyPluginCallbackTypebox<AuthPluginOptions> = (
           'This endpoint will request your e-mail change with a token',
         operationId: 'requestEmailChange',
         response: {
-          204: LegacyRef(NoContentResponseSchema)
+          204: NoContentResponseSchema
         },
         summary: 'Request e-mail change',
         tags: ['Email Change']

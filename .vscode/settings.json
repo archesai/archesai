@@ -6,21 +6,17 @@
     { "pattern": "e2e/*/" }
   ],
   "files.exclude": {
-    "**/*.tsbuildinfo": true,
     "**/.cache": true,
-    "**/.next": true,
+    "**/.coverage": true,
     "**/.nitro": true,
     "**/.output": true,
     "**/.tanstack": true,
     "**/.turbo": true,
     "**/dist": true,
-    "**/next-env.d.ts": true,
     "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
-    "./apps/landing/src/styles/globals.css": "./apps/landing/src/**",
     "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
     "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  }
 }

@@ -9,24 +9,23 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@eslint/compat": "catalog:",
-    "@eslint/js": "catalog:",
-    "eslint-config-prettier": "catalog:",
-    "eslint-import-resolver-typescript": "catalog:",
-    "eslint-plugin-import": "catalog:",
-    "eslint-plugin-jest": "catalog:",
-    "eslint-plugin-jsdoc": "catalog:",
-    "eslint-plugin-perfectionist": "catalog:",
-    "eslint-plugin-react": "catalog:",
-    "eslint-plugin-react-hooks": "catalog:",
-    "globals": "catalog:",
-    "typescript-eslint": "catalog:"
+    "@eslint/compat": "catalog:eslint",
+    "@eslint/js": "catalog:eslint",
+    "eslint-config-prettier": "catalog:eslint",
+    "eslint-import-resolver-typescript": "catalog:eslint",
+    "eslint-plugin-import": "catalog:eslint",
+    "eslint-plugin-jest": "catalog:eslint",
+    "eslint-plugin-jsdoc": "catalog:eslint",
+    "eslint-plugin-perfectionist": "catalog:eslint",
+    "eslint-plugin-react": "catalog:eslint",
+    "eslint-plugin-react-hooks": "catalog:eslint",
+    "globals": "catalog:eslint",
+    "typescript-eslint": "catalog:eslint"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",

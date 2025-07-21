@@ -1,15 +1,13 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { OrganizationEntitySchema } from '#auth/organizations/entities/organization.entity'
 
-export const CreateOrganizationDtoSchema: TObject<{
-  billingEmail: TString
-  organizationId: TString
-}> = Type.Object({
-  billingEmail: OrganizationEntitySchema.properties.billingEmail,
-  organizationId: OrganizationEntitySchema.properties.id
+export const CreateOrganizationDtoSchema: z.ZodObject<{
+  billingEmail: z.ZodString
+  organizationId: z.ZodString
+}> = z.object({
+  billingEmail: OrganizationEntitySchema.shape.billingEmail,
+  organizationId: OrganizationEntitySchema.shape.id
 })
 
-export type CreateOrganizationDto = Static<typeof CreateOrganizationDtoSchema>
+export type CreateOrganizationDto = z.infer<typeof CreateOrganizationDtoSchema>

@@ -6,7 +6,7 @@ import {
   updateMember,
   useGetOneMemberSuspense
 } from '@archesai/client'
-import { MEMBER_ENTITY_KEY, Type } from '@archesai/schemas'
+import { MEMBER_ENTITY_KEY, StringSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -36,9 +36,7 @@ export default function MemberForm({ id }: { id?: string }) {
           type='text'
         />
       ),
-      validationRule: Type.String({
-        minLength: 1
-      })
+      validationRule: StringSchema
     },
     {
       defaultValue: member.role,

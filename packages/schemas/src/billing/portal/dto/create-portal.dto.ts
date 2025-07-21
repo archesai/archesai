@@ -1,11 +1,9 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const CreatePortalDtoSchema: TObject<{
-  organizationId: TString
-}> = Type.Object({
-  organizationId: Type.String()
+export const CreatePortalDtoSchema: z.ZodObject<{
+  organizationId: z.ZodString
+}> = z.object({
+  organizationId: z.string()
 })
 
-export type CreatePortalDto = Static<typeof CreatePortalDtoSchema>
+export type CreatePortalDto = z.infer<typeof CreatePortalDtoSchema>

@@ -5,8 +5,514 @@
  * The Arches AI API
  * OpenAPI spec version: v1
  */
+/**
+ * Schema for Account entity
+ */
+export interface AccountEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /**
+   * The access token
+   * @nullable
+   */
+  accessToken: string | null
+  /**
+   * The expiration date
+   * @nullable
+   */
+  accessTokenExpiresAt: string | null
+  /** The unique identifier for the account */
+  accountId: string
+  /**
+   * The ID token
+   * @nullable
+   */
+  idToken: string | null
+  /**
+   * The hashed password for local authentication
+   * @nullable
+   */
+  password: string | null
+  /** The provider ID associated with the auth provider */
+  providerId: string
+  /**
+   * The refresh token
+   * @nullable
+   */
+  refreshToken: string | null
+  /**
+   * The refresh token expiration date
+   * @nullable
+   */
+  refreshTokenExpiresAt: string | null
+  /**
+   * The scope of the access token
+   * @nullable
+   */
+  scope: string | null
+  /** The user ID associated with the auth provider */
+  userId: string
+}
+
+/**
+ * Schema for API Token entity
+ */
+export interface ApiTokenEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether the API token is enabled or not */
+  enabled: boolean
+  /**
+   * The date and time when the API token expires
+   * @nullable
+   */
+  expiresAt: string | null
+  /** The API token key. This will only be shown once */
+  key: string
+  /**
+   * The date and time when the API token was last refilled
+   * @nullable
+   */
+  lastRefill: string | null
+  /**
+   * The date and time when the API token was last used
+   * @nullable
+   */
+  lastRequest: string | null
+  /**
+   * The metadata for the API token, used for custom data
+   * @nullable
+   */
+  metadata: string | null
+  /**
+   * The name of the API token
+   * @nullable
+   */
+  name: string | null
+  /**
+   * The name of the API token
+   * @nullable
+   */
+  permissions: string | null
+  /**
+   * TThe prefix for the API token, used for routing requests
+   * @nullable
+   */
+  prefix: string | null
+  /** Whether the API token has rate limiting enabled */
+  rateLimitEnabled: boolean
+  /**
+   * The maximum number of requests allowed per time window
+   * @nullable
+   */
+  rateLimitMax: number | null
+  /**
+   * The time window in seconds for the rate limit
+   * @nullable
+   */
+  rateLimitTimeWindow: number | null
+  /**
+   * The amount of requests to refill the token with
+   * @nullable
+   */
+  refillAmount: number | null
+  /**
+   * The interval in seconds to refill the token
+   * @nullable
+   */
+  refillInterval: number | null
+  /**
+   * The number of requests remaining for the token
+   * @nullable
+   */
+  remaining: number | null
+  /** The number of requests made with the token */
+  requestCount: number
+  /**
+   * The number of requests remaining for the token
+   * @nullable
+   */
+  start: string | null
+  /** The id of the user the token belongs to */
+  userId: string
+}
+
+/**
+ * The role of the invitation
+ */
+export type InvitationEntityInputRole =
+  (typeof InvitationEntityInputRole)[keyof typeof InvitationEntityInputRole]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterConditionOperator = {
+export const InvitationEntityInputRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
+
+/**
+ * Schema for Invitation entity
+ */
+export interface InvitationEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The email of the invitated user */
+  email: string
+  /** The date and time when the invitation expires */
+  expiresAt: string
+  /** The user id of the inviter */
+  inviterId: string
+  /** The name of the organization the token belongs to */
+  organizationId: string
+  /** The role of the invitation */
+  role: InvitationEntityInputRole
+  /** The status of the invitation, e.g., pending, accepted, declined */
+  status: string
+}
+
+/**
+ * The role of the member
+ */
+export type MemberEntityInputRole =
+  (typeof MemberEntityInputRole)[keyof typeof MemberEntityInputRole]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MemberEntityInputRole = {
+  admin: 'admin',
+  owner: 'owner',
+  member: 'member'
+} as const
+
+/**
+ * Schema for Member entity
+ */
+export interface MemberEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The organization name */
+  organizationId: string
+  /** The role of the member */
+  role: MemberEntityInputRole
+  /** The user id */
+  userId: string
+}
+
+/**
+ * The plan that the organization is subscribed to
+ */
+export type OrganizationEntityInputPlan =
+  (typeof OrganizationEntityInputPlan)[keyof typeof OrganizationEntityInputPlan]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationEntityInputPlan = {
+  BASIC: 'BASIC',
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM',
+  STANDARD: 'STANDARD',
+  UNLIMITED: 'UNLIMITED'
+} as const
+
+/**
+ * Schema for Organization entity
+ */
+export interface OrganizationEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The billing email to use for the organization */
+  billingEmail: string
+  /** The number of credits you have remaining for this organization */
+  credits: number
+  /**
+   * The URL of the organization logo
+   * @nullable
+   */
+  logo: string | null
+  /**
+   * The metadata for the organization, used for custom data
+   * @nullable
+   */
+  metadata: string | null
+  /** The name of the organization */
+  name: string
+  /** The plan that the organization is subscribed to */
+  plan: OrganizationEntityInputPlan
+  /** The unique slug for the organization, used in URLs */
+  slug: string
+  /**
+   * The Stripe customer ID
+   * @nullable
+   */
+  stripeCustomerId: string | null
+}
+
+/**
+ * Schema for Session entity
+ */
+export interface SessionEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The active organization ID */
+  activeOrganizationId: string
+  /** The expiration date of the session */
+  expiresAt: string
+  /**
+   * The IP address of the session
+   * @nullable
+   */
+  ipAddress: string | null
+  /** The session token */
+  token: string
+  /**
+   * The user agent of the session
+   * @nullable
+   */
+  userAgent: string | null
+  /** The ID of the user associated with the session */
+  userId: string
+}
+
+/**
+ * Schema for User entity
+ */
+export interface UserEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not the user is deactivated */
+  deactivated?: boolean
+  /** The user's e-mail */
+  email: string
+  /** Whether or not the user's e-mail has been verified */
+  emailVerified: boolean
+  /**
+   * The user's avatar image URL
+   * @nullable
+   */
+  image: string | null
+  /**
+   * The user's name
+   * @minLength 1
+   */
+  name: string
+}
+
+/**
+ * Schema for Verification Token entity
+ */
+export interface VerificationTokenEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The expiration date of the token */
+  expiresAt: string
+  /** The identifier associated with the token */
+  identifier: string
+  /** The token string */
+  value: string
+}
+
+export type BadRequestResponseInputError = {
+  /** The request is invalid or malformed. */
+  detail: string
+  /** 400 */
+  status: string
+  /** Bad Request */
+  title: string
+}
+
+/**
+ * Schema for 400 Bad Request response
+ */
+export interface BadRequestResponseInput {
+  error: BadRequestResponseInputError
+}
+
+export type ConflictResponseInputError = {
+  /** The request conflicts with the current state of the resource. */
+  detail: string
+  /** 409 */
+  status: string
+  /** Conflict */
+  title: string
+}
+
+/**
+ * Schema for 409 Conflict response
+ */
+export interface ConflictResponseInput {
+  error: ConflictResponseInputError
+}
+
+export type ForbiddenResponseInputError = {
+  /** You do not have permission to access this resource. */
+  detail: string
+  /** 403 */
+  status: string
+  /** Forbidden */
+  title: string
+}
+
+/**
+ * Schema for 403 Forbidden response
+ */
+export interface ForbiddenResponseInput {
+  error: ForbiddenResponseInputError
+}
+
+export type InternalServerErrorResponseInputError = {
+  /** An unexpected error occurred on the server. */
+  detail: string
+  /** 500 */
+  status: string
+  /** Internal Server Error */
+  title: string
+}
+
+/**
+ * Schema for 500 Internal Server Error response
+ */
+export interface InternalServerErrorResponseInput {
+  error: InternalServerErrorResponseInputError
+}
+
+/**
+ * Schema for 204 No Content response
+ */
+export type NoContentResponseInput = null
+
+export type NotFoundResponseInputError = {
+  /** The requested resource could not be found. */
+  detail: string
+  /** 404 */
+  status: string
+  /** Not Found */
+  title: string
+}
+
+/**
+ * Schema for 404 Not Found response
+ */
+export interface NotFoundResponseInput {
+  error: NotFoundResponseInputError
+}
+
+export type UnauthorizedResponseInputError = {
+  /** You are not authrozied to reach this endpoint. */
+  detail: string
+  /** 401 */
+  status: string
+  /** Unauthorized */
+  title: string
+}
+
+/**
+ * Schema for 401 Unauthorized response
+ */
+export interface UnauthorizedResponseInput {
+  error: UnauthorizedResponseInputError
+}
+
+export type ValidationErrorResponseInputErrorDetailsItem = {
+  /** username, email */
+  field: string
+  /** Username is required., Email format is invalid. */
+  message: string
+  /** john_doe, invalid-email */
+  value?: string
+}
+
+export type ValidationErrorResponseInputError = {
+  /** Validation failed for one or more fields. */
+  detail: string
+  details: ValidationErrorResponseInputErrorDetailsItem[]
+  /** 422 */
+  status: string
+  /** Validation Error */
+  title: string
+}
+
+/**
+ * Schema for 422 Validation Error response
+ */
+export interface ValidationErrorResponseInput {
+  error: ValidationErrorResponseInputError
+}
+
+export type FilterValueInputAnyOfItem = string | number | boolean
+
+export type FilterValueInputAnyOfTwoFrom = string | number
+
+export type FilterValueInputAnyOfTwoTo = string | number
+
+export type FilterValueInputAnyOfTwo = {
+  from: FilterValueInputAnyOfTwoFrom
+  to: FilterValueInputAnyOfTwoTo
+}
+
+export type FilterValueInputAnyOfFiveUnit =
+  (typeof FilterValueInputAnyOfFiveUnit)[keyof typeof FilterValueInputAnyOfFiveUnit]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FilterValueInputAnyOfFiveUnit = {
+  days: 'days',
+  weeks: 'weeks',
+  months: 'months',
+  years: 'years'
+} as const
+
+export type FilterValueInputAnyOfFive = {
+  unit: FilterValueInputAnyOfFiveUnit
+  value: number
+}
+
+/**
+ * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
+ */
+export type FilterValueInput =
+  | string
+  | number
+  | boolean
+  | FilterValueInputAnyOfItem[]
+  | FilterValueInputAnyOfTwo
+  | FilterValueInputAnyOfFive
+
+/**
+ * Supported filter operations
+ */
+export type OperatorInput = (typeof OperatorInput)[keyof typeof OperatorInput]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OperatorInput = {
   eq: 'eq',
   ne: 'ne',
   lt: 'lt',
@@ -22,237 +528,47 @@ export const FilterConditionOperator = {
   isBetween: 'isBetween',
   isRelativeToToday: 'isRelativeToToday'
 } as const
-export type FilterConditionType =
-  (typeof FilterConditionType)[keyof typeof FilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterConditionType = {
-  condition: 'condition'
-} as const
-
-export type FilterConditionValueAnyOfItem = string | number | boolean
-
-export type FilterConditionValueAnyOfTwoFrom = string | number
-
-export type FilterConditionValueAnyOfTwoTo = string | number
-
-export type FilterConditionValueAnyOfTwo = {
-  from: FilterConditionValueAnyOfTwoFrom
-  to: FilterConditionValueAnyOfTwoTo
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterConditionValueAnyOfFiveUnit = {
-  days: 'days',
-  weeks: 'weeks',
-  months: 'months',
-  years: 'years'
-} as const
-export type FilterConditionValueAnyOfFive = {
-  unit: (typeof FilterConditionValueAnyOfFiveUnit)[keyof typeof FilterConditionValueAnyOfFiveUnit]
-  value: number
-}
-
-/**
- * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
- */
-export type FilterConditionValue =
-  | string
-  | number
-  | boolean
-  | FilterConditionValueAnyOfItem[]
-  | FilterConditionValueAnyOfTwo
-  | FilterConditionValueAnyOfFive
 
 /**
  * A single filter condition with field, operator, and value
  */
-export interface FilterCondition {
+export interface FilterConditionInput {
   field: string
-  /** Supported filter operators */
-  operator: (typeof FilterConditionOperator)[keyof typeof FilterConditionOperator]
-  type: FilterConditionType
-  /** Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates */
-  value: FilterConditionValue
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
 }
 
-/**
- * Supported filter operators
- */
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const Operator = {
-  eq: 'eq',
-  ne: 'ne',
-  lt: 'lt',
-  lte: 'lte',
-  gt: 'gt',
-  gte: 'gte',
-  iLike: 'iLike',
-  notILike: 'notILike',
-  inArray: 'inArray',
-  notInArray: 'notInArray',
-  isEmpty: 'isEmpty',
-  isNotEmpty: 'isNotEmpty',
-  isBetween: 'isBetween',
-  isRelativeToToday: 'isRelativeToToday'
-} as const
-export type Operator = (typeof Operator)[keyof typeof Operator]
-
-export type FilterValueSchemaAnyOfItem = string | number | boolean
-
-export type FilterValueSchemaAnyOfTwoFrom = string | number
-
-export type FilterValueSchemaAnyOfTwoTo = string | number
-
-export type FilterValueSchemaAnyOfTwo = {
-  from: FilterValueSchemaAnyOfTwoFrom
-  to: FilterValueSchemaAnyOfTwoTo
-}
+export type FilterNodeInputAnyOfOperator =
+  (typeof FilterNodeInputAnyOfOperator)[keyof typeof FilterNodeInputAnyOfOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterValueSchemaAnyOfFiveUnit = {
-  days: 'days',
-  weeks: 'weeks',
-  months: 'months',
-  years: 'years'
-} as const
-export type FilterValueSchemaAnyOfFive = {
-  unit: (typeof FilterValueSchemaAnyOfFiveUnit)[keyof typeof FilterValueSchemaAnyOfFiveUnit]
-  value: number
-}
-
-/**
- * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
- */
-export type FilterValueSchema =
-  | string
-  | number
-  | boolean
-  | FilterValueSchemaAnyOfItem[]
-  | FilterValueSchemaAnyOfTwo
-  | FilterValueSchemaAnyOfFive
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeAnyOfOperator = {
-  eq: 'eq',
-  ne: 'ne',
-  lt: 'lt',
-  lte: 'lte',
-  gt: 'gt',
-  gte: 'gte',
-  iLike: 'iLike',
-  notILike: 'notILike',
-  inArray: 'inArray',
-  notInArray: 'notInArray',
-  isEmpty: 'isEmpty',
-  isNotEmpty: 'isNotEmpty',
-  isBetween: 'isBetween',
-  isRelativeToToday: 'isRelativeToToday'
-} as const
-export type FilterNodeAnyOfType =
-  (typeof FilterNodeAnyOfType)[keyof typeof FilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FilterNodeAnyOfValueAnyOfItem = string | number | boolean
-
-export type FilterNodeAnyOfValueAnyOfTwoFrom = string | number
-
-export type FilterNodeAnyOfValueAnyOfTwoTo = string | number
-
-export type FilterNodeAnyOfValueAnyOfTwo = {
-  from: FilterNodeAnyOfValueAnyOfTwoFrom
-  to: FilterNodeAnyOfValueAnyOfTwoTo
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeAnyOfValueAnyOfFiveUnit = {
-  days: 'days',
-  weeks: 'weeks',
-  months: 'months',
-  years: 'years'
-} as const
-export type FilterNodeAnyOfValueAnyOfFive = {
-  unit: (typeof FilterNodeAnyOfValueAnyOfFiveUnit)[keyof typeof FilterNodeAnyOfValueAnyOfFiveUnit]
-  value: number
-}
-
-/**
- * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
- */
-export type FilterNodeAnyOfValue =
-  | string
-  | number
-  | boolean
-  | FilterNodeAnyOfValueAnyOfItem[]
-  | FilterNodeAnyOfValueAnyOfTwo
-  | FilterNodeAnyOfValueAnyOfFive
-
-/**
- * A single filter condition with field, operator, and value
- */
-export type FilterNodeAnyOf = {
-  field: string
-  /** Supported filter operators */
-  operator: (typeof FilterNodeAnyOfOperator)[keyof typeof FilterNodeAnyOfOperator]
-  type: FilterNodeAnyOfType
-  /** Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates */
-  value: FilterNodeAnyOfValue
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeAnyOfOneoneOperator = { and: 'and', or: 'or' } as const
-export type FilterNodeAnyOfOneoneType =
-  (typeof FilterNodeAnyOfOneoneType)[keyof typeof FilterNodeAnyOfOneoneType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeAnyOfOneoneType = {
-  group: 'group'
+export const FilterNodeInputAnyOfOperator = {
+  and: 'and',
+  or: 'or'
 } as const
 
 /**
  * A logical group of filter conditions or other groups
  */
-export type FilterNodeAnyOfOneone = {
-  children: FilterNode[]
-  operator: (typeof FilterNodeAnyOfOneoneOperator)[keyof typeof FilterNodeAnyOfOneoneOperator]
-  type: FilterNodeAnyOfOneoneType
+export type FilterNodeInputAnyOf = {
+  children: FilterNodeInput[]
+  operator: FilterNodeInputAnyOfOperator
+  type: 'group'
 }
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type FilterNode = FilterNodeAnyOf | FilterNodeAnyOfOneone
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterGroupOperator = { and: 'and', or: 'or' } as const
-export type FilterGroupType =
-  (typeof FilterGroupType)[keyof typeof FilterGroupType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterGroupType = {
-  group: 'group'
-} as const
+export type FilterNodeInput = FilterConditionInput | FilterNodeInputAnyOf
 
 /**
- * A logical group of filter conditions or other groups
+ * Pagination configuration with page number and size
  */
-export interface FilterGroup {
-  children: FilterNode[]
-  operator: (typeof FilterGroupOperator)[keyof typeof FilterGroupOperator]
-  type: FilterGroupType
-}
-
-/**
- * Pagination configuration
- */
-export interface Page {
+export interface PageInput {
   /**
    * @minimum 1
-   * @maximum 1.7976931348623157e+308
+   * @maximum 9007199254740991
    */
   number?: number
   /**
@@ -262,103 +578,1102 @@ export interface Page {
   size?: number
 }
 
+export type SortInputOrder =
+  (typeof SortInputOrder)[keyof typeof SortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
 /**
- * A list of errors that occurred during the request
+ * Sorting configuration with field and order
  */
-export interface ErrorObject {
-  detail: string
-  status: string
-  title: string
+export interface SortInput {
+  field: string
+  order: SortInputOrder
 }
 
 /**
- * Error Document
+ * Complete search query with nested filters, pagination, and sorting
  */
-export interface ErrorDocument {
-  errors: ErrorObject[]
-}
-
-export type ForbiddenResponseErrorsItem = {
-  detail: string
-  status: string
-  title: string
+export interface SearchQueryInput {
+  filter?: FilterNodeInput
+  page?: PageInput
+  sort?: SortInput[]
 }
 
 /**
- * Forbidden
+ * Schema for Artifact entity
  */
-export interface ForbiddenResponse {
-  errors: ForbiddenResponseErrorsItem[]
+export interface ArtifactEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
+  credits: number
+  /**
+   * The artifact's description
+   * @nullable
+   */
+  description: string | null
+  /** The MIME type of the artifact, e.g. image/png */
+  mimeType: string
+  /**
+   * The name of the artifact, used for display purposes
+   * @nullable
+   */
+  name: string | null
+  /** The organization name */
+  organizationId: string
+  /**
+   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+   * @nullable
+   */
+  previewImage: string | null
+  /**
+   * The ID of the run that produced this artifact, if applicable
+   * @nullable
+   */
+  producerId: string | null
+  /**
+   * The artifact text
+   * @nullable
+   */
+  text: string | null
+  /**
+   * The artifact URL
+   * @nullable
+   */
+  url: string | null
 }
 
 /**
- * No Content
+ * Schema for Label entity
  */
-export type NoContentResponse = null
+export interface LabelEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The name of the label */
+  name: string
+  /** The organization name */
+  organizationId: string
+}
 
-export type NotFoundResponseErrorsItem = {
-  detail: string
-  status: string
-  title: string
+export type PipelineStepEntityInputDependentsItem = {
+  pipelineStepId: string
+}
+
+export type PipelineStepEntityInputPrerequisitesItem = {
+  pipelineStepId: string
 }
 
 /**
- * Not Found
+ * Schema for Pipeline Step entity
  */
-export interface NotFoundResponse {
-  errors: NotFoundResponseErrorsItem[]
-}
-
-export type UnauthorizedResponseErrorsItem = {
-  detail: string
-  status: string
-  title: string
-}
-
-/**
- * Unauthorized
- */
-export interface UnauthorizedResponse {
-  errors: UnauthorizedResponseErrorsItem[]
+export interface PipelineStepEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  dependents: PipelineStepEntityInputDependentsItem[]
+  pipelineId: string
+  prerequisites: PipelineStepEntityInputPrerequisitesItem[]
+  toolId: string
 }
 
 /**
- * The access token
+ * Schema for Pipeline entity
  */
-export type AccountEntityAccessToken = string | null
+export interface PipelineEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /**
+   * The pipeline description
+   * @nullable
+   */
+  description: string | null
+  /**
+   * The pipeline name
+   * @nullable
+   */
+  name: string | null
+  /** The organization id */
+  organizationId: string
+  /** The steps in the pipeline */
+  steps: PipelineStepEntityInput[]
+}
+
+export type RunEntityInputStatus =
+  (typeof RunEntityInputStatus)[keyof typeof RunEntityInputStatus]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunEntityInputStatus = {
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  PROCESSING: 'PROCESSING',
+  QUEUED: 'QUEUED'
+} as const
 
 /**
- * The expiration date
+ * Schema for Run entity
  */
-export type AccountEntityAccessTokenExpiresAt = string | null
+export interface RunEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /**
+   * The timestamp when the run completed
+   * @nullable
+   */
+  completedAt: string | null
+  /**
+   * The error message
+   * @nullable
+   */
+  error: string | null
+  /** The organization name */
+  organizationId: string
+  /**
+   * The pipeline ID associated with the run
+   * @nullable
+   */
+  pipelineId: string | null
+  /** The percent progress of the run */
+  progress: number
+  /**
+   * The timestamp when the run started
+   * @nullable
+   */
+  startedAt: string | null
+  status: RunEntityInputStatus
+  /** The tool ID associated with the run */
+  toolId: string
+}
 
 /**
- * The ID token
+ * Schema for Tool entity
  */
-export type AccountEntityIdToken = string | null
+export interface ToolEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The tool description */
+  description: string
+  /** The MIME type of the input for the tool, e.g. text/plain */
+  inputMimeType: string
+  /** The name of the tool */
+  name: string
+  /** The organization name */
+  organizationId: string
+  /** The MIME type of the output for the tool, e.g. text/plain */
+  outputMimeType: string
+}
 
 /**
- * The hashed password for local authentication
+ * Schema for File entity
  */
-export type AccountEntityPassword = string | null
+export interface FileEntityInput {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not this is a directory */
+  isDir: boolean
+  /** The original name of the file */
+  organizationId: string
+  /** The path to the item */
+  path: string
+  /** The read-only URL that you can use to download the file from secure storage */
+  read?: string
+  /** The size of the item in bytes */
+  size: number
+  /** The write-only URL that you can use to upload the file to secure storage */
+  write?: string
+}
+
+export type AccountsFilterNodeInputAnyOfField =
+  (typeof AccountsFilterNodeInputAnyOfField)[keyof typeof AccountsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  accountId: 'accountId',
+  idToken: 'idToken',
+  password: 'password',
+  providerId: 'providerId',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  userId: 'userId'
+} as const
+
+export type AccountsFilterNodeInputAnyOf = {
+  field: AccountsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type AccountsFilterNodeInputAnyOfThreeOperator =
+  (typeof AccountsFilterNodeInputAnyOfThreeOperator)[keyof typeof AccountsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type AccountsFilterNodeInputAnyOfThree = {
+  children: AccountsFilterNodeInput[]
+  operator: AccountsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
 
 /**
- * The refresh token
+ * A recursive filter node for accounts entity that can be a condition or group
  */
-export type AccountEntityRefreshToken = string | null
+export type AccountsFilterNodeInput =
+  | AccountsFilterNodeInputAnyOf
+  | AccountsFilterNodeInputAnyOfThree
+
+export type AccountsSortInputField =
+  (typeof AccountsSortInputField)[keyof typeof AccountsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  accountId: 'accountId',
+  idToken: 'idToken',
+  password: 'password',
+  providerId: 'providerId',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  userId: 'userId'
+} as const
+
+export type AccountsSortInputOrder =
+  (typeof AccountsSortInputOrder)[keyof typeof AccountsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
 
 /**
- * The refresh token expiration date
+ * Sorting configuration for accounts entity with field and order
  */
-export type AccountEntityRefreshTokenExpiresAt = string | null
+export interface AccountsSortInput {
+  field: AccountsSortInputField
+  order: AccountsSortInputOrder
+}
+
+export type InvitationsFilterNodeInputAnyOfField =
+  (typeof InvitationsFilterNodeInputAnyOfField)[keyof typeof InvitationsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
+  organizationId: 'organizationId',
+  role: 'role',
+  status: 'status'
+} as const
+
+export type InvitationsFilterNodeInputAnyOf = {
+  field: InvitationsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type InvitationsFilterNodeInputAnyOfThreeOperator =
+  (typeof InvitationsFilterNodeInputAnyOfThreeOperator)[keyof typeof InvitationsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type InvitationsFilterNodeInputAnyOfThree = {
+  children: InvitationsFilterNodeInput[]
+  operator: InvitationsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
 
 /**
- * The scope of the access token
+ * A recursive filter node for invitations entity that can be a condition or group
  */
-export type AccountEntityScope = string | null
+export type InvitationsFilterNodeInput =
+  | InvitationsFilterNodeInputAnyOf
+  | InvitationsFilterNodeInputAnyOfThree
+
+export type InvitationsSortInputField =
+  (typeof InvitationsSortInputField)[keyof typeof InvitationsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
+  organizationId: 'organizationId',
+  role: 'role',
+  status: 'status'
+} as const
+
+export type InvitationsSortInputOrder =
+  (typeof InvitationsSortInputOrder)[keyof typeof InvitationsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
 
 /**
- * The account entity
+ * Sorting configuration for invitations entity with field and order
+ */
+export interface InvitationsSortInput {
+  field: InvitationsSortInputField
+  order: InvitationsSortInputOrder
+}
+
+export type MembersFilterNodeInputAnyOfField =
+  (typeof MembersFilterNodeInputAnyOfField)[keyof typeof MembersFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  role: 'role',
+  userId: 'userId'
+} as const
+
+export type MembersFilterNodeInputAnyOf = {
+  field: MembersFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type MembersFilterNodeInputAnyOfThreeOperator =
+  (typeof MembersFilterNodeInputAnyOfThreeOperator)[keyof typeof MembersFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type MembersFilterNodeInputAnyOfThree = {
+  children: MembersFilterNodeInput[]
+  operator: MembersFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for members entity that can be a condition or group
+ */
+export type MembersFilterNodeInput =
+  | MembersFilterNodeInputAnyOf
+  | MembersFilterNodeInputAnyOfThree
+
+export type MembersSortInputField =
+  (typeof MembersSortInputField)[keyof typeof MembersSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  role: 'role',
+  userId: 'userId'
+} as const
+
+export type MembersSortInputOrder =
+  (typeof MembersSortInputOrder)[keyof typeof MembersSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for members entity with field and order
+ */
+export interface MembersSortInput {
+  field: MembersSortInputField
+  order: MembersSortInputOrder
+}
+
+export type OrganizationsFilterNodeInputAnyOfField =
+  (typeof OrganizationsFilterNodeInputAnyOfField)[keyof typeof OrganizationsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerId: 'stripeCustomerId'
+} as const
+
+export type OrganizationsFilterNodeInputAnyOf = {
+  field: OrganizationsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type OrganizationsFilterNodeInputAnyOfThreeOperator =
+  (typeof OrganizationsFilterNodeInputAnyOfThreeOperator)[keyof typeof OrganizationsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type OrganizationsFilterNodeInputAnyOfThree = {
+  children: OrganizationsFilterNodeInput[]
+  operator: OrganizationsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for organizations entity that can be a condition or group
+ */
+export type OrganizationsFilterNodeInput =
+  | OrganizationsFilterNodeInputAnyOf
+  | OrganizationsFilterNodeInputAnyOfThree
+
+export type OrganizationsSortInputField =
+  (typeof OrganizationsSortInputField)[keyof typeof OrganizationsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerId: 'stripeCustomerId'
+} as const
+
+export type OrganizationsSortInputOrder =
+  (typeof OrganizationsSortInputOrder)[keyof typeof OrganizationsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for organizations entity with field and order
+ */
+export interface OrganizationsSortInput {
+  field: OrganizationsSortInputField
+  order: OrganizationsSortInputOrder
+}
+
+export type SessionsFilterNodeInputAnyOfField =
+  (typeof SessionsFilterNodeInputAnyOfField)[keyof typeof SessionsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  activeOrganizationId: 'activeOrganizationId',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userId: 'userId'
+} as const
+
+export type SessionsFilterNodeInputAnyOf = {
+  field: SessionsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type SessionsFilterNodeInputAnyOfThreeOperator =
+  (typeof SessionsFilterNodeInputAnyOfThreeOperator)[keyof typeof SessionsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type SessionsFilterNodeInputAnyOfThree = {
+  children: SessionsFilterNodeInput[]
+  operator: SessionsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for sessions entity that can be a condition or group
+ */
+export type SessionsFilterNodeInput =
+  | SessionsFilterNodeInputAnyOf
+  | SessionsFilterNodeInputAnyOfThree
+
+export type SessionsSortInputField =
+  (typeof SessionsSortInputField)[keyof typeof SessionsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  activeOrganizationId: 'activeOrganizationId',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userId: 'userId'
+} as const
+
+export type SessionsSortInputOrder =
+  (typeof SessionsSortInputOrder)[keyof typeof SessionsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for sessions entity with field and order
+ */
+export interface SessionsSortInput {
+  field: SessionsSortInputField
+  order: SessionsSortInputOrder
+}
+
+export type UsersFilterNodeInputAnyOfField =
+  (typeof UsersFilterNodeInputAnyOfField)[keyof typeof UsersFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  deactivated: 'deactivated',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name'
+} as const
+
+export type UsersFilterNodeInputAnyOf = {
+  field: UsersFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type UsersFilterNodeInputAnyOfThreeOperator =
+  (typeof UsersFilterNodeInputAnyOfThreeOperator)[keyof typeof UsersFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type UsersFilterNodeInputAnyOfThree = {
+  children: UsersFilterNodeInput[]
+  operator: UsersFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for users entity that can be a condition or group
+ */
+export type UsersFilterNodeInput =
+  | UsersFilterNodeInputAnyOf
+  | UsersFilterNodeInputAnyOfThree
+
+export type UsersSortInputField =
+  (typeof UsersSortInputField)[keyof typeof UsersSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  deactivated: 'deactivated',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name'
+} as const
+
+export type UsersSortInputOrder =
+  (typeof UsersSortInputOrder)[keyof typeof UsersSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for users entity with field and order
+ */
+export interface UsersSortInput {
+  field: UsersSortInputField
+  order: UsersSortInputOrder
+}
+
+export type ArtifactsFilterNodeInputAnyOfField =
+  (typeof ArtifactsFilterNodeInputAnyOfField)[keyof typeof ArtifactsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  previewImage: 'previewImage',
+  producerId: 'producerId',
+  text: 'text',
+  url: 'url'
+} as const
+
+export type ArtifactsFilterNodeInputAnyOf = {
+  field: ArtifactsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type ArtifactsFilterNodeInputAnyOfThreeOperator =
+  (typeof ArtifactsFilterNodeInputAnyOfThreeOperator)[keyof typeof ArtifactsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type ArtifactsFilterNodeInputAnyOfThree = {
+  children: ArtifactsFilterNodeInput[]
+  operator: ArtifactsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for artifacts entity that can be a condition or group
+ */
+export type ArtifactsFilterNodeInput =
+  | ArtifactsFilterNodeInputAnyOf
+  | ArtifactsFilterNodeInputAnyOfThree
+
+export type ArtifactsSortInputField =
+  (typeof ArtifactsSortInputField)[keyof typeof ArtifactsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  previewImage: 'previewImage',
+  producerId: 'producerId',
+  text: 'text',
+  url: 'url'
+} as const
+
+export type ArtifactsSortInputOrder =
+  (typeof ArtifactsSortInputOrder)[keyof typeof ArtifactsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for artifacts entity with field and order
+ */
+export interface ArtifactsSortInput {
+  field: ArtifactsSortInputField
+  order: ArtifactsSortInputOrder
+}
+
+export type LabelsFilterNodeInputAnyOfField =
+  (typeof LabelsFilterNodeInputAnyOfField)[keyof typeof LabelsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationId: 'organizationId'
+} as const
+
+export type LabelsFilterNodeInputAnyOf = {
+  field: LabelsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type LabelsFilterNodeInputAnyOfThreeOperator =
+  (typeof LabelsFilterNodeInputAnyOfThreeOperator)[keyof typeof LabelsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type LabelsFilterNodeInputAnyOfThree = {
+  children: LabelsFilterNodeInput[]
+  operator: LabelsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for labels entity that can be a condition or group
+ */
+export type LabelsFilterNodeInput =
+  | LabelsFilterNodeInputAnyOf
+  | LabelsFilterNodeInputAnyOfThree
+
+export type LabelsSortInputField =
+  (typeof LabelsSortInputField)[keyof typeof LabelsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationId: 'organizationId'
+} as const
+
+export type LabelsSortInputOrder =
+  (typeof LabelsSortInputOrder)[keyof typeof LabelsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for labels entity with field and order
+ */
+export interface LabelsSortInput {
+  field: LabelsSortInputField
+  order: LabelsSortInputOrder
+}
+
+export type PipelinesFilterNodeInputAnyOfField =
+  (typeof PipelinesFilterNodeInputAnyOfField)[keyof typeof PipelinesFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  name: 'name',
+  organizationId: 'organizationId',
+  steps: 'steps'
+} as const
+
+export type PipelinesFilterNodeInputAnyOf = {
+  field: PipelinesFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type PipelinesFilterNodeInputAnyOfThreeOperator =
+  (typeof PipelinesFilterNodeInputAnyOfThreeOperator)[keyof typeof PipelinesFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type PipelinesFilterNodeInputAnyOfThree = {
+  children: PipelinesFilterNodeInput[]
+  operator: PipelinesFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for pipelines entity that can be a condition or group
+ */
+export type PipelinesFilterNodeInput =
+  | PipelinesFilterNodeInputAnyOf
+  | PipelinesFilterNodeInputAnyOfThree
+
+export type PipelinesSortInputField =
+  (typeof PipelinesSortInputField)[keyof typeof PipelinesSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  name: 'name',
+  organizationId: 'organizationId',
+  steps: 'steps'
+} as const
+
+export type PipelinesSortInputOrder =
+  (typeof PipelinesSortInputOrder)[keyof typeof PipelinesSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for pipelines entity with field and order
+ */
+export interface PipelinesSortInput {
+  field: PipelinesSortInputField
+  order: PipelinesSortInputOrder
+}
+
+export type RunsFilterNodeInputAnyOfField =
+  (typeof RunsFilterNodeInputAnyOfField)[keyof typeof RunsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationId: 'organizationId',
+  pipelineId: 'pipelineId',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolId: 'toolId'
+} as const
+
+export type RunsFilterNodeInputAnyOf = {
+  field: RunsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type RunsFilterNodeInputAnyOfThreeOperator =
+  (typeof RunsFilterNodeInputAnyOfThreeOperator)[keyof typeof RunsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type RunsFilterNodeInputAnyOfThree = {
+  children: RunsFilterNodeInput[]
+  operator: RunsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for runs entity that can be a condition or group
+ */
+export type RunsFilterNodeInput =
+  | RunsFilterNodeInputAnyOf
+  | RunsFilterNodeInputAnyOfThree
+
+export type RunsSortInputField =
+  (typeof RunsSortInputField)[keyof typeof RunsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationId: 'organizationId',
+  pipelineId: 'pipelineId',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolId: 'toolId'
+} as const
+
+export type RunsSortInputOrder =
+  (typeof RunsSortInputOrder)[keyof typeof RunsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for runs entity with field and order
+ */
+export interface RunsSortInput {
+  field: RunsSortInputField
+  order: RunsSortInputOrder
+}
+
+export type ToolsFilterNodeInputAnyOfField =
+  (typeof ToolsFilterNodeInputAnyOfField)[keyof typeof ToolsFilterNodeInputAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsFilterNodeInputAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  inputMimeType: 'inputMimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  outputMimeType: 'outputMimeType'
+} as const
+
+export type ToolsFilterNodeInputAnyOf = {
+  field: ToolsFilterNodeInputAnyOfField
+  operator: OperatorInput
+  type: 'condition'
+  value: FilterValueInput
+}
+
+export type ToolsFilterNodeInputAnyOfThreeOperator =
+  (typeof ToolsFilterNodeInputAnyOfThreeOperator)[keyof typeof ToolsFilterNodeInputAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsFilterNodeInputAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type ToolsFilterNodeInputAnyOfThree = {
+  children: ToolsFilterNodeInput[]
+  operator: ToolsFilterNodeInputAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for tools entity that can be a condition or group
+ */
+export type ToolsFilterNodeInput =
+  | ToolsFilterNodeInputAnyOf
+  | ToolsFilterNodeInputAnyOfThree
+
+export type ToolsSortInputField =
+  (typeof ToolsSortInputField)[keyof typeof ToolsSortInputField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsSortInputField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  inputMimeType: 'inputMimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  outputMimeType: 'outputMimeType'
+} as const
+
+export type ToolsSortInputOrder =
+  (typeof ToolsSortInputOrder)[keyof typeof ToolsSortInputOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ToolsSortInputOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for tools entity with field and order
+ */
+export interface ToolsSortInput {
+  field: ToolsSortInputField
+  order: ToolsSortInputOrder
+}
+
+/**
+ * Schema for Account entity
  */
 export interface AccountEntity {
   /** The date this item was created */
@@ -367,224 +1682,141 @@ export interface AccountEntity {
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The access token */
-  accessToken: AccountEntityAccessToken
-  /** The expiration date */
-  accessTokenExpiresAt: AccountEntityAccessTokenExpiresAt
+  /**
+   * The access token
+   * @nullable
+   */
+  accessToken: string | null
+  /**
+   * The expiration date
+   * @nullable
+   */
+  accessTokenExpiresAt: string | null
   /** The unique identifier for the account */
   accountId: string
-  /** The ID token */
-  idToken: AccountEntityIdToken
-  /** The hashed password for local authentication */
-  password: AccountEntityPassword
+  /**
+   * The ID token
+   * @nullable
+   */
+  idToken: string | null
+  /**
+   * The hashed password for local authentication
+   * @nullable
+   */
+  password: string | null
   /** The provider ID associated with the auth provider */
   providerId: string
-  /** The refresh token */
-  refreshToken: AccountEntityRefreshToken
-  /** The refresh token expiration date */
-  refreshTokenExpiresAt: AccountEntityRefreshTokenExpiresAt
-  /** The scope of the access token */
-  scope: AccountEntityScope
+  /**
+   * The refresh token
+   * @nullable
+   */
+  refreshToken: string | null
+  /**
+   * The refresh token expiration date
+   * @nullable
+   */
+  refreshTokenExpiresAt: string | null
+  /**
+   * The scope of the access token
+   * @nullable
+   */
+  scope: string | null
   /** The user ID associated with the auth provider */
   userId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-export type SearchAccountsQueryFilterAnyOfType =
-  (typeof SearchAccountsQueryFilterAnyOfType)[keyof typeof SearchAccountsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchAccountsQueryFilterAnyOf = {
-  field: (typeof SearchAccountsQueryFilterAnyOfField)[keyof typeof SearchAccountsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchAccountsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchAccountsQueryFilterAnyOfFourType =
-  (typeof SearchAccountsQueryFilterAnyOfFourType)[keyof typeof SearchAccountsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchAccountsQueryFilterAnyOfFour = {
-  children: AccountsFilterNode[]
-  operator: (typeof SearchAccountsQueryFilterAnyOfFourOperator)[keyof typeof SearchAccountsQueryFilterAnyOfFourOperator]
-  type: SearchAccountsQueryFilterAnyOfFourType
-}
-
-export type SearchAccountsQueryFilter =
-  | SearchAccountsQueryFilterAnyOf
-  | SearchAccountsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchAccountsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchAccountsQuerySortItem = {
-  field: (typeof SearchAccountsQuerySortItemField)[keyof typeof SearchAccountsQuerySortItemField]
-  order: (typeof SearchAccountsQuerySortItemOrder)[keyof typeof SearchAccountsQuerySortItemOrder]
+/**
+ * Schema for API Token entity
+ */
+export interface ApiTokenEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether the API token is enabled or not */
+  enabled: boolean
+  /**
+   * The date and time when the API token expires
+   * @nullable
+   */
+  expiresAt: string | null
+  /** The API token key. This will only be shown once */
+  key: string
+  /**
+   * The date and time when the API token was last refilled
+   * @nullable
+   */
+  lastRefill: string | null
+  /**
+   * The date and time when the API token was last used
+   * @nullable
+   */
+  lastRequest: string | null
+  /**
+   * The metadata for the API token, used for custom data
+   * @nullable
+   */
+  metadata: string | null
+  /**
+   * The name of the API token
+   * @nullable
+   */
+  name: string | null
+  /**
+   * The name of the API token
+   * @nullable
+   */
+  permissions: string | null
+  /**
+   * TThe prefix for the API token, used for routing requests
+   * @nullable
+   */
+  prefix: string | null
+  /** Whether the API token has rate limiting enabled */
+  rateLimitEnabled: boolean
+  /**
+   * The maximum number of requests allowed per time window
+   * @nullable
+   */
+  rateLimitMax: number | null
+  /**
+   * The time window in seconds for the rate limit
+   * @nullable
+   */
+  rateLimitTimeWindow: number | null
+  /**
+   * The amount of requests to refill the token with
+   * @nullable
+   */
+  refillAmount: number | null
+  /**
+   * The interval in seconds to refill the token
+   * @nullable
+   */
+  refillInterval: number | null
+  /**
+   * The number of requests remaining for the token
+   * @nullable
+   */
+  remaining: number | null
+  /** The number of requests made with the token */
+  requestCount: number
+  /**
+   * The number of requests remaining for the token
+   * @nullable
+   */
+  start: string | null
+  /** The id of the user the token belongs to */
+  userId: string
 }
 
 /**
- * Complete search query for accounts with nested filters, pagination, and sorting
+ * The role of the invitation
  */
-export interface SearchAccountsQuery {
-  filter?: SearchAccountsQueryFilter
-  page?: Page
-  sort?: SearchAccountsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-export type AccountsFilterNodeAnyOfType =
-  (typeof AccountsFilterNodeAnyOfType)[keyof typeof AccountsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type AccountsFilterNodeAnyOf = {
-  field: (typeof AccountsFilterNodeAnyOfField)[keyof typeof AccountsFilterNodeAnyOfField]
-  operator: Operator
-  type: AccountsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type AccountsFilterNodeAnyOfFourType =
-  (typeof AccountsFilterNodeAnyOfFourType)[keyof typeof AccountsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type AccountsFilterNodeAnyOfFour = {
-  children: AccountsFilterNode[]
-  operator: (typeof AccountsFilterNodeAnyOfFourOperator)[keyof typeof AccountsFilterNodeAnyOfFourOperator]
-  type: AccountsFilterNodeAnyOfFourType
-}
-
-export type AccountsFilterNode =
-  | AccountsFilterNodeAnyOf
-  | AccountsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-export type AccountsFilterConditionType =
-  (typeof AccountsFilterConditionType)[keyof typeof AccountsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface AccountsFilterCondition {
-  field: (typeof AccountsFilterConditionField)[keyof typeof AccountsFilterConditionField]
-  operator: Operator
-  type: AccountsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface AccountsSort {
-  field: (typeof AccountsSortField)[keyof typeof AccountsSortField]
-  order: (typeof AccountsSortOrder)[keyof typeof AccountsSortOrder]
-}
+export type InvitationEntityRole =
+  (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationEntityRole = {
@@ -592,8 +1824,9 @@ export const InvitationEntityRole = {
   owner: 'owner',
   member: 'member'
 } as const
+
 /**
- * The invitation entity
+ * Schema for Invitation entity
  */
 export interface InvitationEntity {
   /** The date this item was created */
@@ -611,187 +1844,16 @@ export interface InvitationEntity {
   /** The name of the organization the token belongs to */
   organizationId: string
   /** The role of the invitation */
-  role: (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+  role: InvitationEntityRole
   /** The status of the invitation, e.g., pending, accepted, declined */
   status: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-export type SearchInvitationsQueryFilterAnyOfType =
-  (typeof SearchInvitationsQueryFilterAnyOfType)[keyof typeof SearchInvitationsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchInvitationsQueryFilterAnyOf = {
-  field: (typeof SearchInvitationsQueryFilterAnyOfField)[keyof typeof SearchInvitationsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchInvitationsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchInvitationsQueryFilterAnyOfFourType =
-  (typeof SearchInvitationsQueryFilterAnyOfFourType)[keyof typeof SearchInvitationsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchInvitationsQueryFilterAnyOfFour = {
-  children: InvitationsFilterNode[]
-  operator: (typeof SearchInvitationsQueryFilterAnyOfFourOperator)[keyof typeof SearchInvitationsQueryFilterAnyOfFourOperator]
-  type: SearchInvitationsQueryFilterAnyOfFourType
-}
-
-export type SearchInvitationsQueryFilter =
-  | SearchInvitationsQueryFilterAnyOf
-  | SearchInvitationsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchInvitationsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchInvitationsQuerySortItem = {
-  field: (typeof SearchInvitationsQuerySortItemField)[keyof typeof SearchInvitationsQuerySortItemField]
-  order: (typeof SearchInvitationsQuerySortItemOrder)[keyof typeof SearchInvitationsQuerySortItemOrder]
-}
-
 /**
- * Complete search query for invitations with nested filters, pagination, and sorting
+ * The role of the member
  */
-export interface SearchInvitationsQuery {
-  filter?: SearchInvitationsQueryFilter
-  page?: Page
-  sort?: SearchInvitationsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-export type InvitationsFilterNodeAnyOfType =
-  (typeof InvitationsFilterNodeAnyOfType)[keyof typeof InvitationsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type InvitationsFilterNodeAnyOf = {
-  field: (typeof InvitationsFilterNodeAnyOfField)[keyof typeof InvitationsFilterNodeAnyOfField]
-  operator: Operator
-  type: InvitationsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type InvitationsFilterNodeAnyOfFourType =
-  (typeof InvitationsFilterNodeAnyOfFourType)[keyof typeof InvitationsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type InvitationsFilterNodeAnyOfFour = {
-  children: InvitationsFilterNode[]
-  operator: (typeof InvitationsFilterNodeAnyOfFourOperator)[keyof typeof InvitationsFilterNodeAnyOfFourOperator]
-  type: InvitationsFilterNodeAnyOfFourType
-}
-
-export type InvitationsFilterNode =
-  | InvitationsFilterNodeAnyOf
-  | InvitationsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-export type InvitationsFilterConditionType =
-  (typeof InvitationsFilterConditionType)[keyof typeof InvitationsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface InvitationsFilterCondition {
-  field: (typeof InvitationsFilterConditionField)[keyof typeof InvitationsFilterConditionField]
-  operator: Operator
-  type: InvitationsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface InvitationsSort {
-  field: (typeof InvitationsSortField)[keyof typeof InvitationsSortField]
-  order: (typeof InvitationsSortOrder)[keyof typeof InvitationsSortOrder]
-}
+export type MemberEntityRole =
+  (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MemberEntityRole = {
@@ -799,8 +1861,9 @@ export const MemberEntityRole = {
   owner: 'owner',
   member: 'member'
 } as const
+
 /**
- * The member entity
+ * Schema for Member entity
  */
 export interface MemberEntity {
   /** The date this item was created */
@@ -812,182 +1875,16 @@ export interface MemberEntity {
   /** The organization name */
   organizationId: string
   /** The role of the member */
-  role: (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
+  role: MemberEntityRole
   /** The user id */
   userId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-export type SearchMembersQueryFilterAnyOfType =
-  (typeof SearchMembersQueryFilterAnyOfType)[keyof typeof SearchMembersQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchMembersQueryFilterAnyOf = {
-  field: (typeof SearchMembersQueryFilterAnyOfField)[keyof typeof SearchMembersQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchMembersQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchMembersQueryFilterAnyOfFourType =
-  (typeof SearchMembersQueryFilterAnyOfFourType)[keyof typeof SearchMembersQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchMembersQueryFilterAnyOfFour = {
-  children: MembersFilterNode[]
-  operator: (typeof SearchMembersQueryFilterAnyOfFourOperator)[keyof typeof SearchMembersQueryFilterAnyOfFourOperator]
-  type: SearchMembersQueryFilterAnyOfFourType
-}
-
-export type SearchMembersQueryFilter =
-  | SearchMembersQueryFilterAnyOf
-  | SearchMembersQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchMembersQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchMembersQuerySortItem = {
-  field: (typeof SearchMembersQuerySortItemField)[keyof typeof SearchMembersQuerySortItemField]
-  order: (typeof SearchMembersQuerySortItemOrder)[keyof typeof SearchMembersQuerySortItemOrder]
-}
-
 /**
- * Complete search query for members with nested filters, pagination, and sorting
+ * The plan that the organization is subscribed to
  */
-export interface SearchMembersQuery {
-  filter?: SearchMembersQueryFilter
-  page?: Page
-  sort?: SearchMembersQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-export type MembersFilterNodeAnyOfType =
-  (typeof MembersFilterNodeAnyOfType)[keyof typeof MembersFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type MembersFilterNodeAnyOf = {
-  field: (typeof MembersFilterNodeAnyOfField)[keyof typeof MembersFilterNodeAnyOfField]
-  operator: Operator
-  type: MembersFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type MembersFilterNodeAnyOfFourType =
-  (typeof MembersFilterNodeAnyOfFourType)[keyof typeof MembersFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type MembersFilterNodeAnyOfFour = {
-  children: MembersFilterNode[]
-  operator: (typeof MembersFilterNodeAnyOfFourOperator)[keyof typeof MembersFilterNodeAnyOfFourOperator]
-  type: MembersFilterNodeAnyOfFourType
-}
-
-export type MembersFilterNode =
-  | MembersFilterNodeAnyOf
-  | MembersFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-export type MembersFilterConditionType =
-  (typeof MembersFilterConditionType)[keyof typeof MembersFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface MembersFilterCondition {
-  field: (typeof MembersFilterConditionField)[keyof typeof MembersFilterConditionField]
-  operator: Operator
-  type: MembersFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface MembersSort {
-  field: (typeof MembersSortField)[keyof typeof MembersSortField]
-  order: (typeof MembersSortOrder)[keyof typeof MembersSortOrder]
-}
-
-/**
- * The URL of the organization logo
- */
-export type OrganizationEntityLogo = string | null
-
-/**
- * The metadata for the organization, used for custom data
- */
-export type OrganizationEntityMetadata = string | null
+export type OrganizationEntityPlan =
+  (typeof OrganizationEntityPlan)[keyof typeof OrganizationEntityPlan]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationEntityPlan = {
@@ -997,13 +1894,9 @@ export const OrganizationEntityPlan = {
   STANDARD: 'STANDARD',
   UNLIMITED: 'UNLIMITED'
 } as const
-/**
- * The Stripe customer ID
- */
-export type OrganizationEntityStripeCustomerId = string | null
 
 /**
- * The organization entity
+ * Schema for Organization entity
  */
 export interface OrganizationEntity {
   /** The date this item was created */
@@ -1016,219 +1909,31 @@ export interface OrganizationEntity {
   billingEmail: string
   /** The number of credits you have remaining for this organization */
   credits: number
-  /** The URL of the organization logo */
-  logo: OrganizationEntityLogo
-  /** The metadata for the organization, used for custom data */
-  metadata: OrganizationEntityMetadata
+  /**
+   * The URL of the organization logo
+   * @nullable
+   */
+  logo: string | null
+  /**
+   * The metadata for the organization, used for custom data
+   * @nullable
+   */
+  metadata: string | null
   /** The name of the organization */
   name: string
   /** The plan that the organization is subscribed to */
-  plan: (typeof OrganizationEntityPlan)[keyof typeof OrganizationEntityPlan]
+  plan: OrganizationEntityPlan
   /** The unique slug for the organization, used in URLs */
   slug: string
-  /** The Stripe customer ID */
-  stripeCustomerId: OrganizationEntityStripeCustomerId
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-export type SearchOrganizationsQueryFilterAnyOfType =
-  (typeof SearchOrganizationsQueryFilterAnyOfType)[keyof typeof SearchOrganizationsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchOrganizationsQueryFilterAnyOf = {
-  field: (typeof SearchOrganizationsQueryFilterAnyOfField)[keyof typeof SearchOrganizationsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchOrganizationsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchOrganizationsQueryFilterAnyOfFourType =
-  (typeof SearchOrganizationsQueryFilterAnyOfFourType)[keyof typeof SearchOrganizationsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchOrganizationsQueryFilterAnyOfFour = {
-  children: OrganizationsFilterNode[]
-  operator: (typeof SearchOrganizationsQueryFilterAnyOfFourOperator)[keyof typeof SearchOrganizationsQueryFilterAnyOfFourOperator]
-  type: SearchOrganizationsQueryFilterAnyOfFourType
-}
-
-export type SearchOrganizationsQueryFilter =
-  | SearchOrganizationsQueryFilterAnyOf
-  | SearchOrganizationsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchOrganizationsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchOrganizationsQuerySortItem = {
-  field: (typeof SearchOrganizationsQuerySortItemField)[keyof typeof SearchOrganizationsQuerySortItemField]
-  order: (typeof SearchOrganizationsQuerySortItemOrder)[keyof typeof SearchOrganizationsQuerySortItemOrder]
+  /**
+   * The Stripe customer ID
+   * @nullable
+   */
+  stripeCustomerId: string | null
 }
 
 /**
- * Complete search query for organizations with nested filters, pagination, and sorting
- */
-export interface SearchOrganizationsQuery {
-  filter?: SearchOrganizationsQueryFilter
-  page?: Page
-  sort?: SearchOrganizationsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-export type OrganizationsFilterNodeAnyOfType =
-  (typeof OrganizationsFilterNodeAnyOfType)[keyof typeof OrganizationsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type OrganizationsFilterNodeAnyOf = {
-  field: (typeof OrganizationsFilterNodeAnyOfField)[keyof typeof OrganizationsFilterNodeAnyOfField]
-  operator: Operator
-  type: OrganizationsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type OrganizationsFilterNodeAnyOfFourType =
-  (typeof OrganizationsFilterNodeAnyOfFourType)[keyof typeof OrganizationsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type OrganizationsFilterNodeAnyOfFour = {
-  children: OrganizationsFilterNode[]
-  operator: (typeof OrganizationsFilterNodeAnyOfFourOperator)[keyof typeof OrganizationsFilterNodeAnyOfFourOperator]
-  type: OrganizationsFilterNodeAnyOfFourType
-}
-
-export type OrganizationsFilterNode =
-  | OrganizationsFilterNodeAnyOf
-  | OrganizationsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-export type OrganizationsFilterConditionType =
-  (typeof OrganizationsFilterConditionType)[keyof typeof OrganizationsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface OrganizationsFilterCondition {
-  field: (typeof OrganizationsFilterConditionField)[keyof typeof OrganizationsFilterConditionField]
-  operator: Operator
-  type: OrganizationsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface OrganizationsSort {
-  field: (typeof OrganizationsSortField)[keyof typeof OrganizationsSortField]
-  order: (typeof OrganizationsSortOrder)[keyof typeof OrganizationsSortOrder]
-}
-
-/**
- * The IP address of the session
- */
-export type SessionEntityIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type SessionEntityUserAgent = string | null
-
-/**
- * The session entity
+ * Schema for Session entity
  */
 export interface SessionEntity {
   /** The date this item was created */
@@ -1241,200 +1946,24 @@ export interface SessionEntity {
   activeOrganizationId: string
   /** The expiration date of the session */
   expiresAt: string
-  /** The IP address of the session */
-  ipAddress: SessionEntityIpAddress
+  /**
+   * The IP address of the session
+   * @nullable
+   */
+  ipAddress: string | null
   /** The session token */
   token: string
-  /** The user agent of the session */
-  userAgent: SessionEntityUserAgent
+  /**
+   * The user agent of the session
+   * @nullable
+   */
+  userAgent: string | null
   /** The ID of the user associated with the session */
   userId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-export type SearchSessionsQueryFilterAnyOfType =
-  (typeof SearchSessionsQueryFilterAnyOfType)[keyof typeof SearchSessionsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchSessionsQueryFilterAnyOf = {
-  field: (typeof SearchSessionsQueryFilterAnyOfField)[keyof typeof SearchSessionsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchSessionsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchSessionsQueryFilterAnyOfFourType =
-  (typeof SearchSessionsQueryFilterAnyOfFourType)[keyof typeof SearchSessionsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchSessionsQueryFilterAnyOfFour = {
-  children: SessionsFilterNode[]
-  operator: (typeof SearchSessionsQueryFilterAnyOfFourOperator)[keyof typeof SearchSessionsQueryFilterAnyOfFourOperator]
-  type: SearchSessionsQueryFilterAnyOfFourType
-}
-
-export type SearchSessionsQueryFilter =
-  | SearchSessionsQueryFilterAnyOf
-  | SearchSessionsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchSessionsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchSessionsQuerySortItem = {
-  field: (typeof SearchSessionsQuerySortItemField)[keyof typeof SearchSessionsQuerySortItemField]
-  order: (typeof SearchSessionsQuerySortItemOrder)[keyof typeof SearchSessionsQuerySortItemOrder]
-}
-
 /**
- * Complete search query for sessions with nested filters, pagination, and sorting
- */
-export interface SearchSessionsQuery {
-  filter?: SearchSessionsQueryFilter
-  page?: Page
-  sort?: SearchSessionsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-export type SessionsFilterNodeAnyOfType =
-  (typeof SessionsFilterNodeAnyOfType)[keyof typeof SessionsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SessionsFilterNodeAnyOf = {
-  field: (typeof SessionsFilterNodeAnyOfField)[keyof typeof SessionsFilterNodeAnyOfField]
-  operator: Operator
-  type: SessionsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SessionsFilterNodeAnyOfFourType =
-  (typeof SessionsFilterNodeAnyOfFourType)[keyof typeof SessionsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SessionsFilterNodeAnyOfFour = {
-  children: SessionsFilterNode[]
-  operator: (typeof SessionsFilterNodeAnyOfFourOperator)[keyof typeof SessionsFilterNodeAnyOfFourOperator]
-  type: SessionsFilterNodeAnyOfFourType
-}
-
-export type SessionsFilterNode =
-  | SessionsFilterNodeAnyOf
-  | SessionsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-export type SessionsFilterConditionType =
-  (typeof SessionsFilterConditionType)[keyof typeof SessionsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface SessionsFilterCondition {
-  field: (typeof SessionsFilterConditionField)[keyof typeof SessionsFilterConditionField]
-  operator: Operator
-  type: SessionsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface SessionsSort {
-  field: (typeof SessionsSortField)[keyof typeof SessionsSortField]
-  order: (typeof SessionsSortOrder)[keyof typeof SessionsSortOrder]
-}
-
-/**
- * The user's avatar image URL
- */
-export type UserEntityImage = null | string
-
-/**
- * The user entity
+ * Schema for User entity
  */
 export interface UserEntity {
   /** The date this item was created */
@@ -1449,8 +1978,11 @@ export interface UserEntity {
   email: string
   /** Whether or not the user's e-mail has been verified */
   emailVerified: boolean
-  /** The user's avatar image URL */
-  image: UserEntityImage
+  /**
+   * The user's avatar image URL
+   * @nullable
+   */
+  image: string | null
   /**
    * The user's name
    * @minLength 1
@@ -1458,208 +1990,288 @@ export interface UserEntity {
   name: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-export type SearchUsersQueryFilterAnyOfType =
-  (typeof SearchUsersQueryFilterAnyOfType)[keyof typeof SearchUsersQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchUsersQueryFilterAnyOf = {
-  field: (typeof SearchUsersQueryFilterAnyOfField)[keyof typeof SearchUsersQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchUsersQueryFilterAnyOfType
-  value: FilterValueSchema
+/**
+ * Schema for Verification Token entity
+ */
+export interface VerificationTokenEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** The expiration date of the token */
+  expiresAt: string
+  /** The identifier associated with the token */
+  identifier: string
+  /** The token string */
+  value: string
 }
 
+export type BadRequestResponseError = {
+  /** The request is invalid or malformed. */
+  detail: string
+  /** 400 */
+  status: string
+  /** Bad Request */
+  title: string
+}
+
+/**
+ * Schema for 400 Bad Request response
+ */
+export interface BadRequestResponse {
+  error: BadRequestResponseError
+}
+
+export type ConflictResponseError = {
+  /** The request conflicts with the current state of the resource. */
+  detail: string
+  /** 409 */
+  status: string
+  /** Conflict */
+  title: string
+}
+
+/**
+ * Schema for 409 Conflict response
+ */
+export interface ConflictResponse {
+  error: ConflictResponseError
+}
+
+export type ForbiddenResponseError = {
+  /** You do not have permission to access this resource. */
+  detail: string
+  /** 403 */
+  status: string
+  /** Forbidden */
+  title: string
+}
+
+/**
+ * Schema for 403 Forbidden response
+ */
+export interface ForbiddenResponse {
+  error: ForbiddenResponseError
+}
+
+export type InternalServerErrorResponseError = {
+  /** An unexpected error occurred on the server. */
+  detail: string
+  /** 500 */
+  status: string
+  /** Internal Server Error */
+  title: string
+}
+
+/**
+ * Schema for 500 Internal Server Error response
+ */
+export interface InternalServerErrorResponse {
+  error: InternalServerErrorResponseError
+}
+
+/**
+ * Schema for 204 No Content response
+ */
+export type NoContentResponse = null
+
+export type NotFoundResponseError = {
+  /** The requested resource could not be found. */
+  detail: string
+  /** 404 */
+  status: string
+  /** Not Found */
+  title: string
+}
+
+/**
+ * Schema for 404 Not Found response
+ */
+export interface NotFoundResponse {
+  error: NotFoundResponseError
+}
+
+export type UnauthorizedResponseError = {
+  /** You are not authrozied to reach this endpoint. */
+  detail: string
+  /** 401 */
+  status: string
+  /** Unauthorized */
+  title: string
+}
+
+/**
+ * Schema for 401 Unauthorized response
+ */
+export interface UnauthorizedResponse {
+  error: UnauthorizedResponseError
+}
+
+export type ValidationErrorResponseErrorDetailsItem = {
+  /** username, email */
+  field: string
+  /** Username is required., Email format is invalid. */
+  message: string
+  /** john_doe, invalid-email */
+  value?: string
+}
+
+export type ValidationErrorResponseError = {
+  /** Validation failed for one or more fields. */
+  detail: string
+  details: ValidationErrorResponseErrorDetailsItem[]
+  /** 422 */
+  status: string
+  /** Validation Error */
+  title: string
+}
+
+/**
+ * Schema for 422 Validation Error response
+ */
+export interface ValidationErrorResponse {
+  error: ValidationErrorResponseError
+}
+
+export type FilterValueAnyOfItem = string | number | boolean
+
+export type FilterValueAnyOfTwoFrom = string | number
+
+export type FilterValueAnyOfTwoTo = string | number
+
+export type FilterValueAnyOfTwo = {
+  from: FilterValueAnyOfTwoFrom
+  to: FilterValueAnyOfTwoTo
+}
+
+export type FilterValueAnyOfFiveUnit =
+  (typeof FilterValueAnyOfFiveUnit)[keyof typeof FilterValueAnyOfFiveUnit]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQueryFilterAnyOfFourOperator = {
+export const FilterValueAnyOfFiveUnit = {
+  days: 'days',
+  weeks: 'weeks',
+  months: 'months',
+  years: 'years'
+} as const
+
+export type FilterValueAnyOfFive = {
+  unit: FilterValueAnyOfFiveUnit
+  value: number
+}
+
+/**
+ * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
+ */
+export type FilterValue =
+  | string
+  | number
+  | boolean
+  | FilterValueAnyOfItem[]
+  | FilterValueAnyOfTwo
+  | FilterValueAnyOfFive
+
+/**
+ * Supported filter operations
+ */
+export type Operator = (typeof Operator)[keyof typeof Operator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const Operator = {
+  eq: 'eq',
+  ne: 'ne',
+  lt: 'lt',
+  lte: 'lte',
+  gt: 'gt',
+  gte: 'gte',
+  iLike: 'iLike',
+  notILike: 'notILike',
+  inArray: 'inArray',
+  notInArray: 'notInArray',
+  isEmpty: 'isEmpty',
+  isNotEmpty: 'isNotEmpty',
+  isBetween: 'isBetween',
+  isRelativeToToday: 'isRelativeToToday'
+} as const
+
+/**
+ * A single filter condition with field, operator, and value
+ */
+export interface FilterCondition {
+  field: string
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type FilterNodeAnyOfOperator =
+  (typeof FilterNodeAnyOfOperator)[keyof typeof FilterNodeAnyOfOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FilterNodeAnyOfOperator = {
   and: 'and',
   or: 'or'
 } as const
-export type SearchUsersQueryFilterAnyOfFourType =
-  (typeof SearchUsersQueryFilterAnyOfFourType)[keyof typeof SearchUsersQueryFilterAnyOfFourType]
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchUsersQueryFilterAnyOfFour = {
-  children: UsersFilterNode[]
-  operator: (typeof SearchUsersQueryFilterAnyOfFourOperator)[keyof typeof SearchUsersQueryFilterAnyOfFourOperator]
-  type: SearchUsersQueryFilterAnyOfFourType
+/**
+ * A logical group of filter conditions or other groups
+ */
+export type FilterNodeAnyOf = {
+  children: FilterNode[]
+  operator: FilterNodeAnyOfOperator
+  type: 'group'
 }
 
-export type SearchUsersQueryFilter =
-  | SearchUsersQueryFilterAnyOf
-  | SearchUsersQueryFilterAnyOfFour
+/**
+ * A recursive filter node that can be a condition or group
+ */
+export type FilterNode = FilterCondition | FilterNodeAnyOf
+
+/**
+ * Pagination configuration with page number and size
+ */
+export interface Page {
+  /**
+   * @minimum 1
+   * @maximum 9007199254740991
+   */
+  number?: number
+  /**
+   * @minimum 1
+   * @maximum 100
+   */
+  size?: number
+}
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchUsersQuerySortItemOrder = {
+export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
-export type SearchUsersQuerySortItem = {
-  field: (typeof SearchUsersQuerySortItemField)[keyof typeof SearchUsersQuerySortItemField]
-  order: (typeof SearchUsersQuerySortItemOrder)[keyof typeof SearchUsersQuerySortItemOrder]
+
+/**
+ * Sorting configuration with field and order
+ */
+export interface Sort {
+  field: string
+  order: SortOrder
 }
 
 /**
- * Complete search query for users with nested filters, pagination, and sorting
+ * Complete search query with nested filters, pagination, and sorting
  */
-export interface SearchUsersQuery {
-  filter?: SearchUsersQueryFilter
+export interface SearchQuery {
+  filter?: FilterNode
   page?: Page
-  sort?: SearchUsersQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-export type UsersFilterNodeAnyOfType =
-  (typeof UsersFilterNodeAnyOfType)[keyof typeof UsersFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type UsersFilterNodeAnyOf = {
-  field: (typeof UsersFilterNodeAnyOfField)[keyof typeof UsersFilterNodeAnyOfField]
-  operator: Operator
-  type: UsersFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type UsersFilterNodeAnyOfFourType =
-  (typeof UsersFilterNodeAnyOfFourType)[keyof typeof UsersFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type UsersFilterNodeAnyOfFour = {
-  children: UsersFilterNode[]
-  operator: (typeof UsersFilterNodeAnyOfFourOperator)[keyof typeof UsersFilterNodeAnyOfFourOperator]
-  type: UsersFilterNodeAnyOfFourType
-}
-
-export type UsersFilterNode = UsersFilterNodeAnyOf | UsersFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-export type UsersFilterConditionType =
-  (typeof UsersFilterConditionType)[keyof typeof UsersFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface UsersFilterCondition {
-  field: (typeof UsersFilterConditionField)[keyof typeof UsersFilterConditionField]
-  operator: Operator
-  type: UsersFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface UsersSort {
-  field: (typeof UsersSortField)[keyof typeof UsersSortField]
-  order: (typeof UsersSortOrder)[keyof typeof UsersSortOrder]
+  sort?: Sort[]
 }
 
 /**
- * The artifact's description
- */
-export type ArtifactEntityDescription = null | string
-
-/**
- * The name of the artifact, used for display purposes
- */
-export type ArtifactEntityName = null | string
-
-/**
- * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
- */
-export type ArtifactEntityPreviewImage = null | string
-
-/**
- * The ID of the run that produced this artifact, if applicable
- */
-export type ArtifactEntityProducerId = null | string
-
-/**
- * The artifact text
- */
-export type ArtifactEntityText = null | string
-
-/**
- * The artifact URL
- */
-export type ArtifactEntityUrl = null | string
-
-/**
- * The artifact entity
+ * Schema for Artifact entity
  */
 export interface ArtifactEntity {
   /** The date this item was created */
@@ -1670,218 +2282,44 @@ export interface ArtifactEntity {
   updatedAt: string
   /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
   credits: number
-  /** The artifact's description */
-  description: ArtifactEntityDescription
+  /**
+   * The artifact's description
+   * @nullable
+   */
+  description: string | null
   /** The MIME type of the artifact, e.g. image/png */
   mimeType: string
-  /** The name of the artifact, used for display purposes */
-  name: ArtifactEntityName
+  /**
+   * The name of the artifact, used for display purposes
+   * @nullable
+   */
+  name: string | null
   /** The organization name */
   organizationId: string
-  /** The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI. */
-  previewImage: ArtifactEntityPreviewImage
-  /** The ID of the run that produced this artifact, if applicable */
-  producerId: ArtifactEntityProducerId
-  /** The artifact text */
-  text: ArtifactEntityText
-  /** The artifact URL */
-  url: ArtifactEntityUrl
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-export type SearchArtifactsQueryFilterAnyOfType =
-  (typeof SearchArtifactsQueryFilterAnyOfType)[keyof typeof SearchArtifactsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchArtifactsQueryFilterAnyOf = {
-  field: (typeof SearchArtifactsQueryFilterAnyOfField)[keyof typeof SearchArtifactsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchArtifactsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchArtifactsQueryFilterAnyOfFourType =
-  (typeof SearchArtifactsQueryFilterAnyOfFourType)[keyof typeof SearchArtifactsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchArtifactsQueryFilterAnyOfFour = {
-  children: ArtifactsFilterNode[]
-  operator: (typeof SearchArtifactsQueryFilterAnyOfFourOperator)[keyof typeof SearchArtifactsQueryFilterAnyOfFourOperator]
-  type: SearchArtifactsQueryFilterAnyOfFourType
-}
-
-export type SearchArtifactsQueryFilter =
-  | SearchArtifactsQueryFilterAnyOf
-  | SearchArtifactsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchArtifactsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchArtifactsQuerySortItem = {
-  field: (typeof SearchArtifactsQuerySortItemField)[keyof typeof SearchArtifactsQuerySortItemField]
-  order: (typeof SearchArtifactsQuerySortItemOrder)[keyof typeof SearchArtifactsQuerySortItemOrder]
+  /**
+   * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+   * @nullable
+   */
+  previewImage: string | null
+  /**
+   * The ID of the run that produced this artifact, if applicable
+   * @nullable
+   */
+  producerId: string | null
+  /**
+   * The artifact text
+   * @nullable
+   */
+  text: string | null
+  /**
+   * The artifact URL
+   * @nullable
+   */
+  url: string | null
 }
 
 /**
- * Complete search query for artifacts with nested filters, pagination, and sorting
- */
-export interface SearchArtifactsQuery {
-  filter?: SearchArtifactsQueryFilter
-  page?: Page
-  sort?: SearchArtifactsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-export type ArtifactsFilterNodeAnyOfType =
-  (typeof ArtifactsFilterNodeAnyOfType)[keyof typeof ArtifactsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type ArtifactsFilterNodeAnyOf = {
-  field: (typeof ArtifactsFilterNodeAnyOfField)[keyof typeof ArtifactsFilterNodeAnyOfField]
-  operator: Operator
-  type: ArtifactsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type ArtifactsFilterNodeAnyOfFourType =
-  (typeof ArtifactsFilterNodeAnyOfFourType)[keyof typeof ArtifactsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type ArtifactsFilterNodeAnyOfFour = {
-  children: ArtifactsFilterNode[]
-  operator: (typeof ArtifactsFilterNodeAnyOfFourOperator)[keyof typeof ArtifactsFilterNodeAnyOfFourOperator]
-  type: ArtifactsFilterNodeAnyOfFourType
-}
-
-export type ArtifactsFilterNode =
-  | ArtifactsFilterNodeAnyOf
-  | ArtifactsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-export type ArtifactsFilterConditionType =
-  (typeof ArtifactsFilterConditionType)[keyof typeof ArtifactsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface ArtifactsFilterCondition {
-  field: (typeof ArtifactsFilterConditionField)[keyof typeof ArtifactsFilterConditionField]
-  operator: Operator
-  type: ArtifactsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface ArtifactsSort {
-  field: (typeof ArtifactsSortField)[keyof typeof ArtifactsSortField]
-  order: (typeof ArtifactsSortOrder)[keyof typeof ArtifactsSortOrder]
-}
-
-/**
- * The label entity
+ * Schema for Label entity
  */
 export interface LabelEntity {
   /** The date this item was created */
@@ -1896,215 +2334,6 @@ export interface LabelEntity {
   organizationId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-export type SearchLabelsQueryFilterAnyOfType =
-  (typeof SearchLabelsQueryFilterAnyOfType)[keyof typeof SearchLabelsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchLabelsQueryFilterAnyOf = {
-  field: (typeof SearchLabelsQueryFilterAnyOfField)[keyof typeof SearchLabelsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchLabelsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchLabelsQueryFilterAnyOfFourType =
-  (typeof SearchLabelsQueryFilterAnyOfFourType)[keyof typeof SearchLabelsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchLabelsQueryFilterAnyOfFour = {
-  children: LabelsFilterNode[]
-  operator: (typeof SearchLabelsQueryFilterAnyOfFourOperator)[keyof typeof SearchLabelsQueryFilterAnyOfFourOperator]
-  type: SearchLabelsQueryFilterAnyOfFourType
-}
-
-export type SearchLabelsQueryFilter =
-  | SearchLabelsQueryFilterAnyOf
-  | SearchLabelsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchLabelsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchLabelsQuerySortItem = {
-  field: (typeof SearchLabelsQuerySortItemField)[keyof typeof SearchLabelsQuerySortItemField]
-  order: (typeof SearchLabelsQuerySortItemOrder)[keyof typeof SearchLabelsQuerySortItemOrder]
-}
-
-/**
- * Complete search query for labels with nested filters, pagination, and sorting
- */
-export interface SearchLabelsQuery {
-  filter?: SearchLabelsQueryFilter
-  page?: Page
-  sort?: SearchLabelsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-export type LabelsFilterNodeAnyOfType =
-  (typeof LabelsFilterNodeAnyOfType)[keyof typeof LabelsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type LabelsFilterNodeAnyOf = {
-  field: (typeof LabelsFilterNodeAnyOfField)[keyof typeof LabelsFilterNodeAnyOfField]
-  operator: Operator
-  type: LabelsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type LabelsFilterNodeAnyOfFourType =
-  (typeof LabelsFilterNodeAnyOfFourType)[keyof typeof LabelsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type LabelsFilterNodeAnyOfFour = {
-  children: LabelsFilterNode[]
-  operator: (typeof LabelsFilterNodeAnyOfFourOperator)[keyof typeof LabelsFilterNodeAnyOfFourOperator]
-  type: LabelsFilterNodeAnyOfFourType
-}
-
-export type LabelsFilterNode = LabelsFilterNodeAnyOf | LabelsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-export type LabelsFilterConditionType =
-  (typeof LabelsFilterConditionType)[keyof typeof LabelsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface LabelsFilterCondition {
-  field: (typeof LabelsFilterConditionField)[keyof typeof LabelsFilterConditionField]
-  operator: Operator
-  type: LabelsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface LabelsSort {
-  field: (typeof LabelsSortField)[keyof typeof LabelsSortField]
-  order: (typeof LabelsSortOrder)[keyof typeof LabelsSortOrder]
-}
-
-/**
- * The pipeline description
- */
-export type PipelineEntityDescription = string | null
-
-/**
- * The pipeline name
- */
-export type PipelineEntityName = string | null
-
-export type PipelineEntityStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type PipelineEntityStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-/**
- * The pipeline step entity
- */
-export type PipelineEntityStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: PipelineEntityStepsItemDependentsItem[]
-  pipelineId: string
-  prerequisites: PipelineEntityStepsItemPrerequisitesItem[]
-  toolId: string
-}
-
-/**
- * The pipeline entity
- */
-export interface PipelineEntity {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The pipeline description */
-  description: PipelineEntityDescription
-  /** The pipeline name */
-  name: PipelineEntityName
-  /** The organization id */
-  organizationId: string
-  /** The steps in the pipeline */
-  steps: PipelineEntityStepsItem[]
-}
-
 export type PipelineStepEntityDependentsItem = {
   pipelineStepId: string
 }
@@ -2114,7 +2343,7 @@ export type PipelineStepEntityPrerequisitesItem = {
 }
 
 /**
- * The pipeline step entity
+ * Schema for Pipeline Step entity
  */
 export interface PipelineStepEntity {
   /** The date this item was created */
@@ -2129,192 +2358,34 @@ export interface PipelineStepEntity {
   toolId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-export type SearchPipelinesQueryFilterAnyOfType =
-  (typeof SearchPipelinesQueryFilterAnyOfType)[keyof typeof SearchPipelinesQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchPipelinesQueryFilterAnyOf = {
-  field: (typeof SearchPipelinesQueryFilterAnyOfField)[keyof typeof SearchPipelinesQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchPipelinesQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchPipelinesQueryFilterAnyOfFourType =
-  (typeof SearchPipelinesQueryFilterAnyOfFourType)[keyof typeof SearchPipelinesQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchPipelinesQueryFilterAnyOfFour = {
-  children: PipelinesFilterNode[]
-  operator: (typeof SearchPipelinesQueryFilterAnyOfFourOperator)[keyof typeof SearchPipelinesQueryFilterAnyOfFourOperator]
-  type: SearchPipelinesQueryFilterAnyOfFourType
-}
-
-export type SearchPipelinesQueryFilter =
-  | SearchPipelinesQueryFilterAnyOf
-  | SearchPipelinesQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchPipelinesQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchPipelinesQuerySortItem = {
-  field: (typeof SearchPipelinesQuerySortItemField)[keyof typeof SearchPipelinesQuerySortItemField]
-  order: (typeof SearchPipelinesQuerySortItemOrder)[keyof typeof SearchPipelinesQuerySortItemOrder]
-}
-
 /**
- * Complete search query for pipelines with nested filters, pagination, and sorting
+ * Schema for Pipeline entity
  */
-export interface SearchPipelinesQuery {
-  filter?: SearchPipelinesQueryFilter
-  page?: Page
-  sort?: SearchPipelinesQuerySortItem[]
+export interface PipelineEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /**
+   * The pipeline description
+   * @nullable
+   */
+  description: string | null
+  /**
+   * The pipeline name
+   * @nullable
+   */
+  name: string | null
+  /** The organization id */
+  organizationId: string
+  /** The steps in the pipeline */
+  steps: PipelineStepEntity[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-export type PipelinesFilterNodeAnyOfType =
-  (typeof PipelinesFilterNodeAnyOfType)[keyof typeof PipelinesFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type PipelinesFilterNodeAnyOf = {
-  field: (typeof PipelinesFilterNodeAnyOfField)[keyof typeof PipelinesFilterNodeAnyOfField]
-  operator: Operator
-  type: PipelinesFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type PipelinesFilterNodeAnyOfFourType =
-  (typeof PipelinesFilterNodeAnyOfFourType)[keyof typeof PipelinesFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type PipelinesFilterNodeAnyOfFour = {
-  children: PipelinesFilterNode[]
-  operator: (typeof PipelinesFilterNodeAnyOfFourOperator)[keyof typeof PipelinesFilterNodeAnyOfFourOperator]
-  type: PipelinesFilterNodeAnyOfFourType
-}
-
-export type PipelinesFilterNode =
-  | PipelinesFilterNodeAnyOf
-  | PipelinesFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-export type PipelinesFilterConditionType =
-  (typeof PipelinesFilterConditionType)[keyof typeof PipelinesFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface PipelinesFilterCondition {
-  field: (typeof PipelinesFilterConditionField)[keyof typeof PipelinesFilterConditionField]
-  operator: Operator
-  type: PipelinesFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface PipelinesSort {
-  field: (typeof PipelinesSortField)[keyof typeof PipelinesSortField]
-  order: (typeof PipelinesSortOrder)[keyof typeof PipelinesSortOrder]
-}
-
-/**
- * The timestamp when the run completed
- */
-export type RunEntityCompletedAt = string | null
-
-/**
- * The error message
- */
-export type RunEntityError = string | null
-
-/**
- * The pipeline ID associated with the run
- */
-export type RunEntityPipelineId = string | null
-
-/**
- * The timestamp when the run started
- */
-export type RunEntityStartedAt = string | null
+export type RunEntityStatus =
+  (typeof RunEntityStatus)[keyof typeof RunEntityStatus]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunEntityStatus = {
@@ -2323,8 +2394,9 @@ export const RunEntityStatus = {
   PROCESSING: 'PROCESSING',
   QUEUED: 'QUEUED'
 } as const
+
 /**
- * The run entity
+ * Schema for Run entity
  */
 export interface RunEntity {
   /** The date this item was created */
@@ -2333,207 +2405,37 @@ export interface RunEntity {
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The timestamp when the run completed */
-  completedAt: RunEntityCompletedAt
-  /** The error message */
-  error: RunEntityError
+  /**
+   * The timestamp when the run completed
+   * @nullable
+   */
+  completedAt: string | null
+  /**
+   * The error message
+   * @nullable
+   */
+  error: string | null
   /** The organization name */
   organizationId: string
-  /** The pipeline ID associated with the run */
-  pipelineId: RunEntityPipelineId
+  /**
+   * The pipeline ID associated with the run
+   * @nullable
+   */
+  pipelineId: string | null
   /** The percent progress of the run */
   progress: number
-  /** The timestamp when the run started */
-  startedAt: RunEntityStartedAt
-  status: (typeof RunEntityStatus)[keyof typeof RunEntityStatus]
+  /**
+   * The timestamp when the run started
+   * @nullable
+   */
+  startedAt: string | null
+  status: RunEntityStatus
   /** The tool ID associated with the run */
   toolId: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQueryFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-export type SearchRunsQueryFilterAnyOfType =
-  (typeof SearchRunsQueryFilterAnyOfType)[keyof typeof SearchRunsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQueryFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type SearchRunsQueryFilterAnyOf = {
-  field: (typeof SearchRunsQueryFilterAnyOfField)[keyof typeof SearchRunsQueryFilterAnyOfField]
-  operator: Operator
-  type: SearchRunsQueryFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQueryFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type SearchRunsQueryFilterAnyOfFourType =
-  (typeof SearchRunsQueryFilterAnyOfFourType)[keyof typeof SearchRunsQueryFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchRunsQueryFilterAnyOfFour = {
-  children: RunsFilterNode[]
-  operator: (typeof SearchRunsQueryFilterAnyOfFourOperator)[keyof typeof SearchRunsQueryFilterAnyOfFourOperator]
-  type: SearchRunsQueryFilterAnyOfFourType
-}
-
-export type SearchRunsQueryFilter =
-  | SearchRunsQueryFilterAnyOf
-  | SearchRunsQueryFilterAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQuerySortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchRunsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type SearchRunsQuerySortItem = {
-  field: (typeof SearchRunsQuerySortItemField)[keyof typeof SearchRunsQuerySortItemField]
-  order: (typeof SearchRunsQuerySortItemOrder)[keyof typeof SearchRunsQuerySortItemOrder]
-}
-
 /**
- * Complete search query for runs with nested filters, pagination, and sorting
- */
-export interface SearchRunsQuery {
-  filter?: SearchRunsQueryFilter
-  page?: Page
-  sort?: SearchRunsQuerySortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-export type RunsFilterNodeAnyOfType =
-  (typeof RunsFilterNodeAnyOfType)[keyof typeof RunsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type RunsFilterNodeAnyOf = {
-  field: (typeof RunsFilterNodeAnyOfField)[keyof typeof RunsFilterNodeAnyOfField]
-  operator: Operator
-  type: RunsFilterNodeAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeAnyOfFourOperator = { and: 'and', or: 'or' } as const
-export type RunsFilterNodeAnyOfFourType =
-  (typeof RunsFilterNodeAnyOfFourType)[keyof typeof RunsFilterNodeAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type RunsFilterNodeAnyOfFour = {
-  children: RunsFilterNode[]
-  operator: (typeof RunsFilterNodeAnyOfFourOperator)[keyof typeof RunsFilterNodeAnyOfFourOperator]
-  type: RunsFilterNodeAnyOfFourType
-}
-
-export type RunsFilterNode = RunsFilterNodeAnyOf | RunsFilterNodeAnyOfFour
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-export type RunsFilterConditionType =
-  (typeof RunsFilterConditionType)[keyof typeof RunsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface RunsFilterCondition {
-  field: (typeof RunsFilterConditionField)[keyof typeof RunsFilterConditionField]
-  operator: Operator
-  type: RunsFilterConditionType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsSortField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsSortOrder = { asc: 'asc', desc: 'desc' } as const
-export interface RunsSort {
-  field: (typeof RunsSortField)[keyof typeof RunsSortField]
-  order: (typeof RunsSortOrder)[keyof typeof RunsSortOrder]
-}
-
-/**
- * The tool entity
+ * Schema for Tool entity
  */
 export interface ToolEntity {
   /** The date this item was created */
@@ -2554,84 +2456,808 @@ export interface ToolEntity {
   outputMimeType: string
 }
 
+/**
+ * Schema for File entity
+ */
+export interface FileEntity {
+  /** The date this item was created */
+  createdAt: string
+  /** The ID of the item */
+  id: string
+  /** The date this item was last updated */
+  updatedAt: string
+  /** Whether or not this is a directory */
+  isDir: boolean
+  /** The original name of the file */
+  organizationId: string
+  /** The path to the item */
+  path: string
+  /** The read-only URL that you can use to download the file from secure storage */
+  read?: string
+  /** The size of the item in bytes */
+  size: number
+  /** The write-only URL that you can use to upload the file to secure storage */
+  write?: string
+}
+
+export type AccountsFilterNodeAnyOfField =
+  (typeof AccountsFilterNodeAnyOfField)[keyof typeof AccountsFilterNodeAnyOfField]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQueryFilterAnyOfField = {
+export const AccountsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
-} as const
-export type SearchToolsQueryFilterAnyOfType =
-  (typeof SearchToolsQueryFilterAnyOfType)[keyof typeof SearchToolsQueryFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQueryFilterAnyOfType = {
-  condition: 'condition'
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  accountId: 'accountId',
+  idToken: 'idToken',
+  password: 'password',
+  providerId: 'providerId',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  userId: 'userId'
 } as const
 
-export type SearchToolsQueryFilterAnyOf = {
-  field: (typeof SearchToolsQueryFilterAnyOfField)[keyof typeof SearchToolsQueryFilterAnyOfField]
+export type AccountsFilterNodeAnyOf = {
+  field: AccountsFilterNodeAnyOfField
   operator: Operator
-  type: SearchToolsQueryFilterAnyOfType
-  value: FilterValueSchema
+  type: 'condition'
+  value: FilterValue
 }
 
+export type AccountsFilterNodeAnyOfThreeOperator =
+  (typeof AccountsFilterNodeAnyOfThreeOperator)[keyof typeof AccountsFilterNodeAnyOfThreeOperator]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQueryFilterAnyOfFourOperator = {
+export const AccountsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
-export type SearchToolsQueryFilterAnyOfFourType =
-  (typeof SearchToolsQueryFilterAnyOfFourType)[keyof typeof SearchToolsQueryFilterAnyOfFourType]
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQueryFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type SearchToolsQueryFilterAnyOfFour = {
-  children: ToolsFilterNode[]
-  operator: (typeof SearchToolsQueryFilterAnyOfFourOperator)[keyof typeof SearchToolsQueryFilterAnyOfFourOperator]
-  type: SearchToolsQueryFilterAnyOfFourType
+export type AccountsFilterNodeAnyOfThree = {
+  children: AccountsFilterNode[]
+  operator: AccountsFilterNodeAnyOfThreeOperator
+  type: 'group'
 }
 
-export type SearchToolsQueryFilter =
-  | SearchToolsQueryFilterAnyOf
-  | SearchToolsQueryFilterAnyOfFour
+/**
+ * A recursive filter node for accounts entity that can be a condition or group
+ */
+export type AccountsFilterNode =
+  | AccountsFilterNodeAnyOf
+  | AccountsFilterNodeAnyOfThree
+
+export type AccountsSortField =
+  (typeof AccountsSortField)[keyof typeof AccountsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQuerySortItemField = {
+export const AccountsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  accountId: 'accountId',
+  idToken: 'idToken',
+  password: 'password',
+  providerId: 'providerId',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  userId: 'userId'
+} as const
+
+export type AccountsSortOrder =
+  (typeof AccountsSortOrder)[keyof typeof AccountsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const AccountsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for accounts entity with field and order
+ */
+export interface AccountsSort {
+  field: AccountsSortField
+  order: AccountsSortOrder
+}
+
+export type InvitationsFilterNodeAnyOfField =
+  (typeof InvitationsFilterNodeAnyOfField)[keyof typeof InvitationsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
+  organizationId: 'organizationId',
+  role: 'role',
+  status: 'status'
+} as const
+
+export type InvitationsFilterNodeAnyOf = {
+  field: InvitationsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type InvitationsFilterNodeAnyOfThreeOperator =
+  (typeof InvitationsFilterNodeAnyOfThreeOperator)[keyof typeof InvitationsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type InvitationsFilterNodeAnyOfThree = {
+  children: InvitationsFilterNode[]
+  operator: InvitationsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for invitations entity that can be a condition or group
+ */
+export type InvitationsFilterNode =
+  | InvitationsFilterNodeAnyOf
+  | InvitationsFilterNodeAnyOfThree
+
+export type InvitationsSortField =
+  (typeof InvitationsSortField)[keyof typeof InvitationsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  email: 'email',
+  expiresAt: 'expiresAt',
+  inviterId: 'inviterId',
+  organizationId: 'organizationId',
+  role: 'role',
+  status: 'status'
+} as const
+
+export type InvitationsSortOrder =
+  (typeof InvitationsSortOrder)[keyof typeof InvitationsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const InvitationsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for invitations entity with field and order
+ */
+export interface InvitationsSort {
+  field: InvitationsSortField
+  order: InvitationsSortOrder
+}
+
+export type MembersFilterNodeAnyOfField =
+  (typeof MembersFilterNodeAnyOfField)[keyof typeof MembersFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  role: 'role',
+  userId: 'userId'
+} as const
+
+export type MembersFilterNodeAnyOf = {
+  field: MembersFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type MembersFilterNodeAnyOfThreeOperator =
+  (typeof MembersFilterNodeAnyOfThreeOperator)[keyof typeof MembersFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type MembersFilterNodeAnyOfThree = {
+  children: MembersFilterNode[]
+  operator: MembersFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for members entity that can be a condition or group
+ */
+export type MembersFilterNode =
+  | MembersFilterNodeAnyOf
+  | MembersFilterNodeAnyOfThree
+
+export type MembersSortField =
+  (typeof MembersSortField)[keyof typeof MembersSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  role: 'role',
+  userId: 'userId'
+} as const
+
+export type MembersSortOrder =
+  (typeof MembersSortOrder)[keyof typeof MembersSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const MembersSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for members entity with field and order
+ */
+export interface MembersSort {
+  field: MembersSortField
+  order: MembersSortOrder
+}
+
+export type OrganizationsFilterNodeAnyOfField =
+  (typeof OrganizationsFilterNodeAnyOfField)[keyof typeof OrganizationsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerId: 'stripeCustomerId'
+} as const
+
+export type OrganizationsFilterNodeAnyOf = {
+  field: OrganizationsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type OrganizationsFilterNodeAnyOfThreeOperator =
+  (typeof OrganizationsFilterNodeAnyOfThreeOperator)[keyof typeof OrganizationsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type OrganizationsFilterNodeAnyOfThree = {
+  children: OrganizationsFilterNode[]
+  operator: OrganizationsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for organizations entity that can be a condition or group
+ */
+export type OrganizationsFilterNode =
+  | OrganizationsFilterNodeAnyOf
+  | OrganizationsFilterNodeAnyOfThree
+
+export type OrganizationsSortField =
+  (typeof OrganizationsSortField)[keyof typeof OrganizationsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  billingEmail: 'billingEmail',
+  credits: 'credits',
+  logo: 'logo',
+  metadata: 'metadata',
+  name: 'name',
+  plan: 'plan',
+  slug: 'slug',
+  stripeCustomerId: 'stripeCustomerId'
+} as const
+
+export type OrganizationsSortOrder =
+  (typeof OrganizationsSortOrder)[keyof typeof OrganizationsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const OrganizationsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for organizations entity with field and order
+ */
+export interface OrganizationsSort {
+  field: OrganizationsSortField
+  order: OrganizationsSortOrder
+}
+
+export type SessionsFilterNodeAnyOfField =
+  (typeof SessionsFilterNodeAnyOfField)[keyof typeof SessionsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  activeOrganizationId: 'activeOrganizationId',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userId: 'userId'
+} as const
+
+export type SessionsFilterNodeAnyOf = {
+  field: SessionsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type SessionsFilterNodeAnyOfThreeOperator =
+  (typeof SessionsFilterNodeAnyOfThreeOperator)[keyof typeof SessionsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type SessionsFilterNodeAnyOfThree = {
+  children: SessionsFilterNode[]
+  operator: SessionsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for sessions entity that can be a condition or group
+ */
+export type SessionsFilterNode =
+  | SessionsFilterNodeAnyOf
+  | SessionsFilterNodeAnyOfThree
+
+export type SessionsSortField =
+  (typeof SessionsSortField)[keyof typeof SessionsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  activeOrganizationId: 'activeOrganizationId',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  token: 'token',
+  userAgent: 'userAgent',
+  userId: 'userId'
+} as const
+
+export type SessionsSortOrder =
+  (typeof SessionsSortOrder)[keyof typeof SessionsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SessionsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for sessions entity with field and order
+ */
+export interface SessionsSort {
+  field: SessionsSortField
+  order: SessionsSortOrder
+}
+
+export type UsersFilterNodeAnyOfField =
+  (typeof UsersFilterNodeAnyOfField)[keyof typeof UsersFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  deactivated: 'deactivated',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name'
+} as const
+
+export type UsersFilterNodeAnyOf = {
+  field: UsersFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type UsersFilterNodeAnyOfThreeOperator =
+  (typeof UsersFilterNodeAnyOfThreeOperator)[keyof typeof UsersFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type UsersFilterNodeAnyOfThree = {
+  children: UsersFilterNode[]
+  operator: UsersFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for users entity that can be a condition or group
+ */
+export type UsersFilterNode = UsersFilterNodeAnyOf | UsersFilterNodeAnyOfThree
+
+export type UsersSortField =
+  (typeof UsersSortField)[keyof typeof UsersSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  deactivated: 'deactivated',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  name: 'name'
+} as const
+
+export type UsersSortOrder =
+  (typeof UsersSortOrder)[keyof typeof UsersSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UsersSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for users entity with field and order
+ */
+export interface UsersSort {
+  field: UsersSortField
+  order: UsersSortOrder
+}
+
+export type ArtifactsFilterNodeAnyOfField =
+  (typeof ArtifactsFilterNodeAnyOfField)[keyof typeof ArtifactsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  previewImage: 'previewImage',
+  producerId: 'producerId',
+  text: 'text',
+  url: 'url'
+} as const
+
+export type ArtifactsFilterNodeAnyOf = {
+  field: ArtifactsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type ArtifactsFilterNodeAnyOfThreeOperator =
+  (typeof ArtifactsFilterNodeAnyOfThreeOperator)[keyof typeof ArtifactsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type ArtifactsFilterNodeAnyOfThree = {
+  children: ArtifactsFilterNode[]
+  operator: ArtifactsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for artifacts entity that can be a condition or group
+ */
+export type ArtifactsFilterNode =
+  | ArtifactsFilterNodeAnyOf
+  | ArtifactsFilterNodeAnyOfThree
+
+export type ArtifactsSortField =
+  (typeof ArtifactsSortField)[keyof typeof ArtifactsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  credits: 'credits',
+  description: 'description',
+  mimeType: 'mimeType',
+  name: 'name',
+  organizationId: 'organizationId',
+  previewImage: 'previewImage',
+  producerId: 'producerId',
+  text: 'text',
+  url: 'url'
+} as const
+
+export type ArtifactsSortOrder =
+  (typeof ArtifactsSortOrder)[keyof typeof ArtifactsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ArtifactsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for artifacts entity with field and order
+ */
+export interface ArtifactsSort {
+  field: ArtifactsSortField
+  order: ArtifactsSortOrder
+}
+
+export type LabelsFilterNodeAnyOfField =
+  (typeof LabelsFilterNodeAnyOfField)[keyof typeof LabelsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationId: 'organizationId'
+} as const
+
+export type LabelsFilterNodeAnyOf = {
+  field: LabelsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type LabelsFilterNodeAnyOfThreeOperator =
+  (typeof LabelsFilterNodeAnyOfThreeOperator)[keyof typeof LabelsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type LabelsFilterNodeAnyOfThree = {
+  children: LabelsFilterNode[]
+  operator: LabelsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for labels entity that can be a condition or group
+ */
+export type LabelsFilterNode =
+  | LabelsFilterNodeAnyOf
+  | LabelsFilterNodeAnyOfThree
+
+export type LabelsSortField =
+  (typeof LabelsSortField)[keyof typeof LabelsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  organizationId: 'organizationId'
+} as const
+
+export type LabelsSortOrder =
+  (typeof LabelsSortOrder)[keyof typeof LabelsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LabelsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for labels entity with field and order
+ */
+export interface LabelsSort {
+  field: LabelsSortField
+  order: LabelsSortOrder
+}
+
+export type PipelinesFilterNodeAnyOfField =
+  (typeof PipelinesFilterNodeAnyOfField)[keyof typeof PipelinesFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
   description: 'description',
-  inputMimeType: 'inputMimeType',
   name: 'name',
   organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
+  steps: 'steps'
 } as const
+
+export type PipelinesFilterNodeAnyOf = {
+  field: PipelinesFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type PipelinesFilterNodeAnyOfThreeOperator =
+  (typeof PipelinesFilterNodeAnyOfThreeOperator)[keyof typeof PipelinesFilterNodeAnyOfThreeOperator]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SearchToolsQuerySortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+export const PipelinesFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
 } as const
-export type SearchToolsQuerySortItem = {
-  field: (typeof SearchToolsQuerySortItemField)[keyof typeof SearchToolsQuerySortItemField]
-  order: (typeof SearchToolsQuerySortItemOrder)[keyof typeof SearchToolsQuerySortItemOrder]
+
+export type PipelinesFilterNodeAnyOfThree = {
+  children: PipelinesFilterNode[]
+  operator: PipelinesFilterNodeAnyOfThreeOperator
+  type: 'group'
 }
 
 /**
- * Complete search query for tools with nested filters, pagination, and sorting
+ * A recursive filter node for pipelines entity that can be a condition or group
  */
-export interface SearchToolsQuery {
-  filter?: SearchToolsQueryFilter
-  page?: Page
-  sort?: SearchToolsQuerySortItem[]
+export type PipelinesFilterNode =
+  | PipelinesFilterNodeAnyOf
+  | PipelinesFilterNodeAnyOfThree
+
+export type PipelinesSortField =
+  (typeof PipelinesSortField)[keyof typeof PipelinesSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  description: 'description',
+  name: 'name',
+  organizationId: 'organizationId',
+  steps: 'steps'
+} as const
+
+export type PipelinesSortOrder =
+  (typeof PipelinesSortOrder)[keyof typeof PipelinesSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PipelinesSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for pipelines entity with field and order
+ */
+export interface PipelinesSort {
+  field: PipelinesSortField
+  order: PipelinesSortOrder
 }
+
+export type RunsFilterNodeAnyOfField =
+  (typeof RunsFilterNodeAnyOfField)[keyof typeof RunsFilterNodeAnyOfField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterNodeAnyOfField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationId: 'organizationId',
+  pipelineId: 'pipelineId',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolId: 'toolId'
+} as const
+
+export type RunsFilterNodeAnyOf = {
+  field: RunsFilterNodeAnyOfField
+  operator: Operator
+  type: 'condition'
+  value: FilterValue
+}
+
+export type RunsFilterNodeAnyOfThreeOperator =
+  (typeof RunsFilterNodeAnyOfThreeOperator)[keyof typeof RunsFilterNodeAnyOfThreeOperator]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsFilterNodeAnyOfThreeOperator = {
+  and: 'and',
+  or: 'or'
+} as const
+
+export type RunsFilterNodeAnyOfThree = {
+  children: RunsFilterNode[]
+  operator: RunsFilterNodeAnyOfThreeOperator
+  type: 'group'
+}
+
+/**
+ * A recursive filter node for runs entity that can be a condition or group
+ */
+export type RunsFilterNode = RunsFilterNodeAnyOf | RunsFilterNodeAnyOfThree
+
+export type RunsSortField = (typeof RunsSortField)[keyof typeof RunsSortField]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortField = {
+  createdAt: 'createdAt',
+  id: 'id',
+  updatedAt: 'updatedAt',
+  completedAt: 'completedAt',
+  error: 'error',
+  organizationId: 'organizationId',
+  pipelineId: 'pipelineId',
+  progress: 'progress',
+  startedAt: 'startedAt',
+  status: 'status',
+  toolId: 'toolId'
+} as const
+
+export type RunsSortOrder = (typeof RunsSortOrder)[keyof typeof RunsSortOrder]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const RunsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for runs entity with field and order
+ */
+export interface RunsSort {
+  field: RunsSortField
+  order: RunsSortOrder
+}
+
+export type ToolsFilterNodeAnyOfField =
+  (typeof ToolsFilterNodeAnyOfField)[keyof typeof ToolsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsFilterNodeAnyOfField = {
@@ -2644,67 +3270,36 @@ export const ToolsFilterNodeAnyOfField = {
   organizationId: 'organizationId',
   outputMimeType: 'outputMimeType'
 } as const
-export type ToolsFilterNodeAnyOfType =
-  (typeof ToolsFilterNodeAnyOfType)[keyof typeof ToolsFilterNodeAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterNodeAnyOfType = {
-  condition: 'condition'
-} as const
 
 export type ToolsFilterNodeAnyOf = {
-  field: (typeof ToolsFilterNodeAnyOfField)[keyof typeof ToolsFilterNodeAnyOfField]
+  field: ToolsFilterNodeAnyOfField
   operator: Operator
-  type: ToolsFilterNodeAnyOfType
-  value: FilterValueSchema
+  type: 'condition'
+  value: FilterValue
 }
 
+export type ToolsFilterNodeAnyOfThreeOperator =
+  (typeof ToolsFilterNodeAnyOfThreeOperator)[keyof typeof ToolsFilterNodeAnyOfThreeOperator]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterNodeAnyOfFourOperator = {
+export const ToolsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
-export type ToolsFilterNodeAnyOfFourType =
-  (typeof ToolsFilterNodeAnyOfFourType)[keyof typeof ToolsFilterNodeAnyOfFourType]
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterNodeAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type ToolsFilterNodeAnyOfFour = {
+export type ToolsFilterNodeAnyOfThree = {
   children: ToolsFilterNode[]
-  operator: (typeof ToolsFilterNodeAnyOfFourOperator)[keyof typeof ToolsFilterNodeAnyOfFourOperator]
-  type: ToolsFilterNodeAnyOfFourType
+  operator: ToolsFilterNodeAnyOfThreeOperator
+  type: 'group'
 }
 
-export type ToolsFilterNode = ToolsFilterNodeAnyOf | ToolsFilterNodeAnyOfFour
+/**
+ * A recursive filter node for tools entity that can be a condition or group
+ */
+export type ToolsFilterNode = ToolsFilterNodeAnyOf | ToolsFilterNodeAnyOfThree
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterConditionField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
-} as const
-export type ToolsFilterConditionType =
-  (typeof ToolsFilterConditionType)[keyof typeof ToolsFilterConditionType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterConditionType = {
-  condition: 'condition'
-} as const
-
-export interface ToolsFilterCondition {
-  field: (typeof ToolsFilterConditionField)[keyof typeof ToolsFilterConditionField]
-  operator: Operator
-  type: ToolsFilterConditionType
-  value: FilterValueSchema
-}
+export type ToolsSortField =
+  (typeof ToolsSortField)[keyof typeof ToolsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortField = {
@@ -2717,15 +3312,29 @@ export const ToolsSortField = {
   organizationId: 'organizationId',
   outputMimeType: 'outputMimeType'
 } as const
+
+export type ToolsSortOrder =
+  (typeof ToolsSortOrder)[keyof typeof ToolsSortOrder]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsSortOrder = { asc: 'asc', desc: 'desc' } as const
+export const ToolsSortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+/**
+ * Sorting configuration for tools entity with field and order
+ */
 export interface ToolsSort {
-  field: (typeof ToolsSortField)[keyof typeof ToolsSortField]
-  order: (typeof ToolsSortOrder)[keyof typeof ToolsSortOrder]
+  field: ToolsSortField
+  order: ToolsSortOrder
 }
 
 export type LoginBody = {
-  /** The email address associated with the account */
+  /**
+   * The email address associated with the account
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
   email: string
   /**
    * The name of the user creating the account
@@ -2734,152 +3343,23 @@ export type LoginBody = {
   name: string
   /** The password for the account */
   password: string
-}
-
-/**
- * The IP address of the session
- */
-export type Login200SessionIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type Login200SessionUserAgent = string | null
-
-/**
- * The session entity
- */
-export type Login200Session = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: Login200SessionIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: Login200SessionUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
-/**
- * The user's avatar image URL
- */
-export type Login200UserImage = null | string
-
-/**
- * The user entity
- */
-export type Login200User = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: Login200UserImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
 }
 
 export type Login200 = {
-  /** The session entity */
-  session: Login200Session
-  /** The user entity */
-  user: Login200User
-}
-
-/**
- * The IP address of the session
- */
-export type GetSession200SessionIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type GetSession200SessionUserAgent = string | null
-
-/**
- * The session entity
- */
-export type GetSession200Session = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: GetSession200SessionIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: GetSession200SessionUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
-/**
- * The user's avatar image URL
- */
-export type GetSession200UserImage = null | string
-
-/**
- * The user entity
- */
-export type GetSession200User = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: GetSession200UserImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
+  session: SessionEntity
+  user: UserEntity
 }
 
 export type GetSession200 = {
-  /** The session entity */
-  session: GetSession200Session
-  /** The user entity */
-  user: GetSession200User
+  session: SessionEntity
+  user: UserEntity
 }
 
 export type RegisterBody = {
-  /** The email address associated with the account */
+  /**
+   * The email address associated with the account
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
   email: string
   /**
    * The name of the user creating the account
@@ -2890,75 +3370,9 @@ export type RegisterBody = {
   password: string
 }
 
-/**
- * The IP address of the session
- */
-export type Register204SessionIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type Register204SessionUserAgent = string | null
-
-/**
- * The session entity
- */
-export type Register204Session = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: Register204SessionIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: Register204SessionUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
-/**
- * The user's avatar image URL
- */
-export type Register204UserImage = null | string
-
-/**
- * The user entity
- */
-export type Register204User = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: Register204UserImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type Register204 = {
-  /** The session entity */
-  session: Register204Session
-  /** The user entity */
-  user: Register204User
+export type Register201 = {
+  session: SessionEntity
+  user: UserEntity
 }
 
 export type ConfirmEmailVerificationBody = {
@@ -2966,75 +3380,9 @@ export type ConfirmEmailVerificationBody = {
   token: string
 }
 
-/**
- * The IP address of the session
- */
-export type ConfirmEmailVerification204SessionIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type ConfirmEmailVerification204SessionUserAgent = string | null
-
-/**
- * The session entity
- */
-export type ConfirmEmailVerification204Session = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: ConfirmEmailVerification204SessionIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: ConfirmEmailVerification204SessionUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
-/**
- * The user's avatar image URL
- */
-export type ConfirmEmailVerification204UserImage = null | string
-
-/**
- * The user entity
- */
-export type ConfirmEmailVerification204User = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** Whether or not the user is deactivated */
-  deactivated: boolean
-  /** The user's e-mail */
-  email: string
-  /** Whether or not the user's e-mail has been verified */
-  emailVerified: boolean
-  /** The user's avatar image URL */
-  image: ConfirmEmailVerification204UserImage
-  /**
-   * The user's name
-   * @minLength 1
-   */
-  name: string
-}
-
-export type ConfirmEmailVerification204 = {
-  /** The session entity */
-  session: ConfirmEmailVerification204Session
-  /** The user entity */
-  user: ConfirmEmailVerification204User
+export type ConfirmEmailVerification200 = {
+  session: SessionEntity
+  user: UserEntity
 }
 
 export type ConfirmPasswordResetBody = {
@@ -3050,23 +3398,38 @@ export type RequestPasswordResetBody = {
 }
 
 export type ConfirmEmailChangeBody = {
-  /** The e-mail to send the confirmation token to */
+  /**
+   * The e-mail to send the confirmation token to
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
   newEmail: string
   /** The password reset token */
   token: string
-  /** The user ID of the user requesting the email change */
+  /**
+   * The user ID of the user requesting the email change
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   userId: string
 }
 
 export type RequestEmailChangeBody = {
-  /** The e-mail to send the confirmation token to */
+  /**
+   * The e-mail to send the confirmation token to
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
   newEmail: string
-  /** The user ID of the user requesting the email change */
+  /**
+   * The user ID of the user requesting the email change
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   userId: string
 }
 
 export type CreateAccountBody = {
-  /** The email address associated with the account */
+  /**
+   * The email address associated with the account
+   * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+   */
   email: string
   /**
    * The name of the user creating the account
@@ -3082,85 +3445,9 @@ export type CreateAccount201 = {
 }
 
 export type FindManyAccountsParams = {
-  filter?: FindManyAccountsFilterAnyOf | FindManyAccountsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyAccountsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-export type FindManyAccountsFilterAnyOfType =
-  (typeof FindManyAccountsFilterAnyOfType)[keyof typeof FindManyAccountsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyAccountsFilterAnyOf = {
-  field: (typeof FindManyAccountsFilterAnyOfField)[keyof typeof FindManyAccountsFilterAnyOfField]
-  operator: Operator
-  type: FindManyAccountsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyAccountsFilterAnyOfFourType =
-  (typeof FindManyAccountsFilterAnyOfFourType)[keyof typeof FindManyAccountsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyAccountsFilterAnyOfFour = {
-  children: AccountsFilterNode[]
-  operator: (typeof FindManyAccountsFilterAnyOfFourOperator)[keyof typeof FindManyAccountsFilterAnyOfFourOperator]
-  type: FindManyAccountsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyAccountsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyAccountsSortItem = {
-  field: (typeof FindManyAccountsSortItemField)[keyof typeof FindManyAccountsSortItemField]
-  order: (typeof FindManyAccountsSortItemOrder)[keyof typeof FindManyAccountsSortItemOrder]
+  filter?: AccountsFilterNodeInput
+  page?: PageInput
+  sort?: AccountsSortInput[]
 }
 
 export type FindManyAccounts200Meta = {
@@ -3181,76 +3468,15 @@ export type GetOneAccount200 = {
   data: AccountEntity
 }
 
-/**
- * The access token
- */
-export type UpdateAccountBodyAccessToken = string | null
-
-/**
- * The expiration date
- */
-export type UpdateAccountBodyAccessTokenExpiresAt = string | null
-
-/**
- * The ID token
- */
-export type UpdateAccountBodyIdToken = string | null
-
-/**
- * The hashed password for local authentication
- */
-export type UpdateAccountBodyPassword = string | null
-
-/**
- * The refresh token
- */
-export type UpdateAccountBodyRefreshToken = string | null
-
-/**
- * The refresh token expiration date
- */
-export type UpdateAccountBodyRefreshTokenExpiresAt = string | null
-
-/**
- * The scope of the access token
- */
-export type UpdateAccountBodyScope = string | null
-
-/**
- * The account entity
- */
-export type UpdateAccountBody = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The access token */
-  accessToken: UpdateAccountBodyAccessToken
-  /** The expiration date */
-  accessTokenExpiresAt: UpdateAccountBodyAccessTokenExpiresAt
-  /** The unique identifier for the account */
-  accountId: string
-  /** The ID token */
-  idToken: UpdateAccountBodyIdToken
-  /** The hashed password for local authentication */
-  password: UpdateAccountBodyPassword
-  /** The provider ID associated with the auth provider */
-  providerId: string
-  /** The refresh token */
-  refreshToken: UpdateAccountBodyRefreshToken
-  /** The refresh token expiration date */
-  refreshTokenExpiresAt: UpdateAccountBodyRefreshTokenExpiresAt
-  /** The scope of the access token */
-  scope: UpdateAccountBodyScope
-  /** The user ID associated with the auth provider */
-  userId: string
-}
-
 export type UpdateAccount200 = {
   data: AccountEntity
 }
+
+/**
+ * The role of the invitation
+ */
+export type CreateInvitationBodyRole =
+  (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateInvitationBodyRole = {
@@ -3258,11 +3484,12 @@ export const CreateInvitationBodyRole = {
   owner: 'owner',
   member: 'member'
 } as const
+
 export type CreateInvitationBody = {
   /** The email of the invitated user */
   email: string
   /** The role of the invitation */
-  role: (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
+  role: CreateInvitationBodyRole
 }
 
 export type CreateInvitation201 = {
@@ -3270,77 +3497,9 @@ export type CreateInvitation201 = {
 }
 
 export type FindManyInvitationsParams = {
-  filter?: FindManyInvitationsFilterAnyOf | FindManyInvitationsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyInvitationsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-export type FindManyInvitationsFilterAnyOfType =
-  (typeof FindManyInvitationsFilterAnyOfType)[keyof typeof FindManyInvitationsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyInvitationsFilterAnyOf = {
-  field: (typeof FindManyInvitationsFilterAnyOfField)[keyof typeof FindManyInvitationsFilterAnyOfField]
-  operator: Operator
-  type: FindManyInvitationsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyInvitationsFilterAnyOfFourType =
-  (typeof FindManyInvitationsFilterAnyOfFourType)[keyof typeof FindManyInvitationsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyInvitationsFilterAnyOfFour = {
-  children: InvitationsFilterNode[]
-  operator: (typeof FindManyInvitationsFilterAnyOfFourOperator)[keyof typeof FindManyInvitationsFilterAnyOfFourOperator]
-  type: FindManyInvitationsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyInvitationsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyInvitationsSortItem = {
-  field: (typeof FindManyInvitationsSortItemField)[keyof typeof FindManyInvitationsSortItemField]
-  order: (typeof FindManyInvitationsSortItemOrder)[keyof typeof FindManyInvitationsSortItemOrder]
+  filter?: InvitationsFilterNodeInput
+  page?: PageInput
+  sort?: InvitationsSortInput[]
 }
 
 export type FindManyInvitations200Meta = {
@@ -3361,22 +3520,35 @@ export type GetOneInvitation200 = {
   data: InvitationEntity
 }
 
+/**
+ * The role of the invitation
+ */
+export type UpdateInvitationBodyRole =
+  (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateInvitationBodyRole = {
   admin: 'admin',
   owner: 'owner',
   member: 'member'
 } as const
+
 export type UpdateInvitationBody = {
   /** The email of the invitated user */
   email?: string
   /** The role of the invitation */
-  role?: (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
+  role?: UpdateInvitationBodyRole
 }
 
 export type UpdateInvitation200 = {
   data: InvitationEntity
 }
+
+/**
+ * The role of the member
+ */
+export type CreateMemberBodyRole =
+  (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateMemberBodyRole = {
@@ -3384,9 +3556,10 @@ export const CreateMemberBodyRole = {
   owner: 'owner',
   member: 'member'
 } as const
+
 export type CreateMemberBody = {
   /** The role of the member */
-  role: (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
+  role: CreateMemberBodyRole
 }
 
 export type CreateMember201 = {
@@ -3394,71 +3567,9 @@ export type CreateMember201 = {
 }
 
 export type FindManyMembersParams = {
-  filter?: FindManyMembersFilterAnyOf | FindManyMembersFilterAnyOfFour
-  page?: Page
-  sort?: FindManyMembersSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-export type FindManyMembersFilterAnyOfType =
-  (typeof FindManyMembersFilterAnyOfType)[keyof typeof FindManyMembersFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyMembersFilterAnyOf = {
-  field: (typeof FindManyMembersFilterAnyOfField)[keyof typeof FindManyMembersFilterAnyOfField]
-  operator: Operator
-  type: FindManyMembersFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyMembersFilterAnyOfFourType =
-  (typeof FindManyMembersFilterAnyOfFourType)[keyof typeof FindManyMembersFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyMembersFilterAnyOfFour = {
-  children: MembersFilterNode[]
-  operator: (typeof FindManyMembersFilterAnyOfFourOperator)[keyof typeof FindManyMembersFilterAnyOfFourOperator]
-  type: FindManyMembersFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyMembersSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyMembersSortItem = {
-  field: (typeof FindManyMembersSortItemField)[keyof typeof FindManyMembersSortItemField]
-  order: (typeof FindManyMembersSortItemOrder)[keyof typeof FindManyMembersSortItemOrder]
+  filter?: MembersFilterNodeInput
+  page?: PageInput
+  sort?: MembersSortInput[]
 }
 
 export type FindManyMembers200Meta = {
@@ -3479,15 +3590,22 @@ export type GetOneMember200 = {
   data: MemberEntity
 }
 
+/**
+ * The role of the member
+ */
+export type UpdateMemberBodyRole =
+  (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateMemberBodyRole = {
   admin: 'admin',
   owner: 'owner',
   member: 'member'
 } as const
+
 export type UpdateMemberBody = {
   /** The role of the member */
-  role?: (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
+  role?: UpdateMemberBodyRole
 }
 
 export type UpdateMember200 = {
@@ -3506,83 +3624,9 @@ export type CreateOrganization201 = {
 }
 
 export type FindManyOrganizationsParams = {
-  filter?:
-    | FindManyOrganizationsFilterAnyOf
-    | FindManyOrganizationsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyOrganizationsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-export type FindManyOrganizationsFilterAnyOfType =
-  (typeof FindManyOrganizationsFilterAnyOfType)[keyof typeof FindManyOrganizationsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyOrganizationsFilterAnyOf = {
-  field: (typeof FindManyOrganizationsFilterAnyOfField)[keyof typeof FindManyOrganizationsFilterAnyOfField]
-  operator: Operator
-  type: FindManyOrganizationsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyOrganizationsFilterAnyOfFourType =
-  (typeof FindManyOrganizationsFilterAnyOfFourType)[keyof typeof FindManyOrganizationsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyOrganizationsFilterAnyOfFour = {
-  children: OrganizationsFilterNode[]
-  operator: (typeof FindManyOrganizationsFilterAnyOfFourOperator)[keyof typeof FindManyOrganizationsFilterAnyOfFourOperator]
-  type: FindManyOrganizationsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyOrganizationsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyOrganizationsSortItem = {
-  field: (typeof FindManyOrganizationsSortItemField)[keyof typeof FindManyOrganizationsSortItemField]
-  order: (typeof FindManyOrganizationsSortItemOrder)[keyof typeof FindManyOrganizationsSortItemOrder]
+  filter?: OrganizationsFilterNodeInput
+  page?: PageInput
+  sort?: OrganizationsSortInput[]
 }
 
 export type FindManyOrganizations200Meta = {
@@ -3614,116 +3658,14 @@ export type UpdateOrganization200 = {
   data: OrganizationEntity
 }
 
-/**
- * The IP address of the session
- */
-export type CreateSessionBodyIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type CreateSessionBodyUserAgent = string | null
-
-/**
- * The session entity
- */
-export type CreateSessionBody = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: CreateSessionBodyIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: CreateSessionBodyUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
 export type CreateSession201 = {
   data: SessionEntity
 }
 
 export type FindManySessionsParams = {
-  filter?: FindManySessionsFilterAnyOf | FindManySessionsFilterAnyOfFour
-  page?: Page
-  sort?: FindManySessionsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-export type FindManySessionsFilterAnyOfType =
-  (typeof FindManySessionsFilterAnyOfType)[keyof typeof FindManySessionsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManySessionsFilterAnyOf = {
-  field: (typeof FindManySessionsFilterAnyOfField)[keyof typeof FindManySessionsFilterAnyOfField]
-  operator: Operator
-  type: FindManySessionsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManySessionsFilterAnyOfFourType =
-  (typeof FindManySessionsFilterAnyOfFourType)[keyof typeof FindManySessionsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManySessionsFilterAnyOfFour = {
-  children: SessionsFilterNode[]
-  operator: (typeof FindManySessionsFilterAnyOfFourOperator)[keyof typeof FindManySessionsFilterAnyOfFourOperator]
-  type: FindManySessionsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManySessionsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManySessionsSortItem = {
-  field: (typeof FindManySessionsSortItemField)[keyof typeof FindManySessionsSortItemField]
-  order: (typeof FindManySessionsSortItemOrder)[keyof typeof FindManySessionsSortItemOrder]
+  filter?: SessionsFilterNodeInput
+  page?: PageInput
+  sort?: SessionsSortInput[]
 }
 
 export type FindManySessions200Meta = {
@@ -3744,54 +3686,18 @@ export type GetOneSession200 = {
   data: SessionEntity
 }
 
-/**
- * The IP address of the session
- */
-export type UpdateSessionBodyIpAddress = string | null
-
-/**
- * The user agent of the session
- */
-export type UpdateSessionBodyUserAgent = string | null
-
-/**
- * The session entity
- */
-export type UpdateSessionBody = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  /** The active organization ID */
-  activeOrganizationId: string
-  /** The expiration date of the session */
-  expiresAt: string
-  /** The IP address of the session */
-  ipAddress: UpdateSessionBodyIpAddress
-  /** The session token */
-  token: string
-  /** The user agent of the session */
-  userAgent: UpdateSessionBodyUserAgent
-  /** The ID of the user associated with the session */
-  userId: string
-}
-
 export type UpdateSession200 = {
   data: SessionEntity
 }
 
-/**
- * The user's avatar image URL
- */
-export type CreateUserBodyImage = null | string
-
 export type CreateUserBody = {
   /** The user's e-mail */
   email: string
-  /** The user's avatar image URL */
-  image: CreateUserBodyImage
+  /**
+   * The user's avatar image URL
+   * @nullable
+   */
+  image: string | null
 }
 
 export type CreateUser201 = {
@@ -3799,72 +3705,9 @@ export type CreateUser201 = {
 }
 
 export type FindManyUsersParams = {
-  filter?: FindManyUsersFilterAnyOf | FindManyUsersFilterAnyOfFour
-  page?: Page
-  sort?: FindManyUsersSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-export type FindManyUsersFilterAnyOfType =
-  (typeof FindManyUsersFilterAnyOfType)[keyof typeof FindManyUsersFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyUsersFilterAnyOf = {
-  field: (typeof FindManyUsersFilterAnyOfField)[keyof typeof FindManyUsersFilterAnyOfField]
-  operator: Operator
-  type: FindManyUsersFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyUsersFilterAnyOfFourType =
-  (typeof FindManyUsersFilterAnyOfFourType)[keyof typeof FindManyUsersFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyUsersFilterAnyOfFour = {
-  children: UsersFilterNode[]
-  operator: (typeof FindManyUsersFilterAnyOfFourOperator)[keyof typeof FindManyUsersFilterAnyOfFourOperator]
-  type: FindManyUsersFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  deactivated: 'deactivated',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyUsersSortItemOrder = { asc: 'asc', desc: 'desc' } as const
-export type FindManyUsersSortItem = {
-  field: (typeof FindManyUsersSortItemField)[keyof typeof FindManyUsersSortItemField]
-  order: (typeof FindManyUsersSortItemOrder)[keyof typeof FindManyUsersSortItemOrder]
+  filter?: UsersFilterNodeInput
+  page?: PageInput
+  sort?: UsersSortInput[]
 }
 
 export type FindManyUsers200Meta = {
@@ -3885,16 +3728,14 @@ export type GetOneUser200 = {
   data: UserEntity
 }
 
-/**
- * The user's avatar image URL
- */
-export type UpdateUserBodyImage = null | string
-
 export type UpdateUserBody = {
   /** The user's e-mail */
   email?: string
-  /** The user's avatar image URL */
-  image?: UpdateUserBodyImage
+  /**
+   * The user's avatar image URL
+   * @nullable
+   */
+  image?: string | null
 }
 
 export type UpdateUser200 = {
@@ -3963,14 +3804,18 @@ export type GetConfig200Config = {
   validate: boolean
 }
 
+export type GetConfig200DatabaseType =
+  (typeof GetConfig200DatabaseType)[keyof typeof GetConfig200DatabaseType]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetConfig200DatabaseType = {
   postgres: 'postgres',
   sqlite: 'sqlite',
   'in-memory': 'in-memory'
 } as const
+
 export type GetConfig200Database = {
-  type: (typeof GetConfig200DatabaseType)[keyof typeof GetConfig200DatabaseType]
+  type: GetConfig200DatabaseType
   url: string
 }
 
@@ -3989,13 +3834,17 @@ export type GetConfig200Email =
   | GetConfig200EmailAnyOf
   | GetConfig200EmailAnyOfTwo
 
+export type GetConfig200EmbeddingType =
+  (typeof GetConfig200EmbeddingType)[keyof typeof GetConfig200EmbeddingType]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetConfig200EmbeddingType = {
   openai: 'openai',
   ollama: 'ollama'
 } as const
+
 export type GetConfig200Embedding = {
-  type: (typeof GetConfig200EmbeddingType)[keyof typeof GetConfig200EmbeddingType]
+  type: GetConfig200EmbeddingType
 }
 
 export type GetConfig200Jwt = {
@@ -4033,6 +3882,9 @@ export type GetConfig200LlmAnyOfThree = {
 
 export type GetConfig200Llm = GetConfig200LlmAnyOf | GetConfig200LlmAnyOfThree
 
+export type GetConfig200LoggingLevel =
+  (typeof GetConfig200LoggingLevel)[keyof typeof GetConfig200LoggingLevel]
+
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const GetConfig200LoggingLevel = {
   fatal: 'fatal',
@@ -4043,9 +3895,10 @@ export const GetConfig200LoggingLevel = {
   trace: 'trace',
   silent: 'silent'
 } as const
+
 export type GetConfig200Logging = {
   gcpfix: boolean
-  level: (typeof GetConfig200LoggingLevel)[keyof typeof GetConfig200LoggingLevel]
+  level: GetConfig200LoggingLevel
   pretty: boolean
 }
 
@@ -4230,23 +4083,19 @@ export type GetConfig200 = {
   unstructured: GetConfig200Unstructured
 }
 
-/**
- * The artifact text
- */
-export type CreateArtifactBodyText = null | string
-
-/**
- * The artifact URL
- */
-export type CreateArtifactBodyUrl = null | string
-
 export type CreateArtifactBody = {
   /** The name of the artifact */
   name: string
-  /** The artifact text */
-  text: CreateArtifactBodyText
-  /** The artifact URL */
-  url: CreateArtifactBodyUrl
+  /**
+   * The artifact text
+   * @nullable
+   */
+  text: string | null
+  /**
+   * The artifact URL
+   * @nullable
+   */
+  url: string | null
 }
 
 export type CreateArtifact201 = {
@@ -4254,83 +4103,9 @@ export type CreateArtifact201 = {
 }
 
 export type FindManyArtifactsParams = {
-  filter?: FindManyArtifactsFilterAnyOf | FindManyArtifactsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyArtifactsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-export type FindManyArtifactsFilterAnyOfType =
-  (typeof FindManyArtifactsFilterAnyOfType)[keyof typeof FindManyArtifactsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyArtifactsFilterAnyOf = {
-  field: (typeof FindManyArtifactsFilterAnyOfField)[keyof typeof FindManyArtifactsFilterAnyOfField]
-  operator: Operator
-  type: FindManyArtifactsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyArtifactsFilterAnyOfFourType =
-  (typeof FindManyArtifactsFilterAnyOfFourType)[keyof typeof FindManyArtifactsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyArtifactsFilterAnyOfFour = {
-  children: ArtifactsFilterNode[]
-  operator: (typeof FindManyArtifactsFilterAnyOfFourOperator)[keyof typeof FindManyArtifactsFilterAnyOfFourOperator]
-  type: FindManyArtifactsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyArtifactsSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyArtifactsSortItem = {
-  field: (typeof FindManyArtifactsSortItemField)[keyof typeof FindManyArtifactsSortItemField]
-  order: (typeof FindManyArtifactsSortItemOrder)[keyof typeof FindManyArtifactsSortItemOrder]
+  filter?: ArtifactsFilterNodeInput
+  page?: PageInput
+  sort?: ArtifactsSortInput[]
 }
 
 export type FindManyArtifacts200Meta = {
@@ -4351,23 +4126,19 @@ export type GetOneArtifact200 = {
   data: ArtifactEntity
 }
 
-/**
- * The artifact text
- */
-export type UpdateArtifactBodyText = null | string
-
-/**
- * The artifact URL
- */
-export type UpdateArtifactBodyUrl = null | string
-
 export type UpdateArtifactBody = {
   /** The name of the artifact */
   name?: string
-  /** The artifact text */
-  text?: UpdateArtifactBodyText
-  /** The artifact URL */
-  url?: UpdateArtifactBodyUrl
+  /**
+   * The artifact text
+   * @nullable
+   */
+  text?: string | null
+  /**
+   * The artifact URL
+   * @nullable
+   */
+  url?: string | null
 }
 
 export type UpdateArtifact200 = {
@@ -4384,66 +4155,9 @@ export type CreateLabel201 = {
 }
 
 export type FindManyLabelsParams = {
-  filter?: FindManyLabelsFilterAnyOf | FindManyLabelsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyLabelsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-export type FindManyLabelsFilterAnyOfType =
-  (typeof FindManyLabelsFilterAnyOfType)[keyof typeof FindManyLabelsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyLabelsFilterAnyOf = {
-  field: (typeof FindManyLabelsFilterAnyOfField)[keyof typeof FindManyLabelsFilterAnyOfField]
-  operator: Operator
-  type: FindManyLabelsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyLabelsFilterAnyOfFourType =
-  (typeof FindManyLabelsFilterAnyOfFourType)[keyof typeof FindManyLabelsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyLabelsFilterAnyOfFour = {
-  children: LabelsFilterNode[]
-  operator: (typeof FindManyLabelsFilterAnyOfFourOperator)[keyof typeof FindManyLabelsFilterAnyOfFourOperator]
-  type: FindManyLabelsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyLabelsSortItemOrder = { asc: 'asc', desc: 'desc' } as const
-export type FindManyLabelsSortItem = {
-  field: (typeof FindManyLabelsSortItemField)[keyof typeof FindManyLabelsSortItemField]
-  order: (typeof FindManyLabelsSortItemOrder)[keyof typeof FindManyLabelsSortItemOrder]
+  filter?: LabelsFilterNodeInput
+  page?: PageInput
+  sort?: LabelsSortInput[]
 }
 
 export type FindManyLabels200Meta = {
@@ -4473,47 +4187,19 @@ export type UpdateLabel200 = {
   data: LabelEntity
 }
 
-/**
- * The pipeline description
- */
-export type CreatePipelineBodyDescription = string | null
-
-/**
- * The pipeline name
- */
-export type CreatePipelineBodyName = string | null
-
-export type CreatePipelineBodyStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type CreatePipelineBodyStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-/**
- * The pipeline step entity
- */
-export type CreatePipelineBodyStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: CreatePipelineBodyStepsItemDependentsItem[]
-  pipelineId: string
-  prerequisites: CreatePipelineBodyStepsItemPrerequisitesItem[]
-  toolId: string
-}
-
 export type CreatePipelineBody = {
-  /** The pipeline description */
-  description: CreatePipelineBodyDescription
-  /** The pipeline name */
-  name: CreatePipelineBodyName
+  /**
+   * The pipeline description
+   * @nullable
+   */
+  description: string | null
+  /**
+   * The pipeline name
+   * @nullable
+   */
+  name: string | null
   /** The steps in the pipeline */
-  steps: CreatePipelineBodyStepsItem[]
+  steps: PipelineStepEntityInput[]
 }
 
 export type CreatePipeline201 = {
@@ -4521,73 +4207,9 @@ export type CreatePipeline201 = {
 }
 
 export type FindManyPipelinesParams = {
-  filter?: FindManyPipelinesFilterAnyOf | FindManyPipelinesFilterAnyOfFour
-  page?: Page
-  sort?: FindManyPipelinesSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-export type FindManyPipelinesFilterAnyOfType =
-  (typeof FindManyPipelinesFilterAnyOfType)[keyof typeof FindManyPipelinesFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyPipelinesFilterAnyOf = {
-  field: (typeof FindManyPipelinesFilterAnyOfField)[keyof typeof FindManyPipelinesFilterAnyOfField]
-  operator: Operator
-  type: FindManyPipelinesFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyPipelinesFilterAnyOfFourType =
-  (typeof FindManyPipelinesFilterAnyOfFourType)[keyof typeof FindManyPipelinesFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyPipelinesFilterAnyOfFour = {
-  children: PipelinesFilterNode[]
-  operator: (typeof FindManyPipelinesFilterAnyOfFourOperator)[keyof typeof FindManyPipelinesFilterAnyOfFourOperator]
-  type: FindManyPipelinesFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyPipelinesSortItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
-} as const
-export type FindManyPipelinesSortItem = {
-  field: (typeof FindManyPipelinesSortItemField)[keyof typeof FindManyPipelinesSortItemField]
-  order: (typeof FindManyPipelinesSortItemOrder)[keyof typeof FindManyPipelinesSortItemOrder]
+  filter?: PipelinesFilterNodeInput
+  page?: PageInput
+  sort?: PipelinesSortInput[]
 }
 
 export type FindManyPipelines200Meta = {
@@ -4608,61 +4230,31 @@ export type GetOnePipeline200 = {
   data: PipelineEntity
 }
 
-/**
- * The pipeline description
- */
-export type UpdatePipelineBodyDescription = string | null
-
-/**
- * The pipeline name
- */
-export type UpdatePipelineBodyName = string | null
-
-export type UpdatePipelineBodyStepsItemDependentsItem = {
-  pipelineStepId: string
-}
-
-export type UpdatePipelineBodyStepsItemPrerequisitesItem = {
-  pipelineStepId: string
-}
-
-/**
- * The pipeline step entity
- */
-export type UpdatePipelineBodyStepsItem = {
-  /** The date this item was created */
-  createdAt: string
-  /** The ID of the item */
-  id: string
-  /** The date this item was last updated */
-  updatedAt: string
-  dependents: UpdatePipelineBodyStepsItemDependentsItem[]
-  pipelineId: string
-  prerequisites: UpdatePipelineBodyStepsItemPrerequisitesItem[]
-  toolId: string
-}
-
 export type UpdatePipelineBody = {
-  /** The pipeline description */
-  description?: UpdatePipelineBodyDescription
-  /** The pipeline name */
-  name?: UpdatePipelineBodyName
+  /**
+   * The pipeline description
+   * @nullable
+   */
+  description?: string | null
+  /**
+   * The pipeline name
+   * @nullable
+   */
+  name?: string | null
   /** The steps in the pipeline */
-  steps?: UpdatePipelineBodyStepsItem[]
+  steps?: PipelineStepEntityInput[]
 }
 
 export type UpdatePipeline200 = {
   data: PipelineEntity
 }
 
-/**
- * The pipeline ID associated with the run
- */
-export type CreateRunBodyPipelineId = string | null
-
 export type CreateRunBody = {
-  /** The pipeline ID associated with the run */
-  pipelineId: CreateRunBodyPipelineId
+  /**
+   * The pipeline ID associated with the run
+   * @nullable
+   */
+  pipelineId: string | null
 }
 
 export type CreateRun201 = {
@@ -4670,78 +4262,9 @@ export type CreateRun201 = {
 }
 
 export type FindManyRunsParams = {
-  filter?: FindManyRunsFilterAnyOf | FindManyRunsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyRunsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-export type FindManyRunsFilterAnyOfType =
-  (typeof FindManyRunsFilterAnyOfType)[keyof typeof FindManyRunsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyRunsFilterAnyOf = {
-  field: (typeof FindManyRunsFilterAnyOfField)[keyof typeof FindManyRunsFilterAnyOfField]
-  operator: Operator
-  type: FindManyRunsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyRunsFilterAnyOfFourType =
-  (typeof FindManyRunsFilterAnyOfFourType)[keyof typeof FindManyRunsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyRunsFilterAnyOfFour = {
-  children: RunsFilterNode[]
-  operator: (typeof FindManyRunsFilterAnyOfFourOperator)[keyof typeof FindManyRunsFilterAnyOfFourOperator]
-  type: FindManyRunsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyRunsSortItemOrder = { asc: 'asc', desc: 'desc' } as const
-export type FindManyRunsSortItem = {
-  field: (typeof FindManyRunsSortItemField)[keyof typeof FindManyRunsSortItemField]
-  order: (typeof FindManyRunsSortItemOrder)[keyof typeof FindManyRunsSortItemOrder]
+  filter?: RunsFilterNodeInput
+  page?: PageInput
+  sort?: RunsSortInput[]
 }
 
 export type FindManyRuns200Meta = {
@@ -4762,14 +4285,12 @@ export type GetOneRun200 = {
   data: RunEntity
 }
 
-/**
- * The pipeline ID associated with the run
- */
-export type UpdateRunBodyPipelineId = string | null
-
 export type UpdateRunBody = {
-  /** The pipeline ID associated with the run */
-  pipelineId?: UpdateRunBodyPipelineId
+  /**
+   * The pipeline ID associated with the run
+   * @nullable
+   */
+  pipelineId?: string | null
 }
 
 export type UpdateRun200 = {
@@ -4788,72 +4309,9 @@ export type CreateTool201 = {
 }
 
 export type FindManyToolsParams = {
-  filter?: FindManyToolsFilterAnyOf | FindManyToolsFilterAnyOfFour
-  page?: Page
-  sort?: FindManyToolsSortItem[]
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsFilterAnyOfField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
-} as const
-export type FindManyToolsFilterAnyOfType =
-  (typeof FindManyToolsFilterAnyOfType)[keyof typeof FindManyToolsFilterAnyOfType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsFilterAnyOfType = {
-  condition: 'condition'
-} as const
-
-export type FindManyToolsFilterAnyOf = {
-  field: (typeof FindManyToolsFilterAnyOfField)[keyof typeof FindManyToolsFilterAnyOfField]
-  operator: Operator
-  type: FindManyToolsFilterAnyOfType
-  value: FilterValueSchema
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsFilterAnyOfFourOperator = {
-  and: 'and',
-  or: 'or'
-} as const
-export type FindManyToolsFilterAnyOfFourType =
-  (typeof FindManyToolsFilterAnyOfFourType)[keyof typeof FindManyToolsFilterAnyOfFourType]
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsFilterAnyOfFourType = {
-  group: 'group'
-} as const
-
-export type FindManyToolsFilterAnyOfFour = {
-  children: ToolsFilterNode[]
-  operator: (typeof FindManyToolsFilterAnyOfFourOperator)[keyof typeof FindManyToolsFilterAnyOfFourOperator]
-  type: FindManyToolsFilterAnyOfFourType
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsSortItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
-} as const
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FindManyToolsSortItemOrder = { asc: 'asc', desc: 'desc' } as const
-export type FindManyToolsSortItem = {
-  field: (typeof FindManyToolsSortItemField)[keyof typeof FindManyToolsSortItemField]
-  order: (typeof FindManyToolsSortItemOrder)[keyof typeof FindManyToolsSortItemOrder]
+  filter?: ToolsFilterNodeInput
+  page?: PageInput
+  sort?: ToolsSortInput[]
 }
 
 export type FindManyTools200Meta = {
@@ -4886,13 +4344,13 @@ export type UpdateTool200 = {
 }
 
 export type GetHealth200Services = {
-  database?: string
-  email?: string
-  redis?: string
+  database: string
+  email: string
+  redis: string
 }
 
 export type GetHealth200 = {
-  services?: GetHealth200Services
-  timestamp?: string
-  uptime?: number
+  services: GetHealth200Services
+  timestamp: string
+  uptime: number
 }

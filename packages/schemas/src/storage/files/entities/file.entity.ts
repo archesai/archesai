@@ -1,59 +1,39 @@
-import type {
-  Static,
-  TBoolean,
-  TNumber,
-  TObject,
-  TOptional,
-  TString
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import { z } from 'zod'
 
 import { BaseEntitySchema } from '#base/entities/base.entity'
 
-export const FileEntitySchema: TObject<{
-  createdAt: TString
-  id: TString
-  isDir: TBoolean
-  organizationId: TString
-  path: TString
-  read: TOptional<TString>
-  size: TNumber
-  updatedAt: TString
-  write: TOptional<TString>
-}> = Type.Object(
-  {
-    ...BaseEntitySchema.properties,
-    isDir: Type.Boolean({
-      description: 'Whether or not this is a directory'
-    }),
-    organizationId: Type.String({
-      description: 'The original name of the file'
-    }),
-    path: Type.String({ description: 'The path to the item' }),
-    read: Type.Optional(
-      Type.String({
-        description:
-          'The read-only URL that you can use to download the file from secure storage',
-        format: 'uri'
-      })
+export const FileEntitySchema: z.ZodObject<{
+  createdAt: z.ZodString
+  id: z.ZodString
+  isDir: z.ZodBoolean
+  organizationId: z.ZodString
+  path: z.ZodString
+  read: z.ZodOptional<z.ZodURL>
+  size: z.ZodNumber
+  updatedAt: z.ZodString
+  write: z.ZodOptional<z.ZodString>
+}> = BaseEntitySchema.extend({
+  isDir: z.boolean().describe('Whether or not this is a directory'),
+  organizationId: z.string().describe('The original name of the file'),
+  path: z.string().describe('The path to the item'),
+  read: z
+    .url()
+    .optional()
+    .describe(
+      'The read-only URL that you can use to download the file from secure storage'
     ),
-    size: Type.Number({ description: 'The size of the item in bytes' }),
-    write: Type.Optional(
-      Type.String({
-        description:
-          'The write-only URL that you can use to upload the file to secure storage',
-        format: 'uri'
-      })
+  size: z.number().describe('The size of the item in bytes'),
+  write: z
+    .string()
+    .optional()
+    .describe(
+      'The write-only URL that you can use to upload the file to secure storage'
     )
-  },
-  {
-    $id: 'FileEntity',
-    description: 'The file entity',
-    title: 'File Entity'
-  }
-)
+}).meta({
+  description: 'Schema for File entity',
+  id: 'FileEntity'
+})
 
-export type FileEntity = Static<typeof FileEntitySchema>
+export type FileEntity = z.infer<typeof FileEntitySchema>
 
 export const FILE_ENTITY_KEY = 'files'

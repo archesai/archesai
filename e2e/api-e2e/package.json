@@ -12,12 +12,12 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@types/jest": "catalog:",
+    "@types/jest": "catalog:test",
     "@types/node": "catalog:",
-    "@types/supertest": "catalog:",
-    "jest": "catalog:",
-    "jest-openapi": "catalog:",
-    "supertest": "catalog:",
+    "@types/supertest": "catalog:test",
+    "jest": "catalog:test",
+    "jest-openapi": "catalog:test",
+    "supertest": "catalog:test",
     "typescript": "catalog:"
   }
 }

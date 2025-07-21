@@ -1,19 +1,10 @@
-import type {
-  Static,
-  TNull,
-  TObject,
-  TOptional,
-  TString,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateUserDtoSchema } from '#auth/users/dto/create-user.dto'
 
-export const UpdateUserDtoSchema: TObject<{
-  email: TOptional<TString>
-  image: TOptional<TUnion<[TNull, TString]>>
-}> = Type.Partial(CreateUserDtoSchema)
+export const UpdateUserDtoSchema: z.ZodObject<{
+  email: z.ZodOptional<z.ZodString>
+  image: z.ZodOptional<z.ZodNullable<z.ZodString>>
+}> = CreateUserDtoSchema.partial()
 
-export type UpdateUserDto = Static<typeof UpdateUserDtoSchema>
+export type UpdateUserDto = z.infer<typeof UpdateUserDtoSchema>

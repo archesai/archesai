@@ -1,6 +1,4 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { createIsomorphicFn, createServerFn } from '@tanstack/react-start'
-import { getHeaders as getServerHeaders } from '@tanstack/react-start/server'
 
 import type { GetSession200 } from '@archesai/client'
 
@@ -12,19 +10,8 @@ import {
 import { AppSidebar } from '@archesai/ui/layouts/app-sidebar/app-sidebar'
 import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 
+import { getHeadersIsomorphic } from '#lib/get-headers'
 import { siteRoutes } from '#lib/site-config'
-
-export const getHeaders = createServerFn({ method: 'GET' }).handler(() => {
-  return getServerHeaders()
-})
-
-export const getHeadersIsomorphic = createIsomorphicFn()
-  .client(() => {
-    return getHeaders()
-  })
-  .server(() => {
-    return getServerHeaders()
-  })
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: async ({ context, location }) => {

@@ -1,13 +1,11 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { LabelEntitySchema } from '#orchestration/labels/entities/label.entity'
 
-export const CreateLabelDtoSchema: TObject<{
-  name: TString
-}> = Type.Object({
-  name: LabelEntitySchema.properties.name
+export const CreateLabelDtoSchema: z.ZodObject<{
+  name: z.ZodString
+}> = LabelEntitySchema.pick({
+  name: true
 })
 
-export type CreateLabelDto = Static<typeof CreateLabelDtoSchema>
+export type CreateLabelDto = z.infer<typeof CreateLabelDtoSchema>

@@ -1,12 +1,10 @@
-import type { Static, TObject, TOptional, TString } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateOrganizationDtoSchema } from '#auth/organizations/dto/create-organization.dto'
 
-export const UpdateOrganizationDtoSchema: TObject<{
-  billingEmail: TOptional<TString>
-  organizationId: TOptional<TString>
-}> = Type.Partial(CreateOrganizationDtoSchema)
+export const UpdateOrganizationDtoSchema: z.ZodObject<{
+  billingEmail: z.ZodOptional<z.ZodString>
+  organizationId: z.ZodOptional<z.ZodString>
+}> = CreateOrganizationDtoSchema.partial()
 
-export type UpdateOrganizationDto = Static<typeof UpdateOrganizationDtoSchema>
+export type UpdateOrganizationDto = z.infer<typeof UpdateOrganizationDtoSchema>

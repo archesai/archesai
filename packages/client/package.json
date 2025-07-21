@@ -12,7 +12,6 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "git clean -xdf node_modules .cache .turbo .tanstack dist .nitro .out",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "generate": "NODE_TLS_REJECT_UNAUTHORIZED=0 orval",
     "lint": "eslint",
@@ -20,16 +19,16 @@
   },
   "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-query": "catalog:tanstack",
     "qs": "catalog:",
     "tslib": "catalog:"
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
-    "@ibm-cloud/openapi-ruleset": "catalog:",
+    "@ibm-cloud/openapi-ruleset": "catalog:client",
     "@types/node": "catalog:",
     "@types/qs": "catalog:",
-    "orval": "catalog:",
+    "orval": "catalog:client",
     "typescript": "catalog:"
   }
 }

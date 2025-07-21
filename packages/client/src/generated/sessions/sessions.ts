@@ -27,14 +27,13 @@ import qs from 'qs'
 
 import type {
   CreateSession201,
-  CreateSessionBody,
   DeleteSession200,
   FindManySessions200,
   FindManySessionsParams,
   GetOneSession200,
   NotFoundResponse,
-  UpdateSession200,
-  UpdateSessionBody
+  SessionEntityInput,
+  UpdateSession200
 } from '../orval.schemas'
 
 import { customFetch } from '../../fetcher'
@@ -50,14 +49,14 @@ export const getCreateSessionUrl = () => {
 }
 
 export const createSession = async (
-  createSessionBody: CreateSessionBody,
+  sessionEntityInput: SessionEntityInput,
   options?: RequestInit
 ): Promise<CreateSession201> => {
   return customFetch<CreateSession201>(getCreateSessionUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createSessionBody)
+    body: JSON.stringify(sessionEntityInput)
   })
 }
 
@@ -68,14 +67,14 @@ export const getCreateSessionMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createSession>>,
     TError,
-    { data: CreateSessionBody },
+    { data: SessionEntityInput },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createSession>>,
   TError,
-  { data: CreateSessionBody },
+  { data: SessionEntityInput },
   TContext
 > => {
   const mutationKey = ['createSession']
@@ -92,7 +91,7 @@ export const getCreateSessionMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createSession>>,
-    { data: CreateSessionBody }
+    { data: SessionEntityInput }
   > = (props) => {
     const { data } = props ?? {}
 
@@ -105,7 +104,7 @@ export const getCreateSessionMutationOptions = <
 export type CreateSessionMutationResult = NonNullable<
   Awaited<ReturnType<typeof createSession>>
 >
-export type CreateSessionMutationBody = CreateSessionBody
+export type CreateSessionMutationBody = SessionEntityInput
 export type CreateSessionMutationError = unknown
 
 /**
@@ -116,7 +115,7 @@ export const useCreateSession = <TError = unknown, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof createSession>>,
       TError,
-      { data: CreateSessionBody },
+      { data: SessionEntityInput },
       TContext
     >
     request?: SecondParameter<typeof customFetch>
@@ -125,7 +124,7 @@ export const useCreateSession = <TError = unknown, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof createSession>>,
   TError,
-  { data: CreateSessionBody },
+  { data: SessionEntityInput },
   TContext
 > => {
   const mutationOptions = getCreateSessionMutationOptions(options)
@@ -817,14 +816,14 @@ export const getUpdateSessionUrl = (id: string | undefined | null) => {
 
 export const updateSession = async (
   id: string | undefined | null,
-  updateSessionBody: UpdateSessionBody,
+  sessionEntityInput: SessionEntityInput,
   options?: RequestInit
 ): Promise<UpdateSession200> => {
   return customFetch<UpdateSession200>(getUpdateSessionUrl(id), {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateSessionBody)
+    body: JSON.stringify(sessionEntityInput)
   })
 }
 
@@ -835,14 +834,14 @@ export const getUpdateSessionMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateSession>>,
     TError,
-    { id: string | undefined | null; data: UpdateSessionBody },
+    { id: string | undefined | null; data: SessionEntityInput },
     TContext
   >
   request?: SecondParameter<typeof customFetch>
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateSession>>,
   TError,
-  { id: string | undefined | null; data: UpdateSessionBody },
+  { id: string | undefined | null; data: SessionEntityInput },
   TContext
 > => {
   const mutationKey = ['updateSession']
@@ -859,7 +858,7 @@ export const getUpdateSessionMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateSession>>,
-    { id: string | undefined | null; data: UpdateSessionBody }
+    { id: string | undefined | null; data: SessionEntityInput }
   > = (props) => {
     const { id, data } = props ?? {}
 
@@ -872,7 +871,7 @@ export const getUpdateSessionMutationOptions = <
 export type UpdateSessionMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateSession>>
 >
-export type UpdateSessionMutationBody = UpdateSessionBody
+export type UpdateSessionMutationBody = SessionEntityInput
 export type UpdateSessionMutationError = NotFoundResponse
 
 /**
@@ -883,7 +882,7 @@ export const useUpdateSession = <TError = NotFoundResponse, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateSession>>,
       TError,
-      { id: string | undefined | null; data: UpdateSessionBody },
+      { id: string | undefined | null; data: SessionEntityInput },
       TContext
     >
     request?: SecondParameter<typeof customFetch>
@@ -892,7 +891,7 @@ export const useUpdateSession = <TError = NotFoundResponse, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateSession>>,
   TError,
-  { id: string | undefined | null; data: UpdateSessionBody },
+  { id: string | undefined | null; data: SessionEntityInput },
   TContext
 > => {
   const mutationOptions = getUpdateSessionMutationOptions(options)

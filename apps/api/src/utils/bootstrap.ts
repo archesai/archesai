@@ -1,5 +1,12 @@
+import type { FastifySchema } from 'fastify'
+import type { FastifySerializerCompiler } from 'fastify/types/schema.js'
+
 import fastify from 'fastify'
 import fp from 'fastify-plugin'
+import {
+  serializerCompiler,
+  validatorCompiler
+} from 'fastify-type-provider-zod'
 import qs from 'qs'
 
 import { errorHandlerPlugin } from '@archesai/core'
@@ -7,6 +14,7 @@ import { errorHandlerPlugin } from '@archesai/core'
 import { controllersPlugin } from '#plugins/controllers.plugin'
 import { corsPlugin } from '#plugins/cors.plugin'
 import { docsPlugin } from '#plugins/docs.plugin'
+import { healthPlugin } from '#plugins/health.plugin'
 import { createContainer } from '#utils/container'
 
 // =================================================================
@@ -27,6 +35,11 @@ export async function bootstrap(): Promise<void> {
     querystringParser: qs.parse,
     trustProxy: true
   })
+
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(
+    serializerCompiler as FastifySerializerCompiler<FastifySchema>
+  )
 
   // Register the centralized error handler
   await app.register(fp(errorHandlerPlugin), {
@@ -62,66 +75,12 @@ export async function bootstrap(): Promise<void> {
     container
   })
 
-  // =================================================================
-  // 5. HEALTH CHECK & SYSTEM ROUTES
-  // =================================================================
-
-  app.get(
-    '/health',
-    {
-      schema: {
-        response: {
-          200: {
-            properties: {
-              services: {
-                properties: {
-                  database: { type: 'string' },
-                  email: { type: 'string' },
-                  redis: { type: 'string' }
-                },
-                type: 'object'
-              },
-              timestamp: { type: 'string' },
-              uptime: { type: 'number' }
-            },
-            type: 'object'
-          }
-        },
-        summary: 'Health check endpoint',
-        tags: ['System']
-      }
-    },
-    async () => {
-      // Use functional services for health checks
-      const dbStatus = await checkServiceHealth('database', () =>
-        container.databaseService.ping()
-      )
-      const redisStatus = await checkServiceHealth('redis', () =>
-        container.redisService.ping()
-      )
-      const emailStatus = await checkServiceHealth('email', () =>
-        container.emailService.ping()
-      )
-
-      return {
-        services: {
-          database: dbStatus,
-          email: emailStatus,
-          redis: redisStatus
-        },
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-      }
-    }
-  )
-
-  // =================================================================
-  // 6. ERROR HANDLING
-  // =================================================================
-
-  // =================================================================
-  // 7. GRACEFUL SHUTDOWN
-  // =================================================================
+  // Health Check Setup
+  await app.register(fp(healthPlugin), {
+    databaseService: container.databaseService,
+    emailService: container.emailService,
+    redisService: container.redisService
+  })
 
   // const gracefulShutdown = () => {
   //   container.loggerService.logger.log('Starting graceful shutdown...')
@@ -145,17 +104,4 @@ export async function bootstrap(): Promise<void> {
     host: '0.0.0.0',
     port: container.configService.get('server.port')
   })
-}
-
-async function checkServiceHealth(
-  serviceName: string,
-  healthCheck: () => Promise<boolean>
-): Promise<string> {
-  try {
-    const isHealthy = await healthCheck()
-    return isHealthy ? 'healthy' : 'unhealthy'
-  } catch (error) {
-    console.error(`Health check failed for ${serviceName}:`, error)
-    return 'unhealthy'
-  }
 }

@@ -1,6 +1,6 @@
-import type { FastifyPluginCallbackTypebox } from '@fastify/type-provider-typebox'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
-import { Type, UpdateSubscriptionDtoSchema } from '@archesai/schemas'
+import { IdParamsSchema, UpdateSubscriptionDtoSchema } from '@archesai/schemas'
 
 import type { StripeService } from '#stripe/stripe.service'
 
@@ -10,9 +10,9 @@ export interface SubscriptionsControllerOptions {
   stripeService: StripeService
 }
 
-export const subscriptionsController: FastifyPluginCallbackTypebox<
+export const subscriptionsController: FastifyPluginAsyncZod<
   SubscriptionsControllerOptions
-> = (app, { stripeService }, done) => {
+> = async (app, { stripeService }) => {
   const subscriptionsService = new SubscriptionsService(stripeService)
   app.delete(
     `/billing/subscriptions/:id`,
@@ -20,9 +20,7 @@ export const subscriptionsController: FastifyPluginCallbackTypebox<
       schema: {
         description: 'Cancel a subscription',
         operationId: 'cancelSubscription',
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         summary: 'Cancel a subscription',
         tags: ['Billing']
       }
@@ -39,9 +37,7 @@ export const subscriptionsController: FastifyPluginCallbackTypebox<
         body: UpdateSubscriptionDtoSchema,
         description: 'Update a subscription',
         operationId: 'updateSubscription',
-        params: Type.Object({
-          id: Type.String()
-        }),
+        params: IdParamsSchema,
         summary: 'Update a subscription',
         tags: ['Billing']
       }
@@ -51,5 +47,5 @@ export const subscriptionsController: FastifyPluginCallbackTypebox<
     }
   )
 
-  done()
+  await Promise.resolve()
 }

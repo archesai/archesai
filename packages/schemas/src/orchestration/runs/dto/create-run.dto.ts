@@ -1,13 +1,11 @@
-import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { RunEntitySchema } from '#orchestration/runs/entities/run.entity'
 
-export const CreateRunDtoSchema: TObject<{
-  pipelineId: TUnion<[TString, TNull]>
-}> = Type.Object({
-  pipelineId: RunEntitySchema.properties.pipelineId
+export const CreateRunDtoSchema: z.ZodObject<{
+  pipelineId: z.ZodNullable<z.ZodString>
+}> = RunEntitySchema.pick({
+  pipelineId: true
 })
 
-export type CreateRunDto = Static<typeof CreateRunDtoSchema>
+export type CreateRunDto = z.infer<typeof CreateRunDtoSchema>

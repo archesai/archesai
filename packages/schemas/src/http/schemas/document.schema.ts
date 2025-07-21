@@ -1,39 +1,34 @@
-import type { TArray, TUnsafe } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import type { TObject, TSchema } from '@archesai/schemas'
-
-import { LegacyRef, Type } from '@archesai/schemas'
-
-export const DocumentSchemaFactory = (
-  documentSchema: TSchema
-): TObject<{
-  data: TUnsafe<unknown>
+export const DocumentSchemaFactory = <T extends z.ZodType>(
+  documentSchema: T
+): z.ZodObject<{
+  data: T
 }> => {
-  return Type.Object({
-    data: LegacyRef(documentSchema)
-    //   errors: Type.Optional(Type.Array(LegacyRef(ErrorObjectSchema))),
-    //   meta: Type.Optional(LegacyRef(MetaSchema))
+  return z.object({
+    data: documentSchema
   })
 }
 
-export const DocumentColectionSchemaFactory = (
-  documentSchema: TSchema
-  //   metaSchema?: TSchema
-): TObject<{
-  data: TArray<TUnsafe<unknown>>
+export const DocumentCollectionSchemaFactory = <T extends z.ZodType>(
+  documentSchema: T
+): z.ZodObject<{
+  data: z.ZodArray<T>
+  meta: z.ZodObject<{
+    total: z.ZodNumber
+  }>
 }> => {
-  return Type.Object({
-    data: Type.Array(LegacyRef(documentSchema)),
-    meta: Type.Object({
-      total: Type.Number({
-        description: 'Total number of items in the collection'
-      })
+  return z.object({
+    data: z.array(documentSchema),
+    meta: z.object({
+      total: z.number().describe('Total number of items in the collection')
     })
-    // meta: metaSchema ? LegacyRef(metaSchema) : Type.Optional(Type.Any())
   })
 }
 
-export type DocumentCollectionSchema = ReturnType<
-  typeof DocumentColectionSchemaFactory
+export type DocumentCollectionSchema<T extends z.ZodTypeAny> = ReturnType<
+  typeof DocumentCollectionSchemaFactory<T>
 >
-export type DocumentSchema = ReturnType<typeof DocumentSchemaFactory>
+export type DocumentSchema<T extends z.ZodTypeAny> = ReturnType<
+  typeof DocumentSchemaFactory<T>
+>

@@ -1,17 +1,15 @@
-import type {
-  Static,
-  TLiteral,
-  TObject,
-  TOptional,
-  TUnion
-} from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { CreateMemberDtoSchema } from '#auth/members/dto/create-member.dto'
 
-export const UpdateMemberDtoSchema: TObject<{
-  role: TOptional<TUnion<TLiteral<'admin' | 'member' | 'owner'>[]>>
-}> = Type.Partial(CreateMemberDtoSchema)
+export const UpdateMemberDtoSchema: z.ZodObject<{
+  role: z.ZodOptional<
+    z.ZodEnum<{
+      admin: 'admin'
+      member: 'member'
+      owner: 'owner'
+    }>
+  >
+}> = CreateMemberDtoSchema.partial()
 
-export type UpdateMemberDto = Static<typeof UpdateMemberDtoSchema>
+export type UpdateMemberDto = z.infer<typeof UpdateMemberDtoSchema>

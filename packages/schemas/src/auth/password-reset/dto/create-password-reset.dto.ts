@@ -1,14 +1,11 @@
-import type { Static, TObject, TString } from '@sinclair/typebox'
+import { z } from 'zod'
 
-import { Type } from '@sinclair/typebox'
-
-export const CreatePasswordResetDtoSchema: TObject<{
-  email: TString
-}> = Type.Object({
-  email: Type.String({
-    description: 'The e-mail to send the password reset token to',
-    format: 'email'
-  })
+export const CreatePasswordResetDtoSchema: z.ZodObject<{
+  email: z.ZodString
+}> = z.object({
+  email: z.string().describe('The e-mail to send the password reset token to')
 })
 
-export type CreatePasswordResetDto = Static<typeof CreatePasswordResetDtoSchema>
+export type CreatePasswordResetDto = z.infer<
+  typeof CreatePasswordResetDtoSchema
+>

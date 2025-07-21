@@ -8,7 +8,7 @@ import ffmpeg from 'fluent-ffmpeg'
 import type { Logger } from '@archesai/core'
 
 import { retry } from '@archesai/core'
-import { Type, Value } from '@archesai/schemas'
+import { IdParamsSchema } from '@archesai/schemas'
 
 export const createAudioService = (logger: Logger) => {
   return {
@@ -38,12 +38,7 @@ export const createAudioService = (logger: Logger) => {
       logger.debug('got response from moises', {
         response
       })
-      const validatedResponse = Value.Parse(
-        Type.Object({
-          id: Type.String()
-        }),
-        response
-      )
+      const validatedResponse = IdParamsSchema.parse(await response.json())
 
       while (true) {
         logger.debug('checking moises job', { validatedResponse })
@@ -64,16 +59,15 @@ export const createAudioService = (logger: Logger) => {
         logger.debug('got response from moises', {
           response
         })
-        const moisesCheckJobResponse = Value.Parse(
-          Type.Object({
-            result: Type.Object({
-              Bass: Type.String(),
-              Drums: Type.String()
-            }),
-            status: Type.String()
-          }),
-          response.json()
-        )
+        const moisesCheckJobResponse = (await response.json()) as {
+          result: {
+            Bass: string
+            Drums: string
+            Other: string
+            Vocals: string
+          }
+          status: 'FAILED' | 'PENDING' | 'PROCESSING' | 'SUCCEEDED'
+        }
 
         if (moisesCheckJobResponse.status == 'SUCCEEDED') {
           const bassSrc = moisesCheckJobResponse.result.Bass

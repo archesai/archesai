@@ -1,15 +1,13 @@
-import type { Static, TNull, TObject, TString, TUnion } from '@sinclair/typebox'
-
-import { Type } from '@sinclair/typebox'
+import type { z } from 'zod'
 
 import { UserEntitySchema } from '#auth/users/entities/user.entity'
 
-export const CreateUserDtoSchema: TObject<{
-  email: TString
-  image: TUnion<[TNull, TString]>
-}> = Type.Object({
-  email: UserEntitySchema.properties.email,
-  image: UserEntitySchema.properties.image
+export const CreateUserDtoSchema: z.ZodObject<{
+  email: z.ZodString
+  image: z.ZodNullable<z.ZodString>
+}> = UserEntitySchema.pick({
+  email: true,
+  image: true
 })
 
-export type CreateUserDto = Static<typeof CreateUserDtoSchema>
+export type CreateUserDto = z.infer<typeof CreateUserDtoSchema>
