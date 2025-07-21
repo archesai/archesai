@@ -717,8 +717,6 @@ export interface PipelineEntityInput {
   name: string | null
   /** The organization id */
   organizationId: string
-  /** The steps in the pipeline */
-  steps: PipelineStepEntityInput[]
 }
 
 export type RunEntityInputStatus =
@@ -1453,8 +1451,7 @@ export const PipelinesFilterNodeInputAnyOfField = {
   updatedAt: 'updatedAt',
   description: 'description',
   name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
+  organizationId: 'organizationId'
 } as const
 
 export type PipelinesFilterNodeInputAnyOf = {
@@ -1496,8 +1493,7 @@ export const PipelinesSortInputField = {
   updatedAt: 'updatedAt',
   description: 'description',
   name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
+  organizationId: 'organizationId'
 } as const
 
 export type PipelinesSortInputOrder =
@@ -2386,8 +2382,6 @@ export interface PipelineEntity {
   name: string | null
   /** The organization id */
   organizationId: string
-  /** The steps in the pipeline */
-  steps: PipelineStepEntity[]
 }
 
 export type RunEntityStatus =
@@ -3120,8 +3114,7 @@ export const PipelinesFilterNodeAnyOfField = {
   updatedAt: 'updatedAt',
   description: 'description',
   name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
+  organizationId: 'organizationId'
 } as const
 
 export type PipelinesFilterNodeAnyOf = {
@@ -3163,8 +3156,7 @@ export const PipelinesSortField = {
   updatedAt: 'updatedAt',
   description: 'description',
   name: 'name',
-  organizationId: 'organizationId',
-  steps: 'steps'
+  organizationId: 'organizationId'
 } as const
 
 export type PipelinesSortOrder =
@@ -4153,8 +4145,6 @@ export type CreatePipelineBody = {
    * @nullable
    */
   name: string | null
-  /** The steps in the pipeline */
-  steps: PipelineStepEntityInput[]
 }
 
 export type CreatePipeline201 = {
@@ -4196,8 +4186,6 @@ export type UpdatePipelineBody = {
    * @nullable
    */
   name?: string | null
-  /** The steps in the pipeline */
-  steps?: PipelineStepEntityInput[]
 }
 
 export type UpdatePipeline200 = {

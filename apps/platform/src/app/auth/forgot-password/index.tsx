@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <GenericForm<CreatePasswordResetDto, CreatePasswordResetDto>
+      <GenericForm<CreatePasswordResetDto, never>
         description='Enter your email address to receive a password reset link'
         entityKey='auth'
         fields={[

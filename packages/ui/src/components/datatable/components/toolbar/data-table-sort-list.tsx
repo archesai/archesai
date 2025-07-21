@@ -12,7 +12,6 @@ import {
   SortableItemHandle,
   SortableOverlay
 } from '#components/custom/sortable'
-import { dataTableConfig } from '#components/datatable/config'
 import { Badge } from '#components/shadcn/badge'
 import { Button } from '#components/shadcn/button'
 import {
@@ -383,7 +382,10 @@ function DataTableSortItem({
             className='min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]'
             id={directionListboxId}
           >
-            {dataTableConfig.sortOrders.map((order) => (
+            {[
+              { label: 'Asc', value: 'asc' as const },
+              { label: 'Desc', value: 'desc' as const }
+            ].map((order) => (
               <SelectItem
                 key={order.value}
                 value={order.value}

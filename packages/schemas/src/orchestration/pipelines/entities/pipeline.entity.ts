@@ -42,31 +42,12 @@ export const PipelineEntitySchema: z.ZodObject<{
   id: z.ZodString
   name: z.ZodNullable<z.ZodString>
   organizationId: z.ZodString
-  steps: z.ZodArray<
-    z.ZodObject<{
-      createdAt: z.ZodString
-      dependents: z.ZodArray<
-        z.ZodObject<{
-          pipelineStepId: z.ZodString
-        }>
-      >
-      id: z.ZodString
-      pipelineId: z.ZodString
-      prerequisites: z.ZodArray<
-        z.ZodObject<{
-          pipelineStepId: z.ZodString
-        }>
-      >
-      toolId: z.ZodString
-      updatedAt: z.ZodString
-    }>
-  >
   updatedAt: z.ZodString
 }> = BaseEntitySchema.extend({
   description: z.string().nullable().describe('The pipeline description'),
   name: z.string().nullable().describe('The pipeline name'),
-  organizationId: z.string().describe('The organization id'),
-  steps: z.array(PipelineStepEntitySchema).describe('The steps in the pipeline')
+  organizationId: z.string().describe('The organization id')
+  // steps: z.array(PipelineStepEntitySchema).describe('The steps in the pipeline')
 }).meta({
   description: 'Schema for Pipeline entity',
   id: 'PipelineEntity'

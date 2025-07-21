@@ -27,7 +27,7 @@ export function GridView<TEntity extends BaseEntity>({
   const [hover, setHover] = useState(-1)
 
   return (
-    <div className='grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4'>
+    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
       {/* Data Cards */}
       {data.length > 0 ?
         data.map((item, i) => {

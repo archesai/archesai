@@ -3,7 +3,7 @@ import { ChevronsUpDown, Plus } from 'lucide-react'
 import type { UserEntity } from '@archesai/schemas'
 
 import {
-  useFindManyMembersSuspense,
+  useFindManyOrganizationsSuspense,
   useGetSessionSuspense,
   useUpdateUser
 } from '@archesai/client'
@@ -27,14 +27,7 @@ import {
 
 export function OrganizationButton() {
   const { data: sessionData } = useGetSessionSuspense()
-  const { data: memberships } = useFindManyMembersSuspense({
-    filter: {
-      field: 'organizationId',
-      operator: 'eq',
-      type: 'condition',
-      value: sessionData.session.activeOrganizationId ?? ''
-    }
-  })
+  const { data: organizations } = useFindManyOrganizationsSuspense()
 
   const { mutateAsync: updateUser } = useUpdateUser()
 
@@ -84,18 +77,17 @@ export function OrganizationButton() {
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
-            {memberships.data.map((membership) => (
+            {organizations.data.map((organization) => (
               <DropdownMenuItem
                 className='gap-2 p-2'
-                key={membership.id}
+                key={organization.id}
                 onClick={async () => {
-                  await handleSwitchOrganization(membership.organizationId)
+                  await handleSwitchOrganization(organization.id)
                 }}
               >
-                {membership.organizationId}
-                {'Arches Platform' === membership.organizationId && (
-                  <Badge>Current</Badge>
-                )}
+                {organization.name}
+                {sessionData.session.activeOrganizationId ===
+                  organization.id && <Badge>Current</Badge>}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

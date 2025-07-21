@@ -10,7 +10,6 @@ import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { Workflow } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { Badge } from '@archesai/ui/components/shadcn/badge'
 
 export default function PipelineDataTable() {
   const navigate = useNavigate()
@@ -44,20 +43,6 @@ export default function PipelineDataTable() {
             )
           },
           enableHiding: false
-        },
-        {
-          accessorKey: 'Inputs',
-          cell: ({ row }) => {
-            return (
-              <div className='flex gap-1'>
-                {row.original.steps.map((step, i) => {
-                  return <Badge key={i}>{step.toolId}</Badge>
-                })}
-              </div>
-            )
-          },
-          enableHiding: false,
-          enableSorting: false
         },
         {
           accessorKey: 'createdAt',

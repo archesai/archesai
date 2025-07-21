@@ -4,10 +4,10 @@ import type { ToolEntity } from '@archesai/schemas'
 
 import { deleteTool, getFindManyToolsQueryOptions } from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
-import { ContentTypeToIcon } from '@archesai/ui/components/custom/content-type-to-icon'
 import { PackageCheck, Text } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
+import { Badge } from '@archesai/ui/components/shadcn/badge'
 
 export default function ToolDataTable() {
   const navigate = useNavigate()
@@ -56,10 +56,7 @@ export default function ToolDataTable() {
           accessorKey: 'inputMimeType',
           cell: ({ row }) => {
             return (
-              <div className='flex items-center gap-2'>
-                <ContentTypeToIcon contentType={row.original.inputMimeType} />
-                {row.original.inputMimeType}
-              </div>
+              <Badge variant={'secondary'}>{row.original.inputMimeType}</Badge>
             )
           },
           enableColumnFilter: true,
@@ -74,10 +71,7 @@ export default function ToolDataTable() {
           accessorKey: 'outputMimeType',
           cell: ({ row }) => {
             return (
-              <div className='flex items-center gap-2'>
-                <ContentTypeToIcon contentType={row.original.outputMimeType} />
-                {row.original.outputMimeType}
-              </div>
+              <Badge variant={'secondary'}>{row.original.outputMimeType}</Badge>
             )
           },
           enableColumnFilter: true,

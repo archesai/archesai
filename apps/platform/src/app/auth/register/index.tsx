@@ -17,7 +17,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <GenericForm<CreateAccountDto, CreateAccountDto>
+      <GenericForm<CreateAccountDto, never>
         description='Create your account by entering your email and password'
         entityKey='auth'
         fields={[

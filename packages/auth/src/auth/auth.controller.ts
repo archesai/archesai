@@ -110,7 +110,10 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
 
       // Run callback if provided
       if (beforeSend) {
-        const responseJson = (await response.json()) as Record<string, unknown>
+        const responseJson = (
+          responseText ?
+            JSON.parse(responseText)
+          : null) as null | Record<string, unknown>
         await beforeSend(response, responseJson)
       }
 

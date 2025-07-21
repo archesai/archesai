@@ -61,8 +61,6 @@ export interface DataTableProps<TEntity extends BaseEntity> {
 export function DataTable<TEntity extends BaseEntity>(
   props: DataTableProps<TEntity>
 ) {
-  // Use the useDebounce hook to debounce the query
-  // const debouncedQuery = useDebounce(query, 200) // 500ms delay
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<TEntity> | null>(null)
 
@@ -110,11 +108,7 @@ export function DataTable<TEntity extends BaseEntity>(
       </div>
 
       {/* PAGINATION */}
-      {!props.minimal && (
-        <div className='self-auto'>
-          <DataTablePagination<TEntity> table={table} />
-        </div>
-      )}
+      {!props.minimal && <DataTablePagination<TEntity> table={table} />}
 
       {/* THIS IS THE FORM DIALOG */}
       <Dialog

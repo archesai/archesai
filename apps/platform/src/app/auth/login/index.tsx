@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   return (
     <>
-      <GenericForm<CreateAccountDto, CreateAccountDto>
+      <GenericForm<CreateAccountDto, never>
         description='Enter your email and password to login'
         entityKey='auth'
         fields={[

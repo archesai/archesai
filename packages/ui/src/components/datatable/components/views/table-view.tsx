@@ -24,14 +24,11 @@ export function TableView<TEntity extends BaseEntity>(
 ) {
   const columns = props.table.getAllColumns()
   return (
-    <div className='overflow-hidden rounded-xl border bg-card shadow-xs dark:bg-transparent'>
+    <div className='overflow-hidden rounded-lg border bg-card'>
       <Table>
         <TableHeader>
           {props.table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              className='hover:bg-secondary/0'
-              key={headerGroup.id}
-            >
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -62,7 +59,7 @@ export function TableView<TEntity extends BaseEntity>(
                 ))}
               </TableRow>
             ))
-          : <TableRow className='bg-black/5 dark:bg-black/20'>
+          : <TableRow>
               <TableCell
                 className='h-24 text-center'
                 colSpan={columns.length + 2}
