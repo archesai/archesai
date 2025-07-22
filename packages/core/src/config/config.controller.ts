@@ -21,7 +21,7 @@ export const configController: FastifyPluginAsyncZod<
           200: ArchesConfigSchema
         },
         summary: `Get the configuration`,
-        tags: ['Configuration']
+        tags: ['System']
       }
     },
     () => {

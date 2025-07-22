@@ -109,8 +109,8 @@ export default function ArtifactDataTable() {
         }
       ]}
       createForm={ArtifactForm}
-      defaultView='table'
       entityKey={ARTIFACT_ENTITY_KEY}
+      getQueryOptions={getFindManyArtifactsQueryOptions}
       grid={(_item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>
@@ -131,7 +131,6 @@ export default function ArtifactDataTable() {
       }}
       icon={<FileIcon size={24} />}
       updateForm={ArtifactForm}
-      useFindMany={getFindManyArtifactsQueryOptions}
     />
   )
 }

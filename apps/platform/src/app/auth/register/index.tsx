@@ -7,6 +7,8 @@ import { CreateAccountDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
+import { TermsIndicator } from '#components/terms-indicator'
+
 export const Route = createFileRoute('/auth/register/')({
   component: RegisterPage
 })
@@ -93,11 +95,7 @@ export default function RegisterPage() {
         showCard={true}
         title='Register'
       />
-      <div className='text-center text-xs text-balance text-muted-foreground *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary'>
-        By clicking continue, you agree to our{' '}
-        <Link to='/'>Terms of Service</Link> and{' '}
-        <Link to='/'>Privacy Policy</Link>.
-      </div>
+      <TermsIndicator />
     </>
   )
 }

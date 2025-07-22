@@ -108,6 +108,7 @@ export class CallbacksService {
         throw new InternalServerErrorException('Invalid price')
       }
       const planType = price.product.metadata.key
+
       if (!planType || !PlanTypes.includes(planType as PlanType)) {
         throw new InternalServerErrorException('Invalid plan type')
       }

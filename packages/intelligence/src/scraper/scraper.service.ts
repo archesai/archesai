@@ -127,7 +127,14 @@ export const createScraperService = (
           }
 
           return getThumbnailFromFirstPagePdf(
-            Buffer.from((await fetch(url)) as unknown as ArrayBuffer)
+            Buffer.from(
+              await fetch(url).then(async (response) => {
+                if (!response.ok) {
+                  throw new BadRequestException('Failed to fetch PDF')
+                }
+                return new Uint8Array(await response.arrayBuffer())
+              })
+            )
           )
         case 'text/plain':
           if (!text) {

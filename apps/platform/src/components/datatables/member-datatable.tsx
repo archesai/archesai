@@ -40,17 +40,16 @@ export default function MemberDataTable() {
         }
       ]}
       createForm={MemberForm}
-      defaultView='table'
       deleteItem={async (id) => {
         await deleteMember(id)
       }}
       entityKey={MEMBER_ENTITY_KEY}
+      getQueryOptions={getFindManyMembersQueryOptions}
       handleSelect={() => {
-        console.log('handleSelect')
+        // Handle member selection if needed
       }}
       icon={<UserIcon />}
       updateForm={MemberForm}
-      useFindMany={getFindManyMembersQueryOptions}
     />
   )
 }

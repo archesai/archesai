@@ -1,7 +1,6 @@
 export * from './generated/accounts/accounts'
 export * from './generated/artifacts/artifacts'
 export * from './generated/authentication/authentication'
-export * from './generated/configuration/configuration'
 export * from './generated/email-change/email-change'
 export * from './generated/email-verification/email-verification'
 export * from './generated/invitations/invitations'

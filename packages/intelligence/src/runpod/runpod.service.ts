@@ -1,6 +1,7 @@
 import type { ConfigService, Logger } from '@archesai/core'
 
 import { delay, retry } from '@archesai/core'
+import { IdParamsSchema, RunpodResponseSchema } from '@archesai/schemas'
 
 export const createRunpodService = (
   configService: ConfigService,
@@ -27,15 +28,12 @@ export const createRunpodService = (
       logger.debug('runpod job status', { response })
 
       // fixme: add better error handling
-      const responseData = (await response.json()) as {
-        id: string
-        output: string
-        status: 'COMPLETED' | 'FAILED' | 'IN_PROGRESS'
-      }
+      const responseData = await response.json()
+      const parsedResponse = RunpodResponseSchema.parse(responseData)
 
-      if (responseData.status === 'COMPLETED') {
-        return responseData.output
-      } else if (responseData.status === 'FAILED') {
+      if (parsedResponse.status === 'COMPLETED') {
+        return parsedResponse.output
+      } else if (parsedResponse.status === 'FAILED') {
         throw new Error('Job failed')
       }
     }
@@ -61,9 +59,10 @@ export const createRunpodService = (
 
     logger.debug('runpod job started', { response })
 
-    const responseData = (await response.json()) as { id: string }
+    const responseData = await response.json()
+    const parsedResponse = IdParamsSchema.parse(responseData)
 
-    return responseData.id
+    return parsedResponse.id
   }
 
   return {

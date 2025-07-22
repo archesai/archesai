@@ -1,127 +1,29 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
-import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
+import { UnauthorizedException } from '@archesai/core'
 import {
-  BetterAuthSessionSchema,
   CreateAccountDtoSchema,
-  CreateEmailChangeDtoSchema,
-  CreatePasswordResetDtoSchema,
   DocumentSchemaFactory,
   NoContentResponseSchema,
-  NotFoundResponseSchema,
-  SessionEntitySchema,
-  // SessionEntitySchema,
   UnauthorizedResponseSchema,
-  UpdateEmailChangeDtoSchema,
-  UpdateEmailVerificationDtoSchema,
-  UpdatePasswordResetDtoSchema,
   UserEntitySchema
-  // UserEntitySchema
 } from '@archesai/schemas'
 
 import type { AuthService } from '#auth/auth.service'
 
+import { getHeaders, setHeaders } from '#utils/headers'
+
 export interface AuthPluginOptions {
   authService: AuthService
+  // organizationsService: OrganizationsService
 }
 
-declare module 'fastify' {
-  interface FastifyInstance {
-    authHandler: (
-      req: FastifyRequest,
-      reply: FastifyReply,
-      beforeSend?: (
-        response: Response,
-        responseBody: null | Record<string, unknown>
-      ) => Promise<void>
-    ) => Promise<void>
-  }
-}
-
-const getHeaders = (
-  headers: Record<string, string | string[] | undefined>
-): Headers => {
-  const headersObj = new Headers()
-  Object.entries(headers).forEach(([key, value]) => {
-    if (value) {
-      if (Array.isArray(value)) {
-        value.forEach((v) => {
-          headersObj.append(key, v)
-        })
-      } else {
-        headersObj.append(key, value)
-      }
-    }
-  })
-
-  return headersObj
-}
-
-const setHeaders = (headers: Headers, response: FastifyReply): void => {
-  headers.forEach((value, key) => {
-    response.header(key, value)
-  })
-}
-
-export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
+export const authPlugin: FastifyPluginAsyncZod<AuthPluginOptions> = async (
   app,
-  { authService },
-  done
+  { authService }
 ) => {
-  // Optional: Add helper methods to fastify instance
-  app.decorate(
-    'authHandler',
-    async (
-      req: FastifyRequest,
-      reply: FastifyReply,
-      beforeSend?: (
-        response: Response,
-        responseText: null | Record<string, unknown>
-      ) => Promise<void>
-    ) => {
-      // Reusable auth handler logic that can be called from other routes
-      const url = new URL(
-        req.url,
-        `http://${req.headers.host?.toString() ?? ''}`
-      )
-
-      const headers = new Headers()
-      Object.entries(req.headers).forEach(([key, value]) => {
-        if (value) headers.append(key, value.toString())
-      })
-
-      const formattedRequest = new Request(url.toString(), {
-        body: req.body ? JSON.stringify(req.body) : undefined,
-        headers,
-        method: req.method
-      })
-
-      const response = await authService.handler(formattedRequest)
-
-      // Get response text once
-      const responseText = response.body ? await response.text() : null
-
-      // Forward response to client
-      reply.status(response.status)
-      response.headers.forEach((value, key) => {
-        reply.header(key, value)
-      })
-
-      // Run callback if provided
-      if (beforeSend) {
-        const responseJson = (
-          responseText ?
-            JSON.parse(responseText)
-          : null) as null | Record<string, unknown>
-        await beforeSend(response, responseJson)
-      }
-
-      reply.send(responseText)
-    }
-  )
-
   app.post(
-    `/api/auth/sign-up/email`,
+    `/sign-up`,
     {
       schema: {
         body: CreateAccountDtoSchema,
@@ -148,32 +50,17 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
         returnHeaders: true
       })
 
-      const cookie = headers.get('set-cookie')
+      // create an organization for the user
+      // const organization = await organizationsService.create({
+      // body: {
+      //   name: `${user.email}'s Organization`,
+      //   slug: user.email,
+      //   userId: user.id
+      // },
+      // })
 
-      const organization = await authService.createOrganization({
-        body: {
-          name: `${user.email}'s Organization`,
-          slug: user.email,
-          userId: user.id
-        },
-        headers: new Headers({
-          Cookie: cookie ?? ''
-        })
-      })
-
-      if (!organization) {
-        throw new Error('Failed to create organization')
-      }
-
-      await authService.setActiveOrganization({
-        body: {
-          organizationId: organization.id,
-          organizationSlug: organization.slug
-        },
-        headers: new Headers({
-          Cookie: cookie ?? ''
-        })
-      })
+      // set the active organization for the user
+      // fiix me
 
       setHeaders(headers, res)
       return {
@@ -185,7 +72,7 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
   )
 
   app.post(
-    `/api/auth/sign-in/email`,
+    `/sign-in`,
     {
       schema: {
         body: CreateAccountDtoSchema.pick({
@@ -208,7 +95,6 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
           email: req.body.email,
           password: req.body.password
         },
-        headers: req.headers,
         returnHeaders: true
       })
       setHeaders(headers, res)
@@ -219,7 +105,7 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
   )
 
   app.post(
-    `/api/auth/sign-out`,
+    `/sign-out`,
     {
       schema: {
         description: `This endpoint will log you out of the current session`,
@@ -232,189 +118,24 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
         tags: ['Authentication']
       }
     },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.get(
-    `/api/auth/session`,
-    {
-      schema: {
-        description: `This endpoint will return the current session information`,
-        operationId: 'getSession',
-        response: {
-          200: BetterAuthSessionSchema,
-          401: UnauthorizedResponseSchema
-        },
-        summary: `Get Session`,
-        tags: ['Authentication']
-      }
-    },
-    async (req) => {
-      const headers = getHeaders(req.headers)
-      const response = await authService.getSession({
-        headers
+    async (req, res) => {
+      const reqHeaders = getHeaders(req.headers)
+      const {
+        headers: resHeaders,
+        response: { success }
+      } = await authService.signOut({
+        headers: reqHeaders,
+        returnHeaders: true
       })
-      return response
-    }
-  )
-
-  app.patch(
-    `/api/auth/session`,
-    {
-      schema: {
-        body: SessionEntitySchema.pick({
-          activeOrganizationId: true
-        }),
-        description: `This endpoint will update the active organization for the current session`,
-        operationId: 'updateSession',
-        response: {
-          200: BetterAuthSessionSchema,
-          401: UnauthorizedResponseSchema
-        },
-        summary: `Update Session`,
-        tags: ['Authentication']
+      if (!success) {
+        throw new UnauthorizedException(
+          'You are not logged in or your session has expired.'
+        )
       }
-    },
-    async (req) => {
-      const headers = getHeaders(req.headers)
-      await authService.setActiveOrganization({
-        body: {
-          organizationId: req.body.activeOrganizationId
-        },
-        headers
-      })
-      const response = await authService.getSession({
-        headers
-      })
-      return response
+      setHeaders(resHeaders, res)
+      return null
     }
   )
 
-  app.post(
-    `/api/auth/verify-email`,
-    {
-      schema: {
-        body: UpdateEmailVerificationDtoSchema,
-        description: 'This endpoint will confirm your e-mail with a token',
-        operationId: 'confirmEmailVerification',
-        response: {
-          200: BetterAuthSessionSchema,
-          401: UnauthorizedResponseSchema,
-          404: NotFoundResponseSchema
-        },
-        summary: 'Confirm e-mail verification',
-        tags: ['Email Verification']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.post(
-    `/api/auth/send-verification-email`,
-    {
-      schema: {
-        description:
-          'This endpoint will send an e-mail verification link to you. ADMIN ONLY.',
-        operationId: 'requestEmailVerification',
-        response: {
-          204: NoContentResponseSchema
-        },
-        security: [{ bearerAuth: [] }], // ✅ add this line
-        summary: 'Request e-mail verification',
-        tags: ['Email Verification']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.post(
-    `/api/auth/forgot-password`,
-    {
-      schema: {
-        body: UpdatePasswordResetDtoSchema,
-        description:
-          'This endpoint will confirm your password change with a token',
-        operationId: 'confirmPasswordReset',
-        response: {
-          204: NoContentResponseSchema,
-          401: UnauthorizedResponseSchema,
-          404: NotFoundResponseSchema
-        },
-        summary: 'Confirm password reset',
-        tags: ['Password Reset']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.post(
-    `/api/auth/reset-password`,
-    {
-      schema: {
-        body: CreatePasswordResetDtoSchema,
-        description: 'This endpoint will request a password reset link',
-        operationId: 'requestPasswordReset',
-        response: {
-          204: NoContentResponseSchema
-        },
-        summary: 'Request password reset',
-        tags: ['Password Reset']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.post(
-    `/api/auth/change-email`,
-    {
-      schema: {
-        body: UpdateEmailChangeDtoSchema,
-        description:
-          'This endpoint will confirm your e-mail change with a token',
-        operationId: 'confirmEmailChange',
-        response: {
-          204: NoContentResponseSchema,
-          401: UnauthorizedResponseSchema,
-          404: NotFoundResponseSchema
-        },
-        summary: 'Confirm e-mail change',
-        tags: ['Email Change']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  app.post(
-    `/api/auth/email-change/request`,
-    {
-      schema: {
-        body: CreateEmailChangeDtoSchema,
-        description:
-          'This endpoint will request your e-mail change with a token',
-        operationId: 'requestEmailChange',
-        response: {
-          204: NoContentResponseSchema
-        },
-        summary: 'Request e-mail change',
-        tags: ['Email Change']
-      }
-    },
-    (req, res) => {
-      return app.authHandler(req, res)
-    }
-  )
-
-  done()
+  await Promise.resolve()
 }

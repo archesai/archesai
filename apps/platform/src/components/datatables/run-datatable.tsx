@@ -77,16 +77,15 @@ export default function RunDataTable() {
           id: 'completedAt'
         }
       ]}
-      defaultView='table'
       deleteItem={async (id) => {
         await deleteRun(id)
       }}
       entityKey={RUN_ENTITY_KEY}
+      getQueryOptions={getFindManyRunsQueryOptions}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}
       icon={<PackageCheckIcon />}
-      useFindMany={getFindManyRunsQueryOptions}
     />
   )
 }

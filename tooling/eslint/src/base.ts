@@ -54,13 +54,20 @@ const base: ConfigArray = tseslint.config(
     },
     linterOptions: { reportUnusedDisableDirectives: true },
     rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...banImportExtension('js'),
+        ...banImportExtension('jsx'),
+        ...banImportExtension('ts'),
+        ...banImportExtension('tsx')
+      ],
       '@typescript-eslint/consistent-type-imports': [
-        'warn',
+        'error',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
       ],
       '@typescript-eslint/consistent-type-exports': [
         'error',
-        { fixMixedExportsWithInlineTypeSpecifier: true }
+        { fixMixedExportsWithInlineTypeSpecifier: false }
       ],
       '@typescript-eslint/no-misused-promises': [
         2,
@@ -72,10 +79,10 @@ const base: ConfigArray = tseslint.config(
       ],
       '@typescript-eslint/no-import-type-side-effects': 'error',
       // '@typescript-eslint/consistent-type-assertions': [
-      //   'error',
+      //   'warn',
       //   { assertionStyle: 'never' }
       // ],
-      // allow while true
+      // allow while true loops
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
         {
@@ -94,7 +101,7 @@ const base: ConfigArray = tseslint.config(
     rules: {
       ...importPlugin.flatConfigs.recommended.rules,
       ...importPlugin.flatConfigs.typescript.rules,
-      'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+      // 'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       'import/default': 'off',
       'import/namespace': 'off',
       'import/no-named-as-default-member': 'off',
@@ -103,7 +110,6 @@ const base: ConfigArray = tseslint.config(
       'import/extensions': 'off',
       ...(process.env['CI'] !== 'true' && {
         'import/no-cycle': 'off',
-        'import/no-deprecated': 'off',
         'import/no-named-as-default': 'off',
         'import/no-unused-modules': 'off'
       })
@@ -115,7 +121,8 @@ const base: ConfigArray = tseslint.config(
         '@typescript-eslint/parser': ['.ts', '.tsx']
       },
       'import/resolver': {
-        typescript: true
+        typescript: true,
+        node: true
       }
     }
   },
@@ -125,7 +132,9 @@ const base: ConfigArray = tseslint.config(
     rules: {
       ...perfectionist.configs['recommended-natural'].rules,
       'perfectionist/sort-imports': 'off',
-      'perfectionist/sort-named-imports': 'off'
+      'perfectionist/sort-named-imports': 'off',
+      'perfectionist/sort-decorators': 'off',
+      'perfectionist/sort-enums': 'off'
     }
   },
   {
@@ -133,5 +142,32 @@ const base: ConfigArray = tseslint.config(
     name: 'prettier config'
   }
 )
+
+function banImportExtension(extension: string) {
+  const message = `Unexpected use of file extension (.${extension}) in import`
+  const literalAttributeMatcher = `Literal[value=/\\.${extension}$/]`
+  return [
+    {
+      // import foo from 'bar.js';
+      selector: `ImportDeclaration > ${literalAttributeMatcher}.source`,
+      message
+    },
+    {
+      // const foo = import('bar.js');
+      selector: `ImportExpression > ${literalAttributeMatcher}.source`,
+      message
+    },
+    {
+      // type Foo = typeof import('bar.js');
+      selector: `TSImportType > TSLiteralType > ${literalAttributeMatcher}`,
+      message
+    },
+    {
+      // const foo = require('foo.js');
+      selector: `CallExpression[callee.name = "require"] > ${literalAttributeMatcher}.arguments`,
+      message
+    }
+  ]
+}
 
 export default base

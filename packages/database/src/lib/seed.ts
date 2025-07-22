@@ -1,7 +1,5 @@
 import { reset, seed } from 'drizzle-seed'
 
-import type { ArtifactEntity } from '@archesai/schemas'
-
 import { createClient } from '#lib/clients'
 import * as schema from '#schema/index'
 
@@ -184,7 +182,7 @@ async function main() {
     pipelineStepToDependency: schema.PipelineStepToDependency
   }
   const labelToArtifactData = labels.map((label) => ({
-    artifactId: (artifacts[0] as ArtifactEntity).id, // Assuming you want to link to the first artifact
+    artifactId: artifacts[0]?.id ?? '', // Assuming you want to link to the first artifact
     labelId: label.id
   }))
   await db.insert(junctionTables.labelsToArtifacts).values(labelToArtifactData)

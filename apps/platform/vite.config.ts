@@ -1,13 +1,14 @@
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
+// import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    allowedHosts: ['platform.archesai.dev', 'platform.archesai.test'],
+    allowedHosts: ['platform.archesai.test'],
     proxy: {}
   },
   // optimizeDeps: {
@@ -35,5 +36,11 @@ export default defineConfig({
         ]
       }
     })
+    // visualizer({
+    //   filename: 'dist/stats.html',
+    //   open: true,
+    //   gzipSize: true,
+    //   brotliSize: true
+    // })
   ]
 })

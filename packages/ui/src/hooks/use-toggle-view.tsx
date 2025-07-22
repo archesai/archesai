@@ -1,87 +1,51 @@
 import { useCallback, useEffect, useState } from 'react'
 
-type Listener = (view: ViewType) => void
 type ViewType = 'grid' | 'table'
 
-// Global state management
-class ViewStateManager {
-  get view() {
-    return this._view
+// Cookie utility functions
+const getCookie = (name: string): null | string => {
+  if (typeof document === 'undefined') return null
+
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) {
+    return parts.pop()?.split(';').shift() ?? null
   }
-  private _view: ViewType
-
-  private listeners = new Set<Listener>()
-
-  constructor() {
-    this._view = this.getStoredView()
-
-    // Listen for storage changes from other tabs
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', this.handleStorageChange)
-    }
-  }
-
-  setView(newView: ViewType) {
-    this._view = newView
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('view', newView)
-    }
-    this.notifyListeners()
-  }
-
-  subscribe(listener: Listener) {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
-    }
-  }
-
-  toggleView() {
-    const newView = this._view === 'grid' ? 'table' : 'grid'
-    this.setView(newView)
-  }
-
-  private getStoredView(): ViewType {
-    if (typeof window === 'undefined') return 'grid'
-    const storedView = localStorage.getItem('view')
-    return storedView === 'table' ? 'table' : 'grid'
-  }
-
-  private handleStorageChange = (e: StorageEvent) => {
-    if (e.key === 'view' && e.newValue) {
-      const newView = e.newValue === 'table' ? 'table' : 'grid'
-      this._view = newView
-      this.notifyListeners()
-    }
-  }
-
-  private notifyListeners() {
-    this.listeners.forEach((listener) => {
-      listener(this._view)
-    })
-  }
+  return null
 }
 
-const viewStateManager = new ViewStateManager()
+const setCookie = (name: string, value: string, days = 30) => {
+  if (typeof document === 'undefined') return
 
-export const useToggleView = () => {
-  const [view, setView] = useState<ViewType>(viewStateManager.view)
+  const expires = new Date()
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000)
+  document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`
+}
 
-  useEffect(() => {
-    const unsubscribe = viewStateManager.subscribe(setView)
-    return unsubscribe
-  }, [])
+export const useToggleView = ({
+  defaultView = 'table'
+}: { defaultView?: ViewType } = {}) => {
+  // Initialize from cookie or use default
+  const getInitialView = (): ViewType => {
+    const savedView = getCookie('viewType') as null | ViewType
+    return savedView ?? defaultView
+  }
 
+  const [view, setView] = useState<ViewType>(getInitialView)
+
+  // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
       if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-        viewStateManager.setView('grid')
+        const newView = 'grid'
+        setView(newView)
+        setCookie('viewType', newView)
       }
     }
 
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', handleResize)
-      handleResize()
+      handleResize() // Check on mount
     }
 
     return () => {
@@ -92,12 +56,15 @@ export const useToggleView = () => {
   }, [])
 
   const setViewWrapper = useCallback((newView: ViewType) => {
-    viewStateManager.setView(newView)
+    setView(newView)
+    setCookie('viewType', newView)
   }, [])
 
   const toggleView = useCallback(() => {
-    viewStateManager.toggleView()
-  }, [])
+    const newView = view === 'grid' ? 'table' : 'grid'
+    setView(newView)
+    setCookie('viewType', newView)
+  }, [view])
 
   return {
     setView: setViewWrapper,

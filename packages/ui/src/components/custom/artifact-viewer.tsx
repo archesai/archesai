@@ -1,9 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
-import ReactPlayer from 'react-player'
 
 import { getGetOneArtifactSuspenseQueryOptions } from '@archesai/client'
-
-// const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
 export function ArtifactViewer({ artifactId }: { artifactId: string }) {
   const {
@@ -15,18 +12,10 @@ export function ArtifactViewer({ artifactId }: { artifactId: string }) {
     artifact.mimeType.startsWith('audio/')
   ) {
     hoverContent = (
-      <ReactPlayer
-        config={{
-          html: {
-            attributes: {
-              controlsList: 'nodownload'
-            }
-          }
-        }}
+      <video
+        className='h-full w-full object-contain'
         controls
-        height='100%'
         src={artifact.url ?? ''}
-        width='100%'
       />
     )
   } else if (artifact.mimeType.startsWith('image/') && artifact.url) {

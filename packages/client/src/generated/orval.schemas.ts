@@ -3457,24 +3457,6 @@ export type Login200 = {
   data: UserEntity
 }
 
-export type GetSession200 = {
-  session: SessionEntity
-  user: UserEntity
-}
-
-export type UpdateSessionBody = {
-  /**
-   * The active organization ID
-   * @nullable
-   */
-  activeOrganizationId: string | null
-}
-
-export type UpdateSession200 = {
-  session: SessionEntity
-  user: UserEntity
-}
-
 export type ConfirmEmailVerificationBody = {
   /** The password reset token */
   token: string
@@ -3483,18 +3465,6 @@ export type ConfirmEmailVerificationBody = {
 export type ConfirmEmailVerification200 = {
   session: SessionEntity
   user: UserEntity
-}
-
-export type ConfirmPasswordResetBody = {
-  /** The new password */
-  newPassword: string
-  /** The password reset token */
-  token: string
-}
-
-export type RequestPasswordResetBody = {
-  /** The e-mail to send the password reset token to */
-  email: string
 }
 
 export type ConfirmEmailChangeBody = {
@@ -3523,6 +3493,18 @@ export type RequestEmailChangeBody = {
    * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
    */
   userId: string
+}
+
+export type ConfirmPasswordResetBody = {
+  /** The new password */
+  newPassword: string
+  /** The password reset token */
+  token: string
+}
+
+export type RequestPasswordResetBody = {
+  /** The e-mail to send the password reset token to */
+  email: string
 }
 
 export type FindManyAccountsParams = {
@@ -3769,6 +3751,23 @@ export type DeleteSession200 = {
 
 export type GetOneSession200 = {
   data: SessionEntity
+}
+
+export type UpdateSessionBody = {
+  /**
+   * The active organization ID
+   * @nullable
+   */
+  activeOrganizationId: string | null
+}
+
+export type UpdateSession200 = {
+  data: SessionEntity
+}
+
+export type GetSession200 = {
+  session: SessionEntity
+  user: UserEntity
 }
 
 export type FindManyUsersParams = {

@@ -3,10 +3,13 @@ import type { FastifyPluginAsync } from 'fastify'
 import {
   accountsPlugin,
   authPlugin,
+  emailChangeController,
+  emailVerificationController,
   invitationsPlugin,
   membersPlugin,
   organizationsPlugin,
-  sessionsPlugin,
+  passwordResetController,
+  sessionsController,
   usersPlugin
 } from '@archesai/auth'
 // import {
@@ -39,6 +42,10 @@ export const controllersPlugin: FastifyPluginAsync<
     authService: container.authService
   })
 
+  await app.register(emailVerificationController)
+  await app.register(emailChangeController)
+  await app.register(passwordResetController)
+
   await app.register(accountsPlugin, {
     databaseService: container.databaseService,
     websocketsService: container.websocketsService
@@ -59,7 +66,8 @@ export const controllersPlugin: FastifyPluginAsync<
     websocketsService: container.websocketsService
   })
 
-  await app.register(sessionsPlugin, {
+  await app.register(sessionsController, {
+    authService: container.authService,
     databaseService: container.databaseService,
     websocketsService: container.websocketsService
   })

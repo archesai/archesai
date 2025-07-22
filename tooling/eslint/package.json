@@ -2,6 +2,7 @@
   "name": "@archesai/eslint",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -16,6 +17,7 @@
   "dependencies": {
     "@eslint/compat": "catalog:eslint",
     "@eslint/js": "catalog:eslint",
+    "@tanstack/eslint-plugin-query": "^5.81.2",
     "eslint-config-prettier": "catalog:eslint",
     "eslint-import-resolver-typescript": "catalog:eslint",
     "eslint-plugin-import": "catalog:eslint",

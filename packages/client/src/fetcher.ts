@@ -1,9 +1,8 @@
-// NOTE: Supports cases where `content-type` is other than `json`
 const getBody = <T>(c: Request | Response): Promise<T> => {
   const contentType = c.headers.get('content-type')
 
   if (contentType?.includes('application/json')) {
-    return c.json() as Promise<T>
+    return c.json() satisfies Promise<T>
   }
 
   if (contentType?.includes('application/pdf')) {

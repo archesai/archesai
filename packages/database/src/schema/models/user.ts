@@ -12,7 +12,7 @@ import { MemberTable } from '#schema/models/member'
 export const UserTable = pgTable(USER_ENTITY_KEY, {
   ...baseFields,
   deactivated: boolean().default(false).notNull(),
-  email: text().unique().notNull(),
+  email: text().notNull().unique(),
   emailVerified: boolean().default(false).notNull(),
   image: text(),
   name: text().notNull()

@@ -1,4 +1,5 @@
 import type { FastifySchema } from 'fastify'
+// eslint-disable-next-line no-restricted-syntax
 import type { FastifySerializerCompiler } from 'fastify/types/schema.js'
 
 import fastify from 'fastify'

@@ -13,7 +13,7 @@ export const SessionTable = pgTable('session', {
     mode: 'string'
   }).notNull(),
   ipAddress: text(),
-  token: text().notNull(),
+  token: text().notNull().unique(),
   userAgent: text(),
   userId: text('userId')
     .notNull()

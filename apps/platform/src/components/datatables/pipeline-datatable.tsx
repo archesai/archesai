@@ -49,11 +49,11 @@ export default function PipelineDataTable() {
           id: 'createdAt'
         }
       ]}
-      defaultView='table'
       deleteItem={async (id) => {
         await deletePipeline(id)
       }}
       entityKey={PIPELINE_ENTITY_KEY}
+      getQueryOptions={getFindManyPipelinesQueryOptions}
       handleSelect={async (pipeline) => {
         await navigate({
           params: {
@@ -63,7 +63,6 @@ export default function PipelineDataTable() {
         })
       }}
       icon={<WorkflowIcon />}
-      useFindMany={getFindManyPipelinesQueryOptions}
     />
   )
 }

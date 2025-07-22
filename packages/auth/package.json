@@ -2,6 +2,7 @@
   "name": "@archesai/auth",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
   "type": "module",
   "imports": {
     "#*": "./src/*.ts"
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
+    "@better-auth/cli": "catalog:",
     "@types/node": "catalog:",
     "fastify": "catalog:fastify",
     "fastify-type-provider-zod": "catalog:fastify",

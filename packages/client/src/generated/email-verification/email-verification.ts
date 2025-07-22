@@ -31,7 +31,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Confirm e-mail verification
  */
 export const getConfirmEmailVerificationUrl = () => {
-  return `/api/auth/verify-email`
+  return `/email-verification/verify`
 }
 
 export const confirmEmailVerification = async (
@@ -130,7 +130,7 @@ export const useConfirmEmailVerification = <
  * @summary Request e-mail verification
  */
 export const getRequestEmailVerificationUrl = () => {
-  return `/api/auth/send-verification-email`
+  return `/email-verification/request`
 }
 
 export const requestEmailVerification = async (

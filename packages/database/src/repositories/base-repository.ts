@@ -22,28 +22,7 @@ export function createBaseRepository<
   }
 ) {
   const toEntity = (model: (typeof table)['$inferSelect']): TEntity => {
-    try {
-      return entitySchema.parse(model)
-    } catch (error) {
-      console.log(model, error)
-      throw new Error('Failed to parse model to entity')
-    }
-
-    // try {
-    //   return Value.Parse(this.entitySchema, model)
-    // } catch (error) {
-    //   if (error instanceof AssertError) {
-    //     const errors = [...error.Errors()]
-    //     this.logger.error('Validation error while parsing model to entity', {
-    //       ...error,
-    //       errors: errors,
-    //       model
-    //     })
-    //     throw new Error('Validation error while parsing model to entity')
-    //   }
-    //   this.logger.error('Failed to parse model to entity', { error, model })
-    //   throw new Error('Failed to parse model to entity')
-    // }
+    return entitySchema.parse(model)
   }
 
   const buildSearchQueryPrimaryKey = (value: string): SearchQuery<TModel> => {

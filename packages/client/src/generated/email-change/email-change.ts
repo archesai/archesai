@@ -27,11 +27,11 @@ import { customFetch } from '../../fetcher'
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
- * This endpoint will confirm your e-mail change with a token
- * @summary Confirm e-mail change
+ * This endpoint will verify your e-mail change with a token
+ * @summary Verify e-mail change
  */
 export const getConfirmEmailChangeUrl = () => {
-  return `/api/auth/change-email`
+  return `/email-change/verify`
 }
 
 export const confirmEmailChange = async (
@@ -96,7 +96,7 @@ export type ConfirmEmailChangeMutationError =
   | NotFoundResponse
 
 /**
- * @summary Confirm e-mail change
+ * @summary Verify e-mail change
  */
 export const useConfirmEmailChange = <
   TError = UnauthorizedResponse | NotFoundResponse,
@@ -127,7 +127,7 @@ export const useConfirmEmailChange = <
  * @summary Request e-mail change
  */
 export const getRequestEmailChangeUrl = () => {
-  return `/api/auth/email-change/request`
+  return `/email-change/request`
 }
 
 export const requestEmailChange = async (

@@ -99,16 +99,15 @@ export default function ToolDataTable() {
           }
         }
       ]}
-      defaultView='table'
       deleteItem={async (id) => {
         await deleteTool(id)
       }}
       entityKey={TOOL_ENTITY_KEY}
+      getQueryOptions={getFindManyToolsQueryOptions}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
       icon={<PackageCheckIcon />}
-      useFindMany={getFindManyToolsQueryOptions}
     />
   )
 }

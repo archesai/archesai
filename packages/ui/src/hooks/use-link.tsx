@@ -157,8 +157,8 @@ const defaultTrackEvent = (
     // }
 
     // Console log for development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📊 Analytics Event:', { action, category, label, value })
+    if (process.env.COLLECT === 'development') {
+      console.debug('📊 Analytics Event:', { action, category, label, value })
     }
   }
 }

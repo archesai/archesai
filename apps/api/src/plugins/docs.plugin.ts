@@ -22,14 +22,14 @@ export const docsPlugin: FastifyPluginAsync<{
           securitySchemes: {
             bearerAuth: {
               bearerFormat: 'JWT',
-              description: 'API Token',
+              description: 'API Token for authenticated requests',
               scheme: 'bearer',
               type: 'http'
             },
             sessionCookie: {
-              description: 'Session Cookie',
+              description: 'Session cookie for authenticated requests',
               in: 'cookie',
-              name: 'sessionid',
+              name: '__Secure-better-auth.session_token',
               type: 'apiKey'
             }
           }
@@ -69,7 +69,11 @@ export const docsPlugin: FastifyPluginAsync<{
       configuration: {
         _integration: 'fastify',
         forceDarkModeState: 'dark',
+        hideModels: true,
         layout: 'modern',
+        pageTitle: 'Arches AI API',
+        persistAuth: true,
+        tagsSorter: 'alpha',
         theme: 'purple',
         title: 'Arches AI API',
         withDefaultFonts: true

@@ -27,11 +27,11 @@ import { customFetch } from '../../fetcher'
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
 /**
- * This endpoint will confirm your password change with a token
- * @summary Confirm password reset
+ * This endpoint will verify your password change with a token
+ * @summary Verify password reset
  */
 export const getConfirmPasswordResetUrl = () => {
-  return `/api/auth/forgot-password`
+  return `/password-reset/verify`
 }
 
 export const confirmPasswordReset = async (
@@ -96,7 +96,7 @@ export type ConfirmPasswordResetMutationError =
   | NotFoundResponse
 
 /**
- * @summary Confirm password reset
+ * @summary Verify password reset
  */
 export const useConfirmPasswordReset = <
   TError = UnauthorizedResponse | NotFoundResponse,
@@ -127,7 +127,7 @@ export const useConfirmPasswordReset = <
  * @summary Request password reset
  */
 export const getRequestPasswordResetUrl = () => {
-  return `/api/auth/reset-password`
+  return `/password-reset/request`
 }
 
 export const requestPasswordReset = async (

@@ -1,7 +1,7 @@
 import type { UseQueryOptions } from '@tanstack/react-query'
 import type { AccessorKeyColumnDef, RowData } from '@tanstack/react-table'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { VisuallyHidden } from 'radix-ui'
 
@@ -40,21 +40,20 @@ export interface DataTableProps<TEntity extends BaseEntity> {
   actionBar?: React.ReactNode
   columns: AccessorKeyColumnDef<TEntity>[]
   createForm?: React.ComponentType
-  defaultView?: 'grid' | 'table'
   deleteItem?: (id: string) => Promise<void>
   entityKey?: string
+  getQueryOptions: (query: SearchQuery<TEntity>) => UseQueryOptions<{
+    data: TEntity[]
+    meta: {
+      total: number
+    }
+  }>
   grid?: (item: TEntity) => React.ReactNode
   gridHover?: (item: TEntity) => React.ReactNode
   handleSelect: (item: TEntity) => void
   icon: React.ReactNode
   minimal?: boolean
   updateForm?: React.ComponentType<{ id: string }>
-  useFindMany: (query: SearchQuery<TEntity>) => UseQueryOptions<{
-    data: TEntity[]
-    meta: {
-      total: number
-    }
-  }>
 }
 
 export function DataTable<TEntity extends BaseEntity>(
@@ -63,25 +62,27 @@ export function DataTable<TEntity extends BaseEntity>(
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<TEntity> | null>(null)
 
-  const { setView, view } = useToggleView()
-  useEffect(() => {
-    setView(props.defaultView ?? 'table')
-  }, [props.defaultView, setView])
+  const { view } = useToggleView({
+    defaultView: 'table'
+  })
 
-  const filterState = useFilterState<TEntity>()
-
-  const { data: queryData } = useQuery(
-    props.useFindMany(filterState.searchQuery)
-  )
-  const data = queryData?.data ?? []
-  const total = queryData?.meta.total ?? 0
+  const { searchQuery } = useFilterState<TEntity>()
+  const queryOptions = props.getQueryOptions(searchQuery)
+  const { data: queryData } = useQuery(queryOptions)
 
   const { table } = useDataTable<TEntity>({
+    clearOnDefault: true,
     columns: props.columns,
-    data,
-    filterState,
-    pageCount: -1,
-    total
+    data: queryData?.data ?? [],
+    getRowId: (originalRow) => originalRow.id,
+    initialState: {
+      columnPinning: { right: ['actions'] },
+      sorting: [
+        { desc: true, id: 'createdAt' as Extract<keyof TEntity, string> }
+      ]
+    },
+    pageCount: (queryData?.meta.total ?? -1) / (searchQuery.page?.size ?? 1),
+    shallow: false
   })
 
   return (

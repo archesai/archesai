@@ -9,6 +9,8 @@ import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
+import { TermsIndicator } from '#components/terms-indicator'
+
 export const Route = createFileRoute('/auth/login/')({
   component: LoginPage
 })
@@ -121,11 +123,7 @@ export default function LoginPage() {
         showCard={true}
         title='Login'
       />
-      <div className='text-center text-xs text-balance text-muted-foreground *:[a]:underline *:[a]:underline-offset-4 *:[a]:hover:text-primary'>
-        By clicking continue, you agree to our{' '}
-        <Link to='/'>Terms of Service</Link> and{' '}
-        <Link to='/'>Privacy Policy</Link>.
-      </div>
+      <TermsIndicator />
     </>
   )
 }

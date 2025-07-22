@@ -2,8 +2,6 @@ import { basename, dirname, extname, join } from 'node:path'
 
 import type { FileEntity } from '@archesai/schemas'
 
-export const STORAGE_SERVICE = 'STORAGE_SERVICE'
-
 export abstract class StorageService {
   public abstract checkExists(
     path: string,

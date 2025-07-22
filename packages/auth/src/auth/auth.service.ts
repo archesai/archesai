@@ -1,3 +1,5 @@
+import type { BetterAuthPlugin } from 'better-auth'
+
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
@@ -40,8 +42,7 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
             modelName: 'OrganizationTable'
           }
         }
-      })
-      // reactStartCookies()
+      }) satisfies BetterAuthPlugin
     ],
     session: {
       cookieCache: {
@@ -70,11 +71,10 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
   })
 
   return {
-    createOrganization: auth.api.createOrganization,
     getSession: auth.api.getSession,
     handler: auth.handler,
-    setActiveOrganization: auth.api.setActiveOrganization,
     signInEmail: auth.api.signInEmail,
+    signOut: auth.api.signOut,
     signUpEmail: auth.api.signUpEmail
   }
 }

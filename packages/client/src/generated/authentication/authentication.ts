@@ -45,7 +45,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
  * @summary Register
  */
 export const getRegisterUrl = () => {
-  return `/api/auth/sign-up/email`
+  return `/sign-up`
 }
 
 export const register = async (
@@ -136,7 +136,7 @@ export const useRegister = <TError = UnauthorizedResponse, TContext = unknown>(
  * @summary Login
  */
 export const getLoginUrl = () => {
-  return `/api/auth/sign-in/email`
+  return `/sign-in`
 }
 
 export const login = async (
@@ -225,7 +225,7 @@ export const useLogin = <TError = UnauthorizedResponse, TContext = unknown>(
  * @summary Logout
  */
 export const getLogoutUrl = () => {
-  return `/api/auth/sign-out`
+  return `/sign-out`
 }
 
 export const logout = async (
@@ -307,11 +307,106 @@ export const useLogout = <TError = UnauthorizedResponse, TContext = unknown>(
   return useMutation(mutationOptions, queryClient)
 }
 /**
+ * This endpoint will update the active organization for the current session
+ * @summary Update Session
+ */
+export const getUpdateSessionUrl = (id: string | undefined | null) => {
+  return `/sessions/${id}`
+}
+
+export const updateSession = async (
+  id: string | undefined | null,
+  updateSessionBody: UpdateSessionBody,
+  options?: RequestInit
+): Promise<UpdateSession200> => {
+  return customFetch<UpdateSession200>(getUpdateSessionUrl(id), {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateSessionBody)
+  })
+}
+
+export const getUpdateSessionMutationOptions = <
+  TError = UnauthorizedResponse,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateSession>>,
+    TError,
+    { id: string | undefined | null; data: UpdateSessionBody },
+    TContext
+  >
+  request?: SecondParameter<typeof customFetch>
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateSession>>,
+  TError,
+  { id: string | undefined | null; data: UpdateSessionBody },
+  TContext
+> => {
+  const mutationKey = ['updateSession']
+  const { mutation: mutationOptions, request: requestOptions } =
+    options ?
+      (
+        options.mutation &&
+        'mutationKey' in options.mutation &&
+        options.mutation.mutationKey
+      ) ?
+        options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined }
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateSession>>,
+    { id: string | undefined | null; data: UpdateSessionBody }
+  > = (props) => {
+    const { id, data } = props ?? {}
+
+    return updateSession(id, data, requestOptions)
+  }
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type UpdateSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateSession>>
+>
+export type UpdateSessionMutationBody = UpdateSessionBody
+export type UpdateSessionMutationError = UnauthorizedResponse
+
+/**
+ * @summary Update Session
+ */
+export const useUpdateSession = <
+  TError = UnauthorizedResponse,
+  TContext = unknown
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateSession>>,
+      TError,
+      { id: string | undefined | null; data: UpdateSessionBody },
+      TContext
+    >
+    request?: SecondParameter<typeof customFetch>
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateSession>>,
+  TError,
+  { id: string | undefined | null; data: UpdateSessionBody },
+  TContext
+> => {
+  const mutationOptions = getUpdateSessionMutationOptions(options)
+
+  return useMutation(mutationOptions, queryClient)
+}
+/**
  * This endpoint will return the current session information
  * @summary Get Session
  */
 export const getGetSessionUrl = () => {
-  return `/api/auth/session`
+  return `/sessions/current`
 }
 
 export const getSession = async (
@@ -324,7 +419,7 @@ export const getSession = async (
 }
 
 export const getGetSessionQueryKey = () => {
-  return [`/api/auth/session`] as const
+  return [`/sessions/current`] as const
 }
 
 export const getGetSessionQueryOptions = <
@@ -565,99 +660,4 @@ export function useGetSessionSuspense<
   query.queryKey = queryOptions.queryKey
 
   return query
-}
-
-/**
- * This endpoint will update the active organization for the current session
- * @summary Update Session
- */
-export const getUpdateSessionUrl = () => {
-  return `/api/auth/session`
-}
-
-export const updateSession = async (
-  updateSessionBody: UpdateSessionBody,
-  options?: RequestInit
-): Promise<UpdateSession200> => {
-  return customFetch<UpdateSession200>(getUpdateSessionUrl(), {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateSessionBody)
-  })
-}
-
-export const getUpdateSessionMutationOptions = <
-  TError = UnauthorizedResponse,
-  TContext = unknown
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof updateSession>>,
-    TError,
-    { data: UpdateSessionBody },
-    TContext
-  >
-  request?: SecondParameter<typeof customFetch>
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof updateSession>>,
-  TError,
-  { data: UpdateSessionBody },
-  TContext
-> => {
-  const mutationKey = ['updateSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof updateSession>>,
-    { data: UpdateSessionBody }
-  > = (props) => {
-    const { data } = props ?? {}
-
-    return updateSession(data, requestOptions)
-  }
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type UpdateSessionMutationResult = NonNullable<
-  Awaited<ReturnType<typeof updateSession>>
->
-export type UpdateSessionMutationBody = UpdateSessionBody
-export type UpdateSessionMutationError = UnauthorizedResponse
-
-/**
- * @summary Update Session
- */
-export const useUpdateSession = <
-  TError = UnauthorizedResponse,
-  TContext = unknown
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof updateSession>>,
-      TError,
-      { data: UpdateSessionBody },
-      TContext
-    >
-    request?: SecondParameter<typeof customFetch>
-  },
-  queryClient?: QueryClient
-): UseMutationResult<
-  Awaited<ReturnType<typeof updateSession>>,
-  TError,
-  { data: UpdateSessionBody },
-  TContext
-> => {
-  const mutationOptions = getUpdateSessionMutationOptions(options)
-
-  return useMutation(mutationOptions, queryClient)
 }

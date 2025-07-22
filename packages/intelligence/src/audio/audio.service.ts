@@ -8,7 +8,7 @@ import ffmpeg from 'fluent-ffmpeg'
 import type { Logger } from '@archesai/core'
 
 import { retry } from '@archesai/core'
-import { IdParamsSchema } from '@archesai/schemas'
+import { IdParamsSchema, MoisesCheckJobResponseSchema } from '@archesai/schemas'
 
 export const createAudioService = (logger: Logger) => {
   return {
@@ -59,23 +59,17 @@ export const createAudioService = (logger: Logger) => {
         logger.debug('got response from moises', {
           response
         })
-        const moisesCheckJobResponse = (await response.json()) as {
-          result: {
-            Bass: string
-            Drums: string
-            Other: string
-            Vocals: string
-          }
-          status: 'FAILED' | 'PENDING' | 'PROCESSING' | 'SUCCEEDED'
-        }
+        const moisesCheckJobResponse = await response.json()
+        const validatedMoisesCheckJobResponse =
+          MoisesCheckJobResponseSchema.parse(moisesCheckJobResponse)
 
-        if (moisesCheckJobResponse.status == 'SUCCEEDED') {
-          const bassSrc = moisesCheckJobResponse.result.Bass
-          const drumsSrc = moisesCheckJobResponse.result.Drums
+        if (validatedMoisesCheckJobResponse.status == 'SUCCEEDED') {
+          const bassSrc = validatedMoisesCheckJobResponse.result.Bass
+          const drumsSrc = validatedMoisesCheckJobResponse.result.Drums
           logger.debug('got bass and drums src', { bassSrc, drumsSrc })
 
           return { bassSrc, drumsSrc }
-        } else if (moisesCheckJobResponse.status === 'FAILED') {
+        } else if (validatedMoisesCheckJobResponse.status === 'FAILED') {
           throw new Error("Moises' job failed")
         }
       }

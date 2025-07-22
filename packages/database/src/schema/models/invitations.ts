@@ -19,17 +19,15 @@ export const InvitationTable = pgTable(INVITATION_ENTITY_KEY, {
   inviterId: text()
     .notNull()
     .references(() => UserTable.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
+      onDelete: 'cascade'
     }),
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
+      onDelete: 'cascade'
     }),
   role: roleEnum().default('member').notNull(),
-  status: text().notNull()
+  status: text().default('pending').notNull()
 })
 
 export const invitationRelations = relations(InvitationTable, ({ one }) => ({

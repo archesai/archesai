@@ -40,17 +40,16 @@ export default function LabelDataTable() {
         }
       ]}
       createForm={LabelForm}
-      defaultView='table'
       deleteItem={async (id) => {
         await deleteLabel(id)
       }}
       entityKey={LABEL_ENTITY_KEY}
+      getQueryOptions={getFindManyLabelsQueryOptions}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}
       icon={<ListIcon />}
       updateForm={LabelForm}
-      useFindMany={getFindManyLabelsQueryOptions}
     />
   )
 }

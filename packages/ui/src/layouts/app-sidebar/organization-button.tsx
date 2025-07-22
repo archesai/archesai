@@ -85,7 +85,8 @@ export function OrganizationButton() {
                     {
                       data: {
                         activeOrganizationId: membership.organizationId
-                      }
+                      },
+                      id: session.id
                     },
                     {
                       onSuccess: () => {

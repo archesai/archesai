@@ -56,7 +56,6 @@
     "react-day-picker": "catalog:ui",
     "react-dom": "catalog:react19",
     "react-hook-form": "catalog:ui",
-    "react-player": "catalog:ui",
     "react-resizable-panels": "catalog:ui",
     "socket.io-client": "catalog:",
     "sonner": "catalog:ui",

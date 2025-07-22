@@ -15,8 +15,7 @@ export const MemberTable = pgTable(MEMBER_ENTITY_KEY, {
   organizationId: text()
     .notNull()
     .references(() => OrganizationTable.id, {
-      onDelete: 'cascade',
-      onUpdate: 'cascade'
+      onDelete: 'cascade'
     }),
   role: roleEnum().default('member').notNull(),
   userId: text()
