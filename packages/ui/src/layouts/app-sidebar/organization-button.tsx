@@ -2,7 +2,6 @@ import { toast } from 'sonner'
 
 import {
   useFindManyMembersSuspense,
-  useFindManyOrganizationsSuspense,
   useGetSessionSuspense,
   useUpdateSession
 } from '@archesai/client'
