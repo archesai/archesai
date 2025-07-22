@@ -7,7 +7,7 @@ export const AccountEntitySchema: z.ZodObject<{
   accessTokenExpiresAt: z.ZodNullable<z.ZodString>
   accountId: z.ZodString
   createdAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   idToken: z.ZodNullable<z.ZodString>
   password: z.ZodNullable<z.ZodString>
   providerId: z.ZodString

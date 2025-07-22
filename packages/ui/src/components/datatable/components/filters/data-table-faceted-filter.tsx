@@ -1,5 +1,3 @@
-'use no memo'
-
 import type { Column } from '@tanstack/react-table'
 
 import * as React from 'react'
@@ -7,8 +5,8 @@ import * as React from 'react'
 import type { Option } from '#types/simple-data-table'
 
 import {
-  CheckIcon,
-  PlusCircleIcon,
+  CheckCircle2Icon,
+  PlusSquareIcon,
   XCircleIcon
 } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
@@ -100,7 +98,7 @@ export function DataTableFacetedFilter<TData, TValue>({
             >
               <XCircleIcon />
             </div>
-          : <PlusCircleIcon />}
+          : <PlusSquareIcon />}
           {title}
           {selectedValues.size > 0 && (
             <>
@@ -166,7 +164,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         )
                       )}
                     >
-                      <CheckIcon />
+                      <CheckCircle2Icon />
                     </div>
                     {option.icon && <option.icon />}
                     <span className='truncate'>{option.label}</span>

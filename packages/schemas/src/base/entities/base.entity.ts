@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 export const BaseEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   updatedAt: z.ZodString
 }> = z.object({
   createdAt: z.string().describe('The date this item was created'),
-  id: z.string().describe('The ID of the item'),
+  id: z.uuid().describe('The ID of the item'),
   updatedAt: z.string().describe('The date this item was last updated')
 })
 

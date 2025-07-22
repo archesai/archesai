@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 
+import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
 import {
   ArrowRightIcon,
   BarChartIcon,
-  CheckIcon,
+  CheckCircle2Icon,
   ChevronRightIcon,
   LayersIcon,
   MenuIcon,
@@ -116,17 +117,12 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className='flex min-h-[100dvh] flex-col'>
+    <div className='flex min-h-[100dvh] flex-col bg-black'>
       <header
         className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? 'bg-background/80 shadow-sm' : 'bg-transparent'}`}
       >
         <div className='container flex h-16 items-center justify-between'>
-          <div className='flex items-center gap-2 font-bold'>
-            <div className='flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground'>
-              S
-            </div>
-            <span>SaaSify</span>
-          </div>
+          <ArchesLogo size='lg' />
           <nav className='hidden gap-8 md:flex'>
             <Link
               className='text-sm font-medium text-muted-foreground transition-colors hover:text-foreground'
@@ -317,15 +313,15 @@ export default function LandingPage() {
               </div>
               <div className='mt-6 flex items-center justify-center gap-4 text-sm text-muted-foreground'>
                 <div className='flex items-center gap-1'>
-                  <CheckIcon className='size-4 text-primary' />
+                  <CheckCircle2Icon className='size-4 text-primary' />
                   <span>No credit card</span>
                 </div>
                 <div className='flex items-center gap-1'>
-                  <CheckIcon className='size-4 text-primary' />
+                  <CheckCircle2Icon className='size-4 text-primary' />
                   <span>14-day trial</span>
                 </div>
                 <div className='flex items-center gap-1'>
-                  <CheckIcon className='size-4 text-primary' />
+                  <CheckCircle2Icon className='size-4 text-primary' />
                   <span>Cancel anytime</span>
                 </div>
               </div>
@@ -749,7 +745,7 @@ export default function LandingPage() {
                                   className='flex items-center'
                                   key={j}
                                 >
-                                  <CheckIcon className='mr-2 size-4 text-primary' />
+                                  <CheckCircle2Icon className='mr-2 size-4 text-primary' />
                                   <span>{feature}</span>
                                 </li>
                               ))}
@@ -845,7 +841,7 @@ export default function LandingPage() {
                                   className='flex items-center'
                                   key={j}
                                 >
-                                  <CheckIcon className='mr-2 size-4 text-primary' />
+                                  <CheckCircle2Icon className='mr-2 size-4 text-primary' />
                                   <span>{feature}</span>
                                 </li>
                               ))}

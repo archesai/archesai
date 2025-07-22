@@ -6,7 +6,7 @@ export const ApiTokenEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   enabled: z.ZodBoolean
   expiresAt: z.ZodNullable<z.ZodString>
-  id: z.ZodString
+  id: z.ZodUUID
   key: z.ZodString
   lastRefill: z.ZodNullable<z.ZodString>
   lastRequest: z.ZodNullable<z.ZodString>

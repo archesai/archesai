@@ -6,7 +6,7 @@ import {
   useState
 } from 'react'
 
-import { CheckIcon, ChevronsUpDownIcon } from '#components/custom/icons'
+import { CheckCircle2Icon, ChevronsUpDownIcon } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
 import {
   Command,
@@ -271,7 +271,7 @@ function FacetedItem(props: FacetedItemProps) {
           : 'opacity-50 [&_svg]:invisible'
         )}
       >
-        <CheckIcon className='size-4' />
+        <CheckCircle2Icon className='size-4' />
       </span>
       {children}
     </CommandItem>

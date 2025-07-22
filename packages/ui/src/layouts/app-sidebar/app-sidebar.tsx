@@ -30,7 +30,6 @@ export function AppSidebar({
         <SidebarLinks siteRoutes={siteRoutes} />
       </SidebarContent>
       <SidebarFooter>
-        {/* <CreditQuota /> */}
         <UserButton />
       </SidebarFooter>
       <SidebarRail />

@@ -8,7 +8,7 @@ import type { BaseEntity } from '@archesai/schemas'
 import type { LucideIcon } from '#components/custom/icons'
 
 import {
-  CheckSquareIcon,
+  CheckCircle2Icon,
   PlusSquareIcon,
   SortAscIcon
 } from '#components/custom/icons'
@@ -200,7 +200,7 @@ export function DataSelector<TItem extends BaseEntity>({
                   {isMultiSelect &&
                     Array.isArray(selectedData) &&
                     selectedData.some((i) => i.id === item.id) && (
-                      <CheckSquareIcon className='h-4 w-4 text-green-500' />
+                      <CheckCircle2Icon className='h-4 w-4 text-green-500' />
                     )}
                 </CommandItem>
               ))}

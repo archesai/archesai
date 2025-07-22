@@ -7,7 +7,7 @@ export const UserEntitySchema: z.ZodObject<{
   deactivated: z.ZodDefault<z.ZodBoolean>
   email: z.ZodString
   emailVerified: z.ZodBoolean
-  id: z.ZodString
+  id: z.ZodUUID
   image: z.ZodNullable<z.ZodString>
   name: z.ZodString
   updatedAt: z.ZodString

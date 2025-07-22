@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { FilterGroupType, FilterNodeType } from '#query/filter-node.schema'
+import type { FilterNodeType } from '#query/filter-node.schema'
 
 import { FilterNodeSchema } from '#query/filter-node.schema'
 import { FilterValueSchema } from '#query/filter-value.schema'
@@ -18,8 +18,8 @@ export const SearchQuerySchema: z.ZodObject<{
   >
   page: z.ZodOptional<
     z.ZodObject<{
-      number: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
-      size: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+      number: z.ZodOptional<z.ZodDefault<z.ZodCoercedNumber>>
+      size: z.ZodOptional<z.ZodDefault<z.ZodCoercedNumber>>
     }>
   >
   sort: z.ZodOptional<
@@ -57,83 +57,11 @@ export const createSearchQuerySchema = (
   entitySchema: z.ZodObject,
   entityKey: string
 ): z.ZodObject<{
-  filter: z.ZodOptional<
-    z.ZodType<
-      | FilterGroupType
-      | {
-          field: string
-          operator:
-            | 'eq'
-            | 'gt'
-            | 'gte'
-            | 'iLike'
-            | 'inArray'
-            | 'isBetween'
-            | 'isEmpty'
-            | 'isNotEmpty'
-            | 'isRelativeToToday'
-            | 'lt'
-            | 'lte'
-            | 'ne'
-            | 'notILike'
-            | 'notInArray'
-          type: 'condition'
-          value:
-            | (boolean | number | string)[]
-            | boolean
-            | number
-            | string
-            | {
-                from: number | string
-                to: number | string
-              }
-            | {
-                unit: 'days' | 'months' | 'weeks' | 'years'
-                value: number
-              }
-        },
-      unknown,
-      z.core.$ZodTypeInternals<
-        | FilterGroupType
-        | {
-            field: string
-            operator:
-              | 'eq'
-              | 'gt'
-              | 'gte'
-              | 'iLike'
-              | 'inArray'
-              | 'isBetween'
-              | 'isEmpty'
-              | 'isNotEmpty'
-              | 'isRelativeToToday'
-              | 'lt'
-              | 'lte'
-              | 'ne'
-              | 'notILike'
-              | 'notInArray'
-            type: 'condition'
-            value:
-              | (boolean | number | string)[]
-              | boolean
-              | number
-              | string
-              | {
-                  from: number | string
-                  to: number | string
-                }
-              | {
-                  unit: 'days' | 'months' | 'weeks' | 'years'
-                  value: number
-                }
-          }
-      >
-    >
-  >
+  filter: z.ZodOptional<z.ZodType<FilterNodeType>>
   page: z.ZodOptional<
     z.ZodObject<{
-      number: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
-      size: z.ZodOptional<z.ZodDefault<z.ZodNumber>>
+      number: z.ZodOptional<z.ZodDefault<z.ZodCoercedNumber>>
+      size: z.ZodOptional<z.ZodDefault<z.ZodCoercedNumber>>
     }>
   >
   sort: z.ZodOptional<
@@ -206,7 +134,6 @@ export const createSearchQuerySchema = (
     })
     .meta({
       description: `Search query schema for ${entityKey} entity`
-      // id: `${entityKey}SearchQuery`
     })
 
   return searchQuerySchema

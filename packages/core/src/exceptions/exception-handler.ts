@@ -1,5 +1,7 @@
 import type { FastifyPluginCallback, FastifyRequest } from 'fastify'
 
+import { ZodError } from 'zod'
+
 import type { ErrorDocument } from '@archesai/schemas'
 
 import { AppError } from '#exceptions/http-errors'
@@ -100,20 +102,27 @@ export const errorHandlerPlugin: FastifyPluginCallback<ErrorHandlerOptions> = (
     const requestContext = sanitizeRequest(request)
 
     // Handle validation errors from TypeBox/Ajv FIRST (highest priority)
-    if (error.validation) {
+    if (error instanceof ZodError) {
       const logData = {
         error: error.message,
         request: requestContext,
-        validation: error.validation
+        validation: error.issues.map((issue) => ({
+          code: issue.code,
+          field: issue.path.join('.'),
+          input: issue.input,
+          message: issue.message
+        }))
       }
       logError(request, { statusCode: 400 }, logData)
       const responseData = createErrorResponse(
         error.message,
         400,
-        error.name,
-        error.validation.map((v) => ({
-          field: v.instancePath.replace(/^\//, ''),
-          message: v.message ?? 'Invalid value'
+        'Validation Error',
+        error.issues.map((issue) => ({
+          code: issue.code,
+          field: issue.path.join('.'),
+          input: issue.input,
+          message: issue.message
         }))
       )
       return reply.status(400).send(responseData)

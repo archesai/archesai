@@ -7,7 +7,7 @@ export const RunEntitySchema: z.ZodObject<{
   completedAt: z.ZodNullable<z.ZodString>
   createdAt: z.ZodString
   error: z.ZodNullable<z.ZodString>
-  id: z.ZodString
+  id: z.ZodUUID
   organizationId: z.ZodString
   pipelineId: z.ZodNullable<z.ZodString>
   progress: z.ZodNumber

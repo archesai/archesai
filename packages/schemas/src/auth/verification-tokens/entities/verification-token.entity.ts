@@ -5,7 +5,7 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 export const VerificationEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   expiresAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   identifier: z.ZodString
   updatedAt: z.ZodString
   value: z.ZodString

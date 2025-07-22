@@ -1,5 +1,3 @@
-'use no memo'
-
 import type { UseQueryOptions } from '@tanstack/react-query'
 import type { AccessorKeyColumnDef, RowData } from '@tanstack/react-table'
 
@@ -12,10 +10,11 @@ import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 import type { DataTableRowAction } from '#types/simple-data-table'
 
 import { DataTablePagination } from '#components/datatable/components/data-table-pagination'
+import { DataTableViewOptions } from '#components/datatable/components/data-table-view-options'
 import { TasksTableActionBar } from '#components/datatable/components/tasks-table-action-bar'
-import { DataTableAdvancedToolbar } from '#components/datatable/components/toolbar/data-table-advanced-toolbar'
 import { DataTableFilterMenu } from '#components/datatable/components/toolbar/data-table-filter-menu'
 import { DataTableSortList } from '#components/datatable/components/toolbar/data-table-sort-list'
+// import { ViewToggle } from '#components/datatable/components/view-toggle'
 import { GridView } from '#components/datatable/components/views/grid-view'
 import { TableView } from '#components/datatable/components/views/table-view'
 // import { DataTableToolbar } from '#components/datatable/components/toolbar/data-table-toolbar'
@@ -77,27 +76,35 @@ export function DataTable<TEntity extends BaseEntity>(
   const data = queryData?.data ?? []
   const total = queryData?.meta.total ?? 0
 
-  // Update table with fresh data
   const { table } = useDataTable<TEntity>({
     columns: props.columns,
-    data: data,
+    data,
     filterState,
-    pageCount: Math.ceil(total / (filterState.searchQuery.page?.size ?? 10)) // Should come from backend
+    pageCount: -1,
+    total
   })
 
   return (
     <div className='flex flex-1 flex-col gap-4'>
       {/* FILTER TOOLBAR */}
-      <DataTableAdvancedToolbar table={table}>
-        <DataTableSortList
-          align='start'
-          table={table}
-        />
-        <DataTableFilterMenu table={table} />
-      </DataTableAdvancedToolbar>
-      {/* {!props.minimal && <DataTableToolbar<TEntity> table={table} />} */}
+      <div
+        aria-orientation='horizontal'
+        className='flex flex-col gap-4'
+        role='toolbar'
+      >
+        <div className='flex gap-2'>
+          <DataTableSortList
+            align='start'
+            table={table}
+          />
+          {/* <ViewToggle /> */}
+          <DataTableViewOptions table={table} />
+        </div>
 
-      {/* DATA TABLE - EITHER GRID OR TABLE VIEW*/}
+        <DataTableFilterMenu table={table} />
+      </div>
+
+      {/* DATA TABLE */}
       <div className='flex-1 overflow-auto'>
         {view === 'grid' ?
           <GridView<TEntity>
@@ -107,10 +114,10 @@ export function DataTable<TEntity extends BaseEntity>(
         : <TableView<TEntity> table={table} />}
       </div>
 
-      {/* PAGINATION */}
-      {!props.minimal && <DataTablePagination<TEntity> table={table} />}
+      {/* PAGINATION - Now uses filterState directly */}
+      {!props.minimal && <DataTablePagination table={table} />}
 
-      {/* THIS IS THE FORM DIALOG */}
+      {/* DIALOG AND ACTION BAR remain the same */}
       <Dialog
         onOpenChange={() => {
           setRowAction(null)
@@ -140,7 +147,7 @@ export function DataTable<TEntity extends BaseEntity>(
           )}
         </DialogContent>
       </Dialog>
-      {<TasksTableActionBar table={table} />}
+      <TasksTableActionBar table={table} />
     </div>
   )
 }

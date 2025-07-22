@@ -35,7 +35,7 @@ export const PaymentMethodEntitySchema: z.ZodObject<{
   >
   createdAt: z.ZodString
   customer: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   type: z.ZodString
   updatedAt: z.ZodString
 }> = BaseEntitySchema.extend({

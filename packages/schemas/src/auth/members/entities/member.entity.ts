@@ -5,7 +5,7 @@ import { RoleTypes } from '#enums/role'
 
 export const MemberEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   organizationId: z.ZodString
   role: z.ZodEnum<{
     admin: 'admin'

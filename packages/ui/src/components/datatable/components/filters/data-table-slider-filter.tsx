@@ -1,10 +1,8 @@
-'use no memo'
-
 import type { Column } from '@tanstack/react-table'
 
 import { useCallback, useId, useMemo } from 'react'
 
-import { PlusCircleIcon, XCircleIcon } from '#components/custom/icons'
+import { PlusSquareIcon, XCircleIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { Input } from '#components/shadcn/input'
 import { Label } from '#components/shadcn/label'
@@ -141,7 +139,7 @@ export function DataTableSliderFilter<TData>({
             >
               <XCircleIcon />
             </div>
-          : <PlusCircleIcon />}
+          : <PlusSquareIcon />}
           <span>{title}</span>
           {columnFilterValue ?
             <>

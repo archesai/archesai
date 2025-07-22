@@ -14,7 +14,6 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '#components/shadcn/popover'
-import { cn } from '#lib/utils'
 
 export const StatusTypeEnumButton = ({
   onClick,
@@ -29,18 +28,13 @@ export const StatusTypeEnumButton = ({
   const renderIcon = () => {
     switch (run.status) {
       case 'COMPLETED':
-        return <CheckCircle2Icon className='text-green-600' />
+        return <CheckCircle2Icon className='text-green-500' />
       case 'FAILED':
-        return <BanIcon className='text-red-600' />
+        return <BanIcon className='text-destructive' />
       case 'PROCESSING':
-        return (
-          <div className='flex items-center gap-2'>
-            <Loader2Icon className='animate-spin text-primary' />
-            <span>{(run.progress * 100).toFixed(0)}%</span>
-          </div>
-        )
+        return <Loader2Icon className='animate-spin text-primary' />
       case 'QUEUED':
-        return <ClockArrowUpIcon className='text-primary' />
+        return <ClockArrowUpIcon className='text-orange-400' />
       default:
         return null
     }
@@ -53,18 +47,14 @@ export const StatusTypeEnumButton = ({
     >
       <PopoverTrigger asChild>
         <Button
-          className={cn('flex items-center justify-between', '')}
           onClick={onClick}
           size='sm'
-          variant='outline'
+          variant='secondary'
         >
-          <div className='flex flex-1 items-center justify-start gap-1 truncate overflow-hidden'>
-            {/* {Icon && <Icon className='text-blue-700' />} */}
-          </div>
-          <div className='ml-2 shrink-0'>{renderIcon()}</div>
+          {renderIcon()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='overflow-auto p-4 text-sm'>
+      <PopoverContent className='p-2 text-sm'>
         <div>
           <strong className='font-semibold'>Status:</strong> {run.status}
         </div>

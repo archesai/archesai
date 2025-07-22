@@ -7,7 +7,7 @@ export const InvitationEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   email: z.ZodString
   expiresAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   inviterId: z.ZodString
   organizationId: z.ZodString
   role: z.ZodEnum<{

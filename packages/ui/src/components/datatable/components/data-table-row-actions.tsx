@@ -1,5 +1,3 @@
-'use no memo'
-
 import type { Table } from '@tanstack/table-core'
 
 import type { BaseEntity } from '@archesai/schemas'

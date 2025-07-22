@@ -6,7 +6,7 @@ export const ArtifactEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   credits: z.ZodNumber
   description: z.ZodNullable<z.ZodString>
-  id: z.ZodString
+  id: z.ZodUUID
   mimeType: z.ZodString
   name: z.ZodNullable<z.ZodString>
   organizationId: z.ZodString

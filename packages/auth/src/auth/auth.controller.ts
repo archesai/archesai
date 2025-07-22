@@ -1,8 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 
-import type { SessionEntity, UserEntity } from '@archesai/schemas'
-
 import {
   BetterAuthSessionSchema,
   CreateAccountDtoSchema,
@@ -11,6 +9,7 @@ import {
   DocumentSchemaFactory,
   NoContentResponseSchema,
   NotFoundResponseSchema,
+  SessionEntitySchema,
   // SessionEntitySchema,
   UnauthorizedResponseSchema,
   UpdateEmailChangeDtoSchema,
@@ -129,47 +128,59 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
         description: `This endpoint will register you with your e-mail and password`,
         operationId: 'register',
         response: {
-          201: BetterAuthSessionSchema,
+          201: DocumentSchemaFactory(UserEntitySchema),
           401: UnauthorizedResponseSchema
         },
         summary: `Register`,
         tags: ['Authentication']
       }
     },
-    (req, res) => {
-      return app.authHandler(req, res, async (response, responseBody) => {
-        // Create organization after successful signup
-        if (response.status === 200 && responseBody) {
-          try {
-            const userData = responseBody as {
-              session: SessionEntity
-              user: UserEntity
-            }
-            if (userData.user.id) {
-              const organization = await authService.createOrganization({
-                body: {
-                  name: `${userData.user.email}'s Organization`,
-                  slug: userData.user.email,
-                  userId: userData.user.id
-                }
-              })
-              if (!organization) {
-                throw new Error('Failed to create organization')
-              }
-              await authService.setActiveOrganization({
-                body: {
-                  organizationId: organization.id
-                }
-              })
-            }
-          } catch (orgError) {
-            console.error(
-              'Failed to create organization after signup:',
-              orgError
-            )
-          }
-        }
+    async (req, res) => {
+      const {
+        headers,
+        response: { user }
+      } = await authService.signUpEmail({
+        body: {
+          email: req.body.email,
+          name: req.body.name,
+          password: req.body.password
+        },
+        returnHeaders: true
       })
+
+      const cookie = headers.get('set-cookie')
+
+      const organization = await authService.createOrganization({
+        body: {
+          name: `${user.email}'s Organization`,
+          slug: user.email,
+          userId: user.id
+        },
+        headers: new Headers({
+          Cookie: cookie ?? ''
+        })
+      })
+
+      if (!organization) {
+        throw new Error('Failed to create organization')
+      }
+
+      await authService.setActiveOrganization({
+        body: {
+          organizationId: organization.id,
+          organizationSlug: organization.slug
+        },
+        headers: new Headers({
+          Cookie: cookie ?? ''
+        })
+      })
+
+      setHeaders(headers, res)
+      return {
+        data: {
+          user
+        }
+      }
     }
   )
 
@@ -227,7 +238,7 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
   )
 
   app.get(
-    `/api/auth/get-session`,
+    `/api/auth/session`,
     {
       schema: {
         description: `This endpoint will return the current session information`,
@@ -242,6 +253,38 @@ export const authPlugin: FastifyPluginCallbackZod<AuthPluginOptions> = (
     },
     async (req) => {
       const headers = getHeaders(req.headers)
+      const response = await authService.getSession({
+        headers
+      })
+      return response
+    }
+  )
+
+  app.patch(
+    `/api/auth/session`,
+    {
+      schema: {
+        body: SessionEntitySchema.pick({
+          activeOrganizationId: true
+        }),
+        description: `This endpoint will update the active organization for the current session`,
+        operationId: 'updateSession',
+        response: {
+          200: BetterAuthSessionSchema,
+          401: UnauthorizedResponseSchema
+        },
+        summary: `Update Session`,
+        tags: ['Authentication']
+      }
+    },
+    async (req) => {
+      const headers = getHeaders(req.headers)
+      await authService.setActiveOrganization({
+        body: {
+          organizationId: req.body.activeOrganizationId
+        },
+        headers
+      })
       const response = await authService.getSession({
         headers
       })

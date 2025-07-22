@@ -10,7 +10,10 @@ import {
   useGetSessionSuspense,
   useUpdateOrganization
 } from '@archesai/client'
-import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
+import {
+  ORGANIZATION_ENTITY_KEY,
+  OrganizationEntitySchema
+} from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -18,17 +21,16 @@ export default function OrganizationForm() {
   const {
     data: { session }
   } = useGetSessionSuspense()
-  const { mutateAsync: createOrganization } = useCreateOrganization({})
+  const { mutateAsync: createOrganization } = useCreateOrganization()
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
-  const { error } = useGetOneOrganizationSuspense(session.activeOrganizationId)
-  if (error) {
-    return <div>Organization not found</div>
-  }
+  const {
+    data: { data: organization }
+  } = useGetOneOrganizationSuspense(session.activeOrganizationId)
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: session.activeOrganizationId ?? '',
-      description: 'The name of the organization. This cannot be changed.',
+      defaultValue: organization.name,
+      description: OrganizationEntitySchema.shape.name.description ?? '',
       label: 'Name',
       name: 'name',
       renderControl: (field) => (
@@ -36,6 +38,20 @@ export default function OrganizationForm() {
           {...field}
           disabled={true}
           type='text'
+        />
+      )
+    },
+    {
+      defaultValue: organization.billingEmail ?? '',
+      description:
+        OrganizationEntitySchema.shape.billingEmail.description ?? '',
+      label: 'Billing Email',
+      name: 'billingEmail',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          disabled={true}
+          type='email'
         />
       )
     }
@@ -59,7 +75,7 @@ export default function OrganizationForm() {
         })
       }}
       showCard={true}
-      title={ORGANIZATION_ENTITY_KEY}
+      title={'Organiation'}
     />
   )
 }

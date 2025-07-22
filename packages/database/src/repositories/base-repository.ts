@@ -22,7 +22,12 @@ export function createBaseRepository<
   }
 ) {
   const toEntity = (model: (typeof table)['$inferSelect']): TEntity => {
-    return entitySchema.parse(model)
+    try {
+      return entitySchema.parse(model)
+    } catch (error) {
+      console.log(model, error)
+      throw new Error('Failed to parse model to entity')
+    }
 
     // try {
     //   return Value.Parse(this.entitySchema, model)
@@ -50,7 +55,7 @@ export function createBaseRepository<
         value: value
       },
       page: {
-        number: 0,
+        number: 1,
         size: 1
       },
       sort: [
@@ -111,7 +116,7 @@ export function createBaseRepository<
       const models = await databaseService
         .select(table, whereConditions, orderBy)
         .limit(query.page?.size ?? 10)
-        .offset(query.page?.number ?? 0)
+        .offset(((query.page?.number ?? 1) - 1) * (query.page?.size ?? 10))
       const count = await databaseService.count(table, whereConditions)
       return {
         count: count,

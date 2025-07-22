@@ -1,10 +1,9 @@
 import { useRef, useState } from 'react'
 
 import {
-  CloudUploadIcon,
   Loader2Icon,
   TrashIcon,
-  UploadIcon
+  UploadCloudIcon
 } from '#components/custom/icons'
 // import { toast } from 'sonner'
 
@@ -169,7 +168,7 @@ export default function ImportCard() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <CloudUploadIcon className='h-5 w-5 text-muted-foreground' />
+        <UploadCloudIcon className='h-5 w-5 text-muted-foreground' />
         <p className='text-sm text-muted-foreground'>
           Drag and drop files here, or click to select files
         </p>
@@ -227,7 +226,7 @@ export default function ImportCard() {
                 <span>Uploading...</span>
               </div>
             : <div className='flex gap-2'>
-                <UploadIcon className='h-5 w-5' />
+                <UploadCloudIcon className='h-5 w-5' />
                 <span>Upload</span>
               </div>
             }

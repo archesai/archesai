@@ -4,7 +4,7 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const FileEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   isDir: z.ZodBoolean
   organizationId: z.ZodString
   path: z.ZodString

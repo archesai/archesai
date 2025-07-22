@@ -1,5 +1,3 @@
-'use no memo'
-
 import type { Column } from '@tanstack/react-table'
 import type { DateRange } from 'react-day-picker'
 

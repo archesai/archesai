@@ -4,7 +4,7 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const LabelEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   name: z.ZodString
   organizationId: z.ZodString
   updatedAt: z.ZodString

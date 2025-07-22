@@ -1,13 +1,14 @@
-import type { UserEntity } from '@archesai/schemas'
+import { toast } from 'sonner'
 
 import {
+  useFindManyMembersSuspense,
   useFindManyOrganizationsSuspense,
   useGetSessionSuspense,
-  useUpdateUser
+  useUpdateSession
 } from '@archesai/client'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
-import { ChevronsUpDownIcon, PlusIcon } from '#components/custom/icons'
+import { ChevronsUpDownIcon, PlusSquareIcon } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
 import {
   DropdownMenu,
@@ -25,19 +26,21 @@ import {
 } from '#components/shadcn/sidebar'
 
 export function OrganizationButton() {
-  const { data: sessionData } = useGetSessionSuspense()
-  const { data: organizations } = useFindManyOrganizationsSuspense()
+  const {
+    data: { session, user }
+  } = useGetSessionSuspense()
+  const { data: memberships } = useFindManyMembersSuspense({
+    filter: {
+      field: 'userId',
+      operator: 'eq',
+      type: 'condition',
+      value: user.id
+    }
+  })
 
-  const { mutateAsync: updateUser } = useUpdateUser()
+  const { mutateAsync: updateSession } = useUpdateSession()
 
   const { isMobile } = useSidebar()
-
-  const handleSwitchOrganization = async (_organizationId: string) => {
-    await updateUser({
-      data: {} as UserEntity,
-      id: 'organization'
-    })
-  }
 
   return (
     <SidebarMenu>
@@ -57,11 +60,9 @@ export function OrganizationButton() {
                 </div>
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>
-                  {sessionData.user.name}
-                </span>
+                <span className='truncate font-medium'>{user.name}</span>
                 <span className='truncate text-xs'>
-                  {sessionData.session.activeOrganizationId}
+                  {session.activeOrganizationId}
                 </span>
               </div>
               <ChevronsUpDownIcon className='ml-auto' />
@@ -76,23 +77,37 @@ export function OrganizationButton() {
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
-            {organizations.data.map((organization) => (
+            {memberships.data.map((membership) => (
               <DropdownMenuItem
                 className='gap-2 p-2'
-                key={organization.id}
+                key={membership.id}
                 onClick={async () => {
-                  await handleSwitchOrganization(organization.id)
+                  await updateSession(
+                    {
+                      data: {
+                        activeOrganizationId: membership.organizationId
+                      }
+                    },
+                    {
+                      onSuccess: () => {
+                        toast.success(
+                          `Switched to organization: ${membership.organizationId}`
+                        )
+                      }
+                    }
+                  )
                 }}
               >
-                {organization.name}
-                {sessionData.session.activeOrganizationId ===
-                  organization.id && <Badge>Current</Badge>}
+                {membership.organizationId}
+                {session.activeOrganizationId === membership.organizationId && (
+                  <Badge>Current</Badge>
+                )}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem className='gap-2 p-2'>
               <div className='flex size-6 items-center justify-center rounded-md border bg-transparent'>
-                <PlusIcon className='size-4' />
+                <PlusSquareIcon className='size-4' />
               </div>
               <div className='font-medium text-muted-foreground'>
                 New Organization

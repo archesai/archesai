@@ -9,7 +9,7 @@ export const PlanDtoSchema: z.ZodObject<{
   createdAt: z.ZodString
   currency: z.ZodString
   description: z.ZodOptional<z.ZodNullable<z.ZodString>>
-  id: z.ZodString
+  id: z.ZodUUID
   metadata: z.ZodObject<{
     key: z.ZodOptional<
       z.ZodEnum<{

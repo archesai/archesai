@@ -11,7 +11,10 @@
 export interface AccountEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -64,7 +67,10 @@ export interface AccountEntityInput {
 export interface ApiTokenEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -164,7 +170,10 @@ export const InvitationEntityInputRole = {
 export interface InvitationEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -201,7 +210,10 @@ export const MemberEntityInputRole = {
 export interface MemberEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -234,12 +246,18 @@ export const OrganizationEntityInputPlan = {
 export interface OrganizationEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
+  /**
+   * The billing email to use for the organization
+   * @nullable
+   */
+  billingEmail: string | null
   /** The number of credits you have remaining for this organization */
   credits: number
   /**
@@ -271,7 +289,10 @@ export interface OrganizationEntityInput {
 export interface SessionEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -304,7 +325,10 @@ export interface SessionEntityInput {
 export interface UserEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -332,7 +356,10 @@ export interface UserEntityInput {
 export interface VerificationTokenEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -613,7 +640,10 @@ export interface SearchQueryInput {
 export interface ArtifactEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -661,7 +691,10 @@ export interface ArtifactEntityInput {
 export interface LabelEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -685,7 +718,10 @@ export type PipelineStepEntityInputPrerequisitesItem = {
 export interface PipelineStepEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -701,7 +737,10 @@ export interface PipelineStepEntityInput {
 export interface PipelineEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -736,7 +775,10 @@ export const RunEntityInputStatus = {
 export interface RunEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -775,7 +817,10 @@ export interface RunEntityInput {
 export interface ToolEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -797,7 +842,10 @@ export interface ToolEntityInput {
 export interface FileEntityInput {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1677,7 +1725,10 @@ export interface ToolsSortInput {
 export interface AccountEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1730,7 +1781,10 @@ export interface AccountEntity {
 export interface ApiTokenEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1830,7 +1884,10 @@ export const InvitationEntityRole = {
 export interface InvitationEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1867,7 +1924,10 @@ export const MemberEntityRole = {
 export interface MemberEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1900,12 +1960,18 @@ export const OrganizationEntityPlan = {
 export interface OrganizationEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
-  /** The billing email to use for the organization */
-  billingEmail: string
+  /**
+   * The billing email to use for the organization
+   * @nullable
+   */
+  billingEmail: string | null
   /** The number of credits you have remaining for this organization */
   credits: number
   /**
@@ -1937,7 +2003,10 @@ export interface OrganizationEntity {
 export interface SessionEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1970,7 +2039,10 @@ export interface SessionEntity {
 export interface UserEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -1998,7 +2070,10 @@ export interface UserEntity {
 export interface VerificationTokenEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2278,7 +2353,10 @@ export interface SearchQuery {
 export interface ArtifactEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2326,7 +2404,10 @@ export interface ArtifactEntity {
 export interface LabelEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2350,7 +2431,10 @@ export type PipelineStepEntityPrerequisitesItem = {
 export interface PipelineStepEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2366,7 +2450,10 @@ export interface PipelineStepEntity {
 export interface PipelineEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2401,7 +2488,10 @@ export const RunEntityStatus = {
 export interface RunEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2440,7 +2530,10 @@ export interface RunEntity {
 export interface ToolEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -2462,7 +2555,10 @@ export interface ToolEntity {
 export interface FileEntity {
   /** The date this item was created */
   createdAt: string
-  /** The ID of the item */
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   id: string
   /** The date this item was last updated */
   updatedAt: string
@@ -3344,8 +3440,7 @@ export type RegisterBody = {
 }
 
 export type Register201 = {
-  session: SessionEntity
-  user: UserEntity
+  data: UserEntity
 }
 
 export type LoginBody = {
@@ -3363,6 +3458,19 @@ export type Login200 = {
 }
 
 export type GetSession200 = {
+  session: SessionEntity
+  user: UserEntity
+}
+
+export type UpdateSessionBody = {
+  /**
+   * The active organization ID
+   * @nullable
+   */
+  activeOrganizationId: string | null
+}
+
+export type UpdateSession200 = {
   session: SessionEntity
   user: UserEntity
 }
@@ -3582,9 +3690,15 @@ export type UpdateMember200 = {
 }
 
 export type CreateOrganizationBody = {
-  /** The billing email to use for the organization */
-  billingEmail: string
-  /** The ID of the item */
+  /**
+   * The billing email to use for the organization
+   * @nullable
+   */
+  billingEmail: string | null
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   organizationId: string
 }
 
@@ -3617,9 +3731,15 @@ export type GetOneOrganization200 = {
 }
 
 export type UpdateOrganizationBody = {
-  /** The billing email to use for the organization */
-  billingEmail?: string
-  /** The ID of the item */
+  /**
+   * The billing email to use for the organization
+   * @nullable
+   */
+  billingEmail?: string | null
+  /**
+   * The ID of the item
+   * @pattern ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000)$
+   */
   organizationId?: string
 }
 

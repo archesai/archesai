@@ -3,7 +3,6 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import type { GetSession200 } from '@archesai/client'
 
 import { getGetSessionQueryOptions } from '@archesai/client'
-import { Separator } from '@archesai/ui/components/shadcn/separator'
 import {
   SidebarInset,
   SidebarProvider
@@ -48,8 +47,7 @@ export default function AppLayout() {
       {/* This is the main content area. */}
       <SidebarInset>
         <PageHeader siteRoutes={siteRoutes} />
-        <Separator />
-        <div className='flex flex-1 flex-col overflow-y-auto p-4'>
+        <div className='flex flex-1 flex-col overflow-y-auto p-4 py-2'>
           <Outlet />
         </div>
       </SidebarInset>

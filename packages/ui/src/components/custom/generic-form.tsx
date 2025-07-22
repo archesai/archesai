@@ -72,7 +72,6 @@ export function GenericForm<
 >(props: GenericFormProps<CreateDto, UpdateDto>) {
   const {
     description,
-    entityKey,
     fields,
     isUpdateForm,
     // mutateOptions,
@@ -127,7 +126,9 @@ export function GenericForm<
         noValidate
         onSubmit={form.handleSubmit(handleSubmit)}
       >
-        <Card className={cn(!showCard && 'border-none shadow-none')}>
+        <Card
+          className={cn(!showCard && 'border-none shadow-none', 'min-w-sm')}
+        >
           <CardHeader>
             {title && <CardTitle>{title}</CardTitle>}
             {description && <CardDescription>{description}</CardDescription>}
@@ -135,7 +136,7 @@ export function GenericForm<
 
           <Separator />
 
-          <CardContent className='flex flex-col gap-6 p-4'>
+          <CardContent className='flex flex-col gap-4 p-4'>
             {props.preContent}
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
@@ -180,9 +181,7 @@ export function GenericForm<
               {form.formState.isSubmitting && (
                 <Loader2Icon className='animate-spin' />
               )}
-              <span className='capitalize'>
-                {isUpdateForm ? 'Update' : 'Create'} {entityKey}
-              </span>
+              <span className='capitalize'>Submit</span>
             </Button>
             <Button
               // disabled={

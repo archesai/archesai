@@ -9,7 +9,7 @@ export const PipelineStepEntitySchema: z.ZodObject<{
       pipelineStepId: z.ZodString
     }>
   >
-  id: z.ZodString
+  id: z.ZodUUID
   pipelineId: z.ZodString
   prerequisites: z.ZodArray<
     z.ZodObject<{
@@ -39,7 +39,7 @@ export const PipelineStepEntitySchema: z.ZodObject<{
 export const PipelineEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   description: z.ZodNullable<z.ZodString>
-  id: z.ZodString
+  id: z.ZodUUID
   name: z.ZodNullable<z.ZodString>
   organizationId: z.ZodString
   updatedAt: z.ZodString

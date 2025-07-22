@@ -23,6 +23,7 @@ async function main() {
     artifacts: schema.ArtifactTable,
     invitations: schema.InvitationTable,
     labels: schema.LabelTable,
+    members: schema.MemberTable,
     organizations: schema.OrganizationTable,
     pipelines: schema.PipelineTable,
     pipelineSteps: schema.PipelineStepTable,
@@ -34,17 +35,109 @@ async function main() {
   await seed(db, mainTables, {
     count: 100
   }).refine((f) => ({
+    accounts: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    apiToken: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
     artifacts: {
       columns: {
         description: f.loremIpsum(),
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        }),
         mimeType: f.valuesFromArray({
           values: ['image/png', 'image/jpeg', 'application/pdf', 'text/plain']
         }),
         name: f.jobTitle()
       }
     },
+    invitations: {
+      columns: {
+        email: f.email(),
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    labels: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    members: {
+      columns: {
+        email: f.email(),
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    organizations: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        }),
+        name: f.companyName()
+      }
+    },
+    pipelines: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        }),
+        name: f.jobTitle()
+      }
+    },
+    pipelineSteps: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    runs: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
+    sessions: {
+      columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        })
+      }
+    },
     tools: {
       columns: {
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        }),
         inputMimeType: f.valuesFromArray({
           values: [
             'text/plain',
@@ -63,15 +156,17 @@ async function main() {
             'video/mp4'
           ]
         })
-      },
-      count: 5
+      }
     },
     users: {
       columns: {
         email: f.email(),
+        id: f.valuesFromArray({
+          isUnique: true,
+          values: Array.from({ length: 100 }, () => crypto.randomUUID())
+        }),
         name: f.firstName()
-      },
-      count: 10
+      }
     }
   }))
 

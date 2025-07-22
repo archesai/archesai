@@ -165,4 +165,4 @@ strictDepBuilds: true
 
 strictPeerDependencies: true
 
-useNodeVersion: 24.4.0
+useNodeVersion: 24.4.1

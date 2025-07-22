@@ -14,6 +14,7 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
         domain: '.archesai.test', // your domain
         enabled: true
       },
+      generateId: false,
       useSecureCookies: true
     },
 
@@ -73,7 +74,8 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
     getSession: auth.api.getSession,
     handler: auth.handler,
     setActiveOrganization: auth.api.setActiveOrganization,
-    signInEmail: auth.api.signInEmail
+    signInEmail: auth.api.signInEmail,
+    signUpEmail: auth.api.signUpEmail
   }
 }
 

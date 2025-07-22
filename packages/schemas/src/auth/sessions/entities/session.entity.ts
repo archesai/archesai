@@ -6,7 +6,7 @@ export const SessionEntitySchema: z.ZodObject<{
   activeOrganizationId: z.ZodNullable<z.ZodString>
   createdAt: z.ZodString
   expiresAt: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   ipAddress: z.ZodNullable<z.ZodString>
   token: z.ZodString
   updatedAt: z.ZodString

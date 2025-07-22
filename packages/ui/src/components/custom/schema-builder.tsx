@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { PlusIcon, TrashIcon } from '#components/custom/icons'
+import { PlusSquareIcon, TrashIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { Input } from '#components/shadcn/input'
 import { Label } from '#components/shadcn/label'
@@ -94,7 +94,7 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
         onClick={addField}
         variant='outline'
       >
-        <PlusIcon className='mr-2 h-4 w-4' />
+        <PlusSquareIcon className='mr-2 h-4 w-4' />
         Add Field
       </Button>
     </div>

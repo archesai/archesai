@@ -1,6 +1,7 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
 
+import { MoonIcon, SunIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 
 export function ModeToggle() {
@@ -10,37 +11,26 @@ export function ModeToggle() {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   }, [resolvedTheme, setTheme])
 
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <div />
+  }
+
   return (
     <Button
-      className='group/toggle extend-touch-target text-muted-foreground'
+      className='group/toggle extend-touch-target'
       onClick={toggleTheme}
       size='sm'
       title='Toggle theme'
       variant='outline'
     >
-      <svg
-        className='size-4.5'
-        fill='none'
-        height='24'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-        viewBox='0 0 24 24'
-        width='24'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <path
-          d='M0 0h24v24H0z'
-          fill='none'
-          stroke='none'
-        />
-        <path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0' />
-        <path d='M12 3l0 18' />
-        <path d='M12 9l4.65 -4.65' />
-        <path d='M12 14.3l7.37 -7.37' />
-        <path d='M12 19.6l8.85 -8.85' />
-      </svg>
+      {resolvedTheme === 'dark' ?
+        <MoonIcon />
+      : <SunIcon />}
       <span className='sr-only'>Toggle theme</span>
     </Button>
   )

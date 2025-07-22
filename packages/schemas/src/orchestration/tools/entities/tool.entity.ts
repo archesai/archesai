@@ -5,7 +5,7 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 export const ToolEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
   description: z.ZodString
-  id: z.ZodString
+  id: z.ZodUUID
   inputMimeType: z.ZodString
   name: z.ZodString
   organizationId: z.ZodString
