@@ -9,20 +9,13 @@ import type { PipelineRepository } from '#pipelines/pipeline.repository'
 export const createPipelinesService = (
   pipelineRepository: PipelineRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(
-    pipelineRepository,
-    websocketsService,
-    emitPipelineMutationEvent
-  )
-
-const emitPipelineMutationEvent = (
-  entity: PipelineEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
-  })
+) => {
+  const emitPipelineMutationEvent = (entity: PipelineEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
+    })
+  }
+  return createBaseService(pipelineRepository, emitPipelineMutationEvent)
 }
 
 export type PipelinesService = ReturnType<typeof createPipelinesService>

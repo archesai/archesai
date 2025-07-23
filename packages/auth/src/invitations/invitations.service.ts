@@ -10,12 +10,13 @@ export const createInvitationsService = (
   invitationRepository: InvitationRepository,
   websocketsService: WebsocketsService
 ) => {
+  const emitInvitationMutationEvent = (entity: InvitationEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, INVITATION_ENTITY_KEY]
+    })
+  }
   return {
-    ...createBaseService(
-      invitationRepository,
-      websocketsService,
-      emitInvitationMutationEvent
-    ),
+    ...createBaseService(invitationRepository, emitInvitationMutationEvent),
     async accept(id: string, user: UserEntity): Promise<InvitationEntity> {
       const invitation = await invitationRepository.findOne(id)
       if (invitation.email !== user.email) {
@@ -28,15 +29,6 @@ export const createInvitationsService = (
       })
     }
   }
-}
-
-const emitInvitationMutationEvent = (
-  entity: InvitationEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, INVITATION_ENTITY_KEY]
-  })
 }
 
 export type InvitationsService = ReturnType<typeof createInvitationsService>

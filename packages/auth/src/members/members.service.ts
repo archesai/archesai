@@ -9,20 +9,13 @@ import type { MemberRepository } from '#members/member.repository'
 export const createMembersService = (
   memberRepository: MemberRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(
-    memberRepository,
-    websocketsService,
-    emitMemberMutationEvent
-  )
-
-const emitMemberMutationEvent = (
-  entity: MemberEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]
-  })
+) => {
+  const emitMemberMutationEvent = (entity: MemberEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]
+    })
+  }
+  return createBaseService(memberRepository, emitMemberMutationEvent)
 }
 
 export type MembersService = ReturnType<typeof createMembersService>

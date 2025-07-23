@@ -1,7 +1,4 @@
-// import type { BaseRepository } from '#common/base-repository'
 import type { BaseEntity, SearchQuery } from '@archesai/schemas'
-
-import type { WebsocketsService } from '#websockets/websockets.service'
 
 export type BaseService<
   TEntity extends BaseEntity,
@@ -37,18 +34,12 @@ export function createBaseService<
   TSelect extends BaseEntity
 >(
   repository: IBaseRepository<TEntity, TInsert, TSelect>,
-  websocketsService: undefined | WebsocketsService,
-  emitMutationEvent: (
-    entity: TEntity,
-    websocketsService: WebsocketsService
-  ) => void
+  emitMutationEvent: (entity: TEntity) => void
 ) {
   return {
     async create(data: TInsert): Promise<TEntity> {
       const entity = await repository.create(data)
-      if (websocketsService) {
-        emitMutationEvent(entity, websocketsService)
-      }
+      emitMutationEvent(entity)
       return entity
     },
 
@@ -56,19 +47,15 @@ export function createBaseService<
       data: TInsert[]
     ): Promise<{ count: number; data: TEntity[] }> {
       const result = await repository.createMany(data)
-      if (websocketsService) {
-        result.data.forEach((entity) => {
-          emitMutationEvent(entity, websocketsService)
-        })
-      }
+      result.data.forEach((entity) => {
+        emitMutationEvent(entity)
+      })
       return result
     },
 
     async delete(id: string): Promise<TEntity> {
       const entity = await repository.delete(id)
-      if (websocketsService) {
-        emitMutationEvent(entity, websocketsService)
-      }
+      emitMutationEvent(entity)
       return entity
     },
 
@@ -76,11 +63,9 @@ export function createBaseService<
       query: SearchQuery<TSelect>
     ): Promise<{ count: number; data: TEntity[] }> {
       const result = await repository.deleteMany(query)
-      if (websocketsService) {
-        result.data.forEach((entity) => {
-          emitMutationEvent(entity, websocketsService)
-        })
-      }
+      result.data.forEach((entity) => {
+        emitMutationEvent(entity)
+      })
       return result
     },
 
@@ -92,15 +77,12 @@ export function createBaseService<
     },
 
     async findOne(id: string): Promise<TEntity> {
-      const found = await repository.findOne(id)
-      return found
+      return repository.findOne(id)
     },
 
     async update(id: string, data: TInsert): Promise<TEntity> {
       const entity = await repository.update(id, data)
-      if (websocketsService) {
-        emitMutationEvent(entity, websocketsService)
-      }
+      emitMutationEvent(entity)
       return entity
     },
 
@@ -109,11 +91,9 @@ export function createBaseService<
       query: SearchQuery<TSelect>
     ): Promise<{ count: number; data: TEntity[] }> {
       const result = await repository.updateMany(data, query)
-      if (websocketsService) {
-        result.data.forEach((entity) => {
-          emitMutationEvent(entity, websocketsService)
-        })
-      }
+      result.data.forEach((entity) => {
+        emitMutationEvent(entity)
+      })
       return result
     }
   }

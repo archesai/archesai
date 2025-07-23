@@ -9,20 +9,13 @@ import type { AccountRepository } from '#accounts/account.repository'
 export const createAccountsService = (
   accountRepository: AccountRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(
-    accountRepository,
-    websocketsService,
-    emitAccountsMutationEvent
-  )
-
-const emitAccountsMutationEvent = (
-  entity: AccountEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.userId, 'update', {
-    queryKey: ['users', entity.userId, ACCOUNT_ENTITY_KEY]
-  })
+) => {
+  const emitAccountsMutationEvent = (entity: AccountEntity): void => {
+    websocketsService.broadcastEvent(entity.userId, 'update', {
+      queryKey: ['users', entity.userId, ACCOUNT_ENTITY_KEY]
+    })
+  }
+  return createBaseService(accountRepository, emitAccountsMutationEvent)
 }
 
 export type AccountsService = ReturnType<typeof createAccountsService>

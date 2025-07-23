@@ -9,20 +9,13 @@ import type { ArtifactRepository } from '#artifacts/artifact.repository'
 export const createArtifactsService = (
   artifactRepository: ArtifactRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(
-    artifactRepository,
-    websocketsService,
-    emitArtifactMutationEvent
-  )
-
-const emitArtifactMutationEvent = (
-  entity: ArtifactEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, ARTIFACT_ENTITY_KEY]
-  })
+) => {
+  const emitArtifactMutationEvent = (entity: ArtifactEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, ARTIFACT_ENTITY_KEY]
+    })
+  }
+  return createBaseService(artifactRepository, emitArtifactMutationEvent)
 }
 
 export type ArtifactsService = ReturnType<typeof createArtifactsService>

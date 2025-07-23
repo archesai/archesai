@@ -9,15 +9,13 @@ import type { UserRepository } from '#users/user.repository'
 export const createUsersService = (
   userRepository: UserRepository,
   websocketsService: WebsocketsService
-) => createBaseService(userRepository, websocketsService, emitUserMutationEvent)
-
-const emitUserMutationEvent = (
-  entity: UserEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.id, 'update', {
-    queryKey: ['users', USER_ENTITY_KEY]
-  })
+) => {
+  const emitUserMutationEvent = (entity: UserEntity): void => {
+    websocketsService.broadcastEvent(entity.id, 'update', {
+      queryKey: ['users', USER_ENTITY_KEY]
+    })
+  }
+  return createBaseService(userRepository, emitUserMutationEvent)
 }
 
 export type UsersService = ReturnType<typeof createUsersService>

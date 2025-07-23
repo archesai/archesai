@@ -11,12 +11,13 @@ export const createToolsService = (
   toolRepository: ToolRepository,
   websocketsService: WebsocketsService
 ) => {
+  const emitToolMutationEvent = (entity: ToolEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
+    })
+  }
   return {
-    ...createBaseService(
-      toolRepository,
-      websocketsService,
-      emitToolMutationEvent
-    ),
+    ...createBaseService(toolRepository, emitToolMutationEvent),
     async createDefaultTools(organizationId: string) {
       const defaultTools: ToolInsertModel[] = [
         {
@@ -61,20 +62,11 @@ export const createToolsService = (
 
       const result = await toolRepository.createMany(defaultTools)
       result.data.forEach((tool) => {
-        emitToolMutationEvent(tool, websocketsService)
+        emitToolMutationEvent(tool)
       })
       return result
     }
   }
-}
-
-const emitToolMutationEvent = (
-  entity: ToolEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
-  })
 }
 
 export type ToolsService = ReturnType<typeof createToolsService>

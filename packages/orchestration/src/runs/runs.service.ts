@@ -9,15 +9,13 @@ import type { RunRepository } from '#runs/run.repository'
 export const createRunsService = (
   runRepository: RunRepository,
   websocketsService: WebsocketsService
-) => createBaseService(runRepository, websocketsService, emitRunMutationEvent)
-
-const emitRunMutationEvent = (
-  entity: RunEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
-  })
+) => {
+  const emitRunMutationEvent = (entity: RunEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
+    })
+  }
+  return createBaseService(runRepository, emitRunMutationEvent)
 }
 
 export type RunsService = ReturnType<typeof createRunsService>

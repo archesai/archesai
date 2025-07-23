@@ -9,20 +9,16 @@ import type { OrganizationRepository } from '#organizations/organization.reposit
 export const createOrganizationsService = (
   organizationRepository: OrganizationRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(
+) => {
+  const emitOrganizationMutationEvent = (entity: OrganizationEntity): void => {
+    websocketsService.broadcastEvent(entity.id, 'update', {
+      queryKey: ['organizations', entity.id, ORGANIZATION_ENTITY_KEY]
+    })
+  }
+  return createBaseService(
     organizationRepository,
-    websocketsService,
     emitOrganizationMutationEvent
   )
-
-const emitOrganizationMutationEvent = (
-  entity: OrganizationEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.id, 'update', {
-    queryKey: ['organizations', entity.id, ORGANIZATION_ENTITY_KEY]
-  })
 }
 
 export type OrganizationsService = ReturnType<typeof createOrganizationsService>

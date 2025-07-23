@@ -9,16 +9,13 @@ import type { LabelRepository } from '#labels/label.repository'
 export const createLabelsService = (
   labelRepository: LabelRepository,
   websocketsService: WebsocketsService
-) =>
-  createBaseService(labelRepository, websocketsService, emitLabelMutationEvent)
-
-const emitLabelMutationEvent = (
-  entity: LabelEntity,
-  websocketsService: WebsocketsService
-): void => {
-  websocketsService.broadcastEvent(entity.organizationId, 'update', {
-    queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
-  })
+) => {
+  const emitLabelMutationEvent = (entity: LabelEntity): void => {
+    websocketsService.broadcastEvent(entity.organizationId, 'update', {
+      queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]
+    })
+  }
+  return createBaseService(labelRepository, emitLabelMutationEvent)
 }
 
 export type LabelsService = ReturnType<typeof createLabelsService>

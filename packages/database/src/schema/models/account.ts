@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
+import type { AccountEntity } from '@archesai/schemas'
+
 import { ACCOUNT_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
@@ -37,3 +39,6 @@ export const accountRelations = relations(AccountTable, ({ one }) => ({
     references: [UserTable.id]
   })
 }))
+
+export type zAccountCheck =
+  AccountEntity extends AccountSelectModel ? true : false
