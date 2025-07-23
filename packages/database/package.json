@@ -28,7 +28,6 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "@libsql/client": "catalog:database",
     "drizzle-orm": "catalog:database",
     "pg": "catalog:database",
     "tslib": "catalog:"
