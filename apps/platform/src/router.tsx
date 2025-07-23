@@ -24,7 +24,6 @@ export function createRouter() {
         placeholderData: keepPreviousData,
         refetchOnReconnect: () => !queryClient.isMutating(),
         refetchOnWindowFocus: false,
-        retry: 0,
         staleTime: 1000 * 60 * 2 // 2 minutes,
       }
     },
@@ -51,7 +50,8 @@ export function createRouter() {
   return routerWithQueryClient(
     createTanStackRouter({
       context: {
-        queryClient
+        queryClient,
+        session: null
       },
       defaultErrorComponent: DefaultCatchBoundary,
       defaultNotFoundComponent: () => <NotFound />,

@@ -5,7 +5,7 @@ import { Separator } from '#components/shadcn/separator'
 import { SidebarTrigger } from '#components/shadcn/sidebar'
 import { BreadCrumbs } from '#layouts/page-header/components/breadcrumbs'
 import { CommandMenu } from '#layouts/page-header/components/command-menu'
-import { ModeToggle } from '#layouts/page-header/components/mode-toggle'
+import { ThemeToggle } from '#layouts/page-header/components/theme-toggle'
 
 export interface PageHeaderProps {
   siteRoutes: SiteRoute[]
@@ -24,7 +24,7 @@ export const PageHeader = ({ siteRoutes }: PageHeaderProps) => {
       </div>
       <div className='flex items-center justify-end gap-2'>
         <CommandMenu siteRoutes={siteRoutes} />
-        <ModeToggle />
+        <ThemeToggle />
         <UserButton size={'sm'} />
       </div>
     </header>

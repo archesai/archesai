@@ -1,14 +1,24 @@
-import { createIsomorphicFn, createServerFn } from '@tanstack/react-start'
-import { getHeaders as getServerHeaders } from '@tanstack/react-start/server'
+import { createServerFn } from '@tanstack/react-start'
+import { getWebRequest } from '@tanstack/react-start/server'
 
-export const getHeaders = createServerFn({ method: 'GET' }).handler(() => {
-  return getServerHeaders()
-})
+import { getSession } from '@archesai/client'
 
-export const getHeadersIsomorphic = createIsomorphicFn()
-  .client(() => {
-    return getHeaders()
-  })
-  .server(() => {
-    return getServerHeaders()
-  })
+export const getSessionServer = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { headers } = getWebRequest()
+    try {
+      const { session, user } = await getSession({
+        headers,
+        credentials: 'include'
+      })
+      if (user && session) {
+        const sessionData = {
+          user,
+          session
+        }
+        return sessionData
+      }
+    } catch {}
+    return null
+  }
+)

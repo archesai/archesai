@@ -3,6 +3,7 @@ import type { BetterAuthPlugin } from 'better-auth'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
+import { reactStartCookies } from 'better-auth/react-start'
 
 import type { DrizzleDatabaseService } from '@archesai/database'
 
@@ -42,7 +43,8 @@ export const createAuthService = (databaseService: DrizzleDatabaseService) => {
             modelName: 'OrganizationTable'
           }
         }
-      }) satisfies BetterAuthPlugin
+      }) satisfies BetterAuthPlugin,
+      reactStartCookies()
     ],
     session: {
       cookieCache: {

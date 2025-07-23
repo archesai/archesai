@@ -1,8 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
-import type { GetSession200 } from '@archesai/client'
-
-import { getGetSessionQueryOptions } from '@archesai/client'
 import {
   SidebarInset,
   SidebarProvider
@@ -10,30 +7,12 @@ import {
 import { AppSidebar } from '@archesai/ui/layouts/app-sidebar/app-sidebar'
 import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 
-import { getHeadersIsomorphic } from '#lib/get-headers'
 import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
-  beforeLoad: async ({ context, location }) => {
-    try {
-      const headers = await getHeadersIsomorphic()
-      const res = (await context.queryClient.fetchQuery(
-        getGetSessionQueryOptions({
-          request: {
-            headers: [['cookie', headers.cookie ?? '']]
-          }
-        })
-      )) as GetSession200 | null | undefined
-      if (!res) {
-        throw new Error('Session not found')
-      }
-    } catch (error) {
-      console.error('Error fetching session:', error)
-      redirect({
-        search: location.search,
-        throw: true,
-        to: '/auth/login'
-      })
+  beforeLoad: async ({ context }) => {
+    if (!context.session?.user) {
+      throw redirect({ to: '/auth/login' })
     }
   },
   component: AppLayout

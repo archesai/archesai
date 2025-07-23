@@ -1,10 +1,21 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
 import { useLinkComponent } from '@archesai/ui/hooks/use-link'
 
 export const Route = createFileRoute('/auth')({
-  component: AuthenticationLayout
+  component: AuthenticationLayout,
+  beforeLoad: async ({ context }) => {
+    const REDIRECT_URL = '/'
+    if (context.session?.user) {
+      throw redirect({
+        to: REDIRECT_URL
+      })
+    }
+    return {
+      redirectUrl: REDIRECT_URL
+    }
+  }
 })
 
 export default function AuthenticationLayout() {

@@ -33,6 +33,7 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
         {isRoot ?
           <Link to='/'>Home</Link>
         : <Button
+            asChild
             size='sm'
             variant={'ghost'}
           >

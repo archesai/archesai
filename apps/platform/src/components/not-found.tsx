@@ -31,10 +31,11 @@ export default function NotFound({ children }: { children?: React.ReactNode }) {
               <Link to='/'>Go Home</Link>
             </Button>
             <Button
-              asChild
+              type='button'
               className='flex-1'
+              onClick={() => window.history.back()}
             >
-              <Link to='/'>Go Home</Link>
+              Go back
             </Button>
           </div>
         </CardContent>

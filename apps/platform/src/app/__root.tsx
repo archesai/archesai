@@ -10,6 +10,9 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
+import type { SessionEntity, UserEntity } from '@archesai/schemas'
+
+import { getGetSessionQueryKey } from '@archesai/client'
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
 import { LinkProvider } from '@archesai/ui/hooks/use-link'
 import { seo } from '@archesai/ui/lib/seo'
@@ -18,11 +21,25 @@ import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
 import { SmartLink } from '#components/smart-links'
+import { getSessionServer } from '#lib/get-headers'
 import globalsCss from '../styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
+  session: {
+    user: UserEntity
+    session: SessionEntity
+  } | null
 }>()({
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.fetchQuery({
+      queryKey: getGetSessionQueryKey(),
+      queryFn: ({ signal }) => getSessionServer({ signal })
+    })
+    return {
+      session
+    }
+  },
   component: RootComponent,
   errorComponent: (props) => {
     return (
