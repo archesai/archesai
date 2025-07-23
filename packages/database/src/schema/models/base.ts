@@ -1,5 +1,7 @@
 import { sql } from 'drizzle-orm'
-import { text, timestamp } from 'drizzle-orm/pg-core'
+import { pgEnum, text, timestamp } from 'drizzle-orm/pg-core'
+
+import { PlanTypes, RoleTypes, StatusTypes } from '@archesai/schemas'
 
 export const baseFields = {
   createdAt: timestamp({
@@ -16,3 +18,9 @@ export const baseFields = {
     .defaultNow()
     .notNull()
 }
+
+export const roleEnum = pgEnum('role', RoleTypes)
+
+export const planEnum = pgEnum('planType', PlanTypes)
+
+export const statusEnum = pgEnum('runStatus', StatusTypes)

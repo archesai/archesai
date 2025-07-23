@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
@@ -15,7 +15,7 @@ import { createLabelRepository } from '#labels/label.repository'
 import { createLabelsService } from '#labels/labels.service'
 
 export interface LabelsPluginOptions {
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
   websocketsService: WebsocketsService
 }
 

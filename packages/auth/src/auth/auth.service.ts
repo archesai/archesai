@@ -5,9 +5,9 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
 
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
-export const createAuthService = (databaseService: DrizzleDatabaseService) => {
+export const createAuthService = (databaseService: DatabaseService) => {
   const auth = betterAuth({
     account: {
       modelName: 'AccountTable'

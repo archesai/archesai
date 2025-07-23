@@ -1,4 +1,7 @@
-export * from '#adapters/drizzle-database.service'
-export * from '#lib/clients'
-export * from '#repositories/base-repository'
+export {
+  createDatabaseService,
+  DatabaseService
+} from '#lib/drizzle-database.service'
+export { createBaseRepository } from '#lib/base-repository'
+export type { BaseRepository } from '#lib/base-repository'
 export * from '#schema/index'

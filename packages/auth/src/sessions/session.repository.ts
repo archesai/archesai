@@ -1,15 +1,10 @@
-import type {
-  DrizzleDatabaseService,
-  SessionSelectModel
-} from '@archesai/database'
+import type { DatabaseService, SessionSelectModel } from '@archesai/database'
 import type { SessionEntity } from '@archesai/schemas'
 
 import { createBaseRepository, SessionTable } from '@archesai/database'
 import { SessionEntitySchema } from '@archesai/schemas'
 
-export const createSessionRepository = (
-  databaseService: DrizzleDatabaseService
-) => {
+export const createSessionRepository = (databaseService: DatabaseService) => {
   return createBaseRepository<SessionEntity, SessionSelectModel>(
     databaseService,
     SessionTable,

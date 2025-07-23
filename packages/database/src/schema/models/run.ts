@@ -5,9 +5,8 @@ import type { RunEntity } from '@archesai/schemas'
 
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
-import { runStatus } from '#schema/enums'
 import { ArtifactTable } from '#schema/models/artifact'
-import { baseFields } from '#schema/models/base'
+import { baseFields, statusEnum } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
 import { PipelineTable } from '#schema/models/pipeline'
 import { RunToArtifactTable } from '#schema/models/run-to-artifact'
@@ -29,7 +28,7 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
   }),
   progress: doublePrecision().default(0).notNull(),
   startedAt: timestamp({ mode: 'string', precision: 3 }),
-  status: runStatus().default('QUEUED').notNull(),
+  status: statusEnum().default('QUEUED').notNull(),
   toolId: text()
     .notNull()
     .references(() => ToolTable.id, {

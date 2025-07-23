@@ -4,7 +4,6 @@
 // import userEvent from '@archesai/jest/user-event' // FIXME (these are uninstalled)
 
 // import type { BaseEntity } from '@archesai/schemas'
-// import * as hooks from '#hooks/use-select-items' // Import hooks module for spying
 // import { toSentenceCase } from '#lib/utils'
 
 // import { DataTable } from './data-table'

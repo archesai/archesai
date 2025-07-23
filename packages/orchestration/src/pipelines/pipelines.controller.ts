@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
@@ -15,7 +15,7 @@ import { createPipelineRepository } from '#pipelines/pipeline.repository'
 import { createPipelinesService } from '#pipelines/pipelines.service'
 
 export interface PipelinesPluginOptions {
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
   websocketsService: WebsocketsService
 }
 

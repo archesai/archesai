@@ -5,8 +5,7 @@ import type { InvitationEntity } from '@archesai/schemas'
 
 import { INVITATION_ENTITY_KEY } from '@archesai/schemas'
 
-import { roleEnum } from '#schema/enums'
-import { baseFields } from '#schema/models/base'
+import { baseFields, roleEnum } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
 import { UserTable } from '#schema/models/user'
 

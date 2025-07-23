@@ -4,8 +4,7 @@ import type { OrganizationEntity } from '@archesai/schemas'
 
 import { ORGANIZATION_ENTITY_KEY } from '@archesai/schemas'
 
-import { planType } from '#schema/enums'
-import { baseFields } from '#schema/models/base'
+import { baseFields, planEnum } from '#schema/models/base'
 
 export const OrganizationTable = pgTable(ORGANIZATION_ENTITY_KEY, {
   ...baseFields,
@@ -14,7 +13,7 @@ export const OrganizationTable = pgTable(ORGANIZATION_ENTITY_KEY, {
   logo: text(),
   metadata: text(),
   name: text().notNull(),
-  plan: planType().default('FREE').notNull(),
+  plan: planEnum().default('FREE').notNull(),
   slug: text().notNull().unique(),
   stripeCustomerId: text().unique()
 })

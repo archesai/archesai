@@ -1,5 +1,5 @@
 import type {
-  DrizzleDatabaseService,
+  DatabaseService,
   VerificationSelectModel
 } from '@archesai/database'
 import type { VerificationEntity } from '@archesai/schemas'
@@ -8,7 +8,7 @@ import { createBaseRepository, VerificationTable } from '@archesai/database'
 import { VerificationEntitySchema } from '@archesai/schemas'
 
 export const createVerificationRepository = (
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
 ) => {
   return createBaseRepository<VerificationEntity, VerificationSelectModel>(
     databaseService,

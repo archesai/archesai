@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
 import type { WebsocketsService } from '@archesai/core'
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
 import { crudPlugin } from '@archesai/core'
 import {
@@ -15,7 +15,7 @@ import { createArtifactRepository } from '#artifacts/artifact.repository'
 import { createArtifactsService } from '#artifacts/artifacts.service'
 
 export interface ArtifactsPluginOptions {
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
   websocketsService: WebsocketsService
 }
 

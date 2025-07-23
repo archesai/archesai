@@ -3,6 +3,7 @@ import type { NodePgDatabase } from 'drizzle-orm/node-postgres'
 import type { PgTable } from 'drizzle-orm/pg-core'
 
 import { asc, desc, sql } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/node-postgres'
 import { getTableConfig } from 'drizzle-orm/pg-core'
 import pg from 'pg'
 
@@ -14,19 +15,19 @@ import type {
   SearchQuery
 } from '@archesai/schemas'
 
-import type * as schema from '#schema/index'
+import * as schema from '#schema/index'
 
-import { createPooledClient } from '#lib/clients'
-
-export const createDrizzleDatabaseService = (
+export const createDatabaseService = (
   connectionString: string
-): DrizzleDatabaseService => {
+): DatabaseService => {
   const pool = new pg.Pool({ connectionString })
-  const db = createPooledClient(pool)
-  return new DrizzleDatabaseService(db)
+  const db = drizzle(pool, {
+    schema
+  })
+  return new DatabaseService(db)
 }
 
-export class DrizzleDatabaseService {
+export class DatabaseService {
   readonly db: NodePgDatabase<typeof schema>
   constructor(db: NodePgDatabase<typeof schema>) {
     this.db = db

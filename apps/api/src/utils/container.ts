@@ -6,7 +6,7 @@ import type {
   RedisService,
   WebsocketsService
 } from '@archesai/core'
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
 import { createAuthService } from '@archesai/auth'
 // import { StripeService } from '@archesai/billing'
@@ -17,12 +17,12 @@ import {
   createRedisService,
   createWebsocketsService
 } from '@archesai/core'
-import { createDrizzleDatabaseService } from '@archesai/database'
+import { createDatabaseService } from '@archesai/database'
 
 export interface Container {
   authService: AuthService
   configService: ConfigService
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
   emailService: EmailService
   loggerService: LoggerService
   redisService: RedisService
@@ -33,7 +33,7 @@ export interface Container {
 export function createContainer(): Container {
   const configService = createConfigService()
   const loggerService = createLogger(configService)
-  const databaseService = createDrizzleDatabaseService(
+  const databaseService = createDatabaseService(
     configService.get('database.url')
   )
   const emailService = createEmailService(configService)

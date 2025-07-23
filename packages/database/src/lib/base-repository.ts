@@ -4,7 +4,7 @@ import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
 
-import type { DrizzleDatabaseService } from '#adapters/drizzle-database.service'
+import type { DatabaseService } from '#lib/drizzle-database.service'
 
 export type BaseRepository<
   TEntity extends BaseEntity,
@@ -15,7 +15,7 @@ export function createBaseRepository<
   TEntity extends BaseEntity,
   TModel extends BaseEntity
 >(
-  databaseService: DrizzleDatabaseService,
+  databaseService: DatabaseService,
   table: PgTable,
   entitySchema: {
     parse: (data: unknown) => TEntity

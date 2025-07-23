@@ -1,6 +1,6 @@
+import { drizzle } from 'drizzle-orm/node-postgres'
 import { reset, seed } from 'drizzle-seed'
 
-import { createClient } from '#lib/clients'
 import * as schema from '#schema/index'
 
 async function main() {
@@ -8,7 +8,10 @@ async function main() {
   if (!url) {
     throw new Error('DATABASE_URL is required')
   }
-  const db = createClient(url)
+  const db = drizzle({
+    connection: url,
+    schema
+  })
   if (process.env.DRIZZLE_RESET) {
     await reset(db, schema)
   }

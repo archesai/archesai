@@ -1,15 +1,10 @@
-import type {
-  DrizzleDatabaseService,
-  LabelSelectModel
-} from '@archesai/database'
+import type { DatabaseService, LabelSelectModel } from '@archesai/database'
 import type { LabelEntity } from '@archesai/schemas'
 
 import { createBaseRepository, LabelTable } from '@archesai/database'
 import { LabelEntitySchema } from '@archesai/schemas'
 
-export const createLabelRepository = (
-  databaseService: DrizzleDatabaseService
-) => {
+export const createLabelRepository = (databaseService: DatabaseService) => {
   return createBaseRepository<LabelEntity, LabelSelectModel>(
     databaseService,
     LabelTable,

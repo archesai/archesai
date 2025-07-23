@@ -1,4 +1,5 @@
-import { createClient } from '#lib/clients'
+import { drizzle } from 'drizzle-orm/node-postgres'
+
 import * as schema from '#schema/index'
 
 if (!('DATABASE_URL' in process.env))
@@ -6,7 +7,10 @@ if (!('DATABASE_URL' in process.env))
 
 const clean = async () => {
   const url = process.env.DATABASE_URL ?? ''
-  const db = createClient(url)
+  const db = drizzle({
+    connection: url,
+    schema
+  })
 
   const tableSchema = db._.schema
   if (!tableSchema) throw new Error('No table schema found')

@@ -1,15 +1,10 @@
-import type {
-  DrizzleDatabaseService,
-  ToolSelectModel
-} from '@archesai/database'
+import type { DatabaseService, ToolSelectModel } from '@archesai/database'
 import type { ToolEntity } from '@archesai/schemas'
 
 import { createBaseRepository, ToolTable } from '@archesai/database'
 import { ToolEntitySchema } from '@archesai/schemas'
 
-export const createToolRepository = (
-  databaseService: DrizzleDatabaseService
-) => {
+export const createToolRepository = (databaseService: DatabaseService) => {
   return createBaseRepository<ToolEntity, ToolSelectModel>(
     databaseService,
     ToolTable,

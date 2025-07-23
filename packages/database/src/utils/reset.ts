@@ -1,6 +1,6 @@
+import { drizzle } from 'drizzle-orm/node-postgres'
 import { reset as resetDb } from 'drizzle-seed'
 
-import { createClient } from '#lib/clients'
 import * as schema from '#schema/index'
 
 if (!('DATABASE_URL' in process.env))
@@ -13,8 +13,10 @@ async function reset() {
   }
   console.log('⏳ Resetting database...')
   const start = Date.now()
-  const db = createClient(url)
-
+  const db = drizzle({
+    connection: url,
+    schema
+  })
   await resetDb(db, schema)
 
   const end = Date.now()

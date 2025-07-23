@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import type { RedisClientType } from '@redis/client'
 
-import { createClient } from '@redis/client'
+import { createClient as createRedisClient } from '@redis/client'
 
 import type { ConfigService } from '#config/config.service'
 import type { Logger } from '#logging/logger'
@@ -141,7 +141,7 @@ export class RedisService {
     const redisPort = this.configService.get('redis.port').toString()
     const redisAuth = this.configService.get('redis.auth')
 
-    return createClient({
+    return createRedisClient({
       ...(redisAuth ? { password: redisAuth } : {}),
       url: `redis://${redisHost}:${redisPort}`,
       ...(redisCa ?

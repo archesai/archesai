@@ -2,12 +2,12 @@ import type { FastifyPluginAsync } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 
 import type { EmailService, RedisService } from '@archesai/core'
-import type { DrizzleDatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 
 import { HealthCheckSchema } from '@archesai/schemas'
 
 export const healthPlugin: FastifyPluginAsync<{
-  databaseService: DrizzleDatabaseService
+  databaseService: DatabaseService
   emailService: EmailService
   redisService: RedisService
 }> = async (app, { databaseService, emailService, redisService }) => {
