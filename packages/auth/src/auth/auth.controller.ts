@@ -15,7 +15,6 @@ import { getHeaders, setHeaders } from '#utils/headers'
 
 export interface AuthPluginOptions {
   authService: AuthService
-  // organizationsService: OrganizationsService
 }
 
 export const authPlugin: FastifyPluginAsyncZod<AuthPluginOptions> = async (

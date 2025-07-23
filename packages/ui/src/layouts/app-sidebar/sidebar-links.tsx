@@ -1,4 +1,4 @@
-import { useLocation, useRouter } from '@tanstack/react-router'
+import { Link, useLocation, useRouter } from '@tanstack/react-router'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
@@ -19,13 +19,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem
 } from '#components/shadcn/sidebar'
-import { useLinkComponent } from '#hooks/use-link'
 
 export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
   const router = useRouter()
   const pathname = useLocation().pathname
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
-  const Link = useLinkComponent()
   return (
     <>
       {sections.map((section) => {
@@ -50,7 +48,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                             isActive={rootRoute.href === pathname}
                             tooltip={rootRoute.title}
                           >
-                            <Link href={rootRoute.href}>
+                            <Link to={rootRoute.href}>
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
                             </Link>
@@ -79,7 +77,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                               {children.map((route) => (
                                 <SidebarMenuSubItem key={route.title}>
                                   <SidebarMenuSubButton asChild>
-                                    <Link href={route.href}>
+                                    <Link to={route.href}>
                                       <span>{route.title}</span>
                                     </Link>
                                   </SidebarMenuSubButton>

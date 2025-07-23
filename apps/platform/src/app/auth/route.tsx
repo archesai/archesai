@@ -1,13 +1,12 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router'
 
 import { ArchesLogo } from '@archesai/ui/components/custom/arches-logo'
-import { useLinkComponent } from '@archesai/ui/hooks/use-link'
 
 export const Route = createFileRoute('/auth')({
-  component: AuthenticationLayout,
-  beforeLoad: async ({ context }) => {
+  beforeLoad: ({ context }) => {
     const REDIRECT_URL = '/'
     if (context.session?.user) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({
         to: REDIRECT_URL
       })
@@ -15,14 +14,14 @@ export const Route = createFileRoute('/auth')({
     return {
       redirectUrl: REDIRECT_URL
     }
-  }
+  },
+  component: AuthenticationLayout
 })
 
 export default function AuthenticationLayout() {
-  const Link = useLinkComponent()
   return (
     <div className='flex h-svh flex-col items-center justify-center gap-4'>
-      <Link href='/'>
+      <Link to='/'>
         <ArchesLogo size='lg' />
       </Link>
       <Outlet />

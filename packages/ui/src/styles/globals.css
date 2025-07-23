@@ -193,7 +193,9 @@
     text-rendering: optimizeLegibility;
     font-feature-settings:
       'rlig' 1,
-      'calt' 1;
+      /* Required ligatures */ 'calt' 1,
+      /* Contextual alternates */ 'liga' 1,
+      /* Standard ligatures */ 'kern' 1; /* Kerning */
   }
 
   @supports (font: -apple-system-body) and (-webkit-appearance: none) {

@@ -19,11 +19,13 @@ import { singularize } from '#utils/pluralize'
 import { toCamelCase, toTitleCase, vf } from '#utils/strings'
 
 export interface CrudPluginOptions<
-  TEntity extends BaseEntity,
-  TInsert,
-  TSelect extends BaseEntity,
-  TCreateSchema = z.ZodType,
-  TUpdateSchema = z.ZodType
+  TEntity extends BaseEntity = BaseEntity,
+  TInsert = unknown,
+  TSelect extends TEntity = TEntity,
+  TCreateSchema extends z.ZodType<TInsert> = z.ZodType<TInsert>,
+  TUpdateSchema extends z.ZodType<Partial<TInsert>> = z.ZodType<
+    Partial<TInsert>
+  >
 > {
   createSchema?: TCreateSchema
   enableBulkOperations?: boolean
@@ -35,9 +37,7 @@ export interface CrudPluginOptions<
   updateSchema?: TUpdateSchema
 }
 
-export const crudPlugin: FastifyPluginAsyncZod<
-  CrudPluginOptions<BaseEntity, unknown, BaseEntity>
-> = async (
+export const crudPlugin: FastifyPluginAsyncZod<CrudPluginOptions> = async (
   app,
   {
     createSchema,
@@ -107,7 +107,7 @@ export const crudPlugin: FastifyPluginAsyncZod<
     },
     async (request) => {
       const results = await service.findMany(
-        request.query as SearchQuery<BaseEntity>
+        request.query as SearchQuery<unknown>
       )
       return {
         data: results.data,

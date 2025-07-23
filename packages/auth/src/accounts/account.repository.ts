@@ -1,11 +1,11 @@
-import type { AccountSelectModel, DatabaseService } from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 import type { AccountEntity } from '@archesai/schemas'
 
 import { AccountTable, createBaseRepository } from '@archesai/database'
 import { AccountEntitySchema } from '@archesai/schemas'
 
 export const createAccountRepository = (databaseService: DatabaseService) => {
-  return createBaseRepository<AccountEntity, AccountSelectModel>(
+  return createBaseRepository<AccountEntity>(
     databaseService,
     AccountTable,
     AccountEntitySchema

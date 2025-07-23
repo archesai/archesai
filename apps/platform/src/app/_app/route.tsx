@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import {
@@ -10,8 +11,9 @@ import { PageHeader } from '@archesai/ui/layouts/page-header/page-header'
 import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: ({ context }) => {
     if (!context.session?.user) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({ to: '/auth/login' })
     }
   },

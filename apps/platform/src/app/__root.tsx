@@ -26,15 +26,15 @@ import globalsCss from '../styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
-  session: {
-    user: UserEntity
+  session: null | {
     session: SessionEntity
-  } | null
+    user: UserEntity
+  }
 }>()({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
-      queryKey: getGetSessionQueryKey(),
-      queryFn: ({ signal }) => getSessionServer({ signal })
+      queryFn: ({ signal }) => getSessionServer({ signal }),
+      queryKey: getGetSessionQueryKey()
     })
     return {
       session

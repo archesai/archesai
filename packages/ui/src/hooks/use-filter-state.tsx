@@ -14,49 +14,11 @@ import { SearchQuerySchema } from '@archesai/schemas'
 
 import type { FilterOperator } from '#types/simple-data-table'
 
-export interface FilterActions<TEntity extends BaseEntity> {
-  addCondition: (condition: FilterCondition<TEntity>) => void
-  addGroup: (
-    operator: 'and' | 'or',
-    conditions: FilterCondition<TEntity>[]
-  ) => void
-  addSort: (field: keyof TEntity, order: 'asc' | 'desc') => void
-  removeCondition: (field: keyof TEntity) => void
-  resetAll: () => void
-  resetFilters: () => void
-  resetPagination: () => void
-  resetSorting: () => void
-  setCondition: (
-    field: keyof TEntity,
-    operator: FilterOperator,
-    value: FilterValue
-  ) => void
-  setFilter: (filter: FilterNode<TEntity> | undefined) => void
-  setPage: (page: number) => void
-  setPageSize: (size: number) => void
-  setSearchQuery: (query: SearchQuery<TEntity>) => void
-  setSorting: (sorting: SortingState) => void
-  wrapInGroup: (operator: 'and' | 'or') => void
-}
-
-export interface FilterState<TEntity extends BaseEntity> {
-  filter?: FilterNode<TEntity> | undefined
-  hasFilters: boolean
-  hasSorting: boolean
-  isEmpty: boolean
-  pageNumber: number
-  pageSize: number
-  searchQuery: SearchQuery<TEntity>
-  sorting: SortingState
-}
-
 /**
  * Simplified filter state management that supports your complex nested filters
  * but removes unnecessary frontend complexity.
  */
-export function useFilterState<
-  TEntity extends BaseEntity
->(): FilterActions<TEntity> & FilterState<TEntity> {
+export function useFilterState<TEntity extends BaseEntity>() {
   const search = useSearch({ strict: false }) as unknown
   const navigate = useNavigate()
 
@@ -221,7 +183,6 @@ export function useFilterState<
   const setPageSize = (size: number) => {
     updateSearch({
       page: {
-        number: 1,
         size
       }
     })

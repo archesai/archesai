@@ -1,7 +1,4 @@
-import type {
-  DatabaseService,
-  OrganizationSelectModel
-} from '@archesai/database'
+import type { DatabaseService } from '@archesai/database'
 import type { OrganizationEntity } from '@archesai/schemas'
 
 import { createBaseRepository, OrganizationTable } from '@archesai/database'
@@ -10,7 +7,7 @@ import { OrganizationEntitySchema } from '@archesai/schemas'
 export const createOrganizationRepository = (
   databaseService: DatabaseService
 ) => {
-  return createBaseRepository<OrganizationEntity, OrganizationSelectModel>(
+  return createBaseRepository<OrganizationEntity>(
     databaseService,
     OrganizationTable,
     OrganizationEntitySchema

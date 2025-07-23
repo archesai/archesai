@@ -20,6 +20,25 @@ export const corsPlugin: FastifyPluginAsync<{
     })
   }
 
+  // app.addHook('onSend', async (request, reply) => {
+  //   const url = request.url
+
+  //   // API routes - no cache to prevent NS_BINDING_ABORTED
+  //   if (url.startsWith('/')) {
+  //     reply.header('Cache-Control', 'no-cache, must-revalidate')
+  //     reply.header('Pragma', 'no-cache')
+  //     reply.header('Expires', '0')
+  //   }
+  //   // Static assets - long cache
+  //   else if (/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/.exec(url)) {
+  //     reply.header('Cache-Control', 'public, max-age=31536000')
+  //     reply.header(
+  //       'Expires',
+  //       new Date(Date.now() + 31536000 * 1000).toUTCString()
+  //     )
+  //   }
+  // })
+
   // FIXME
   // // Security Middlewares
   // await httpInstance.register(helmet, {

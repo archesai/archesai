@@ -163,22 +163,17 @@ export const createDatabaseService = (connectionString: string) => {
 
       return buildFilterNode(query.filter)
     },
-
     async count(table: PgTable, where?: SQL): Promise<number> {
       const count = await db.$count(table, where)
       return count
     },
-
     db,
-
-    delete<T extends PgTable>(table: T, where?: SQL) {
+    async delete<T extends PgTable>(table: T, where?: SQL) {
       return db.delete(table).where(where).returning()
     },
-
-    insert<T extends PgTable>(table: T, values: T['$inferInsert'][]) {
+    async insert<T extends PgTable>(table: T, values: T['$inferInsert'][]) {
       return db.insert(table).values(values).returning()
     },
-
     async ping(): Promise<boolean> {
       try {
         await db.execute(sql`SELECT 1`)
@@ -187,23 +182,30 @@ export const createDatabaseService = (connectionString: string) => {
         return false
       }
     },
-
-    select(table: PgTable, where?: SQL, orderBy?: SQL[]) {
-      const query = db
+    async select(
+      table: PgTable,
+      where?: SQL,
+      orderBy: SQL[] = [],
+      limit = 10,
+      offset = 0
+    ) {
+      const query = await db
         .select()
         .from(table)
         .where(where)
-        .orderBy(...(orderBy ?? []))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset)
 
       return query
     },
-
-    update<T extends PgTable>(
+    async update<T extends PgTable>(
       table: T,
-      values: T['$inferInsert'][],
+      values: T['$inferInsert'],
       where?: SQL
-    ) {
-      return db.update(table).set(values).where(where).returning()
+    ): Promise<T['$inferSelect'][]> {
+      const result = await db.update(table).set(values).where(where).returning()
+      return result as T['$inferSelect'][]
     }
   }
 }

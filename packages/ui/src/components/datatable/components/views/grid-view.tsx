@@ -37,12 +37,15 @@ export function GridView<TEntity extends BaseEntity>({
 
           return (
             <Card
-              className={cn(`h-64`, isItemSelected && 'bg-primary/10')}
+              className={cn(
+                `h-64 transition-all duration-200 hover:bg-accent hover:shadow-lg`,
+                isItemSelected && 'bg-accent/80'
+              )}
               key={item.id}
             >
               {/* Top Content */}
               <CardContent
-                className='h-full cursor-pointer transition-all hover:bg-primary/10'
+                className='h-full cursor-pointer'
                 onClick={item.getToggleSelectedHandler()}
                 onMouseEnter={() => {
                   setHover(i)
@@ -64,7 +67,7 @@ export function GridView<TEntity extends BaseEntity>({
               {/* Footer */}
               <CardFooter className='justify-start'>
                 {context && flexRender(checkbox, context)}
-                {item.original.id}
+                <span className='truncate'>{item.original.id}</span>
               </CardFooter>
               {gridHover && hover === i && gridHover(item.original)}
             </Card>

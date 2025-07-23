@@ -2,7 +2,10 @@ import { useNavigate } from '@tanstack/react-router'
 
 import type { LabelEntity } from '@archesai/schemas'
 
-import { deleteLabel, getFindManyLabelsQueryOptions } from '@archesai/client'
+import {
+  deleteLabel,
+  getFindManyLabelsSuspenseQueryOptions
+} from '@archesai/client'
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 import { ListIcon } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
@@ -44,7 +47,7 @@ export default function LabelDataTable() {
         await deleteLabel(id)
       }}
       entityKey={LABEL_ENTITY_KEY}
-      getQueryOptions={getFindManyLabelsQueryOptions}
+      getQueryOptions={getFindManyLabelsSuspenseQueryOptions}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}

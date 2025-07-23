@@ -24,6 +24,7 @@ export default function RegisterPage() {
         entityKey='auth'
         fields={[
           {
+            defaultValue: '',
             label: 'Name',
             name: 'name',
             renderControl: (field) => (
@@ -35,6 +36,7 @@ export default function RegisterPage() {
             validationRule: CreateAccountDtoSchema.shape.name
           },
           {
+            defaultValue: '',
             label: 'Email',
             name: 'email',
             renderControl: (field) => (
@@ -46,6 +48,7 @@ export default function RegisterPage() {
             validationRule: CreateAccountDtoSchema.shape.email
           },
           {
+            defaultValue: '',
             label: 'Password',
             name: 'password',
             renderControl: (field) => (
@@ -57,6 +60,7 @@ export default function RegisterPage() {
             validationRule: CreateAccountDtoSchema.shape.password
           },
           {
+            defaultValue: '',
             label: 'Confirm Password',
             name: 'confirmPassword',
             renderControl: (field) => (

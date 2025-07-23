@@ -4,7 +4,7 @@ import type { PipelineEntity } from '@archesai/schemas'
 
 import {
   deletePipeline,
-  getFindManyPipelinesQueryOptions
+  getFindManyPipelinesSuspenseQueryOptions
 } from '@archesai/client'
 import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { WorkflowIcon } from '@archesai/ui/components/custom/icons'
@@ -53,7 +53,7 @@ export default function PipelineDataTable() {
         await deletePipeline(id)
       }}
       entityKey={PIPELINE_ENTITY_KEY}
-      getQueryOptions={getFindManyPipelinesQueryOptions}
+      getQueryOptions={getFindManyPipelinesSuspenseQueryOptions}
       handleSelect={async (pipeline) => {
         await navigate({
           params: {

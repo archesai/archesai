@@ -1,6 +1,9 @@
 import type { MemberEntity } from '@archesai/schemas'
 
-import { deleteMember, getFindManyMembersQueryOptions } from '@archesai/client'
+import {
+  deleteMember,
+  getFindManyMembersSuspenseQueryOptions
+} from '@archesai/client'
 import { MEMBER_ENTITY_KEY } from '@archesai/schemas'
 import { UserIcon } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
@@ -44,7 +47,7 @@ export default function MemberDataTable() {
         await deleteMember(id)
       }}
       entityKey={MEMBER_ENTITY_KEY}
-      getQueryOptions={getFindManyMembersQueryOptions}
+      getQueryOptions={getFindManyMembersSuspenseQueryOptions}
       handleSelect={() => {
         // Handle member selection if needed
       }}

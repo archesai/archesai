@@ -1,3 +1,5 @@
+'use no memo'
+
 import type {
   AccessorKeyColumnDef,
   ColumnFiltersState,
@@ -14,11 +16,13 @@ import type {
 import { useCallback, useMemo, useState } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
-import type { BaseEntity, FilterNode } from '@archesai/schemas'
+import type {
+  BaseEntity //FilterNode
+} from '@archesai/schemas'
 
 import { DataTableColumnHeader } from '#components/datatable/components/data-table-column-header'
 import { Checkbox } from '#components/shadcn/checkbox'
-import { useDebouncedCallback } from '#hooks/use-debounced-callback'
+// import { useDebouncedCallback } from '#hooks/use-debounced-callback'
 import { useFilterState } from '#hooks/use-filter-state'
 import { toSentenceCase } from '#lib/utils'
 
@@ -80,10 +84,10 @@ export function useDataTable<TData extends BaseEntity>(
   )
 
   const {
-    filter,
+    // filter,
     pageNumber,
     pageSize,
-    setFilter,
+    // setFilter,
     setPage,
     setPageSize,
     setSorting,
@@ -123,19 +127,19 @@ export function useDataTable<TData extends BaseEntity>(
     [sorting, setSorting]
   )
 
-  const filterableColumns = useMemo(() => {
-    if (enableAdvancedFilter) return []
+  // const filterableColumns = useMemo(() => {
+  //   if (enableAdvancedFilter) return []
 
-    return columns.filter((column) => column.enableColumnFilter)
-  }, [columns, enableAdvancedFilter])
+  //   return columns.filter((column) => column.enableColumnFilter)
+  // }, [columns, enableAdvancedFilter])
 
-  const debouncedSetFilterValues = useDebouncedCallback(
-    (value: FilterNode<TData> | undefined) => {
-      setPage(1)
-      setFilter(value)
-    },
-    debounceMs
-  )
+  // const debouncedSetFilterValues = useDebouncedCallback(
+  //   (value: FilterNode<TData> | undefined) => {
+  //     setPage(1)
+  //     setFilter(value)
+  //   },
+  //   debounceMs
+  // )
 
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
     if (enableAdvancedFilter) return []
@@ -159,7 +163,7 @@ export function useDataTable<TData extends BaseEntity>(
     //   []
     // )
     return []
-  }, [filter, enableAdvancedFilter])
+  }, [enableAdvancedFilter])
 
   const [columnFilters, setColumnFilters] =
     useState<ColumnFiltersState>(initialColumnFilters)
@@ -193,7 +197,7 @@ export function useDataTable<TData extends BaseEntity>(
         return next
       })
     },
-    [debouncedSetFilterValues, filterableColumns, enableAdvancedFilter]
+    [enableAdvancedFilter]
   )
 
   const enhancedColumns = useMemo<AccessorKeyColumnDef<TData>[]>(

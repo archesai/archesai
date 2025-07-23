@@ -2,7 +2,10 @@ import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { RunEntity } from '@archesai/schemas'
 
-import { deleteRun, getFindManyRunsQueryOptions } from '@archesai/client'
+import {
+  deleteRun,
+  getFindManyRunsSuspenseQueryOptions
+} from '@archesai/client'
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
 import { PackageCheckIcon } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
@@ -81,7 +84,7 @@ export default function RunDataTable() {
         await deleteRun(id)
       }}
       entityKey={RUN_ENTITY_KEY}
-      getQueryOptions={getFindManyRunsQueryOptions}
+      getQueryOptions={getFindManyRunsSuspenseQueryOptions}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}

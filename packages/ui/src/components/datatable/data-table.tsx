@@ -1,8 +1,10 @@
-import type { UseQueryOptions } from '@tanstack/react-query'
+'use no memo'
+
+import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type { AccessorKeyColumnDef, RowData } from '@tanstack/react-table'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { VisuallyHidden } from 'radix-ui'
 
 import type { BaseEntity, SearchQuery } from '@archesai/schemas'
@@ -14,6 +16,7 @@ import { DataTableViewOptions } from '#components/datatable/components/data-tabl
 import { TasksTableActionBar } from '#components/datatable/components/tasks-table-action-bar'
 import { DataTableFilterMenu } from '#components/datatable/components/toolbar/data-table-filter-menu'
 import { DataTableSortList } from '#components/datatable/components/toolbar/data-table-sort-list'
+import { ViewToggle } from '#components/datatable/components/view-toggle'
 // import { ViewToggle } from '#components/datatable/components/view-toggle'
 import { GridView } from '#components/datatable/components/views/grid-view'
 import { TableView } from '#components/datatable/components/views/table-view'
@@ -42,7 +45,7 @@ export interface DataTableProps<TEntity extends BaseEntity> {
   createForm?: React.ComponentType
   deleteItem?: (id: string) => Promise<void>
   entityKey?: string
-  getQueryOptions: (query: SearchQuery<TEntity>) => UseQueryOptions<{
+  getQueryOptions: (query: SearchQuery<TEntity>) => UseSuspenseQueryOptions<{
     data: TEntity[]
     meta: {
       total: number
@@ -62,18 +65,16 @@ export function DataTable<TEntity extends BaseEntity>(
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<TEntity> | null>(null)
 
-  const { view } = useToggleView({
-    defaultView: 'table'
-  })
+  const { view } = useToggleView()
 
   const { searchQuery } = useFilterState<TEntity>()
   const queryOptions = props.getQueryOptions(searchQuery)
-  const { data: queryData } = useQuery(queryOptions)
+  const { data: queryData } = useSuspenseQuery(queryOptions)
 
   const { table } = useDataTable<TEntity>({
     clearOnDefault: true,
     columns: props.columns,
-    data: queryData?.data ?? [],
+    data: queryData.data,
     getRowId: (originalRow) => originalRow.id,
     initialState: {
       columnPinning: { right: ['actions'] },
@@ -81,7 +82,8 @@ export function DataTable<TEntity extends BaseEntity>(
         { desc: true, id: 'createdAt' as Extract<keyof TEntity, string> }
       ]
     },
-    pageCount: (queryData?.meta.total ?? -1) / (searchQuery.page?.size ?? 1),
+    pageCount:
+      Math.ceil(queryData.meta.total / (searchQuery.page?.size ?? 10)) || 1,
     shallow: false
   })
 
@@ -98,7 +100,7 @@ export function DataTable<TEntity extends BaseEntity>(
             align='start'
             table={table}
           />
-          {/* <ViewToggle /> */}
+          <ViewToggle />
           <DataTableViewOptions table={table} />
         </div>
 

@@ -1,7 +1,6 @@
-import type { BaseEntity } from '#base/entities/base.entity'
 import type { FilterOperation } from '#query/operator.schema'
 
-export interface FilterCondition<TEntity extends BaseEntity> {
+export interface FilterCondition<TEntity> {
   field: keyof TEntity
   operator: FilterOperation
   type: 'condition'
@@ -14,17 +13,17 @@ export interface FilterCondition<TEntity extends BaseEntity> {
     | { unit: 'days' | 'months' | 'weeks' | 'years'; value: number }
 }
 
-export interface FilterGroup<TEntity extends BaseEntity> {
+export interface FilterGroup<TEntity> {
   children: FilterNode<TEntity>[]
   operator: 'and' | 'or'
   type: 'group'
 }
 
-export type FilterNode<TEntity extends BaseEntity> =
+export type FilterNode<TEntity> =
   | FilterCondition<TEntity>
   | FilterGroup<TEntity>
 
-export interface SearchQuery<TEntity extends BaseEntity> {
+export interface SearchQuery<TEntity> {
   filter?: FilterNode<TEntity>
   page?: {
     number?: number

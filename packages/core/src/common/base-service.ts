@@ -3,35 +3,35 @@ import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 export type BaseService<
   TEntity extends BaseEntity,
   TInsert,
-  TSelect extends BaseEntity
+  TSelect extends TEntity
 > = ReturnType<typeof createBaseService<TEntity, TInsert, TSelect>>
 
 export interface IBaseRepository<
   TEntity extends BaseEntity,
   TInsert,
-  TModel extends BaseEntity
+  TSelect extends TEntity
 > {
   create(data: TInsert): Promise<TEntity>
   createMany(data: TInsert[]): Promise<{ count: number; data: TEntity[] }>
   delete(id: string): Promise<TEntity>
   deleteMany(
-    query: SearchQuery<TModel>
+    query: SearchQuery<TSelect>
   ): Promise<{ count: number; data: TEntity[] }>
   findMany(
-    query: SearchQuery<TModel>
+    query: SearchQuery<TSelect>
   ): Promise<{ count: number; data: TEntity[] }>
   findOne(id: string): Promise<TEntity>
   update(id: string, data: TInsert): Promise<TEntity>
   updateMany(
     data: TInsert,
-    query: SearchQuery<TModel>
+    query: SearchQuery<TSelect>
   ): Promise<{ count: number; data: TEntity[] }>
 }
 
 export function createBaseService<
   TEntity extends BaseEntity,
   TInsert,
-  TSelect extends BaseEntity
+  TSelect extends TEntity
 >(
   repository: IBaseRepository<TEntity, TInsert, TSelect>,
   emitMutationEvent: (entity: TEntity) => void

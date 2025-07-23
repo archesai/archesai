@@ -8,20 +8,22 @@ import type { DatabaseService } from '#lib/database.service'
 
 export function createBaseRepository<
   TEntity extends BaseEntity,
-  TModel extends BaseEntity
+  TTable extends PgTable = PgTable
 >(
   databaseService: DatabaseService,
-  table: PgTable,
+  table: TTable,
   entitySchema: {
     parse: (data: unknown) => TEntity
   }
 ) {
-  const toEntity = (model: (typeof table)['$inferSelect']): TEntity => {
+  const toEntity = (model: TTable['$inferSelect']): TEntity => {
     return entitySchema.parse(model)
   }
 
-  const buildSearchQueryPrimaryKey = (value: string): SearchQuery<TModel> => {
-    const query: SearchQuery<TModel> = {
+  const buildSearchQueryPrimaryKey = (
+    value: string
+  ): SearchQuery<TTable['$inferSelect']> => {
+    const query: SearchQuery<TTable['$inferSelect']> = {
       filter: {
         field: 'id',
         operator: 'eq',
@@ -43,7 +45,7 @@ export function createBaseRepository<
   }
 
   return {
-    async create(data: (typeof table)['$inferInsert']): Promise<TEntity> {
+    async create(data: TTable['$inferInsert']): Promise<TEntity> {
       const [model] = await databaseService.insert(table, [data])
       if (!model) {
         throw new Error('Failed to create entity')
@@ -52,7 +54,7 @@ export function createBaseRepository<
     },
 
     async createMany(
-      data: (typeof table)['$inferInsert'][]
+      data: TTable['$inferInsert'][]
     ): Promise<{ count: number; data: TEntity[] }> {
       const models = await databaseService.insert(table, data)
       return {
@@ -72,7 +74,7 @@ export function createBaseRepository<
     },
 
     async deleteMany(
-      query: SearchQuery<TModel>
+      query: SearchQuery<TTable['$inferSelect']>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const models = await databaseService.delete(table, whereConditions)
@@ -83,14 +85,17 @@ export function createBaseRepository<
     },
 
     async findMany(
-      query: SearchQuery<TModel>
+      query: SearchQuery<TTable['$inferSelect']>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const orderBy = databaseService.buildOrderBy(table, query)
-      const models = await databaseService
-        .select(table, whereConditions, orderBy)
-        .limit(query.page?.size ?? 10)
-        .offset(((query.page?.number ?? 1) - 1) * (query.page?.size ?? 10))
+      const models = await databaseService.select(
+        table,
+        whereConditions,
+        orderBy,
+        query.page?.size,
+        (query.page?.number ?? 1) - 1
+      )
       const count = await databaseService.count(table, whereConditions)
       return {
         count: count,
@@ -113,10 +118,7 @@ export function createBaseRepository<
       return toEntity(model)
     },
 
-    async update(
-      id: string,
-      data: (typeof table)['$inferInsert']
-    ): Promise<TEntity> {
+    async update(id: string, data: TTable['$inferInsert']): Promise<TEntity> {
       const query = buildSearchQueryPrimaryKey(id)
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const [model] = await databaseService.update(
@@ -131,8 +133,8 @@ export function createBaseRepository<
     },
 
     async updateMany(
-      data: (typeof table)['$inferInsert'][],
-      query: SearchQuery<TModel>
+      data: TTable['$inferSelect'],
+      query: SearchQuery<TTable['$inferSelect']>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)
       const models = await databaseService.update(table, data, whereConditions)

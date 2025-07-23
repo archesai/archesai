@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type ViewType = 'grid' | 'table'
 
@@ -55,16 +55,16 @@ export const useToggleView = ({
     }
   }, [])
 
-  const setViewWrapper = useCallback((newView: ViewType) => {
+  const setViewWrapper = (newView: ViewType) => {
     setView(newView)
     setCookie('viewType', newView)
-  }, [])
+  }
 
-  const toggleView = useCallback(() => {
+  const toggleView = () => {
     const newView = view === 'grid' ? 'table' : 'grid'
     setView(newView)
     setCookie('viewType', newView)
-  }, [view])
+  }
 
   return {
     setView: setViewWrapper,

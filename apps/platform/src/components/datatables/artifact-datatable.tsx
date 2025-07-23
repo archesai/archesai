@@ -2,7 +2,7 @@ import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { ArtifactEntity } from '@archesai/schemas'
 
-import { getFindManyArtifactsQueryOptions } from '@archesai/client'
+import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 import {
   CalendarIcon,
@@ -110,7 +110,7 @@ export default function ArtifactDataTable() {
       ]}
       createForm={ArtifactForm}
       entityKey={ARTIFACT_ENTITY_KEY}
-      getQueryOptions={getFindManyArtifactsQueryOptions}
+      getQueryOptions={getFindManyArtifactsSuspenseQueryOptions}
       grid={(_item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>

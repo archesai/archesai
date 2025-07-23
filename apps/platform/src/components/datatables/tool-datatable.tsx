@@ -2,7 +2,10 @@ import { Link, useNavigate } from '@tanstack/react-router'
 
 import type { ToolEntity } from '@archesai/schemas'
 
-import { deleteTool, getFindManyToolsQueryOptions } from '@archesai/client'
+import {
+  deleteTool,
+  getFindManyToolsSuspenseQueryOptions
+} from '@archesai/client'
 import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 import {
   CalendarIcon,
@@ -103,7 +106,7 @@ export default function ToolDataTable() {
         await deleteTool(id)
       }}
       entityKey={TOOL_ENTITY_KEY}
-      getQueryOptions={getFindManyToolsQueryOptions}
+      getQueryOptions={getFindManyToolsSuspenseQueryOptions}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
