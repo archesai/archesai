@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import {
