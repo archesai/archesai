@@ -27,7 +27,7 @@ export default function ToolDataTable() {
           cell: ({ row }) => {
             return (
               <Link
-                className='shrink truncate text-wrap text-primary hover:underline md:text-sm'
+                className='shrink truncate text-wrap text-blue-500 hover:underline md:text-sm'
                 params={{
                   artifactId: row.original.id
                 }}

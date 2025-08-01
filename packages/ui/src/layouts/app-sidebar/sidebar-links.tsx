@@ -48,7 +48,10 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                             isActive={rootRoute.href === pathname}
                             tooltip={rootRoute.title}
                           >
-                            <Link to={rootRoute.href}>
+                            <Link
+                              className='text-muted-foreground'
+                              to={rootRoute.href}
+                            >
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
                             </Link>
@@ -66,7 +69,10 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                       >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
-                            <SidebarMenuButton tooltip={rootRoute.title}>
+                            <SidebarMenuButton
+                              className='text-muted-foreground'
+                              tooltip={rootRoute.title}
+                            >
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
                               <ChevronRightIcon className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
@@ -76,7 +82,11 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
                             <SidebarMenuSub>
                               {children.map((route) => (
                                 <SidebarMenuSubItem key={route.title}>
-                                  <SidebarMenuSubButton asChild>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    className='text-muted-foreground'
+                                    isActive={route.href === pathname}
+                                  >
                                     <Link to={route.href}>
                                       <span>{route.title}</span>
                                     </Link>

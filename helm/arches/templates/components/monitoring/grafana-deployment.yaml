@@ -1,0 +1,40 @@
+{{- if eq .Values.monitoring.grafana.mode "managed" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "arches.fullname" . }}-grafana
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "arches.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: grafana
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: grafana
+    spec:
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: grafana
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.monitoring.grafana.image.repository }}:{{ .Values.monitoring.grafana.image.tag }}"
+          imagePullPolicy: {{ .Values.monitoring.grafana.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: admin
+          resources:
+            {{- toYaml .Values.monitoring.grafana.resources | nindent 12 }}
+{{- end }}

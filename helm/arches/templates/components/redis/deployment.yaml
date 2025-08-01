@@ -1,0 +1,88 @@
+{{- if eq .Values.redis.mode "managed" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "arches.fullname" . }}-redis
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "arches.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+    spec:
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: redis
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          {{- if .Values.redis.auth }}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "arches.fullname" . }}-redis
+                  key: REDIS_PASSWORD
+          command:
+            - redis-server
+            - --requirepass
+            - $(REDIS_PASSWORD)
+          {{- end }}
+          {{- if .Values.redis.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  {{- if .Values.redis.auth }}
+                  redis-cli -a $REDIS_PASSWORD ping
+                  {{- else }}
+                  redis-cli ping
+                  {{- end }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  {{- if .Values.redis.auth }}
+                  redis-cli -a $REDIS_PASSWORD ping
+                  {{- else }}
+                  redis-cli ping
+                  {{- end }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      {{- if .Values.redis.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "arches.fullname" . }}-redis
+      {{- end }}
+{{- end }}

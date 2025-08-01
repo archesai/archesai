@@ -92,19 +92,16 @@ export function DataTable<TEntity extends BaseEntity>(
       {/* FILTER TOOLBAR */}
       <div
         aria-orientation='horizontal'
-        className='flex flex-col gap-4'
+        className='flex gap-2'
         role='toolbar'
       >
-        <div className='flex gap-2'>
-          <DataTableSortList
-            align='start'
-            table={table}
-          />
-          <ViewToggle />
-          <DataTableViewOptions table={table} />
-        </div>
-
+        <DataTableSortList
+          align='start'
+          table={table}
+        />
         <DataTableFilterMenu table={table} />
+        <DataTableViewOptions table={table} />
+        <ViewToggle />
       </div>
 
       {/* DATA TABLE */}

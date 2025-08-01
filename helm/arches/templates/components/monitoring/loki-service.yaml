@@ -1,0 +1,27 @@
+{{- if eq .Values.monitoring.loki.mode "managed" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-loki
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: loki
+spec:
+  {{- if .Values.infrastructure.development.loki.enabled }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
+  ports:
+    - port: 3100
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.infrastructure.development.loki.enabled }}
+      nodePort: {{ .Values.infrastructure.development.loki.port }}
+      {{- end }}
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: loki
+{{- end }}

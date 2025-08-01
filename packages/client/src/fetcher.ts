@@ -14,7 +14,7 @@ const getBody = <T>(c: Request | Response): Promise<T> => {
 
 // NOTE: Update just base url
 const getUrl = (contextUrl: string): string => {
-  const baseUrl = 'https://api.archesai.test'
+  const baseUrl = 'https://api.archesai.dev'
   const requestUrl = new URL(`${baseUrl}${contextUrl}`)
 
   return requestUrl.toString()

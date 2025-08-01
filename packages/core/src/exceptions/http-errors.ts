@@ -51,6 +51,12 @@ export class ConflictException extends AppError {
   }
 }
 
+export class FileNotFoundException extends AppError {
+  constructor(key: string) {
+    super(404, `File not found: ${key}`, 'FILE_NOT_FOUND')
+  }
+}
+
 export class ForbiddenException extends AppError {
   constructor(message = 'Forbidden') {
     super(403, message, 'FORBIDDEN')
@@ -66,6 +72,12 @@ export class InternalServerErrorException extends AppError {
 export class NotFoundException extends AppError {
   constructor(message = 'Not Found') {
     super(404, message, 'NOT_FOUND')
+  }
+}
+
+export class StorageException extends AppError {
+  constructor(message = 'Storage Error') {
+    super(500, message, 'STORAGE_ERROR')
   }
 }
 

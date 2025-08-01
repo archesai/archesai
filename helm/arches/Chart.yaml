@@ -1,0 +1,22 @@
+apiVersion: v2
+name: arches
+description: Arches AI Platform Helm Chart
+type: application
+version: 0.1.0
+appVersion: 'latest'
+keywords:
+  - arches
+  - ai
+  - data-processing
+  - platform
+home: https://github.com/archesai/archesai
+sources:
+  - https://github.com/archesai/archesai
+maintainers:
+  - name: Arches Team
+    email: jonathan@archesai.com
+dependencies:
+  - name: ingress-nginx
+    version: '4.13.0' # Latest stable version
+    repository: 'https://kubernetes.github.io/ingress-nginx'
+icon: https://platform.archesai.com/favicon.ico

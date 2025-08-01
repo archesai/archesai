@@ -190,7 +190,7 @@ export function DataTableSortList<TData>({
           <Button
             onKeyDown={onTriggerKeyDown}
             size='sm'
-            variant='outline'
+            variant='ghost'
           >
             <ArrowDownUpIcon />
             Sort
@@ -261,7 +261,7 @@ export function DataTableSortList<TData>({
                 className='rounded'
                 onClick={onSortingReset}
                 size='sm'
-                variant='outline'
+                variant='ghost'
               >
                 Reset sorting
               </Button>
@@ -338,7 +338,7 @@ function DataTableSortItem({
               className='w-44 justify-between rounded font-normal'
               id={fieldTriggerId}
               size='sm'
-              variant='outline'
+              variant='ghost'
             >
               <span className='truncate'>{columnLabels.get(sort.id)}</span>
               <ChevronsUpDownIcon className='opacity-50' />
@@ -407,7 +407,7 @@ function DataTableSortItem({
             onSortRemove(sort.id)
           }}
           size='icon'
-          variant='outline'
+          variant='ghost'
         >
           <TrashIcon />
         </Button>
@@ -415,7 +415,7 @@ function DataTableSortItem({
           <Button
             className='size-8 shrink-0 rounded'
             size='icon'
-            variant='outline'
+            variant='ghost'
           >
             <GripVerticalIcon />
           </Button>

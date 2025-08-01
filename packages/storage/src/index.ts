@@ -1,3 +1,3 @@
-export { LocalStorageService } from '#storage/services/local.service'
-export { S3StorageProvider } from '#storage/services/s3.service'
-export { StorageService } from '#storage/storage.service'
+export { storagePlugin } from '#storage/storage.controller'
+export { createStorageService } from '#storage/storage.service'
+export type { StorageService } from '#storage/storage.service'

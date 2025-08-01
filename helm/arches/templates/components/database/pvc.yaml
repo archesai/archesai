@@ -1,0 +1,16 @@
+{{- if and (eq .Values.database.mode "managed") .Values.database.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "arches.fullname" . }}-postgres
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.database.persistence.size }}
+{{- end }}

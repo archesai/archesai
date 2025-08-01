@@ -103,6 +103,6 @@ export async function bootstrap(): Promise<void> {
 
   await app.listen({
     host: '0.0.0.0',
-    port: container.configService.get('server.port')
+    port: container.configService.get('api.port')
   })
 }

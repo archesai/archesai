@@ -10,10 +10,10 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "dev": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node --watch src/main.ts",
+    "dev": "ARCHES_CONFIG_ROOT=$PWD/../.. node --watch src/main.ts",
     "format": "prettier --check . --ignore-path ../../.gitignore",
     "lint": "eslint",
-    "start": "ARCHES_CONFIG_ROOT=$PWD/../../deploy/kubernetes/base node dist/main.js",
+    "start": "ARCHES_CONFIG_ROOT=$PWD/../.. node dist/main.js",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier/base",

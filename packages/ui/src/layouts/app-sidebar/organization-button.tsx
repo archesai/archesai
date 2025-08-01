@@ -50,20 +50,10 @@ export function OrganizationButton() {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               size='lg'
             >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground'>
-                <div className='-mt-0.5'>
-                  <ArchesLogo
-                    scale={0.12}
-                    size='sm'
-                  />
-                </div>
-              </div>
-              <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>{user.name}</span>
-                <span className='truncate text-xs'>
-                  {session.activeOrganizationId}
-                </span>
-              </div>
+              <ArchesLogo
+                scale={0.8}
+                size='lg'
+              />
               <ChevronsUpDownIcon className='ml-auto' />
             </SidebarMenuButton>
           </DropdownMenuTrigger>

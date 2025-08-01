@@ -14,7 +14,7 @@ export class RedisIoAdapter {
   }
 
   public async connectToRedis(): Promise<void> {
-    if (!this.configService.get('redis.enabled')) {
+    if (this.configService.get('redis.mode') === 'disabled') {
       return
     }
 

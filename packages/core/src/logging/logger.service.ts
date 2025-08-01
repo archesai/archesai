@@ -29,7 +29,7 @@ export const createLogger = (
       ...defaultOptions.transport
     }
   ]
-  if (configService.get('monitoring.loki.enabled')) {
+  if (configService.get('monitoring.loki.mode') !== 'disabled') {
     targets.push({
       options: {
         host: configService.get('monitoring.loki.host'),

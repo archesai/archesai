@@ -1,0 +1,37 @@
+{{- if eq .Values.monitoring.loki.mode "managed" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "arches.fullname" . }}-loki
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "arches.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: loki
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: loki
+    spec:
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: loki
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.monitoring.loki.image.repository }}:{{ .Values.monitoring.loki.image.tag }}"
+          imagePullPolicy: {{ .Values.monitoring.loki.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3100
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.monitoring.loki.resources | nindent 12 }}
+{{- end }}

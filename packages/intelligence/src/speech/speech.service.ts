@@ -6,7 +6,7 @@ import { streamToBuffer } from '@archesai/core'
 
 export const createSpeechService = (configService: ConfigService) => {
   const elevenLabsClient = new ElevenLabsClient({
-    apiKey: configService.get('speech.token')
+    apiKey: configService.get('intelligence.speech.token')
   })
 
   return {

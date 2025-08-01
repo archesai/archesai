@@ -1,0 +1,20 @@
+{{- if eq .Values.intelligence.unstructured.mode "managed" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-unstructured
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: unstructured
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: unstructured
+{{- end }}

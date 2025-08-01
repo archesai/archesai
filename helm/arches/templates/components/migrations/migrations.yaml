@@ -1,0 +1,54 @@
+{{- if .Values.infrastructure.migrations.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "arches.fullname" . }}-migrations
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: migrations
+  annotations:
+    "helm.sh/hook": post-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: migrations
+    spec:
+      restartPolicy: Never
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: migrations
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          command: ["npm", "run", "migration:run"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "arches.fullname" . }}-database
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: config
+              mountPath: /archesai/conf/config.yaml
+              subPath: config.yaml
+              readOnly: true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "arches.fullname" . }}-config
+{{- end -}}

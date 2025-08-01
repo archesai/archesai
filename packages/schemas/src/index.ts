@@ -82,5 +82,5 @@ export * from '#query/page.schema'
 export * from '#query/sort.schema'
 
 export * from '#storage/files/dto/create-file.dto'
-export * from '#storage/files/dto/create-signed-url.dto'
 export * from '#storage/files/entities/file.entity'
+export * from '#storage/storage.schema'

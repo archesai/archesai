@@ -1,0 +1,37 @@
+{{- if eq .Values.intelligence.scraper.mode "managed" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "arches.fullname" . }}-scraper
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: scraper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "arches.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: scraper
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: scraper
+    spec:
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: scraper
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.intelligence.scraper.image.repository }}:{{ .Values.intelligence.scraper.image.tag }}"
+          imagePullPolicy: {{ .Values.intelligence.scraper.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.intelligence.scraper.resources | nindent 12 }}
+{{- end }}

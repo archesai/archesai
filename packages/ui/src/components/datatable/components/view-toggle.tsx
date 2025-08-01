@@ -15,7 +15,7 @@ export function ViewToggle() {
           setView('table')
         }}
         size={'sm'}
-        variant={'outline'}
+        variant={'ghost'}
       >
         <ListIcon />
       </Button>
@@ -25,7 +25,7 @@ export function ViewToggle() {
           setView('grid')
         }}
         size={'sm'}
-        variant={'outline'}
+        variant={'ghost'}
       >
         <GridIcon />
       </Button>

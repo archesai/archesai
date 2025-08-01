@@ -25,6 +25,8 @@
     "@socket.io/redis-adapter": "catalog:",
     "nodemailer": "catalog:",
     "pino": "catalog:",
+    "pino-loki": "catalog:",
+    "pino-pretty": "catalog:",
     "socket.io": "catalog:",
     "tslib": "catalog:",
     "yaml": "catalog:"
@@ -35,7 +37,6 @@
     "@types/nodemailer": "catalog:",
     "fastify": "catalog:fastify",
     "fastify-type-provider-zod": "catalog:fastify",
-    "pino-pretty": "catalog:",
     "typescript": "catalog:",
     "zod": "catalog:"
   }

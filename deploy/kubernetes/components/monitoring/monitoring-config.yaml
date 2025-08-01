@@ -1,4 +1,0 @@
-logging:
-  loki:
-    enabled: false
-    host: http://loki:3100

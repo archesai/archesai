@@ -73,3 +73,6 @@ vitest.config.*.timestamp*
 test-output
 
 **/src/metadata.ts
+
+
+**/charts/**

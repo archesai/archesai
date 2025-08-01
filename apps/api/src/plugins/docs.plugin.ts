@@ -14,7 +14,7 @@ export const docsPlugin: FastifyPluginAsync<{
   configService: ConfigService
   logger: Logger
 }> = async (app, { configService, logger }) => {
-  if (configService.get('server.docs.enabled')) {
+  if (configService.get('api.docs')) {
     // Register fastify plugin
     await app.register(fastifySwagger, {
       openapi: {
@@ -43,7 +43,7 @@ export const docsPlugin: FastifyPluginAsync<{
         openapi: '3.1.1',
         servers: [
           {
-            url: `${configService.get('tls.enabled') ? 'https://' : 'http://'}${configService.get('server.host')}`
+            url: `http://${configService.get('api.host')}`
           }
         ]
       },

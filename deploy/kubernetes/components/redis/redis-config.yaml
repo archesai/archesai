@@ -1,4 +1,0 @@
-redis:
-  auth: PASSWORD
-  host: redis
-  port: 6379

@@ -1,0 +1,52 @@
+{{- if not .Values.infrastructure.development.api.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-api
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.api.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+{{- else}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-api
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api-external
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.api.port }}
+      targetPort: {{ .Values.infrastructure.development.api.port }}
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ include "arches.fullname" . }}-api
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api-external
+subsets:
+  - addresses:
+      - ip: {{ .Values.infrastructure.development.hostIP }}
+    ports:
+      - port: {{ .Values.infrastructure.development.api.port }}
+        protocol: TCP
+---
+{{- end }}

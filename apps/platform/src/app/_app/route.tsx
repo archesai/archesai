@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
+import { Separator } from '@archesai/ui/components/shadcn/separator'
 import {
   SidebarInset,
   SidebarProvider
@@ -25,9 +26,10 @@ export default function AppLayout() {
       {/* This is the sidebar that is displayed on the left side of the screen. */}
       <AppSidebar siteRoutes={siteRoutes} />
       {/* This is the main content area. */}
-      <SidebarInset>
+      <SidebarInset className='max-h-screen'>
         <PageHeader siteRoutes={siteRoutes} />
-        <div className='flex flex-1 flex-col overflow-y-auto p-4 py-2'>
+        <Separator />
+        <div className='flex flex-1 flex-col overflow-y-auto p-4'>
           <Outlet />
         </div>
       </SidebarInset>

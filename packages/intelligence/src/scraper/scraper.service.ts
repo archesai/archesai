@@ -81,10 +81,10 @@ export const createScraperService = (
   }
 
   const initializeBrowser = async () => {
-    if (!configService.get('scraper.enabled')) {
+    if (configService.get('intelligence.scraper.mode') === 'disabled') {
       throw new Error('scraper is not enabled')
     }
-    const scraperEndpoint = configService.get('scraper.endpoint')
+    const scraperEndpoint = configService.get('intelligence.scraper.endpoint')
     browser = await chromium.connect(scraperEndpoint)
     logger.log('browser connection open', {
       scraperEndpoint
@@ -151,13 +151,13 @@ export const createScraperService = (
     },
 
     async onDestroy() {
-      if (configService.get('scraper.enabled')) {
+      if (configService.get('intelligence.scraper.mode') !== 'disabled') {
         await closeBrowser()
       }
     },
 
     async onInit() {
-      if (configService.get('scraper.enabled')) {
+      if (configService.get('intelligence.scraper.mode') !== 'disabled') {
         await initializeBrowser()
       }
     },

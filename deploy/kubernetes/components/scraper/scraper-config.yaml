@@ -1,3 +1,0 @@
-scraper:
-  enabled: true
-  endpoint: http://playwright:3000

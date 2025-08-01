@@ -4,15 +4,17 @@ import { MoonIcon, SunIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { setTheme, theme } = useTheme()
 
   return (
     <Button
       className='group/toggle extend-touch-target'
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={() => {
+        setTheme(theme === 'dark' ? 'light' : 'dark')
+      }}
       size='sm'
       title='Toggle theme'
-      variant='outline'
+      variant='ghost'
     >
       <SunIcon className='size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
       <MoonIcon className='absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />

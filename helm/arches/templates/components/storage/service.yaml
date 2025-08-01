@@ -1,0 +1,24 @@
+{{- if eq .Values.storage.mode "managed" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-minio
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: api
+      protocol: TCP
+      name: api
+    - port: 9001
+      targetPort: console
+      protocol: TCP
+      name: console
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: storage
+{{- end }}

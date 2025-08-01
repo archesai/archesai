@@ -24,7 +24,7 @@ export function TableView<TEntity extends BaseEntity>(
 ) {
   const columns = props.table.getAllColumns()
   return (
-    <div className='border bg-card'>
+    <div>
       <Table>
         <TableHeader>
           {props.table.getHeaderGroups().map((headerGroup) => (

@@ -1,0 +1,27 @@
+{{- if eq .Values.redis.mode "managed" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-redis
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  {{- if .Values.infrastructure.development.redis.enabled }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
+  ports:
+    - port: 6379
+      targetPort: redis
+      protocol: TCP
+      name: redis
+      {{- if .Values.infrastructure.development.redis.enabled }}
+      nodePort: {{ .Values.infrastructure.development.redis.port }}
+      {{- end }}
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+{{- end }}

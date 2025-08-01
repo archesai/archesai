@@ -1,0 +1,52 @@
+{{- if eq .Values.platform.mode "managed" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "arches.fullname" . }}-platform
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "arches.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: platform
+  template:
+    metadata:
+      labels:
+        {{- include "arches.labels" . | nindent 8 }}
+        app.kubernetes.io/component: platform
+    spec:
+      {{- with .Values.infrastructure.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "arches.serviceAccountName" . }}
+      containers:
+        - name: platform
+          image: "{{ .Values.infrastructure.images.imageRegistry }}{{ .Values.platform.image.repository }}:{{ .Values.platform.image.tag }}"
+          imagePullPolicy: {{ .Values.platform.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: ARCHES_SERVER_HOST
+              value: "{{ include "arches.fullname" . }}-api:{{ .Values.api.port }}"
+          resources:
+            {{- toYaml .Values.platform.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http  
+            initialDelaySeconds: 30
+            periodSeconds: 10
+{{- end }}

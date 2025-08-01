@@ -27,6 +27,7 @@ import {
   runsController,
   toolsController
 } from '@archesai/orchestration'
+import { storagePlugin } from '@archesai/storage'
 
 import type { Container } from '#utils/container'
 
@@ -106,6 +107,11 @@ export const controllersPlugin: FastifyPluginAsync<
   // await app.register(subscriptionsController, {
   //   stripeService: container.stripeService
   // })
+
+  // Storage controllers
+  await app.register(storagePlugin, {
+    storageService: container.storageService
+  })
 
   // Orchestration controllers
   await app.register(artifactsController, {

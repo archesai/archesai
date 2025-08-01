@@ -46,7 +46,7 @@ export class RedisService {
   }
 
   public async createClient(): Promise<RedisClientType> {
-    if (!this.configService.get('redis.enabled')) {
+    if (this.configService.get('redis.mode') === 'disabled') {
       throw new Error('Redis is not enabled')
     }
 

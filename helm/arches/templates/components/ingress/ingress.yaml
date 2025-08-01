@@ -1,0 +1,163 @@
+{{- if ne .Values.ingress.mode "disabled" }}
+{{- $fullName := include "arches.fullname" . -}}
+{{- $customCertEnabled := and .Values.ingress.tls.enabled .Values.ingress.tls.secretName -}}
+
+# API Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-api
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingress
+  {{- if eq .Values.ingress.mode "managed" }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+  {{- end }}
+spec:
+  ingressClassName: nginx
+
+
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - api.{{ .Values.ingress.domain }}
+    {{- if $customCertEnabled }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+    {{- else }}
+    secretName: {{ $fullName }}-api-tls
+    {{- end }}
+  {{- end }}
+  rules:
+  - host: api.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-api
+            port:
+              number: {{ .Values.api.port }}
+
+---
+{{- if eq .Values.platform.mode "managed" }}
+# Platform Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-platform
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingress
+  {{- if eq .Values.ingress.mode "managed" }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+  {{- end }}
+spec:
+  ingressClassName: nginx
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - platform.{{ .Values.ingress.domain }}
+    {{- if $customCertEnabled }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+    {{- else }}
+    secretName: {{ $fullName }}-platform-tls
+    {{- end }}
+  {{- end }}
+  rules:
+  - host: platform.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-platform
+            port:
+              number: 3000
+{{- end }}
+
+---
+{{- if eq .Values.monitoring.grafana.mode "managed" }}
+# Grafana Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-grafana
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingress
+  {{- if eq .Values.ingress.mode "managed" }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+  {{- end }}
+spec:
+  ingressClassName: nginx
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - grafana.{{ .Values.ingress.domain }}
+    {{- if $customCertEnabled }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+    {{- else }}
+    secretName: {{ $fullName }}-grafana-tls
+    {{- end }}
+  {{- end }}
+  rules:
+  - host: grafana.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-grafana
+            port:
+              number: 3000
+{{- end }}
+
+---
+{{- if eq .Values.storage.mode "managed" }}
+# MinIO Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-minio
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: ingress
+  {{- if eq .Values.ingress.mode "managed" }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.issuer }}
+  {{- end }}
+spec:
+  ingressClassName: nginx
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - storage.{{ .Values.ingress.domain }}
+    {{- if $customCertEnabled }}
+    secretName: {{ .Values.ingress.tls.secretName }}
+    {{- else }}
+    secretName: {{ $fullName }}-minio-tls
+    {{- end }}
+  {{- end }}
+  rules:
+  - host: storage.{{ .Values.ingress.domain }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $fullName }}-minio
+            port:
+              number: 9001
+{{- end }}
+{{- end }}

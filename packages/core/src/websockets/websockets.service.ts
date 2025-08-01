@@ -84,7 +84,7 @@ export class WebsocketsService {
       transports: ['websocket']
     })
 
-    if (this.configService.get('redis.enabled')) {
+    if (this.configService.get('redis.mode') !== 'disabled') {
       const redisIoAdapter = new RedisIoAdapter(
         this.configService,
         this.redisService

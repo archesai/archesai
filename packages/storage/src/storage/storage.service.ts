@@ -1,46 +1,199 @@
-import { basename, dirname, extname, join } from 'node:path'
+import {
+  AbortMultipartUploadCommand,
+  CompleteMultipartUploadCommand,
+  CreateMultipartUploadCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+  UploadPartCommand
+} from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-import type { FileEntity } from '@archesai/schemas'
+import type { ConfigService, Logger } from '@archesai/core'
 
-export abstract class StorageService {
-  public abstract checkExists(
-    path: string,
-    throwOnMissing: boolean
-  ): Promise<boolean>
-  public abstract createDirectory(path: string): Promise<void>
-  public abstract createSignedUrl(
-    path: string,
-    action: 'read' | 'write'
-  ): Promise<FileEntity>
-  public abstract delete(path: string): Promise<FileEntity>
-  public abstract downloadToBuffer(path: string): Promise<Buffer>
-  public abstract downloadToFile(
-    path: string,
-    destination: string
-  ): Promise<void>
-  public abstract findOne(path: string): Promise<FileEntity>
-  public abstract listDirectory(path: string): Promise<FileEntity[]>
-  public async renameIfConflict(path: string): Promise<string> {
-    const originalFilePath = path
-    for (let i = 0; i < 10000; i++) {
-      const conflict = await this.checkExists(path, false)
-      if (!conflict) {
-        return path
+export type StorageService = ReturnType<typeof createStorageService>
+
+interface FileMetadata {
+  contentType?: string
+  etag: string
+  key: string
+  lastModified: Date
+  size: number
+}
+
+interface ListResult {
+  continuationToken?: string
+  directories: string[]
+  files: FileMetadata[]
+}
+
+export function createStorageService(
+  configService: ConfigService,
+  logger: Logger
+) {
+  const bucketName = configService.get('storage.bucket')
+  const s3 = new S3Client({
+    credentials: {
+      accessKeyId: configService.get('storage.accesskey'),
+      secretAccessKey: configService.get('storage.secretkey')
+    },
+    endpoint: configService.get('storage.endpoint'),
+    forcePathStyle: true,
+    region: 'us-east-1'
+  })
+  logger.debug('s3-storage initialized', { bucketName })
+
+  return {
+    async abortMultipartUpload(key: string, uploadId: string): Promise<void> {
+      await s3.send(
+        new AbortMultipartUploadCommand({
+          Bucket: bucketName,
+          Key: key,
+          UploadId: uploadId
+        })
+      )
+    },
+
+    async completeMultipartUpload(
+      key: string,
+      uploadId: string,
+      parts: { etag: string; partNumber: number }[]
+    ): Promise<void> {
+      await s3.send(
+        new CompleteMultipartUploadCommand({
+          Bucket: bucketName,
+          Key: key,
+          MultipartUpload: {
+            Parts: parts.map((part) => ({
+              ETag: part.etag,
+              PartNumber: part.partNumber
+            }))
+          },
+          UploadId: uploadId
+        })
+      )
+    },
+
+    async createMultipartUpload(
+      key: string,
+      contentType?: string
+    ): Promise<string> {
+      const response = await s3.send(
+        new CreateMultipartUploadCommand({
+          Bucket: bucketName,
+          ContentType: contentType,
+          Key: key
+        })
+      )
+      return response.UploadId!
+    },
+
+    async delete(key: string): Promise<void> {
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: key
+        })
+      )
+    },
+
+    async download(key: string): Promise<Buffer> {
+      const response = await s3.send(
+        new GetObjectCommand({
+          Bucket: bucketName,
+          Key: key
+        })
+      )
+
+      const chunks: Uint8Array[] = []
+      const stream = response.Body as AsyncIterable<Uint8Array>
+
+      for await (const chunk of stream) {
+        chunks.push(chunk)
       }
-      const ext = extname(originalFilePath)
-      const baseName = basename(originalFilePath, ext)
-      const dirName = dirname(originalFilePath)
-      path = join(dirName, `${baseName}(${(i + 1).toString()})${ext}`)
+
+      return Buffer.concat(chunks)
+    },
+
+    async getDownloadUrl(key: string, expiresIn = 3600): Promise<string> {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key
+      })
+      return getSignedUrl(s3, command, { expiresIn })
+    },
+
+    async getMultipartUploadUrl(
+      key: string,
+      uploadId: string,
+      partNumber: number,
+      expiresIn = 3600
+    ): Promise<string> {
+      const command = new UploadPartCommand({
+        Bucket: bucketName,
+        Key: key,
+        PartNumber: partNumber,
+        UploadId: uploadId
+      })
+      return getSignedUrl(s3, command, { expiresIn })
+    },
+
+    async getUploadUrl(
+      key: string,
+      contentType?: string,
+      expiresIn = 3600
+    ): Promise<string> {
+      const command = new PutObjectCommand({
+        Bucket: bucketName,
+        ContentType: contentType,
+        Key: key
+      })
+      return getSignedUrl(s3, command, { expiresIn })
+    },
+
+    async list(prefix?: string, maxKeys = 100): Promise<ListResult> {
+      const command = new ListObjectsV2Command({
+        Bucket: bucketName,
+        Delimiter: '/',
+        MaxKeys: maxKeys,
+        Prefix: prefix
+      })
+
+      const response = await s3.send(command)
+
+      const files: FileMetadata[] = (response.Contents ?? []).map((obj) => ({
+        etag: obj.ETag!,
+        key: obj.Key!,
+        lastModified: obj.LastModified!,
+        size: obj.Size!
+      }))
+
+      const directories = (response.CommonPrefixes ?? []).map(
+        (prefix) => prefix.Prefix!
+      )
+
+      return {
+        continuationToken: response.NextContinuationToken,
+        directories,
+        files
+      }
+    },
+
+    async upload(
+      key: string,
+      data: Buffer,
+      contentType?: string
+    ): Promise<void> {
+      await s3.send(
+        new PutObjectCommand({
+          Body: data,
+          Bucket: bucketName,
+          ContentType: contentType,
+          Key: key
+        })
+      )
     }
-    throw new Error('Could not resolve file name conflict')
   }
-  public abstract uploadFromFile(
-    path: string,
-    file: {
-      buffer: Buffer
-      mimetype: string
-      originalname: string
-    }
-  ): Promise<FileEntity>
-  public abstract uploadFromUrl(path: string, url: string): Promise<FileEntity>
 }

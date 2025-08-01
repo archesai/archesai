@@ -7,6 +7,7 @@ import type {
   WebsocketsService
 } from '@archesai/core'
 import type { DatabaseService } from '@archesai/database'
+import type { StorageService } from '@archesai/storage'
 
 import { createAuthService } from '@archesai/auth'
 // import { StripeService } from '@archesai/billing'
@@ -18,6 +19,7 @@ import {
   createWebsocketsService
 } from '@archesai/core'
 import { createDatabaseService } from '@archesai/database'
+import { createStorageService } from '@archesai/storage'
 
 export interface Container {
   authService: AuthService
@@ -26,6 +28,7 @@ export interface Container {
   emailService: EmailService
   loggerService: LoggerService
   redisService: RedisService
+  storageService: StorageService
   // stripeService: StripeService
   websocketsService: WebsocketsService
 }
@@ -38,10 +41,14 @@ export function createContainer(): Container {
   )
   const emailService = createEmailService(configService)
   const redisService = createRedisService(configService, loggerService.logger)
-  const authService = createAuthService(databaseService)
+  const authService = createAuthService(databaseService, configService)
   const websocketsService = createWebsocketsService(
     configService,
     redisService,
+    loggerService.logger
+  )
+  const storageService = createStorageService(
+    configService,
     loggerService.logger
   )
   // const stripeService = new StripeService(configService)
@@ -53,6 +60,7 @@ export function createContainer(): Container {
     emailService,
     loggerService,
     redisService,
+    storageService,
     // stripeService,
     websocketsService
   }

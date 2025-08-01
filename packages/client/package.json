@@ -14,7 +14,7 @@
   "scripts": {
     "build": "tsc --build",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "NODE_TLS_REJECT_UNAUTHORIZED=0 orval",
+    "generate": "orval",
     "lint": "eslint",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },

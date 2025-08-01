@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    allowedHosts: ['platform.archesai.test']
+    allowedHosts: ['platform.archesai.dev']
   },
   // optimizeDeps: {
   //   include: ['@archesai/schemas', '@archesai/client'] // your monorepo packages

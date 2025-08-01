@@ -22,7 +22,6 @@ export interface ArtifactsPluginOptions {
 export const artifactsController: FastifyPluginAsyncZod<
   ArtifactsPluginOptions
 > = async (app, { databaseService, websocketsService }) => {
-  app.log.info('Registering artifacts controller')
   // Create the artifact repository and service
   const artifactRepository = createArtifactRepository(databaseService)
   const artifactsService = createArtifactsService(

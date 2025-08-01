@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arches.fullname" . }}-postgres
+  namespace: {{ .Values.infrastructure.namespace }}
+  labels:
+    {{- include "arches.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  {{- if .Values.infrastructure.development.postgres.enabled }}
+  type: NodePort
+  {{- else }}
+  type: ClusterIP
+  {{- end }}
+  ports:
+    - port: 5432
+      targetPort: postgres
+      protocol: TCP
+      name: postgres
+      {{- if  .Values.infrastructure.development.postgres.enabled }}
+      nodePort: {{ .Values.infrastructure.development.postgres.port }}
+      {{- end }}
+  selector:
+    {{- include "arches.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres

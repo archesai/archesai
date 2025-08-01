@@ -28,6 +28,7 @@
   "devDependencies": {
     "@archesai/typescript": "workspace:*",
     "@types/node": "catalog:",
+    "fastify-type-provider-zod": "catalog:fastify",
     "typescript": "catalog:"
   }
 }

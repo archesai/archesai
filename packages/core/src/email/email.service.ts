@@ -7,10 +7,10 @@ import type { ConfigService } from '#config/config.service'
 export const createEmailService = (configService: ConfigService) => {
   const nodemailerTransport = nodemailer.createTransport({
     auth: {
-      pass: configService.get('email.password'),
-      user: configService.get('email.user')
+      pass: configService.get('api.email.password'),
+      user: configService.get('api.email.user')
     },
-    service: configService.get('email.service')
+    service: configService.get('api.email.service')
   })
 
   return {

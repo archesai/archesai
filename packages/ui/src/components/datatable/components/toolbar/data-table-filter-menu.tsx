@@ -266,7 +266,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
           className='size-8'
           onClick={resetFilters}
           size='icon'
-          variant='outline'
+          variant='ghost'
         >
           <XCircleIcon />
         </Button>
@@ -282,7 +282,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
             onKeyDown={onTriggerKeyDown}
             ref={triggerRef}
             size={filters.length > 0 ? 'icon' : 'sm'}
-            variant='outline'
+            variant='ghost'
           >
             <ListFilterIcon />
             {filters.length > 0 ? null : 'Filter'}

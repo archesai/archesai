@@ -18,5 +18,14 @@
   "tailwindCSS.experimental.configFile": {
     "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
     "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
+  },
+  "yaml.schemas": {
+    "file:///home/jonathan/Projects/archesai/helm/arches/values.schema.json": [
+      "file:///home/jonathan/Projects/archesai/helm/arches/values.yaml",
+      "file:///home/jonathan/Projects/archesai/helm/dev-overrides.yaml"
+    ],
+
+    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta13.json": "file:///home/jonathan/Projects/archesai/skaffold.yaml",
+    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/k3d.yaml"
   }
 }

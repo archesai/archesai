@@ -9,8 +9,8 @@ export const createLlmService = (
   logger: Logger
 ) => {
   const openai = new OpenAI({
-    apiKey: configService.get('llm.token'),
-    baseURL: configService.get('llm.endpoint'),
+    apiKey: configService.get('intelligence.llm.token'),
+    baseURL: configService.get('intelligence.llm.endpoint'),
     organization: 'org-uCtGHWe8lpVBqo5thoryOqcS'
   })
 
@@ -25,7 +25,9 @@ export const createLlmService = (
       const stream = await openai.chat.completions.create({
         ...createChatCompletionDto,
         model:
-          configService.get('llm.type') == 'openai' ? 'gpt-4o' : 'llama3.1',
+          configService.get('intelligence.llm.type') == 'openai' ?
+            'gpt-4o'
+          : 'llama3.1',
         stream: true
       })
 
@@ -51,7 +53,7 @@ export const createLlmService = (
       const { data, usage } = await openai.embeddings.create({
         input: texts,
         model:
-          configService.get('llm.type') == 'openai' ?
+          configService.get('intelligence.llm.type') == 'openai' ?
             'text-embedding-ada-002'
           : 'mxbai-embed-large'
       })
@@ -98,7 +100,7 @@ export const createLlmService = (
         frequency_penalty: 0,
         max_tokens: 80,
         model:
-          configService.get('llm.type') == 'openai' ?
+          configService.get('intelligence.llm.type') == 'openai' ?
             'gpt-3.5-turbo-instruct'
           : 'llama3.1',
         presence_penalty: 0,

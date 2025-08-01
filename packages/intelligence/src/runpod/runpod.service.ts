@@ -11,6 +11,10 @@ export const createRunpodService = (
     podId: string,
     runpodJobId: string
   ): Promise<string> => {
+    const token = configService.get('intelligence.runpod.token')
+    if (configService.get('intelligence.runpod.mode') === 'enabled' || !token) {
+      throw new Error('Runpod is not enabled due to configuration')
+    }
     while (true) {
       await delay(5000)
 
@@ -19,7 +23,7 @@ export const createRunpodService = (
         async () =>
           fetch(`https://api.runpod.ai/v2/${podId}/status/${runpodJobId}`, {
             headers: {
-              Authorization: `Bearer ${configService.get('runpod.token')}`
+              Authorization: `Bearer ${token}`
             }
           }),
         5
@@ -43,13 +47,20 @@ export const createRunpodService = (
     podId: string,
     input: Record<string, unknown>
   ): Promise<string> => {
+    const token = configService.get('intelligence.runpod.token')
+    if (
+      configService.get('intelligence.runpod.mode') === 'disabled' ||
+      !token
+    ) {
+      throw new Error('Runpod is not enabled due to configuration')
+    }
     const response = await retry(
       logger,
       () =>
         fetch(`https://api.runpod.ai/v2/${podId}/run`, {
           body: JSON.stringify(input),
           headers: {
-            Authorization: `Bearer ${configService.get('runpod.token')}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
           method: 'POST'

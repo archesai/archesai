@@ -78,7 +78,7 @@ export function DataTablePagination<TData>({
               table.setPageIndex(0)
             }}
             size='icon'
-            variant='outline'
+            variant='ghost'
           >
             <ChevronsLeftIcon />
           </Button>
@@ -90,7 +90,7 @@ export function DataTablePagination<TData>({
               table.previousPage()
             }}
             size='icon'
-            variant='outline'
+            variant='ghost'
           >
             <ChevronLeftIcon />
           </Button>
@@ -102,7 +102,7 @@ export function DataTablePagination<TData>({
               table.nextPage()
             }}
             size='icon'
-            variant='outline'
+            variant='ghost'
           >
             <ChevronRightIcon />
           </Button>
@@ -114,7 +114,7 @@ export function DataTablePagination<TData>({
               table.setPageIndex(table.getPageCount() - 1)
             }}
             size='icon'
-            variant='outline'
+            variant='ghost'
           >
             <ChevronsRightIcon />
           </Button>

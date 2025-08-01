@@ -9,16 +9,14 @@ import type { ConfigService } from '@archesai/core'
 export const corsPlugin: FastifyPluginAsync<{
   configService: ConfigService
 }> = async (app, { configService }) => {
-  if (configService.get('server.cors.enabled')) {
-    const allowedOrigins = configService.get('server.cors.origins').split(',')
-    await app.register(cors, {
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-      credentials: true,
-      maxAge: 86400,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-      origin: allowedOrigins
-    })
-  }
+  const allowedOrigins = configService.get('api.cors.origins').split(',')
+  await app.register(cors, {
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    maxAge: 86400,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    origin: allowedOrigins
+  })
 
   // app.addHook('onSend', async (request, reply) => {
   //   const url = request.url

@@ -3808,146 +3808,881 @@ export type UpdateUser200 = {
   data: UserEntity
 }
 
-export type GetConfig200AuthFirebaseAnyOf = {
-  enabled: boolean
+/**
+ * CORS configuration for the API server. This allows you to specify which origins are allowed to make requests to the API.
+ */
+export type GetConfig200ApiCors = {
+  /** A comma-separated list of allowed origins for CORS requests. Use "*" to allow all */
+  origins: string
 }
 
-export type GetConfig200AuthFirebaseAnyOfTwo = {
-  clientEmail: string
-  enabled: boolean
-  privateKey: string
-  projectId: string
-}
-
-export type GetConfig200AuthFirebase =
-  | GetConfig200AuthFirebaseAnyOf
-  | GetConfig200AuthFirebaseAnyOfTwo
-
-export type GetConfig200AuthLocal = {
-  enabled: boolean
-}
-
-export type GetConfig200AuthTwitterAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200AuthTwitterAnyOfTwo = {
-  callbackURL: string
-  consumerKey: string
-  consumerSecret: string
-  enabled: boolean
-}
-
-export type GetConfig200AuthTwitter =
-  | GetConfig200AuthTwitterAnyOf
-  | GetConfig200AuthTwitterAnyOfTwo
-
-export type GetConfig200Auth = {
-  firebase: GetConfig200AuthFirebase
-  local: GetConfig200AuthLocal
-  twitter: GetConfig200AuthTwitter
-}
-
-export type GetConfig200BillingAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200BillingAnyOfTwoStripe = {
-  token: string
-  whsec: string
-}
-
-export type GetConfig200BillingAnyOfTwo = {
-  enabled: boolean
-  stripe: GetConfig200BillingAnyOfTwoStripe
-}
-
-export type GetConfig200Billing =
-  | GetConfig200BillingAnyOf
-  | GetConfig200BillingAnyOfTwo
-
-export type GetConfig200Config = {
-  validate: boolean
-}
-
-export type GetConfig200DatabaseType =
-  (typeof GetConfig200DatabaseType)[keyof typeof GetConfig200DatabaseType]
+export type GetConfig200ApiEmailAnyOfMode =
+  (typeof GetConfig200ApiEmailAnyOfMode)[keyof typeof GetConfig200ApiEmailAnyOfMode]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200DatabaseType = {
-  postgres: 'postgres',
-  sqlite: 'sqlite',
-  'in-memory': 'in-memory'
+export const GetConfig200ApiEmailAnyOfMode = {
+  disabled: 'disabled'
 } as const
 
-export type GetConfig200Database = {
-  type: GetConfig200DatabaseType
-  url: string
+/**
+ * Email configuration is disabled
+ */
+export type GetConfig200ApiEmailAnyOf = {
+  mode: GetConfig200ApiEmailAnyOfMode
 }
 
-export type GetConfig200EmailAnyOf = {
-  enabled: boolean
-}
+/**
+ * Email configuration is enabled
+ */
+export type GetConfig200ApiEmailAnyOfThreeMode =
+  (typeof GetConfig200ApiEmailAnyOfThreeMode)[keyof typeof GetConfig200ApiEmailAnyOfThreeMode]
 
-export type GetConfig200EmailAnyOfTwo = {
-  enabled: boolean
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200ApiEmailAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+/**
+ * Email configuration for sending emails. This includes the service, user, and password for the email service.
+ */
+export type GetConfig200ApiEmailAnyOfThree = {
+  /** Email configuration is enabled */
+  mode: GetConfig200ApiEmailAnyOfThreeMode
+  /** Password for the email service. This is required when email configuration is enabled. */
   password: string
+  /** Email service provider (e.g., "gmail", "sendgrid", etc.). This is required when email configuration is enabled. */
   service: string
+  /** Username for the email service. This is required when email configuration is enabled. */
   user: string
 }
 
-export type GetConfig200Email =
-  | GetConfig200EmailAnyOf
-  | GetConfig200EmailAnyOfTwo
+export type GetConfig200ApiEmail =
+  | GetConfig200ApiEmailAnyOf
+  | GetConfig200ApiEmailAnyOfThree
 
-export type GetConfig200EmbeddingType =
-  (typeof GetConfig200EmbeddingType)[keyof typeof GetConfig200EmbeddingType]
+export type GetConfig200ApiImagePullPolicy =
+  (typeof GetConfig200ApiImagePullPolicy)[keyof typeof GetConfig200ApiImagePullPolicy]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200EmbeddingType = {
+export const GetConfig200ApiImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200ApiImage = {
+  pullPolicy: GetConfig200ApiImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200ApiResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200ApiResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200ApiResources = {
+  limits: GetConfig200ApiResourcesLimits
+  requests: GetConfig200ApiResourcesRequests
+}
+
+/**
+ * Configuration schema for the API server. This includes settings for CORS, documentation, email, host, port, and request validation.
+ */
+export type GetConfig200Api = {
+  /** CORS configuration for the API server. This allows you to specify which origins are allowed to make requests to the API. */
+  cors: GetConfig200ApiCors
+  /** Enable or disable API documentation */
+  docs: boolean
+  email: GetConfig200ApiEmail
+  /** The host address on which the API server will listen */
+  host: string
+  /** The port on which the API server will listen */
+  port: number
+  /** Enable or disable request validation. When enabled, the API will validate incoming requests against the defined schemas. */
+  validate: boolean
+  image: GetConfig200ApiImage
+  resources: GetConfig200ApiResources
+}
+
+export type GetConfig200AuthAnyOfMode =
+  (typeof GetConfig200AuthAnyOfMode)[keyof typeof GetConfig200AuthAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200AuthAnyOf = {
+  mode: GetConfig200AuthAnyOfMode
+}
+
+export type GetConfig200AuthAnyOfThreeFirebaseAnyOfMode =
+  (typeof GetConfig200AuthAnyOfThreeFirebaseAnyOfMode)[keyof typeof GetConfig200AuthAnyOfThreeFirebaseAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeFirebaseAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeFirebaseAnyOf = {
+  mode: GetConfig200AuthAnyOfThreeFirebaseAnyOfMode
+}
+
+export type GetConfig200AuthAnyOfThreeFirebaseAnyOfThreeMode =
+  (typeof GetConfig200AuthAnyOfThreeFirebaseAnyOfThreeMode)[keyof typeof GetConfig200AuthAnyOfThreeFirebaseAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeFirebaseAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeFirebaseAnyOfThree = {
+  /** Firebase service account client email address */
+  clientEmail: string
+  mode: GetConfig200AuthAnyOfThreeFirebaseAnyOfThreeMode
+  /** Firebase service account private key (PEM format) */
+  privateKey: string
+  /** Firebase project ID for authentication */
+  projectId: string
+}
+
+/**
+ * Firebase authentication configuration. Enables Google Firebase Auth integration for user authentication and authorization.
+ */
+export type GetConfig200AuthAnyOfThreeFirebase =
+  | GetConfig200AuthAnyOfThreeFirebaseAnyOf
+  | GetConfig200AuthAnyOfThreeFirebaseAnyOfThree
+
+export type GetConfig200AuthAnyOfThreeLocalAnyOfMode =
+  (typeof GetConfig200AuthAnyOfThreeLocalAnyOfMode)[keyof typeof GetConfig200AuthAnyOfThreeLocalAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeLocalAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeLocalAnyOf = {
+  mode: GetConfig200AuthAnyOfThreeLocalAnyOfMode
+}
+
+export type GetConfig200AuthAnyOfThreeLocalAnyOfThreeMode =
+  (typeof GetConfig200AuthAnyOfThreeLocalAnyOfThreeMode)[keyof typeof GetConfig200AuthAnyOfThreeLocalAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeLocalAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeLocalAnyOfThree = {
+  mode: GetConfig200AuthAnyOfThreeLocalAnyOfThreeMode
+}
+
+/**
+ * Local authentication configuration. Provides username/password authentication stored in your database.
+ */
+export type GetConfig200AuthAnyOfThreeLocal =
+  | GetConfig200AuthAnyOfThreeLocalAnyOf
+  | GetConfig200AuthAnyOfThreeLocalAnyOfThree
+
+export type GetConfig200AuthAnyOfThreeTwitterAnyOfMode =
+  (typeof GetConfig200AuthAnyOfThreeTwitterAnyOfMode)[keyof typeof GetConfig200AuthAnyOfThreeTwitterAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeTwitterAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeTwitterAnyOf = {
+  mode: GetConfig200AuthAnyOfThreeTwitterAnyOfMode
+}
+
+export type GetConfig200AuthAnyOfThreeTwitterAnyOfThreeMode =
+  (typeof GetConfig200AuthAnyOfThreeTwitterAnyOfThreeMode)[keyof typeof GetConfig200AuthAnyOfThreeTwitterAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeTwitterAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200AuthAnyOfThreeTwitterAnyOfThree = {
+  /** OAuth callback URL that Twitter will redirect to after authentication */
+  callbackURL: string
+  /** Twitter API consumer key (API key) from your Twitter app */
+  consumerKey: string
+  /** Twitter API consumer secret (API secret key) from your Twitter app */
+  consumerSecret: string
+  mode: GetConfig200AuthAnyOfThreeTwitterAnyOfThreeMode
+}
+
+/**
+ * Twitter OAuth authentication configuration. Enables "Sign in with Twitter" functionality for users.
+ */
+export type GetConfig200AuthAnyOfThreeTwitter =
+  | GetConfig200AuthAnyOfThreeTwitterAnyOf
+  | GetConfig200AuthAnyOfThreeTwitterAnyOfThree
+
+export type GetConfig200AuthAnyOfThreeMode =
+  (typeof GetConfig200AuthAnyOfThreeMode)[keyof typeof GetConfig200AuthAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200AuthAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200AuthAnyOfThree = {
+  /** Firebase authentication configuration. Enables Google Firebase Auth integration for user authentication and authorization. */
+  firebase: GetConfig200AuthAnyOfThreeFirebase
+  /** Local authentication configuration. Provides username/password authentication stored in your database. */
+  local: GetConfig200AuthAnyOfThreeLocal
+  /** Twitter OAuth authentication configuration. Enables "Sign in with Twitter" functionality for users. */
+  twitter: GetConfig200AuthAnyOfThreeTwitter
+  mode: GetConfig200AuthAnyOfThreeMode
+}
+
+/**
+ * Authentication configuration for the API server. This includes Firebase, local, and Twitter authentication options. Each option can be enabled or disabled independently. The default mode is "enabled" with local authentication enabled.
+ */
+export type GetConfig200Auth =
+  | GetConfig200AuthAnyOf
+  | GetConfig200AuthAnyOfThree
+
+export type GetConfig200BillingAnyOfMode =
+  (typeof GetConfig200BillingAnyOfMode)[keyof typeof GetConfig200BillingAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200BillingAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200BillingAnyOf = {
+  mode: GetConfig200BillingAnyOfMode
+}
+
+export type GetConfig200BillingAnyOfThreeStripe = {
+  /** Stripe secret API key (sk_live_... or sk_test_...) for payment processing */
+  token: string
+  /** Stripe webhook endpoint secret for verifying webhook signatures */
+  whsec: string
+}
+
+export type GetConfig200BillingAnyOfThreeMode =
+  (typeof GetConfig200BillingAnyOfThreeMode)[keyof typeof GetConfig200BillingAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200BillingAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200BillingAnyOfThree = {
+  stripe: GetConfig200BillingAnyOfThreeStripe
+  mode: GetConfig200BillingAnyOfThreeMode
+}
+
+/**
+ * Billing configuration for payment processing using Stripe. Includes API keys and webhook secrets.
+ */
+export type GetConfig200Billing =
+  | GetConfig200BillingAnyOf
+  | GetConfig200BillingAnyOfThree
+
+export type GetConfig200DatabaseAnyOfMode =
+  (typeof GetConfig200DatabaseAnyOfMode)[keyof typeof GetConfig200DatabaseAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200DatabaseAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200DatabaseAnyOf = {
+  mode: GetConfig200DatabaseAnyOfMode
+}
+
+export type GetConfig200DatabaseAnyOfThreeMode =
+  (typeof GetConfig200DatabaseAnyOfThreeMode)[keyof typeof GetConfig200DatabaseAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200DatabaseAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200DatabaseAnyOfThree = {
+  /** Database connection URL/string */
+  url: string
+  mode: GetConfig200DatabaseAnyOfThreeMode
+}
+
+export type GetConfig200DatabaseAnyOfFiveAuth = {
+  /** Database name to create and use */
+  database: string
+  /** Database user password (change for production!) */
+  password: string
+}
+
+/**
+ * Kubernetes image pull policy
+ */
+export type GetConfig200DatabaseAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200DatabaseAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200DatabaseAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200DatabaseAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200DatabaseAnyOfFiveImage = {
+  /** Kubernetes image pull policy */
+  pullPolicy: GetConfig200DatabaseAnyOfFiveImagePullPolicy
+  /** PostgreSQL with pgvector extension docker image */
+  repository: string
+  /** PostgreSQL version tag */
+  tag: string
+}
+
+export type GetConfig200DatabaseAnyOfFiveMode =
+  (typeof GetConfig200DatabaseAnyOfFiveMode)[keyof typeof GetConfig200DatabaseAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200DatabaseAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200DatabaseAnyOfFivePersistence = {
+  /** Enable persistent storage for database data */
+  enabled: boolean
+  /** Size of persistent volume for database storage */
+  size: string
+}
+
+export type GetConfig200DatabaseAnyOfFiveResourcesLimits = {
+  /** Maximum CPU allocation for database */
+  cpu: string
+  /** Maximum memory allocation for database */
+  memory: string
+}
+
+export type GetConfig200DatabaseAnyOfFiveResourcesRequests = {
+  /** Requested CPU allocation for database */
+  cpu: string
+  /** Requested memory allocation for database */
+  memory: string
+}
+
+export type GetConfig200DatabaseAnyOfFiveResources = {
+  limits: GetConfig200DatabaseAnyOfFiveResourcesLimits
+  requests: GetConfig200DatabaseAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200DatabaseAnyOfFive = {
+  auth: GetConfig200DatabaseAnyOfFiveAuth
+  image: GetConfig200DatabaseAnyOfFiveImage
+  mode: GetConfig200DatabaseAnyOfFiveMode
+  persistence: GetConfig200DatabaseAnyOfFivePersistence
+  resources: GetConfig200DatabaseAnyOfFiveResources
+}
+
+/**
+ * Database configuration for PostgreSQL with optional pgvector support. Includes managed mode with persistence and resource limits.
+ */
+export type GetConfig200Database =
+  | GetConfig200DatabaseAnyOf
+  | GetConfig200DatabaseAnyOfThree
+  | GetConfig200DatabaseAnyOfFive
+
+/**
+ * Development port forwarding configuration for the API service
+ */
+export type GetConfig200InfrastructureDevelopmentApi = {
+  /** Enable development port forwarding for the API service */
+  enabled: boolean
+  /** Local port to forward API service to during development */
+  port: number
+}
+
+/**
+ * Development port forwarding configuration for the Loki service
+ */
+export type GetConfig200InfrastructureDevelopmentLoki = {
+  /** Enable development port forwarding for Loki service */
+  enabled: boolean
+  /** Local port to forward Loki service to during development */
+  port: number
+}
+
+/**
+ * Development port forwarding configuration for the platform service
+ */
+export type GetConfig200InfrastructureDevelopmentPlatform = {
+  /** Enable development port forwarding for the platform/frontend service */
+  enabled: boolean
+  /** Local port to forward platform service to during development */
+  port: number
+}
+
+/**
+ * Development port forwarding configuration for PostgreSQL database
+ */
+export type GetConfig200InfrastructureDevelopmentPostgres = {
+  /** Enable development port forwarding for PostgreSQL database */
+  enabled: boolean
+  /** Local port to forward PostgreSQL to during development */
+  port: number
+}
+
+/**
+ * Development port forwarding configuration for Redis cache
+ */
+export type GetConfig200InfrastructureDevelopmentRedis = {
+  /** Enable development port forwarding for Redis cache */
+  enabled: boolean
+  /** Local port to forward Redis to during development */
+  port: number
+}
+
+/**
+ * Development environment configuration for local port forwarding and debugging
+ */
+export type GetConfig200InfrastructureDevelopment = {
+  /** Development port forwarding configuration for the API service */
+  api: GetConfig200InfrastructureDevelopmentApi
+  /** Host IP address for development port forwarding (typically Docker bridge IP) */
+  hostIP: string
+  /** Development port forwarding configuration for the Loki service */
+  loki: GetConfig200InfrastructureDevelopmentLoki
+  /** Development port forwarding configuration for the platform service */
+  platform: GetConfig200InfrastructureDevelopmentPlatform
+  /** Development port forwarding configuration for PostgreSQL database */
+  postgres: GetConfig200InfrastructureDevelopmentPostgres
+  /** Development port forwarding configuration for Redis cache */
+  redis: GetConfig200InfrastructureDevelopmentRedis
+}
+
+/**
+ * Container image configuration for Kubernetes deployments
+ */
+export type GetConfig200InfrastructureImages = {
+  /** List of Kubernetes secrets for pulling private container images */
+  imagePullSecrets: string[]
+  /** Custom container registry URL (leave empty for Docker Hub) */
+  imageRegistry: string
+}
+
+/**
+ * Database migration configuration for schema updates
+ */
+export type GetConfig200InfrastructureMigrations = {
+  /** Enable automatic database migrations on deployment */
+  enabled: boolean
+}
+
+/**
+ * Kubernetes service account configuration for pod security and RBAC
+ */
+export type GetConfig200InfrastructureServiceAccount = {
+  /** Create a dedicated Kubernetes service account for the application */
+  create: boolean
+  /** Custom service account name (auto-generated if empty) */
+  name: string
+}
+
+/**
+ * Infrastructure configuration for Kubernetes deployments, including development settings, image management, migrations, and service accounts.
+ */
+export type GetConfig200Infrastructure = {
+  /** Development environment configuration for local port forwarding and debugging */
+  development: GetConfig200InfrastructureDevelopment
+  /** Container image configuration for Kubernetes deployments */
+  images: GetConfig200InfrastructureImages
+  /** Database migration configuration for schema updates */
+  migrations: GetConfig200InfrastructureMigrations
+  /** Kubernetes namespace where all resources will be deployed */
+  namespace: string
+  /** Kubernetes service account configuration for pod security and RBAC */
+  serviceAccount: GetConfig200InfrastructureServiceAccount
+}
+
+export type GetConfig200IngressAnyOfMode =
+  (typeof GetConfig200IngressAnyOfMode)[keyof typeof GetConfig200IngressAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IngressAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200IngressAnyOf = {
+  mode: GetConfig200IngressAnyOfMode
+}
+
+/**
+ * TLS configuration for ingress, including certificate management and encryption settings
+ */
+export type GetConfig200IngressAnyOfThreeTls = {
+  /** Enable TLS/SSL encryption for HTTPS traffic */
+  enabled: boolean
+  /** Kubernetes secret name containing TLS certificate and key */
+  secretName: string
+}
+
+export type GetConfig200IngressAnyOfThreeMode =
+  (typeof GetConfig200IngressAnyOfThreeMode)[keyof typeof GetConfig200IngressAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IngressAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200IngressAnyOfThree = {
+  /** Primary domain name for ingress routing */
+  domain: string
+  /** TLS configuration for ingress, including certificate management and encryption settings */
+  tls: GetConfig200IngressAnyOfThreeTls
+  mode: GetConfig200IngressAnyOfThreeMode
+}
+
+export type GetConfig200IngressAnyOfSixTls = {
+  /** Enable TLS/SSL encryption for HTTPS traffic */
+  enabled: boolean
+  /** Cert-manager ClusterIssuer name for automatic certificate generation */
+  issuer: string
+  /** Kubernetes secret name for storing generated TLS certificate */
+  secretName: string
+}
+
+export type GetConfig200IngressAnyOfSixMode =
+  (typeof GetConfig200IngressAnyOfSixMode)[keyof typeof GetConfig200IngressAnyOfSixMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IngressAnyOfSixMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200IngressAnyOfSix = {
+  /** Primary domain name for ingress routing */
+  domain: string
+  tls: GetConfig200IngressAnyOfSixTls
+  mode: GetConfig200IngressAnyOfSixMode
+}
+
+/**
+ * Ingress configuration for routing external traffic to internal services. Supports TLS/SSL encryption and automatic certificate management.
+ */
+export type GetConfig200Ingress =
+  | GetConfig200IngressAnyOf
+  | GetConfig200IngressAnyOfThree
+  | GetConfig200IngressAnyOfSix
+
+/**
+ * The embedding provider to use for vector embeddings
+ */
+export type GetConfig200IntelligenceEmbeddingType =
+  (typeof GetConfig200IntelligenceEmbeddingType)[keyof typeof GetConfig200IntelligenceEmbeddingType]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceEmbeddingType = {
   openai: 'openai',
   ollama: 'ollama'
 } as const
 
-export type GetConfig200Embedding = {
-  type: GetConfig200EmbeddingType
+/**
+ * Configuration for text embedding generation
+ */
+export type GetConfig200IntelligenceEmbedding = {
+  /** The embedding provider to use for vector embeddings */
+  type: GetConfig200IntelligenceEmbeddingType
 }
 
-export type GetConfig200Jwt = {
-  expiration: string
-  secret: string
-}
-
-export type GetConfig200LlmAnyOfType =
-  (typeof GetConfig200LlmAnyOfType)[keyof typeof GetConfig200LlmAnyOfType]
+export type GetConfig200IntelligenceLlmAnyOfType =
+  (typeof GetConfig200IntelligenceLlmAnyOfType)[keyof typeof GetConfig200IntelligenceLlmAnyOfType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200LlmAnyOfType = {
+export const GetConfig200IntelligenceLlmAnyOfType = {
   ollama: 'ollama'
 } as const
 
-export type GetConfig200LlmAnyOf = {
+export type GetConfig200IntelligenceLlmAnyOf = {
+  /** Ollama server endpoint URL */
   endpoint: string
+  /** Optional authentication token for Ollama */
   token?: string
-  type: GetConfig200LlmAnyOfType
+  type: GetConfig200IntelligenceLlmAnyOfType
 }
 
-export type GetConfig200LlmAnyOfThreeType =
-  (typeof GetConfig200LlmAnyOfThreeType)[keyof typeof GetConfig200LlmAnyOfThreeType]
+export type GetConfig200IntelligenceLlmAnyOfThreeType =
+  (typeof GetConfig200IntelligenceLlmAnyOfThreeType)[keyof typeof GetConfig200IntelligenceLlmAnyOfThreeType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200LlmAnyOfThreeType = {
+export const GetConfig200IntelligenceLlmAnyOfThreeType = {
   openai: 'openai'
 } as const
 
-export type GetConfig200LlmAnyOfThree = {
-  endpoint?: string
-  token: string
-  type: GetConfig200LlmAnyOfThreeType
+export type GetConfig200IntelligenceLlmAnyOfThree = {
+  /** OpenAI API endpoint (defaults to official API) */
+  endpoint: string
+  /** OpenAI API key for authentication */
+  token?: string
+  type: GetConfig200IntelligenceLlmAnyOfThreeType
 }
 
-export type GetConfig200Llm = GetConfig200LlmAnyOf | GetConfig200LlmAnyOfThree
+/**
+ * Large Language Model configuration for AI processing
+ */
+export type GetConfig200IntelligenceLlm =
+  | GetConfig200IntelligenceLlmAnyOf
+  | GetConfig200IntelligenceLlmAnyOfThree
 
+export type GetConfig200IntelligenceRunpodAnyOfMode =
+  (typeof GetConfig200IntelligenceRunpodAnyOfMode)[keyof typeof GetConfig200IntelligenceRunpodAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceRunpodAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200IntelligenceRunpodAnyOf = {
+  mode: GetConfig200IntelligenceRunpodAnyOfMode
+}
+
+export type GetConfig200IntelligenceRunpodAnyOfThreeMode =
+  (typeof GetConfig200IntelligenceRunpodAnyOfThreeMode)[keyof typeof GetConfig200IntelligenceRunpodAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceRunpodAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200IntelligenceRunpodAnyOfThree = {
+  mode: GetConfig200IntelligenceRunpodAnyOfThreeMode
+  /**
+   * RunPod API token for serverless GPU access
+   * @minLength 1
+   */
+  token?: string
+}
+
+/**
+ * RunPod serverless GPU configuration for AI workloads
+ */
+export type GetConfig200IntelligenceRunpod =
+  | GetConfig200IntelligenceRunpodAnyOf
+  | GetConfig200IntelligenceRunpodAnyOfThree
+
+export type GetConfig200IntelligenceScraperAnyOfMode =
+  (typeof GetConfig200IntelligenceScraperAnyOfMode)[keyof typeof GetConfig200IntelligenceScraperAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceScraperAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200IntelligenceScraperAnyOf = {
+  mode: GetConfig200IntelligenceScraperAnyOfMode
+}
+
+export type GetConfig200IntelligenceScraperAnyOfThreeMode =
+  (typeof GetConfig200IntelligenceScraperAnyOfThreeMode)[keyof typeof GetConfig200IntelligenceScraperAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceScraperAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200IntelligenceScraperAnyOfThree = {
+  /** Web scraper service endpoint URL */
+  endpoint: string
+  mode: GetConfig200IntelligenceScraperAnyOfThreeMode
+}
+
+export type GetConfig200IntelligenceScraperAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200IntelligenceScraperAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200IntelligenceScraperAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceScraperAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200IntelligenceScraperAnyOfFiveImage = {
+  pullPolicy: GetConfig200IntelligenceScraperAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200IntelligenceScraperAnyOfFiveMode =
+  (typeof GetConfig200IntelligenceScraperAnyOfFiveMode)[keyof typeof GetConfig200IntelligenceScraperAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceScraperAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200IntelligenceScraperAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200IntelligenceScraperAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200IntelligenceScraperAnyOfFiveResources = {
+  limits: GetConfig200IntelligenceScraperAnyOfFiveResourcesLimits
+  requests: GetConfig200IntelligenceScraperAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200IntelligenceScraperAnyOfFive = {
+  image: GetConfig200IntelligenceScraperAnyOfFiveImage
+  mode: GetConfig200IntelligenceScraperAnyOfFiveMode
+  resources: GetConfig200IntelligenceScraperAnyOfFiveResources
+}
+
+/**
+ * Web scraping service for content extraction
+ */
+export type GetConfig200IntelligenceScraper =
+  | GetConfig200IntelligenceScraperAnyOf
+  | GetConfig200IntelligenceScraperAnyOfThree
+  | GetConfig200IntelligenceScraperAnyOfFive
+
+export type GetConfig200IntelligenceSpeechAnyOfMode =
+  (typeof GetConfig200IntelligenceSpeechAnyOfMode)[keyof typeof GetConfig200IntelligenceSpeechAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceSpeechAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200IntelligenceSpeechAnyOf = {
+  mode: GetConfig200IntelligenceSpeechAnyOfMode
+}
+
+export type GetConfig200IntelligenceSpeechAnyOfThreeMode =
+  (typeof GetConfig200IntelligenceSpeechAnyOfThreeMode)[keyof typeof GetConfig200IntelligenceSpeechAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceSpeechAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200IntelligenceSpeechAnyOfThree = {
+  mode: GetConfig200IntelligenceSpeechAnyOfThreeMode
+  /** Speech-to-text service API token */
+  token: string
+}
+
+/**
+ * Speech recognition and text-to-speech services
+ */
+export type GetConfig200IntelligenceSpeech =
+  | GetConfig200IntelligenceSpeechAnyOf
+  | GetConfig200IntelligenceSpeechAnyOfThree
+
+export type GetConfig200IntelligenceUnstructuredAnyOfMode =
+  (typeof GetConfig200IntelligenceUnstructuredAnyOfMode)[keyof typeof GetConfig200IntelligenceUnstructuredAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceUnstructuredAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200IntelligenceUnstructuredAnyOf = {
+  mode: GetConfig200IntelligenceUnstructuredAnyOfMode
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfThreeMode =
+  (typeof GetConfig200IntelligenceUnstructuredAnyOfThreeMode)[keyof typeof GetConfig200IntelligenceUnstructuredAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceUnstructuredAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200IntelligenceUnstructuredAnyOfThree = {
+  mode: GetConfig200IntelligenceUnstructuredAnyOfThreeMode
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200IntelligenceUnstructuredAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200IntelligenceUnstructuredAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceUnstructuredAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveImage = {
+  pullPolicy: GetConfig200IntelligenceUnstructuredAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveMode =
+  (typeof GetConfig200IntelligenceUnstructuredAnyOfFiveMode)[keyof typeof GetConfig200IntelligenceUnstructuredAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200IntelligenceUnstructuredAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFiveResources = {
+  limits: GetConfig200IntelligenceUnstructuredAnyOfFiveResourcesLimits
+  requests: GetConfig200IntelligenceUnstructuredAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200IntelligenceUnstructuredAnyOfFive = {
+  image: GetConfig200IntelligenceUnstructuredAnyOfFiveImage
+  mode: GetConfig200IntelligenceUnstructuredAnyOfFiveMode
+  resources: GetConfig200IntelligenceUnstructuredAnyOfFiveResources
+}
+
+/**
+ * Unstructured.io service for document parsing and extraction
+ */
+export type GetConfig200IntelligenceUnstructured =
+  | GetConfig200IntelligenceUnstructuredAnyOf
+  | GetConfig200IntelligenceUnstructuredAnyOfThree
+  | GetConfig200IntelligenceUnstructuredAnyOfFive
+
+/**
+ * Intelligence configuration for AI capabilities including LLMs, embeddings, web scraping, speech processing, and unstructured data handling.
+ */
+export type GetConfig200Intelligence = {
+  /** Configuration for text embedding generation */
+  embedding: GetConfig200IntelligenceEmbedding
+  /** Large Language Model configuration for AI processing */
+  llm: GetConfig200IntelligenceLlm
+  /** RunPod serverless GPU configuration for AI workloads */
+  runpod: GetConfig200IntelligenceRunpod
+  /** Web scraping service for content extraction */
+  scraper: GetConfig200IntelligenceScraper
+  /** Speech recognition and text-to-speech services */
+  speech: GetConfig200IntelligenceSpeech
+  /** Unstructured.io service for document parsing and extraction */
+  unstructured: GetConfig200IntelligenceUnstructured
+}
+
+/**
+ * Minimum log level to output (fatal=highest, silent=no logs)
+ */
 export type GetConfig200LoggingLevel =
   (typeof GetConfig200LoggingLevel)[keyof typeof GetConfig200LoggingLevel]
 
@@ -3962,191 +4697,576 @@ export const GetConfig200LoggingLevel = {
   silent: 'silent'
 } as const
 
+/**
+ * Logging configuration for the application. This includes the log level and whether to pretty-print logs.
+ */
 export type GetConfig200Logging = {
-  gcpfix: boolean
+  /** Minimum log level to output (fatal=highest, silent=no logs) */
   level: GetConfig200LoggingLevel
+  /** Enable pretty-printed logs for development (disable in production for structured logs) */
   pretty: boolean
 }
 
-export type GetConfig200MonitoringLoki = {
-  enabled: boolean
-  host?: string
+export type GetConfig200MonitoringGrafanaAnyOfMode =
+  (typeof GetConfig200MonitoringGrafanaAnyOfMode)[keyof typeof GetConfig200MonitoringGrafanaAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringGrafanaAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200MonitoringGrafanaAnyOf = {
+  mode: GetConfig200MonitoringGrafanaAnyOfMode
 }
 
+export type GetConfig200MonitoringGrafanaAnyOfThreeMode =
+  (typeof GetConfig200MonitoringGrafanaAnyOfThreeMode)[keyof typeof GetConfig200MonitoringGrafanaAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringGrafanaAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200MonitoringGrafanaAnyOfThree = {
+  mode: GetConfig200MonitoringGrafanaAnyOfThreeMode
+}
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200MonitoringGrafanaAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200MonitoringGrafanaAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringGrafanaAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveImage = {
+  pullPolicy: GetConfig200MonitoringGrafanaAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveMode =
+  (typeof GetConfig200MonitoringGrafanaAnyOfFiveMode)[keyof typeof GetConfig200MonitoringGrafanaAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringGrafanaAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200MonitoringGrafanaAnyOfFiveResources = {
+  limits: GetConfig200MonitoringGrafanaAnyOfFiveResourcesLimits
+  requests: GetConfig200MonitoringGrafanaAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200MonitoringGrafanaAnyOfFive = {
+  image: GetConfig200MonitoringGrafanaAnyOfFiveImage
+  mode: GetConfig200MonitoringGrafanaAnyOfFiveMode
+  resources: GetConfig200MonitoringGrafanaAnyOfFiveResources
+}
+
+/**
+ * Grafana monitoring dashboard configuration
+ */
+export type GetConfig200MonitoringGrafana =
+  | GetConfig200MonitoringGrafanaAnyOf
+  | GetConfig200MonitoringGrafanaAnyOfThree
+  | GetConfig200MonitoringGrafanaAnyOfFive
+
+export type GetConfig200MonitoringLokiAnyOfMode =
+  (typeof GetConfig200MonitoringLokiAnyOfMode)[keyof typeof GetConfig200MonitoringLokiAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringLokiAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200MonitoringLokiAnyOf = {
+  mode: GetConfig200MonitoringLokiAnyOfMode
+}
+
+export type GetConfig200MonitoringLokiAnyOfThreeMode =
+  (typeof GetConfig200MonitoringLokiAnyOfThreeMode)[keyof typeof GetConfig200MonitoringLokiAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringLokiAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200MonitoringLokiAnyOfThree = {
+  /** External Loki host URL */
+  host: string
+  mode: GetConfig200MonitoringLokiAnyOfThreeMode
+}
+
+export type GetConfig200MonitoringLokiAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200MonitoringLokiAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200MonitoringLokiAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringLokiAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200MonitoringLokiAnyOfFiveImage = {
+  pullPolicy: GetConfig200MonitoringLokiAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200MonitoringLokiAnyOfFiveMode =
+  (typeof GetConfig200MonitoringLokiAnyOfFiveMode)[keyof typeof GetConfig200MonitoringLokiAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200MonitoringLokiAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200MonitoringLokiAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200MonitoringLokiAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200MonitoringLokiAnyOfFiveResources = {
+  limits: GetConfig200MonitoringLokiAnyOfFiveResourcesLimits
+  requests: GetConfig200MonitoringLokiAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200MonitoringLokiAnyOfFive = {
+  host: string
+  image: GetConfig200MonitoringLokiAnyOfFiveImage
+  mode: GetConfig200MonitoringLokiAnyOfFiveMode
+  resources: GetConfig200MonitoringLokiAnyOfFiveResources
+}
+
+/**
+ * Loki log aggregation service configuration
+ */
+export type GetConfig200MonitoringLoki =
+  | GetConfig200MonitoringLokiAnyOf
+  | GetConfig200MonitoringLokiAnyOfThree
+  | GetConfig200MonitoringLokiAnyOfFive
+
+/**
+ * Monitoring configuration for Grafana and Loki services
+ */
 export type GetConfig200Monitoring = {
-  enabled: boolean
+  /** Grafana monitoring dashboard configuration */
+  grafana: GetConfig200MonitoringGrafana
+  /** Loki log aggregation service configuration */
   loki: GetConfig200MonitoringLoki
 }
 
-export type GetConfig200Platform = {
-  enabled: boolean
-  host: string
+export type GetConfig200PlatformAnyOfMode =
+  (typeof GetConfig200PlatformAnyOfMode)[keyof typeof GetConfig200PlatformAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200PlatformAnyOfMode = {
+  disabled: 'disabled'
+} as const
+
+export type GetConfig200PlatformAnyOf = {
+  mode: GetConfig200PlatformAnyOfMode
 }
+
+export type GetConfig200PlatformAnyOfThreeMode =
+  (typeof GetConfig200PlatformAnyOfThreeMode)[keyof typeof GetConfig200PlatformAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200PlatformAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200PlatformAnyOfThree = {
+  /** Host address where the platform service will be accessible */
+  host: string
+  mode: GetConfig200PlatformAnyOfThreeMode
+}
+
+export type GetConfig200PlatformAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200PlatformAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200PlatformAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200PlatformAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200PlatformAnyOfFiveImage = {
+  pullPolicy: GetConfig200PlatformAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200PlatformAnyOfFiveMode =
+  (typeof GetConfig200PlatformAnyOfFiveMode)[keyof typeof GetConfig200PlatformAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200PlatformAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200PlatformAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200PlatformAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200PlatformAnyOfFiveResources = {
+  limits: GetConfig200PlatformAnyOfFiveResourcesLimits
+  requests: GetConfig200PlatformAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200PlatformAnyOfFive = {
+  /** Host address where the platform service will be accessible */
+  host: string
+  image: GetConfig200PlatformAnyOfFiveImage
+  mode: GetConfig200PlatformAnyOfFiveMode
+  resources: GetConfig200PlatformAnyOfFiveResources
+}
+
+/**
+ * Platform configuration for the Arches AI platform service, including host address, image settings, and resource limits.
+ */
+export type GetConfig200Platform =
+  | GetConfig200PlatformAnyOf
+  | GetConfig200PlatformAnyOfThree
+  | GetConfig200PlatformAnyOfFive
+
+export type GetConfig200RedisAnyOfMode =
+  (typeof GetConfig200RedisAnyOfMode)[keyof typeof GetConfig200RedisAnyOfMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200RedisAnyOfMode = {
+  disabled: 'disabled'
+} as const
 
 export type GetConfig200RedisAnyOf = {
-  enabled: boolean
+  mode: GetConfig200RedisAnyOfMode
 }
 
-export type GetConfig200RedisAnyOfTwo = {
-  auth?: string
+export type GetConfig200RedisAnyOfThreeMode =
+  (typeof GetConfig200RedisAnyOfThreeMode)[keyof typeof GetConfig200RedisAnyOfThreeMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200RedisAnyOfThreeMode = {
+  enabled: 'enabled'
+} as const
+
+export type GetConfig200RedisAnyOfThree = {
+  /** Redis authentication password (optional) */
+  auth: string
+  /** Certificate Authority for TLS connections (optional) */
   ca?: string
-  enabled: boolean
+  /** Redis server hostname or IP address */
   host: string
+  /** Redis server port number */
   port: number
+  mode: GetConfig200RedisAnyOfThreeMode
+}
+
+export type GetConfig200RedisAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200RedisAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200RedisAnyOfFiveImagePullPolicy]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200RedisAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
+} as const
+
+export type GetConfig200RedisAnyOfFiveImage = {
+  pullPolicy: GetConfig200RedisAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
+}
+
+export type GetConfig200RedisAnyOfFiveMode =
+  (typeof GetConfig200RedisAnyOfFiveMode)[keyof typeof GetConfig200RedisAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200RedisAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200RedisAnyOfFivePersistence = {
+  /** Enable persistent storage for Redis data */
+  enabled: boolean
+  /** Size of persistent volume for Redis storage */
+  size: string
+}
+
+export type GetConfig200RedisAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200RedisAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200RedisAnyOfFiveResources = {
+  limits: GetConfig200RedisAnyOfFiveResourcesLimits
+  requests: GetConfig200RedisAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200RedisAnyOfFive = {
+  /** Redis authentication password (optional) */
+  auth: string
+  /** Certificate Authority for TLS connections (optional) */
+  ca?: string
+  /** Redis server hostname or IP address */
+  host: string
+  /** Redis server port number */
+  port: number
+  image: GetConfig200RedisAnyOfFiveImage
+  mode: GetConfig200RedisAnyOfFiveMode
+  persistence: GetConfig200RedisAnyOfFivePersistence
+  resources: GetConfig200RedisAnyOfFiveResources
 }
 
 export type GetConfig200Redis =
   | GetConfig200RedisAnyOf
-  | GetConfig200RedisAnyOfTwo
+  | GetConfig200RedisAnyOfThree
+  | GetConfig200RedisAnyOfFive
 
-export type GetConfig200RunpodAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200RunpodAnyOfTwo = {
-  enabled: boolean
-  /** @minLength 1 */
-  token: string
-}
-
-export type GetConfig200Runpod =
-  | GetConfig200RunpodAnyOf
-  | GetConfig200RunpodAnyOfTwo
-
-export type GetConfig200ScraperAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200ScraperAnyOfTwo = {
-  enabled: boolean
-  endpoint: string
-}
-
-export type GetConfig200Scraper =
-  | GetConfig200ScraperAnyOf
-  | GetConfig200ScraperAnyOfTwo
-
-export type GetConfig200ServerCors = {
-  enabled: boolean
-  origins: string
-}
-
-export type GetConfig200ServerDocs = {
-  enabled: boolean
-  export: boolean
-}
-
-export type GetConfig200Server = {
-  cors: GetConfig200ServerCors
-  docs: GetConfig200ServerDocs
-  host: string
-  port: number
-}
-
-export type GetConfig200Session = {
-  enabled: boolean
-  secret: string
-}
-
-export type GetConfig200SpeechAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200SpeechAnyOfTwo = {
-  enabled: boolean
-  token: string
-}
-
-export type GetConfig200Speech =
-  | GetConfig200SpeechAnyOf
-  | GetConfig200SpeechAnyOfTwo
-
-export type GetConfig200StorageAnyOfType =
-  (typeof GetConfig200StorageAnyOfType)[keyof typeof GetConfig200StorageAnyOfType]
+export type GetConfig200StorageAnyOfMode =
+  (typeof GetConfig200StorageAnyOfMode)[keyof typeof GetConfig200StorageAnyOfMode]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200StorageAnyOfType = {
-  local: 'local'
+export const GetConfig200StorageAnyOfMode = {
+  disabled: 'disabled'
 } as const
 
 export type GetConfig200StorageAnyOf = {
-  type: GetConfig200StorageAnyOfType
+  mode: GetConfig200StorageAnyOfMode
 }
 
-export type GetConfig200StorageAnyOfThreeType =
-  (typeof GetConfig200StorageAnyOfThreeType)[keyof typeof GetConfig200StorageAnyOfThreeType]
+export type GetConfig200StorageAnyOfThreeMode =
+  (typeof GetConfig200StorageAnyOfThreeMode)[keyof typeof GetConfig200StorageAnyOfThreeMode]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200StorageAnyOfThreeType = {
-  'google-cloud': 'google-cloud'
+export const GetConfig200StorageAnyOfThreeMode = {
+  enabled: 'enabled'
 } as const
 
 export type GetConfig200StorageAnyOfThree = {
-  type: GetConfig200StorageAnyOfThreeType
+  /** MinIO/S3 access key ID for authentication */
+  accesskey: string
+  /** S3 bucket name for file storage */
+  bucket: string
+  /** MinIO server endpoint URL */
+  endpoint: string
+  /** MinIO/S3 secret access key for authentication */
+  secretkey: string
+  mode: GetConfig200StorageAnyOfThreeMode
 }
 
-export type GetConfig200StorageAnyOfFiveType =
-  (typeof GetConfig200StorageAnyOfFiveType)[keyof typeof GetConfig200StorageAnyOfFiveType]
+export type GetConfig200StorageAnyOfFiveImagePullPolicy =
+  (typeof GetConfig200StorageAnyOfFiveImagePullPolicy)[keyof typeof GetConfig200StorageAnyOfFiveImagePullPolicy]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const GetConfig200StorageAnyOfFiveType = {
-  minio: 'minio'
+export const GetConfig200StorageAnyOfFiveImagePullPolicy = {
+  Always: 'Always',
+  IfNotPresent: 'IfNotPresent',
+  Never: 'Never'
 } as const
 
-export type GetConfig200StorageAnyOfFive = {
-  accesskey: string
-  bucket: string
-  endpoint: string
-  secretkey: string
-  type: GetConfig200StorageAnyOfFiveType
+export type GetConfig200StorageAnyOfFiveImage = {
+  pullPolicy: GetConfig200StorageAnyOfFiveImagePullPolicy
+  repository: string
+  tag: string
 }
 
+export type GetConfig200StorageAnyOfFiveMode =
+  (typeof GetConfig200StorageAnyOfFiveMode)[keyof typeof GetConfig200StorageAnyOfFiveMode]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GetConfig200StorageAnyOfFiveMode = {
+  managed: 'managed'
+} as const
+
+export type GetConfig200StorageAnyOfFivePersistence = {
+  /** Enable persistent storage for MinIO data */
+  enabled: boolean
+  /** Size of persistent volume for object storage */
+  size: string
+}
+
+export type GetConfig200StorageAnyOfFiveResourcesLimits = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200StorageAnyOfFiveResourcesRequests = {
+  cpu: string
+  memory: string
+}
+
+export type GetConfig200StorageAnyOfFiveResources = {
+  limits: GetConfig200StorageAnyOfFiveResourcesLimits
+  requests: GetConfig200StorageAnyOfFiveResourcesRequests
+}
+
+export type GetConfig200StorageAnyOfFive = {
+  /** MinIO/S3 access key ID for authentication */
+  accesskey: string
+  /** S3 bucket name for file storage */
+  bucket: string
+  /** MinIO server endpoint URL */
+  endpoint: string
+  /** MinIO/S3 secret access key for authentication */
+  secretkey: string
+  image: GetConfig200StorageAnyOfFiveImage
+  mode: GetConfig200StorageAnyOfFiveMode
+  persistence: GetConfig200StorageAnyOfFivePersistence
+  resources: GetConfig200StorageAnyOfFiveResources
+}
+
+/**
+ * Object storage configuration for MinIO or S3-compatible services
+ */
 export type GetConfig200Storage =
   | GetConfig200StorageAnyOf
   | GetConfig200StorageAnyOfThree
   | GetConfig200StorageAnyOfFive
 
-export type GetConfig200Tls = {
-  enabled: boolean
-}
-
-export type GetConfig200UnstructuredAnyOf = {
-  enabled: boolean
-}
-
-export type GetConfig200UnstructuredAnyOfTwo = {
-  enabled: boolean
-  endpoint: string
-}
-
-export type GetConfig200Unstructured =
-  | GetConfig200UnstructuredAnyOf
-  | GetConfig200UnstructuredAnyOfTwo
-
 /**
  * Arches AI configuration schema
  */
 export type GetConfig200 = {
+  /** Configuration schema for the API server. This includes settings for CORS, documentation, email, host, port, and request validation. */
+  api: GetConfig200Api
+  /** Authentication configuration for the API server. This includes Firebase, local, and Twitter authentication options. Each option can be enabled or disabled independently. The default mode is "enabled" with local authentication enabled. */
   auth: GetConfig200Auth
+  /** Billing configuration for payment processing using Stripe. Includes API keys and webhook secrets. */
   billing: GetConfig200Billing
-  config: GetConfig200Config
+  /** Database configuration for PostgreSQL with optional pgvector support. Includes managed mode with persistence and resource limits. */
   database: GetConfig200Database
-  email: GetConfig200Email
-  embedding: GetConfig200Embedding
-  jwt: GetConfig200Jwt
-  llm: GetConfig200Llm
+  /** Infrastructure configuration for Kubernetes deployments, including development settings, image management, migrations, and service accounts. */
+  infrastructure: GetConfig200Infrastructure
+  /** Ingress configuration for routing external traffic to internal services. Supports TLS/SSL encryption and automatic certificate management. */
+  ingress: GetConfig200Ingress
+  /** Intelligence configuration for AI capabilities including LLMs, embeddings, web scraping, speech processing, and unstructured data handling. */
+  intelligence: GetConfig200Intelligence
+  /** Logging configuration for the application. This includes the log level and whether to pretty-print logs. */
   logging: GetConfig200Logging
+  /** Monitoring configuration for Grafana and Loki services */
   monitoring: GetConfig200Monitoring
+  /** Platform configuration for the Arches AI platform service, including host address, image settings, and resource limits. */
   platform: GetConfig200Platform
   redis: GetConfig200Redis
-  runpod: GetConfig200Runpod
-  scraper: GetConfig200Scraper
-  server: GetConfig200Server
-  session: GetConfig200Session
-  speech: GetConfig200Speech
+  /** Object storage configuration for MinIO or S3-compatible services */
   storage: GetConfig200Storage
-  tls: GetConfig200Tls
-  unstructured: GetConfig200Unstructured
+}
+
+export type PostUploadUrlBody = {
+  contentType?: string
+  expiresIn?: number
+  key: string
+}
+
+export type PostUploadUrl200 = {
+  url: string
+}
+
+export type PostDownloadUrlBody = {
+  expiresIn?: number
+  key: string
+}
+
+export type PostDownloadUrl200 = {
+  url: string
+}
+
+export type GetFilesParams = {
+  maxKeys?: number
+  prefix?: string
+}
+
+export type GetFiles200FilesItem = {
+  contentType?: string
+  etag: string
+  key: string
+  lastModified: string
+  size: number
+}
+
+export type GetFiles200 = {
+  continuationToken?: string
+  directories: string[]
+  files: GetFiles200FilesItem[]
+}
+
+export type DeleteFilesKey200 = {
+  success: boolean
+}
+
+export type PostMultipartCreateBody = {
+  contentType?: string
+  key: string
+}
+
+export type PostMultipartCreate200 = {
+  uploadId: string
+}
+
+export type PostMultipartPartUrlBody = {
+  expiresIn?: number
+  key: string
+  partNumber: number
+  uploadId: string
+}
+
+export type PostMultipartPartUrl200 = {
+  url: string
+}
+
+export type PostMultipartCompleteBodyPartsItem = {
+  etag: string
+  partNumber: number
+}
+
+export type PostMultipartCompleteBody = {
+  key: string
+  parts: PostMultipartCompleteBodyPartsItem[]
+  uploadId: string
+}
+
+export type PostMultipartComplete200 = {
+  success: boolean
+}
+
+export type PostMultipartAbortBody = {
+  key: string
+  uploadId: string
+}
+
+export type PostMultipartAbort200 = {
+  success: boolean
 }
 
 export type CreateArtifactBody = {

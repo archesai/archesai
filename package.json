@@ -8,13 +8,13 @@
     "clean": "pnpm clean:dist && pnpm clean:node_modules",
     "clean:dist": "pnpm -r exec sh -c 'rm -rf .cache .turbo .tanstack dist .nitro .output'",
     "clean:node_modules": "pnpm -r exec sh -c 'rm -rf node_modules'",
-    "db:clean": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:clean",
-    "db:generate": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:generate",
-    "db:migreate": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:migreate",
-    "db:push": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:push",
-    "db:reset": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:reset",
-    "db:seed": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:seed",
-    "db:studio": "DATABASE_URL=postgresql://admin:admin@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:studio",
+    "db:clean": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:clean",
+    "db:generate": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:generate",
+    "db:migreate": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:migreate",
+    "db:push": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:push",
+    "db:reset": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:reset",
+    "db:seed": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:seed",
+    "db:studio": "DATABASE_URL=postgresql://admin:password@localhost:5432/archesai-db?schema=public pnpm --filter @archesai/database db:studio",
     "dev": "turbo watch dev --continue",
     "dev:api": "turbo watch dev -F @archesai/api",
     "dev:platform": "turbo watch dev -F @archesai/platform",
@@ -30,7 +30,7 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,json,css,md,yaml}": [
-      "pnpm prettier --write --ignore-path .gitignore --log-level warn"
+      "pnpm prettier --write --ignore-path .gitignore --ignore-path .prettierignore --log-level warn"
     ]
   },
   "prettier": "@archesai/prettier/base",
@@ -50,9 +50,9 @@
     "turbo": "catalog:root",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
-    "node": ">=24.3.0",
-    "pnpm": "^10.13.1"
+    "node": ">=24.5.0",
+    "pnpm": "^10.14.0"
   }
 }

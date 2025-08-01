@@ -27,7 +27,7 @@ export default function ArtifactDataTable() {
             return (
               <div className='flex gap-2'>
                 <Link
-                  className='text-primary hover:underline'
+                  className='text-blue-500 hover:underline'
                   params={{
                     artifactId: row.original.id
                   }}
@@ -71,7 +71,7 @@ export default function ArtifactDataTable() {
           cell: ({ row }) => {
             return row.original.producerId ?
                 <Link
-                  className='text-primary hover:underline'
+                  className='text-blue-500 hover:underline'
                   params={{
                     artifactId: row.original.id
                   }}

@@ -29,7 +29,7 @@ export default defineConfig({
       //     }
       //   }
       // },
-      target: 'https://api.archesai.test/docs/openapi.json'
+      target: 'https://api.archesai.dev/docs/openapi.json'
     },
     output: {
       prettier: true,

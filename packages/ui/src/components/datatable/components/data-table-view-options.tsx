@@ -47,7 +47,7 @@ export function DataTableViewOptions<TEntity extends BaseEntity>(
           className='ml-auto hidden h-8 lg:flex'
           role='combobox'
           size='sm'
-          variant='outline'
+          variant='ghost'
         >
           <Settings2Icon />
           View

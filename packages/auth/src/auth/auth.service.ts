@@ -5,16 +5,20 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
 import { reactStartCookies } from 'better-auth/react-start'
 
+import type { ConfigService } from '@archesai/core'
 import type { DatabaseService } from '@archesai/database'
 
-export const createAuthService = (databaseService: DatabaseService) => {
+export const createAuthService = (
+  databaseService: DatabaseService,
+  configService: ConfigService
+) => {
   const auth = betterAuth({
     account: {
       modelName: 'AccountTable'
     },
     advanced: {
       crossSubDomainCookies: {
-        domain: '.archesai.test', // your domain
+        domain: '.' + configService.get('ingress.domain'), // your domain
         enabled: true
       },
       generateId: false,
@@ -52,12 +56,7 @@ export const createAuthService = (databaseService: DatabaseService) => {
       },
       modelName: 'SessionTable'
     },
-    trustedOrigins: [
-      'https://platform.archesai.test',
-      'http://platform.archesai.test',
-      'http://api.archesai.test',
-      'https://api.archesai.test'
-    ],
+    trustedOrigins: configService.get('api.cors.origins').split(','),
     user: {
       additionalFields: {
         deactivated: {
