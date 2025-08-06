@@ -4,8 +4,9 @@
 /** @typedef {import("prettier-plugin-sort-json").SortJsonOptions} SortJsonOptions */
 
 /** @type { PrettierConfig | SortImportsConfig | TailwindConfig | SortJsonOptions} */
-export default {
+const prettierConfig = {
   arrowParens: 'always',
+  experimentalTernaries: true,
   importOrder: [
     '<TYPES>',
     '',
@@ -25,7 +26,6 @@ export default {
     '^[../]',
     '^[./]'
   ],
-  experimentalTernaries: true,
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderTypeScriptVersion: '5.8.3',
   jsonRecursiveSort: true,
@@ -56,7 +56,9 @@ export default {
   singleAttributePerLine: true,
   singleQuote: true,
   tabWidth: 2,
-  tailwindStylesheet: './src/styles/globals.css',
   tailwindFunctions: ['cn', 'cva'],
+  tailwindStylesheet: './src/styles/globals.css',
   trailingComma: 'none'
 }
+
+export default prettierConfig

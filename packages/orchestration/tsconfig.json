@@ -1,31 +1,24 @@
 {
   "extends": "../../tooling/typescript/src/base.json",
-  "files": [],
   "include": [],
   "references": [
+    {
+      "path": "../schemas"
+    },
+    {
+      "path": "../database"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
     {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../packages/intelligence"
-    },
-    {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/database"
-    },
-    {
-      "path": "../../packages/schemas"
-    },
-    {
-      "path": "../../packages/storage"
-    },
-    {
-      "path": "../../tooling/eslint"
     }
   ]
 }

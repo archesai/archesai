@@ -17,7 +17,6 @@
     "#types/*": "./src/types/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     "./globals.css": "./src/styles/globals.css",
     "./atoms/*": "./src/atoms/*.ts",
     "./components/*": "./src/components/*.tsx",
@@ -26,13 +25,6 @@
     "./lib/*": "./src/lib/*.ts",
     "./providers/*": "./src/providers/*.tsx"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/schemas": "workspace:*",
@@ -43,7 +35,9 @@
     "@hookform/resolvers": "catalog:ui",
     "@radix-ui/react-slot": "catalog:ui",
     "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-table": "catalog:tanstack",
+    "@tanstack/table-core": "catalog:tanstack",
     "class-variance-authority": "catalog:ui",
     "clsx": "catalog:ui",
     "cmdk": "catalog:ui",
@@ -60,19 +54,7 @@
     "socket.io-client": "catalog:",
     "sonner": "catalog:ui",
     "tailwind-merge": "catalog:ui",
-    "tslib": "catalog:",
     "vaul": "catalog:ui",
     "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@tanstack/react-router": "catalog:tanstack",
-    "@tanstack/table-core": "catalog:tanstack",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
-    "tailwindcss": "catalog:ui",
-    "tw-animate-css": "catalog:ui",
-    "typescript": "catalog:"
   }
 }

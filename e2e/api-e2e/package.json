@@ -6,18 +6,10 @@
   "imports": {
     "#*": "./src/*.ts"
   },
-  "prettier": "@archesai/prettier/base",
-  "dependencies": {
-    "@archesai/core": "workspace:*"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/jest": "catalog:test",
-    "@types/node": "catalog:",
-    "@types/supertest": "catalog:test",
-    "jest": "catalog:test",
-    "jest-openapi": "catalog:test",
-    "supertest": "catalog:test",
-    "typescript": "catalog:"
+  "nx": {
+    "projectType": "e2e",
+    "implicitDependencies": [
+      "@archesai/api"
+    ]
   }
 }

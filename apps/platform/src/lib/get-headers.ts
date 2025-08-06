@@ -7,18 +7,23 @@ export const getSessionServer = createServerFn({ method: 'GET' }).handler(
   async () => {
     const { headers } = getWebRequest()
     try {
-      const { session, user } = await getSession({
-        headers,
-        credentials: 'include'
-      })
+      const { session, user } = (await getSession({
+        credentials: 'include',
+        headers
+      })) as {
+        session: null | { id: string; userId: string }
+        user: null | { email: string; id: string; name: string }
+      }
       if (user && session) {
         const sessionData = {
-          user,
-          session
+          session,
+          user
         }
         return sessionData
       }
-    } catch {}
+    } catch {
+      /* empty */
+    }
     return null
   }
 )

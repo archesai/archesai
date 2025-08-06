@@ -3,7 +3,7 @@ import path from 'path'
 
 import { z } from 'zod'
 
-import { ArchesConfigSchema } from './src/config/config.schema.ts'
+import { ArchesConfigSchema } from '#config/config.schema'
 
 const schema = z.toJSONSchema(ArchesConfigSchema, {
   io: 'input'

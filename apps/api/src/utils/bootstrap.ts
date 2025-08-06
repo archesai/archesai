@@ -12,25 +12,15 @@ import qs from 'qs'
 
 import { errorHandlerPlugin } from '@archesai/core'
 
-import { controllersPlugin } from '#plugins/controllers.plugin'
-import { corsPlugin } from '#plugins/cors.plugin'
-import { docsPlugin } from '#plugins/docs.plugin'
-import { healthPlugin } from '#plugins/health.plugin'
+import { controllersPlugin } from '#app/plugins/controllers.plugin'
+import { corsPlugin } from '#app/plugins/cors.plugin'
+import { docsPlugin } from '#app/plugins/docs.plugin'
+import { healthPlugin } from '#app/plugins/health.plugin'
 import { createContainer } from '#utils/container'
 
-// =================================================================
-// UTILITY FUNCTIONS
-// =================================================================
-
 export async function bootstrap(): Promise<void> {
-  // =================================================================
-  // 1. DEPENDENCY INJECTION - Completely functional, no classes!
-  // =================================================================
   const container = createContainer()
 
-  // =================================================================
-  // 2. CREATE FASTIFY INSTANCE
-  // =================================================================
   const app = fastify({
     loggerInstance: container.loggerService.pinoLogger,
     querystringParser: qs.parse,
@@ -42,41 +32,24 @@ export async function bootstrap(): Promise<void> {
     serializerCompiler as FastifySerializerCompiler<FastifySchema>
   )
 
-  // Register the centralized error handler
   await app.register(fp(errorHandlerPlugin), {
     includeStack: container.configService.get('logging.level') === 'debug',
     sanitizeHeaders: true
   })
 
-  // =================================================================
-  // 3. MIDDLEWARE SETUP
-  // =================================================================
-
-  // CORS Configuration
   await app.register(fp(corsPlugin), {
     configService: container.configService
   })
 
-  // Auth Management
-  // const sessionsService = app.get(SessionsService)
-  // await sessionsService.setup(httpInstance)
-
-  // =================================================================
-  // 4. REGISTER ALL FUNCTIONAL PLUGINS
-  // =================================================================
-
-  // Docs Setup
   await app.register(fp(docsPlugin), {
     configService: container.configService,
     logger: container.loggerService.logger
   })
 
-  // Register all controllers
   await app.register(controllersPlugin, {
     container
   })
 
-  // Health Check Setup
   await app.register(fp(healthPlugin), {
     databaseService: container.databaseService,
     emailService: container.emailService,

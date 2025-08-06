@@ -52,7 +52,13 @@ function setRef<T>(ref: PossibleRef<T>, value: null | T): void {
  * A hook that memoizes a composed ref.
  */
 function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
-  return useCallback(composeRefs(...refs), refs)
+  // Create stable callback without dependencies since refs are passed directly
+  return useCallback(
+    (node: null | T) => {
+      return composeRefs(...refs)(node)
+    },
+    [refs]
+  )
 }
 
 export { composeRefs, useComposedRefs }

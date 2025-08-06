@@ -9,15 +9,6 @@
     "#lib/*": "./src/lib/*.ts",
     "#router": "./src/router.tsx"
   },
-  "scripts": {
-    "build": "vite build",
-    "dev": "vite dev",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "start": "vite start",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/schemas": "workspace:*",
@@ -31,21 +22,9 @@
     "@xyflow/react": "catalog:",
     "motion": "catalog:ui",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19",
-    "vite": "catalog:vite"
+    "react-dom": "catalog:react19"
   },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@fontsource/geist": "catalog:ui",
-    "@fontsource/geist-mono": "catalog:ui",
-    "@tailwindcss/vite": "catalog:vite",
-    "@types/node": "catalog:",
-    "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19",
-    "@vitejs/plugin-react": "catalog:vite",
-    "babel-plugin-react-compiler": "catalog:vite",
-    "rollup-plugin-visualizer": "catalog:vite",
-    "tailwindcss": "catalog:ui",
-    "typescript": "catalog:"
+  "nx": {
+    "projectType": "application"
   }
 }

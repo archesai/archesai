@@ -1,17 +1,12 @@
 {
-  "extends": [
-    "../../tooling/typescript/src/base.json",
-    "../../tooling/typescript/src/spec.json"
-  ],
+  "extends": "../../tooling/typescript/src/base.json",
+  "include": [],
   "references": [
     {
-      "path": "./tsconfig.lib.json"
+      "path": "../../tooling/eslint"
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../tooling/eslint"
     }
   ]
 }

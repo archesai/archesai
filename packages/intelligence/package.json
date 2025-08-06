@@ -8,16 +8,8 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
@@ -25,13 +17,6 @@
     "fluent-ffmpeg": "catalog:intelligence",
     "openai": "catalog:intelligence",
     "playwright-core": "catalog:intelligence",
-    "sharp": "catalog:intelligence",
-    "tslib": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/fluent-ffmpeg": "catalog:intelligence",
-    "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "sharp": "catalog:intelligence"
   }
 }

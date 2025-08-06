@@ -1,1 +1,1991 @@
-{}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "description": "Arches AI configuration schema",
+  "properties": {
+    "api": {
+      "default": {
+        "cors": {
+          "origins": "https://platform.archesai.dev"
+        },
+        "docs": true,
+        "email": {
+          "mode": "disabled"
+        },
+        "host": "0.0.0.0",
+        "image": {
+          "pullPolicy": "IfNotPresent",
+          "repository": "archesai/api",
+          "tag": "latest"
+        },
+        "port": 3001,
+        "resources": {
+          "limits": {
+            "cpu": "1000m",
+            "memory": "1Gi"
+          },
+          "requests": {
+            "cpu": "500m",
+            "memory": "512Mi"
+          }
+        },
+        "validate": true
+      },
+      "description": "Configuration schema for the API server. This includes settings for CORS, documentation, email, host, port, and request validation.",
+      "properties": {
+        "cors": {
+          "default": {
+            "origins": "https://platform.archesai.dev"
+          },
+          "description": "CORS configuration for the API server. This allows you to specify which origins are allowed to make requests to the API.",
+          "properties": {
+            "origins": {
+              "default": "https://platform.archesai.dev",
+              "description": "A comma-separated list of allowed origins for CORS requests. Use \"*\" to allow all",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "docs": {
+          "default": true,
+          "description": "Enable or disable API documentation",
+          "type": "boolean"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "description": "Email configuration is disabled",
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "description": "Email configuration for sending emails. This includes the service, user, and password for the email service.",
+              "properties": {
+                "mode": {
+                  "const": "enabled",
+                  "description": "Email configuration is enabled",
+                  "type": "string"
+                },
+                "password": {
+                  "description": "Password for the email service. This is required when email configuration is enabled.",
+                  "type": "string"
+                },
+                "service": {
+                  "description": "Email service provider (e.g., \"gmail\", \"sendgrid\", etc.). This is required when email configuration is enabled.",
+                  "type": "string"
+                },
+                "user": {
+                  "description": "Username for the email service. This is required when email configuration is enabled.",
+                  "type": "string"
+                }
+              },
+              "required": ["mode", "password", "service", "user"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "mode": "disabled"
+          }
+        },
+        "host": {
+          "default": "0.0.0.0",
+          "description": "The host address on which the API server will listen",
+          "type": "string"
+        },
+        "image": {
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "type": "string"
+            },
+            "repository": {
+              "default": "archesai/api",
+              "type": "string"
+            },
+            "tag": {
+              "default": "latest",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "port": {
+          "default": 3001,
+          "description": "The port on which the API server will listen",
+          "type": "number"
+        },
+        "resources": {
+          "properties": {
+            "limits": {
+              "properties": {
+                "cpu": {
+                  "default": "1000m",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "1Gi",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "requests": {
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": ["limits", "requests"],
+          "type": "object"
+        },
+        "validate": {
+          "default": true,
+          "description": "Enable or disable request validation. When enabled, the API will validate incoming requests against the defined schemas.",
+          "type": "boolean"
+        }
+      },
+      "required": ["image", "resources"],
+      "type": "object"
+    },
+    "auth": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "firebase": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "mode": {
+                      "const": "disabled",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["mode"],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "clientEmail": {
+                      "description": "Firebase service account client email address",
+                      "type": "string"
+                    },
+                    "mode": {
+                      "const": "enabled",
+                      "type": "string"
+                    },
+                    "privateKey": {
+                      "description": "Firebase service account private key (PEM format)",
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "description": "Firebase project ID for authentication",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clientEmail",
+                    "mode",
+                    "privateKey",
+                    "projectId"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "default": {
+                "mode": "disabled"
+              },
+              "description": "Firebase authentication configuration. Enables Google Firebase Auth integration for user authentication and authorization."
+            },
+            "local": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "mode": {
+                      "const": "disabled",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["mode"],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "mode": {
+                      "const": "enabled",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["mode"],
+                  "type": "object"
+                }
+              ],
+              "default": {
+                "mode": "enabled"
+              },
+              "description": "Local authentication configuration. Provides username/password authentication stored in your database."
+            },
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "twitter": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "mode": {
+                      "const": "disabled",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["mode"],
+                  "type": "object"
+                },
+                {
+                  "properties": {
+                    "callbackURL": {
+                      "description": "OAuth callback URL that Twitter will redirect to after authentication",
+                      "type": "string"
+                    },
+                    "consumerKey": {
+                      "description": "Twitter API consumer key (API key) from your Twitter app",
+                      "type": "string"
+                    },
+                    "consumerSecret": {
+                      "description": "Twitter API consumer secret (API secret key) from your Twitter app",
+                      "type": "string"
+                    },
+                    "mode": {
+                      "const": "enabled",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "callbackURL",
+                    "consumerKey",
+                    "consumerSecret",
+                    "mode"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "default": {
+                "mode": "disabled"
+              },
+              "description": "Twitter OAuth authentication configuration. Enables \"Sign in with Twitter\" functionality for users."
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "firebase": {
+          "mode": "disabled"
+        },
+        "local": {
+          "mode": "enabled"
+        },
+        "mode": "enabled",
+        "twitter": {
+          "mode": "disabled"
+        }
+      },
+      "description": "Authentication configuration for the API server. This includes Firebase, local, and Twitter authentication options. Each option can be enabled or disabled independently. The default mode is \"enabled\" with local authentication enabled."
+    },
+    "billing": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "stripe": {
+              "properties": {
+                "token": {
+                  "description": "Stripe secret API key (sk_live_... or sk_test_...) for payment processing",
+                  "type": "string"
+                },
+                "whsec": {
+                  "description": "Stripe webhook endpoint secret for verifying webhook signatures",
+                  "type": "string"
+                }
+              },
+              "required": ["token", "whsec"],
+              "type": "object"
+            }
+          },
+          "required": ["stripe", "mode"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "mode": "disabled"
+      },
+      "description": "Billing configuration for payment processing using Stripe. Includes API keys and webhook secrets."
+    },
+    "database": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "url": {
+              "default": "postgresql://admin:password@localhost:5432/archesai-db?schema=public",
+              "description": "Database connection URL/string",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "auth": {
+              "default": {
+                "database": "archesai-db",
+                "password": "password"
+              },
+              "properties": {
+                "database": {
+                  "default": "archesai-db",
+                  "description": "Database name to create and use",
+                  "type": "string"
+                },
+                "password": {
+                  "default": "password",
+                  "description": "Database user password (change for production!)",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "image": {
+              "default": {
+                "pullPolicy": "IfNotPresent",
+                "repository": "pgvector/pgvector",
+                "tag": "pg16"
+              },
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "description": "Kubernetes image pull policy",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "pgvector/pgvector",
+                  "description": "PostgreSQL with pgvector extension docker image",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "pg16",
+                  "description": "PostgreSQL version tag",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "mode": {
+              "const": "managed",
+              "type": "string"
+            },
+            "persistence": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable persistent storage for database data",
+                  "type": "boolean"
+                },
+                "size": {
+                  "default": "10Gi",
+                  "description": "Size of persistent volume for database storage",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "description": "Maximum CPU allocation for database",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "1Gi",
+                      "description": "Maximum memory allocation for database",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "description": "Requested CPU allocation for database",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "description": "Requested memory allocation for database",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object"
+            },
+            "url": {
+              "default": "postgresql://admin:password@localhost:5432/archesai-db?schema=public",
+              "description": "Database connection URL/string",
+              "type": "string"
+            }
+          },
+          "required": ["mode", "persistence", "resources"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "auth": {
+          "database": "archesai-db",
+          "password": "password"
+        },
+        "image": {
+          "pullPolicy": "IfNotPresent",
+          "repository": "pgvector/pgvector",
+          "tag": "pg16"
+        },
+        "mode": "managed",
+        "persistence": {
+          "enabled": true,
+          "size": "10Gi"
+        },
+        "resources": {
+          "limits": {
+            "cpu": "500m",
+            "memory": "1Gi"
+          },
+          "requests": {
+            "cpu": "250m",
+            "memory": "512Mi"
+          }
+        },
+        "url": "postgresql://admin:password@localhost:5432/archesai-db?schema=public"
+      },
+      "description": "Database configuration for PostgreSQL with optional pgvector support. Includes managed mode with persistence and resource limits."
+    },
+    "infrastructure": {
+      "default": {
+        "development": {
+          "api": {
+            "enabled": false,
+            "port": 3001
+          },
+          "hostIP": "172.18.0.1",
+          "loki": {
+            "enabled": false,
+            "port": 30056
+          },
+          "platform": {
+            "enabled": false,
+            "port": 3000
+          },
+          "postgres": {
+            "enabled": false,
+            "port": 30054
+          },
+          "redis": {
+            "enabled": false,
+            "port": 30055
+          }
+        },
+        "images": {
+          "imagePullSecrets": [],
+          "imageRegistry": ""
+        },
+        "migrations": {
+          "enabled": false
+        },
+        "namespace": "arches-system",
+        "serviceAccount": {
+          "create": true,
+          "name": ""
+        }
+      },
+      "description": "Infrastructure configuration for Kubernetes deployments, including development settings, image management, migrations, and service accounts.",
+      "properties": {
+        "development": {
+          "default": {
+            "api": {
+              "enabled": false,
+              "port": 3001
+            },
+            "hostIP": "172.18.0.1",
+            "loki": {
+              "enabled": false,
+              "port": 30056
+            },
+            "platform": {
+              "enabled": false,
+              "port": 3000
+            },
+            "postgres": {
+              "enabled": false,
+              "port": 30054
+            },
+            "redis": {
+              "enabled": false,
+              "port": 30055
+            }
+          },
+          "description": "Development environment configuration for local port forwarding and debugging",
+          "properties": {
+            "api": {
+              "default": {
+                "enabled": false,
+                "port": 3001
+              },
+              "description": "Development port forwarding configuration for the API service",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable development port forwarding for the API service",
+                  "type": "boolean"
+                },
+                "port": {
+                  "default": 3001,
+                  "description": "Local port to forward API service to during development",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "hostIP": {
+              "default": "172.18.0.1",
+              "description": "Host IP address for development port forwarding (typically Docker bridge IP)",
+              "type": "string"
+            },
+            "loki": {
+              "default": {
+                "enabled": false,
+                "port": 30056
+              },
+              "description": "Development port forwarding configuration for the Loki service",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable development port forwarding for Loki service",
+                  "type": "boolean"
+                },
+                "port": {
+                  "default": 30056,
+                  "description": "Local port to forward Loki service to during development",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "platform": {
+              "default": {
+                "enabled": false,
+                "port": 3000
+              },
+              "description": "Development port forwarding configuration for the platform service",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable development port forwarding for the platform/frontend service",
+                  "type": "boolean"
+                },
+                "port": {
+                  "default": 3000,
+                  "description": "Local port to forward platform service to during development",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "postgres": {
+              "default": {
+                "enabled": false,
+                "port": 30054
+              },
+              "description": "Development port forwarding configuration for PostgreSQL database",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable development port forwarding for PostgreSQL database",
+                  "type": "boolean"
+                },
+                "port": {
+                  "default": 30054,
+                  "description": "Local port to forward PostgreSQL to during development",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "redis": {
+              "default": {
+                "enabled": false,
+                "port": 30055
+              },
+              "description": "Development port forwarding configuration for Redis cache",
+              "properties": {
+                "enabled": {
+                  "default": false,
+                  "description": "Enable development port forwarding for Redis cache",
+                  "type": "boolean"
+                },
+                "port": {
+                  "default": 30055,
+                  "description": "Local port to forward Redis to during development",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "images": {
+          "default": {
+            "imagePullSecrets": [],
+            "imageRegistry": ""
+          },
+          "description": "Container image configuration for Kubernetes deployments",
+          "properties": {
+            "imagePullSecrets": {
+              "default": [],
+              "description": "List of Kubernetes secrets for pulling private container images",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "imageRegistry": {
+              "default": "",
+              "description": "Custom container registry URL (leave empty for Docker Hub)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "migrations": {
+          "default": {
+            "enabled": false
+          },
+          "description": "Database migration configuration for schema updates",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable automatic database migrations on deployment",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "namespace": {
+          "default": "arches-system",
+          "description": "Kubernetes namespace where all resources will be deployed",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "default": {
+            "create": true,
+            "name": ""
+          },
+          "description": "Kubernetes service account configuration for pod security and RBAC",
+          "properties": {
+            "create": {
+              "default": true,
+              "description": "Create a dedicated Kubernetes service account for the application",
+              "type": "boolean"
+            },
+            "name": {
+              "default": "",
+              "description": "Custom service account name (auto-generated if empty)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "ingress": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "domain": {
+              "default": "archesai.dev",
+              "description": "Primary domain name for ingress routing",
+              "type": "string"
+            },
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "tls": {
+              "default": {
+                "enabled": true,
+                "secretName": "archesai-tls"
+              },
+              "description": "TLS configuration for ingress, including certificate management and encryption settings",
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable TLS/SSL encryption for HTTPS traffic",
+                  "type": "boolean"
+                },
+                "secretName": {
+                  "default": "archesai-tls",
+                  "description": "Kubernetes secret name containing TLS certificate and key",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "domain": {
+              "default": "archesai.dev",
+              "description": "Primary domain name for ingress routing",
+              "type": "string"
+            },
+            "mode": {
+              "const": "managed",
+              "type": "string"
+            },
+            "tls": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable TLS/SSL encryption for HTTPS traffic",
+                  "type": "boolean"
+                },
+                "issuer": {
+                  "default": "letsencrypt-staging",
+                  "description": "Cert-manager ClusterIssuer name for automatic certificate generation",
+                  "type": "string"
+                },
+                "secretName": {
+                  "default": "archesai-tls",
+                  "description": "Kubernetes secret name for storing generated TLS certificate",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": ["tls", "mode"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "domain": "archesai.dev",
+        "mode": "managed",
+        "tls": {
+          "enabled": true,
+          "issuer": "letsencrypt-staging",
+          "secretName": "archesai-tls"
+        }
+      },
+      "description": "Ingress configuration for routing external traffic to internal services. Supports TLS/SSL encryption and automatic certificate management."
+    },
+    "intelligence": {
+      "default": {
+        "embedding": {
+          "type": "ollama"
+        },
+        "llm": {
+          "endpoint": "http://localhost:11434",
+          "type": "ollama"
+        },
+        "runpod": {
+          "mode": "disabled"
+        },
+        "scraper": {
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "arches/scraper",
+            "tag": "latest"
+          },
+          "mode": "managed",
+          "resources": {
+            "limits": {
+              "cpu": "500m",
+              "memory": "1Gi"
+            },
+            "requests": {
+              "cpu": "250m",
+              "memory": "512Mi"
+            }
+          }
+        },
+        "speech": {
+          "mode": "disabled"
+        },
+        "unstructured": {
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "downloads.unstructured.io/unstructured-io/unstructured-api",
+            "tag": "latest"
+          },
+          "mode": "managed",
+          "resources": {
+            "limits": {
+              "cpu": "1000m",
+              "memory": "2Gi"
+            },
+            "requests": {
+              "cpu": "500m",
+              "memory": "1Gi"
+            }
+          }
+        }
+      },
+      "description": "Intelligence configuration for AI capabilities including LLMs, embeddings, web scraping, speech processing, and unstructured data handling.",
+      "properties": {
+        "embedding": {
+          "default": {
+            "type": "ollama"
+          },
+          "description": "Configuration for text embedding generation",
+          "properties": {
+            "type": {
+              "default": "ollama",
+              "description": "The embedding provider to use for vector embeddings",
+              "enum": ["openai", "ollama"],
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "llm": {
+          "anyOf": [
+            {
+              "properties": {
+                "endpoint": {
+                  "default": "http://localhost:11434",
+                  "description": "Ollama server endpoint URL",
+                  "type": "string"
+                },
+                "token": {
+                  "description": "Optional authentication token for Ollama",
+                  "type": "string"
+                },
+                "type": {
+                  "const": "ollama",
+                  "type": "string"
+                }
+              },
+              "required": ["type"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "endpoint": {
+                  "default": "https://api.openai.com/v1",
+                  "description": "OpenAI API endpoint (defaults to official API)",
+                  "type": "string"
+                },
+                "token": {
+                  "description": "OpenAI API key for authentication",
+                  "type": "string"
+                },
+                "type": {
+                  "const": "openai",
+                  "type": "string"
+                }
+              },
+              "required": ["type"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "endpoint": "http://localhost:11434",
+            "type": "ollama"
+          },
+          "description": "Large Language Model configuration for AI processing"
+        },
+        "runpod": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                },
+                "token": {
+                  "description": "RunPod API token for serverless GPU access",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "mode": "disabled"
+          },
+          "description": "RunPod serverless GPU configuration for AI workloads"
+        },
+        "scraper": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "endpoint": {
+                  "description": "Web scraper service endpoint URL",
+                  "type": "string"
+                },
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                }
+              },
+              "required": ["endpoint", "mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "image": {
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "type": "string"
+                    },
+                    "repository": {
+                      "default": "arches/scraper",
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "mode": {
+                  "const": "managed",
+                  "type": "string"
+                },
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "500m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "1Gi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "250m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "512Mi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object"
+                }
+              },
+              "required": ["image", "mode", "resources"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "image": {
+              "pullPolicy": "IfNotPresent",
+              "repository": "arches/scraper",
+              "tag": "latest"
+            },
+            "mode": "managed",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              }
+            }
+          },
+          "description": "Web scraping service for content extraction"
+        },
+        "speech": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                },
+                "token": {
+                  "description": "Speech-to-text service API token",
+                  "type": "string"
+                }
+              },
+              "required": ["mode", "token"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "mode": "disabled"
+          },
+          "description": "Speech recognition and text-to-speech services"
+        },
+        "unstructured": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "image": {
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "type": "string"
+                    },
+                    "repository": {
+                      "default": "downloads.unstructured.io/unstructured-io/unstructured-api",
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "mode": {
+                  "const": "managed",
+                  "type": "string"
+                },
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "1000m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "2Gi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "500m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "1Gi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object"
+                }
+              },
+              "required": ["image", "mode", "resources"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "image": {
+              "pullPolicy": "IfNotPresent",
+              "repository": "downloads.unstructured.io/unstructured-io/unstructured-api",
+              "tag": "latest"
+            },
+            "mode": "managed",
+            "resources": {
+              "limits": {
+                "cpu": "1000m",
+                "memory": "2Gi"
+              },
+              "requests": {
+                "cpu": "500m",
+                "memory": "1Gi"
+              }
+            }
+          },
+          "description": "Unstructured.io service for document parsing and extraction"
+        }
+      },
+      "type": "object"
+    },
+    "logging": {
+      "default": {
+        "level": "info",
+        "pretty": false
+      },
+      "description": "Logging configuration for the application. This includes the log level and whether to pretty-print logs.",
+      "properties": {
+        "level": {
+          "default": "info",
+          "description": "Minimum log level to output (fatal=highest, silent=no logs)",
+          "enum": [
+            "fatal",
+            "error",
+            "warn",
+            "info",
+            "debug",
+            "trace",
+            "silent"
+          ],
+          "type": "string"
+        },
+        "pretty": {
+          "default": false,
+          "description": "Enable pretty-printed logs for development (disable in production for structured logs)",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "monitoring": {
+      "default": {
+        "grafana": {
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "grafana/grafana",
+            "tag": "latest"
+          },
+          "mode": "managed",
+          "resources": {
+            "limits": {
+              "cpu": "200m",
+              "memory": "256Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            }
+          }
+        },
+        "loki": {
+          "host": "http://localhost:3100",
+          "image": {
+            "pullPolicy": "IfNotPresent",
+            "repository": "grafana/loki",
+            "tag": "latest"
+          },
+          "mode": "managed",
+          "resources": {
+            "limits": {
+              "cpu": "200m",
+              "memory": "256Mi"
+            },
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            }
+          }
+        }
+      },
+      "description": "Monitoring configuration for Grafana and Loki services",
+      "properties": {
+        "grafana": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "image": {
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "type": "string"
+                    },
+                    "repository": {
+                      "default": "grafana/grafana",
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "mode": {
+                  "const": "managed",
+                  "type": "string"
+                },
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "200m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "128Mi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object"
+                }
+              },
+              "required": ["image", "mode", "resources"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "image": {
+              "pullPolicy": "IfNotPresent",
+              "repository": "grafana/grafana",
+              "tag": "latest"
+            },
+            "mode": "managed",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              }
+            }
+          },
+          "description": "Grafana monitoring dashboard configuration"
+        },
+        "loki": {
+          "anyOf": [
+            {
+              "properties": {
+                "mode": {
+                  "const": "disabled",
+                  "type": "string"
+                }
+              },
+              "required": ["mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "host": {
+                  "description": "External Loki host URL",
+                  "type": "string"
+                },
+                "mode": {
+                  "const": "enabled",
+                  "type": "string"
+                }
+              },
+              "required": ["host", "mode"],
+              "type": "object"
+            },
+            {
+              "properties": {
+                "host": {
+                  "default": "http://localhost:3100",
+                  "type": "string"
+                },
+                "image": {
+                  "properties": {
+                    "pullPolicy": {
+                      "default": "IfNotPresent",
+                      "enum": ["Always", "IfNotPresent", "Never"],
+                      "type": "string"
+                    },
+                    "repository": {
+                      "default": "grafana/loki",
+                      "type": "string"
+                    },
+                    "tag": {
+                      "default": "latest",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "mode": {
+                  "const": "managed",
+                  "type": "string"
+                },
+                "resources": {
+                  "properties": {
+                    "limits": {
+                      "properties": {
+                        "cpu": {
+                          "default": "200m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "256Mi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "requests": {
+                      "properties": {
+                        "cpu": {
+                          "default": "100m",
+                          "type": "string"
+                        },
+                        "memory": {
+                          "default": "128Mi",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "required": ["limits", "requests"],
+                  "type": "object"
+                }
+              },
+              "required": ["image", "mode", "resources"],
+              "type": "object"
+            }
+          ],
+          "default": {
+            "host": "http://localhost:3100",
+            "image": {
+              "pullPolicy": "IfNotPresent",
+              "repository": "grafana/loki",
+              "tag": "latest"
+            },
+            "mode": "managed",
+            "resources": {
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              }
+            }
+          },
+          "description": "Loki log aggregation service configuration"
+        }
+      },
+      "type": "object"
+    },
+    "platform": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "host": {
+              "default": "localhost",
+              "description": "Host address where the platform service will be accessible",
+              "type": "string"
+            },
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "host": {
+              "default": "localhost",
+              "description": "Host address where the platform service will be accessible",
+              "type": "string"
+            },
+            "image": {
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "archesai/platform",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "latest",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "mode": {
+              "const": "managed",
+              "type": "string"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object"
+            }
+          },
+          "required": ["image", "mode", "resources"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "host": "localhost",
+        "image": {
+          "pullPolicy": "IfNotPresent",
+          "repository": "archesai/platform",
+          "tag": "latest"
+        },
+        "mode": "managed",
+        "resources": {
+          "limits": {
+            "cpu": "500m",
+            "memory": "512Mi"
+          },
+          "requests": {
+            "cpu": "250m",
+            "memory": "256Mi"
+          }
+        }
+      },
+      "description": "Platform configuration for the Arches AI platform service, including host address, image settings, and resource limits."
+    },
+    "redis": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "auth": {
+              "default": "password",
+              "description": "Redis authentication password (optional)",
+              "type": "string"
+            },
+            "ca": {
+              "description": "Certificate Authority for TLS connections (optional)",
+              "type": "string"
+            },
+            "host": {
+              "default": "localhost",
+              "description": "Redis server hostname or IP address",
+              "type": "string"
+            },
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "port": {
+              "default": 6379,
+              "description": "Redis server port number",
+              "type": "number"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "auth": {
+              "default": "password",
+              "description": "Redis authentication password (optional)",
+              "type": "string"
+            },
+            "ca": {
+              "description": "Certificate Authority for TLS connections (optional)",
+              "type": "string"
+            },
+            "host": {
+              "default": "localhost",
+              "description": "Redis server hostname or IP address",
+              "type": "string"
+            },
+            "image": {
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "redis",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "7-alpine",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "mode": {
+              "const": "managed",
+              "type": "string"
+            },
+            "persistence": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable persistent storage for Redis data",
+                  "type": "boolean"
+                },
+                "size": {
+                  "default": "1Gi",
+                  "description": "Size of persistent volume for Redis storage",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "port": {
+              "default": 6379,
+              "description": "Redis server port number",
+              "type": "number"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "200m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "100m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "128Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object"
+            }
+          },
+          "required": ["image", "mode", "persistence", "resources"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "auth": "password",
+        "host": "localhost",
+        "image": {
+          "pullPolicy": "IfNotPresent",
+          "repository": "redis",
+          "tag": "7-alpine"
+        },
+        "mode": "managed",
+        "persistence": {
+          "enabled": true,
+          "size": "1Gi"
+        },
+        "port": 6379,
+        "resources": {
+          "limits": {
+            "cpu": "200m",
+            "memory": "256Mi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "memory": "128Mi"
+          }
+        }
+      }
+    },
+    "storage": {
+      "anyOf": [
+        {
+          "properties": {
+            "mode": {
+              "const": "disabled",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "accesskey": {
+              "default": "minioadmin",
+              "description": "MinIO/S3 access key ID for authentication",
+              "type": "string"
+            },
+            "bucket": {
+              "default": "archesai",
+              "description": "S3 bucket name for file storage",
+              "type": "string"
+            },
+            "endpoint": {
+              "default": "http://localhost:9000",
+              "description": "MinIO server endpoint URL",
+              "type": "string"
+            },
+            "mode": {
+              "const": "enabled",
+              "type": "string"
+            },
+            "secretkey": {
+              "default": "minioadmin",
+              "description": "MinIO/S3 secret access key for authentication",
+              "type": "string"
+            }
+          },
+          "required": ["mode"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "accesskey": {
+              "default": "minioadmin",
+              "description": "MinIO/S3 access key ID for authentication",
+              "type": "string"
+            },
+            "bucket": {
+              "default": "archesai",
+              "description": "S3 bucket name for file storage",
+              "type": "string"
+            },
+            "endpoint": {
+              "default": "http://localhost:9000",
+              "description": "MinIO server endpoint URL",
+              "type": "string"
+            },
+            "image": {
+              "properties": {
+                "pullPolicy": {
+                  "default": "IfNotPresent",
+                  "enum": ["Always", "IfNotPresent", "Never"],
+                  "type": "string"
+                },
+                "repository": {
+                  "default": "minio/minio",
+                  "type": "string"
+                },
+                "tag": {
+                  "default": "latest",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "mode": {
+              "const": "managed",
+              "type": "string"
+            },
+            "persistence": {
+              "properties": {
+                "enabled": {
+                  "default": true,
+                  "description": "Enable persistent storage for MinIO data",
+                  "type": "boolean"
+                },
+                "size": {
+                  "default": "20Gi",
+                  "description": "Size of persistent volume for object storage",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "resources": {
+              "properties": {
+                "limits": {
+                  "properties": {
+                    "cpu": {
+                      "default": "500m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "512Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "requests": {
+                  "properties": {
+                    "cpu": {
+                      "default": "250m",
+                      "type": "string"
+                    },
+                    "memory": {
+                      "default": "256Mi",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "required": ["limits", "requests"],
+              "type": "object"
+            },
+            "secretkey": {
+              "default": "minioadmin",
+              "description": "MinIO/S3 secret access key for authentication",
+              "type": "string"
+            }
+          },
+          "required": ["image", "mode", "persistence", "resources"],
+          "type": "object"
+        }
+      ],
+      "default": {
+        "accesskey": "minioadmin",
+        "bucket": "arches",
+        "endpoint": "http://localhost:9000",
+        "image": {
+          "pullPolicy": "IfNotPresent",
+          "repository": "minio/minio",
+          "tag": "latest"
+        },
+        "mode": "managed",
+        "persistence": {
+          "enabled": true,
+          "size": "20Gi"
+        },
+        "resources": {
+          "limits": {
+            "cpu": "500m",
+            "memory": "512Mi"
+          },
+          "requests": {
+            "cpu": "250m",
+            "memory": "256Mi"
+          }
+        },
+        "secretkey": "minioadmin"
+      },
+      "description": "Object storage configuration for MinIO or S3-compatible services"
+    }
+  },
+  "type": "object"
+}

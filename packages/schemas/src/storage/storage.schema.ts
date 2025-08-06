@@ -1,11 +1,23 @@
 import { z } from 'zod'
 
 // Response schemas
-export const UrlResponseSchema = z.object({ url: z.string() })
-export const SuccessResponseSchema = z.object({ success: z.boolean() })
-export const UploadIdResponseSchema = z.object({ uploadId: z.string() })
+export const UrlResponseSchema: z.ZodObject<{
+  url: z.ZodString
+}> = z.object({ url: z.string() })
+export const SuccessResponseSchema: z.ZodObject<{
+  success: z.ZodBoolean
+}> = z.object({ success: z.boolean() })
+export const UploadIdResponseSchema: z.ZodObject<{
+  uploadId: z.ZodString
+}> = z.object({ uploadId: z.string() })
 
-export const FileMetadataSchema = z.object({
+export const FileMetadataSchema: z.ZodObject<{
+  contentType: z.ZodOptional<z.ZodString>
+  etag: z.ZodString
+  key: z.ZodString
+  lastModified: z.ZodDate
+  size: z.ZodNumber
+}> = z.object({
   contentType: z.string().optional(),
   etag: z.string(),
   key: z.string(),
@@ -13,46 +25,87 @@ export const FileMetadataSchema = z.object({
   size: z.number()
 })
 
-export const ListResultSchema = z.object({
+export const ListResultSchema: z.ZodObject<{
+  continuationToken: z.ZodOptional<z.ZodString>
+  directories: z.ZodArray<z.ZodString>
+  files: z.ZodArray<
+    z.ZodObject<{
+      contentType: z.ZodOptional<z.ZodString>
+      etag: z.ZodString
+      key: z.ZodString
+      lastModified: z.ZodDate
+      size: z.ZodNumber
+    }>
+  >
+}> = z.object({
   continuationToken: z.string().optional(),
   directories: z.array(z.string()),
   files: z.array(FileMetadataSchema)
 })
 
 // Request schemas
-export const GetUploadUrlSchema = z.object({
+export const GetUploadUrlSchema: z.ZodObject<{
+  contentType: z.ZodOptional<z.ZodString>
+  expiresIn: z.ZodDefault<z.ZodNumber>
+  key: z.ZodString
+}> = z.object({
   contentType: z.string().optional(),
   expiresIn: z.number().default(3600),
   key: z.string()
 })
 
-export const GetDownloadUrlSchema = z.object({
+export const GetDownloadUrlSchema: z.ZodObject<{
+  expiresIn: z.ZodDefault<z.ZodNumber>
+  key: z.ZodString
+}> = z.object({
   expiresIn: z.number().default(3600),
   key: z.string()
 })
 
-export const KeyParamsSchema = z.object({
+export const KeyParamsSchema: z.ZodObject<{
+  key: z.ZodString
+}> = z.object({
   key: z.string()
 })
 
-export const ListFilesSchema = z.object({
+export const ListFilesSchema: z.ZodObject<{
+  maxKeys: z.ZodDefault<z.ZodNumber>
+  prefix: z.ZodOptional<z.ZodString>
+}> = z.object({
   maxKeys: z.number().default(100),
   prefix: z.string().optional()
 })
 
-export const CreateMultipartSchema = z.object({
+export const CreateMultipartSchema: z.ZodObject<{
+  contentType: z.ZodOptional<z.ZodString>
+  key: z.ZodString
+}> = z.object({
   contentType: z.string().optional(),
   key: z.string()
 })
 
-export const GetMultipartPartUrlSchema = z.object({
+export const GetMultipartPartUrlSchema: z.ZodObject<{
+  expiresIn: z.ZodDefault<z.ZodNumber>
+  key: z.ZodString
+  partNumber: z.ZodNumber
+  uploadId: z.ZodString
+}> = z.object({
   expiresIn: z.number().default(3600),
   key: z.string(),
   partNumber: z.number(),
   uploadId: z.string()
 })
 
-export const CompleteMultipartSchema = z.object({
+export const CompleteMultipartSchema: z.ZodObject<{
+  key: z.ZodString
+  parts: z.ZodArray<
+    z.ZodObject<{
+      etag: z.ZodString
+      partNumber: z.ZodNumber
+    }>
+  >
+  uploadId: z.ZodString
+}> = z.object({
   key: z.string(),
   parts: z.array(
     z.object({
@@ -63,7 +116,10 @@ export const CompleteMultipartSchema = z.object({
   uploadId: z.string()
 })
 
-export const AbortMultipartSchema = z.object({
+export const AbortMultipartSchema: z.ZodObject<{
+  key: z.ZodString
+  uploadId: z.ZodString
+}> = z.object({
   key: z.string(),
   uploadId: z.string()
 })

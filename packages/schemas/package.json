@@ -7,23 +7,9 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
-    "tslib": "catalog:",
     "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/node": "catalog:",
-    "typescript": "catalog:"
   }
 }

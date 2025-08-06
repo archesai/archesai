@@ -6,16 +6,20 @@ import type { ConfigArray } from 'typescript-eslint'
 
 import { includeIgnoreFile } from '@eslint/compat'
 import eslint from '@eslint/js'
+import nxPlugin from '@nx/eslint-plugin'
 import prettier from 'eslint-config-prettier'
 import importPlugin from 'eslint-plugin-import'
 import perfectionist from 'eslint-plugin-perfectionist'
 import globals from 'globals'
+import jsoncParser from 'jsonc-eslint-parser'
 import tseslint from 'typescript-eslint'
 
 const base: ConfigArray = tseslint.config(
   {
     name: 'ignore .gitignored',
-    ...includeIgnoreFile(path.join(import.meta.dirname, '../../../.gitignore'))
+    ...includeIgnoreFile(
+      path.join(import.meta.dirname, '../../../../.gitignore')
+    )
   },
   {
     ignores: ['*.config.ts', '*.config.js'],
@@ -23,25 +27,24 @@ const base: ConfigArray = tseslint.config(
   },
   // Base JavaScript config
   {
-    files: ['**/*.{js,mjs,cjs}'],
-    name: 'javascript-base',
     extends: [eslint.configs.recommended],
+    files: ['**/*.{js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: globals.node,
       sourceType: 'module'
     },
-    linterOptions: { reportUnusedDisableDirectives: true }
+    linterOptions: { reportUnusedDisableDirectives: true },
+    name: 'javascript-base'
   },
   // TypeScript config
   {
-    files: ['**/*.{ts,tsx}'],
-    name: 'typescript',
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked
     ],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: globals.node,
@@ -53,31 +56,22 @@ const base: ConfigArray = tseslint.config(
       sourceType: 'module'
     },
     linterOptions: { reportUnusedDisableDirectives: true },
+    name: 'typescript',
     rules: {
-      'no-restricted-syntax': [
+      '@typescript-eslint/consistent-type-exports': [
         'error',
-        ...banImportExtension('js'),
-        ...banImportExtension('jsx'),
-        ...banImportExtension('ts'),
-        ...banImportExtension('tsx')
+        { fixMixedExportsWithInlineTypeSpecifier: false }
       ],
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
       ],
-      '@typescript-eslint/consistent-type-exports': [
-        'error',
-        { fixMixedExportsWithInlineTypeSpecifier: false }
-      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+      // '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/no-misused-promises': [
         2,
         { checksVoidReturn: { attributes: false } }
       ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
-      ],
-      '@typescript-eslint/no-import-type-side-effects': 'error',
       // '@typescript-eslint/consistent-type-assertions': [
       //   'warn',
       //   { assertionStyle: 'never' }
@@ -87,6 +81,54 @@ const base: ConfigArray = tseslint.config(
         'error',
         {
           allowConstantLoopConditions: true
+        }
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+      ],
+      'no-restricted-syntax': [
+        'error',
+        ...banImportExtension('js'),
+        ...banImportExtension('jsx'),
+        ...banImportExtension('ts'),
+        ...banImportExtension('tsx')
+      ]
+    }
+  },
+  // NX config
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: { '@nx': nxPlugin },
+    rules: {
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          allowCircularSelfDependency: true,
+          banTransitiveDependencies: true,
+          depConstraints: [
+            {
+              onlyDependOnLibsWithTags: ['*'],
+              sourceTag: '*'
+            }
+          ],
+          enforceBuildableLibDependency: true
+        }
+      ]
+    }
+  },
+  {
+    files: ['{package,project,nx}.json'],
+    languageOptions: {
+      parser: jsoncParser
+    },
+    plugins: { '@nx': nxPlugin },
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: ['react-dom']
+          // includeTransitiveDependencies: true
         }
       ]
     }
@@ -103,12 +145,12 @@ const base: ConfigArray = tseslint.config(
       ...importPlugin.flatConfigs.typescript.rules,
       // 'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       'import/default': 'off',
+      'import/extensions': 'off',
       'import/namespace': 'off',
       'import/no-named-as-default-member': 'off',
       'import/no-relative-packages': 'error',
       'import/no-unresolved': 'off',
-      'import/extensions': 'off',
-      ...(process.env['CI'] !== 'true' && {
+      ...(process.env.CI !== 'true' && {
         'import/no-cycle': 'off',
         'import/no-named-as-default': 'off',
         'import/no-unused-modules': 'off'
@@ -121,8 +163,8 @@ const base: ConfigArray = tseslint.config(
         '@typescript-eslint/parser': ['.ts', '.tsx']
       },
       'import/resolver': {
-        typescript: true,
-        node: true
+        node: true,
+        typescript: true
       }
     }
   },
@@ -131,10 +173,10 @@ const base: ConfigArray = tseslint.config(
     name: 'perfectionist',
     rules: {
       ...perfectionist.configs['recommended-natural'].rules,
-      'perfectionist/sort-imports': 'off',
-      'perfectionist/sort-named-imports': 'off',
       'perfectionist/sort-decorators': 'off',
-      'perfectionist/sort-enums': 'off'
+      'perfectionist/sort-enums': 'off',
+      'perfectionist/sort-imports': 'off',
+      'perfectionist/sort-named-imports': 'off'
     }
   },
   {
@@ -148,26 +190,26 @@ function banImportExtension(extension: string) {
   const literalAttributeMatcher = `Literal[value=/\\.${extension}$/]`
   return [
     {
+      message,
       // import foo from 'bar.js';
-      selector: `ImportDeclaration > ${literalAttributeMatcher}.source`,
-      message
+      selector: `ImportDeclaration > ${literalAttributeMatcher}.source`
     },
     {
+      message,
       // const foo = import('bar.js');
-      selector: `ImportExpression > ${literalAttributeMatcher}.source`,
-      message
+      selector: `ImportExpression > ${literalAttributeMatcher}.source`
     },
     {
+      message,
       // type Foo = typeof import('bar.js');
-      selector: `TSImportType > TSLiteralType > ${literalAttributeMatcher}`,
-      message
+      selector: `TSImportType > TSLiteralType > ${literalAttributeMatcher}`
     },
     {
+      message,
       // const foo = require('foo.js');
-      selector: `CallExpression[callee.name = "require"] > ${literalAttributeMatcher}.arguments`,
-      message
+      selector: `CallExpression[callee.name = "require"] > ${literalAttributeMatcher}.arguments`
     }
   ]
 }
 
-export default base
+export { base }

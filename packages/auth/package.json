@@ -8,29 +8,14 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "better-auth": "catalog:",
-    "tslib": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@better-auth/cli": "catalog:",
-    "@types/node": "catalog:",
     "fastify": "catalog:fastify",
-    "fastify-type-provider-zod": "catalog:fastify",
-    "typescript": "catalog:"
+    "fastify-type-provider-zod": "catalog:fastify"
   }
 }

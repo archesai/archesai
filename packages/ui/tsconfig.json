@@ -11,23 +11,22 @@
   //   "baseUrl": "."
   // },
   "extends": "../../tooling/typescript/src/base.json",
-  "files": [],
   "include": [],
   "references": [
+    {
+      "path": "../schemas"
+    },
+    {
+      "path": "../client"
+    },
+    {
+      "path": "../../tooling/eslint"
+    },
     {
       "path": "./tsconfig.lib.json"
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../packages/client"
-    },
-    {
-      "path": "../../packages/schemas"
-    },
-    {
-      "path": "../../tooling/eslint"
     }
   ]
 }

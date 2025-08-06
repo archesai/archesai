@@ -1,8 +1,5 @@
-import base from '@archesai/eslint/base'
+import type { ConfigArray } from '@archesai/eslint'
 
-export default [
-  ...base,
-  {
-    ignores: ['apps/**', 'packages/**', 'tooling/**', 'e2e/**']
-  }
-]
+import { base } from '@archesai/eslint'
+
+export default [...base] as ConfigArray

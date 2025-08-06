@@ -9,10 +9,13 @@
   ],
   "references": [
     {
-      "path": "../../packages/client/tsconfig.lib.json"
+      "path": "../schemas/tsconfig.lib.json"
     },
     {
-      "path": "../../packages/schemas/tsconfig.lib.json"
+      "path": "../client/tsconfig.lib.json"
+    },
+    {
+      "path": "../../tooling/eslint/tsconfig.lib.json"
     }
   ]
 }

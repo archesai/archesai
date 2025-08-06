@@ -37,7 +37,7 @@ export default function PipelineDataTable() {
         {
           accessorKey: 'description',
           cell: ({ row }) => {
-            return (row.original.description ?? 'No Description').toString()
+            return row.original.description ?? 'No Description'
           },
           id: 'description'
         },

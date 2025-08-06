@@ -8,28 +8,18 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "generate": "orval",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
+    "client:generate": "orval"
   },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@tanstack/react-query": "catalog:tanstack",
-    "qs": "catalog:",
-    "tslib": "catalog:"
+    "qs": "catalog:"
   },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@ibm-cloud/openapi-ruleset": "catalog:client",
-    "@types/node": "catalog:",
-    "@types/qs": "catalog:",
-    "orval": "catalog:client",
-    "typescript": "catalog:"
+  "nx": {
+    "implicitDependencies": [
+      "@archesai/api"
+    ]
   }
 }

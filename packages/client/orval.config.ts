@@ -1,4 +1,6 @@
-import { ConfigExternal, defineConfig } from 'orval'
+import type { ConfigExternal } from 'orval'
+
+import { defineConfig } from 'orval'
 
 export default defineConfig({
   archesai: {

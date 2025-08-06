@@ -41,7 +41,7 @@ const FILE_SIZES = [
 ] as const
 
 const formatBytes = (bytes: number, decimals = 2): string => {
-  if (!+bytes) return '0 Bytes'
+  if (!bytes) return '0 Bytes'
   const k = 1024
   const dm = decimals < 0 ? 0 : decimals
   const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -533,7 +533,7 @@ export default function FileUpload({
               <div className='absolute inset-[20%] animate-pulse rounded-lg bg-blue-500/5 transition-all duration-300' />
             </div>
 
-            <div className='absolute -top-4 -right-4 h-8 w-8 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100' />
+            <div className='absolute -right-4 -top-4 h-8 w-8 bg-gradient-to-br from-blue-500/20 to-transparent opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100' />
 
             <div className='relative h-[240px]'>
               <AnimatePresence mode='wait'>

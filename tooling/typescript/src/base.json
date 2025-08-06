@@ -7,6 +7,7 @@
     "baseUrl": "${configDir}",
     "checkJs": false,
     "composite": true,
+    "customConditions": ["development"],
     "declaration": true,
     "declarationDir": "${configDir}/dist",
     "declarationMap": true,

@@ -6,14 +6,15 @@
     { "pattern": "e2e/*/" }
   ],
   "files.exclude": {
-    "**/.cache": true,
-    "**/.coverage": true,
-    "**/.nitro": true,
-    "**/.output": true,
-    "**/.tanstack": true,
-    "**/.turbo": true,
-    "**/dist": true,
-    "**/node_modules": true
+    "**/.cache": false,
+    "**/.coverage": false,
+    "**/.nitro": false,
+    "**/.nx": false,
+    "**/.output": false,
+    "**/.tanstack": false,
+    "**/.turbo": false,
+    "**/dist": false,
+    "**/node_modules": false
   },
   "tailwindCSS.experimental.configFile": {
     "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",

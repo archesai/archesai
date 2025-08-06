@@ -8,36 +8,19 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/schemas": "workspace:*",
     "@fastify/deepmerge": "catalog:fastify",
     "@redis/client": "catalog:",
     "@socket.io/redis-adapter": "catalog:",
-    "nodemailer": "catalog:",
-    "pino": "catalog:",
-    "pino-loki": "catalog:",
-    "pino-pretty": "catalog:",
-    "socket.io": "catalog:",
-    "tslib": "catalog:",
-    "yaml": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/node": "catalog:",
-    "@types/nodemailer": "catalog:",
     "fastify": "catalog:fastify",
     "fastify-type-provider-zod": "catalog:fastify",
-    "typescript": "catalog:",
+    "nodemailer": "catalog:",
+    "pino": "catalog:",
+    "socket.io": "catalog:",
+    "yaml": "catalog:",
     "zod": "catalog:"
   }
 }

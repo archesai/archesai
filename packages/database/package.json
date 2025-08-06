@@ -7,37 +7,23 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc --build",
-    "db:clean": "node ./src/utils/clean.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:inspect": "drizzle-kit inspect",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:reset": "node ./src/utils/reset.ts",
-    "db:seed": "node ./src/utils/seed.ts",
-    "db:studio": "drizzle-kit studio",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "typecheck": "tsc --build --emitDeclarationOnly"
+    "database:clean": "node ./src/utils/clean.ts",
+    "database:generate": "drizzle-kit generate",
+    "database:inspect": "drizzle-kit inspect",
+    "database:migrate": "drizzle-kit migrate",
+    "database:push": "drizzle-kit push",
+    "database:reset": "node ./src/utils/reset.ts",
+    "database:seed": "node ./src/utils/seed.ts",
+    "database:studio": "drizzle-kit studio"
   },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "drizzle-orm": "catalog:database",
-    "pg": "catalog:database",
-    "tslib": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/node": "catalog:",
-    "@types/pg": "catalog:database",
-    "drizzle-kit": "catalog:database",
     "drizzle-seed": "catalog:database",
-    "typescript": "catalog:"
+    "pg": "catalog:database"
   }
 }

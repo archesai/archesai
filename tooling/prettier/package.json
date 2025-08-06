@@ -4,27 +4,17 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "imports": {
+    "#*": "./src/*.ts"
+  },
   "exports": {
-    "./package.json": "./package.json",
-    "./*": "./src/*.js"
+    ".": "./src/index.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "typecheck": "tsc --build --emitDeclarationOnly"
-  },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "prettier-plugin-packagejson": "catalog:prettier",
     "prettier-plugin-sh": "catalog:prettier",
     "prettier-plugin-sort-json": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/node": "catalog:",
-    "prettier": "catalog:prettier",
-    "typescript": "catalog:"
   }
 }

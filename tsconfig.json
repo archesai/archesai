@@ -1,20 +1,17 @@
 {
   "compileOnSave": false,
   "extends": "./tooling/typescript/src/base.json",
-  "files": [],
+  "include": [],
   "references": [
+    {
+      "path": "./tsconfig.solution.json"
+    },
     {
       "path": "./apps/api"
     },
     {
       "path": "./apps/platform"
     },
-    // {
-    //   "path": "./e2e/api-e2e"
-    // },
-    // {
-    //   "path": "./e2e/platform-e2e"
-    // },
     {
       "path": "./packages/auth"
     },
@@ -50,6 +47,12 @@
     },
     {
       "path": "./tooling/prettier"
+    },
+    {
+      "path": "./e2e/platform-e2e"
+    },
+    {
+      "path": "./e2e/api-e2e"
     }
   ]
 }

@@ -1,5 +1,5 @@
-import base from '@archesai/eslint/base'
-import jest from '@archesai/eslint/jest'
-import react from '@archesai/eslint/react'
+import type { ConfigArray } from '@archesai/eslint'
 
-export default [...jest, ...react, ...base]
+import { base, react } from '@archesai/eslint'
+
+export default [...base, ...react] as ConfigArray

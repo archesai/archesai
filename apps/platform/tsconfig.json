@@ -1,25 +1,24 @@
 {
   "extends": "../../tooling/typescript/src/base.json",
-  "files": [],
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../packages/client"
+      "path": "../../packages/ui"
     },
     {
       "path": "../../packages/schemas"
     },
     {
-      "path": "../../packages/ui"
+      "path": "../../packages/client"
     },
     {
       "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
   ]
 }

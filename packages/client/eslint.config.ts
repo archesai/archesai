@@ -1,5 +1,6 @@
-import base from '@archesai/eslint/base'
-import react from '@archesai/eslint/react'
+import type { ConfigArray } from '@archesai/eslint'
+
+import { base, react } from '@archesai/eslint'
 
 export default [
   ...react,
@@ -7,4 +8,4 @@ export default [
   {
     ignores: ['**/generated/**/*.ts']
   }
-]
+] as ConfigArray

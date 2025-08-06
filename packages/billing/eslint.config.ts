@@ -1,6 +1,5 @@
-import type { ConfigArray } from 'typescript-eslint'
+import type { ConfigArray } from '@archesai/eslint'
 
-import base from '@archesai/eslint/base'
-import jest from '@archesai/eslint/jest'
+import { base } from '@archesai/eslint'
 
-export default [...base, ...jest] satisfies ConfigArray
+export default [...base] as ConfigArray

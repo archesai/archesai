@@ -24,7 +24,7 @@ interface FileMetadata {
 }
 
 interface ListResult {
-  continuationToken?: string
+  continuationToken?: string | undefined
   directories: string[]
   files: FileMetadata[]
 }
@@ -87,7 +87,10 @@ export function createStorageService(
           Key: key
         })
       )
-      return response.UploadId!
+      if (!response.UploadId) {
+        throw new Error('Failed to create multipart upload')
+      }
+      return response.UploadId
     },
 
     async delete(key: string): Promise<void> {
@@ -164,15 +167,15 @@ export function createStorageService(
       const response = await s3.send(command)
 
       const files: FileMetadata[] = (response.Contents ?? []).map((obj) => ({
-        etag: obj.ETag!,
-        key: obj.Key!,
-        lastModified: obj.LastModified!,
-        size: obj.Size!
-      }))
+        etag: obj.ETag,
+        key: obj.Key,
+        lastModified: obj.LastModified,
+        size: obj.Size
+      })) as FileMetadata[]
 
-      const directories = (response.CommonPrefixes ?? []).map(
-        (prefix) => prefix.Prefix!
-      )
+      const directories = (response.CommonPrefixes ?? [])
+        .map((prefix) => prefix.Prefix)
+        .filter((f) => f !== undefined)
 
       return {
         continuationToken: response.NextContinuationToken,

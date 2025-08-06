@@ -4,42 +4,27 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#app/*": "./src/app/*.ts",
-    "#utils/*": "./src/utils/*.ts",
-    "#plugins/*": "./src/plugins/*.ts"
+    "#*": "./src/*.ts"
   },
-  "scripts": {
-    "build": "tsc --build",
-    "dev": "ARCHES_CONFIG_ROOT=$PWD/../.. node --watch src/main.ts",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint",
-    "start": "ARCHES_CONFIG_ROOT=$PWD/../.. node dist/main.js",
-    "typecheck": "tsc --build --emitDeclarationOnly"
+  "exports": {
+    ".": "./dist/index.js"
   },
-  "prettier": "@archesai/prettier/base",
   "dependencies": {
     "@archesai/auth": "workspace:*",
-    "@archesai/billing": "workspace:*",
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
-    "@archesai/intelligence": "workspace:*",
     "@archesai/orchestration": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@archesai/storage": "workspace:*",
     "@fastify/cors": "catalog:fastify",
-    "@fastify/helmet": "catalog:fastify",
     "@fastify/swagger": "catalog:fastify",
     "@scalar/fastify-api-reference": "catalog:fastify",
     "fastify": "catalog:fastify",
-    "fastify-type-provider-zod": "catalog:fastify",
-    "qs": "catalog:",
-    "tslib": "catalog:"
-  },
-  "devDependencies": {
-    "@archesai/typescript": "workspace:*",
-    "@types/node": "catalog:",
-    "@types/qs": "catalog:",
     "fastify-plugin": "catalog:fastify",
-    "typescript": "catalog:"
+    "fastify-type-provider-zod": "catalog:fastify",
+    "qs": "catalog:"
+  },
+  "nx": {
+    "projectType": "application"
   }
 }

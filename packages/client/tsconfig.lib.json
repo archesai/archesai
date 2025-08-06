@@ -7,5 +7,9 @@
     "../../tooling/typescript/src/react.json",
     "../../tooling/typescript/src/lib.json"
   ],
-  "references": []
+  "references": [
+    {
+      "path": "../../tooling/eslint/tsconfig.lib.json"
+    }
+  ]
 }

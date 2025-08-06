@@ -1,29 +1,7 @@
 {
   "extends": "../../tooling/typescript/src/base.json",
-  "files": [],
   "include": [],
   "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../packages/intelligence"
-    },
-    {
-      "path": "../../packages/auth"
-    },
-    {
-      "path": "../../packages/billing"
-    },
-    {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/database"
-    },
     {
       "path": "../../packages/storage"
     },
@@ -34,7 +12,22 @@
       "path": "../../packages/orchestration"
     },
     {
+      "path": "../../packages/database"
+    },
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/auth"
+    },
+    {
       "path": "../../tooling/eslint"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
   ]
 }

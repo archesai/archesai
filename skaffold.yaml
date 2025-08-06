@@ -41,7 +41,7 @@ customActions:
       - image: api
         name: seed
         command: ['pnpm']
-        args: ['--filter', 'api', 'db:seed']
+        args: ['--filter', 'api', 'database:seed']
   - name: test-e2e
     executionMode:
       kubernetesCluster: {}

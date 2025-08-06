@@ -5,11 +5,6 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./package.json": "./package.json",
     "./*": "./src/*.json"
-  },
-  "scripts": {
-    "format": "prettier --check . --ignore-path ../../.gitignore"
-  },
-  "prettier": "@archesai/prettier/base"
+  }
 }

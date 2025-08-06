@@ -67,7 +67,7 @@ export default function MemberForm({ id }: { id?: string }) {
             ].map((option) => (
               <SelectItem
                 key={option.id}
-                value={option.id.toString()}
+                value={option.id}
               >
                 {option.name}
               </SelectItem>
