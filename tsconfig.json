@@ -1,11 +1,7 @@
 {
-  "compileOnSave": false,
   "extends": "./tooling/typescript/src/base.json",
-  "include": [],
+  "files": [],
   "references": [
-    {
-      "path": "./tsconfig.solution.json"
-    },
     {
       "path": "./apps/api"
     },

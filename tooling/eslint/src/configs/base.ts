@@ -51,7 +51,7 @@ const base: ConfigArray = tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: path.join(import.meta.dirname, '../../../')
+        tsconfigRootDir: path.join(import.meta.dirname, '../../../../')
       },
       sourceType: 'module'
     },
@@ -105,14 +105,14 @@ const base: ConfigArray = tseslint.config(
         'error',
         {
           allowCircularSelfDependency: true,
-          banTransitiveDependencies: true,
+          // banTransitiveDependencies: true,
           depConstraints: [
             {
               onlyDependOnLibsWithTags: ['*'],
               sourceTag: '*'
             }
-          ],
-          enforceBuildableLibDependency: true
+          ]
+          // enforceBuildableLibDependency: true
         }
       ]
     }

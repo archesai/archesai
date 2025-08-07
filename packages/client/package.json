@@ -8,18 +8,18 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "client:generate": "orval"
   },
   "dependencies": {
     "@tanstack/react-query": "catalog:tanstack",
+    "orval": "catalog:client",
     "qs": "catalog:"
   },
   "nx": {
-    "implicitDependencies": [
-      "@archesai/api"
-    ]
+    "projectType": "library"
   }
 }

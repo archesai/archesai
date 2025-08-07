@@ -295,3 +295,32 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 Arches AI offers a versatile and powerful data processing platform designed to meet the diverse needs of businesses across various industries. By providing a comprehensive suite of tools for data management, transformation, and analysis, Arches AI empowers organizations to unlock the full potential of their data, drive innovation, and achieve strategic goals. Whether it's enhancing operational efficiency, enabling advanced analytics, or fostering data-driven decision-making, Arches AI is positioned to be an indispensable partner for businesses seeking to thrive in the data-centric landscape.
 
 ---
+
+    // "typecheck": {
+    //   "dependsOn": ["^typecheck"],
+    //   "inputs": [
+    //     "production",
+    //     {
+    //       "dependentTasksOutputFiles": "**/*.d.ts"
+    //     }
+    //   ],
+    //   "outputs": ["{projectRoot}/dist/**/*.d.ts"],
+    //   "syncGenerators": ["@nx/js:typescript-sync"]
+    // }
+
+
+        // "@nx/eslint:lint": {
+    //   "inputs": ["default"],
+    //   "options": {
+    //     "cache": true,
+    //     "cacheLocation": "{projectRoot}/.cache/eslint",
+    //     "eslintConfig": "{projectRoot}/eslint.config.ts",
+    //     "lintFilePatterns": ["{projectRoot}/**/*.ts", "{projectRoot}/**/*.tsx"]
+    //   }
+    // }
+    // "build": {
+    //   "dependsOn": ["^build"],
+    //   "inputs": ["production", "^production"],
+    //   "outputs": ["{projectRoot}/dist"],
+    //   "syncGenerators": ["@nx/js:typescript-sync"]
+    // }

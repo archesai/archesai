@@ -8,7 +8,8 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@eslint/compat": "catalog:eslint",
@@ -23,5 +24,8 @@
     "globals": "catalog:eslint",
     "jsonc-eslint-parser": "catalog:eslint",
     "typescript-eslint": "catalog:eslint"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

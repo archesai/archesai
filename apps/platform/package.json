@@ -9,20 +9,27 @@
     "#lib/*": "./src/lib/*.ts",
     "#router": "./src/router.tsx"
   },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev"
+  },
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@archesai/ui": "workspace:*",
+    "@tailwindcss/vite": "catalog:vite",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-query-devtools": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-router-devtools": "catalog:tanstack",
     "@tanstack/react-router-with-query": "catalog:tanstack",
     "@tanstack/react-start": "catalog:tanstack",
+    "@vitejs/plugin-react": "catalog:vite",
     "@xyflow/react": "catalog:",
     "motion": "catalog:ui",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "vite": "catalog:vite"
   },
   "nx": {
     "projectType": "application"

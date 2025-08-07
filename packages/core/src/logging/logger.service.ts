@@ -1,6 +1,9 @@
-import type { Logger, TransportTargetOptions } from 'pino'
+import type { Logger } from 'pino'
+import type { PrettyStream } from 'pino-pretty'
 
 import { pino } from 'pino'
+import loki, { pinoLoki as _pinoLoki } from 'pino-loki'
+import pretty, { prettyFactory as _pinoPretty } from 'pino-pretty'
 
 import type { ConfigService } from '#config/config.service'
 
@@ -12,44 +15,34 @@ export const createLogger = (
   logger: PinoLoggerAdapter
   pinoLogger: Logger
 } => {
+  const streams: PrettyStream[] = []
+
+  const prettyTransport = pretty({
+    colorize: true,
+    messageKey: 'message'
+  })
+  streams.push(prettyTransport)
+
   const defaultOptions = {
     level: 'info',
-    messageKey: 'message',
-    transport: {
-      options: {
-        colorize: true,
-        messageKey: 'message'
-        // singleLine: true
-      },
-      target: 'pino-pretty'
-    }
+    messageKey: 'message'
   }
-  const targets: TransportTargetOptions[] = [
-    {
-      ...defaultOptions.transport
-    }
-  ]
+
   if (configService.get('monitoring.loki.mode') !== 'disabled') {
-    targets.push({
-      options: {
-        host: configService.get('monitoring.loki.host'),
-        json: true,
-        labels: {
-          app: 'archesai',
-          environment: 'production'
-        }
-      },
-      target: 'pino-loki'
+    const _lokiTransport = loki({
+      host: configService.get('monitoring.loki.host'),
+      labels: {
+        app: 'archesai',
+        environment: 'production'
+      }
     })
+    streams.push(_lokiTransport)
   }
   const loggerConfig: pino.LoggerOptions = {
     level: configService.get('logging.level'),
-    messageKey: 'message',
-    transport: {
-      targets
-    }
+    messageKey: 'message'
   }
-  const pinoLogger = pino(loggerConfig)
+  const pinoLogger = pino({ ...loggerConfig, ...defaultOptions }, ...streams)
   return {
     logger: new PinoLoggerAdapter(pinoLogger),
     pinoLogger

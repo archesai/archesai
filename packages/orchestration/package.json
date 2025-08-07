@@ -8,12 +8,16 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "fastify-type-provider-zod": "catalog:fastify"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

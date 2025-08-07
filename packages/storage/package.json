@@ -8,7 +8,8 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@archesai/core": "workspace:*",
@@ -16,5 +17,8 @@
     "@aws-sdk/client-s3": "catalog:storage",
     "@aws-sdk/s3-request-presigner": "catalog:storage",
     "fastify-type-provider-zod": "catalog:fastify"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

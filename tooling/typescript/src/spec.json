@@ -1,9 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.spec.tsbuildinfo",
+    "declarationDir": "${configDir}/.cache/dist/spec",
+    "emitDeclarationOnly": true,
+    "isolatedDeclarations": false,
+    "outDir": "${configDir}/.cache/dist/spec",
+    "rootDir": "${configDir}",
+    "tsBuildInfoFile": "${configDir}/.cache/dist/spec/tsconfig.spec.tsbuildinfo",
     "types": ["node", "vitest/globals"]
   },
-  "exclude": ["${configDir}/node_modules", "${configDir}/dist"],
-  "include": ["${configDir}/src/**/*.spec.ts", "${configDir}/src/**/*.spec.tsx"]
+  "include": [
+    "${configDir}/src/**/*.spec.ts",
+    "${configDir}/src/**/*.spec.tsx",
+    "${configDir}/**/vite.config.ts",
+    "${configDir}/**/vitest.config.ts",
+    "${configDir}/**/playwright.config.ts",
+    "${configDir}/**/orval.config.ts",
+    "${configDir}/**/drizzle.config.ts",
+    "${configDir}/**/eslint.config.ts"
+  ]
 }

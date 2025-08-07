@@ -1,6 +1,6 @@
 {
   "extends": "../../tooling/typescript/src/base.json",
-  "include": [],
+  "files": [],
   "references": [
     {
       "path": "../schemas"
@@ -13,6 +13,9 @@
     },
     {
       "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
     }
   ]
 }

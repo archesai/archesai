@@ -23,7 +23,8 @@
     "./hooks/*": "./src/hooks/*.tsx",
     "./layouts/*": "./src/layouts/*.tsx",
     "./lib/*": "./src/lib/*.ts",
-    "./providers/*": "./src/providers/*.tsx"
+    "./providers/*": "./src/providers/*.tsx",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@archesai/client": "workspace:*",
@@ -56,5 +57,8 @@
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui",
     "zod": "catalog:"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

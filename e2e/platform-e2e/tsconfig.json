@@ -1,6 +1,6 @@
 {
   "extends": "../../tooling/typescript/src/base.json",
-  "include": [],
+  "files": [],
   "references": [
     {
       "path": "../../tooling/eslint"

@@ -5,6 +5,10 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./*": "./src/*.json"
+    "./*": "./src/*.json",
+    "./package.json": "./package.json"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

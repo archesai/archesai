@@ -6,8 +6,9 @@
   "imports": {
     "#*": "./src/*.ts"
   },
-  "exports": {
-    ".": "./dist/index.js"
+  "scripts": {
+    "build": "vite build",
+    "dev": "ARCHES_LOGGING_LEVEL=debug ARCHES_CONFIG_ROOT=$PWD/../.. vite dev"
   },
   "dependencies": {
     "@archesai/auth": "workspace:*",
@@ -22,7 +23,8 @@
     "fastify": "catalog:fastify",
     "fastify-plugin": "catalog:fastify",
     "fastify-type-provider-zod": "catalog:fastify",
-    "qs": "catalog:"
+    "qs": "catalog:",
+    "vite": "catalog:vite"
   },
   "nx": {
     "projectType": "application"

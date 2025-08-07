@@ -8,7 +8,8 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
@@ -16,5 +17,8 @@
     "prettier-plugin-sh": "catalog:prettier",
     "prettier-plugin-sort-json": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

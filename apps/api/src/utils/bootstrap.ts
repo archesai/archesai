@@ -1,4 +1,4 @@
-import type { FastifySchema } from 'fastify'
+import type { FastifyInstance, FastifySchema } from 'fastify'
 // eslint-disable-next-line no-restricted-syntax
 import type { FastifySerializerCompiler } from 'fastify/types/schema.js'
 
@@ -18,7 +18,7 @@ import { docsPlugin } from '#app/plugins/docs.plugin'
 import { healthPlugin } from '#app/plugins/health.plugin'
 import { createContainer } from '#utils/container'
 
-export async function bootstrap(): Promise<void> {
+export async function bootstrap(): Promise<FastifyInstance> {
   const container = createContainer()
 
   const app = fastify({
@@ -74,8 +74,12 @@ export async function bootstrap(): Promise<void> {
   // Websocket Adapter
   await container.websocketsService.setupWebsocketAdapter(app.server)
 
-  await app.listen({
-    host: '0.0.0.0',
-    port: container.configService.get('api.port')
-  })
+  if (process.env.PRODUCTION === 'true') {
+    await app.listen({
+      host: '0.0.0.0',
+      port: container.configService.get('api.port')
+    })
+  }
+
+  return app as unknown as FastifyInstance
 }

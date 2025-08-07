@@ -8,7 +8,8 @@
     "#*": "./src/*.ts"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@archesai/core": "workspace:*",
@@ -18,5 +19,8 @@
     "openai": "catalog:intelligence",
     "playwright-core": "catalog:intelligence",
     "sharp": "catalog:intelligence"
+  },
+  "nx": {
+    "projectType": "library"
   }
 }

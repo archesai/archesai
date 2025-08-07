@@ -11,7 +11,7 @@
   //   "baseUrl": "."
   // },
   "extends": "../../tooling/typescript/src/base.json",
-  "include": [],
+  "files": [],
   "references": [
     {
       "path": "../schemas"
