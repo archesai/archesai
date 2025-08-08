@@ -6,7 +6,6 @@ import type { LabelEntity } from '@archesai/schemas'
 import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
-import { LabelToArtifactTable } from '#schema/models/label-to-artifact'
 import { OrganizationTable } from '#schema/models/organization'
 
 export const LabelTable = pgTable(
@@ -24,8 +23,7 @@ export const LabelTable = pgTable(
   (LabelTable) => [uniqueIndex().on(LabelTable.name, LabelTable.organizationId)]
 )
 
-export const labelRelations = relations(LabelTable, ({ many, one }) => ({
-  artifacts: many(LabelToArtifactTable),
+export const labelRelations = relations(LabelTable, ({ one }) => ({
   organization: one(OrganizationTable, {
     fields: [LabelTable.organizationId],
     references: [OrganizationTable.id]

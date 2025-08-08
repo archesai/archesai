@@ -7,7 +7,6 @@ import { PIPELINE_STEP_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
 import { PipelineTable } from '#schema/models/pipeline'
-import { PipelineStepToDependency } from '#schema/models/pipeline-step-to-dependency'
 import { ToolTable } from '#schema/models/tool'
 
 export const PipelineStepTable = pgTable(PIPELINE_STEP_ENTITY_KEY, {
@@ -28,16 +27,10 @@ export const PipelineStepTable = pgTable(PIPELINE_STEP_ENTITY_KEY, {
 
 export const pipelineStepRelations = relations(
   PipelineStepTable,
-  ({ many, one }) => ({
-    dependents: many(PipelineStepToDependency, {
-      relationName: 'dependents'
-    }),
+  ({ one }) => ({
     pipeline: one(PipelineTable, {
       fields: [PipelineStepTable.pipelineId],
       references: [PipelineTable.id]
-    }),
-    prerequisites: many(PipelineStepToDependency, {
-      relationName: 'prerequisites'
     }),
     tool: one(ToolTable, {
       fields: [PipelineStepTable.toolId],

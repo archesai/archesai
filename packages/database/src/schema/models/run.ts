@@ -5,11 +5,9 @@ import type { RunEntity } from '@archesai/schemas'
 
 import { RUN_ENTITY_KEY } from '@archesai/schemas'
 
-import { ArtifactTable } from '#schema/models/artifact'
 import { baseFields, statusEnum } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
 import { PipelineTable } from '#schema/models/pipeline'
-import { RunToArtifactTable } from '#schema/models/run-to-artifact'
 import { ToolTable } from '#schema/models/tool'
 
 export const RunTable = pgTable(RUN_ENTITY_KEY, {
@@ -37,9 +35,7 @@ export const RunTable = pgTable(RUN_ENTITY_KEY, {
     })
 })
 
-export const runRelations = relations(RunTable, ({ many, one }) => ({
-  inputs: many(RunToArtifactTable),
-  outputs: many(ArtifactTable),
+export const runRelations = relations(RunTable, ({ one }) => ({
   pipeline: one(PipelineTable, {
     fields: [RunTable.pipelineId],
     references: [PipelineTable.id]

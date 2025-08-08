@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import { fastify } from 'fastify'
 import fp from 'fastify-plugin'
 import {
   serializerCompiler,

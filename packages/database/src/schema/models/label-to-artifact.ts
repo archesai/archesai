@@ -9,10 +9,14 @@ export const LabelToArtifactTable = pgTable(
   {
     artifactId: text()
       .notNull()
-      .references(() => ArtifactTable.id),
+      .references(() => ArtifactTable.id, {
+        onDelete: 'cascade'
+      }),
     labelId: text()
       .notNull()
-      .references(() => LabelTable.id)
+      .references(() => LabelTable.id, {
+        onDelete: 'cascade'
+      })
   },
   (t) => [primaryKey({ columns: [t.labelId, t.artifactId] })]
 )

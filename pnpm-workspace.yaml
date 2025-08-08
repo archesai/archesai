@@ -11,7 +11,7 @@ catalog:
   '@faker-js/faker': 9.9.0
   '@redis/client': 5.8.0
   '@socket.io/redis-adapter': 8.3.0
-  '@types/node': 24.2.0
+  '@types/node': 24.2.1
   '@types/nodemailer': 6.4.17
   '@types/qs': 6.14.0
   '@xyflow/react': 12.8.2
@@ -66,7 +66,7 @@ catalogs:
     fastify-type-provider-zod: 5.0.3
   intelligence:
     '@elevenlabs/elevenlabs-js': 2.8.0
-    openai: 5.12.1
+    openai: 5.12.2
     playwright-core: 1.54.2
     sharp: 0.34.3
   nx:
@@ -75,7 +75,7 @@ catalogs:
     '@nx/js': 21.3.11
     nx: 21.3.11
   prettier:
-    '@ianvs/prettier-plugin-sort-imports': 4.6.0
+    '@ianvs/prettier-plugin-sort-imports': 4.6.1
     prettier: 3.6.2
     prettier-plugin-packagejson: 2.5.19
     prettier-plugin-sh: 0.18.0
@@ -90,15 +90,15 @@ catalogs:
     '@commitlint/cli': 19.8.1
     '@commitlint/config-conventional': 19.8.1
     husky: 9.1.7
-    lint-staged: 16.1.4
+    lint-staged: 16.1.5
     only-allow: 1.2.1
     sherif: 1.6.1
   storage:
-    '@aws-sdk/client-s3': 3.863.0
+    '@aws-sdk/client-s3': 3.864.0
     '@aws-sdk/s3-request-presigner': 3.863.0
   tanstack:
-    '@tanstack/react-query': 5.84.1
-    '@tanstack/react-query-devtools': 5.84.1
+    '@tanstack/react-query': 5.84.2
+    '@tanstack/react-query-devtools': 5.84.2
     '@tanstack/react-router': 1.130.12
     '@tanstack/react-router-devtools': 1.130.13
     '@tanstack/react-router-with-query': 1.130.12

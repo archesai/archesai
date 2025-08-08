@@ -5,9 +5,7 @@ import type { UserEntity } from '@archesai/schemas'
 
 import { USER_ENTITY_KEY } from '@archesai/schemas'
 
-import { AccountTable } from '#schema/models/account'
 import { baseFields } from '#schema/models/base'
-import { MemberTable } from '#schema/models/member'
 
 export const UserTable = pgTable(USER_ENTITY_KEY, {
   ...baseFields,
@@ -18,10 +16,7 @@ export const UserTable = pgTable(USER_ENTITY_KEY, {
   name: text().notNull()
 })
 
-export const userRelations = relations(UserTable, ({ many }) => ({
-  accounts: many(AccountTable),
-  memberships: many(MemberTable)
-}))
+export const userRelations = relations(UserTable, () => ({}))
 
 export type UserInsertModel = typeof UserTable.$inferInsert
 export type UserSelectModel = typeof UserTable.$inferSelect

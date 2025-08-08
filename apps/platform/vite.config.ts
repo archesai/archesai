@@ -3,6 +3,7 @@ import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -25,6 +26,12 @@ export default defineConfig({
           ]
         ]
       }
+    }),
+    visualizer({
+      brotliSize: true,
+      filename: 'dist/stats.html',
+      gzipSize: true,
+      open: true
     })
   ],
   preview: {
@@ -54,10 +61,3 @@ export default defineConfig({
     watch: false
   }
 })
-
-// visualizer({
-//   filename: 'dist/stats.html',
-//   open: true,
-//   gzipSize: true,
-//   brotliSize: true
-// })

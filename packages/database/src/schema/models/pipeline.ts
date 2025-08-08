@@ -7,7 +7,6 @@ import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
 import { OrganizationTable } from '#schema/models/organization'
-import { PipelineStepTable } from '#schema/models/pipeline-step'
 
 export const PipelineTable = pgTable(PIPELINE_ENTITY_KEY, {
   ...baseFields,
@@ -21,12 +20,11 @@ export const PipelineTable = pgTable(PIPELINE_ENTITY_KEY, {
     })
 })
 
-export const pipelineRelations = relations(PipelineTable, ({ many, one }) => ({
+export const pipelineRelations = relations(PipelineTable, ({ one }) => ({
   organization: one(OrganizationTable, {
     fields: [PipelineTable.organizationId],
     references: [OrganizationTable.id]
-  }),
-  steps: many(PipelineStepTable)
+  })
 }))
 
 export type PipelineInsertModel = typeof PipelineTable.$inferInsert

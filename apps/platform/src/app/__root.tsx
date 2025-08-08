@@ -21,7 +21,7 @@ import { ThemeProvider } from '@archesai/ui/providers/theme-provider'
 import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
 import { SmartLink } from '#components/smart-links'
-import { getSessionServer } from '#lib/get-headers'
+import getServerSession from '#lib/get-headers'
 import globalsCss from '../styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
@@ -33,7 +33,7 @@ export const Route = createRootRouteWithContext<{
 }>()({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
-      queryFn: ({ signal }) => getSessionServer({ signal }),
+      queryFn: ({ signal }) => getServerSession({ signal }),
       queryKey: getGetSessionQueryKey()
     })
     return {

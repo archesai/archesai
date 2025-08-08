@@ -41,5 +41,10 @@
       "plugin": "@nx/eslint/plugin"
     }
   ],
+  "targetDefaults": {
+    "dev": {
+      "continuous": true
+    }
+  },
   "useDaemonProcess": false
 }

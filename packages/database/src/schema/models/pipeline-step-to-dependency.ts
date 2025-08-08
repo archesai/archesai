@@ -8,10 +8,14 @@ export const PipelineStepToDependency = pgTable(
   {
     pipelineStepId: text()
       .notNull()
-      .references(() => PipelineStepTable.id),
+      .references(() => PipelineStepTable.id, {
+        onDelete: 'cascade'
+      }),
     prerequisiteId: text()
       .notNull()
-      .references(() => PipelineStepTable.id)
+      .references(() => PipelineStepTable.id, {
+        onDelete: 'cascade'
+      })
   },
   (PipelineStepToDependency) => [
     primaryKey({

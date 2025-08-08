@@ -8,8 +8,8 @@
     "#*": "./src/*.ts"
   },
   "scripts": {
-    "dev": "ARCHES_CONFIG_ROOT=$PWD/../.. node --watch src/main.ts",
-    "start": "ARCHES_CONFIG_ROOT=$PWD/../.. node dist/main.js"
+    "dev": "ARCHES_CONFIG_ROOT=$PWD/../.. node --watch src/index.ts",
+    "start": "ARCHES_CONFIG_ROOT=$PWD/../.. node dist/index.js"
   },
   "dependencies": {
     "@archesai/auth": "workspace:*",

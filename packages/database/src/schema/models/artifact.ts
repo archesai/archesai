@@ -6,10 +6,8 @@ import type { ArtifactEntity } from '@archesai/schemas'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 
 import { baseFields } from '#schema/models/base'
-import { LabelToArtifactTable } from '#schema/models/label-to-artifact'
 import { OrganizationTable } from '#schema/models/organization'
 import { RunTable } from '#schema/models/run'
-import { RunToArtifactTable } from '#schema/models/run-to-artifact'
 
 export const ArtifactTable = pgTable(ARTIFACT_ENTITY_KEY, {
   ...baseFields,
@@ -35,9 +33,7 @@ export const ArtifactTable = pgTable(ARTIFACT_ENTITY_KEY, {
   url: text()
 })
 
-export const artifactRelations = relations(ArtifactTable, ({ many, one }) => ({
-  consumers: many(RunToArtifactTable),
-  labels: many(LabelToArtifactTable),
+export const artifactRelations = relations(ArtifactTable, ({ one }) => ({
   producer: one(RunTable, {
     fields: [ArtifactTable.producerId],
     references: [RunTable.id]
