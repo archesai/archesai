@@ -9,122 +9,122 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
-import { Route as AuthRouteRouteImport } from './app/auth/route'
-import { Route as AppRouteRouteImport } from './app/_app/route'
-import { Route as LandingIndexRouteImport } from './app/landing/index'
-import { Route as AppIndexRouteImport } from './app/_app/index'
-import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
-import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
-import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
-import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
-import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
-import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
-import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
-import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
-import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
-import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
-import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
-import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
-import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
 import { Route as AppArtifactsArtifactIdIndexRouteImport } from './app/_app/artifacts/$artifactId/index'
+import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
+import { Route as AppIndexRouteImport } from './app/_app/index'
+import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
+import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
+import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
+import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
+import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
+import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
+import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
+import { Route as AppRouteRouteImport } from './app/_app/route'
+import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
+import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
+import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
+import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
+import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
+import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
+import { Route as AuthRouteRouteImport } from './app/auth/route'
+import { Route as LandingIndexRouteImport } from './app/landing/index'
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 const LandingIndexRoute = LandingIndexRouteImport.update({
   id: '/landing/',
   path: '/landing/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => rootRouteImport
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
   id: '/register/',
   path: '/register/',
-  getParentRoute: () => AuthRouteRoute,
+  getParentRoute: () => AuthRouteRoute
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => AuthRouteRoute,
+  getParentRoute: () => AuthRouteRoute
 } as any)
 const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
   id: '/forgot-password/',
   path: '/forgot-password/',
-  getParentRoute: () => AuthRouteRoute,
+  getParentRoute: () => AuthRouteRoute
 } as any)
 const AppToolsIndexRoute = AppToolsIndexRouteImport.update({
   id: '/tools/',
   path: '/tools/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppRunsIndexRoute = AppRunsIndexRouteImport.update({
   id: '/runs/',
   path: '/runs/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
   id: '/profile/',
   path: '/profile/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesIndexRoute = AppPipelinesIndexRouteImport.update({
   id: '/pipelines/',
   path: '/pipelines/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppOrganizationIndexRoute = AppOrganizationIndexRouteImport.update({
   id: '/organization/',
   path: '/organization/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
   id: '/labels/',
   path: '/labels/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
   id: '/artifacts/',
   path: '/artifacts/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppRunsRunIdIndexRoute = AppRunsRunIdIndexRouteImport.update({
   id: '/runs/$runId/',
   path: '/runs/$runId/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesCreateIndexRoute = AppPipelinesCreateIndexRouteImport.update({
   id: '/pipelines/create/',
   path: '/pipelines/create/',
-  getParentRoute: () => AppRouteRoute,
+  getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesPipelineIdIndexRoute =
   AppPipelinesPipelineIdIndexRouteImport.update({
     id: '/pipelines/$pipelineId/',
     path: '/pipelines/$pipelineId/',
-    getParentRoute: () => AppRouteRoute,
+    getParentRoute: () => AppRouteRoute
   } as any)
 const AppOrganizationMembersIndexRoute =
   AppOrganizationMembersIndexRouteImport.update({
     id: '/organization/members/',
     path: '/organization/members/',
-    getParentRoute: () => AppRouteRoute,
+    getParentRoute: () => AppRouteRoute
   } as any)
 const AppArtifactsArtifactIdIndexRoute =
   AppArtifactsArtifactIdIndexRouteImport.update({
     id: '/artifacts/$artifactId/',
     path: '/artifacts/$artifactId/',
-    getParentRoute: () => AppRouteRoute,
+    getParentRoute: () => AppRouteRoute
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -426,11 +426,11 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
   AppPipelinesPipelineIdIndexRoute: AppPipelinesPipelineIdIndexRoute,
   AppPipelinesCreateIndexRoute: AppPipelinesCreateIndexRoute,
-  AppRunsRunIdIndexRoute: AppRunsRunIdIndexRoute,
+  AppRunsRunIdIndexRoute: AppRunsRunIdIndexRoute
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
-  AppRouteRouteChildren,
+  AppRouteRouteChildren
 )
 
 interface AuthRouteRouteChildren {
@@ -442,17 +442,17 @@ interface AuthRouteRouteChildren {
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  AuthRegisterIndexRoute: AuthRegisterIndexRoute,
+  AuthRegisterIndexRoute: AuthRegisterIndexRoute
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
-  AuthRouteRouteChildren,
+  AuthRouteRouteChildren
 )
 
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  LandingIndexRoute: LandingIndexRoute,
+  LandingIndexRoute: LandingIndexRoute
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

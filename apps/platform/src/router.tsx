@@ -11,7 +11,7 @@ import { toast } from '@archesai/ui/components/shadcn/sonner'
 
 import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
-import { routeTree } from './routeTree.gen'
+import { routeTree } from '#routeTree.gen'
 
 export function createRouter() {
   if (typeof document !== 'undefined') {
@@ -58,7 +58,7 @@ export function createRouter() {
       defaultPendingComponent: () => {
         return (
           <div className='flex h-full w-full items-center justify-center'>
-            <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary' />
+            <div className='border-primary text-primary h-12 w-12 animate-spin rounded-full border-4 border-t-transparent' />
           </div>
         )
       },

@@ -1,8 +1,7 @@
-import type { IncomingMessage } from 'http'
+import type { IncomingMessage } from 'node:http'
 import type Stripe from 'stripe'
 
 import type { ConfigService, WebsocketsService } from '@archesai/core'
-import type { PlanType } from '@archesai/schemas'
 
 import { InternalServerErrorException } from '@archesai/core'
 import { PlanTypes } from '@archesai/schemas'
@@ -109,7 +108,10 @@ export class CallbacksService {
       }
       const planType = price.product.metadata.key
 
-      if (!planType || !PlanTypes.includes(planType as PlanType)) {
+      if (
+        !planType ||
+        !PlanTypes.map((t) => t.toWellFormed()).includes(planType)
+      ) {
         throw new InternalServerErrorException('Invalid plan type')
       }
 

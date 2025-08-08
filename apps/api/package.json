@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@archesai/auth": "workspace:*",
+    "@archesai/billing": "workspace:*",
     "@archesai/core": "workspace:*",
     "@archesai/database": "workspace:*",
     "@archesai/orchestration": "workspace:*",

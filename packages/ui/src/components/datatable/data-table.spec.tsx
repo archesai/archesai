@@ -6,8 +6,6 @@
 // import type { BaseEntity } from '@archesai/schemas'
 // import { toSentenceCase } from '#lib/utils'
 
-// import { DataTable } from './data-table'
-
 // jest.mock('#hooks/use-select-items') // Mock the module
 
 // describe('DataTable Component', () => {
@@ -251,7 +249,7 @@
 // import { render } from '@testing-library/react';
 // import { BrowserRouter } from 'react-router-dom';
 
-// import App from './app';
+// import App from '#app';
 
 // describe('App', () => {
 //   it('should render successfully', () => {

@@ -6,7 +6,8 @@
   "type": "module",
   "imports": {
     "#*": "./src/*.tsx",
-    "#lib/*": "./src/lib/*.ts"
+    "#lib/*": "./src/lib/*.ts",
+    "#routeTree.gen": "./src/routeTree.gen.ts"
   },
   "scripts": {
     "build": "vite build",

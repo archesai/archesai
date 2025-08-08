@@ -40,5 +40,6 @@
       },
       "plugin": "@nx/eslint/plugin"
     }
-  ]
+  ],
+  "useDaemonProcess": false
 }

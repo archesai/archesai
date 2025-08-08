@@ -1,11 +1,3 @@
 @import 'tailwindcss';
 @import '@archesai/ui/globals.css';
 @source '../../node_modules/@archesai/ui';
-
-@import '@fontsource/geist';
-@import '@fontsource/geist-mono';
-
-@theme inline {
-  --font-sans: 'Geist', sans-serif;
-  --font-mono: 'Geist Mono', monospace;
-}

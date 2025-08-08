@@ -1,7 +1,3 @@
-import type { FastifyInstance, FastifySchema } from 'fastify'
-// eslint-disable-next-line no-restricted-syntax
-import type { FastifySerializerCompiler } from 'fastify/types/schema.js'
-
 import fastify from 'fastify'
 import fp from 'fastify-plugin'
 import {
@@ -18,7 +14,7 @@ import { docsPlugin } from '#app/plugins/docs.plugin'
 import { healthPlugin } from '#app/plugins/health.plugin'
 import { createContainer } from '#utils/container'
 
-export async function bootstrap(): Promise<FastifyInstance> {
+export async function bootstrap(): Promise<void> {
   const container = createContainer()
 
   const app = fastify({
@@ -28,9 +24,8 @@ export async function bootstrap(): Promise<FastifyInstance> {
   })
 
   app.setValidatorCompiler(validatorCompiler)
-  app.setSerializerCompiler(
-    serializerCompiler as FastifySerializerCompiler<FastifySchema>
-  )
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  app.setSerializerCompiler(serializerCompiler)
 
   await app.register(fp(errorHandlerPlugin), {
     includeStack: container.configService.get('logging.level') === 'debug',
@@ -80,6 +75,4 @@ export async function bootstrap(): Promise<FastifyInstance> {
       port: container.configService.get('api.port')
     })
   }
-
-  return app as unknown as FastifyInstance
 }

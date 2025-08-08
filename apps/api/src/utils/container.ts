@@ -10,7 +10,7 @@ import type { DatabaseService } from '@archesai/database'
 import type { StorageService } from '@archesai/storage'
 
 import { createAuthService } from '@archesai/auth'
-// import { StripeService } from '@archesai/billing'
+import { StripeService } from '@archesai/billing'
 import {
   createConfigService,
   createEmailService,
@@ -29,7 +29,7 @@ export interface Container {
   loggerService: LoggerService
   redisService: RedisService
   storageService: StorageService
-  // stripeService: StripeService
+  stripeService?: StripeService | undefined
   websocketsService: WebsocketsService
 }
 
@@ -51,7 +51,15 @@ export function createContainer(): Container {
     configService,
     loggerService.logger
   )
-  // const stripeService = new StripeService(configService)
+
+  let stripeService: StripeService | undefined
+  if (configService.get('billing.mode') === 'enabled') {
+    stripeService = new StripeService(configService)
+  } else {
+    loggerService.logger.warn(
+      'Stripe service is not initialized because billing mode is disabled.'
+    )
+  }
 
   return {
     authService,
@@ -61,7 +69,7 @@ export function createContainer(): Container {
     loggerService,
     redisService,
     storageService,
-    // stripeService,
+    stripeService,
     websocketsService
   }
 }

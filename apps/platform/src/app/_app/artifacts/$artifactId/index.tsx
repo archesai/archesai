@@ -4,7 +4,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ArtifactViewer } from '@archesai/ui/components/custom/artifact-viewer'
 import { Card } from '@archesai/ui/components/shadcn/card'
 
-import { ArtifactDetailsBody, ArtifactDetailsHeader } from './-details'
+import {
+  ArtifactDetailsBody,
+  ArtifactDetailsHeader
+} from '#app/_app/artifacts/$artifactId/-details'
 
 export const Route = createFileRoute('/_app/artifacts/$artifactId/')({
   component: ArtifactDetailsPage

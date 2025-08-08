@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nx run-many -t build -t tsc:build --all",
+    "build": "nx run-many -t build -t tsc:build",
     "clean": "pnpm clean:dist && pnpm clean:node_modules",
     "clean:dist": "pnpm -r exec sh -c 'rm -rf .cache .turbo .tanstack dist .nitro .output .nx'",
     "clean:node_modules": "pnpm -r exec sh -c 'rm -rf node_modules'",
@@ -23,13 +23,13 @@
     "format:fix": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --write",
     "preinstall": "only-allow pnpm",
     "postinstall": "sherif",
-    "lint": "nx run-many -t lint --all",
-    "lint:fix": "nx run-many -t lint --all --fix",
+    "lint": "nx run-many -t lint",
+    "lint:fix": "nx run-many -t lint --fix",
     "prepare": "husky",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
-    "typecheck": "nx run-many -t typecheck --all"
+    "typecheck": "nx run-many -t typecheck"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}": [

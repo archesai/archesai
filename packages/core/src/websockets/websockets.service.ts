@@ -1,4 +1,4 @@
-import type { Server as HttpServer } from 'http'
+import type { Server as HttpServer } from 'node:http'
 import type { Socket } from 'socket.io'
 
 import { Server as WebsocketsServer } from 'socket.io'

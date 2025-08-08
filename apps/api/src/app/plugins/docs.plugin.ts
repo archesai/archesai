@@ -1,8 +1,6 @@
 import type { SwaggerOptions } from '@fastify/swagger'
 import type { FastifyPluginAsync } from 'fastify'
 
-import fastifySwagger from '@fastify/swagger'
-import scalarUi from '@scalar/fastify-api-reference'
 import {
   jsonSchemaTransform,
   jsonSchemaTransformObject
@@ -16,7 +14,7 @@ export const docsPlugin: FastifyPluginAsync<{
 }> = async (app, { configService, logger }) => {
   if (configService.get('api.docs')) {
     // Register fastify plugin
-    await app.register(fastifySwagger, {
+    await app.register(import('@fastify/swagger'), {
       openapi: {
         components: {
           securitySchemes: {
@@ -65,7 +63,7 @@ export const docsPlugin: FastifyPluginAsync<{
     } satisfies SwaggerOptions)
 
     // Register scalar-ui plugin
-    await app.register(scalarUi, {
+    await app.register(import('@scalar/fastify-api-reference'), {
       configuration: {
         _integration: 'fastify',
         forceDarkModeState: 'dark',

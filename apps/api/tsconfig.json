@@ -18,6 +18,9 @@
       "path": "../../packages/core"
     },
     {
+      "path": "../../packages/billing"
+    },
+    {
       "path": "../../packages/auth"
     },
     {

@@ -19,7 +19,9 @@ const prettierConfig = {
     '',
     '<TYPES>^[.|..|~|#]',
     '',
-    '^#'
+    '^#',
+    '^[../]',
+    '^[./]'
   ],
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderTypeScriptVersion: '5.8.3',
