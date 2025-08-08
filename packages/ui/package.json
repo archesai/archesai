@@ -26,6 +26,7 @@
     "./providers/*": "./src/providers/*.tsx",
     "./package.json": "./package.json"
   },
+  "prettier": "@archesai/prettier",
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/schemas": "workspace:*",
