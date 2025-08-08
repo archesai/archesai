@@ -22,7 +22,7 @@
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --list-different",
     "format:fix": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --write",
     "preinstall": "only-allow pnpm",
-    "postinstall": "sherif",
+    "postinstall": "sherif && prettier --write pnpm-lock.yaml",
     "lint": "nx run-many -t lint",
     "lint:fix": "nx run-many -t lint --fix",
     "prepare": "husky",
@@ -33,7 +33,7 @@
   },
   "lint-staged": {
     "**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}": [
-      "pnpm format:fix"
+      "pnpm format"
     ]
   },
   "prettier": "@archesai/prettier",
