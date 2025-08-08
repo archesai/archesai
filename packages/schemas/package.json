@@ -12,8 +12,5 @@
   },
   "dependencies": {
     "zod": "catalog:"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

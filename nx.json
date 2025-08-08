@@ -26,18 +26,19 @@
     },
     {
       "options": {
+        "build": {
+          "configName": "tsconfig.app.json",
+          "targetName": "build"
+        },
+        "typecheck": false
+      },
+      "plugin": "@nx/js/typescript"
+    },
+    {
+      "options": {
         "targetName": "lint"
       },
       "plugin": "@nx/eslint/plugin"
     }
-  ],
-  "targetDefaults": {
-    "build": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "outputs": ["{projectRoot}/dist"],
-      "syncGenerators": ["@nx/js:typescript-sync"]
-    }
-  }
+  ]
 }

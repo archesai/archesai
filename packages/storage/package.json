@@ -17,8 +17,5 @@
     "@aws-sdk/client-s3": "catalog:storage",
     "@aws-sdk/s3-request-presigner": "catalog:storage",
     "fastify-type-provider-zod": "catalog:fastify"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

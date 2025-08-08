@@ -21,10 +21,10 @@ const base: ConfigArray = tseslint.config(
       path.join(import.meta.dirname, '../../../../.gitignore')
     )
   },
-  {
-    ignores: ['*.config.ts', '*.config.js'],
-    name: 'ignore config files'
-  },
+  // {
+  //   ignores: ['*.config.ts', '*.config.js'],
+  //   name: 'ignore config files'
+  // },
   // Base JavaScript config
   {
     extends: [eslint.configs.recommended],

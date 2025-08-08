@@ -4,6 +4,14 @@ import { defineConfig } from 'orval'
 
 export default defineConfig({
   archesai: {
+    hooks: {
+      afterAllFilesWrite: [
+        'prettier --write',
+        './fix-query-params.sh'
+        // `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`,
+        // `sed -i "s|'../fetcher'|'#fetcher'|g" ./src/generated/orval.ts`
+      ]
+    },
     input: {
       // validation: {
       //   ...ruleset,
@@ -34,39 +42,31 @@ export default defineConfig({
       target: 'https://api.archesai.dev/docs/openapi.json'
     },
     output: {
-      prettier: true,
+      allParamsOptional: true,
+      client: 'react-query',
+      httpClient: 'fetch',
+      mode: 'tags-split',
       override: {
         fetch: {
           includeHttpResponseReturnType: false
         },
         mutator: {
-          path: './fetcher.ts',
-          name: 'customFetch'
+          name: 'customFetch',
+          path: './fetcher.ts'
         },
         query: {
-          useQuery: true,
           useInfinite: false,
-          useSuspenseQuery: true,
-          useSuspenseInfiniteQuery: false
+          useQuery: true,
+          useSuspenseInfiniteQuery: false,
+          useSuspenseQuery: true
         }
       },
+      prettier: true,
       // schemas: 'src/generated/models',
       target: './generated/orval.ts',
-      client: 'react-query',
-      httpClient: 'fetch',
-      mode: 'tags-split',
       urlEncodeParameters: true,
-      allParamsOptional: true,
       workspace: './src'
       // propertySortOrder: 'Alphabetical'
-    },
-    hooks: {
-      afterAllFilesWrite: [
-        'prettier --write',
-        './fix-query-params.sh'
-        // `sed -i "s|'\./orval.schemas'|'#generated/orval.schemas'|g" ./src/generated/orval.ts`,
-        // `sed -i "s|'../fetcher'|'#fetcher'|g" ./src/generated/orval.ts`
-      ]
     }
   }
 } satisfies ConfigExternal)

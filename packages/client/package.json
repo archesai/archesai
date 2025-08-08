@@ -16,10 +16,6 @@
   },
   "dependencies": {
     "@tanstack/react-query": "catalog:tanstack",
-    "orval": "catalog:client",
     "qs": "catalog:"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

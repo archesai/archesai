@@ -23,12 +23,8 @@
   "dependencies": {
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
-    "drizzle-kit": "catalog:database",
     "drizzle-orm": "catalog:database",
     "drizzle-seed": "catalog:database",
     "pg": "catalog:database"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

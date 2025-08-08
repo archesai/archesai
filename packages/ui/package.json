@@ -57,8 +57,5 @@
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui",
     "zod": "catalog:"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

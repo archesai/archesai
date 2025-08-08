@@ -17,8 +17,5 @@
     "prettier-plugin-sh": "catalog:prettier",
     "prettier-plugin-sort-json": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

@@ -11,8 +11,6 @@ const prettierConfig = {
     '<TYPES>',
     '',
     '^(react/(.*)$)|^(react$)|^(react-native(.*)$)',
-    '^(next/(.*)$)|^(next$)',
-    '^(expo(.*)$)|^(expo$)',
     '<THIRD_PARTY_MODULES>',
     '',
     '<TYPES>^@archesai',
@@ -21,10 +19,7 @@ const prettierConfig = {
     '',
     '<TYPES>^[.|..|~|#]',
     '',
-    '^#',
-    '^~/',
-    '^[../]',
-    '^[./]'
+    '^#'
   ],
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderTypeScriptVersion: '5.8.3',

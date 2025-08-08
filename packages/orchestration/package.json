@@ -16,8 +16,5 @@
     "@archesai/database": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "fastify-type-provider-zod": "catalog:fastify"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

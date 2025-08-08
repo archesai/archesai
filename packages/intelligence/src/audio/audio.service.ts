@@ -1,9 +1,8 @@
 import { randomUUID } from 'node:crypto'
-import { unlinkSync, writeFileSync } from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
 
-import ffmpeg from 'fluent-ffmpeg'
+// import { unlinkSync, writeFileSync } from 'node:fs'
+// import os from 'node:os'
+// import path from 'node:path'
 
 import type { Logger } from '@archesai/core'
 
@@ -73,58 +72,58 @@ export const createAudioService = (logger: Logger) => {
           throw new Error("Moises' job failed")
         }
       }
-    },
-
-    async trimAudio(
-      url: string,
-      startTime: number,
-      duration: number
-    ): Promise<string> {
-      const inputTmpPath = path.join(os.tmpdir(), 'original.mp3')
-      const outputTmpPath = path.join(os.tmpdir(), 'trimmed.mp3')
-      const response = await (await fetch(url)).arrayBuffer()
-      writeFileSync(inputTmpPath, Buffer.from(response))
-
-      return new Promise<string>((resolve, reject) => {
-        ffmpeg.ffprobe(inputTmpPath, (err: unknown, data) => {
-          if (err) {
-            logger.error('error getting audio duration', { err })
-            reject(new Error('error getting audio duration'))
-          }
-          if ((data.format.duration ?? 0) < startTime + duration) {
-            unlinkSync(inputTmpPath)
-            resolve(url)
-          }
-        })
-
-        ffmpeg(inputTmpPath)
-          .setStartTime(startTime)
-          .setDuration(duration)
-          .output(outputTmpPath)
-          .on('end', () => {
-            // this.storageService
-            //   .uploadFromFile(
-            //     'audio/' + new Date().valueOf().toString() + '.mp3',
-            //     {
-            //       buffer: readFileSync(outputTmpPath),
-            //       mimetype: 'audio/mp3',
-            //       originalname: 'audio.mp3'
-            //     }
-            //   )
-            //   .then((file) => {
-            //     unlinkSync(outputTmpPath)
-            //     unlinkSync(inputTmpPath)
-            //     resolve(file.read || '')
-            //   })
-            //   .catch((err: unknown) => {
-            //     this.logger.error({ err }, 'error uploading file')
-            //     reject(new Error('error uploading file'))
-            //   })
-          })
-          .on('error', reject)
-          .run()
-      })
     }
+
+    // async trimAudio(
+    //   url: string,
+    //   startTime: number,
+    //   duration: number
+    // ): Promise<string> {
+    //   const inputTmpPath = path.join(os.tmpdir(), 'original.mp3')
+    //   const outputTmpPath = path.join(os.tmpdir(), 'trimmed.mp3')
+    //   const response = await (await fetch(url)).arrayBuffer()
+    //   writeFileSync(inputTmpPath, Buffer.from(response))
+
+    //   return new Promise<string>((resolve, reject) => {
+    //     ffmpeg.ffprobe(inputTmpPath, (err: unknown, data) => {
+    //       if (err) {
+    //         logger.error('error getting audio duration', { err })
+    //         reject(new Error('error getting audio duration'))
+    //       }
+    //       if ((data.format.duration ?? 0) < startTime + duration) {
+    //         unlinkSync(inputTmpPath)
+    //         resolve(url)
+    //       }
+    //     })
+
+    //     ffmpeg(inputTmpPath)
+    //       .setStartTime(startTime)
+    //       .setDuration(duration)
+    //       .output(outputTmpPath)
+    //       .on('end', () => {
+    //         // this.storageService
+    //         //   .uploadFromFile(
+    //         //     'audio/' + new Date().valueOf().toString() + '.mp3',
+    //         //     {
+    //         //       buffer: readFileSync(outputTmpPath),
+    //         //       mimetype: 'audio/mp3',
+    //         //       originalname: 'audio.mp3'
+    //         //     }
+    //         //   )
+    //         //   .then((file) => {
+    //         //     unlinkSync(outputTmpPath)
+    //         //     unlinkSync(inputTmpPath)
+    //         //     resolve(file.read || '')
+    //         //   })
+    //         //   .catch((err: unknown) => {
+    //         //     this.logger.error({ err }, 'error uploading file')
+    //         //     reject(new Error('error uploading file'))
+    //         //   })
+    //       })
+    //       .on('error', reject)
+    //       .run()
+    //   })
+    // }
   }
 }
 

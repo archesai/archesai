@@ -15,12 +15,8 @@
     "@archesai/core": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@elevenlabs/elevenlabs-js": "catalog:intelligence",
-    "fluent-ffmpeg": "catalog:intelligence",
     "openai": "catalog:intelligence",
     "playwright-core": "catalog:intelligence",
     "sharp": "catalog:intelligence"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

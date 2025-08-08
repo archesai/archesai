@@ -23,7 +23,7 @@
       "path": "../../packages/auth/tsconfig.lib.json"
     },
     {
-      "path": "../../tooling/eslint/tsconfig.lib.json"
+      "path": "../../tooling/eslint"
     }
   ]
 }

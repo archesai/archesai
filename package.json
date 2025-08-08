@@ -19,8 +19,8 @@
     "dev": "turbo watch dev --continue",
     "dev:api": "turbo watch dev -F @archesai/api",
     "dev:platform": "turbo watch dev -F @archesai/platform",
-    "format": "nx format:check --all",
-    "format:fix": "nx format:write --all",
+    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --list-different",
+    "format:fix": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --write",
     "preinstall": "only-allow pnpm",
     "postinstall": "sherif",
     "lint": "nx run-many -t lint --all",
@@ -32,8 +32,8 @@
     "typecheck": "nx run-many -t typecheck --all"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json,css,md,yaml}": [
-      "pnpm prettier --write --ignore-path .gitignore --ignore-path .prettierignore --log-level warn"
+    "**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}": [
+      "pnpm format:fix"
     ]
   },
   "prettier": "@archesai/prettier",
@@ -63,7 +63,6 @@
     "@tailwindcss/vite": "catalog:vite",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/table-core": "catalog:tanstack",
-    "@types/fluent-ffmpeg": "catalog:intelligence",
     "@types/node": "catalog:",
     "@types/nodemailer": "catalog:",
     "@types/pg": "catalog:database",
@@ -92,8 +91,6 @@
     "tw-animate-css": "catalog:ui",
     "typescript": "catalog:",
     "vite": "catalog:vite",
-    "vite-plugin-dts": "catalog:vite",
-    "vite-plugin-node": "^7.0.0",
     "vitest": "catalog:test",
     "zod": "catalog:"
   },

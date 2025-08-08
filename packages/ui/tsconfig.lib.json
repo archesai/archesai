@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "isolatedDeclarations": false
-  },
   "extends": [
     "../../tooling/typescript/src/base.json",
     "../../tooling/typescript/src/react.json",
@@ -15,7 +12,7 @@
       "path": "../client/tsconfig.lib.json"
     },
     {
-      "path": "../../tooling/eslint/tsconfig.lib.json"
+      "path": "../../tooling/eslint"
     }
   ]
 }

@@ -2,13 +2,14 @@
   "name": "@archesai/api",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
   "type": "module",
   "imports": {
     "#*": "./src/*.ts"
   },
   "scripts": {
-    "build": "vite build",
-    "dev": "ARCHES_LOGGING_LEVEL=debug ARCHES_CONFIG_ROOT=$PWD/../.. vite dev"
+    "dev": "ARCHES_CONFIG_ROOT=$PWD/../.. node --watch src/main.ts",
+    "start": "ARCHES_CONFIG_ROOT=$PWD/../.. node dist/main.js"
   },
   "dependencies": {
     "@archesai/auth": "workspace:*",
@@ -23,8 +24,7 @@
     "fastify": "catalog:fastify",
     "fastify-plugin": "catalog:fastify",
     "fastify-type-provider-zod": "catalog:fastify",
-    "qs": "catalog:",
-    "vite": "catalog:vite"
+    "qs": "catalog:"
   },
   "nx": {
     "projectType": "application"

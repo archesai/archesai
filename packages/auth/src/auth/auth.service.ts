@@ -47,7 +47,7 @@ export const createAuthService = (
             modelName: 'OrganizationTable'
           }
         }
-      }) satisfies BetterAuthPlugin,
+      }) as BetterAuthPlugin,
       reactStartCookies()
     ],
     session: {

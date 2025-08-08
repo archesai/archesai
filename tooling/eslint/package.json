@@ -24,8 +24,5 @@
     "globals": "catalog:eslint",
     "jsonc-eslint-parser": "catalog:eslint",
     "typescript-eslint": "catalog:eslint"
-  },
-  "nx": {
-    "projectType": "library"
   }
 }

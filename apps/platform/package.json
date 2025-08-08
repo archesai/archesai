@@ -2,16 +2,16 @@
   "name": "@archesai/platform",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
   "type": "module",
   "imports": {
-    "#app/*": "./src/app/*.tsx",
-    "#components/*": "./src/components/*.tsx",
-    "#lib/*": "./src/lib/*.ts",
-    "#router": "./src/router.tsx"
+    "#*": "./src/*.tsx",
+    "#lib/*": "./src/lib/*.ts"
   },
   "scripts": {
     "build": "vite build",
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "start": "vite preview"
   },
   "dependencies": {
     "@archesai/client": "workspace:*",

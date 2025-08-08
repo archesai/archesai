@@ -1,11 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.lib.tsbuildinfo"
+    "rootDir": "${configDir}/src",
+    "tsBuildInfoFile": "${configDir}/dist/tsconfig.lib.tsbuildinfo"
   },
   "exclude": [
     "${configDir}/src/**/*.spec.ts",
-    "${configDir}/src/**/*.spec.tsx"
+    "${configDir}/src/**/*.spec.tsx",
+    "${configDir}/vite.config.ts",
+    "${configDir}/vitest.config.ts",
+    "${configDir}/playwright.config.ts",
+    "${configDir}/orval.config.ts",
+    "${configDir}/drizzle.config.ts",
+    "${configDir}/eslint.config.ts"
   ],
-  "include": ["${configDir}/src"]
+  "include": ["${configDir}/src/**/*.ts", "${configDir}/src/**/*.tsx"]
 }
