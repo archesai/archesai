@@ -98,8 +98,8 @@ intelligence:
   scraper:
     image:
       pullPolicy: IfNotPresent
-      repository: arches/scraper
-      tag: latest
+      repository: mcr.microsoft.com/playwright
+      tag: v1.55.0-noble
     mode: managed
     resources:
       limits:

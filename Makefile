@@ -23,3 +23,9 @@ cluster-stop:
 test-e2e:
 	skaffold build --file-output=build.json --profile dev
 	skaffold exec test-e2e --build-artifacts=build.json --profile dev
+
+cluster-upgrade:
+	helm upgrade dev ./helm/arches -f ./helm/dev-overrides.yaml
+
+cluster-install:
+	helm install dev ./helm/arches -f ./helm/dev-overrides.yaml

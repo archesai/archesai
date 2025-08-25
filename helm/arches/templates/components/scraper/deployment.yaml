@@ -32,6 +32,12 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              npx -y playwright@1.55.0 run-server
+              --port 8080
+              --host 0.0.0.0
           resources:
             {{- toYaml .Values.intelligence.scraper.resources | nindent 12 }}
 {{- end }}

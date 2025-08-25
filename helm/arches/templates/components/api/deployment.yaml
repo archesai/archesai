@@ -1,4 +1,4 @@
-{{- if eq .Values.api.mode "managed" }}
+{{- if and (eq .Values.api.mode "managed") (not .Values.infrastructure.development.api.enabled) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
