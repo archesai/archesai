@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { ArtifactEntity } from '@archesai/schemas'
 
 import { createBaseService } from '@archesai/core'
@@ -9,7 +9,7 @@ import type { ArtifactRepository } from '#artifacts/artifact.repository'
 export const createArtifactsService = (
   artifactRepository: ArtifactRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<ArtifactEntity> => {
   const emitArtifactMutationEvent = (entity: ArtifactEntity): void => {
     websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['organizations', entity.organizationId, ARTIFACT_ENTITY_KEY]

@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { InvitationEntity, UserEntity } from '@archesai/schemas'
 
 import { createBaseService } from '@archesai/core'
@@ -9,7 +9,9 @@ import type { InvitationRepository } from '#invitations/invitation.repository'
 export const createInvitationsService = (
   invitationRepository: InvitationRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<InvitationEntity> & {
+  accept(id: string, user: UserEntity): Promise<InvitationEntity>
+} => {
   const emitInvitationMutationEvent = (entity: InvitationEntity): void => {
     websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['organizations', entity.organizationId, INVITATION_ENTITY_KEY]

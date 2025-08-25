@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { ToolInsertModel } from '@archesai/database'
 import type { ToolEntity } from '@archesai/schemas'
 
@@ -10,7 +10,12 @@ import type { ToolRepository } from '#tools/tool.repository'
 export const createToolsService = (
   toolRepository: ToolRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<ToolEntity> & {
+  createDefaultTools: (organizationId: string) => Promise<{
+    count: number
+    data: ToolEntity[]
+  }>
+} => {
   const emitToolMutationEvent = (entity: ToolEntity): void => {
     websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]

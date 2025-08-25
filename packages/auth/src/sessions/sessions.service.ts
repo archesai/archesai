@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { SessionEntity } from '@archesai/schemas'
 
 import { createBaseService } from '@archesai/core'
@@ -8,7 +8,7 @@ import type { SessionRepository } from '#sessions/session.repository'
 export const createSessionsService = (
   sessionRepository: SessionRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<SessionEntity> => {
   const emitSessionMutationEvent = (entity: SessionEntity): void => {
     websocketsService.broadcastEvent(entity.id, 'update', {
       queryKey: ['auth']

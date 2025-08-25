@@ -1,5 +1,6 @@
 import type { PgTable } from 'drizzle-orm/pg-core'
 
+import type { BaseRepository } from '@archesai/core'
 import type { BaseEntity, SearchQuery } from '@archesai/schemas'
 
 import { NotFoundException } from '@archesai/core'
@@ -15,7 +16,7 @@ export function createBaseRepository<
   entitySchema: {
     parse: (data: unknown) => TEntity
   }
-) {
+): BaseRepository<TEntity, TTable['$inferInsert'], TTable['$inferSelect']> {
   const toEntity = (model: TTable['$inferSelect']): TEntity => {
     return entitySchema.parse(model)
   }
@@ -133,7 +134,7 @@ export function createBaseRepository<
     },
 
     async updateMany(
-      data: TTable['$inferSelect'],
+      data: TTable['$inferInsert'],
       query: SearchQuery<TTable['$inferSelect']>
     ): Promise<{ count: number; data: TEntity[] }> {
       const whereConditions = databaseService.buildWhereConditions(table, query)

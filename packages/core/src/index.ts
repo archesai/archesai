@@ -1,3 +1,4 @@
+export type { BaseRepository } from '#common/base-repository'
 export type { BaseService } from '#common/base-service'
 export { createBaseService } from '#common/base-service'
 export { crudPlugin } from '#common/crud.plugin'

@@ -9,7 +9,6 @@ import { baseFields } from '#schema/models/base'
 
 export const UserTable = pgTable(USER_ENTITY_KEY, {
   ...baseFields,
-  deactivated: boolean().default(false).notNull(),
   email: text().notNull().unique(),
   emailVerified: boolean().default(false).notNull(),
   image: text(),

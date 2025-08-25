@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { LabelEntity } from '@archesai/schemas'
 
 import { createBaseService } from '@archesai/core'
@@ -9,7 +9,7 @@ import type { LabelRepository } from '#labels/label.repository'
 export const createLabelsService = (
   labelRepository: LabelRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<LabelEntity> => {
   const emitLabelMutationEvent = (entity: LabelEntity): void => {
     websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['organizations', entity.organizationId, TOOL_ENTITY_KEY]

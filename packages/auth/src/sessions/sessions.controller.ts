@@ -58,9 +58,7 @@ export const sessionsController: FastifyPluginAsyncZod<
       }
     },
     async (req) => {
-      return authService.getSession({
-        headers: getHeaders(req.headers)
-      })
+      return authService.getSession(getHeaders(req.headers))
     }
   )
 

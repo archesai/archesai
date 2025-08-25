@@ -1,3 +1,4 @@
+import type { BaseRepository } from '@archesai/core'
 import type { DatabaseService } from '@archesai/database'
 import type { VerificationEntity } from '@archesai/schemas'
 
@@ -6,7 +7,11 @@ import { VerificationEntitySchema } from '@archesai/schemas'
 
 export const createVerificationRepository = (
   databaseService: DatabaseService
-) => {
+): BaseRepository<
+  VerificationEntity,
+  (typeof VerificationTable)['$inferInsert'],
+  (typeof VerificationTable)['$inferSelect']
+> => {
   return createBaseRepository<VerificationEntity>(
     databaseService,
     VerificationTable,

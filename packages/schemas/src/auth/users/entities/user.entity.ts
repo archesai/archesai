@@ -4,7 +4,6 @@ import { BaseEntitySchema } from '#base/entities/base.entity'
 
 export const UserEntitySchema: z.ZodObject<{
   createdAt: z.ZodString
-  deactivated: z.ZodDefault<z.ZodBoolean>
   email: z.ZodString
   emailVerified: z.ZodBoolean
   id: z.ZodUUID
@@ -12,10 +11,6 @@ export const UserEntitySchema: z.ZodObject<{
   name: z.ZodString
   updatedAt: z.ZodString
 }> = BaseEntitySchema.extend({
-  deactivated: z
-    .boolean()
-    .default(false)
-    .describe('Whether or not the user is deactivated'),
   email: z.string().describe("The user's e-mail"),
   emailVerified: z
     .boolean()

@@ -1,5 +1,3 @@
-import type { BetterAuthPlugin } from 'better-auth'
-
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { organization } from 'better-auth/plugins'
@@ -7,11 +5,61 @@ import { reactStartCookies } from 'better-auth/react-start'
 
 import type { ConfigService } from '@archesai/core'
 import type { DatabaseService } from '@archesai/database'
+import type { SessionEntity, UserEntity } from '@archesai/schemas'
+
+export interface AuthService {
+  getSession(headers: Headers): Promise<null | {
+    session: BetterAuthSession | null
+    user: BetterAuthUser
+  }>
+  signInEmail(body: { email: string; password: string }): Promise<{
+    headers: Headers
+    response: {
+      user: BetterAuthUser
+    }
+  }>
+  signOut(headers: Headers): Promise<{
+    headers: Headers
+  }>
+  signUpEmail(body: {
+    email: string
+    name: string
+    password: string
+  }): Promise<{
+    headers: Headers
+    response: {
+      user: BetterAuthUser
+    }
+  }>
+}
+
+type BetterAuthSession = Omit<
+  SessionEntity,
+  | 'activeOrganizationId'
+  | 'createdAt'
+  | 'expiresAt'
+  | 'ipAddress'
+  | 'updatedAt'
+  | 'userAgent'
+> & {
+  activeOrganizationId?: null | string | undefined
+  createdAt: Date
+  expiresAt: Date
+  ipAddress?: null | string | undefined
+  updatedAt: Date
+  userAgent?: null | string | undefined
+}
+
+type BetterAuthUser = Omit<UserEntity, 'createdAt' | 'image' | 'updatedAt'> & {
+  createdAt: Date
+  image?: null | string | undefined
+  updatedAt: Date
+}
 
 export const createAuthService = (
   databaseService: DatabaseService,
   configService: ConfigService
-) => {
+): AuthService => {
   const auth = betterAuth({
     account: {
       modelName: 'AccountTable'
@@ -47,7 +95,7 @@ export const createAuthService = (
             modelName: 'OrganizationTable'
           }
         }
-      }) as BetterAuthPlugin,
+      }),
       reactStartCookies()
     ],
     session: {
@@ -58,12 +106,6 @@ export const createAuthService = (
     },
     trustedOrigins: configService.get('api.cors.origins').split(','),
     user: {
-      additionalFields: {
-        deactivated: {
-          defaultValue: false,
-          type: 'boolean'
-        }
-      },
       modelName: 'UserTable'
     },
     verification: {
@@ -72,12 +114,21 @@ export const createAuthService = (
   })
 
   return {
-    getSession: auth.api.getSession,
-    handler: auth.handler,
-    signInEmail: auth.api.signInEmail,
-    signOut: auth.api.signOut,
-    signUpEmail: auth.api.signUpEmail
+    getSession: (headers: Headers) => auth.api.getSession({ headers }),
+    signInEmail: (body: { email: string; password: string }) =>
+      auth.api.signInEmail({
+        body,
+        returnHeaders: true
+      }),
+    signOut: (headers: Headers) =>
+      auth.api.signOut({
+        headers,
+        returnHeaders: true
+      }),
+    signUpEmail: (body: { email: string; name: string; password: string }) =>
+      auth.api.signUpEmail({
+        body,
+        returnHeaders: true
+      })
   }
 }
-
-export type AuthService = ReturnType<typeof createAuthService>

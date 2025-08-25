@@ -1,6 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 
-import { UnauthorizedException } from '@archesai/core'
 import {
   CreateAccountDtoSchema,
   DocumentSchemaFactory,
@@ -41,12 +40,9 @@ export const authPlugin: FastifyPluginAsyncZod<AuthPluginOptions> = async (
         headers,
         response: { user }
       } = await authService.signUpEmail({
-        body: {
-          email: req.body.email,
-          name: req.body.name,
-          password: req.body.password
-        },
-        returnHeaders: true
+        email: req.body.email,
+        name: req.body.name,
+        password: req.body.password
       })
 
       // create an organization for the user
@@ -90,11 +86,8 @@ export const authPlugin: FastifyPluginAsyncZod<AuthPluginOptions> = async (
     },
     async (req, res) => {
       const { headers, response } = await authService.signInEmail({
-        body: {
-          email: req.body.email,
-          password: req.body.password
-        },
-        returnHeaders: true
+        email: req.body.email,
+        password: req.body.password
       })
       setHeaders(headers, res)
       return {
@@ -118,19 +111,9 @@ export const authPlugin: FastifyPluginAsyncZod<AuthPluginOptions> = async (
       }
     },
     async (req, res) => {
-      const reqHeaders = getHeaders(req.headers)
-      const {
-        headers: resHeaders,
-        response: { success }
-      } = await authService.signOut({
-        headers: reqHeaders,
-        returnHeaders: true
-      })
-      if (!success) {
-        throw new UnauthorizedException(
-          'You are not logged in or your session has expired.'
-        )
-      }
+      const { headers: resHeaders } = await authService.signOut(
+        getHeaders(req.headers)
+      )
       setHeaders(resHeaders, res)
       return null
     }

@@ -1,4 +1,4 @@
-import type { WebsocketsService } from '@archesai/core'
+import type { BaseService, WebsocketsService } from '@archesai/core'
 import type { MemberEntity } from '@archesai/schemas'
 
 import { createBaseService } from '@archesai/core'
@@ -9,7 +9,7 @@ import type { MemberRepository } from '#members/member.repository'
 export const createMembersService = (
   memberRepository: MemberRepository,
   websocketsService: WebsocketsService
-) => {
+): BaseService<MemberEntity> => {
   const emitMemberMutationEvent = (entity: MemberEntity): void => {
     websocketsService.broadcastEvent(entity.organizationId, 'update', {
       queryKey: ['organizations', entity.organizationId, MEMBER_ENTITY_KEY]

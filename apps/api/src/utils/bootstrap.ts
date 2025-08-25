@@ -69,10 +69,8 @@ export async function bootstrap(): Promise<void> {
   // Websocket Adapter
   await container.websocketsService.setupWebsocketAdapter(app.server)
 
-  if (process.env.PRODUCTION === 'true') {
-    await app.listen({
-      host: '0.0.0.0',
-      port: container.configService.get('api.port')
-    })
-  }
+  await app.listen({
+    host: '0.0.0.0',
+    port: container.configService.get('api.port')
+  })
 }
