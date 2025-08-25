@@ -5,7 +5,7 @@ import {
   QueryClient
 } from '@tanstack/react-query'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
-import { routerWithQueryClient } from '@tanstack/react-router-with-query'
+import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 
 import { toast } from '@archesai/ui/components/shadcn/sonner'
 
@@ -47,30 +47,34 @@ export function createRouter() {
     })
   })
 
-  return routerWithQueryClient(
-    createTanStackRouter({
-      context: {
-        queryClient,
-        session: null
-      },
-      defaultErrorComponent: DefaultCatchBoundary,
-      defaultNotFoundComponent: () => <NotFound />,
-      defaultPendingComponent: () => {
-        return (
-          <div className='flex h-full w-full items-center justify-center'>
-            <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary' />
-          </div>
-        )
-      },
-      defaultPreload: 'intent',
-      // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
-      defaultPreloadStaleTime: 0,
-      defaultStructuralSharing: true,
-      routeTree,
-      scrollRestoration: true
-    }),
-    queryClient
-  )
+  const router = createTanStackRouter({
+    context: {
+      queryClient,
+      session: null
+    },
+    defaultErrorComponent: DefaultCatchBoundary,
+    defaultNotFoundComponent: () => <NotFound />,
+    defaultPendingComponent: () => {
+      return (
+        <div className='flex h-full w-full items-center justify-center'>
+          <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary' />
+        </div>
+      )
+    },
+    defaultPreload: 'intent',
+    // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
+    defaultPreloadStaleTime: 0,
+    defaultStructuralSharing: true,
+    routeTree,
+    scrollRestoration: true
+  })
+
+  setupRouterSsrQueryIntegration({
+    queryClient,
+    router
+  })
+
+  return router
 }
 
 declare module '@tanstack/react-router' {

@@ -24,7 +24,7 @@
     "@tanstack/react-query-devtools": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-router-devtools": "catalog:tanstack",
-    "@tanstack/react-router-with-query": "catalog:tanstack",
+    "@tanstack/react-router-ssr-query": "catalog:tanstack",
     "@tanstack/react-start": "catalog:tanstack",
     "@vitejs/plugin-react": "catalog:vite",
     "@xyflow/react": "catalog:",

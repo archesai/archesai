@@ -3,8 +3,6 @@ import type { Connection, Edge, Node } from '@xyflow/react'
 // import '@xyflow/react/dist/style.css'
 
 import { useCallback, useMemo } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-// import RunForm from "#components/forms/run-form";
 import {
   addEdge,
   Background,
@@ -22,10 +20,6 @@ import type { PipelineStepEntity } from '@archesai/schemas'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Card } from '@archesai/ui/components/shadcn/card'
-
-export const Route = createFileRoute('/_app/pipelines/create/')({
-  component: CreatePipelinePage
-})
 
 export default function CreatePipelinePage() {
   return <CreatePipelineContent />

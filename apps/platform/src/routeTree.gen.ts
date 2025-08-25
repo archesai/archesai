@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './app/__root'
 import { Route as AppArtifactsArtifactIdIndexRouteImport } from './app/_app/artifacts/$artifactId/index'
 import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
@@ -16,7 +18,6 @@ import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
 import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
 import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
 import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
-import { Route as AppPipelinesCreateIndexRouteImport } from './app/_app/pipelines/create/index'
 import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
 import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
 import { Route as AppRouteRouteImport } from './app/_app/route'
@@ -28,6 +29,10 @@ import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
 import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
 import { Route as AuthRouteRouteImport } from './app/auth/route'
 import { Route as LandingIndexRouteImport } from './app/landing/index'
+
+const AppPipelinesCreateIndexLazyRouteImport = createFileRoute(
+  '/_app/pipelines/create/'
+)()
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
@@ -98,14 +103,17 @@ const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
   path: '/artifacts/',
   getParentRoute: () => AppRouteRoute
 } as any)
+const AppPipelinesCreateIndexLazyRoute =
+  AppPipelinesCreateIndexLazyRouteImport.update({
+    id: '/pipelines/create/',
+    path: '/pipelines/create/',
+    getParentRoute: () => AppRouteRoute
+  } as any).lazy(() =>
+    import('./app/_app/pipelines/create/index.lazy').then((d) => d.Route)
+  )
 const AppRunsRunIdIndexRoute = AppRunsRunIdIndexRouteImport.update({
   id: '/runs/$runId/',
   path: '/runs/$runId/',
-  getParentRoute: () => AppRouteRoute
-} as any)
-const AppPipelinesCreateIndexRoute = AppPipelinesCreateIndexRouteImport.update({
-  id: '/pipelines/create/',
-  path: '/pipelines/create/',
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesPipelineIdIndexRoute =
@@ -144,8 +152,8 @@ export interface FileRoutesByFullPath {
   '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexRoute
   '/runs/$runId': typeof AppRunsRunIdIndexRoute
+  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
@@ -164,8 +172,8 @@ export interface FileRoutesByTo {
   '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
   '/organization/members': typeof AppOrganizationMembersIndexRoute
   '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexRoute
   '/runs/$runId': typeof AppRunsRunIdIndexRoute
+  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -186,8 +194,8 @@ export interface FileRoutesById {
   '/_app/artifacts/$artifactId/': typeof AppArtifactsArtifactIdIndexRoute
   '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
   '/_app/pipelines/$pipelineId/': typeof AppPipelinesPipelineIdIndexRoute
-  '/_app/pipelines/create/': typeof AppPipelinesCreateIndexRoute
   '/_app/runs/$runId/': typeof AppRunsRunIdIndexRoute
+  '/_app/pipelines/create/': typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -208,8 +216,8 @@ export interface FileRouteTypes {
     | '/artifacts/$artifactId'
     | '/organization/members'
     | '/pipelines/$pipelineId'
-    | '/pipelines/create'
     | '/runs/$runId'
+    | '/pipelines/create'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -228,8 +236,8 @@ export interface FileRouteTypes {
     | '/artifacts/$artifactId'
     | '/organization/members'
     | '/pipelines/$pipelineId'
-    | '/pipelines/create'
     | '/runs/$runId'
+    | '/pipelines/create'
   id:
     | '__root__'
     | '/_app'
@@ -249,8 +257,8 @@ export interface FileRouteTypes {
     | '/_app/artifacts/$artifactId/'
     | '/_app/organization/members/'
     | '/_app/pipelines/$pipelineId/'
-    | '/_app/pipelines/create/'
     | '/_app/runs/$runId/'
+    | '/_app/pipelines/create/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -359,18 +367,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppArtifactsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/pipelines/create/': {
+      id: '/_app/pipelines/create/'
+      path: '/pipelines/create'
+      fullPath: '/pipelines/create'
+      preLoaderRoute: typeof AppPipelinesCreateIndexLazyRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/_app/runs/$runId/': {
       id: '/_app/runs/$runId/'
       path: '/runs/$runId'
       fullPath: '/runs/$runId'
       preLoaderRoute: typeof AppRunsRunIdIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/_app/pipelines/create/': {
-      id: '/_app/pipelines/create/'
-      path: '/pipelines/create'
-      fullPath: '/pipelines/create'
-      preLoaderRoute: typeof AppPipelinesCreateIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/_app/pipelines/$pipelineId/': {
@@ -409,8 +417,8 @@ interface AppRouteRouteChildren {
   AppArtifactsArtifactIdIndexRoute: typeof AppArtifactsArtifactIdIndexRoute
   AppOrganizationMembersIndexRoute: typeof AppOrganizationMembersIndexRoute
   AppPipelinesPipelineIdIndexRoute: typeof AppPipelinesPipelineIdIndexRoute
-  AppPipelinesCreateIndexRoute: typeof AppPipelinesCreateIndexRoute
   AppRunsRunIdIndexRoute: typeof AppRunsRunIdIndexRoute
+  AppPipelinesCreateIndexLazyRoute: typeof AppPipelinesCreateIndexLazyRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -425,8 +433,8 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppArtifactsArtifactIdIndexRoute: AppArtifactsArtifactIdIndexRoute,
   AppOrganizationMembersIndexRoute: AppOrganizationMembersIndexRoute,
   AppPipelinesPipelineIdIndexRoute: AppPipelinesPipelineIdIndexRoute,
-  AppPipelinesCreateIndexRoute: AppPipelinesCreateIndexRoute,
-  AppRunsRunIdIndexRoute: AppRunsRunIdIndexRoute
+  AppRunsRunIdIndexRoute: AppRunsRunIdIndexRoute,
+  AppPipelinesCreateIndexLazyRoute: AppPipelinesCreateIndexLazyRoute
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

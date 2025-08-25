@@ -1,10 +1,22 @@
-import path from 'node:path'
-
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import { visualizer } from 'rollup-plugin-visualizer'
+// import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
+
+// const clientViz = visualizer({
+//   brotliSize: true,
+//   emitFile: true,
+//   filename: 'stats-client.html',
+//   template: 'treemap'
+// })
+
+// const ssrViz = visualizer({
+//   brotliSize: true,
+//   emitFile: true,
+//   filename: 'stats-ssr.html',
+//   template: 'treemap'
+// })
 
 export default defineConfig({
   plugins: [
@@ -12,7 +24,8 @@ export default defineConfig({
     tanstackStart({
       customViteReactPlugin: true,
       tsr: {
-        routesDirectory: 'src/app' // Defaults to "src/routes"
+        enableRouteTreeFormatting: true,
+        routesDirectory: 'src/app'
       }
     }),
     viteReact({
@@ -26,24 +39,18 @@ export default defineConfig({
           ]
         ]
       }
-    }),
-    visualizer({
-      brotliSize: true,
-      filename: 'dist/stats.html',
-      gzipSize: true,
-      open: true
     })
+    // client-only visualizer
+    // {
+    //   ...clientViz,
+    //   apply: (_c, env) => env.command === 'build' && !env.isSsrBuild
+    // },
+    // ssr-only visualizer
+    // {
+    //   ...ssrViz,
+    //   apply: (_c, env) => env.command === 'build' && env.isSsrBuild === true
+    // }
   ],
-  preview: {
-    allowedHosts: ['platform.archesai.dev'],
-    host: '0.0.0.0',
-    port: 3000
-  },
-  resolve: {
-    alias: {
-      '#': path.resolve(import.meta.dirname, './src')
-    }
-  },
   server: {
     allowedHosts: ['platform.archesai.dev'],
     host: '0.0.0.0',
