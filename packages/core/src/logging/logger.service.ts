@@ -1,7 +1,7 @@
 import type { Logger } from 'pino'
 import type { PrettyStream } from 'pino-pretty'
 
-import pino from 'pino'
+import { default as pino } from 'pino'
 import loki, { pinoLoki as _pinoLoki } from 'pino-loki'
 import pretty, { prettyFactory as _pinoPretty } from 'pino-pretty'
 
