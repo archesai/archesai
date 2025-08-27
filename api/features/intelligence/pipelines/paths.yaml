@@ -1,0 +1,198 @@
+paths:
+  /pipelines:
+    post:
+      operationId: createPipeline
+      summary: Create a new pipeline
+      tags: [Intelligence, Pipelines]
+      description: Create a new pipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  nullable: true
+                name:
+                  description: The pipeline name
+                  type: string
+                  nullable: true
+              required:
+                - description
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+    get:
+      operationId: findManyPipelines
+      summary: Find many pipelines
+      tags: [Intelligence, Pipelines]
+      description: Find many pipelines
+      parameters:
+        - schema:
+            $ref: './schemas.yaml#/components/schemas/pipelinesFilterNode'
+          in: query
+          name: filter
+          required: false
+        - schema:
+            $ref: '../../../common/filters.yaml#/components/schemas/Page'
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: array
+            items:
+              $ref: './schemas.yaml#/components/schemas/pipelinesSort'
+          in: query
+          name: sort
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/PipelineEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /pipelines/{id}:
+    delete:
+      operationId: deletePipeline
+      summary: Delete a pipeline
+      tags: [Intelligence, Pipelines]
+      description: Delete a pipeline
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOnePipeline
+      summary: Find a pipeline
+      tags: [Intelligence, Pipelines]
+      description: Find a pipeline
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+    patch:
+      operationId: updatePipeline
+      summary: Update a pipeline
+      tags: [Intelligence, Pipelines]
+      description: Update a pipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  nullable: true
+                name:
+                  description: The pipeline name
+                  type: string
+                  nullable: true
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'

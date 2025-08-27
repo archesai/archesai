@@ -1,0 +1,114 @@
+openapi: 3.1.1
+info:
+  description: The Arches AI API
+  title: Arches AI API
+  version: v1
+
+paths:
+  ## Auth - Accounts
+  /auth/accounts:
+    { $ref: './features/auth/accounts/paths.yaml#/paths/~1accounts' }
+  /auth/accounts/{id}:
+    { $ref: './features/auth/accounts/paths.yaml#/paths/~1accounts~1{id}' }
+
+  ## Auth - Register
+  /auth/sign-up: { $ref: './features/auth/auth/paths.yaml#/paths/~1sign-up' }
+  /auth/sign-in: { $ref: './features/auth/auth/paths.yaml#/paths/~1sign-in' }
+  /auth/sign-out: { $ref: './features/auth/auth/paths.yaml#/paths/~1sign-out' }
+  /auth/email-verification/verify:
+    {
+      $ref: './features/auth/auth/paths.yaml#/paths/~1email-verification~1verify'
+    }
+  /auth/email-verification/request:
+    {
+      $ref: './features/auth/auth/paths.yaml#/paths/~1email-verification~1request'
+    }
+  /auth/password-reset/request:
+    { $ref: './features/auth/auth/paths.yaml#/paths/~1password-reset~1request' }
+  /auth/password-reset/verify:
+    { $ref: './features/auth/auth/paths.yaml#/paths/~1password-reset~1verify' }
+  /auth/email-change/request:
+    { $ref: './features/auth/auth/paths.yaml#/paths/~1email-change~1request' }
+  /auth/email-change/verify:
+    { $ref: './features/auth/auth/paths.yaml#/paths/~1email-change~1verify' }
+
+  ## Auth - Invitations
+  /auth/invitations:
+    { $ref: './features/auth/invitations/paths.yaml#/paths/~1invitations' }
+  /auth/invitations/{id}:
+    {
+      $ref: './features/auth/invitations/paths.yaml#/paths/~1invitations~1{id}'
+    }
+
+  ## Auth - Members
+  /auth/members: { $ref: './features/auth/members/paths.yaml#/paths/~1members' }
+  /auth/members/{id}:
+    { $ref: './features/auth/members/paths.yaml#/paths/~1members~1{id}' }
+
+  ## Auth - Organzations
+  /auth/organizations:
+    { $ref: './features/auth/organizations/paths.yaml#/paths/~1organizations' }
+  /auth/organizations/{id}:
+    {
+      $ref: './features/auth/organizations/paths.yaml#/paths/~1organizations~1{id}'
+    }
+
+  ## Auth - Sessions
+  /auth/sessions:
+    { $ref: './features/auth/sessions/paths.yaml#/paths/~1sessions' }
+  /auth/sessions/{id}:
+    { $ref: './features/auth/sessions/paths.yaml#/paths/~1sessions~1{id}' }
+
+  ## Auth - Users
+  /auth/users: { $ref: './features/auth/users/paths.yaml#/paths/~1users' }
+  /auth/users/{id}:
+    { $ref: './features/auth/users/paths.yaml#/paths/~1users~1{id}' }
+
+  ## Intelligence - Artifacts
+  /intelligence/artifacts:
+    { $ref: './features/intelligence/artifacts/paths.yaml#/paths/~1artifacts' }
+  /intelligence/artifacts/{id}:
+    {
+      $ref: './features/intelligence/artifacts/paths.yaml#/paths/~1artifacts~1{id}'
+    }
+
+  ## Intelligence - Labels
+  /intelligence/labels:
+    { $ref: './features/intelligence/labels/paths.yaml#/paths/~1labels' }
+  /intelligence/labels/{id}:
+    { $ref: './features/intelligence/labels/paths.yaml#/paths/~1labels~1{id}' }
+
+  ## Intelligence - Pipelines
+  /intelligence/pipelines:
+    { $ref: './features/intelligence/pipelines/paths.yaml#/paths/~1pipelines' }
+  /intelligence/pipelines/{id}:
+    {
+      $ref: './features/intelligence/pipelines/paths.yaml#/paths/~1pipelines~1{id}'
+    }
+
+  ## Intelligence - Runs
+  /intelligence/runs:
+    { $ref: './features/intelligence/runs/paths.yaml#/paths/~1runs' }
+  /intelligence/runs/{id}:
+    { $ref: './features/intelligence/runs/paths.yaml#/paths/~1runs~1{id}' }
+
+  ## Intelligence - Tools
+  /intelligence/tools:
+    { $ref: './features/intelligence/tools/paths.yaml#/paths/~1tools' }
+  /intelligence/tools/{id}:
+    { $ref: './features/intelligence/tools/paths.yaml#/paths/~1tools~1{id}' }
+
+  # Admin - Config
+  /config: { $ref: './infrastructure/config/paths.yaml#/paths/~1config' }
+
+  # Admin - Health
+  /health: { $ref: './infrastructure/health/paths.yaml#/paths/~1health' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      { $ref: './common/security.yaml#/components/securitySchemes/bearerAuth' }
+    sessionCookie:
+      {
+        $ref: './common/security.yaml#/components/securitySchemes/sessionCookie'
+      }

@@ -1,0 +1,141 @@
+components:
+  schemas:
+    RunEntity:
+      description: Schema for Run entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        completedAt:
+          description: The timestamp when the run completed
+          type: string
+          nullable: true
+          format: date-time
+        error:
+          description: The error message
+          type: string
+          nullable: true
+        organizationId:
+          description: The organization name
+          type: string
+        pipelineId:
+          description: The pipeline ID associated with the run
+          type: string
+          nullable: true
+        progress:
+          description: The percent progress of the run
+          type: number
+        startedAt:
+          description: The timestamp when the run started
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+            - COMPLETED
+            - FAILED
+            - PROCESSING
+            - QUEUED
+        toolId:
+          description: The tool ID associated with the run
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - completedAt
+        - error
+        - organizationId
+        - pipelineId
+        - progress
+        - startedAt
+        - status
+        - toolId
+      additionalProperties: false
+    runsFilterNode:
+      description: A recursive filter node for runs entity that can be a condition or group
+      anyOf:
+        - type: object
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - completedAt
+                - error
+                - organizationId
+                - pipelineId
+                - progress
+                - startedAt
+                - status
+                - toolId
+            operator:
+              $ref: '../../../common/filters.yaml#/components/schemas/Operator'
+            type:
+              type: string
+              const: condition
+            value:
+              $ref: '../../../common/filters.yaml#/components/schemas/FilterValue'
+          required:
+            - field
+            - operator
+            - type
+            - value
+        - type: object
+          properties:
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/runsFilterNode'
+            operator:
+              type: string
+              enum:
+                - and
+                - or
+            type:
+              type: string
+              const: group
+          required:
+            - children
+            - operator
+            - type
+    runsSort:
+      description: Sorting configuration for runs entity with field and order
+      type: object
+      properties:
+        field:
+          type: string
+          enum:
+            - createdAt
+            - id
+            - updatedAt
+            - completedAt
+            - error
+            - organizationId
+            - pipelineId
+            - progress
+            - startedAt
+            - status
+            - toolId
+        order:
+          type: string
+          enum:
+            - asc
+            - desc
+      required:
+        - field
+        - order

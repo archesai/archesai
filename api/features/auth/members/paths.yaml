@@ -1,0 +1,195 @@
+paths:
+  /members:
+    post:
+      operationId: createMember
+      summary: Create a new member
+      tags: [Auth, Members]
+      description: Create a new member
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  description: The role of the member
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+              required:
+                - role
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+    get:
+      operationId: findManyMembers
+      summary: Find many members
+      tags: [Auth, Members]
+      description: Find many members
+      parameters:
+        - schema:
+            $ref: './schemas.yaml#/components/schemas/membersFilterNode'
+          in: query
+          name: filter
+          required: false
+        - schema:
+            $ref: '../../../common/filters.yaml#/components/schemas/Page'
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: array
+            items:
+              $ref: './schemas.yaml#/components/schemas/membersSort'
+          in: query
+          name: sort
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/MemberEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /members/{id}:
+    delete:
+      operationId: deleteMember
+      summary: Delete a member
+      tags: [Auth, Members]
+      description: Delete a member
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOneMember
+      summary: Find a member
+      tags: [Auth, Members]
+      description: Find a member
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+    patch:
+      operationId: updateMember
+      summary: Update a member
+      tags: [Auth, Members]
+      description: Update a member
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  description: The role of the member
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'

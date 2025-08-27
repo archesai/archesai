@@ -1,0 +1,124 @@
+components:
+  schemas:
+    InvitationEntity:
+      description: Schema for Invitation entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        email:
+          description: The email of the invitated user
+          type: string
+        expiresAt:
+          description: The date and time when the invitation expires
+          type: string
+        inviterId:
+          description: The user id of the inviter
+          type: string
+        organizationId:
+          description: The name of the organization the token belongs to
+          type: string
+        role:
+          description: The role of the invitation
+          type: string
+          enum:
+            - admin
+            - owner
+            - member
+        status:
+          description: The status of the invitation, e.g., pending, accepted, declined
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - email
+        - expiresAt
+        - inviterId
+        - organizationId
+        - role
+        - status
+      additionalProperties: false
+    invitationsFilterNode:
+      description: A recursive filter node for invitations entity that can be a
+        condition or group
+      anyOf:
+        - type: object
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - email
+                - expiresAt
+                - inviterId
+                - organizationId
+                - role
+                - status
+            operator:
+              $ref: '../../../common/filters.yaml#/components/schemas/Operator'
+            type:
+              type: string
+              const: condition
+            value:
+              $ref: '../../../common/filters.yaml#/components/schemas/FilterValue'
+          required:
+            - field
+            - operator
+            - type
+            - value
+        - type: object
+          properties:
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/invitationsFilterNode'
+            operator:
+              type: string
+              enum:
+                - and
+                - or
+            type:
+              type: string
+              const: group
+          required:
+            - children
+            - operator
+            - type
+    invitationsSort:
+      description: Sorting configuration for invitations entity with field and order
+      type: object
+      properties:
+        field:
+          type: string
+          enum:
+            - createdAt
+            - id
+            - updatedAt
+            - email
+            - expiresAt
+            - inviterId
+            - organizationId
+            - role
+            - status
+        order:
+          type: string
+          enum:
+            - asc
+            - desc
+      required:
+        - field
+        - order

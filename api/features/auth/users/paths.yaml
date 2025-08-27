@@ -1,0 +1,160 @@
+paths:
+  /users:
+    get:
+      operationId: findManyUsers
+      summary: Find many users
+      tags: [Auth, Users]
+      description: Find many users
+      parameters:
+        - schema:
+            $ref: './schemas.yaml#/components/schemas/usersFilterNode'
+          in: query
+          name: filter
+          required: false
+        - schema:
+            $ref: '../../../common/filters.yaml#/components/schemas/Page'
+          in: query
+          name: page
+          required: false
+        - schema:
+            type: array
+            items:
+              $ref: './schemas.yaml#/components/schemas/usersSort'
+          in: query
+          name: sort
+          required: false
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/UserEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /users/{id}:
+    delete:
+      operationId: deleteUser
+      summary: Delete an user
+      tags: [Auth, Users]
+      description: Delete an user
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/UserEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOneUser
+      summary: Find an user
+      tags: [Auth, Users]
+      description: Find an user
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/UserEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'
+
+    patch:
+      operationId: updateUser
+      summary: Update an user
+      tags: [Auth, Users]
+      description: Update an user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The user's e-mail
+                  type: string
+                image:
+                  description: The user's avatar image URL
+                  type: string
+                  nullable: true
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/UserEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../../common/errors.yaml#/components/responses/NotFound'

@@ -1,0 +1,29 @@
+package {{.Package}}
+
+import (
+	"time"
+)
+
+// {{.Entity}} represents a {{.LowerEntity}} domain entity
+type {{.Entity}} struct {
+{{range .EntityFields}}	{{.Name}} {{.Type}} `json:"{{.JsonTag}}{{if .OmitEmpty}},omitempty{{end}}"`
+{{end}}}
+
+// Create{{.Entity}}Params represents the input for creating a {{.LowerEntity}}
+type Create{{.Entity}}Params struct {
+{{range .CreateFields}}	{{.Name}} {{.Type}} `json:"{{.JsonTag}}" validate:"{{.Validate}}"`
+{{end}}}
+
+// Update{{.Entity}}Params represents the input for updating a {{.LowerEntity}}
+type Update{{.Entity}}Params struct {
+{{range .UpdateFields}}	{{.Name}} {{.Type}} `json:"{{.JsonTag}}{{if .OmitEmpty}},omitempty{{end}}" validate:"{{.Validate}}"`
+{{end}}}
+
+// List{{.Entity}}sParams represents parameters for listing {{.LowerEntity}}s
+type List{{.Entity}}sParams struct {
+	Limit  int32  `json:"limit,omitempty"`
+	Offset int32  `json:"offset,omitempty"`
+	Search string `json:"search,omitempty"`
+	SortBy string `json:"sortBy,omitempty"`
+	Order  string `json:"order,omitempty"`
+}

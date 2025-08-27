@@ -1,0 +1,73 @@
+components:
+  schemas:
+    Problem:
+      description: RFC 7807-style problem object
+      type: object
+      additionalProperties: false
+      required: [status, title, detail]
+      properties:
+        status: { type: string } # keep as string if that’s what you return
+        title: { type: string }
+        detail: { type: string }
+        errors:
+          # type: [array, 'null']
+          type: array
+          nullable: true
+          items:
+            type: object
+            additionalProperties: false
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }
+              value: {
+                  # type: [string, number, boolean, 'null']
+                  type: string,
+                  nullable: true
+                }
+
+  responses:
+    BadRequest:
+      description: 400 Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    Conflict:
+      description: 409 Conflict
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    Forbidden:
+      description: 403 Forbidden
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    InternalServerError:
+      description: 500 Internal Server Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    NoContent:
+      description: 204 No Content
+
+    NotFound:
+      description: 404 Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    Unauthorized:
+      description: 401 Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+    ValidationError:
+      description: 422 Validation Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Problem' }

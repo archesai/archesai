@@ -1,0 +1,1407 @@
+components:
+  schemas:
+    ArchesConfig:
+      description: Arches AI configuration schema
+      type: object
+      properties:
+        api:
+          description: >
+            Configuration schema for the API server. This includes settings for
+            CORS, documentation, email, host, port, and request validation.
+          default:
+            cors:
+              origins: https://platform.archesai.dev
+            docs: true
+            email:
+              mode: disabled
+            host: 0.0.0.0
+            image:
+              pullPolicy: IfNotPresent
+              repository: archesai/api
+              tag: latest
+            port: 3001
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+              requests:
+                cpu: 500m
+                memory: 512Mi
+            validate: true
+          type: object
+          properties:
+            cors:
+              description: >
+                CORS configuration for the API server. This allows you to specify
+                which origins are allowed to make requests to the API.
+              default:
+                origins: https://platform.archesai.dev
+              type: object
+              properties:
+                origins:
+                  description: >
+                    A comma-separated list of allowed origins for CORS requests. Use
+                    "*" to allow all
+                  default: https://platform.archesai.dev
+                  type: string
+              required: [origins]
+              additionalProperties: false
+            docs:
+              description: Enable or disable API documentation
+              default: true
+              type: boolean
+            email:
+              default:
+                mode: disabled
+              anyOf:
+                - description: Email configuration is disabled
+                  type: object
+                  properties:
+                    mode:
+                      type: string
+                      enum: [disabled]
+                  required: [mode]
+                  additionalProperties: false
+                - description: >
+                    Email configuration for sending emails. This includes the service,
+                    user, and password for the email service.
+                  type: object
+                  properties:
+                    mode:
+                      description: Email configuration is enabled
+                      type: string
+                      enum: [enabled]
+                    password:
+                      description: >
+                        Password for the email service. This is required when email
+                        configuration is enabled.
+                      type: string
+                    service:
+                      description: >
+                        Email service provider (e.g., "gmail", "sendgrid", etc.). This is
+                        required when email configuration is enabled.
+                      type: string
+                    user:
+                      description: >
+                        Username for the email service. This is required when email
+                        configuration is enabled.
+                      type: string
+                  required: [mode, password, service, user]
+                  additionalProperties: false
+            host:
+              description: The host address on which the API server will listen
+              default: 0.0.0.0
+              type: string
+            port:
+              description: The port on which the API server will listen
+              default: 3001
+              type: number
+            validate:
+              description: >
+                Enable or disable request validation. When enabled, the API will
+                validate incoming requests against the defined schemas.
+              default: true
+              type: boolean
+            image:
+              type: object
+              properties:
+                pullPolicy:
+                  default: IfNotPresent
+                  type: string
+                  enum: [Always, IfNotPresent, Never]
+                repository:
+                  default: archesai/api
+                  type: string
+                tag:
+                  default: latest
+                  type: string
+              required: [pullPolicy, repository, tag]
+              additionalProperties: false
+            resources:
+              type: object
+              properties:
+                limits:
+                  type: object
+                  properties:
+                    cpu: { default: 1000m, type: string }
+                    memory: { default: 1Gi, type: string }
+                  required: [cpu, memory]
+                  additionalProperties: false
+                requests:
+                  type: object
+                  properties:
+                    cpu: { default: 500m, type: string }
+                    memory: { default: 512Mi, type: string }
+                  required: [cpu, memory]
+                  additionalProperties: false
+              required: [limits, requests]
+              additionalProperties: false
+          required: [cors, docs, email, host, port, validate, image, resources]
+          additionalProperties: false
+
+        auth:
+          description: >
+            Authentication configuration for the API server. This includes Firebase,
+            local, and Twitter authentication options. Each option can be enabled
+            or disabled independently. The default mode is "enabled" with local auth.
+          default:
+            firebase: { mode: disabled }
+            local: { mode: enabled }
+            mode: enabled
+            twitter: { mode: disabled }
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                firebase:
+                  description: Firebase authentication configuration…
+                  default: { mode: disabled }
+                  anyOf:
+                    - type: object
+                      properties: { mode: { type: string, enum: [disabled] } }
+                      required: [mode]
+                      additionalProperties: false
+                    - type: object
+                      properties:
+                        clientEmail:
+                          {
+                            description: Firebase service account client email address,
+                            type: string
+                          }
+                        mode: { type: string, enum: [enabled] }
+                        privateKey:
+                          {
+                            description: Firebase service account private key (PEM format),
+                            type: string
+                          }
+                        projectId:
+                          {
+                            description: Firebase project ID for authentication,
+                            type: string
+                          }
+                      required: [clientEmail, mode, privateKey, projectId]
+                      additionalProperties: false
+                local:
+                  description: Local username/password auth…
+                  default: { mode: enabled }
+                  anyOf:
+                    - type: object
+                      properties: { mode: { type: string, enum: [disabled] } }
+                      required: [mode]
+                      additionalProperties: false
+                    - type: object
+                      properties: { mode: { type: string, enum: [enabled] } }
+                      required: [mode]
+                      additionalProperties: false
+                twitter:
+                  description: Twitter OAuth configuration…
+                  default: { mode: disabled }
+                  anyOf:
+                    - type: object
+                      properties: { mode: { type: string, enum: [disabled] } }
+                      required: [mode]
+                      additionalProperties: false
+                    - type: object
+                      properties:
+                        callbackURL:
+                          { description: OAuth callback URL…, type: string }
+                        consumerKey:
+                          {
+                            description: Twitter API consumer key…,
+                            type: string
+                          }
+                        consumerSecret:
+                          {
+                            description: Twitter API consumer secret…,
+                            type: string
+                          }
+                        mode: { type: string, enum: [enabled] }
+                      required: [callbackURL, consumerKey, consumerSecret, mode]
+                      additionalProperties: false
+                mode: { type: string, enum: [enabled] }
+              required: [firebase, local, twitter, mode]
+              additionalProperties: false
+
+        billing:
+          description: Billing configuration for Stripe…
+          default: { mode: disabled }
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                stripe:
+                  type: object
+                  properties:
+                    token: { description: Stripe secret API key…, type: string }
+                    whsec:
+                      {
+                        description: Stripe webhook endpoint secret…,
+                        type: string
+                      }
+                  required: [token, whsec]
+                  additionalProperties: false
+                mode: { type: string, enum: [enabled] }
+              required: [stripe, mode]
+              additionalProperties: false
+
+        database:
+          description: >
+            Database configuration for PostgreSQL with optional pgvector support…
+          default:
+            auth: { database: archesai-db, password: password }
+            image:
+              {
+                pullPolicy: IfNotPresent,
+                repository: pgvector/pgvector,
+                tag: pg16
+              }
+            mode: managed
+            persistence: { enabled: true, size: 10Gi }
+            resources:
+              limits: { cpu: 500m, memory: 1Gi }
+              requests: { cpu: 250m, memory: 512Mi }
+            url: postgresql://admin:password@localhost:5432/archesai-db?schema=public
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                url:
+                  description: Database connection URL/string
+                  default: postgresql://admin:password@localhost:5432/archesai-db?schema=public
+                  type: string
+                mode: { type: string, enum: [enabled] }
+              required: [url, mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                url:
+                  description: Database connection URL/string
+                  default: postgresql://admin:password@localhost:5432/archesai-db?schema=public
+                  type: string
+                auth:
+                  default: { database: archesai-db, password: password }
+                  type: object
+                  properties:
+                    database:
+                      {
+                        description: Database name…,
+                        default: archesai-db,
+                        type: string
+                      }
+                    password:
+                      {
+                        description: Database user password…,
+                        default: password,
+                        type: string
+                      }
+                  required: [database, password]
+                  additionalProperties: false
+                image:
+                  default:
+                    {
+                      pullPolicy: IfNotPresent,
+                      repository: pgvector/pgvector,
+                      tag: pg16
+                    }
+                  type: object
+                  properties:
+                    pullPolicy:
+                      {
+                        description: Kubernetes image pull policy,
+                        default: IfNotPresent,
+                        type: string,
+                        enum: [Always, IfNotPresent, Never]
+                      }
+                    repository:
+                      {
+                        description: PostgreSQL with pgvector extension docker image,
+                        default: pgvector/pgvector,
+                        type: string
+                      }
+                    tag:
+                      {
+                        description: PostgreSQL version tag,
+                        default: pg16,
+                        type: string
+                      }
+                  required: [pullPolicy, repository, tag]
+                  additionalProperties: false
+                mode: { type: string, enum: [managed] }
+                persistence:
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable persistent storage…,
+                        default: true,
+                        type: boolean
+                      }
+                    size:
+                      {
+                        description: Size of persistent volume…,
+                        default: 10Gi,
+                        type: string
+                      }
+                  required: [enabled, size]
+                  additionalProperties: false
+                resources:
+                  type: object
+                  properties:
+                    limits:
+                      type: object
+                      properties:
+                        cpu:
+                          {
+                            description: Maximum CPU allocation…,
+                            default: 500m,
+                            type: string
+                          }
+                        memory:
+                          {
+                            description: Maximum memory allocation…,
+                            default: 1Gi,
+                            type: string
+                          }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                    requests:
+                      type: object
+                      properties:
+                        cpu:
+                          {
+                            description: Requested CPU allocation…,
+                            default: 250m,
+                            type: string
+                          }
+                        memory:
+                          {
+                            description: Requested memory allocation…,
+                            default: 512Mi,
+                            type: string
+                          }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                  required: [limits, requests]
+                  additionalProperties: false
+              required: [url, auth, image, mode, persistence, resources]
+              additionalProperties: false
+
+        infrastructure:
+          description: >
+            Infrastructure configuration for Kubernetes deployments, including
+            development settings, image management, migrations, and service accounts.
+          default:
+            development:
+              api: { enabled: false, port: 3001 }
+              hostIP: 172.18.0.1
+              loki: { enabled: false, port: 30056 }
+              platform: { enabled: false, port: 3000 }
+              postgres: { enabled: false, port: 30054 }
+              redis: { enabled: false, port: 30055 }
+            images: { imagePullSecrets: [], imageRegistry: '' }
+            migrations: { enabled: false }
+            namespace: arches-system
+            serviceAccount: { create: true, name: '' }
+          type: object
+          properties:
+            development:
+              description: Development environment configuration…
+              default:
+                api: { enabled: false, port: 3001 }
+                hostIP: 172.18.0.1
+                loki: { enabled: false, port: 30056 }
+                platform: { enabled: false, port: 3000 }
+                postgres: { enabled: false, port: 30054 }
+                redis: { enabled: false, port: 30055 }
+              type: object
+              properties:
+                api:
+                  description: Development port forwarding config for API
+                  default: { enabled: false, port: 3001 }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable dev port forward for API,
+                        default: false,
+                        type: boolean
+                      }
+                    port:
+                      { description: Local port…, default: 3001, type: number }
+                  required: [enabled, port]
+                  additionalProperties: false
+                hostIP:
+                  description: Host IP address for dev port forwarding…
+                  default: 172.18.0.1
+                  type: string
+                loki:
+                  description: Dev port forwarding for Loki
+                  default: { enabled: false, port: 30056 }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable dev port forward for Loki,
+                        default: false,
+                        type: boolean
+                      }
+                    port:
+                      { description: Local port…, default: 30056, type: number }
+                  required: [enabled, port]
+                  additionalProperties: false
+                platform:
+                  description: Dev port forwarding for platform
+                  default: { enabled: false, port: 3000 }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable dev port forward for platform,
+                        default: false,
+                        type: boolean
+                      }
+                    port:
+                      { description: Local port…, default: 3000, type: number }
+                  required: [enabled, port]
+                  additionalProperties: false
+                postgres:
+                  description: Dev port forwarding for PostgreSQL
+                  default: { enabled: false, port: 30054 }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable dev port forward for PostgreSQL,
+                        default: false,
+                        type: boolean
+                      }
+                    port:
+                      { description: Local port…, default: 30054, type: number }
+                  required: [enabled, port]
+                  additionalProperties: false
+                redis:
+                  description: Dev port forwarding for Redis
+                  default: { enabled: false, port: 30055 }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable dev port forward for Redis,
+                        default: false,
+                        type: boolean
+                      }
+                    port:
+                      { description: Local port…, default: 30055, type: number }
+                  required: [enabled, port]
+                  additionalProperties: false
+              required: [api, hostIP, loki, platform, postgres, redis]
+              additionalProperties: false
+            images:
+              description: Container image configuration…
+              default: { imagePullSecrets: [], imageRegistry: '' }
+              type: object
+              properties:
+                imagePullSecrets:
+                  description: List of Kubernetes secrets for pulling private images
+                  default: []
+                  type: array
+                  items: { type: string }
+                imageRegistry:
+                  description: Custom container registry URL (leave empty for Docker Hub)
+                  default: ''
+                  type: string
+              required: [imagePullSecrets, imageRegistry]
+              additionalProperties: false
+            migrations:
+              description: Database migration configuration…
+              default: { enabled: false }
+              type: object
+              properties:
+                enabled:
+                  {
+                    description: Enable automatic DB migrations…,
+                    default: false,
+                    type: boolean
+                  }
+              required: [enabled]
+              additionalProperties: false
+            namespace:
+              description: Kubernetes namespace where all resources will be deployed
+              default: arches-system
+              type: string
+            serviceAccount:
+              description: Kubernetes service account configuration…
+              default: { create: true, name: '' }
+              type: object
+              properties:
+                create:
+                  {
+                    description: Create dedicated service account,
+                    default: true,
+                    type: boolean
+                  }
+                name:
+                  {
+                    description: Custom service account name,
+                    default: '',
+                    type: string
+                  }
+              required: [create, name]
+              additionalProperties: false
+          required: [development, images, migrations, namespace, serviceAccount]
+          additionalProperties: false
+
+        ingress:
+          description: Ingress configuration…
+          default:
+            domain: archesai.dev
+            mode: managed
+            tls:
+              {
+                enabled: true,
+                issuer: letsencrypt-staging,
+                secretName: archesai-tls
+              }
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                domain:
+                  {
+                    description: Primary domain name for ingress routing,
+                    default: archesai.dev,
+                    type: string
+                  }
+                tls:
+                  description: TLS configuration…
+                  default: { enabled: true, secretName: archesai-tls }
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable TLS/SSL…,
+                        default: true,
+                        type: boolean
+                      }
+                    secretName:
+                      {
+                        description: Kubernetes secret name…,
+                        default: archesai-tls,
+                        type: string
+                      }
+                  required: [enabled, secretName]
+                  additionalProperties: false
+                mode: { type: string, enum: [enabled] }
+              required: [domain, tls, mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                domain:
+                  {
+                    description: Primary domain name for ingress routing,
+                    default: archesai.dev,
+                    type: string
+                  }
+                tls:
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable TLS/SSL…,
+                        default: true,
+                        type: boolean
+                      }
+                    issuer:
+                      {
+                        description: Cert-manager ClusterIssuer…,
+                        default: letsencrypt-staging,
+                        type: string
+                      }
+                    secretName:
+                      {
+                        description: Kubernetes secret name…,
+                        default: archesai-tls,
+                        type: string
+                      }
+                  required: [enabled, issuer, secretName]
+                  additionalProperties: false
+                mode: { type: string, enum: [managed] }
+              required: [domain, tls, mode]
+              additionalProperties: false
+
+        intelligence:
+          description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
+          default:
+            embedding: { type: ollama }
+            llm: { endpoint: http://localhost:11434, type: ollama }
+            runpod: { mode: disabled }
+            scraper:
+              image:
+                {
+                  pullPolicy: IfNotPresent,
+                  repository: arches/scraper,
+                  tag: latest
+                }
+              mode: managed
+              resources:
+                limits: { cpu: 500m, memory: 1Gi }
+                requests: { cpu: 250m, memory: 512Mi }
+            speech: { mode: disabled }
+            unstructured:
+              image:
+                {
+                  pullPolicy: IfNotPresent,
+                  repository: downloads.unstructured.io/unstructured-io/unstructured-api,
+                  tag: latest
+                }
+              mode: managed
+              resources:
+                limits: { cpu: 1000m, memory: 2Gi }
+                requests: { cpu: 500m, memory: 1Gi }
+          type: object
+          properties:
+            embedding:
+              description: Configuration for text embedding generation
+              default: { type: ollama }
+              type: object
+              properties:
+                type:
+                  description: The embedding provider to use for vector embeddings
+                  default: ollama
+                  type: string
+                  enum: [openai, ollama]
+              required: [type]
+              additionalProperties: false
+            llm:
+              description: Large Language Model configuration
+              default: { endpoint: http://localhost:11434, type: ollama }
+              anyOf:
+                - type: object
+                  properties:
+                    endpoint:
+                      {
+                        description: Ollama server endpoint URL,
+                        default: http://localhost:11434,
+                        type: string
+                      }
+                    token:
+                      {
+                        description: Optional authentication token for Ollama,
+                        type: string
+                      }
+                    type: { type: string, enum: [ollama] }
+                  required: [endpoint, type]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    endpoint:
+                      {
+                        description: OpenAI API endpoint (defaults to official API),
+                        default: https://api.openai.com/v1,
+                        type: string
+                      }
+                    token:
+                      {
+                        description: OpenAI API key for authentication,
+                        type: string
+                      }
+                    type: { type: string, enum: [openai] }
+                  required: [endpoint, type]
+                  additionalProperties: false
+            runpod:
+              description: RunPod serverless GPU configuration
+              default: { mode: disabled }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    mode: { type: string, enum: [enabled] }
+                    token:
+                      {
+                        description: RunPod API token…,
+                        type: string,
+                        minLength: 1
+                      }
+                  required: [mode]
+                  additionalProperties: false
+            scraper:
+              description: Web scraping service
+              default:
+                image:
+                  {
+                    pullPolicy: IfNotPresent,
+                    repository: arches/scraper,
+                    tag: latest
+                  }
+                mode: managed
+                resources:
+                  limits: { cpu: 500m, memory: 1Gi }
+                  requests: { cpu: 250m, memory: 512Mi }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    endpoint:
+                      {
+                        description: Web scraper service endpoint URL,
+                        type: string
+                      }
+                    mode: { type: string, enum: [enabled] }
+                  required: [endpoint, mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    image:
+                      type: object
+                      properties:
+                        pullPolicy:
+                          {
+                            default: IfNotPresent,
+                            type: string,
+                            enum: [Always, IfNotPresent, Never]
+                          }
+                        repository: { default: arches/scraper, type: string }
+                        tag: { default: latest, type: string }
+                      required: [pullPolicy, repository, tag]
+                      additionalProperties: false
+                    mode: { type: string, enum: [managed] }
+                    resources:
+                      type: object
+                      properties:
+                        limits:
+                          type: object
+                          properties:
+                            cpu: { default: 500m, type: string }
+                            memory: { default: 1Gi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                        requests:
+                          type: object
+                          properties:
+                            cpu: { default: 250m, type: string }
+                            memory: { default: 512Mi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                      required: [limits, requests]
+                      additionalProperties: false
+                  required: [image, mode, resources]
+                  additionalProperties: false
+            speech:
+              description: Speech recognition and TTS services
+              default: { mode: disabled }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    mode: { type: string, enum: [enabled] }
+                    token:
+                      {
+                        description: Speech-to-text service API token,
+                        type: string
+                      }
+                  required: [mode, token]
+                  additionalProperties: false
+            unstructured:
+              description: Unstructured.io service for document parsing
+              default:
+                image:
+                  {
+                    pullPolicy: IfNotPresent,
+                    repository: downloads.unstructured.io/unstructured-io/unstructured-api,
+                    tag: latest
+                  }
+                mode: managed
+                resources:
+                  limits: { cpu: 1000m, memory: 2Gi }
+                  requests: { cpu: 500m, memory: 1Gi }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties: { mode: { type: string, enum: [enabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    image:
+                      type: object
+                      properties:
+                        pullPolicy:
+                          {
+                            default: IfNotPresent,
+                            type: string,
+                            enum: [Always, IfNotPresent, Never]
+                          }
+                        repository:
+                          {
+                            default: downloads.unstructured.io/unstructured-io/unstructured-api,
+                            type: string
+                          }
+                        tag: { default: latest, type: string }
+                      required: [pullPolicy, repository, tag]
+                      additionalProperties: false
+                    mode: { type: string, enum: [managed] }
+                    resources:
+                      type: object
+                      properties:
+                        limits:
+                          type: object
+                          properties:
+                            cpu: { default: 1000m, type: string }
+                            memory: { default: 2Gi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                        requests:
+                          type: object
+                          properties:
+                            cpu: { default: 500m, type: string }
+                            memory: { default: 1Gi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                      required: [limits, requests]
+                      additionalProperties: false
+                  required: [image, mode, resources]
+                  additionalProperties: false
+          required: [embedding, llm, runpod, scraper, speech, unstructured]
+          additionalProperties: false
+
+        logging:
+          description: Logging configuration
+          default: { level: info, pretty: false }
+          type: object
+          properties:
+            level:
+              description: Minimum log level to output (fatal=highest, silent=no logs)
+              default: info
+              type: string
+              enum: [fatal, error, warn, info, debug, trace, silent]
+            pretty:
+              description: Enable pretty-printed logs for development
+              default: false
+              type: boolean
+          required: [level, pretty]
+          additionalProperties: false
+
+        monitoring:
+          description: Monitoring configuration for Grafana and Loki
+          default:
+            grafana:
+              image:
+                {
+                  pullPolicy: IfNotPresent,
+                  repository: grafana/grafana,
+                  tag: latest
+                }
+              mode: managed
+              resources:
+                limits: { cpu: 200m, memory: 256Mi }
+                requests: { cpu: 100m, memory: 128Mi }
+            loki:
+              host: http://localhost:3100
+              image:
+                {
+                  pullPolicy: IfNotPresent,
+                  repository: grafana/loki,
+                  tag: latest
+                }
+              mode: managed
+              resources:
+                limits: { cpu: 200m, memory: 256Mi }
+                requests: { cpu: 100m, memory: 128Mi }
+          type: object
+          properties:
+            grafana:
+              description: Grafana monitoring dashboard configuration
+              default:
+                image:
+                  {
+                    pullPolicy: IfNotPresent,
+                    repository: grafana/grafana,
+                    tag: latest
+                  }
+                mode: managed
+                resources:
+                  limits: { cpu: 200m, memory: 256Mi }
+                  requests: { cpu: 100m, memory: 128Mi }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties: { mode: { type: string, enum: [enabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    image:
+                      type: object
+                      properties:
+                        pullPolicy:
+                          {
+                            default: IfNotPresent,
+                            type: string,
+                            enum: [Always, IfNotPresent, Never]
+                          }
+                        repository: { default: grafana/grafana, type: string }
+                        tag: { default: latest, type: string }
+                      required: [pullPolicy, repository, tag]
+                      additionalProperties: false
+                    mode: { type: string, enum: [managed] }
+                    resources:
+                      type: object
+                      properties:
+                        limits:
+                          type: object
+                          properties:
+                            cpu: { default: 200m, type: string }
+                            memory: { default: 256Mi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                        requests:
+                          type: object
+                          properties:
+                            cpu: { default: 100m, type: string }
+                            memory: { default: 128Mi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                      required: [limits, requests]
+                      additionalProperties: false
+                  required: [image, mode, resources]
+                  additionalProperties: false
+            loki:
+              description: Loki log aggregation service configuration
+              default:
+                host: http://localhost:3100
+                image:
+                  {
+                    pullPolicy: IfNotPresent,
+                    repository: grafana/loki,
+                    tag: latest
+                  }
+                mode: managed
+                resources:
+                  limits: { cpu: 200m, memory: 256Mi }
+                  requests: { cpu: 100m, memory: 128Mi }
+              anyOf:
+                - type: object
+                  properties: { mode: { type: string, enum: [disabled] } }
+                  required: [mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    host: { description: External Loki host URL, type: string }
+                    mode: { type: string, enum: [enabled] }
+                  required: [host, mode]
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    host: { default: http://localhost:3100, type: string }
+                    image:
+                      type: object
+                      properties:
+                        pullPolicy:
+                          {
+                            default: IfNotPresent,
+                            type: string,
+                            enum: [Always, IfNotPresent, Never]
+                          }
+                        repository: { default: grafana/loki, type: string }
+                        tag: { default: latest, type: string }
+                      required: [pullPolicy, repository, tag]
+                      additionalProperties: false
+                    mode: { type: string, enum: [managed] }
+                    resources:
+                      type: object
+                      properties:
+                        limits:
+                          type: object
+                          properties:
+                            cpu: { default: 200m, type: string }
+                            memory: { default: 256Mi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                        requests:
+                          type: object
+                          properties:
+                            cpu: { default: 100m, type: string }
+                            memory: { default: 128Mi, type: string }
+                          required: [cpu, memory]
+                          additionalProperties: false
+                      required: [limits, requests]
+                      additionalProperties: false
+                  required: [host, image, mode, resources]
+                  additionalProperties: false
+          required: [grafana, loki]
+          additionalProperties: false
+
+        platform:
+          description: Platform configuration (host, image, resources)
+          default:
+            host: localhost
+            image:
+              {
+                pullPolicy: IfNotPresent,
+                repository: archesai/platform,
+                tag: latest
+              }
+            mode: managed
+            resources:
+              limits: { cpu: 500m, memory: 512Mi }
+              requests: { cpu: 250m, memory: 256Mi }
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                host:
+                  {
+                    description: Host address where the platform service will be accessible,
+                    default: localhost,
+                    type: string
+                  }
+                mode: { type: string, enum: [enabled] }
+              required: [host, mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                host:
+                  {
+                    description: Host address…,
+                    default: localhost,
+                    type: string
+                  }
+                image:
+                  type: object
+                  properties:
+                    pullPolicy:
+                      {
+                        default: IfNotPresent,
+                        type: string,
+                        enum: [Always, IfNotPresent, Never]
+                      }
+                    repository: { default: archesai/platform, type: string }
+                    tag: { default: latest, type: string }
+                  required: [pullPolicy, repository, tag]
+                  additionalProperties: false
+                mode: { type: string, enum: [managed] }
+                resources:
+                  type: object
+                  properties:
+                    limits:
+                      type: object
+                      properties:
+                        cpu: { default: 500m, type: string }
+                        memory: { default: 512Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                    requests:
+                      type: object
+                      properties:
+                        cpu: { default: 250m, type: string }
+                        memory: { default: 256Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                  required: [limits, requests]
+                  additionalProperties: false
+              required: [host, image, mode, resources]
+              additionalProperties: false
+
+        redis:
+          default:
+            auth: password
+            host: localhost
+            image:
+              { pullPolicy: IfNotPresent, repository: redis, tag: 7-alpine }
+            mode: managed
+            persistence: { enabled: true, size: 1Gi }
+            port: 6379
+            resources:
+              limits: { cpu: 200m, memory: 256Mi }
+              requests: { cpu: 100m, memory: 128Mi }
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                auth:
+                  {
+                    description: Redis authentication password (optional),
+                    default: password,
+                    type: string
+                  }
+                ca:
+                  {
+                    description: Certificate Authority for TLS (optional),
+                    type: string
+                  }
+                host:
+                  {
+                    description: Redis hostname or IP,
+                    default: localhost,
+                    type: string
+                  }
+                port:
+                  {
+                    description: Redis port number,
+                    default: 6379,
+                    type: number
+                  }
+                mode: { type: string, enum: [enabled] }
+              required: [auth, host, port, mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                auth:
+                  {
+                    description: Redis authentication password (optional),
+                    default: password,
+                    type: string
+                  }
+                ca:
+                  {
+                    description: Certificate Authority for TLS (optional),
+                    type: string
+                  }
+                host:
+                  {
+                    description: Redis hostname or IP,
+                    default: localhost,
+                    type: string
+                  }
+                port:
+                  {
+                    description: Redis port number,
+                    default: 6379,
+                    type: number
+                  }
+                image:
+                  type: object
+                  properties:
+                    pullPolicy:
+                      {
+                        default: IfNotPresent,
+                        type: string,
+                        enum: [Always, IfNotPresent, Never]
+                      }
+                    repository: { default: redis, type: string }
+                    tag: { default: 7-alpine, type: string }
+                  required: [pullPolicy, repository, tag]
+                  additionalProperties: false
+                mode: { type: string, enum: [managed] }
+                persistence:
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable persistent storage for Redis data,
+                        default: true,
+                        type: boolean
+                      }
+                    size:
+                      {
+                        description: Size of persistent volume for Redis storage,
+                        default: 1Gi,
+                        type: string
+                      }
+                  required: [enabled, size]
+                  additionalProperties: false
+                resources:
+                  type: object
+                  properties:
+                    limits:
+                      type: object
+                      properties:
+                        cpu: { default: 200m, type: string }
+                        memory: { default: 256Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                    requests:
+                      type: object
+                      properties:
+                        cpu: { default: 100m, type: string }
+                        memory: { default: 128Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                  required: [limits, requests]
+                  additionalProperties: false
+              required: [auth, host, port, image, mode, persistence, resources]
+              additionalProperties: false
+
+        storage:
+          description: Object storage configuration for MinIO or S3-compatible services
+          default:
+            accesskey: minioadmin
+            bucket: arches
+            endpoint: http://localhost:9000
+            image:
+              { pullPolicy: IfNotPresent, repository: minio/minio, tag: latest }
+            mode: managed
+            persistence: { enabled: true, size: 20Gi }
+            resources:
+              limits: { cpu: 500m, memory: 512Mi }
+              requests: { cpu: 250m, memory: 256Mi }
+            secretkey: minioadmin
+          anyOf:
+            - type: object
+              properties: { mode: { type: string, enum: [disabled] } }
+              required: [mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                accesskey:
+                  {
+                    description: MinIO/S3 access key ID,
+                    default: minioadmin,
+                    type: string
+                  }
+                bucket:
+                  {
+                    description: S3 bucket name,
+                    default: archesai,
+                    type: string
+                  }
+                endpoint:
+                  {
+                    description: MinIO server endpoint URL,
+                    default: http://localhost:9000,
+                    type: string
+                  }
+                secretkey:
+                  {
+                    description: MinIO/S3 secret access key,
+                    default: minioadmin,
+                    type: string
+                  }
+                mode: { type: string, enum: [enabled] }
+              required: [accesskey, bucket, endpoint, secretkey, mode]
+              additionalProperties: false
+            - type: object
+              properties:
+                accesskey:
+                  {
+                    description: MinIO/S3 access key ID,
+                    default: minioadmin,
+                    type: string
+                  }
+                bucket:
+                  {
+                    description: S3 bucket name,
+                    default: archesai,
+                    type: string
+                  }
+                endpoint:
+                  {
+                    description: MinIO server endpoint URL,
+                    default: http://localhost:9000,
+                    type: string
+                  }
+                secretkey:
+                  {
+                    description: MinIO/S3 secret access key,
+                    default: minioadmin,
+                    type: string
+                  }
+                image:
+                  type: object
+                  properties:
+                    pullPolicy:
+                      {
+                        default: IfNotPresent,
+                        type: string,
+                        enum: [Always, IfNotPresent, Never]
+                      }
+                    repository: { default: minio/minio, type: string }
+                    tag: { default: latest, type: string }
+                  required: [pullPolicy, repository, tag]
+                  additionalProperties: false
+                mode: { type: string, enum: [managed] }
+                persistence:
+                  type: object
+                  properties:
+                    enabled:
+                      {
+                        description: Enable persistent storage for MinIO data,
+                        default: true,
+                        type: boolean
+                      }
+                    size:
+                      {
+                        description: Size of persistent volume for object storage,
+                        default: 20Gi,
+                        type: string
+                      }
+                  required: [enabled, size]
+                  additionalProperties: false
+                resources:
+                  type: object
+                  properties:
+                    limits:
+                      type: object
+                      properties:
+                        cpu: { default: 500m, type: string }
+                        memory: { default: 512Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                    requests:
+                      type: object
+                      properties:
+                        cpu: { default: 250m, type: string }
+                        memory: { default: 256Mi, type: string }
+                      required: [cpu, memory]
+                      additionalProperties: false
+                  required: [limits, requests]
+                  additionalProperties: false
+              required:
+                [
+                  accesskey,
+                  bucket,
+                  endpoint,
+                  secretkey,
+                  image,
+                  mode,
+                  persistence,
+                  resources
+                ]
+              additionalProperties: false
+      required:
+        - api
+        - auth
+        - billing
+        - database
+        - infrastructure
+        - ingress
+        - intelligence
+        - logging
+        - monitoring
+        - platform
+        - redis
+        - storage
+      additionalProperties: false

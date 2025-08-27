@@ -1,0 +1,240 @@
+package {{.Package}}
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+)
+
+// Handler handles HTTP requests for {{.LowerEntity}}s
+type Handler struct {
+	service *Service
+	logger  *zap.Logger
+}
+
+// NewHandler creates a new {{.LowerEntity}} handler
+func NewHandler(service *Service, logger *zap.Logger) *Handler {
+	return &Handler{
+		service: service,
+		logger:  logger,
+	}
+}
+
+// RegisterRoutes registers {{.LowerEntity}} routes
+func (h *Handler) RegisterRoutes(g *echo.Group) {
+	{{.LowerEntity}}s := g.Group("/{{.LowerEntity}}s")
+	{{.LowerEntity}}s.GET("", h.List)
+	{{.LowerEntity}}s.POST("", h.Create)
+	{{.LowerEntity}}s.GET("/:id", h.GetByID)
+	{{if .HasSlugField}}{{.LowerEntity}}s.GET("/slug/:slug", h.GetBySlug){{end}}
+	{{.LowerEntity}}s.PATCH("/:id", h.Update)
+	{{.LowerEntity}}s.DELETE("/:id", h.Delete)
+	{{if .HasSearchField}}{{.LowerEntity}}s.GET("/search", h.Search){{end}}
+}
+
+// List handles GET /{{.LowerEntity}}s
+func (h *Handler) List(c echo.Context) error {
+	// Parse query parameters
+	limitStr := c.QueryParam("limit")
+	offsetStr := c.QueryParam("offset")
+	search := c.QueryParam("search")
+	sortBy := c.QueryParam("sortBy")
+	order := c.QueryParam("order")
+
+	limit := int32(50) // default
+	if limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 100 {
+			limit = int32(l)
+		}
+	}
+
+	offset := int32(0) // default
+	if offsetStr != "" {
+		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
+			offset = int32(o)
+		}
+	}
+
+	params := List{{.Entity}}sParams{
+		Limit:  limit,
+		Offset: offset,
+		Search: search,
+		SortBy: sortBy,
+		Order:  order,
+	}
+
+	{{.LowerEntity}}s, totalCount, err := h.service.List(c.Request().Context(), params)
+	if err != nil {
+		h.logger.Error("failed to list {{.LowerEntity}}s", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to list {{.LowerEntity}}s")
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"{{.LowerEntity}}s":   {{.LowerEntity}}s,
+		"totalCount":          totalCount,
+		"limit":               limit,
+		"offset":              offset,
+		"hasMore":             int64(offset+limit) < totalCount,
+	})
+}
+
+// Create handles POST /{{.LowerEntity}}s
+func (h *Handler) Create(c echo.Context) error {
+	var params Create{{.Entity}}Params
+	if err := c.Bind(&params); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+
+	// Validate required fields
+	{{range .RequiredFields}}if params.{{.Name}} == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "{{.JsonTag}} is required")
+	}
+	{{end}}
+
+	{{.LowerEntity}}, err := h.service.Create(c.Request().Context(), params)
+	if err != nil {
+		if err == Err{{.Entity}}Exists {
+			return echo.NewHTTPError(http.StatusConflict, "{{.LowerEntity}} already exists")
+		}
+		h.logger.Error("failed to create {{.LowerEntity}}", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create {{.LowerEntity}}")
+	}
+
+	return c.JSON(http.StatusCreated, {{.LowerEntity}})
+}
+
+// GetByID handles GET /{{.LowerEntity}}s/:id
+func (h *Handler) GetByID(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid {{.LowerEntity}} ID")
+	}
+
+	{{.LowerEntity}}, err := h.service.GetByID(c.Request().Context(), id)
+	if err != nil {
+		if err == Err{{.Entity}}NotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "{{.LowerEntity}} not found")
+		}
+		h.logger.Error("failed to get {{.LowerEntity}}", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get {{.LowerEntity}}")
+	}
+
+	return c.JSON(http.StatusOK, {{.LowerEntity}})
+}
+
+{{if .HasSlugField}}// GetBySlug handles GET /{{.LowerEntity}}s/slug/:slug
+func (h *Handler) GetBySlug(c echo.Context) error {
+	slug := c.Param("slug")
+	if slug == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "slug is required")
+	}
+
+	{{.LowerEntity}}, err := h.service.GetBySlug(c.Request().Context(), slug)
+	if err != nil {
+		if err == Err{{.Entity}}NotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "{{.LowerEntity}} not found")
+		}
+		h.logger.Error("failed to get {{.LowerEntity}} by slug", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get {{.LowerEntity}}")
+	}
+
+	return c.JSON(http.StatusOK, {{.LowerEntity}})
+}
+{{end}}
+
+// Update handles PATCH /{{.LowerEntity}}s/:id
+func (h *Handler) Update(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid {{.LowerEntity}} ID")
+	}
+
+	var params Update{{.Entity}}Params
+	if err := c.Bind(&params); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+
+	{{.LowerEntity}}, err := h.service.Update(c.Request().Context(), id, params)
+	if err != nil {
+		if err == Err{{.Entity}}NotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "{{.LowerEntity}} not found")
+		}
+		{{if .HasSlugField}}if err.Error() == "slug already exists" {
+			return echo.NewHTTPError(http.StatusConflict, "slug already exists")
+		}
+		{{end}}{{if .HasEmailField}}if err.Error() == "email already in use" {
+			return echo.NewHTTPError(http.StatusConflict, "email already in use")
+		}
+		{{end}}h.logger.Error("failed to update {{.LowerEntity}}", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update {{.LowerEntity}}")
+	}
+
+	return c.JSON(http.StatusOK, {{.LowerEntity}})
+}
+
+// Delete handles DELETE /{{.LowerEntity}}s/:id
+func (h *Handler) Delete(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid {{.LowerEntity}} ID")
+	}
+
+	err := h.service.Delete(c.Request().Context(), id)
+	if err != nil {
+		if err == Err{{.Entity}}NotFound {
+			return echo.NewHTTPError(http.StatusNotFound, "{{.LowerEntity}} not found")
+		}
+		h.logger.Error("failed to delete {{.LowerEntity}}", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete {{.LowerEntity}}")
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
+{{if .HasSearchField}}// Search handles GET /{{.LowerEntity}}s/search
+func (h *Handler) Search(c echo.Context) error {
+	query := c.QueryParam("q")
+	if query == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "search query is required")
+	}
+
+	limitStr := c.QueryParam("limit")
+	offsetStr := c.QueryParam("offset")
+
+	limit := int32(20) // default for search
+	if limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 50 {
+			limit = int32(l)
+		}
+	}
+
+	offset := int32(0)
+	if offsetStr != "" {
+		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
+			offset = int32(o)
+		}
+	}
+
+	params := List{{.Entity}}sParams{
+		Limit:  limit,
+		Offset: offset,
+		Search: query,
+	}
+
+	{{.LowerEntity}}s, totalCount, err := h.service.List(c.Request().Context(), params)
+	if err != nil {
+		h.logger.Error("failed to search {{.LowerEntity}}s", zap.Error(err))
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to search {{.LowerEntity}}s")
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"{{.LowerEntity}}s":   {{.LowerEntity}}s,
+		"totalCount":          totalCount,
+		"query":               query,
+		"limit":               limit,
+		"offset":              offset,
+	})
+}
+{{end}}

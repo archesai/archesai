@@ -1,0 +1,14 @@
+paths:
+  /config:
+    get:
+      operationId: getConfig
+      summary: Get the configuration
+      tags: [Infrastructure, Config]
+      description: Get the configuration of the application
+      responses:
+        '200':
+          description: Current configuration
+          content:
+            application/json:
+              schema:
+                $ref: './schemas.yaml#/components/schemas/ArchesConfig'

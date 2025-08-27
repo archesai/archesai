@@ -498,51 +498,51 @@ export interface ValidationErrorResponseInput {
   error: ValidationErrorResponseInputError
 }
 
-export type FilterValueInputAnyOfItem = string | number | boolean
+export type FilterValueAnyOfItem = string | number | boolean
 
-export type FilterValueInputAnyOfTwoFrom = string | number
+export type FilterValueAnyOfTwoFrom = string | number
 
-export type FilterValueInputAnyOfTwoTo = string | number
+export type FilterValueAnyOfTwoTo = string | number
 
-export type FilterValueInputAnyOfTwo = {
-  from: FilterValueInputAnyOfTwoFrom
-  to: FilterValueInputAnyOfTwoTo
+export type FilterValueAnyOfTwo = {
+  from: FilterValueAnyOfTwoFrom
+  to: FilterValueAnyOfTwoTo
 }
 
-export type FilterValueInputAnyOfFiveUnit =
-  (typeof FilterValueInputAnyOfFiveUnit)[keyof typeof FilterValueInputAnyOfFiveUnit]
+export type FilterValueAnyOfFiveUnit =
+  (typeof FilterValueAnyOfFiveUnit)[keyof typeof FilterValueAnyOfFiveUnit]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterValueInputAnyOfFiveUnit = {
+export const FilterValueAnyOfFiveUnit = {
   days: 'days',
   weeks: 'weeks',
   months: 'months',
   years: 'years'
 } as const
 
-export type FilterValueInputAnyOfFive = {
-  unit: FilterValueInputAnyOfFiveUnit
+export type FilterValueAnyOfFive = {
+  unit: FilterValueAnyOfFiveUnit
   value: number
 }
 
 /**
  * Value for filter conditions, supports strings, numbers, booleans, arrays, ranges, and relative dates
  */
-export type FilterValueInput =
+export type FilterValue =
   | string
   | number
   | boolean
-  | FilterValueInputAnyOfItem[]
-  | FilterValueInputAnyOfTwo
-  | FilterValueInputAnyOfFive
+  | FilterValueAnyOfItem[]
+  | FilterValueAnyOfTwo
+  | FilterValueAnyOfFive
 
 /**
  * Supported filter operations
  */
-export type OperatorInput = (typeof OperatorInput)[keyof typeof OperatorInput]
+export type Operator = (typeof Operator)[keyof typeof Operator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OperatorInput = {
+export const Operator = {
   eq: 'eq',
   ne: 'ne',
   lt: 'lt',
@@ -562,18 +562,18 @@ export const OperatorInput = {
 /**
  * A single filter condition with field, operator, and value
  */
-export interface FilterConditionInput {
+export interface FilterCondition {
   field: string
-  operator: OperatorInput
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type FilterNodeInputAnyOfOperator =
-  (typeof FilterNodeInputAnyOfOperator)[keyof typeof FilterNodeInputAnyOfOperator]
+export type FilterNodeAnyOfOperator =
+  (typeof FilterNodeAnyOfOperator)[keyof typeof FilterNodeAnyOfOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const FilterNodeInputAnyOfOperator = {
+export const FilterNodeAnyOfOperator = {
   and: 'and',
   or: 'or'
 } as const
@@ -581,21 +581,21 @@ export const FilterNodeInputAnyOfOperator = {
 /**
  * A logical group of filter conditions or other groups
  */
-export type FilterNodeInputAnyOf = {
-  children: FilterNodeInput[]
-  operator: FilterNodeInputAnyOfOperator
+export type FilterNodeAnyOf = {
+  children: FilterNode[]
+  operator: FilterNodeAnyOfOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type FilterNodeInput = FilterConditionInput | FilterNodeInputAnyOf
+export type FilterNode = FilterCondition | FilterNodeAnyOf
 
 /**
  * Pagination configuration with page number and size
  */
-export interface PageInput {
+export interface Page {
   /**
    * @minimum 1
    * @maximum 9007199254740991
@@ -608,11 +608,10 @@ export interface PageInput {
   size?: number
 }
 
-export type SortInputOrder =
-  (typeof SortInputOrder)[keyof typeof SortInputOrder]
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SortInputOrder = {
+export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -620,18 +619,18 @@ export const SortInputOrder = {
 /**
  * Sorting configuration with field and order
  */
-export interface SortInput {
+export interface Sort {
   field: string
-  order: SortInputOrder
+  order: SortOrder
 }
 
 /**
  * Complete search query with nested filters, pagination, and sorting
  */
-export interface SearchQueryInput {
-  filter?: FilterNodeInput
-  page?: PageInput
-  sort?: SortInput[]
+export interface SearchQuery {
+  filter?: FilterNode
+  page?: Page
+  sort?: Sort[]
 }
 
 /**
@@ -863,11 +862,11 @@ export interface FileEntityInput {
   write?: string
 }
 
-export type AccountsFilterNodeInputAnyOfField =
-  (typeof AccountsFilterNodeInputAnyOfField)[keyof typeof AccountsFilterNodeInputAnyOfField]
+export type AccountsFilterNodeAnyOfField =
+  (typeof AccountsFilterNodeAnyOfField)[keyof typeof AccountsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeInputAnyOfField = {
+export const AccountsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -883,40 +882,40 @@ export const AccountsFilterNodeInputAnyOfField = {
   userId: 'userId'
 } as const
 
-export type AccountsFilterNodeInputAnyOf = {
-  field: AccountsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type AccountsFilterNodeAnyOf = {
+  field: AccountsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type AccountsFilterNodeInputAnyOfThreeOperator =
-  (typeof AccountsFilterNodeInputAnyOfThreeOperator)[keyof typeof AccountsFilterNodeInputAnyOfThreeOperator]
+export type AccountsFilterNodeAnyOfThreeOperator =
+  (typeof AccountsFilterNodeAnyOfThreeOperator)[keyof typeof AccountsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsFilterNodeInputAnyOfThreeOperator = {
+export const AccountsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type AccountsFilterNodeInputAnyOfThree = {
-  children: AccountsFilterNodeInput[]
-  operator: AccountsFilterNodeInputAnyOfThreeOperator
+export type AccountsFilterNodeAnyOfThree = {
+  children: AccountsFilterNode[]
+  operator: AccountsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for accounts entity that can be a condition or group
  */
-export type AccountsFilterNodeInput =
-  | AccountsFilterNodeInputAnyOf
-  | AccountsFilterNodeInputAnyOfThree
+export type AccountsFilterNode =
+  | AccountsFilterNodeAnyOf
+  | AccountsFilterNodeAnyOfThree
 
-export type AccountsSortInputField =
-  (typeof AccountsSortInputField)[keyof typeof AccountsSortInputField]
+export type AccountsSortField =
+  (typeof AccountsSortField)[keyof typeof AccountsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortInputField = {
+export const AccountsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -932,11 +931,11 @@ export const AccountsSortInputField = {
   userId: 'userId'
 } as const
 
-export type AccountsSortInputOrder =
-  (typeof AccountsSortInputOrder)[keyof typeof AccountsSortInputOrder]
+export type AccountsSortOrder =
+  (typeof AccountsSortOrder)[keyof typeof AccountsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const AccountsSortInputOrder = {
+export const AccountsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -944,16 +943,16 @@ export const AccountsSortInputOrder = {
 /**
  * Sorting configuration for accounts entity with field and order
  */
-export interface AccountsSortInput {
-  field: AccountsSortInputField
-  order: AccountsSortInputOrder
+export interface AccountsSort {
+  field: AccountsSortField
+  order: AccountsSortOrder
 }
 
-export type InvitationsFilterNodeInputAnyOfField =
-  (typeof InvitationsFilterNodeInputAnyOfField)[keyof typeof InvitationsFilterNodeInputAnyOfField]
+export type InvitationsFilterNodeAnyOfField =
+  (typeof InvitationsFilterNodeAnyOfField)[keyof typeof InvitationsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeInputAnyOfField = {
+export const InvitationsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -965,40 +964,40 @@ export const InvitationsFilterNodeInputAnyOfField = {
   status: 'status'
 } as const
 
-export type InvitationsFilterNodeInputAnyOf = {
-  field: InvitationsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type InvitationsFilterNodeAnyOf = {
+  field: InvitationsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type InvitationsFilterNodeInputAnyOfThreeOperator =
-  (typeof InvitationsFilterNodeInputAnyOfThreeOperator)[keyof typeof InvitationsFilterNodeInputAnyOfThreeOperator]
+export type InvitationsFilterNodeAnyOfThreeOperator =
+  (typeof InvitationsFilterNodeAnyOfThreeOperator)[keyof typeof InvitationsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsFilterNodeInputAnyOfThreeOperator = {
+export const InvitationsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type InvitationsFilterNodeInputAnyOfThree = {
-  children: InvitationsFilterNodeInput[]
-  operator: InvitationsFilterNodeInputAnyOfThreeOperator
+export type InvitationsFilterNodeAnyOfThree = {
+  children: InvitationsFilterNode[]
+  operator: InvitationsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for invitations entity that can be a condition or group
  */
-export type InvitationsFilterNodeInput =
-  | InvitationsFilterNodeInputAnyOf
-  | InvitationsFilterNodeInputAnyOfThree
+export type InvitationsFilterNode =
+  | InvitationsFilterNodeAnyOf
+  | InvitationsFilterNodeAnyOfThree
 
-export type InvitationsSortInputField =
-  (typeof InvitationsSortInputField)[keyof typeof InvitationsSortInputField]
+export type InvitationsSortField =
+  (typeof InvitationsSortField)[keyof typeof InvitationsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsSortInputField = {
+export const InvitationsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1010,11 +1009,11 @@ export const InvitationsSortInputField = {
   status: 'status'
 } as const
 
-export type InvitationsSortInputOrder =
-  (typeof InvitationsSortInputOrder)[keyof typeof InvitationsSortInputOrder]
+export type InvitationsSortOrder =
+  (typeof InvitationsSortOrder)[keyof typeof InvitationsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const InvitationsSortInputOrder = {
+export const InvitationsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1022,16 +1021,16 @@ export const InvitationsSortInputOrder = {
 /**
  * Sorting configuration for invitations entity with field and order
  */
-export interface InvitationsSortInput {
-  field: InvitationsSortInputField
-  order: InvitationsSortInputOrder
+export interface InvitationsSort {
+  field: InvitationsSortField
+  order: InvitationsSortOrder
 }
 
-export type MembersFilterNodeInputAnyOfField =
-  (typeof MembersFilterNodeInputAnyOfField)[keyof typeof MembersFilterNodeInputAnyOfField]
+export type MembersFilterNodeAnyOfField =
+  (typeof MembersFilterNodeAnyOfField)[keyof typeof MembersFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeInputAnyOfField = {
+export const MembersFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1040,40 +1039,40 @@ export const MembersFilterNodeInputAnyOfField = {
   userId: 'userId'
 } as const
 
-export type MembersFilterNodeInputAnyOf = {
-  field: MembersFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type MembersFilterNodeAnyOf = {
+  field: MembersFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type MembersFilterNodeInputAnyOfThreeOperator =
-  (typeof MembersFilterNodeInputAnyOfThreeOperator)[keyof typeof MembersFilterNodeInputAnyOfThreeOperator]
+export type MembersFilterNodeAnyOfThreeOperator =
+  (typeof MembersFilterNodeAnyOfThreeOperator)[keyof typeof MembersFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersFilterNodeInputAnyOfThreeOperator = {
+export const MembersFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type MembersFilterNodeInputAnyOfThree = {
-  children: MembersFilterNodeInput[]
-  operator: MembersFilterNodeInputAnyOfThreeOperator
+export type MembersFilterNodeAnyOfThree = {
+  children: MembersFilterNode[]
+  operator: MembersFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for members entity that can be a condition or group
  */
-export type MembersFilterNodeInput =
-  | MembersFilterNodeInputAnyOf
-  | MembersFilterNodeInputAnyOfThree
+export type MembersFilterNode =
+  | MembersFilterNodeAnyOf
+  | MembersFilterNodeAnyOfThree
 
-export type MembersSortInputField =
-  (typeof MembersSortInputField)[keyof typeof MembersSortInputField]
+export type MembersSortField =
+  (typeof MembersSortField)[keyof typeof MembersSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersSortInputField = {
+export const MembersSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1082,11 +1081,11 @@ export const MembersSortInputField = {
   userId: 'userId'
 } as const
 
-export type MembersSortInputOrder =
-  (typeof MembersSortInputOrder)[keyof typeof MembersSortInputOrder]
+export type MembersSortOrder =
+  (typeof MembersSortOrder)[keyof typeof MembersSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const MembersSortInputOrder = {
+export const MembersSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1094,16 +1093,16 @@ export const MembersSortInputOrder = {
 /**
  * Sorting configuration for members entity with field and order
  */
-export interface MembersSortInput {
-  field: MembersSortInputField
-  order: MembersSortInputOrder
+export interface MembersSort {
+  field: MembersSortField
+  order: MembersSortOrder
 }
 
-export type OrganizationsFilterNodeInputAnyOfField =
-  (typeof OrganizationsFilterNodeInputAnyOfField)[keyof typeof OrganizationsFilterNodeInputAnyOfField]
+export type OrganizationsFilterNodeAnyOfField =
+  (typeof OrganizationsFilterNodeAnyOfField)[keyof typeof OrganizationsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeInputAnyOfField = {
+export const OrganizationsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1117,40 +1116,40 @@ export const OrganizationsFilterNodeInputAnyOfField = {
   stripeCustomerId: 'stripeCustomerId'
 } as const
 
-export type OrganizationsFilterNodeInputAnyOf = {
-  field: OrganizationsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type OrganizationsFilterNodeAnyOf = {
+  field: OrganizationsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type OrganizationsFilterNodeInputAnyOfThreeOperator =
-  (typeof OrganizationsFilterNodeInputAnyOfThreeOperator)[keyof typeof OrganizationsFilterNodeInputAnyOfThreeOperator]
+export type OrganizationsFilterNodeAnyOfThreeOperator =
+  (typeof OrganizationsFilterNodeAnyOfThreeOperator)[keyof typeof OrganizationsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsFilterNodeInputAnyOfThreeOperator = {
+export const OrganizationsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type OrganizationsFilterNodeInputAnyOfThree = {
-  children: OrganizationsFilterNodeInput[]
-  operator: OrganizationsFilterNodeInputAnyOfThreeOperator
+export type OrganizationsFilterNodeAnyOfThree = {
+  children: OrganizationsFilterNode[]
+  operator: OrganizationsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for organizations entity that can be a condition or group
  */
-export type OrganizationsFilterNodeInput =
-  | OrganizationsFilterNodeInputAnyOf
-  | OrganizationsFilterNodeInputAnyOfThree
+export type OrganizationsFilterNode =
+  | OrganizationsFilterNodeAnyOf
+  | OrganizationsFilterNodeAnyOfThree
 
-export type OrganizationsSortInputField =
-  (typeof OrganizationsSortInputField)[keyof typeof OrganizationsSortInputField]
+export type OrganizationsSortField =
+  (typeof OrganizationsSortField)[keyof typeof OrganizationsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsSortInputField = {
+export const OrganizationsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1164,11 +1163,11 @@ export const OrganizationsSortInputField = {
   stripeCustomerId: 'stripeCustomerId'
 } as const
 
-export type OrganizationsSortInputOrder =
-  (typeof OrganizationsSortInputOrder)[keyof typeof OrganizationsSortInputOrder]
+export type OrganizationsSortOrder =
+  (typeof OrganizationsSortOrder)[keyof typeof OrganizationsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const OrganizationsSortInputOrder = {
+export const OrganizationsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1176,16 +1175,16 @@ export const OrganizationsSortInputOrder = {
 /**
  * Sorting configuration for organizations entity with field and order
  */
-export interface OrganizationsSortInput {
-  field: OrganizationsSortInputField
-  order: OrganizationsSortInputOrder
+export interface OrganizationsSort {
+  field: OrganizationsSortField
+  order: OrganizationsSortOrder
 }
 
-export type SessionsFilterNodeInputAnyOfField =
-  (typeof SessionsFilterNodeInputAnyOfField)[keyof typeof SessionsFilterNodeInputAnyOfField]
+export type SessionsFilterNodeAnyOfField =
+  (typeof SessionsFilterNodeAnyOfField)[keyof typeof SessionsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeInputAnyOfField = {
+export const SessionsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1197,40 +1196,40 @@ export const SessionsFilterNodeInputAnyOfField = {
   userId: 'userId'
 } as const
 
-export type SessionsFilterNodeInputAnyOf = {
-  field: SessionsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type SessionsFilterNodeAnyOf = {
+  field: SessionsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type SessionsFilterNodeInputAnyOfThreeOperator =
-  (typeof SessionsFilterNodeInputAnyOfThreeOperator)[keyof typeof SessionsFilterNodeInputAnyOfThreeOperator]
+export type SessionsFilterNodeAnyOfThreeOperator =
+  (typeof SessionsFilterNodeAnyOfThreeOperator)[keyof typeof SessionsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsFilterNodeInputAnyOfThreeOperator = {
+export const SessionsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type SessionsFilterNodeInputAnyOfThree = {
-  children: SessionsFilterNodeInput[]
-  operator: SessionsFilterNodeInputAnyOfThreeOperator
+export type SessionsFilterNodeAnyOfThree = {
+  children: SessionsFilterNode[]
+  operator: SessionsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for sessions entity that can be a condition or group
  */
-export type SessionsFilterNodeInput =
-  | SessionsFilterNodeInputAnyOf
-  | SessionsFilterNodeInputAnyOfThree
+export type SessionsFilterNode =
+  | SessionsFilterNodeAnyOf
+  | SessionsFilterNodeAnyOfThree
 
-export type SessionsSortInputField =
-  (typeof SessionsSortInputField)[keyof typeof SessionsSortInputField]
+export type SessionsSortField =
+  (typeof SessionsSortField)[keyof typeof SessionsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsSortInputField = {
+export const SessionsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1242,11 +1241,11 @@ export const SessionsSortInputField = {
   userId: 'userId'
 } as const
 
-export type SessionsSortInputOrder =
-  (typeof SessionsSortInputOrder)[keyof typeof SessionsSortInputOrder]
+export type SessionsSortOrder =
+  (typeof SessionsSortOrder)[keyof typeof SessionsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SessionsSortInputOrder = {
+export const SessionsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1254,16 +1253,16 @@ export const SessionsSortInputOrder = {
 /**
  * Sorting configuration for sessions entity with field and order
  */
-export interface SessionsSortInput {
-  field: SessionsSortInputField
-  order: SessionsSortInputOrder
+export interface SessionsSort {
+  field: SessionsSortField
+  order: SessionsSortOrder
 }
 
-export type UsersFilterNodeInputAnyOfField =
-  (typeof UsersFilterNodeInputAnyOfField)[keyof typeof UsersFilterNodeInputAnyOfField]
+export type UsersFilterNodeAnyOfField =
+  (typeof UsersFilterNodeAnyOfField)[keyof typeof UsersFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeInputAnyOfField = {
+export const UsersFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1274,40 +1273,38 @@ export const UsersFilterNodeInputAnyOfField = {
   name: 'name'
 } as const
 
-export type UsersFilterNodeInputAnyOf = {
-  field: UsersFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type UsersFilterNodeAnyOf = {
+  field: UsersFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type UsersFilterNodeInputAnyOfThreeOperator =
-  (typeof UsersFilterNodeInputAnyOfThreeOperator)[keyof typeof UsersFilterNodeInputAnyOfThreeOperator]
+export type UsersFilterNodeAnyOfThreeOperator =
+  (typeof UsersFilterNodeAnyOfThreeOperator)[keyof typeof UsersFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersFilterNodeInputAnyOfThreeOperator = {
+export const UsersFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type UsersFilterNodeInputAnyOfThree = {
-  children: UsersFilterNodeInput[]
-  operator: UsersFilterNodeInputAnyOfThreeOperator
+export type UsersFilterNodeAnyOfThree = {
+  children: UsersFilterNode[]
+  operator: UsersFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for users entity that can be a condition or group
  */
-export type UsersFilterNodeInput =
-  | UsersFilterNodeInputAnyOf
-  | UsersFilterNodeInputAnyOfThree
+export type UsersFilterNode = UsersFilterNodeAnyOf | UsersFilterNodeAnyOfThree
 
-export type UsersSortInputField =
-  (typeof UsersSortInputField)[keyof typeof UsersSortInputField]
+export type UsersSortField =
+  (typeof UsersSortField)[keyof typeof UsersSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersSortInputField = {
+export const UsersSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1318,11 +1315,11 @@ export const UsersSortInputField = {
   name: 'name'
 } as const
 
-export type UsersSortInputOrder =
-  (typeof UsersSortInputOrder)[keyof typeof UsersSortInputOrder]
+export type UsersSortOrder =
+  (typeof UsersSortOrder)[keyof typeof UsersSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UsersSortInputOrder = {
+export const UsersSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1330,16 +1327,16 @@ export const UsersSortInputOrder = {
 /**
  * Sorting configuration for users entity with field and order
  */
-export interface UsersSortInput {
-  field: UsersSortInputField
-  order: UsersSortInputOrder
+export interface UsersSort {
+  field: UsersSortField
+  order: UsersSortOrder
 }
 
-export type ArtifactsFilterNodeInputAnyOfField =
-  (typeof ArtifactsFilterNodeInputAnyOfField)[keyof typeof ArtifactsFilterNodeInputAnyOfField]
+export type ArtifactsFilterNodeAnyOfField =
+  (typeof ArtifactsFilterNodeAnyOfField)[keyof typeof ArtifactsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeInputAnyOfField = {
+export const ArtifactsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1354,40 +1351,40 @@ export const ArtifactsFilterNodeInputAnyOfField = {
   url: 'url'
 } as const
 
-export type ArtifactsFilterNodeInputAnyOf = {
-  field: ArtifactsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type ArtifactsFilterNodeAnyOf = {
+  field: ArtifactsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type ArtifactsFilterNodeInputAnyOfThreeOperator =
-  (typeof ArtifactsFilterNodeInputAnyOfThreeOperator)[keyof typeof ArtifactsFilterNodeInputAnyOfThreeOperator]
+export type ArtifactsFilterNodeAnyOfThreeOperator =
+  (typeof ArtifactsFilterNodeAnyOfThreeOperator)[keyof typeof ArtifactsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsFilterNodeInputAnyOfThreeOperator = {
+export const ArtifactsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type ArtifactsFilterNodeInputAnyOfThree = {
-  children: ArtifactsFilterNodeInput[]
-  operator: ArtifactsFilterNodeInputAnyOfThreeOperator
+export type ArtifactsFilterNodeAnyOfThree = {
+  children: ArtifactsFilterNode[]
+  operator: ArtifactsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for artifacts entity that can be a condition or group
  */
-export type ArtifactsFilterNodeInput =
-  | ArtifactsFilterNodeInputAnyOf
-  | ArtifactsFilterNodeInputAnyOfThree
+export type ArtifactsFilterNode =
+  | ArtifactsFilterNodeAnyOf
+  | ArtifactsFilterNodeAnyOfThree
 
-export type ArtifactsSortInputField =
-  (typeof ArtifactsSortInputField)[keyof typeof ArtifactsSortInputField]
+export type ArtifactsSortField =
+  (typeof ArtifactsSortField)[keyof typeof ArtifactsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsSortInputField = {
+export const ArtifactsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1402,11 +1399,11 @@ export const ArtifactsSortInputField = {
   url: 'url'
 } as const
 
-export type ArtifactsSortInputOrder =
-  (typeof ArtifactsSortInputOrder)[keyof typeof ArtifactsSortInputOrder]
+export type ArtifactsSortOrder =
+  (typeof ArtifactsSortOrder)[keyof typeof ArtifactsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ArtifactsSortInputOrder = {
+export const ArtifactsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1414,16 +1411,16 @@ export const ArtifactsSortInputOrder = {
 /**
  * Sorting configuration for artifacts entity with field and order
  */
-export interface ArtifactsSortInput {
-  field: ArtifactsSortInputField
-  order: ArtifactsSortInputOrder
+export interface ArtifactsSort {
+  field: ArtifactsSortField
+  order: ArtifactsSortOrder
 }
 
-export type LabelsFilterNodeInputAnyOfField =
-  (typeof LabelsFilterNodeInputAnyOfField)[keyof typeof LabelsFilterNodeInputAnyOfField]
+export type LabelsFilterNodeAnyOfField =
+  (typeof LabelsFilterNodeAnyOfField)[keyof typeof LabelsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeInputAnyOfField = {
+export const LabelsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1431,40 +1428,40 @@ export const LabelsFilterNodeInputAnyOfField = {
   organizationId: 'organizationId'
 } as const
 
-export type LabelsFilterNodeInputAnyOf = {
-  field: LabelsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type LabelsFilterNodeAnyOf = {
+  field: LabelsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type LabelsFilterNodeInputAnyOfThreeOperator =
-  (typeof LabelsFilterNodeInputAnyOfThreeOperator)[keyof typeof LabelsFilterNodeInputAnyOfThreeOperator]
+export type LabelsFilterNodeAnyOfThreeOperator =
+  (typeof LabelsFilterNodeAnyOfThreeOperator)[keyof typeof LabelsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsFilterNodeInputAnyOfThreeOperator = {
+export const LabelsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type LabelsFilterNodeInputAnyOfThree = {
-  children: LabelsFilterNodeInput[]
-  operator: LabelsFilterNodeInputAnyOfThreeOperator
+export type LabelsFilterNodeAnyOfThree = {
+  children: LabelsFilterNode[]
+  operator: LabelsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for labels entity that can be a condition or group
  */
-export type LabelsFilterNodeInput =
-  | LabelsFilterNodeInputAnyOf
-  | LabelsFilterNodeInputAnyOfThree
+export type LabelsFilterNode =
+  | LabelsFilterNodeAnyOf
+  | LabelsFilterNodeAnyOfThree
 
-export type LabelsSortInputField =
-  (typeof LabelsSortInputField)[keyof typeof LabelsSortInputField]
+export type LabelsSortField =
+  (typeof LabelsSortField)[keyof typeof LabelsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsSortInputField = {
+export const LabelsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1472,11 +1469,11 @@ export const LabelsSortInputField = {
   organizationId: 'organizationId'
 } as const
 
-export type LabelsSortInputOrder =
-  (typeof LabelsSortInputOrder)[keyof typeof LabelsSortInputOrder]
+export type LabelsSortOrder =
+  (typeof LabelsSortOrder)[keyof typeof LabelsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const LabelsSortInputOrder = {
+export const LabelsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1484,16 +1481,16 @@ export const LabelsSortInputOrder = {
 /**
  * Sorting configuration for labels entity with field and order
  */
-export interface LabelsSortInput {
-  field: LabelsSortInputField
-  order: LabelsSortInputOrder
+export interface LabelsSort {
+  field: LabelsSortField
+  order: LabelsSortOrder
 }
 
-export type PipelinesFilterNodeInputAnyOfField =
-  (typeof PipelinesFilterNodeInputAnyOfField)[keyof typeof PipelinesFilterNodeInputAnyOfField]
+export type PipelinesFilterNodeAnyOfField =
+  (typeof PipelinesFilterNodeAnyOfField)[keyof typeof PipelinesFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeInputAnyOfField = {
+export const PipelinesFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1502,40 +1499,40 @@ export const PipelinesFilterNodeInputAnyOfField = {
   organizationId: 'organizationId'
 } as const
 
-export type PipelinesFilterNodeInputAnyOf = {
-  field: PipelinesFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type PipelinesFilterNodeAnyOf = {
+  field: PipelinesFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type PipelinesFilterNodeInputAnyOfThreeOperator =
-  (typeof PipelinesFilterNodeInputAnyOfThreeOperator)[keyof typeof PipelinesFilterNodeInputAnyOfThreeOperator]
+export type PipelinesFilterNodeAnyOfThreeOperator =
+  (typeof PipelinesFilterNodeAnyOfThreeOperator)[keyof typeof PipelinesFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesFilterNodeInputAnyOfThreeOperator = {
+export const PipelinesFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type PipelinesFilterNodeInputAnyOfThree = {
-  children: PipelinesFilterNodeInput[]
-  operator: PipelinesFilterNodeInputAnyOfThreeOperator
+export type PipelinesFilterNodeAnyOfThree = {
+  children: PipelinesFilterNode[]
+  operator: PipelinesFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for pipelines entity that can be a condition or group
  */
-export type PipelinesFilterNodeInput =
-  | PipelinesFilterNodeInputAnyOf
-  | PipelinesFilterNodeInputAnyOfThree
+export type PipelinesFilterNode =
+  | PipelinesFilterNodeAnyOf
+  | PipelinesFilterNodeAnyOfThree
 
-export type PipelinesSortInputField =
-  (typeof PipelinesSortInputField)[keyof typeof PipelinesSortInputField]
+export type PipelinesSortField =
+  (typeof PipelinesSortField)[keyof typeof PipelinesSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesSortInputField = {
+export const PipelinesSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1544,11 +1541,11 @@ export const PipelinesSortInputField = {
   organizationId: 'organizationId'
 } as const
 
-export type PipelinesSortInputOrder =
-  (typeof PipelinesSortInputOrder)[keyof typeof PipelinesSortInputOrder]
+export type PipelinesSortOrder =
+  (typeof PipelinesSortOrder)[keyof typeof PipelinesSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const PipelinesSortInputOrder = {
+export const PipelinesSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1556,16 +1553,16 @@ export const PipelinesSortInputOrder = {
 /**
  * Sorting configuration for pipelines entity with field and order
  */
-export interface PipelinesSortInput {
-  field: PipelinesSortInputField
-  order: PipelinesSortInputOrder
+export interface PipelinesSort {
+  field: PipelinesSortField
+  order: PipelinesSortOrder
 }
 
-export type RunsFilterNodeInputAnyOfField =
-  (typeof RunsFilterNodeInputAnyOfField)[keyof typeof RunsFilterNodeInputAnyOfField]
+export type RunsFilterNodeAnyOfField =
+  (typeof RunsFilterNodeAnyOfField)[keyof typeof RunsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeInputAnyOfField = {
+export const RunsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1579,40 +1576,37 @@ export const RunsFilterNodeInputAnyOfField = {
   toolId: 'toolId'
 } as const
 
-export type RunsFilterNodeInputAnyOf = {
-  field: RunsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type RunsFilterNodeAnyOf = {
+  field: RunsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type RunsFilterNodeInputAnyOfThreeOperator =
-  (typeof RunsFilterNodeInputAnyOfThreeOperator)[keyof typeof RunsFilterNodeInputAnyOfThreeOperator]
+export type RunsFilterNodeAnyOfThreeOperator =
+  (typeof RunsFilterNodeAnyOfThreeOperator)[keyof typeof RunsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsFilterNodeInputAnyOfThreeOperator = {
+export const RunsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type RunsFilterNodeInputAnyOfThree = {
-  children: RunsFilterNodeInput[]
-  operator: RunsFilterNodeInputAnyOfThreeOperator
+export type RunsFilterNodeAnyOfThree = {
+  children: RunsFilterNode[]
+  operator: RunsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for runs entity that can be a condition or group
  */
-export type RunsFilterNodeInput =
-  | RunsFilterNodeInputAnyOf
-  | RunsFilterNodeInputAnyOfThree
+export type RunsFilterNode = RunsFilterNodeAnyOf | RunsFilterNodeAnyOfThree
 
-export type RunsSortInputField =
-  (typeof RunsSortInputField)[keyof typeof RunsSortInputField]
+export type RunsSortField = (typeof RunsSortField)[keyof typeof RunsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsSortInputField = {
+export const RunsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1626,11 +1620,10 @@ export const RunsSortInputField = {
   toolId: 'toolId'
 } as const
 
-export type RunsSortInputOrder =
-  (typeof RunsSortInputOrder)[keyof typeof RunsSortInputOrder]
+export type RunsSortOrder = (typeof RunsSortOrder)[keyof typeof RunsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const RunsSortInputOrder = {
+export const RunsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1638,16 +1631,16 @@ export const RunsSortInputOrder = {
 /**
  * Sorting configuration for runs entity with field and order
  */
-export interface RunsSortInput {
-  field: RunsSortInputField
-  order: RunsSortInputOrder
+export interface RunsSort {
+  field: RunsSortField
+  order: RunsSortOrder
 }
 
-export type ToolsFilterNodeInputAnyOfField =
-  (typeof ToolsFilterNodeInputAnyOfField)[keyof typeof ToolsFilterNodeInputAnyOfField]
+export type ToolsFilterNodeAnyOfField =
+  (typeof ToolsFilterNodeAnyOfField)[keyof typeof ToolsFilterNodeAnyOfField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterNodeInputAnyOfField = {
+export const ToolsFilterNodeAnyOfField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1658,40 +1651,38 @@ export const ToolsFilterNodeInputAnyOfField = {
   outputMimeType: 'outputMimeType'
 } as const
 
-export type ToolsFilterNodeInputAnyOf = {
-  field: ToolsFilterNodeInputAnyOfField
-  operator: OperatorInput
+export type ToolsFilterNodeAnyOf = {
+  field: ToolsFilterNodeAnyOfField
+  operator: Operator
   type: 'condition'
-  value: FilterValueInput
+  value: FilterValue
 }
 
-export type ToolsFilterNodeInputAnyOfThreeOperator =
-  (typeof ToolsFilterNodeInputAnyOfThreeOperator)[keyof typeof ToolsFilterNodeInputAnyOfThreeOperator]
+export type ToolsFilterNodeAnyOfThreeOperator =
+  (typeof ToolsFilterNodeAnyOfThreeOperator)[keyof typeof ToolsFilterNodeAnyOfThreeOperator]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsFilterNodeInputAnyOfThreeOperator = {
+export const ToolsFilterNodeAnyOfThreeOperator = {
   and: 'and',
   or: 'or'
 } as const
 
-export type ToolsFilterNodeInputAnyOfThree = {
-  children: ToolsFilterNodeInput[]
-  operator: ToolsFilterNodeInputAnyOfThreeOperator
+export type ToolsFilterNodeAnyOfThree = {
+  children: ToolsFilterNode[]
+  operator: ToolsFilterNodeAnyOfThreeOperator
   type: 'group'
 }
 
 /**
  * A recursive filter node for tools entity that can be a condition or group
  */
-export type ToolsFilterNodeInput =
-  | ToolsFilterNodeInputAnyOf
-  | ToolsFilterNodeInputAnyOfThree
+export type ToolsFilterNode = ToolsFilterNodeAnyOf | ToolsFilterNodeAnyOfThree
 
-export type ToolsSortInputField =
-  (typeof ToolsSortInputField)[keyof typeof ToolsSortInputField]
+export type ToolsSortField =
+  (typeof ToolsSortField)[keyof typeof ToolsSortField]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsSortInputField = {
+export const ToolsSortField = {
   createdAt: 'createdAt',
   id: 'id',
   updatedAt: 'updatedAt',
@@ -1702,11 +1693,11 @@ export const ToolsSortInputField = {
   outputMimeType: 'outputMimeType'
 } as const
 
-export type ToolsSortInputOrder =
-  (typeof ToolsSortInputOrder)[keyof typeof ToolsSortInputOrder]
+export type ToolsSortOrder =
+  (typeof ToolsSortOrder)[keyof typeof ToolsSortOrder]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const ToolsSortInputOrder = {
+export const ToolsSortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
@@ -1714,9 +1705,9 @@ export const ToolsSortInputOrder = {
 /**
  * Sorting configuration for tools entity with field and order
  */
-export interface ToolsSortInput {
-  field: ToolsSortInputField
-  order: ToolsSortInputOrder
+export interface ToolsSort {
+  field: ToolsSortField
+  order: ToolsSortOrder
 }
 
 /**
@@ -3508,9 +3499,9 @@ export type RequestPasswordResetBody = {
 }
 
 export type FindManyAccountsParams = {
-  filter?: AccountsFilterNodeInput
-  page?: PageInput
-  sort?: AccountsSortInput[]
+  filter?: AccountsFilterNode
+  page?: Page
+  sort?: AccountsSort[]
 }
 
 export type FindManyAccounts200Meta = {
@@ -3556,9 +3547,9 @@ export type CreateInvitation201 = {
 }
 
 export type FindManyInvitationsParams = {
-  filter?: InvitationsFilterNodeInput
-  page?: PageInput
-  sort?: InvitationsSortInput[]
+  filter?: InvitationsFilterNode
+  page?: Page
+  sort?: InvitationsSort[]
 }
 
 export type FindManyInvitations200Meta = {
@@ -3626,9 +3617,9 @@ export type CreateMember201 = {
 }
 
 export type FindManyMembersParams = {
-  filter?: MembersFilterNodeInput
-  page?: PageInput
-  sort?: MembersSortInput[]
+  filter?: MembersFilterNode
+  page?: Page
+  sort?: MembersSort[]
 }
 
 export type FindManyMembers200Meta = {
@@ -3689,9 +3680,9 @@ export type CreateOrganization201 = {
 }
 
 export type FindManyOrganizationsParams = {
-  filter?: OrganizationsFilterNodeInput
-  page?: PageInput
-  sort?: OrganizationsSortInput[]
+  filter?: OrganizationsFilterNode
+  page?: Page
+  sort?: OrganizationsSort[]
 }
 
 export type FindManyOrganizations200Meta = {
@@ -3730,9 +3721,9 @@ export type UpdateOrganization200 = {
 }
 
 export type FindManySessionsParams = {
-  filter?: SessionsFilterNodeInput
-  page?: PageInput
-  sort?: SessionsSortInput[]
+  filter?: SessionsFilterNode
+  page?: Page
+  sort?: SessionsSort[]
 }
 
 export type FindManySessions200Meta = {
@@ -3771,9 +3762,9 @@ export type GetSession200 = {
 }
 
 export type FindManyUsersParams = {
-  filter?: UsersFilterNodeInput
-  page?: PageInput
-  sort?: UsersSortInput[]
+  filter?: UsersFilterNode
+  page?: Page
+  sort?: UsersSort[]
 }
 
 export type FindManyUsers200Meta = {
@@ -5289,9 +5280,9 @@ export type CreateArtifact201 = {
 }
 
 export type FindManyArtifactsParams = {
-  filter?: ArtifactsFilterNodeInput
-  page?: PageInput
-  sort?: ArtifactsSortInput[]
+  filter?: ArtifactsFilterNode
+  page?: Page
+  sort?: ArtifactsSort[]
 }
 
 export type FindManyArtifacts200Meta = {
@@ -5341,9 +5332,9 @@ export type CreateLabel201 = {
 }
 
 export type FindManyLabelsParams = {
-  filter?: LabelsFilterNodeInput
-  page?: PageInput
-  sort?: LabelsSortInput[]
+  filter?: LabelsFilterNode
+  page?: Page
+  sort?: LabelsSort[]
 }
 
 export type FindManyLabels200Meta = {
@@ -5391,9 +5382,9 @@ export type CreatePipeline201 = {
 }
 
 export type FindManyPipelinesParams = {
-  filter?: PipelinesFilterNodeInput
-  page?: PageInput
-  sort?: PipelinesSortInput[]
+  filter?: PipelinesFilterNode
+  page?: Page
+  sort?: PipelinesSort[]
 }
 
 export type FindManyPipelines200Meta = {
@@ -5444,9 +5435,9 @@ export type CreateRun201 = {
 }
 
 export type FindManyRunsParams = {
-  filter?: RunsFilterNodeInput
-  page?: PageInput
-  sort?: RunsSortInput[]
+  filter?: RunsFilterNode
+  page?: Page
+  sort?: RunsSort[]
 }
 
 export type FindManyRuns200Meta = {
@@ -5491,9 +5482,9 @@ export type CreateTool201 = {
 }
 
 export type FindManyToolsParams = {
-  filter?: ToolsFilterNodeInput
-  page?: PageInput
-  sort?: ToolsSortInput[]
+  filter?: ToolsFilterNode
+  page?: Page
+  sort?: ToolsSort[]
 }
 
 export type FindManyTools200Meta = {

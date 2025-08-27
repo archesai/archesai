@@ -1,0 +1,109 @@
+components:
+  schemas:
+    ApiTokenEntity:
+      description: Schema for API Token entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        enabled:
+          description: Whether the API token is enabled or not
+          type: boolean
+        expiresAt:
+          description: The date and time when the API token expires
+          type: string
+          nullable: true
+        key:
+          description: The API token key. This will only be shown once
+          type: string
+        lastRefill:
+          description: The date and time when the API token was last refilled
+          type: string
+          nullable: true
+        lastRequest:
+          description: The date and time when the API token was last used
+          type: string
+          nullable: true
+        metadata:
+          description: The metadata for the API token, used for custom data
+          type: string
+          nullable: true
+        name:
+          description: The name of the API token
+          type: string
+          nullable: true
+        permissions:
+          description: The name of the API token
+          type: string
+          nullable: true
+        prefix:
+          description: TThe prefix for the API token, used for routing requests
+          type: string
+          nullable: true
+        rateLimitEnabled:
+          description: Whether the API token has rate limiting enabled
+          type: boolean
+        rateLimitMax:
+          description: The maximum number of requests allowed per time window
+          type: number
+          nullable: true
+        rateLimitTimeWindow:
+          description: The time window in seconds for the rate limit
+          type: number
+          nullable: true
+        refillAmount:
+          description: The amount of requests to refill the token with
+          type: number
+          nullable: true
+        refillInterval:
+          description: The interval in seconds to refill the token
+          type: number
+          nullable: true
+        remaining:
+          description: The number of requests remaining for the token
+          type: number
+          nullable: true
+        requestCount:
+          description: The number of requests made with the token
+          type: number
+        start:
+          description: The number of requests remaining for the token
+          type: string
+          nullable: true
+        userId:
+          description: The id of the user the token belongs to
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - enabled
+        - expiresAt
+        - key
+        - lastRefill
+        - lastRequest
+        - metadata
+        - name
+        - permissions
+        - prefix
+        - rateLimitEnabled
+        - rateLimitMax
+        - rateLimitTimeWindow
+        - refillAmount
+        - refillInterval
+        - remaining
+        - requestCount
+        - start
+        - userId
+      additionalProperties: false

@@ -1,0 +1,28 @@
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+            email:
+              type: string
+            redis:
+              type: string
+          required:
+            - database
+            - email
+            - redis
+          additionalProperties: false
+        timestamp:
+          type: string
+        uptime:
+          type: number
+      required:
+        - services
+        - timestamp
+        - uptime
+      additionalProperties: false
