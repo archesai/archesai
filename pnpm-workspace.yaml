@@ -24,15 +24,15 @@ catalog:
   qs: 6.14.0
   socket.io: 4.8.1
   socket.io-client: 4.8.1
-  stripe: 18.4.0
+  stripe: 18.5.0
   tslib: 2.8.1
   typescript: 5.9.2
   yaml: 2.8.1
-  zod: 4.1.1
+  zod: 4.1.4
 
 catalogs:
   client:
-    '@ibm-cloud/openapi-ruleset': 1.31.2
+    '@ibm-cloud/openapi-ruleset': 1.32.1
     orval: 7.11.2
   database:
     '@types/pg': 8.15.5
@@ -60,13 +60,13 @@ catalogs:
     '@fastify/deepmerge': 3.1.0
     '@fastify/helmet': 13.0.1
     '@fastify/swagger': 9.5.1
-    '@scalar/fastify-api-reference': 1.34.5
+    '@scalar/fastify-api-reference': 1.34.6
     fastify: 5.5.0
     fastify-plugin: 5.0.1
     fastify-type-provider-zod: 5.0.3
   intelligence:
     '@elevenlabs/elevenlabs-js': 2.12.2
-    openai: 5.15.0
+    openai: 5.16.0
     playwright-core: 1.55.0
     sharp: 0.34.3
   nx:
@@ -75,15 +75,15 @@ catalogs:
     '@nx/js': 21.4.1
     nx: 21.4.1
   prettier:
-    '@ianvs/prettier-plugin-sort-imports': 4.6.2
+    '@ianvs/prettier-plugin-sort-imports': 4.6.3
     prettier: 3.6.2
     prettier-plugin-packagejson: 2.5.19
     prettier-plugin-sh: 0.18.0
     prettier-plugin-sort-json: 4.1.1
     prettier-plugin-tailwindcss: 0.6.14
   react19:
-    '@types/react': ^19.1.11
-    '@types/react-dom': ^19.1.7
+    '@types/react': ^19.1.12
+    '@types/react-dom': ^19.1.8
     react: ^19.1.1
     react-dom: ^19.1.1
   root:
@@ -94,15 +94,15 @@ catalogs:
     only-allow: 1.2.1
     sherif: 1.6.1
   storage:
-    '@aws-sdk/client-s3': 3.873.0
-    '@aws-sdk/s3-request-presigner': 3.873.0
+    '@aws-sdk/client-s3': 3.876.0
+    '@aws-sdk/s3-request-presigner': 3.876.0
   tanstack:
     '@tanstack/react-query': 5.85.5
     '@tanstack/react-query-devtools': 5.85.5
-    '@tanstack/react-router': 1.131.27
-    '@tanstack/react-router-devtools': 1.131.27
-    '@tanstack/react-router-ssr-query': 1.131.27
-    '@tanstack/react-start': 1.131.27
+    '@tanstack/react-router': 1.131.28
+    '@tanstack/react-router-devtools': 1.131.28
+    '@tanstack/react-router-ssr-query': 1.131.28
+    '@tanstack/react-start': 1.131.28
     '@tanstack/react-table': 8.21.3
     '@tanstack/table-core': 8.21.3
   test:
@@ -124,7 +124,7 @@ catalogs:
     clsx: 2.1.1
     cmdk: 1.1.1
     date-fns: 4.1.0
-    lucide-react: 0.541.0
+    lucide-react: 0.542.0
     motion: 12.23.12
     next-themes: 0.4.6
     radix-ui: 1.4.3
@@ -139,7 +139,7 @@ catalogs:
     vaul: 1.1.2
   vite:
     '@tailwindcss/vite': 4.1.12
-    '@vitejs/plugin-react': 5.0.1
+    '@vitejs/plugin-react': 5.0.2
     babel-plugin-react-compiler: 19.1.0-rc.2
     rollup-plugin-visualizer: 6.0.3
     vite: 7.1.3
@@ -175,4 +175,4 @@ strictDepBuilds: true
 
 strictPeerDependencies: true
 
-useNodeVersion: 24.6.0
+useNodeVersion: 24.7.0
