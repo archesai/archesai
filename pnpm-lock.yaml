@@ -153,8 +153,8 @@ catalogs:
       version: 5.0.3
   intelligence:
     '@elevenlabs/elevenlabs-js':
-      specifier: 2.12.2
-      version: 2.12.2
+      specifier: 2.13.0
+      version: 2.13.0
     openai:
       specifier: 5.16.0
       version: 5.16.0
@@ -756,7 +756,7 @@ importers:
         version: link:../schemas
       '@elevenlabs/elevenlabs-js':
         specifier: catalog:intelligence
-        version: 2.12.2
+        version: 2.13.0
       openai:
         specifier: catalog:intelligence
         version: 5.16.0(zod@3.25.76)
@@ -2458,29 +2458,29 @@ packages:
         integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==
       }
 
-  '@elevenlabs/elevenlabs-js@2.12.2':
+  '@elevenlabs/elevenlabs-js@2.13.0':
     resolution:
       {
-        integrity: sha512-P1OKIOie4LRYodvbiC6gRdLzg3RXsx1LAO6k5A94NPQvVZEgGq1wbWFcKbbhyBVCHP30RyUGtVl0c5tw3rByNg==
+        integrity: sha512-PtVuQUe0GD+ZSdzOKoZy9XVmaFLYSlD8N4Mf9sBnTzEGhho4NCt5X13vP3F2boMWrwQ7v68TC+fGZmQRhwszAw==
       }
     engines: { node: '>=18.0.0' }
 
-  '@emnapi/core@1.4.5':
+  '@emnapi/core@1.5.0':
     resolution:
       {
-        integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==
+        integrity: sha512-sbP8GzB1WDzacS8fgNPpHlp6C9VZe+SJP3F90W9rLemaQj2PzIuTEl1qDOYQf58YIpyjViI24y9aPWCjEzY2cg==
       }
 
-  '@emnapi/runtime@1.4.5':
+  '@emnapi/runtime@1.5.0':
     resolution:
       {
-        integrity: sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==
+        integrity: sha512-97/BJ3iXHww3djw6hYIfErCZFee7qCtrneuLa20UXFCOTCfBM2cvQHjWJ2EG0s0MtdNwInarqCTz35i4wWXHsQ==
       }
 
-  '@emnapi/wasi-threads@1.0.4':
+  '@emnapi/wasi-threads@1.1.0':
     resolution:
       {
-        integrity: sha512-PJR+bOmMOPH8AtcTGAyYNiuJ3/Fcoj2XN/gBEWzDIKh254XO+mM9XoXHk5GNEhodxeMznbg7BlRojVbKN+gC6g==
+        integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==
       }
 
   '@esbuild-kit/core-utils@3.3.2':
@@ -3708,10 +3708,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@ioredis/commands@1.3.0':
+  '@ioredis/commands@1.3.1':
     resolution:
       {
-        integrity: sha512-M/T6Zewn7sDaBQEqIZ8Rb+i9y8qfGmq+5SDFSf9sA2lUZTmdDLVdOiQaeDp+Q4wElZ9HG1GAX5KhDaidp6LQsQ==
+        integrity: sha512-bYtU8avhGIcje3IhvF9aSjsa5URMZBHnwKtOvXsT4sfYy9gppW11gLPT/9oNqlJZD47yPKveQFTAFWpHjKvUoQ==
       }
 
   '@isaacs/balanced-match@4.0.1':
@@ -17293,23 +17293,23 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
-  '@elevenlabs/elevenlabs-js@2.12.2':
+  '@elevenlabs/elevenlabs-js@2.13.0':
     dependencies:
       command-exists: 1.2.9
       node-fetch: 2.7.0
     transitivePeerDependencies:
       - encoding
 
-  '@emnapi/core@1.4.5':
+  '@emnapi/core@1.5.0':
     dependencies:
-      '@emnapi/wasi-threads': 1.0.4
+      '@emnapi/wasi-threads': 1.1.0
       tslib: 2.8.1
 
-  '@emnapi/runtime@1.4.5':
+  '@emnapi/runtime@1.5.0':
     dependencies:
       tslib: 2.8.1
 
-  '@emnapi/wasi-threads@1.0.4':
+  '@emnapi/wasi-threads@1.1.0':
     dependencies:
       tslib: 2.8.1
 
@@ -17829,7 +17829,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.3':
     dependencies:
-      '@emnapi/runtime': 1.4.5
+      '@emnapi/runtime': 1.5.0
     optional: true
 
   '@img/sharp-win32-arm64@0.34.3':
@@ -17844,7 +17844,7 @@ snapshots:
   '@img/sharp-win32-x64@0.34.3':
     optional: true
 
-  '@ioredis/commands@1.3.0': {}
+  '@ioredis/commands@1.3.1': {}
 
   '@isaacs/balanced-match@4.0.1': {}
 
@@ -17933,15 +17933,15 @@ snapshots:
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
-      '@emnapi/core': 1.4.5
-      '@emnapi/runtime': 1.4.5
+      '@emnapi/core': 1.5.0
+      '@emnapi/runtime': 1.5.0
       '@tybys/wasm-util': 0.10.0
     optional: true
 
   '@napi-rs/wasm-runtime@0.2.4':
     dependencies:
-      '@emnapi/core': 1.4.5
-      '@emnapi/runtime': 1.4.5
+      '@emnapi/core': 1.5.0
+      '@emnapi/runtime': 1.5.0
       '@tybys/wasm-util': 0.9.0
 
   '@netlify/binary-info@1.0.0': {}
@@ -22994,7 +22994,7 @@ snapshots:
 
   ioredis@5.7.0:
     dependencies:
-      '@ioredis/commands': 1.3.0
+      '@ioredis/commands': 1.3.1
       cluster-key-slot: 1.1.2
       debug: 4.4.1
       denque: 2.1.0
