@@ -39,13 +39,10 @@
   "prettier": "@archesai/prettier",
   "devDependencies": {
     "@anthropic-ai/claude-code": "catalog:",
-    "@archesai/auth": "workspace:*",
     "@archesai/client": "workspace:*",
     "@archesai/core": "workspace:*",
-    "@archesai/database": "workspace:*",
     "@archesai/eslint": "workspace:*",
     "@archesai/intelligence": "workspace:*",
-    "@archesai/orchestration": "workspace:*",
     "@archesai/prettier": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@archesai/storage": "workspace:*",

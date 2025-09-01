@@ -3,17 +3,17 @@ package database
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"go.uber.org/zap"
 )
 
 // DB represents a database connection pool
 type DB struct {
 	*pgxpool.Pool
-	logger *zap.Logger
+	logger *slog.Logger
 }
 
 // Config holds database configuration
@@ -27,7 +27,7 @@ type Config struct {
 }
 
 // NewConnection creates a new database connection pool
-func NewConnection(cfg Config, logger *zap.Logger) (*DB, error) {
+func NewConnection(cfg Config, logger *slog.Logger) (*DB, error) {
 	ctx := context.Background()
 
 	// Parse the connection string
@@ -86,8 +86,8 @@ func NewConnection(cfg Config, logger *zap.Logger) (*DB, error) {
 	}
 
 	logger.Info("database connection established",
-		zap.Int32("max_connections", config.MaxConns),
-		zap.Int32("min_connections", config.MinConns),
+		"max_connections", config.MaxConns,
+		"min_connections", config.MinConns,
 	)
 
 	return &DB{
@@ -127,13 +127,13 @@ func (db *DB) Transaction(ctx context.Context, fn func(pgx.Tx) error) error {
 		} else if err != nil {
 			// Rollback on error
 			if rbErr := tx.Rollback(ctx); rbErr != nil {
-				db.logger.Error("failed to rollback transaction", zap.Error(rbErr))
+				db.logger.Error("failed to rollback transaction", "error", rbErr)
 			}
 		} else {
 			// Commit on success
 			err = tx.Commit(ctx)
 			if err != nil {
-				db.logger.Error("failed to commit transaction", zap.Error(err))
+				db.logger.Error("failed to commit transaction", "error", err)
 			}
 		}
 	}()
@@ -146,7 +146,7 @@ func (db *DB) Transaction(ctx context.Context, fn func(pgx.Tx) error) error {
 func (db *DB) Migrate(ctx context.Context, migrationsPath string) error {
 	// This is a placeholder for migration logic
 	// In a real implementation, you would use a migration tool like golang-migrate
-	db.logger.Info("running database migrations", zap.String("path", migrationsPath))
+	db.logger.Info("running database migrations", "path", migrationsPath)
 
 	// Example: Check if tables exist
 	var exists bool
@@ -177,7 +177,7 @@ type QueryBuilder struct {
 	db     *DB
 	query  string
 	args   []interface{}
-	logger *zap.Logger
+	logger *slog.Logger
 }
 
 // NewQueryBuilder creates a new query builder

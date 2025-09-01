@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "isolatedDeclarations": false
+  },
+  "extends": [
+    "../../tools/typescript/src/base.json",
+    "../../tools/typescript/src/lib.json"
+  ]
+}

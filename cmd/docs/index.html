@@ -21,7 +21,22 @@
         // The URL of the OpenAPI/Swagger document
         url: '/openapi.yaml',
         // Avoid CORS issues
-        proxyUrl: 'https://proxy.scalar.com'
+        proxyUrl: 'https://proxy.scalar.com',
+        forceDarkModeState: 'dark',
+        hideModels: true,
+        persistAuth: true,
+        tagsSorter: 'alpha',
+        hideTestRequestButton: true,
+        //  favicon: '/favicon.svg'
+        metaData: {
+          title: 'Arches AI API',
+          description: 'API documentation for Arches AI services'
+          // ogDescription: 'Still about my my page',
+          // ogTitle: 'Page title',
+          // ogImage: 'https://example.com/image.png',
+          // twitterCard: 'summary_large_image'
+          // Add more...
+        }
       })
     </script>
   </body>

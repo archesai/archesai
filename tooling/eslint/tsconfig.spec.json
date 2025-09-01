@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "../../tooling/typescript/src/base.json",
-    "../../tooling/typescript/src/lib.json"
-  ]
-}

@@ -1,0 +1,24 @@
+{
+  "extends": "../../tools/typescript/src/base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../schemas"
+    },
+    {
+      "path": "../client"
+    },
+    {
+      "path": "../../tools/eslint"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

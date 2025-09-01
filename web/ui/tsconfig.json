@@ -1,0 +1,32 @@
+{
+  // THE FOLLOWING IS NEEDED FOR SHADCN UTILS
+  // "compilerOptions": {
+  //   "aliases": {
+  //     "components": "src/components/shadcn",
+  //     "hooks": "src/hooks",
+  //     "lib": "src/lib",
+  //     "ui": "src/components/shadcn",
+  //     "utils": "src/lib/utils"
+  //   },
+  //   "baseUrl": "."
+  // },
+  "extends": "../../tools/typescript/src/base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "../schemas"
+    },
+    {
+      "path": "../client"
+    },
+    {
+      "path": "../../tools/eslint"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

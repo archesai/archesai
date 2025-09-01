@@ -1,0 +1,15 @@
+{
+  "extends": "../../tools/typescript/src/base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "../../tools/eslint"
+    }
+  ]
+}

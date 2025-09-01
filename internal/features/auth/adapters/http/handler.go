@@ -1,24 +1,29 @@
 package http
 
 import (
+	"log/slog"
 	"net/http"
-	"strconv"
 
+	"github.com/archesai/archesai/gen/api/features/auth/users"
 	"github.com/archesai/archesai/internal/features/auth/domain"
 	"github.com/archesai/archesai/internal/features/auth/ports"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Handler handles HTTP requests for auth operations
+// Implements users.ServerInterface
 type Handler struct {
 	service ports.Service
-	logger  *zap.Logger
+	logger  *slog.Logger
 }
 
+// Ensure Handler implements users.ServerInterface
+var _ users.ServerInterface = (*Handler)(nil)
+
 // NewHandler creates a new auth HTTP handler
-func NewHandler(service ports.Service, logger *zap.Logger) *Handler {
+func NewHandler(service ports.Service, logger *slog.Logger) *Handler {
 	return &Handler{
 		service: service,
 		logger:  logger,
@@ -42,7 +47,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 		case domain.ErrUserExists:
 			return echo.NewHTTPError(http.StatusConflict, "User already exists")
 		default:
-			h.logger.Error("failed to sign up user", zap.Error(err))
+			h.logger.Error("failed to sign up user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
@@ -75,7 +80,7 @@ func (h *Handler) SignIn(c echo.Context) error {
 		case domain.ErrInvalidCredentials:
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
 		default:
-			h.logger.Error("failed to sign in user", zap.Error(err))
+			h.logger.Error("failed to sign in user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
@@ -106,7 +111,7 @@ func (h *Handler) SignOut(c echo.Context) error {
 		case domain.ErrInvalidToken:
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		default:
-			h.logger.Error("failed to sign out user", zap.Error(err))
+			h.logger.Error("failed to sign out user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
@@ -136,7 +141,7 @@ func (h *Handler) RefreshToken(c echo.Context) error {
 		case domain.ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
-			h.logger.Error("failed to refresh token", zap.Error(err))
+			h.logger.Error("failed to refresh token", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
@@ -144,109 +149,105 @@ func (h *Handler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, tokens)
 }
 
-// GetUser handles retrieving user information
-func (h *Handler) GetUser(c echo.Context) error {
-	userIDParam := c.Param("id")
-	userID, err := uuid.Parse(userIDParam)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user ID")
-	}
+// GetOneUser handles retrieving user information
+// Implements users.ServerInterface.GetOneUser
+func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
+	userID := uuid.UUID(id)
 
-	user, err := h.service.GetUser(c.Request().Context(), userID)
+	user, err := h.service.GetUser(ctx.Request().Context(), userID)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
-			h.logger.Error("failed to get user", zap.Error(err))
+			h.logger.Error("failed to get user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
 
-	return c.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, user)
 }
 
 // UpdateUser handles updating user information
-func (h *Handler) UpdateUser(c echo.Context) error {
-	userIDParam := c.Param("id")
-	userID, err := uuid.Parse(userIDParam)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user ID")
-	}
+// Implements users.ServerInterface.UpdateUser
+func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
+	userID := uuid.UUID(id)
 
-	var req domain.UpdateUserRequest
-	if err := c.Bind(&req); err != nil {
+	var req users.UpdateUserJSONRequestBody
+	if err := ctx.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
 
-	user, err := h.service.UpdateUser(c.Request().Context(), userID, &req)
+	// Map to domain request
+	domainReq := &domain.UpdateUserRequest{}
+	if req.Email != nil {
+		// Note: Email update might need special handling (verification, etc.)
+		// For now, we'll skip email updates via this endpoint
+	}
+	if req.Image != nil {
+		domainReq.Image = req.Image
+	}
+
+	user, err := h.service.UpdateUser(ctx.Request().Context(), userID, domainReq)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
-			h.logger.Error("failed to update user", zap.Error(err))
+			h.logger.Error("failed to update user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
 
-	return c.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, user)
 }
 
 // DeleteUser handles user deletion
-func (h *Handler) DeleteUser(c echo.Context) error {
-	userIDParam := c.Param("id")
-	userID, err := uuid.Parse(userIDParam)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user ID")
-	}
+// Implements users.ServerInterface.DeleteUser
+func (h *Handler) DeleteUser(ctx echo.Context, id openapi_types.UUID) error {
+	userID := uuid.UUID(id)
 
-	err = h.service.DeleteUser(c.Request().Context(), userID)
+	err := h.service.DeleteUser(ctx.Request().Context(), userID)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
-			h.logger.Error("failed to delete user", zap.Error(err))
+			h.logger.Error("failed to delete user", "error", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 		}
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "User deleted successfully"})
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "User deleted successfully"})
 }
 
-// ListUsers handles listing users with pagination
-func (h *Handler) ListUsers(c echo.Context) error {
-	limitParam := c.QueryParam("limit")
-	offsetParam := c.QueryParam("offset")
+// FindManyUsers handles listing users with pagination
+// Implements users.ServerInterface.FindManyUsers
+func (h *Handler) FindManyUsers(ctx echo.Context, params users.FindManyUsersParams) error {
+	// Use converter functions for pagination
+	limit, offset := convertPagination(params.Page)
+	
+	// TODO: Apply filter and sort if needed
+	// filter := convertFilter(params.Filter)
+	// orderBy, orderDir := convertSort(params.Sort)
 
-	var limit, offset int32 = 50, 0
-
-	if limitParam != "" {
-		if l, err := strconv.ParseInt(limitParam, 10, 32); err == nil {
-			limit = int32(l)
-		}
-	}
-
-	if offsetParam != "" {
-		if o, err := strconv.ParseInt(offsetParam, 10, 32); err == nil {
-			offset = int32(o)
-		}
-	}
-
-	users, err := h.service.ListUsers(c.Request().Context(), limit, offset)
+	domainUsers, err := h.service.ListUsers(ctx.Request().Context(), limit, offset)
 	if err != nil {
-		h.logger.Error("failed to list users", zap.Error(err))
+		h.logger.Error("failed to list users", "error", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
+	// Convert domain users to generated types
+	userEntities := convertToGeneratedUsers(domainUsers)
+	
 	response := map[string]interface{}{
-		"users":  users,
+		"data":   userEntities,
+		"total":  len(userEntities),
 		"limit":  limit,
 		"offset": offset,
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return ctx.JSON(http.StatusOK, response)
 }
 
 // RegisterRoutes registers auth routes with the Echo router
@@ -257,9 +258,5 @@ func (h *Handler) RegisterRoutes(e *echo.Group) {
 	e.POST("/auth/signout", h.SignOut)
 	e.POST("/auth/refresh", h.RefreshToken)
 
-	// User management routes
-	e.GET("/users/:id", h.GetUser)
-	e.PUT("/users/:id", h.UpdateUser)
-	e.DELETE("/users/:id", h.DeleteUser)
-	e.GET("/users", h.ListUsers)
+	// Note: User routes will be registered via the generated RegisterHandlers function
 }

@@ -2,13 +2,13 @@ package auth
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/archesai/archesai/internal/features/auth/domain"
 	"github.com/archesai/archesai/internal/features/auth/ports"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 // ContextKey is a type for context keys
@@ -22,7 +22,7 @@ const (
 )
 
 // Middleware creates an authentication middleware
-func Middleware(authService ports.Service, logger *zap.Logger) echo.MiddlewareFunc {
+func Middleware(authService ports.Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -42,7 +42,7 @@ func Middleware(authService ports.Service, logger *zap.Logger) echo.MiddlewareFu
 			// Validate token
 			claims, err := authService.ValidateToken(token)
 			if err != nil {
-				logger.Warn("invalid token", zap.Error(err))
+				logger.Warn("invalid token", "error", err)
 				if err == domain.ErrTokenExpired {
 					return echo.NewHTTPError(http.StatusUnauthorized, "token expired")
 				}
@@ -65,7 +65,7 @@ func Middleware(authService ports.Service, logger *zap.Logger) echo.MiddlewareFu
 
 // OptionalAuthMiddleware creates an optional authentication middleware
 // It validates the token if present but doesn't require it
-func OptionalAuthMiddleware(authService ports.Service, logger *zap.Logger) echo.MiddlewareFunc {
+func OptionalAuthMiddleware(authService ports.Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -91,7 +91,7 @@ func OptionalAuthMiddleware(authService ports.Service, logger *zap.Logger) echo.
 					ctx = context.WithValue(ctx, UserContextKey, claims.UserID)
 					c.SetRequest(c.Request().WithContext(ctx))
 				} else {
-					logger.Debug("invalid optional token", zap.Error(err))
+					logger.Debug("invalid optional token", "error", err)
 				}
 			}
 

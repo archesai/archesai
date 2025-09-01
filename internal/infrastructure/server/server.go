@@ -3,49 +3,50 @@ package server
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/archesai/archesai/internal/infrastructure/database"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.uber.org/zap"
 )
 
 // Server represents the API server
 type Server struct {
 	echo   *echo.Echo
-	db     *database.DB
-	logger *zap.Logger
 	config *Config
+	logger *slog.Logger
 }
 
 // Config holds server configuration
 type Config struct {
 	Port           string
 	AllowedOrigins []string
-	JWTSecret      string
 }
 
 // NewServer creates a new API server
-func NewServer(db *database.DB, logger *zap.Logger, config *Config) *Server {
+func NewServer(config *Config, logger *slog.Logger) *Server {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
 
 	server := &Server{
 		echo:   e,
-		db:     db,
-		logger: logger,
 		config: config,
+		logger: logger,
 	}
 
 	server.setupMiddleware()
-	server.setupRoutes()
+	server.setupInfrastructureRoutes()
 
 	return server
+}
+
+// Echo returns the underlying echo instance for route registration
+func (s *Server) Echo() *echo.Echo {
+	return s.echo
 }
 
 func (s *Server) setupMiddleware() {
@@ -59,13 +60,13 @@ func (s *Server) setupMiddleware() {
 		LogError:  true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			s.logger.Info("request",
-				zap.String("id", v.RequestID),
-				zap.String("method", c.Request().Method),
-				zap.String("uri", v.URI),
-				zap.Int("status", v.Status),
-				zap.Duration("latency", v.Latency),
-				zap.String("remote_ip", c.RealIP()),
-				zap.Error(v.Error),
+				"id", v.RequestID,
+				"method", c.Request().Method,
+				"uri", v.URI,
+				"status", v.Status,
+				"latency", v.Latency,
+				"remote_ip", c.RealIP(),
+				"error", v.Error,
 			)
 			return nil
 		},
@@ -85,15 +86,23 @@ func (s *Server) setupMiddleware() {
 	s.echo.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		LogErrorFunc: func(c echo.Context, err error, stack []byte) error {
 			s.logger.Error("panic recovered",
-				zap.String("id", c.Response().Header().Get(echo.HeaderXRequestID)),
-				zap.Error(err),
-				zap.String("stack", string(stack)),
+				"id", c.Response().Header().Get(echo.HeaderXRequestID),
+				"error", err,
+				"stack", string(stack),
 			)
 			return nil
 		},
 	}))
 
 	// CORS middleware
+	// 	  const allowedOrigins = configService.get('api.cors.origins').split(',')
+	//   await app.register(cors, {
+	//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+	//     credentials: true,
+	//     maxAge: 86400,
+	//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+	//     origin: allowedOrigins
+	//   })
 	s.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     s.config.AllowedOrigins,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
@@ -102,6 +111,20 @@ func (s *Server) setupMiddleware() {
 		ExposeHeaders:    []string{"X-Request-ID"},
 		MaxAge:           86400,
 	}))
+
+	// FIXME
+	// // Security Middlewares
+	// await httpInstance.register(helmet, {
+	//   contentSecurityPolicy: {
+	//     directives: {
+	//       defaultSrc: [`'self'`],
+	//       fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
+	//       imgSrc: [`'self'`, 'data:'],
+	//       scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
+	//       styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
+	//     }
+	//   }
+	// })
 
 	// Compression middleware
 	s.echo.Use(middleware.GzipWithConfig(middleware.GzipConfig{
@@ -157,14 +180,13 @@ func (s *Server) setupMiddleware() {
 	}))
 }
 
-// setupRoutes configures API routes
-func (s *Server) setupRoutes() {
-	// Health check
+// setupInfrastructureRoutes configures infrastructure routes only
+func (s *Server) setupInfrastructureRoutes() {
+	// Health check - simple liveness probe
 	s.echo.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"status":    "healthy",
 			"timestamp": time.Now().Unix(),
-			"database":  "healthy",
 		})
 	})
 
@@ -176,22 +198,15 @@ func (s *Server) setupRoutes() {
 		})
 	})
 
-	// API v1 routes
-	// api := s.echo.Group("/api/v1")
-	// Register user and organization routes
-	// userHandler.RegisterRoutes(api)
-	// orgHandler.RegisterRoutes(api)
-
-	// 404 handler
+	// 404 handler - must be registered last (will be overridden when container registers routes)
 	s.echo.RouteNotFound("/*", func(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "route not found")
 	})
-	// 	// 404 handler
-	// e.RouteNotFound("/*", func(c echo.Context) error {
-	// 	return c.JSON(http.StatusNotFound, map[string]string{
-	// 		"error": "Route not found",
-	// 	})
-	// })
+}
+
+// SetReadinessCheck allows the container to provide a readiness check function
+func (s *Server) SetReadinessCheck(checkFunc func(echo.Context) error) {
+	s.echo.GET("/ready", checkFunc)
 }
 
 // Start starts the server
@@ -199,10 +214,11 @@ func (s *Server) Start() error {
 	// Start server in goroutine
 	go func() {
 		addr := fmt.Sprintf(":%s", s.config.Port)
-		s.logger.Info("starting server", zap.String("address", addr))
+		s.logger.Info("starting server", "address", addr)
 
 		if err := s.echo.Start(addr); err != nil && err != http.ErrServerClosed {
-			s.logger.Fatal("failed to start server", zap.Error(err))
+			s.logger.Error("failed to start server", "error", err)
+			os.Exit(1)
 		}
 	}()
 
@@ -218,7 +234,7 @@ func (s *Server) Start() error {
 	defer cancel()
 
 	if err := s.echo.Shutdown(ctx); err != nil {
-		s.logger.Error("server forced to shutdown", zap.Error(err))
+		s.logger.Error("server forced to shutdown", "error", err)
 		return err
 	}
 

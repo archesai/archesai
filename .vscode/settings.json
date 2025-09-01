@@ -1,9 +1,7 @@
 {
   "eslint.workingDirectories": [
-    { "pattern": "apps/*/" },
-    { "pattern": "packages/*/" },
-    { "pattern": "tooling/*/" },
-    { "pattern": "e2e/*/" }
+    { "pattern": "web/*/" },
+    { "pattern": "tools/*/" }
   ],
   "files.exclude": {
     "**/.cache": true,
@@ -17,8 +15,8 @@
     "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
-    "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
-    "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
+    "./web/platform/src/styles/globals.css": "./web/platform/src/**",
+    "./web/ui/src/styles/globals.css": "./web/ui/src/**"
   },
   "yaml.schemas": {
     "file:///home/jonathan/Projects/archesai/helm/arches/values.schema.json": [

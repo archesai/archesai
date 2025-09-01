@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/archesai/archesai/internal/features/auth/domain"
 	"github.com/archesai/archesai/internal/features/auth/ports"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +18,7 @@ import (
 type Service struct {
 	repo      ports.Repository
 	jwtSecret []byte
-	logger    *zap.Logger
+	logger    *slog.Logger
 	config    Config
 }
 
@@ -34,7 +34,7 @@ type Config struct {
 }
 
 // NewService creates a new authentication service
-func NewService(repo ports.Repository, config Config, logger *zap.Logger) *Service {
+func NewService(repo ports.Repository, config Config, logger *slog.Logger) *Service {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -67,7 +67,7 @@ func (s *Service) SignUp(ctx context.Context, req *domain.SignUpRequest) (*domai
 	// Hash the password
 	hashedPassword, err := s.hashPassword(req.Password)
 	if err != nil {
-		s.logger.Error("failed to hash password", zap.Error(err))
+		s.logger.Error("failed to hash password", "error", err)
 		return nil, nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
@@ -84,14 +84,14 @@ func (s *Service) SignUp(ctx context.Context, req *domain.SignUpRequest) (*domai
 
 	// Save user to database
 	if err := s.repo.CreateUser(ctx, user); err != nil {
-		s.logger.Error("failed to create user", zap.Error(err))
+		s.logger.Error("failed to create user", "error", err)
 		return nil, nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	// Generate tokens
 	tokens, err := s.generateTokens(user)
 	if err != nil {
-		s.logger.Error("failed to generate tokens", zap.Error(err))
+		s.logger.Error("failed to generate tokens", "error", err)
 		return nil, nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
@@ -106,11 +106,11 @@ func (s *Service) SignUp(ctx context.Context, req *domain.SignUpRequest) (*domai
 	}
 
 	if err := s.repo.CreateSession(ctx, session); err != nil {
-		s.logger.Error("failed to create session", zap.Error(err))
+		s.logger.Error("failed to create session", "error", err)
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	s.logger.Info("user signed up successfully", zap.String("user_id", user.ID.String()))
+	s.logger.Info("user signed up successfully", "user_id", user.ID.String())
 	return user, tokens, nil
 }
 
@@ -119,20 +119,20 @@ func (s *Service) SignIn(ctx context.Context, req *domain.SignInRequest, ipAddre
 	// Get user by email
 	user, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		s.logger.Warn("user not found", zap.String("email", req.Email))
+		s.logger.Warn("user not found", "email", req.Email)
 		return nil, nil, domain.ErrInvalidCredentials
 	}
 
 	// Verify password
 	if err := s.verifyPassword(req.Password, user.PasswordHash); err != nil {
-		s.logger.Warn("invalid password", zap.String("user_id", user.ID.String()))
+		s.logger.Warn("invalid password", "user_id", user.ID.String())
 		return nil, nil, domain.ErrInvalidCredentials
 	}
 
 	// Generate tokens
 	tokens, err := s.generateTokens(user)
 	if err != nil {
-		s.logger.Error("failed to generate tokens", zap.Error(err))
+		s.logger.Error("failed to generate tokens", "error", err)
 		return nil, nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
@@ -149,11 +149,11 @@ func (s *Service) SignIn(ctx context.Context, req *domain.SignInRequest, ipAddre
 	}
 
 	if err := s.repo.CreateSession(ctx, session); err != nil {
-		s.logger.Error("failed to create session", zap.Error(err))
+		s.logger.Error("failed to create session", "error", err)
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	s.logger.Info("user signed in successfully", zap.String("user_id", user.ID.String()))
+	s.logger.Info("user signed in successfully", "user_id", user.ID.String())
 	return user, tokens, nil
 }
 
@@ -167,11 +167,11 @@ func (s *Service) SignOut(ctx context.Context, token string) error {
 
 	// Delete session
 	if err := s.repo.DeleteSession(ctx, session.ID); err != nil {
-		s.logger.Error("failed to delete session", zap.Error(err))
+		s.logger.Error("failed to delete session", "error", err)
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
 
-	s.logger.Info("user signed out successfully", zap.String("user_id", session.UserID.String()))
+	s.logger.Info("user signed out successfully", "user_id", session.UserID.String())
 	return nil
 }
 
@@ -216,7 +216,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*domai
 	// Generate new tokens
 	tokens, err := s.generateTokens(user)
 	if err != nil {
-		s.logger.Error("failed to generate tokens", zap.Error(err))
+		s.logger.Error("failed to generate tokens", "error", err)
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
@@ -354,7 +354,7 @@ func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error 
 // CleanupExpiredSessions removes expired sessions from the database
 func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
 	if err := s.repo.DeleteExpiredSessions(ctx); err != nil {
-		s.logger.Error("failed to cleanup expired sessions", zap.Error(err))
+		s.logger.Error("failed to cleanup expired sessions", "error", err)
 		return fmt.Errorf("failed to cleanup expired sessions: %w", err)
 	}
 	s.logger.Info("expired sessions cleaned up")
