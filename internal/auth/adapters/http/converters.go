@@ -3,7 +3,7 @@ package http
 import (
 	"github.com/archesai/archesai/gen/api/common"
 	"github.com/archesai/archesai/gen/api/features/auth/users"
-	"github.com/archesai/archesai/internal/features/auth/domain"
+	"github.com/archesai/archesai/internal/auth/domain"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -54,8 +54,8 @@ func convertUpdateRequest(req *users.UpdateUserJSONRequestBody) map[string]inter
 
 // convertPagination converts generated pagination params to domain options
 func convertPagination(page *common.Page) (limit, offset int32) {
-	limit = 50  // default
-	offset = 0  // default
+	limit = 50 // default
+	offset = 0 // default
 
 	if page != nil {
 		if page.Size != nil {
@@ -81,10 +81,10 @@ func convertFilter(filter *users.UsersFilterNode) map[string]interface{} {
 	// For now, return empty filter - implement actual filter logic based on your needs
 	// The UsersFilterNode is a union type that needs special handling
 	result := make(map[string]interface{})
-	
+
 	// You would need to implement the actual filter parsing based on the union type
 	// filter.AsUsersFilterNode0() or filter.AsUsersFilterNode1()
-	
+
 	return result
 }
 
@@ -96,7 +96,7 @@ func convertSort(sortList *[]users.UsersSort) (string, string) {
 
 	// Take the first sort parameter
 	sort := (*sortList)[0]
-	
+
 	orderBy := "created_at"
 	orderDir := "desc"
 

@@ -20,8 +20,9 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Host string
-	Port int
+	Host        string
+	Port        int
+	DocsEnabled bool
 }
 
 type AuthConfig struct {
@@ -63,8 +64,9 @@ func Load() (*Config, error) {
 	return &Config{
 		v: v,
 		Server: ServerConfig{
-			Host: v.GetString("api.host"),
-			Port: v.GetInt("api.port"),
+			Host:        v.GetString("api.host"),
+			Port:        v.GetInt("api.port"),
+			DocsEnabled: v.GetBool("api.docs"),
 		},
 		Auth: AuthConfig{
 			JWTSecret:       v.GetString("auth.jwt_secret"),

@@ -5,9 +5,10 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
-	"github.com/archesai/archesai/internal/features/auth/domain"
-	"github.com/archesai/archesai/internal/features/auth/ports"
+	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth/ports"
 	"github.com/labstack/echo/v4"
 )
 
@@ -181,28 +182,42 @@ func GetClaimsFromContext(c echo.Context) (*domain.Claims, bool) {
 func RateLimitMiddleware(maxAttempts int, windowMinutes int) echo.MiddlewareFunc {
 	// This is a simplified version. In production, use a Redis-based solution
 	attempts := make(map[string]int)
-	
+
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			ip := c.RealIP()
-			
+
 			// Check attempts
 			if attempts[ip] >= maxAttempts {
 				return echo.NewHTTPError(http.StatusTooManyRequests, "too many authentication attempts")
 			}
-			
+
 			// Increment attempts
 			attempts[ip]++
-			
+
 			// Continue with request
 			err := next(c)
-			
+
 			// Reset on successful authentication
 			if err == nil && c.Response().Status == http.StatusOK {
 				delete(attempts, ip)
 			}
-			
+
 			return err
+		}
+	}
+}
+
+// SetRequestContextWithTimeout will set the request context with timeout for every incoming HTTP Request
+func SetRequestContextWithTimeout(d time.Duration) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx, cancel := context.WithTimeout(c.Request().Context(), d)
+			defer cancel()
+
+			newRequest := c.Request().WithContext(ctx)
+			c.SetRequest(newRequest)
+			return next(c)
 		}
 	}
 }

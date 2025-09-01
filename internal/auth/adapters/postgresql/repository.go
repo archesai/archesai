@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	"github.com/archesai/archesai/gen/db/postgresql"
-	"github.com/archesai/archesai/internal/features/auth/domain"
-	"github.com/archesai/archesai/internal/features/auth/ports"
+	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth/ports"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"

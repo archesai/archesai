@@ -51,6 +51,7 @@
     "@better-auth/cli": "catalog:",
     "@commitlint/cli": "catalog:root",
     "@commitlint/config-conventional": "catalog:root",
+    "@fastify/swagger": "catalog:fastify",
     "@fontsource/geist": "catalog:ui",
     "@fontsource/geist-mono": "catalog:ui",
     "@ibm-cloud/openapi-ruleset": "catalog:client",

@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	"github.com/archesai/archesai/internal/features/auth/domain"
+	"github.com/archesai/archesai/internal/auth/domain"
 	"github.com/google/uuid"
 )
 

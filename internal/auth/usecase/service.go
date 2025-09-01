@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/features/auth/domain"
-	"github.com/archesai/archesai/internal/features/auth/ports"
+	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth/ports"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

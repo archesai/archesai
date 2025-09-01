@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/archesai/archesai/gen/api/features/auth/users"
-	"github.com/archesai/archesai/internal/features/auth/domain"
-	"github.com/archesai/archesai/internal/features/auth/ports"
+	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/auth/ports"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -226,7 +226,7 @@ func (h *Handler) DeleteUser(ctx echo.Context, id openapi_types.UUID) error {
 func (h *Handler) FindManyUsers(ctx echo.Context, params users.FindManyUsersParams) error {
 	// Use converter functions for pagination
 	limit, offset := convertPagination(params.Page)
-	
+
 	// TODO: Apply filter and sort if needed
 	// filter := convertFilter(params.Filter)
 	// orderBy, orderDir := convertSort(params.Sort)
@@ -239,7 +239,7 @@ func (h *Handler) FindManyUsers(ctx echo.Context, params users.FindManyUsersPara
 
 	// Convert domain users to generated types
 	userEntities := convertToGeneratedUsers(domainUsers)
-	
+
 	response := map[string]interface{}{
 		"data":   userEntities,
 		"total":  len(userEntities),

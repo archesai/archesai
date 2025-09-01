@@ -7,15 +7,16 @@ import (
 	"os"
 	"time"
 
+	"github.com/archesai/archesai/gen/api"
 	postgresqlgen "github.com/archesai/archesai/gen/db/postgresql"
+	authhttp "github.com/archesai/archesai/internal/auth/adapters/http"
+	"github.com/archesai/archesai/internal/auth/adapters/postgresql"
+	"github.com/archesai/archesai/internal/auth/ports"
+	"github.com/archesai/archesai/internal/auth/usecase"
+	"github.com/archesai/archesai/internal/config"
+	"github.com/archesai/archesai/internal/database"
+	"github.com/archesai/archesai/internal/server"
 	"github.com/labstack/echo/v4"
-	authhttp "github.com/archesai/archesai/internal/features/auth/adapters/http"
-	"github.com/archesai/archesai/internal/features/auth/adapters/postgresql"
-	"github.com/archesai/archesai/internal/features/auth/ports"
-	"github.com/archesai/archesai/internal/features/auth/usecase"
-	"github.com/archesai/archesai/internal/infrastructure/config"
-	"github.com/archesai/archesai/internal/infrastructure/database"
-	"github.com/archesai/archesai/internal/infrastructure/server"
 )
 
 // Container holds all application dependencies
@@ -25,7 +26,7 @@ type Container struct {
 	Queries *postgresqlgen.Queries
 	Logger  *slog.Logger
 	Config  *config.Config
-	Server  *server.Server  // The HTTP server
+	Server  *server.Server // The HTTP server
 
 	// Auth feature
 	AuthRepository ports.Repository
@@ -43,7 +44,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	// Initialize slog logger
 	var logger *slog.Logger
 	var logLevel slog.Level
-	
+
 	// Parse log level
 	switch cfg.Logging.Level {
 	case "debug":
@@ -57,12 +58,12 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	default:
 		logLevel = slog.LevelInfo
 	}
-	
+
 	// Configure handler based on format preference
 	if cfg.Logging.Pretty {
 		// Use text handler for pretty output
 		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			Level: logLevel,
+			Level:     logLevel,
 			AddSource: logLevel == slog.LevelDebug,
 		}))
 	} else {
@@ -71,7 +72,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 			Level: logLevel,
 		}))
 	}
-	
+
 	// Set as default logger
 	slog.SetDefault(logger)
 
@@ -106,6 +107,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	serverConfig := &server.Config{
 		Port:           fmt.Sprintf("%d", cfg.Server.Port),
 		AllowedOrigins: cfg.GetAllowedOrigins(),
+		DocsEnabled:    cfg.Server.DocsEnabled,
 	}
 	httpServer := server.NewServer(serverConfig, logger)
 
@@ -154,6 +156,18 @@ func (c *Container) registerRoutes() {
 
 	// Register readiness check that can access the database
 	c.Server.SetReadinessCheck(c.readinessCheck)
+
+	// Setup API documentation if enabled
+	if c.Config.Server.DocsEnabled {
+		swagger, err := api.GetSwagger()
+		if err != nil {
+			c.Logger.Error("failed to load OpenAPI spec", "error", err)
+		} else {
+			if err := c.Server.SetupDocs(swagger); err != nil {
+				c.Logger.Error("failed to setup API docs", "error", err)
+			}
+		}
+	}
 
 	// Register all application routes
 	RegisterRoutes(e, c)

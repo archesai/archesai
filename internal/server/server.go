@@ -24,6 +24,7 @@ type Server struct {
 type Config struct {
 	Port           string
 	AllowedOrigins []string
+	DocsEnabled    bool
 }
 
 // NewServer creates a new API server
