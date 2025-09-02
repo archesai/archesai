@@ -1,0 +1,175 @@
+paths:
+  /runs:
+    post:
+      operationId: createRun
+      summary: Create a new run
+      tags: [Intelligence, Runs]
+      description: Create a new run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  description: The pipeline ID associated with the run
+                  type: string
+                  nullable: true
+              required:
+                - pipelineId
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+    get:
+      operationId: findManyRuns
+      summary: Find many runs
+      tags: [Intelligence, Runs]
+      description: Find many runs
+      parameters:
+        - $ref: ./parameters.yaml#/components/parameters/RunsFilter
+        - $ref: ../../common/parameters/schemas.yaml#/components/parameters/PageQuery
+        - $ref: ./parameters.yaml#/components/parameters/RunsSort
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/RunEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /runs/{id}:
+    delete:
+      operationId: deleteRun
+      summary: Delete a run
+      tags: [Intelligence, Runs]
+      description: Delete a run
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOneRun
+      summary: Find a run
+      tags: [Intelligence, Runs]
+      description: Find a run
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    patch:
+      operationId: updateRun
+      summary: Update a run
+      tags: [Intelligence, Runs]
+      description: Update a run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  description: The pipeline ID associated with the run
+                  type: string
+                  nullable: true
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'

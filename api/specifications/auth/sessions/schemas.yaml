@@ -1,0 +1,51 @@
+components:
+  schemas:
+    SessionEntity:
+      description: Schema for Session entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        activeOrganizationId:
+          description: The active organization ID
+          type: string
+          nullable: true
+        expiresAt:
+          description: The expiration date of the session
+          type: string
+        ipAddress:
+          description: The IP address of the session
+          type: string
+          nullable: true
+        token:
+          description: The session token
+          type: string
+        userAgent:
+          description: The user agent of the session
+          type: string
+          nullable: true
+        userId:
+          description: The ID of the user associated with the session
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - activeOrganizationId
+        - expiresAt
+        - ipAddress
+        - token
+        - userAgent
+        - userId
+      additionalProperties: false

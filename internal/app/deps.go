@@ -7,17 +7,41 @@ import (
 	"os"
 	"time"
 
-	"github.com/archesai/archesai/gen/api"
-	postgresqlgen "github.com/archesai/archesai/gen/db/postgresql"
-	authhttp "github.com/archesai/archesai/internal/auth/adapters/http"
-	"github.com/archesai/archesai/internal/auth/adapters/postgresql"
-	"github.com/archesai/archesai/internal/auth/ports"
-	"github.com/archesai/archesai/internal/auth/usecase"
-	"github.com/archesai/archesai/internal/config"
-	"github.com/archesai/archesai/internal/database"
-	"github.com/archesai/archesai/internal/server"
+	"github.com/archesai/archesai/internal/domains/auth/adapters/postgres"
+	"github.com/archesai/archesai/internal/domains/auth/handlers"
+	"github.com/archesai/archesai/internal/domains/auth/repositories"
+	"github.com/archesai/archesai/internal/domains/auth/services"
+	api "github.com/archesai/archesai/internal/generated/api"
+	"github.com/archesai/archesai/internal/generated/api/auth/users"
+	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
+	"github.com/archesai/archesai/internal/infrastructure/config"
+	"github.com/archesai/archesai/internal/infrastructure/database"
+	"github.com/archesai/archesai/internal/infrastructure/server"
 	"github.com/labstack/echo/v4"
 )
+
+// RegisterRoutes registers all application routes with the Echo server
+func RegisterRoutes(e *echo.Echo, container *Container) {
+	// API v1 group
+	v1 := e.Group("/api/v1")
+
+	// Register auth routes (custom endpoints not in OpenAPI)
+	container.AuthHandler.RegisterRoutes(v1)
+
+	// Register OpenAPI-generated user routes
+	// These implement the users.ServerInterface
+	userGroup := v1.Group("/auth")
+	users.RegisterHandlers(userGroup, container.AuthHandler)
+
+	// TODO: Register other feature routes as they are implemented
+	// Example for intelligence feature:
+	// intelligenceGroup := v1.Group("/intelligence")
+	// artifacts.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+	// labels.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+	// pipelines.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+	// runs.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+	// tools.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+}
 
 // Container holds all application dependencies
 type Container struct {
@@ -29,9 +53,9 @@ type Container struct {
 	Server  *server.Server // The HTTP server
 
 	// Auth feature
-	AuthRepository ports.Repository
-	AuthService    ports.Service
-	AuthHandler    *authhttp.Handler
+	AuthRepository repositories.Repository
+	AuthService    *services.Service
+	AuthHandler    *handlers.Handler
 
 	// TODO: Add other features as they are implemented
 	// IntelligenceRepository intelligence.Repository
@@ -89,14 +113,14 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	queries := postgresqlgen.New(db)
 
 	// Initialize auth feature
-	authRepo := postgresql.NewRepository(queries)
-	authConfig := usecase.Config{
+	authRepo := postgres.NewRepository(queries)
+	authConfig := services.Config{
 		JWTSecret:          cfg.Auth.JWTSecret,
 		AccessTokenExpiry:  cfg.Auth.AccessTokenTTL,
 		RefreshTokenExpiry: cfg.Auth.RefreshTokenTTL,
 	}
-	authService := usecase.NewService(authRepo, authConfig, logger)
-	authHandler := authhttp.NewHandler(authService, logger)
+	authService := services.NewService(authRepo, authConfig, logger)
+	authHandler := handlers.NewHandler(authService, logger)
 
 	// TODO: Initialize other features
 	// intelligenceRepo := intelligencepostgresql.NewRepository(db)

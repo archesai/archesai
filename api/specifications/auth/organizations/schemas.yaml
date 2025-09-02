@@ -1,0 +1,66 @@
+components:
+  schemas:
+    OrganizationEntity:
+      description: Schema for Organization entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        billingEmail:
+          description: The billing email to use for the organization
+          type: string
+          nullable: true
+        credits:
+          description: The number of credits you have remaining for this organization
+          type: number
+        logo:
+          description: The URL of the organization logo
+          type: string
+          nullable: true
+        metadata:
+          description: The metadata for the organization, used for custom data
+          type: string
+          nullable: true
+        name:
+          description: The name of the organization
+          type: string
+        plan:
+          description: The plan that the organization is subscribed to
+          type: string
+          enum:
+            - BASIC
+            - FREE
+            - PREMIUM
+            - STANDARD
+            - UNLIMITED
+        slug:
+          description: The unique slug for the organization, used in URLs
+          type: string
+        stripeCustomerId:
+          description: The Stripe customer ID
+          type: string
+          nullable: true
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - billingEmail
+        - credits
+        - logo
+        - metadata
+        - name
+        - plan
+        - slug
+        - stripeCustomerId
+      additionalProperties: false

@@ -1,5 +1,0 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
-import-mapping:
-  ./schemas.yaml: '-'
-  ../../../common/filters.yaml: github.com/archesai/archesai/gen/api/common
-  ../../../common/errors.yaml: github.com/archesai/archesai/gen/api/common

@@ -1,0 +1,46 @@
+components:
+  parameters:
+    OrganizationsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: ../../common/filters/schemas.yaml#/components/schemas/FilterNode
+      description: |
+        Filter organizations by field values. Supported fields:
+        - createdAt, id, updatedAt, billingEmail, credits, logo
+        - metadata, name, plan, slug, stripeCustomerId
+
+    OrganizationsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: object
+          required: [field, order]
+          properties:
+            field:
+              type: string
+              enum:
+                [
+                  createdAt,
+                  id,
+                  updatedAt,
+                  billingEmail,
+                  credits,
+                  logo,
+                  metadata,
+                  name,
+                  plan,
+                  slug,
+                  stripeCustomerId
+                ]
+            order:
+              type: string
+              enum: [asc, desc]

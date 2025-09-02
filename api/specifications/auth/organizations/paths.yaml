@@ -1,0 +1,186 @@
+paths:
+  /organizations:
+    post:
+      operationId: createOrganization
+      summary: Create a new organization
+      tags: [Auth, Organizations]
+      description: Create a new organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                billingEmail:
+                  description: The billing email to use for the organization
+                  type: string
+                  nullable: true
+                organizationId:
+                  description: The ID of the item
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              required:
+                - billingEmail
+                - organizationId
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+    get:
+      operationId: findManyOrganizations
+      summary: Find many organizations
+      tags: [Auth, Organizations]
+      description: Find many organizations
+      parameters:
+        - $ref: ./parameters.yaml#/components/parameters/OrganizationsFilter
+        - $ref: ../../common/parameters/schemas.yaml#/components/parameters/PageQuery
+        - $ref: ./parameters.yaml#/components/parameters/OrganizationsSort
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/OrganizationEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /organizations/{id}:
+    delete:
+      operationId: deleteOrganization
+      summary: Delete an organization
+      tags: [Auth, Organizations]
+      description: Delete an organization
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOneOrganization
+      summary: Find an organization
+      tags: [Auth, Organizations]
+      description: Find an organization
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    patch:
+      operationId: updateOrganization
+      summary: Update an organization
+      tags: [Auth, Organizations]
+      description: Update an organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                billingEmail:
+                  description: The billing email to use for the organization
+                  type: string
+                  nullable: true
+                organizationId:
+                  description: The ID of the item
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'

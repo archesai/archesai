@@ -1,0 +1,33 @@
+components:
+  parameters:
+    UsersFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: ../../common/filters/schemas.yaml#/components/schemas/FilterNode
+      description: |
+        Filter users by field values. Supported fields:
+        - createdAt, id, updatedAt, email, emailVerified, image, name
+
+    UsersSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: object
+          required: [field, order]
+          properties:
+            field:
+              type: string
+              enum:
+                [createdAt, id, updatedAt, email, emailVerified, image, name]
+            order:
+              type: string
+              enum: [asc, desc]

@@ -1,0 +1,173 @@
+paths:
+  /labels:
+    post:
+      operationId: createLabel
+      summary: Create a new label
+      tags: [Intelligence, Labels]
+      description: Create a new label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the label
+                  type: string
+              required:
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/LabelEntity'
+                required:
+                  - data
+                additionalProperties: false
+    get:
+      operationId: findManyLabels
+      summary: Find many labels
+      tags: [Intelligence, Labels]
+      description: Find many labels
+      parameters:
+        - $ref: ./parameters.yaml#/components/parameters/LabelsFilter
+        - $ref: ../../common/parameters/schemas.yaml#/components/parameters/PageQuery
+        - $ref: ./parameters.yaml#/components/parameters/LabelsSort
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './schemas.yaml#/components/schemas/LabelEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+  /labels/{id}:
+    delete:
+      operationId: deleteLabel
+      summary: Delete a label
+      tags: [Intelligence, Labels]
+      description: Delete a label
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/LabelEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    get:
+      operationId: getOneLabel
+      summary: Find a label
+      tags: [Intelligence, Labels]
+      description: Find a label
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/LabelEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'
+    patch:
+      operationId: updateLabel
+      summary: Update a label
+      tags: [Intelligence, Labels]
+      description: Update a label
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: The name of the label
+                  type: string
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: './schemas.yaml#/components/schemas/LabelEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '../../common/responses/schemas.yaml#/components/responses/NotFound'

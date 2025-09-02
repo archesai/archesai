@@ -1,0 +1,88 @@
+components:
+  schemas:
+    PipelineStepEntity:
+      description: Schema for Pipeline Step entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        dependents:
+          type: array
+          items:
+            type: object
+            properties:
+              pipelineStepId:
+                type: string
+            required:
+              - pipelineStepId
+            additionalProperties: false
+        pipelineId:
+          type: string
+        prerequisites:
+          type: array
+          items:
+            type: object
+            properties:
+              pipelineStepId:
+                type: string
+            required:
+              - pipelineStepId
+            additionalProperties: false
+        toolId:
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - dependents
+        - pipelineId
+        - prerequisites
+        - toolId
+      additionalProperties: false
+    PipelineEntity:
+      description: Schema for Pipeline entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        description:
+          description: The pipeline description
+          type: string
+          nullable: true
+        name:
+          description: The pipeline name
+          type: string
+          nullable: true
+        organizationId:
+          description: The organization id
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - description
+        - name
+        - organizationId
+      additionalProperties: false

@@ -1,0 +1,66 @@
+components:
+  schemas:
+    RunEntity:
+      description: Schema for Run entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+        completedAt:
+          description: The timestamp when the run completed
+          type: string
+          nullable: true
+          format: date-time
+        error:
+          description: The error message
+          type: string
+          nullable: true
+        organizationId:
+          description: The organization name
+          type: string
+        pipelineId:
+          description: The pipeline ID associated with the run
+          type: string
+          nullable: true
+        progress:
+          description: The percent progress of the run
+          type: number
+        startedAt:
+          description: The timestamp when the run started
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+            - COMPLETED
+            - FAILED
+            - PROCESSING
+            - QUEUED
+        toolId:
+          description: The tool ID associated with the run
+          type: string
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - completedAt
+        - error
+        - organizationId
+        - pipelineId
+        - progress
+        - startedAt
+        - status
+        - toolId
+      additionalProperties: false

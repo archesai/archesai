@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/archesai/archesai/internal/app"
-	"github.com/archesai/archesai/internal/config"
+	"github.com/archesai/archesai/internal/infrastructure/config"
 )
 
 func main() {

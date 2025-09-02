@@ -1,0 +1,30 @@
+components:
+  parameters:
+    FilterQuery:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '../../common/filters/schemas.yaml#/components/schemas/FilterNode'
+
+    PageQuery:
+      in: query
+      name: page
+      required: false
+      style: form
+      explode: true
+      schema:
+        $ref: '../../common/filters/schemas.yaml#/components/schemas/Page'
+
+    SortQuery:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          $ref: '../../common/filters/schemas.yaml#/components/schemas/Sort'
