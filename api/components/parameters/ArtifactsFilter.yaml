@@ -1,0 +1,11 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: |
+  Filter artifacts by field values. Supported fields:
+  - createdAt, id, updatedAt, credits, description, mimeType
+  - name, organizationId, previewImage, producerId, text, url

@@ -1,0 +1,13 @@
+description: Billing configuration for Stripe
+type: object
+properties:
+  enabled:
+    description: Enable billing functionality
+    type: boolean
+    default: false
+    example: true
+  stripe:
+    $ref: ./StripeConfig.yaml
+required:
+  - enabled
+additionalProperties: false

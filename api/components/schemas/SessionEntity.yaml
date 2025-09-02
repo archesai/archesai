@@ -1,0 +1,67 @@
+description: Schema for Session entity
+type: object
+properties:
+  createdAt:
+    description: The date this item was created
+    type: string
+    format: date-time
+    example: '2024-01-15T09:30:00Z'
+    minLength: 1
+  id:
+    description: The ID of the item
+    type: string
+    format: uuid
+    pattern: >-
+      ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+  updatedAt:
+    description: The date this item was last updated
+    type: string
+    format: date-time
+    example: '2024-01-15T09:30:00Z'
+    minLength: 1
+  activeOrganizationId:
+    description: The active organization ID
+    type: string
+    nullable: true
+    example: example-id-123
+    minLength: 1
+  expiresAt:
+    description: The expiration date of the session
+    type: string
+    minLength: 1
+    example: example-string
+  ipAddress:
+    description: The IP address of the session
+    type: string
+    nullable: true
+    example: example-string
+    minLength: 1
+  token:
+    description: The session token
+    type: string
+    minLength: 1
+    example: example-string
+  userAgent:
+    description: The user agent of the session
+    type: string
+    nullable: true
+    example: example-string
+    minLength: 1
+  userId:
+    description: The ID of the user associated with the session
+    type: string
+    minLength: 1
+    example: example-id-123
+required:
+  - createdAt
+  - id
+  - updatedAt
+  - activeOrganizationId
+  - expiresAt
+  - ipAddress
+  - token
+  - userAgent
+  - userId
+additionalProperties: false

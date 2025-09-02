@@ -1,0 +1,11 @@
+description: Local username/password authentication
+type: object
+properties:
+  enabled:
+    description: Enable local authentication
+    type: boolean
+    default: true
+    example: true
+required:
+  - enabled
+additionalProperties: false

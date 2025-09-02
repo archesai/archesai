@@ -6,21 +6,17 @@ import (
 
 	"github.com/archesai/archesai/internal/domains/auth/entities"
 	"github.com/archesai/archesai/internal/domains/auth/services"
-	"github.com/archesai/archesai/internal/generated/api/auth/users"
+	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Handler handles HTTP requests for auth operations
-// Implements users.ServerInterface
 type Handler struct {
 	service *services.Service
 	logger  *slog.Logger
 }
-
-// Ensure Handler implements users.ServerInterface
-var _ users.ServerInterface = (*Handler)(nil)
 
 // NewHandler creates a new auth HTTP handler
 func NewHandler(service *services.Service, logger *slog.Logger) *Handler {
@@ -150,9 +146,9 @@ func (h *Handler) RefreshToken(c echo.Context) error {
 }
 
 // GetOneUser handles retrieving user information
-// Implements users.ServerInterface.GetOneUser
+// GetOneUser handles getting a single user
 func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
-	userID := uuid.UUID(id)
+	userID := id
 
 	user, err := h.service.GetUser(ctx.Request().Context(), userID)
 	if err != nil {
@@ -169,11 +165,11 @@ func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
 }
 
 // UpdateUser handles updating user information
-// Implements users.ServerInterface.UpdateUser
+// UpdateUser handles updating a user
 func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
-	userID := uuid.UUID(id)
+	userID := id
 
-	var req users.UpdateUserJSONRequestBody
+	var req api.UpdateUserJSONRequestBody
 	if err := ctx.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -183,6 +179,7 @@ func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 	if req.Email != nil {
 		// Note: Email update might need special handling (verification, etc.)
 		// For now, we'll skip email updates via this endpoint
+		h.logger.Info("email update requested but skipped", "user_id", id)
 	}
 	if req.Image != nil {
 		domainReq.Image = req.Image
@@ -203,9 +200,8 @@ func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 }
 
 // DeleteUser handles user deletion
-// Implements users.ServerInterface.DeleteUser
 func (h *Handler) DeleteUser(ctx echo.Context, id openapi_types.UUID) error {
-	userID := uuid.UUID(id)
+	userID := id
 
 	err := h.service.DeleteUser(ctx.Request().Context(), userID)
 	if err != nil {
@@ -222,8 +218,7 @@ func (h *Handler) DeleteUser(ctx echo.Context, id openapi_types.UUID) error {
 }
 
 // FindManyUsers handles listing users with pagination
-// Implements users.ServerInterface.FindManyUsers
-func (h *Handler) FindManyUsers(ctx echo.Context, params users.FindManyUsersParams) error {
+func (h *Handler) FindManyUsers(ctx echo.Context, params api.FindManyUsersParams) error {
 	// Use converter functions for pagination
 	limit, offset := convertPagination(params.Page)
 
@@ -253,10 +248,39 @@ func (h *Handler) FindManyUsers(ctx echo.Context, params users.FindManyUsersPara
 // RegisterRoutes registers auth routes with the Echo router
 func (h *Handler) RegisterRoutes(e *echo.Group) {
 	// Authentication routes
-	e.POST("/auth/signup", h.SignUp)
-	e.POST("/auth/signin", h.SignIn)
-	e.POST("/auth/signout", h.SignOut)
+	e.POST("/auth/sign-up", h.SignUp)
+	e.POST("/auth/sign-in", h.SignIn)
+	e.POST("/auth/sign-out", h.SignOut)
 	e.POST("/auth/refresh", h.RefreshToken)
 
-	// Note: User routes will be registered via the generated RegisterHandlers function
+	// User CRUD routes
+	e.GET("/auth/users", func(ctx echo.Context) error {
+		// Parse query parameters into FindManyUsersParams
+		var params api.FindManyUsersParams
+		if err := (&echo.DefaultBinder{}).BindQueryParams(ctx, &params); err != nil {
+			return err
+		}
+		return h.FindManyUsers(ctx, params)
+	})
+	e.GET("/auth/users/:id", func(ctx echo.Context) error {
+		id, err := uuid.Parse(ctx.Param("id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
+		}
+		return h.GetOneUser(ctx, id)
+	})
+	e.PATCH("/auth/users/:id", func(ctx echo.Context) error {
+		id, err := uuid.Parse(ctx.Param("id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
+		}
+		return h.UpdateUser(ctx, id)
+	})
+	e.DELETE("/auth/users/:id", func(ctx echo.Context) error {
+		id, err := uuid.Parse(ctx.Param("id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
+		}
+		return h.DeleteUser(ctx, id)
+	})
 }

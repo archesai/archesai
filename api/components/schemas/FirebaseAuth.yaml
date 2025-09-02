@@ -1,0 +1,25 @@
+description: Firebase authentication configuration
+type: object
+properties:
+  enabled:
+    description: Enable Firebase authentication
+    type: boolean
+    default: false
+    example: true
+  clientEmail:
+    description: Firebase service account client email address
+    type: string
+    example: example-string
+  privateKey:
+    description: Firebase service account private key (PEM format)
+    type: string
+    minLength: 1
+    example: example-string
+  projectId:
+    description: Firebase project ID for authentication
+    type: string
+    minLength: 1
+    example: example-id-123
+required:
+  - enabled
+additionalProperties: false

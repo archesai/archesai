@@ -1,3 +1,4 @@
+// Package postgres provides PostgreSQL implementations for auth domain repositories.
 package postgres
 
 import (
@@ -29,6 +30,7 @@ func NewRepository(q postgresql.Querier) *Repository {
 
 // User operations
 
+// GetUserByEmail retrieves a user by their email address.
 func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
 	row, err := r.q.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -40,6 +42,7 @@ func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*entitie
 	return r.dbUserToDomain(row), nil
 }
 
+// GetUserByID retrieves a user by their unique identifier.
 func (r *Repository) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.User, error) {
 	// Note: Generated queries expect string IDs, need to convert
 	row, err := r.q.GetUser(ctx, id.String())
@@ -52,6 +55,7 @@ func (r *Repository) GetUserByID(ctx context.Context, id uuid.UUID) (*entities.U
 	return r.dbUserToDomain(row), nil
 }
 
+// CreateUser creates a new user in the database.
 func (r *Repository) CreateUser(ctx context.Context, user *entities.User) error {
 	// Note: Current schema doesn't include password_hash field
 	// This needs to be added to the database schema and queries
@@ -67,6 +71,7 @@ func (r *Repository) CreateUser(ctx context.Context, user *entities.User) error 
 	return err
 }
 
+// UpdateUser updates an existing user's information.
 func (r *Repository) UpdateUser(ctx context.Context, user *entities.User) error {
 	params := postgresql.UpdateUserParams{
 		ID:            user.ID.String(),
@@ -85,6 +90,7 @@ func (r *Repository) UpdateUser(ctx context.Context, user *entities.User) error 
 	return err
 }
 
+// DeleteUser removes a user from the database.
 func (r *Repository) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	err := r.q.DeleteUser(ctx, id.String())
 	if err != nil {
@@ -95,6 +101,7 @@ func (r *Repository) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+// ListUsers retrieves a paginated list of users.
 func (r *Repository) ListUsers(ctx context.Context, limit, offset int32) ([]*entities.User, error) {
 	if limit == 0 {
 		limit = 50
@@ -120,6 +127,7 @@ func (r *Repository) ListUsers(ctx context.Context, limit, offset int32) ([]*ent
 
 // Session operations
 
+// CreateSession creates a new user session.
 func (r *Repository) CreateSession(ctx context.Context, session *entities.Session) error {
 	params := postgresql.CreateSessionParams{
 		UserID:               session.UserID.String(),
@@ -134,6 +142,7 @@ func (r *Repository) CreateSession(ctx context.Context, session *entities.Sessio
 	return err
 }
 
+// GetSessionByToken retrieves a session by its token.
 func (r *Repository) GetSessionByToken(ctx context.Context, token string) (*entities.Session, error) {
 	row, err := r.q.GetSessionByToken(ctx, token)
 	if err != nil {
@@ -145,6 +154,7 @@ func (r *Repository) GetSessionByToken(ctx context.Context, token string) (*enti
 	return r.dbSessionToDomain(row), nil
 }
 
+// GetSessionByID retrieves a session by its unique identifier.
 func (r *Repository) GetSessionByID(ctx context.Context, id uuid.UUID) (*entities.Session, error) {
 	row, err := r.q.GetSession(ctx, id.String())
 	if err != nil {
@@ -156,6 +166,7 @@ func (r *Repository) GetSessionByID(ctx context.Context, id uuid.UUID) (*entitie
 	return r.dbSessionToDomain(row), nil
 }
 
+// UpdateSession updates an existing session.
 func (r *Repository) UpdateSession(ctx context.Context, session *entities.Session) error {
 	params := postgresql.UpdateSessionParams{
 		ID:                   session.ID.String(),
@@ -172,6 +183,7 @@ func (r *Repository) UpdateSession(ctx context.Context, session *entities.Sessio
 	return err
 }
 
+// DeleteSession removes a session from the database.
 func (r *Repository) DeleteSession(ctx context.Context, id uuid.UUID) error {
 	err := r.q.DeleteSession(ctx, id.String())
 	if err != nil {
@@ -182,11 +194,13 @@ func (r *Repository) DeleteSession(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+// DeleteUserSessions removes all sessions for a specific user.
 func (r *Repository) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
 	return r.q.DeleteSessionsByUser(ctx, userID.String())
 }
 
-func (r *Repository) DeleteExpiredSessions(ctx context.Context) error {
+// DeleteExpiredSessions removes all expired sessions from the database.
+func (r *Repository) DeleteExpiredSessions(_ context.Context) error {
 	// TODO: Add DeleteExpiredSessions query to auth.sql
 	// For now, return nil (no-op)
 	return nil

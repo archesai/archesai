@@ -1,0 +1,91 @@
+description: Schema for Artifact entity
+type: object
+properties:
+  createdAt:
+    description: The date this item was created
+    type: string
+    format: date-time
+    example: '2024-01-15T09:30:00Z'
+    minLength: 1
+  id:
+    description: The ID of the item
+    type: string
+    format: uuid
+    pattern: >-
+      ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+  updatedAt:
+    description: The date this item was last updated
+    type: string
+    format: date-time
+    example: '2024-01-15T09:30:00Z'
+    minLength: 1
+  credits:
+    description: >-
+      The number of credits required to access this artifact. This is used for
+      metering and billing purposes.
+    type: number
+    example: 42
+  description:
+    description: The artifact's description
+    type: string
+    nullable: true
+    example: Example description text
+    minLength: 1
+  mimeType:
+    description: The MIME type of the artifact, e.g. image/png
+    type: string
+    minLength: 1
+    example: example-string
+  name:
+    description: The name of the artifact, used for display purposes
+    type: string
+    nullable: true
+    example: Example Name
+    minLength: 1
+  organizationId:
+    description: The organization name
+    type: string
+    minLength: 1
+    example: example-id-123
+  previewImage:
+    description: >-
+      The URL of the preview image for this artifact. This is used for
+      displaying a thumbnail in the UI.
+    type: string
+    nullable: true
+    example: example-string
+    minLength: 1
+  producerId:
+    description: The ID of the run that produced this artifact, if applicable
+    type: string
+    nullable: true
+    example: example-id-123
+    minLength: 1
+  text:
+    description: The artifact text
+    type: string
+    nullable: true
+    example: example-string
+    minLength: 1
+  url:
+    description: The artifact URL
+    type: string
+    nullable: true
+    example: example-string
+    minLength: 1
+required:
+  - createdAt
+  - id
+  - updatedAt
+  - credits
+  - description
+  - mimeType
+  - name
+  - organizationId
+  - previewImage
+  - producerId
+  - text
+  - url
+additionalProperties: false

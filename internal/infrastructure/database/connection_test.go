@@ -49,7 +49,7 @@ import (
 // 	return dbContainer.Terminate, err
 // }
 
-func TestMain(m *testing.M) {
+func TestMain(_ *testing.M) {
 	// teardown, err := mustStartPostgresContainer()
 	// if err != nil {
 	// 	log.Fatalf("could not start postgres container: %v", err)
@@ -62,14 +62,14 @@ func TestMain(m *testing.M) {
 	// }
 }
 
-func TestNew(t *testing.T) {
+func TestNew(_ *testing.T) {
 
 }
 
-func TestHealth(t *testing.T) {
+func TestHealth(_ *testing.T) {
 
 }
 
-func TestClose(t *testing.T) {
+func TestClose(_ *testing.T) {
 
 }

@@ -1,3 +1,4 @@
+// Package repositories defines repository interfaces for the auth domain.
 package repositories
 
 import (

@@ -1,3 +1,4 @@
+// Package main provides the entry point for the ArchesAI API server.
 package main
 
 import (
@@ -22,7 +23,11 @@ func main() {
 		slog.Error("Failed to initialize application: %v", "error", err)
 		os.Exit(1)
 	}
-	defer container.Close()
+	defer func() {
+		if err := container.Close(); err != nil {
+			slog.Error("Failed to close container: %v", "error", err)
+		}
+	}()
 
 	// Start the server (container owns it now)
 	if err := container.Server.Start(); err != nil {

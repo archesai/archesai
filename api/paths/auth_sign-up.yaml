@@ -1,0 +1,50 @@
+post:
+  operationId: register
+  summary: Register
+  tags:
+    - Auth
+  description: This endpoint will register you with your e-mail and password
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email address associated with the account
+              type: string
+              format: email
+              pattern: >-
+                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+              example: user@example.com
+              minLength: 1
+            name:
+              description: The name of the user creating the account
+              type: string
+              minLength: 1
+              example: Example Name
+            password:
+              description: The password for the account
+              type: string
+              minLength: 1
+              example: example-string
+          required:
+            - email
+            - name
+            - password
+    required: true
+  responses:
+    '201':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/UserEntity.yaml
+            required:
+              - data
+            additionalProperties: false
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

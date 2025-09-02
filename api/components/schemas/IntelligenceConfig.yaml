@@ -1,0 +1,23 @@
+description: Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
+type: object
+properties:
+  embedding:
+    $ref: ./EmbeddingConfig.yaml
+  llm:
+    $ref: ./LLMConfig.yaml
+  runpod:
+    $ref: ./RunPodConfig.yaml
+  scraper:
+    $ref: ./ScraperConfig.yaml
+  speech:
+    $ref: ./SpeechConfig.yaml
+  unstructured:
+    $ref: ./UnstructuredConfig.yaml
+required:
+  - embedding
+  - llm
+  - runpod
+  - scraper
+  - speech
+  - unstructured
+additionalProperties: false

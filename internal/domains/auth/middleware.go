@@ -1,3 +1,4 @@
+// Package auth provides authentication and authorization middleware.
 package auth
 
 import (
@@ -179,7 +180,7 @@ func GetClaimsFromContext(c echo.Context) (*entities.Claims, bool) {
 }
 
 // RateLimitMiddleware creates a rate limiting middleware for authentication endpoints
-func RateLimitMiddleware(maxAttempts int, windowMinutes int) echo.MiddlewareFunc {
+func RateLimitMiddleware(maxAttempts int, _ int) echo.MiddlewareFunc {
 	// This is a simplified version. In production, use a Redis-based solution
 	attempts := make(map[string]int)
 

@@ -1,0 +1,17 @@
+description: Authentication configuration for the API server
+type: object
+properties:
+  enabled:
+    description: Enable authentication
+    type: boolean
+    default: true
+    example: true
+  firebase:
+    $ref: ./FirebaseAuth.yaml
+  local:
+    $ref: ./LocalAuth.yaml
+  twitter:
+    $ref: ./TwitterAuth.yaml
+required:
+  - enabled
+additionalProperties: false

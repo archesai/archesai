@@ -1,0 +1,33 @@
+in: query
+name: sort
+required: false
+style: form
+explode: true
+schema:
+  type: array
+  items:
+    type: object
+    required:
+      - field
+      - order
+    properties:
+      field:
+        type: string
+        enum:
+          - createdAt
+          - id
+          - updatedAt
+          - email
+          - emailVerified
+          - image
+          - name
+        example: createdAt
+        minLength: 1
+      order:
+        type: string
+        enum:
+          - asc
+          - desc
+        example: asc
+        minLength: 1
+description: The sort parameter

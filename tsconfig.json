@@ -12,22 +12,10 @@
       "path": "./web/platform"
     },
     {
-      "path": "./web/intelligence"
-    },
-    {
-      "path": "./web/billing"
-    },
-    {
       "path": "./web/schemas"
     },
     {
-      "path": "./web/storage"
-    },
-    {
       "path": "./web/client"
-    },
-    {
-      "path": "./web/core"
     },
     {
       "path": "./web/ui"

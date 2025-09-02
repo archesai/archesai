@@ -1,0 +1,17 @@
+description: Stripe payment configuration
+type: object
+properties:
+  token:
+    description: Stripe secret API key
+    type: string
+    minLength: 1
+    example: example-string
+  whsec:
+    description: Stripe webhook endpoint secret
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - token
+  - whsec
+additionalProperties: false

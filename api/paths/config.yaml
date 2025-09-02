@@ -1,0 +1,15 @@
+get:
+  operationId: getConfig
+  summary: Get the configuration
+  tags:
+    - Config
+  description: Get the configuration of the application
+  responses:
+    '200':
+      description: Current configuration
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ArchesConfig.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml

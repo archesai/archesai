@@ -83,3 +83,9 @@ test-output
 .cache
 
 .husky/_
+
+**/tmp
+
+#api/openapi.bundled.yaml
+#api/split/
+bin

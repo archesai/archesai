@@ -1,0 +1,15 @@
+get:
+  operationId: getHealth
+  summary: Health check endpoint
+  tags:
+    - Health
+  description: Check the health status of the application
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/HealthResponse.yaml
+    '400':
+      $ref: ../components/responses/BadRequest.yaml

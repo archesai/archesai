@@ -1,3 +1,4 @@
+// Package app provides application dependency injection and route registration.
 package app
 
 import (
@@ -11,8 +12,7 @@ import (
 	"github.com/archesai/archesai/internal/domains/auth/handlers"
 	"github.com/archesai/archesai/internal/domains/auth/repositories"
 	"github.com/archesai/archesai/internal/domains/auth/services"
-	api "github.com/archesai/archesai/internal/generated/api"
-	"github.com/archesai/archesai/internal/generated/api/auth/users"
+	"github.com/archesai/archesai/internal/generated/api"
 	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/database"
@@ -25,13 +25,8 @@ func RegisterRoutes(e *echo.Echo, container *Container) {
 	// API v1 group
 	v1 := e.Group("/api/v1")
 
-	// Register auth routes (custom endpoints not in OpenAPI)
+	// Register auth routes
 	container.AuthHandler.RegisterRoutes(v1)
-
-	// Register OpenAPI-generated user routes
-	// These implement the users.ServerInterface
-	userGroup := v1.Group("/auth")
-	users.RegisterHandlers(userGroup, container.AuthHandler)
 
 	// TODO: Register other feature routes as they are implemented
 	// Example for intelligence feature:

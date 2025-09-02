@@ -1,3 +1,4 @@
+// Package services provides business logic services for the auth domain.
 package services
 
 import (
@@ -331,7 +332,7 @@ func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*entiti
 }
 
 // GetUserSessions retrieves all sessions for a user
-func (s *Service) GetUserSessions(ctx context.Context, userID uuid.UUID) ([]*entities.Session, error) {
+func (s *Service) GetUserSessions(_ context.Context, _ uuid.UUID) ([]*entities.Session, error) {
 	// TODO: Add ListSessionsByUser query to auth.sql
 	// For now, return empty slice
 	return []*entities.Session{}, nil

@@ -1,0 +1,11 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: |
+  Filter runs by field values. Supported fields:
+  - createdAt, id, updatedAt, completedAt, error, organizationId
+  - pipelineId, progress, startedAt, status, toolId

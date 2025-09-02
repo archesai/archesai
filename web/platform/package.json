@@ -33,8 +33,5 @@
     "react-dom": "catalog:react19",
     "rollup-plugin-visualizer": "catalog:vite",
     "vite": "catalog:vite"
-  },
-  "nx": {
-    "projectType": "application"
   }
 }

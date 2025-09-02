@@ -1,0 +1,11 @@
+description: Kubernetes resource configuration
+type: object
+properties:
+  limits:
+    $ref: ./ResourceLimits.yaml
+  requests:
+    $ref: ./ResourceRequests.yaml
+required:
+  - limits
+  - requests
+additionalProperties: false

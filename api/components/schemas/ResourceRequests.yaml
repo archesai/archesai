@@ -1,0 +1,17 @@
+description: Resource requests
+type: object
+properties:
+  cpu:
+    description: Requested CPU allocation
+    type: string
+    minLength: 1
+    example: example-string
+  memory:
+    description: Requested memory allocation
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - cpu
+  - memory
+additionalProperties: false

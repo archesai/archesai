@@ -1,0 +1,31 @@
+description: Schema for User entity
+allOf:
+  - $ref: ./BaseEntity.yaml
+  - type: object
+    properties:
+      email:
+        description: The user's email address
+        allOf:
+          - $ref: ./Email.yaml
+      emailVerified:
+        description: Whether the user's email has been verified
+        type: boolean
+        default: false
+        example: true
+      image:
+        description: The user's avatar image URL
+        allOf:
+          - $ref: ./NullableString.yaml
+        example: https://example.com/avatar.jpg
+      name:
+        description: The user's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: John Doe
+        x-go-validate: required,min=1,max=255
+    required:
+      - email
+      - emailVerified
+      - name
+    additionalProperties: false

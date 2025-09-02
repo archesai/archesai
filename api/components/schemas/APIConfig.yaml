@@ -1,0 +1,42 @@
+description: Configuration schema for the API server
+type: object
+properties:
+  cors:
+    $ref: ./CORSConfig.yaml
+  docs:
+    description: Enable or disable API documentation
+    type: boolean
+    default: true
+    example: true
+  email:
+    $ref: ./EmailConfig.yaml
+  host:
+    description: The host address on which the API server will listen
+    type: string
+    default: 0.0.0.0
+    minLength: 1
+    example: example-string
+  port:
+    description: The port on which the API server will listen
+    type: number
+    default: 3001
+    example: 42
+  validate:
+    description: Enable or disable request validation
+    type: boolean
+    default: true
+    example: true
+  image:
+    $ref: ./ImageConfig.yaml
+  resources:
+    $ref: ./ResourceConfig.yaml
+required:
+  - cors
+  - docs
+  - email
+  - host
+  - port
+  - validate
+  - image
+  - resources
+additionalProperties: false

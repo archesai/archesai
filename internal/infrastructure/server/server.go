@@ -160,11 +160,13 @@ func (s *Server) setupMiddleware() {
 			return c.RealIP(), nil
 		},
 		ErrorHandler: func(c echo.Context, err error) error {
+			s.logger.Warn("rate limiter error", "error", err, "ip", c.RealIP())
 			return c.JSON(http.StatusTooManyRequests, map[string]string{
 				"error": "Too many requests",
 			})
 		},
 		DenyHandler: func(c echo.Context, identifier string, err error) error {
+			s.logger.Info("rate limit exceeded", "identifier", identifier, "path", c.Request().URL.Path, "error", err)
 			return c.JSON(http.StatusTooManyRequests, map[string]string{
 				"error": "Rate limit exceeded",
 			})
@@ -200,7 +202,7 @@ func (s *Server) setupInfrastructureRoutes() {
 	})
 
 	// 404 handler - must be registered last (will be overridden when container registers routes)
-	s.echo.RouteNotFound("/*", func(c echo.Context) error {
+	s.echo.RouteNotFound("/*", func(_ echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "route not found")
 	})
 }

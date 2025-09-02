@@ -1,0 +1,15 @@
+description: Configuration for text embedding generation
+type: object
+properties:
+  type:
+    description: The embedding provider to use for vector embeddings
+    type: string
+    enum:
+      - openai
+      - ollama
+    default: ollama
+    example: openai
+    minLength: 1
+required:
+  - type
+additionalProperties: false

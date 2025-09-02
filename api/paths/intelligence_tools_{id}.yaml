@@ -1,0 +1,118 @@
+delete:
+  operationId: deleteTool
+  summary: Delete a tool
+  tags:
+    - Tools
+  description: Delete a tool
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/ToolEntity.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getOneTool
+  summary: Find a tool
+  tags:
+    - Tools
+  description: Find a tool
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/ToolEntity.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updateTool
+  summary: Update a tool
+  tags:
+    - Tools
+  description: Update a tool
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            description:
+              description: The tool description
+              type: string
+              minLength: 1
+              example: Example description text
+            name:
+              description: The name of the tool
+              type: string
+              minLength: 1
+              example: Example Name
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/ToolEntity.yaml
+            required:
+              - data
+            additionalProperties: false
+    '404':
+      $ref: ../components/responses/NotFound.yaml

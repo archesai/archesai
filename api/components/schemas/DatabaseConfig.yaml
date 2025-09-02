@@ -1,0 +1,31 @@
+description: Database configuration for PostgreSQL
+type: object
+properties:
+  enabled:
+    description: Enable database
+    type: boolean
+    default: true
+    example: true
+  url:
+    description: Database connection URL/string
+    type: string
+    default: postgresql://admin:password@localhost:5432/archesai-db?schema=public
+    minLength: 1
+    example: example-string
+  managed:
+    description: Use managed database deployment
+    type: boolean
+    default: false
+    example: true
+  auth:
+    $ref: ./DatabaseAuth.yaml
+  image:
+    $ref: ./ImageConfig.yaml
+  persistence:
+    $ref: ./PersistenceConfig.yaml
+  resources:
+    $ref: ./ResourceConfig.yaml
+required:
+  - enabled
+  - url
+additionalProperties: false

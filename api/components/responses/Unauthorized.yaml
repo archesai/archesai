@@ -1,0 +1,5 @@
+description: 401 Unauthorized
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml

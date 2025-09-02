@@ -1,0 +1,71 @@
+description: Schema for Organization entity
+allOf:
+  - $ref: ./BaseEntity.yaml
+  - type: object
+    properties:
+      name:
+        description: The organization's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: Acme Corporation
+        x-go-validate: required,min=1,max=255
+      slug:
+        description: URL-friendly unique identifier for the organization
+        type: string
+        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+        minLength: 3
+        maxLength: 50
+        example: acme-corp
+        x-go-validate: required,min=3,max=50,slug
+      logo:
+        description: The organization's logo URL
+        allOf:
+          - $ref: ./NullableString.yaml
+        example: https://example.com/org-logo.png
+      billingEmail:
+        description: Email address for billing communications
+        type: string
+        format: email
+        nullable: true
+        example: billing@acme.com
+        x-go-type: '*string'
+        x-omitempty: true
+      plan:
+        description: The current subscription plan
+        type: string
+        enum:
+          - FREE
+          - BASIC
+          - STANDARD
+          - PREMIUM
+          - UNLIMITED
+        default: FREE
+        example: STANDARD
+        x-go-validate: required,oneof=FREE BASIC STANDARD PREMIUM UNLIMITED
+        minLength: 1
+      credits:
+        description: Available credits for this organization
+        type: number
+        minimum: 0
+        default: 0
+        example: 1000
+        x-go-type: float64
+      metadata:
+        description: Custom metadata in JSON format
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-go-type: '*json.RawMessage'
+        x-go-import:
+          path: encoding/json
+      stripeCustomerId:
+        description: Stripe customer identifier
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-sensitive: true
+    required:
+      - name
+      - slug
+      - plan
+      - credits
+    additionalProperties: false

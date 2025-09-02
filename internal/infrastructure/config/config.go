@@ -1,3 +1,4 @@
+// Package config provides application configuration management.
 package config
 
 import (
@@ -19,27 +20,32 @@ type Config struct {
 	Logging  LoggingConfig
 }
 
+// ServerConfig holds HTTP server configuration options.
 type ServerConfig struct {
 	Host        string
 	Port        int
 	DocsEnabled bool
 }
 
+// AuthConfig holds authentication and JWT configuration.
 type AuthConfig struct {
 	JWTSecret       string
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
 }
 
+// DatabaseConfig holds database connection configuration.
 type DatabaseConfig struct {
 	URL string
 }
 
+// LoggingConfig holds logging configuration options.
 type LoggingConfig struct {
 	Level  string
 	Pretty bool
 }
 
+// Load reads configuration from environment variables and returns a Config.
 func Load() (*Config, error) {
 	v := viper.New()
 

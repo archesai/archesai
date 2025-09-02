@@ -1,3 +1,4 @@
+// Package entities defines domain entities and related types for the auth module.
 package entities
 
 import (

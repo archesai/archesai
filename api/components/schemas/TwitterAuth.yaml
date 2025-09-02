@@ -1,0 +1,26 @@
+description: Twitter OAuth configuration
+type: object
+properties:
+  enabled:
+    description: Enable Twitter OAuth
+    type: boolean
+    default: false
+    example: true
+  callbackURL:
+    description: OAuth callback URL
+    type: string
+    minLength: 1
+    example: example-string
+  consumerKey:
+    description: Twitter API consumer key
+    type: string
+    minLength: 1
+    example: example-string
+  consumerSecret:
+    description: Twitter API consumer secret
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - enabled
+additionalProperties: false

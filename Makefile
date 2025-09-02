@@ -1,6 +1,6 @@
 # Variables
 MAKEFLAGS += -j4
-BINARY_NAME=archesai-api
+OUTPUT_PATH=bin/api
 MAIN_PATH=cmd/api/main.go
 MIGRATION_PATH=internal/database/migrations
 DATABASE_URL ?= postgres://localhost/archesai?sslmode=disable
@@ -10,10 +10,7 @@ GREEN=\033[0;32m
 YELLOW=\033[0;33m
 NC=\033[0m # No Color
 
-# Shell configuration for proper color support
-SHELL := /bin/bash
-
-.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint fmt watch cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install
+.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint lint-go openapi-lint openapi-stats openapi-bundle fmt watch cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -24,7 +21,7 @@ help: ## Show this help message
 # Development Commands
 build: ## Build the application
 	@echo -e "${YELLOW}Building application...${NC}"
-	go build -o bin/$(BINARY_NAME) $(MAIN_PATH)
+	go build -o $(OUTPUT_PATH) $(MAIN_PATH)
 	@echo -e "${GREEN}Build complete!${NC}"
 
 run: ## Run the application
@@ -33,8 +30,7 @@ run: ## Run the application
 
 dev: ## Run the application with hot reload (requires air)
 	@echo -e "${YELLOW}Running in development mode...${NC}"
-	@which air > /dev/null || (echo "Installing air..." && go install github.com/air-verse/air@latest)
-	air
+	go tool air
 
 watch: ## Live reload with air
 	@if command -v air > /dev/null; then \
@@ -43,7 +39,7 @@ watch: ## Live reload with air
 	else \
 		read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
 		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-			go install github.com/air-verse/air@latest; \
+			go get -tool github.com/air-verse/air@latest; \
 			air; \
 			echo "Watching...";\
 		else \
@@ -58,13 +54,11 @@ generate: sqlc oapi ## Generate all code (sqlc + OpenAPI)
 
 sqlc: ## Generate database code with sqlc
 	@echo -e "${YELLOW}Generating sqlc code...${NC}"
-	@which sqlc > /dev/null || (echo "Installing sqlc..." && go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
-	cd internal/generated/database && sqlc generate
+	cd internal/generated/database && go generate
 	@echo -e "${GREEN}sqlc generation complete!${NC}"
 
 oapi: ## Generate OpenAPI server code
 	@echo -e "${YELLOW}Generating OpenAPI server code...${NC}"
-	@which oapi-codegen > /dev/null || (echo "Installing oapi-codegen..." && go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest)
 	cd internal/generated/api && go generate
 	@echo -e "${GREEN}OpenAPI generation complete!${NC}"
 
@@ -100,11 +94,34 @@ migrate-create: ## Create a new migration (usage: make migrate-create name=migra
 	@echo -e "${GREEN}Migration created!${NC}"
 
 # Code Quality
-lint: ## Run linter
-	@echo -e "${YELLOW}Running linter...${NC}"
-	@which golangci-lint > /dev/null || (echo "Installing golangci-lint..." && go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)
+lint: lint-go openapi-lint ## Run all linters (Go + OpenAPI)
+	@echo -e "${GREEN}All linting complete!${NC}"
+
+lint-go: ## Run Go linter
+	@echo -e "${YELLOW}Running Go linter...${NC}"
+	@which golangci-lint > /dev/null || (echo "Installing golangci-lint..." && pacman -Syu golangci-lint)
 	golangci-lint run ./...
-	@echo -e "${GREEN}Linting complete!${NC}"
+	@echo -e "${GREEN}Go linting complete!${NC}"
+
+openapi-lint: ## Lint OpenAPI specification with Redocly
+	@echo -e "${YELLOW}Linting OpenAPI specification...${NC}"
+	pnpm --package=@redocly/cli dlx redocly lint api/openapi.yaml
+	@echo -e "${GREEN}OpenAPI linting complete!${NC}"
+
+openapi-stats: ## Show OpenAPI specification statistics
+	@echo -e "${YELLOW}Analyzing OpenAPI specification...${NC}"
+	pnpm --package=@redocly/cli dlx redocly stats api/openapi.yaml
+	@echo -e "${GREEN}OpenAPI statistics complete!${NC}"
+
+openapi-bundle: ## Bundle OpenAPI specification into a single file
+	@echo -e "${YELLOW}Bundling OpenAPI specification...${NC}"
+	pnpm --package=@redocly/cli dlx redocly bundle api/openapi.yaml -o api/openapi.bundled.yaml
+	@echo -e "${GREEN}OpenAPI bundled to api/openapi.bundled.yaml${NC}"
+
+openapi-split: ## Split OpenAPI specification into multiple files
+	@echo -e "${YELLOW}Splitting OpenAPI specification...${NC}"
+	pnpm --package=@redocly/cli dlx redocly split api/openapi.bundled.yaml --outDir api
+	@echo -e "${GREEN}OpenAPI split into  api/split/${NC}"
 
 fmt: ## Format code
 	@echo -e "${YELLOW}Formatting code...${NC}"
@@ -138,11 +155,9 @@ deps: ## Download dependencies
 
 install-tools: ## Install development tools
 	@echo -e "${YELLOW}Installing development tools...${NC}"
-	go install github.com/air-verse/air@latest
-	go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go install golang.org/x/tools/cmd/goimports@latest
+	go get -tool github.com/air-verse/air@latest
+	go get -tool github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+	go get -tool github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 	@echo -e "${GREEN}Tools installed!${NC}"
 
 # Kubernetes/Skaffold Commands

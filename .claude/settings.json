@@ -1,0 +1,12 @@
+{
+  "outputStyle": "default",
+  "permissions": {
+    "allow": [
+      "Bash(make generate:*)",
+      "Bash(make lint:*)",
+      "Bash(make lint-go:*)"
+    ],
+    "ask": [],
+    "deny": []
+  }
+}

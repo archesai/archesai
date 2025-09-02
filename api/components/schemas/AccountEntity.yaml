@@ -1,0 +1,65 @@
+description: Schema for Account entity (authentication provider account)
+allOf:
+  - $ref: ./BaseEntity.yaml
+  - type: object
+    properties:
+      accountId:
+        description: The unique identifier for the account from the provider
+        type: string
+        example: google_123456789
+        x-go-validate: required
+        minLength: 1
+      userId:
+        description: The user ID this account belongs to
+        allOf:
+          - $ref: ./UUID.yaml
+      providerId:
+        description: The authentication provider identifier
+        type: string
+        enum:
+          - local
+          - google
+          - github
+          - microsoft
+          - apple
+        example: google
+        x-go-validate: required,oneof=local google github microsoft apple
+        minLength: 1
+      accessToken:
+        description: The OAuth access token
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-sensitive: true
+      accessTokenExpiresAt:
+        description: The access token expiration timestamp
+        allOf:
+          - $ref: ./NullableDateTime.yaml
+      refreshToken:
+        description: The OAuth refresh token
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-sensitive: true
+      refreshTokenExpiresAt:
+        description: The refresh token expiration timestamp
+        allOf:
+          - $ref: ./NullableDateTime.yaml
+      idToken:
+        description: The OpenID Connect ID token
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-sensitive: true
+      password:
+        description: The hashed password (only for local authentication)
+        allOf:
+          - $ref: ./NullableString.yaml
+        x-sensitive: true
+      scope:
+        description: The OAuth scope granted
+        allOf:
+          - $ref: ./NullableString.yaml
+        example: openid profile email
+    required:
+      - accountId
+      - userId
+      - providerId
+    additionalProperties: false

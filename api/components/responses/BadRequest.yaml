@@ -1,0 +1,5 @@
+description: 400 Bad Request
+content:
+  application/problem+json:
+    schema:
+      $ref: ../schemas/Problem.yaml

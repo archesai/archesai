@@ -1,0 +1,25 @@
+description: Large Language Model configuration
+type: object
+properties:
+  type:
+    description: LLM provider type
+    type: string
+    enum:
+      - ollama
+      - openai
+    default: ollama
+    example: ollama
+    minLength: 1
+  endpoint:
+    description: LLM service endpoint URL
+    type: string
+    minLength: 1
+    example: example-string
+  token:
+    description: Authentication token for LLM service
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - type
+additionalProperties: false

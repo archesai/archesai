@@ -1,146 +1,134 @@
-openapi: 3.1.1
+#openapi: 3.1.1
+openapi: 3.0.3
 info:
-  description: The Arches AI API
   title: Arches AI API
-  version: v1
-jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+  description: The Arches AI API
+  version: v0.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Arches AI Support
+    email: support@archesai.com
+    url: https://archesai.com/support
+#jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+servers:
+  - url: https://api.archesai.dev
+    description: Remote development server
+  - url: https://api.archesai.com
+    description: Production server
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: Accounts
+    description: Account management operations
+  - name: Artifacts
+    description: Intelligence artifact operations
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Config
+    description: Configuration management
+  - name: Health
+    description: Health check operations
+  - name: Infrastructure
+    description: Infrastructure management operations
+  - name: Intelligence
+    description: AI and intelligence operations
+  - name: Invitations
+    description: User invitation management
+  - name: Labels
+    description: Label management operations
+  - name: Members
+    description: Organization member management
+  - name: Organizations
+    description: Organization management operations
+  - name: Pipelines
+    description: Pipeline management operations
+  - name: Runs
+    description: Pipeline run operations
+  - name: Sessions
+    description: Session management operations
+  - name: Tools
+    description: Tool management operations
+  - name: Users
+    description: User management operations
 paths:
-  ## Auth - Accounts
   /auth/accounts:
-    { $ref: './specifications/auth/accounts/paths.yaml#/paths/~1accounts' }
+    $ref: paths/auth_accounts.yaml
   /auth/accounts/{id}:
-    {
-      $ref: './specifications/auth/accounts/paths.yaml#/paths/~1accounts~1{id}'
-    }
-
-  ## Auth - Register
+    $ref: paths/auth_accounts_{id}.yaml
   /auth/sign-up:
-    { $ref: './specifications/auth/auth/paths.yaml#/paths/~1sign-up' }
+    $ref: paths/auth_sign-up.yaml
   /auth/sign-in:
-    { $ref: './specifications/auth/auth/paths.yaml#/paths/~1sign-in' }
+    $ref: paths/auth_sign-in.yaml
   /auth/sign-out:
-    { $ref: './specifications/auth/auth/paths.yaml#/paths/~1sign-out' }
+    $ref: paths/auth_sign-out.yaml
   /auth/email-verification/verify:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1email-verification~1verify'
-    }
+    $ref: paths/auth_email-verification_verify.yaml
   /auth/email-verification/request:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1email-verification~1request'
-    }
+    $ref: paths/auth_email-verification_request.yaml
   /auth/password-reset/request:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1password-reset~1request'
-    }
+    $ref: paths/auth_password-reset_request.yaml
   /auth/password-reset/verify:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1password-reset~1verify'
-    }
+    $ref: paths/auth_password-reset_verify.yaml
   /auth/email-change/request:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1email-change~1request'
-    }
+    $ref: paths/auth_email-change_request.yaml
   /auth/email-change/verify:
-    {
-      $ref: './specifications/auth/auth/paths.yaml#/paths/~1email-change~1verify'
-    }
-
-  ## Auth - Invitations
+    $ref: paths/auth_email-change_verify.yaml
   /auth/invitations:
-    {
-      $ref: './specifications/auth/invitations/paths.yaml#/paths/~1invitations'
-    }
+    $ref: paths/auth_invitations.yaml
   /auth/invitations/{id}:
-    {
-      $ref: './specifications/auth/invitations/paths.yaml#/paths/~1invitations~1{id}'
-    }
-
-  ## Auth - Members
+    $ref: paths/auth_invitations_{id}.yaml
   /auth/members:
-    { $ref: './specifications/auth/members/paths.yaml#/paths/~1members' }
+    $ref: paths/auth_members.yaml
   /auth/members/{id}:
-    { $ref: './specifications/auth/members/paths.yaml#/paths/~1members~1{id}' }
-
-  ## Auth - Organzations
+    $ref: paths/auth_members_{id}.yaml
   /auth/organizations:
-    {
-      $ref: './specifications/auth/organizations/paths.yaml#/paths/~1organizations'
-    }
+    $ref: paths/auth_organizations.yaml
   /auth/organizations/{id}:
-    {
-      $ref: './specifications/auth/organizations/paths.yaml#/paths/~1organizations~1{id}'
-    }
-
-  ## Auth - Sessions
+    $ref: paths/auth_organizations_{id}.yaml
   /auth/sessions:
-    { $ref: './specifications/auth/sessions/paths.yaml#/paths/~1sessions' }
+    $ref: paths/auth_sessions.yaml
   /auth/sessions/{id}:
-    {
-      $ref: './specifications/auth/sessions/paths.yaml#/paths/~1sessions~1{id}'
-    }
-
-  ## Auth - Users
-  /auth/users: { $ref: './specifications/auth/users/paths.yaml#/paths/~1users' }
+    $ref: paths/auth_sessions_{id}.yaml
+  /auth/users:
+    $ref: paths/auth_users.yaml
   /auth/users/{id}:
-    { $ref: './specifications/auth/users/paths.yaml#/paths/~1users~1{id}' }
-
-  ## Intelligence - Artifacts
+    $ref: paths/auth_users_{id}.yaml
   /intelligence/artifacts:
-    {
-      $ref: './specifications/intelligence/artifacts/paths.yaml#/paths/~1artifacts'
-    }
+    $ref: paths/intelligence_artifacts.yaml
   /intelligence/artifacts/{id}:
-    {
-      $ref: './specifications/intelligence/artifacts/paths.yaml#/paths/~1artifacts~1{id}'
-    }
-
-  ## Intelligence - Labels
+    $ref: paths/intelligence_artifacts_{id}.yaml
   /intelligence/labels:
-    { $ref: './specifications/intelligence/labels/paths.yaml#/paths/~1labels' }
+    $ref: paths/intelligence_labels.yaml
   /intelligence/labels/{id}:
-    {
-      $ref: './specifications/intelligence/labels/paths.yaml#/paths/~1labels~1{id}'
-    }
-
-  ## Intelligence - Pipelines
+    $ref: paths/intelligence_labels_{id}.yaml
   /intelligence/pipelines:
-    {
-      $ref: './specifications/intelligence/pipelines/paths.yaml#/paths/~1pipelines'
-    }
+    $ref: paths/intelligence_pipelines.yaml
   /intelligence/pipelines/{id}:
-    {
-      $ref: './specifications/intelligence/pipelines/paths.yaml#/paths/~1pipelines~1{id}'
-    }
-
-  ## Intelligence - Runs
+    $ref: paths/intelligence_pipelines_{id}.yaml
   /intelligence/runs:
-    { $ref: './specifications/intelligence/runs/paths.yaml#/paths/~1runs' }
+    $ref: paths/intelligence_runs.yaml
   /intelligence/runs/{id}:
-    {
-      $ref: './specifications/intelligence/runs/paths.yaml#/paths/~1runs~1{id}'
-    }
-
-  ## Intelligence - Tools
+    $ref: paths/intelligence_runs_{id}.yaml
   /intelligence/tools:
-    { $ref: './specifications/intelligence/tools/paths.yaml#/paths/~1tools' }
+    $ref: paths/intelligence_tools.yaml
   /intelligence/tools/{id}:
-    {
-      $ref: './specifications/intelligence/tools/paths.yaml#/paths/~1tools~1{id}'
-    }
-
-  # Admin - Config
-  /config: { $ref: './specifications/admin/config/paths.yaml#/paths/~1config' }
-
-  # Admin - Health
-  /health: { $ref: './specifications/admin/health/paths.yaml#/paths/~1health' }
-
+    $ref: paths/intelligence_tools_{id}.yaml
+  /config:
+    $ref: paths/config.yaml
+  /health:
+    $ref: paths/health.yaml
 components:
   securitySchemes:
     bearerAuth:
-      {
-        $ref: './specifications/common/security/schemas.yaml#/components/securitySchemes/bearerAuth'
-      }
+      bearerFormat: JWT
+      description: API Token for authenticated requests
+      scheme: bearer
+      type: http
     sessionCookie:
-      {
-        $ref: './specifications/common/security/schemas.yaml#/components/securitySchemes/sessionCookie'
-      }
+      description: Session cookie for authenticated requests
+      in: cookie
+      name: __Secure-better-auth.session_token
+      type: apiKey

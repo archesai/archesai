@@ -1,0 +1,11 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: |
+  Filter organizations by field values. Supported fields:
+  - createdAt, id, updatedAt, billingEmail, credits, logo
+  - metadata, name, plan, slug, stripeCustomerId

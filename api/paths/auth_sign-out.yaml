@@ -1,0 +1,11 @@
+post:
+  operationId: logout
+  summary: Logout
+  tags:
+    - Auth
+  description: This endpoint will log you out of the current session
+  responses:
+    '204':
+      $ref: ../components/responses/NotFound.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

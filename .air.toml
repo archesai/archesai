@@ -1,13 +1,13 @@
 root = "."
 testdata_dir = "testdata"
-tmp_dir = "tmp"
+tmp_dir = ".tmp"
 
 [build]
   args_bin = []
-  bin = "./main"
+  bin = "./bin/api"
   cmd = "make build"
   delay = 1000
-  exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules"]
+  exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules", "web", "deployments", "tools"]
   exclude_file = []
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
@@ -36,10 +36,16 @@ tmp_dir = "tmp"
 
 [log]
   main_only = false
+  silent = false
   time = false
 
 [misc]
   clean_on_exit = false
+
+[proxy]
+  app_port = 0
+  enabled = false
+  proxy_port = 0
 
 [screen]
   clear_on_rebuild = false

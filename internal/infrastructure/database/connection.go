@@ -1,3 +1,4 @@
+// Package database provides database connection management and utilities.
 package database
 
 import (
@@ -64,12 +65,15 @@ func NewConnection(cfg Config, logger *slog.Logger) (*DB, error) {
 
 	// Set up connection hooks for logging
 	config.BeforeAcquire = func(ctx context.Context, conn *pgx.Conn) bool {
-		logger.Debug("acquiring database connection")
+		logger.Debug("acquiring database connection",
+			"pid", conn.PgConn().PID(),
+			"context_done", ctx.Err() != nil)
 		return true
 	}
 
 	config.AfterRelease = func(conn *pgx.Conn) bool {
-		logger.Debug("releasing database connection")
+		logger.Debug("releasing database connection",
+			"pid", conn.PgConn().PID())
 		return true
 	}
 
@@ -104,17 +108,17 @@ func (db *DB) Close() {
 
 // Health checks the health of the database connection
 func (db *DB) Health(ctx context.Context) error {
-	return db.Pool.Ping(ctx)
+	return db.Ping(ctx)
 }
 
 // Stats returns database pool statistics
 func (db *DB) Stats() *pgxpool.Stat {
-	return db.Pool.Stat()
+	return db.Stat()
 }
 
 // Transaction executes a function within a database transaction
 func (db *DB) Transaction(ctx context.Context, fn func(pgx.Tx) error) error {
-	tx, err := db.Pool.Begin(ctx)
+	tx, err := db.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -122,7 +126,10 @@ func (db *DB) Transaction(ctx context.Context, fn func(pgx.Tx) error) error {
 	defer func() {
 		if p := recover(); p != nil {
 			// Rollback on panic
-			tx.Rollback(ctx)
+			if rbErr := tx.Rollback(ctx); rbErr != nil {
+				// Log rollback error but don't overwrite original panic
+				slog.Error("failed to rollback transaction during panic", "error", rbErr)
+			}
 			panic(p)
 		} else if err != nil {
 			// Rollback on error

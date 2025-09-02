@@ -1,0 +1,7 @@
+type: object
+properties:
+  organizationId:
+    description: The organization identifier
+    $ref: ./UUID.yaml
+required:
+  - organizationId
