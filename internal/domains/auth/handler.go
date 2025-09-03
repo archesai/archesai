@@ -1,11 +1,9 @@
-package handlers
+package auth
 
 import (
 	"log/slog"
 	"net/http"
 
-	"github.com/archesai/archesai/internal/domains/auth/entities"
-	"github.com/archesai/archesai/internal/domains/auth/services"
 	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -14,12 +12,12 @@ import (
 
 // Handler handles HTTP requests for auth operations
 type Handler struct {
-	service *services.Service
+	service *Service
 	logger  *slog.Logger
 }
 
 // NewHandler creates a new auth HTTP handler
-func NewHandler(service *services.Service, logger *slog.Logger) *Handler {
+func NewHandler(service *Service, logger *slog.Logger) *Handler {
 	return &Handler{
 		service: service,
 		logger:  logger,
@@ -28,7 +26,7 @@ func NewHandler(service *services.Service, logger *slog.Logger) *Handler {
 
 // SignUp handles user registration
 func (h *Handler) SignUp(c echo.Context) error {
-	var req entities.SignUpRequest
+	var req SignUpRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -40,7 +38,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 	user, tokens, err := h.service.SignUp(c.Request().Context(), &req)
 	if err != nil {
 		switch err {
-		case entities.ErrUserExists:
+		case ErrUserExists:
 			return echo.NewHTTPError(http.StatusConflict, "User already exists")
 		default:
 			h.logger.Error("failed to sign up user", "error", err)
@@ -58,7 +56,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 
 // SignIn handles user authentication
 func (h *Handler) SignIn(c echo.Context) error {
-	var req entities.SignInRequest
+	var req SignInRequest
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -73,7 +71,7 @@ func (h *Handler) SignIn(c echo.Context) error {
 	user, tokens, err := h.service.SignIn(c.Request().Context(), &req, ipAddress, userAgent)
 	if err != nil {
 		switch err {
-		case entities.ErrInvalidCredentials:
+		case ErrInvalidCredentials:
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
 		default:
 			h.logger.Error("failed to sign in user", "error", err)
@@ -104,7 +102,7 @@ func (h *Handler) SignOut(c echo.Context) error {
 	err := h.service.SignOut(c.Request().Context(), token)
 	if err != nil {
 		switch err {
-		case entities.ErrInvalidToken:
+		case ErrInvalidToken:
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
 		default:
 			h.logger.Error("failed to sign out user", "error", err)
@@ -132,9 +130,9 @@ func (h *Handler) RefreshToken(c echo.Context) error {
 	tokens, err := h.service.RefreshToken(c.Request().Context(), req.RefreshToken)
 	if err != nil {
 		switch err {
-		case entities.ErrInvalidToken, entities.ErrTokenExpired:
+		case ErrInvalidToken, ErrTokenExpired:
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired refresh token")
-		case entities.ErrUserNotFound:
+		case ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
 			h.logger.Error("failed to refresh token", "error", err)
@@ -145,7 +143,6 @@ func (h *Handler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, tokens)
 }
 
-// GetOneUser handles retrieving user information
 // GetOneUser handles getting a single user
 func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
 	userID := id
@@ -153,7 +150,7 @@ func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
 	user, err := h.service.GetUser(ctx.Request().Context(), userID)
 	if err != nil {
 		switch err {
-		case entities.ErrUserNotFound:
+		case ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
 			h.logger.Error("failed to get user", "error", err)
@@ -164,7 +161,6 @@ func (h *Handler) GetOneUser(ctx echo.Context, id openapi_types.UUID) error {
 	return ctx.JSON(http.StatusOK, user)
 }
 
-// UpdateUser handles updating user information
 // UpdateUser handles updating a user
 func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 	userID := id
@@ -175,7 +171,7 @@ func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 	}
 
 	// Map to domain request
-	domainReq := &entities.UpdateUserRequest{}
+	domainReq := &UpdateUserRequest{}
 	if req.Email != "" {
 		// Note: Email update might need special handling (verification, etc.)
 		// For now, we'll skip email updates via this endpoint
@@ -188,7 +184,7 @@ func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 	user, err := h.service.UpdateUser(ctx.Request().Context(), userID, domainReq)
 	if err != nil {
 		switch err {
-		case entities.ErrUserNotFound:
+		case ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
 			h.logger.Error("failed to update user", "error", err)
@@ -206,7 +202,7 @@ func (h *Handler) DeleteUser(ctx echo.Context, id openapi_types.UUID) error {
 	err := h.service.DeleteUser(ctx.Request().Context(), userID)
 	if err != nil {
 		switch err {
-		case entities.ErrUserNotFound:
+		case ErrUserNotFound:
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		default:
 			h.logger.Error("failed to delete user", "error", err)
@@ -283,4 +279,33 @@ func (h *Handler) RegisterRoutes(e *echo.Group) {
 		}
 		return h.DeleteUser(ctx, id)
 	})
+}
+
+// Helper converter functions
+
+// convertToGeneratedUsers converts a slice of domain Users to generated UserEntity
+func convertToGeneratedUsers(domainUsers []*User) []api.UserEntity {
+	result := make([]api.UserEntity, len(domainUsers))
+	for i, u := range domainUsers {
+		result[i] = u.UserEntity
+	}
+	return result
+}
+
+// convertPagination converts generated pagination params to domain options
+func convertPagination(page api.Page) (limit, offset int32) {
+	limit = 50 // default
+	offset = 0 // default
+
+	if page.Size > 0 {
+		limit = int32(page.Size)
+		if limit > 100 {
+			limit = 100 // max limit
+		}
+	}
+	if page.Number > 0 {
+		offset = int32(page.Number-1) * limit
+	}
+
+	return limit, offset
 }

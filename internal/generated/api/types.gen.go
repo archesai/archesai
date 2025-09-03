@@ -4,6 +4,7 @@
 package api
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -369,10 +370,10 @@ type APIConfigEnvironment string
 // AccountEntity defines model for AccountEntity.
 type AccountEntity struct {
 	// AccessToken The OAuth access token
-	AccessToken NullableString `json:"accessToken,omitempty,omitzero" yaml:"accessToken,omitempty"`
+	AccessToken string `json:"accessToken,omitempty,omitzero" yaml:"accessToken,omitempty"`
 
 	// AccessTokenExpiresAt The access token expiration timestamp
-	AccessTokenExpiresAt NullableDateTime `json:"accessTokenExpiresAt,omitempty,omitzero" yaml:"accessTokenExpiresAt,omitempty"`
+	AccessTokenExpiresAt time.Time `json:"accessTokenExpiresAt,omitempty,omitzero" yaml:"accessTokenExpiresAt,omitempty"`
 
 	// AccountId The unique identifier for the account from the provider
 	AccountId string `json:"accountId" yaml:"accountId"`
@@ -384,22 +385,22 @@ type AccountEntity struct {
 	Id UUID `json:"id" yaml:"id"`
 
 	// IdToken The OpenID Connect ID token
-	IdToken NullableString `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
+	IdToken string `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
 
 	// Password The hashed password (only for local authentication)
-	Password NullableString `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
+	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
 
 	// ProviderId The authentication provider identifier
 	ProviderId AccountEntityProviderId `json:"providerId" yaml:"providerId"`
 
 	// RefreshToken The OAuth refresh token
-	RefreshToken NullableString `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
+	RefreshToken string `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
 
 	// RefreshTokenExpiresAt The refresh token expiration timestamp
-	RefreshTokenExpiresAt NullableDateTime `json:"refreshTokenExpiresAt,omitempty,omitzero" yaml:"refreshTokenExpiresAt,omitempty"`
+	RefreshTokenExpiresAt time.Time `json:"refreshTokenExpiresAt,omitempty,omitzero" yaml:"refreshTokenExpiresAt,omitempty"`
 
 	// Scope The OAuth scope granted
-	Scope NullableString `json:"scope,omitempty,omitzero" yaml:"scope,omitempty"`
+	Scope string `json:"scope,omitempty,omitzero" yaml:"scope,omitempty"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -459,7 +460,7 @@ type ArtifactEntity struct {
 	Credits float32 `json:"credits" yaml:"credits"`
 
 	// Description The artifact's description
-	Description string `json:"description" yaml:"description"`
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Id The ID of the item
 	Id openapi_types.UUID `json:"id" yaml:"id"`
@@ -468,25 +469,22 @@ type ArtifactEntity struct {
 	MimeType string `json:"mimeType" yaml:"mimeType"`
 
 	// Name The name of the artifact, used for display purposes
-	Name string `json:"name" yaml:"name"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 
 	// OrganizationId The organization name
 	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-	PreviewImage string `json:"previewImage" yaml:"previewImage"`
+	PreviewImage string `json:"previewImage,omitempty,omitzero" yaml:"previewImage,omitempty"`
 
 	// ProducerId The ID of the run that produced this artifact, if applicable
-	ProducerId string `json:"producerId" yaml:"producerId"`
+	ProducerId string `json:"producerId,omitempty,omitzero" yaml:"producerId,omitempty"`
 
 	// Text The artifact text
 	Text string `json:"text" yaml:"text"`
 
 	// UpdatedAt The date this item was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// Url The artifact URL
-	Url string `json:"url" yaml:"url"`
 }
 
 // AuthConfig Authentication configuration for the API server
@@ -914,16 +912,10 @@ type MonitoringConfig struct {
 	Loki LokiConfig `json:"loki" yaml:"loki"`
 }
 
-// NullableDateTime defines model for NullableDateTime.
-type NullableDateTime = *time.Time
-
-// NullableString defines model for NullableString.
-type NullableString = *string
-
 // OrganizationEntity defines model for OrganizationEntity.
 type OrganizationEntity struct {
 	// BillingEmail Email address for billing communications
-	BillingEmail *string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
+	BillingEmail openapi_types.Email `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
 
 	// CreatedAt The date and time when the resource was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
@@ -935,10 +927,10 @@ type OrganizationEntity struct {
 	Id UUID `json:"id" yaml:"id"`
 
 	// Logo The organization's logo URL
-	Logo NullableString `json:"logo,omitempty,omitzero" yaml:"logo,omitempty"`
+	Logo string `json:"logo,omitempty,omitzero" yaml:"logo,omitempty"`
 
 	// Metadata Custom metadata in JSON format
-	Metadata NullableString `json:"metadata,omitempty,omitzero" yaml:"metadata,omitempty"`
+	Metadata *json.RawMessage `json:"metadata,omitempty,omitzero" yaml:"metadata,omitempty"`
 
 	// Name The organization's display name
 	Name string `json:"name" yaml:"name"`
@@ -950,7 +942,7 @@ type OrganizationEntity struct {
 	Slug string `json:"slug" yaml:"slug"`
 
 	// StripeCustomerId Stripe customer identifier
-	StripeCustomerId NullableString `json:"stripeCustomerId,omitempty,omitzero" yaml:"stripeCustomerId,omitempty"`
+	StripeCustomerId string `json:"stripeCustomerId,omitempty,omitzero" yaml:"stripeCustomerId,omitempty"`
 
 	// UpdatedAt The date and time when the resource was last updated
 	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
@@ -986,7 +978,7 @@ type PipelineEntity struct {
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Description Detailed description of the pipeline's purpose
-	Description NullableString `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Id Universally Unique Identifier
 	Id UUID `json:"id" yaml:"id"`
@@ -1019,8 +1011,8 @@ type PlatformConfig struct {
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
-// ProblemDetails RFC 7807 (Problem Details) compliant error response
-type ProblemDetails struct {
+// Problem RFC 7807 (Problem Details) compliant error response
+type Problem struct {
 	// Detail Human-readable explanation specific to this occurrence
 	Detail string `json:"detail" yaml:"detail"`
 
@@ -1100,13 +1092,13 @@ type ResourceRequests struct {
 // RunEntity Schema for Run entity
 type RunEntity struct {
 	// CompletedAt The timestamp when the run completed
-	CompletedAt time.Time `json:"completedAt" yaml:"completedAt"`
+	CompletedAt time.Time `json:"completedAt,omitempty,omitzero" yaml:"completedAt,omitempty"`
 
 	// CreatedAt The date this item was created
 	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Error The error message
-	Error string `json:"error" yaml:"error"`
+	Error string `json:"error,omitempty,omitzero" yaml:"error,omitempty"`
 
 	// Id The ID of the item
 	Id openapi_types.UUID `json:"id" yaml:"id"`
@@ -1121,7 +1113,7 @@ type RunEntity struct {
 	Progress float32 `json:"progress" yaml:"progress"`
 
 	// StartedAt The timestamp when the run started
-	StartedAt time.Time       `json:"startedAt" yaml:"startedAt"`
+	StartedAt time.Time       `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
 	Status    RunEntityStatus `json:"status" yaml:"status"`
 
 	// ToolId The tool ID associated with the run
@@ -1335,7 +1327,7 @@ type UserEntity struct {
 	Id UUID `json:"id" yaml:"id"`
 
 	// Image The user's avatar image URL
-	Image NullableString `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
+	Image string `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Name The user's display name
 	Name string `json:"name" yaml:"name"`
@@ -1459,13 +1451,13 @@ type UsersSort = []struct {
 }
 
 // BadRequest RFC 7807 (Problem Details) compliant error response
-type BadRequest = ProblemDetails
+type BadRequest = Problem
 
 // NotFound RFC 7807 (Problem Details) compliant error response
-type NotFound = ProblemDetails
+type NotFound = Problem
 
 // Unauthorized RFC 7807 (Problem Details) compliant error response
-type Unauthorized = ProblemDetails
+type Unauthorized = Problem
 
 // AccountsFindManyParams defines parameters for AccountsFindMany.
 type AccountsFindManyParams struct {
@@ -1628,7 +1620,7 @@ type CreateOrganizationJSONBody struct {
 // UpdateOrganizationJSONBody defines parameters for UpdateOrganization.
 type UpdateOrganizationJSONBody struct {
 	// BillingEmail The billing email to use for the organization
-	BillingEmail string `json:"billingEmail,omitzero" yaml:"billingEmail"`
+	BillingEmail string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
 
 	// OrganizationId The ID of the item
 	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
@@ -1721,7 +1713,7 @@ type UpdateUserJSONBody struct {
 	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
 
 	// Image The user's avatar image URL
-	Image string `json:"image,omitzero" yaml:"image"`
+	Image string `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 }
 
 // FindManyArtifactsParams defines parameters for FindManyArtifacts.
@@ -1747,13 +1739,10 @@ type FindManyArtifactsParamsSortOrder string
 // CreateArtifactJSONBody defines parameters for CreateArtifact.
 type CreateArtifactJSONBody struct {
 	// Name The name of the artifact
-	Name string `json:"name" yaml:"name"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 
 	// Text The artifact text
 	Text string `json:"text" yaml:"text"`
-
-	// Url The artifact URL
-	Url string `json:"url" yaml:"url"`
 }
 
 // UpdateArtifactJSONBody defines parameters for UpdateArtifact.
@@ -1762,10 +1751,10 @@ type UpdateArtifactJSONBody struct {
 	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 
 	// Text The artifact text
-	Text string `json:"text,omitzero" yaml:"text"`
+	Text string `json:"text,omitempty,omitzero" yaml:"text,omitempty"`
 
 	// Url The artifact URL
-	Url string `json:"url,omitzero" yaml:"url"`
+	Url string `json:"url,omitempty,omitzero" yaml:"url,omitempty"`
 }
 
 // FindManyLabelsParams defines parameters for FindManyLabels.
@@ -1821,19 +1810,19 @@ type FindManyPipelinesParamsSortOrder string
 // CreatePipelineJSONBody defines parameters for CreatePipeline.
 type CreatePipelineJSONBody struct {
 	// Description The pipeline description
-	Description string `json:"description" yaml:"description"`
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Name The pipeline name
-	Name string `json:"name" yaml:"name"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
 // UpdatePipelineJSONBody defines parameters for UpdatePipeline.
 type UpdatePipelineJSONBody struct {
 	// Description The pipeline description
-	Description string `json:"description,omitzero" yaml:"description"`
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Name The pipeline name
-	Name string `json:"name,omitzero" yaml:"name"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
 // FindManyRunsParams defines parameters for FindManyRuns.
@@ -1865,7 +1854,7 @@ type CreateRunJSONBody struct {
 // UpdateRunJSONBody defines parameters for UpdateRun.
 type UpdateRunJSONBody struct {
 	// PipelineId The pipeline ID associated with the run
-	PipelineId string `json:"pipelineId,omitzero" yaml:"pipelineId"`
+	PipelineId string `json:"pipelineId,omitempty,omitzero" yaml:"pipelineId,omitempty"`
 }
 
 // FindManyToolsParams defines parameters for FindManyTools.

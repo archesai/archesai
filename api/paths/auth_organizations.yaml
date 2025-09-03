@@ -13,7 +13,6 @@ post:
             billingEmail:
               description: The billing email to use for the organization
               type: string
-              nullable: true
               example: example-string
               minLength: 1
             organizationId:

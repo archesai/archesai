@@ -23,7 +23,7 @@ RETURNING id, created_at, updated_at, description, input_mime_type, name, organi
 `
 
 type CreateToolParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Name           string `json:"name"`
 	Description    string `json:"description"`
 	InputMimeType  string `json:"input_mime_type"`
@@ -32,7 +32,7 @@ type CreateToolParams struct {
 
 func (q *Queries) CreateTool(ctx context.Context, arg CreateToolParams) (Tool, error) {
 	row := q.db.QueryRow(ctx, createTool,
-		arg.OrganizationID,
+		arg.OrganizationId,
 		arg.Name,
 		arg.Description,
 		arg.InputMimeType,
@@ -40,13 +40,13 @@ func (q *Queries) CreateTool(ctx context.Context, arg CreateToolParams) (Tool, e
 	)
 	var i Tool
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.InputMimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.OutputMimeType,
 	)
 	return i, err
@@ -81,13 +81,13 @@ func (q *Queries) GetTool(ctx context.Context, id string) (Tool, error) {
 	row := q.db.QueryRow(ctx, getTool, id)
 	var i Tool
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.InputMimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.OutputMimeType,
 	)
 	return i, err
@@ -114,13 +114,13 @@ func (q *Queries) ListTools(ctx context.Context, arg ListToolsParams) ([]Tool, e
 	for rows.Next() {
 		var i Tool
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Description,
 			&i.InputMimeType,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.OutputMimeType,
 		); err != nil {
 			return nil, err
@@ -141,13 +141,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListToolsByOrganizationParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Limit          int32  `json:"limit"`
 	Offset         int32  `json:"offset"`
 }
 
 func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOrganizationParams) ([]Tool, error) {
-	rows, err := q.db.Query(ctx, listToolsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listToolsByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -156,13 +156,13 @@ func (q *Queries) ListToolsByOrganization(ctx context.Context, arg ListToolsByOr
 	for rows.Next() {
 		var i Tool
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Description,
 			&i.InputMimeType,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.OutputMimeType,
 		); err != nil {
 			return nil, err
@@ -187,7 +187,7 @@ RETURNING id, created_at, updated_at, description, input_mime_type, name, organi
 `
 
 type UpdateToolParams struct {
-	ID             string  `json:"id"`
+	Id             string  `json:"id"`
 	Name           *string `json:"name"`
 	Description    *string `json:"description"`
 	InputMimeType  *string `json:"input_mime_type"`
@@ -196,7 +196,7 @@ type UpdateToolParams struct {
 
 func (q *Queries) UpdateTool(ctx context.Context, arg UpdateToolParams) (Tool, error) {
 	row := q.db.QueryRow(ctx, updateTool,
-		arg.ID,
+		arg.Id,
 		arg.Name,
 		arg.Description,
 		arg.InputMimeType,
@@ -204,13 +204,13 @@ func (q *Queries) UpdateTool(ctx context.Context, arg UpdateToolParams) (Tool, e
 	)
 	var i Tool
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Description,
 		&i.InputMimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.OutputMimeType,
 	)
 	return i, err

@@ -13,18 +13,13 @@ post:
             description:
               description: The pipeline description
               type: string
-              nullable: true
               example: Example description text
               minLength: 1
             name:
               description: The pipeline name
               type: string
-              nullable: true
               example: Example Name
               minLength: 1
-          required:
-            - description
-            - name
     required: true
   security:
     - bearerAuth: []

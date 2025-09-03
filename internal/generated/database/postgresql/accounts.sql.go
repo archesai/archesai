@@ -30,46 +30,46 @@ RETURNING id, created_at, updated_at, access_token, access_token_expires_at, acc
 `
 
 type CreateAccountParams struct {
-	UserID                string             `json:"user_id"`
-	ProviderID            string             `json:"provider_id"`
-	AccountID             string             `json:"account_id"`
+	UserId                string             `json:"user_id"`
+	ProviderId            string             `json:"provider_id"`
+	AccountId             string             `json:"account_id"`
 	AccessToken           *string            `json:"access_token"`
 	RefreshToken          *string            `json:"refresh_token"`
 	AccessTokenExpiresAt  pgtype.Timestamptz `json:"access_token_expires_at"`
 	RefreshTokenExpiresAt pgtype.Timestamptz `json:"refresh_token_expires_at"`
 	Scope                 *string            `json:"scope"`
-	IDToken               *string            `json:"id_token"`
+	IdToken               *string            `json:"id_token"`
 	Password              *string            `json:"password"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, createAccount,
-		arg.UserID,
-		arg.ProviderID,
-		arg.AccountID,
+		arg.UserId,
+		arg.ProviderId,
+		arg.AccountId,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IDToken,
+		arg.IdToken,
 		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
-		&i.IDToken,
+		&i.AccountId,
+		&i.IdToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.ProviderId,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -103,19 +103,19 @@ func (q *Queries) GetAccount(ctx context.Context, id string) (Account, error) {
 	row := q.db.QueryRow(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
-		&i.IDToken,
+		&i.AccountId,
+		&i.IdToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.ProviderId,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -127,27 +127,27 @@ LIMIT 1
 `
 
 type GetAccountByUserParams struct {
-	UserID     string `json:"user_id"`
-	ProviderID string `json:"provider_id"`
+	UserId     string `json:"user_id"`
+	ProviderId string `json:"provider_id"`
 }
 
 func (q *Queries) GetAccountByUser(ctx context.Context, arg GetAccountByUserParams) (Account, error) {
-	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserID, arg.ProviderID)
+	row := q.db.QueryRow(ctx, getAccountByUser, arg.UserId, arg.ProviderId)
 	var i Account
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
-		&i.IDToken,
+		&i.AccountId,
+		&i.IdToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.ProviderId,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -173,19 +173,19 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountID,
-			&i.IDToken,
+			&i.AccountId,
+			&i.IdToken,
 			&i.Password,
-			&i.ProviderID,
+			&i.ProviderId,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -213,19 +213,19 @@ func (q *Queries) ListAccountsByUser(ctx context.Context, userID string) ([]Acco
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.AccessToken,
 			&i.AccessTokenExpiresAt,
-			&i.AccountID,
-			&i.IDToken,
+			&i.AccountId,
+			&i.IdToken,
 			&i.Password,
-			&i.ProviderID,
+			&i.ProviderId,
 			&i.RefreshToken,
 			&i.RefreshTokenExpiresAt,
 			&i.Scope,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -253,42 +253,42 @@ RETURNING id, created_at, updated_at, access_token, access_token_expires_at, acc
 `
 
 type UpdateAccountParams struct {
-	ID                    string             `json:"id"`
+	Id                    string             `json:"id"`
 	AccessToken           *string            `json:"access_token"`
 	RefreshToken          *string            `json:"refresh_token"`
 	AccessTokenExpiresAt  pgtype.Timestamptz `json:"access_token_expires_at"`
 	RefreshTokenExpiresAt pgtype.Timestamptz `json:"refresh_token_expires_at"`
 	Scope                 *string            `json:"scope"`
-	IDToken               *string            `json:"id_token"`
+	IdToken               *string            `json:"id_token"`
 	Password              *string            `json:"password"`
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
 	row := q.db.QueryRow(ctx, updateAccount,
-		arg.ID,
+		arg.Id,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.AccessTokenExpiresAt,
 		arg.RefreshTokenExpiresAt,
 		arg.Scope,
-		arg.IDToken,
+		arg.IdToken,
 		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.AccessToken,
 		&i.AccessTokenExpiresAt,
-		&i.AccountID,
-		&i.IDToken,
+		&i.AccountId,
+		&i.IdToken,
 		&i.Password,
-		&i.ProviderID,
+		&i.ProviderId,
 		&i.RefreshToken,
 		&i.RefreshTokenExpiresAt,
 		&i.Scope,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }

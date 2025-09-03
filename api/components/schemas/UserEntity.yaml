@@ -14,9 +14,8 @@ allOf:
         example: true
       image:
         description: The user's avatar image URL
-        allOf:
-          - $ref: ./NullableString.yaml
-        example: https://example.com/avatar.jpg
+        type: string
+        example: 'https://example.com/avatar.jpg'
       name:
         description: The user's display name
         type: string

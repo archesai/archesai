@@ -1484,14 +1484,14 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type BadRequestApplicationProblemPlusJSONResponse ProblemDetails
+type BadRequestApplicationProblemPlusJSONResponse Problem
 
 type NoContentResponse struct {
 }
 
-type NotFoundApplicationProblemPlusJSONResponse ProblemDetails
+type NotFoundApplicationProblemPlusJSONResponse Problem
 
-type UnauthorizedApplicationProblemPlusJSONResponse ProblemDetails
+type UnauthorizedApplicationProblemPlusJSONResponse Problem
 
 type AccountsFindManyRequestObject struct {
 	Params AccountsFindManyParams
@@ -1666,7 +1666,7 @@ func (response ConfirmEmailChange401ApplicationProblemPlusJSONResponse) VisitCon
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ConfirmEmailChange404ApplicationProblemPlusJSONResponse ProblemDetails
+type ConfirmEmailChange404ApplicationProblemPlusJSONResponse Problem
 
 func (response ConfirmEmailChange404ApplicationProblemPlusJSONResponse) VisitConfirmEmailChangeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")
@@ -2355,7 +2355,7 @@ func (response ConfirmPasswordReset401ApplicationProblemPlusJSONResponse) VisitC
 	return json.NewEncoder(w).Encode(response)
 }
 
-type ConfirmPasswordReset404ApplicationProblemPlusJSONResponse ProblemDetails
+type ConfirmPasswordReset404ApplicationProblemPlusJSONResponse Problem
 
 func (response ConfirmPasswordReset404ApplicationProblemPlusJSONResponse) VisitConfirmPasswordResetResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/problem+json")

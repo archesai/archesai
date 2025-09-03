@@ -24,14 +24,12 @@ properties:
   completedAt:
     description: The timestamp when the run completed
     type: string
-    nullable: true
     format: date-time
     example: '2024-01-15T09:30:00Z'
     minLength: 1
   error:
     description: The error message
     type: string
-    nullable: true
     example: example-string
     minLength: 1
   organizationId:
@@ -42,7 +40,6 @@ properties:
   pipelineId:
     description: The pipeline ID associated with the run
     type: string
-    nullable: true
     example: example-id-123
     minLength: 1
   progress:
@@ -53,7 +50,6 @@ properties:
     description: The timestamp when the run started
     type: string
     format: date-time
-    nullable: true
     example: '2024-01-15T09:30:00Z'
     minLength: 1
   status:
@@ -74,12 +70,9 @@ required:
   - createdAt
   - id
   - updatedAt
-  - completedAt
-  - error
   - organizationId
   - pipelineId
   - progress
-  - startedAt
   - status
   - toolId
 additionalProperties: false

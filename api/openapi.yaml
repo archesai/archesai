@@ -1,5 +1,5 @@
-#openapi: 3.1.1
-openapi: 3.0.3
+openapi: 3.1.1
+# openapi: 3.0.3
 info:
   title: Arches AI API
   description: The Arches AI API
@@ -11,7 +11,7 @@ info:
     name: Arches AI Support
     email: support@archesai.com
     url: https://archesai.com/support
-#jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
 servers:
   - url: https://api.archesai.dev
     description: Remote development server

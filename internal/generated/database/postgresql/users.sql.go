@@ -39,7 +39,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -69,7 +69,7 @@ func (q *Queries) GetUser(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
 	var i User
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -89,7 +89,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
@@ -121,7 +121,7 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 	for rows.Next() {
 		var i User
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Email,
@@ -151,7 +151,7 @@ RETURNING id, created_at, updated_at, email, email_verified, image, name
 `
 
 type UpdateUserParams struct {
-	ID            string      `json:"id"`
+	Id            string      `json:"id"`
 	Name          *string     `json:"name"`
 	Email         *string     `json:"email"`
 	EmailVerified pgtype.Bool `json:"email_verified"`
@@ -160,7 +160,7 @@ type UpdateUserParams struct {
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, updateUser,
-		arg.ID,
+		arg.Id,
 		arg.Name,
 		arg.Email,
 		arg.EmailVerified,
@@ -168,7 +168,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,

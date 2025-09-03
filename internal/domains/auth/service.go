@@ -1,5 +1,4 @@
-// Package services provides business logic services for the auth domain.
-package services
+package auth
 
 import (
 	"context"
@@ -8,16 +7,37 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/domains/auth/entities"
-	"github.com/archesai/archesai/internal/domains/auth/repositories"
+	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Repository defines the interface for auth data persistence
+// This interface is defined here (by the consumer) rather than with the implementation
+type Repository interface {
+	// User operations
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+	CreateUser(ctx context.Context, user *User) error
+	UpdateUser(ctx context.Context, user *User) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
+	ListUsers(ctx context.Context, limit, offset int32) ([]*User, error)
+
+	// Session operations
+	CreateSession(ctx context.Context, session *Session) error
+	GetSessionByToken(ctx context.Context, token string) (*Session, error)
+	GetSessionByID(ctx context.Context, id uuid.UUID) (*Session, error)
+	UpdateSession(ctx context.Context, session *Session) error
+	DeleteSession(ctx context.Context, id uuid.UUID) error
+	DeleteUserSessions(ctx context.Context, userID uuid.UUID) error
+	DeleteExpiredSessions(ctx context.Context) error
+}
+
 // Service handles authentication operations
 type Service struct {
-	repo      repositories.Repository
+	repo      Repository
 	jwtSecret []byte
 	logger    *slog.Logger
 	config    Config
@@ -35,7 +55,7 @@ type Config struct {
 }
 
 // NewService creates a new authentication service
-func NewService(repo repositories.Repository, config Config, logger *slog.Logger) *Service {
+func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -58,11 +78,11 @@ func NewService(repo repositories.Repository, config Config, logger *slog.Logger
 }
 
 // SignUp creates a new user account
-func (s *Service) SignUp(ctx context.Context, req *entities.SignUpRequest) (*entities.User, *entities.TokenResponse, error) {
+func (s *Service) SignUp(ctx context.Context, req *SignUpRequest) (*User, *TokenResponse, error) {
 	// Check if user already exists
 	existingUser, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err == nil && existingUser != nil {
-		return nil, nil, entities.ErrUserExists
+		return nil, nil, ErrUserExists
 	}
 
 	// Hash the password
@@ -72,15 +92,18 @@ func (s *Service) SignUp(ctx context.Context, req *entities.SignUpRequest) (*ent
 		return nil, nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Create new user
-	user := &entities.User{
-		ID:            uuid.New(),
-		Email:         req.Email,
-		Name:          req.Name,
-		PasswordHash:  hashedPassword,
-		EmailVerified: false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
+	// Create new user with embedded UserEntity
+	now := time.Now()
+	user := &User{
+		UserEntity: api.UserEntity{
+			Id:            uuid.New(),
+			Email:         openapi_types.Email(req.Email),
+			Name:          req.Name,
+			EmailVerified: false,
+			CreatedAt:     now,
+			UpdatedAt:     now,
+		},
+		PasswordHash: hashedPassword,
 	}
 
 	// Save user to database
@@ -97,13 +120,20 @@ func (s *Service) SignUp(ctx context.Context, req *entities.SignUpRequest) (*ent
 	}
 
 	// Create session
-	session := &entities.Session{
-		ID:        uuid.New(),
-		UserID:    user.ID,
-		Token:     tokens.RefreshToken,
-		ExpiresAt: time.Now().Add(s.config.SessionTokenExpiry),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	sessionNow := time.Now()
+	session := &Session{
+		SessionEntity: api.SessionEntity{
+			Id:        uuid.New(),
+			UserId:    user.Id.String(),
+			Token:     tokens.RefreshToken,
+			ExpiresAt: sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
+			CreatedAt: sessionNow,
+			UpdatedAt: sessionNow,
+			// Required fields with empty defaults
+			ActiveOrganizationId: "",
+			IpAddress:            "",
+			UserAgent:            "",
+		},
 	}
 
 	if err := s.repo.CreateSession(ctx, session); err != nil {
@@ -111,23 +141,23 @@ func (s *Service) SignUp(ctx context.Context, req *entities.SignUpRequest) (*ent
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	s.logger.Info("user signed up successfully", "user_id", user.ID.String())
+	s.logger.Info("user signed up successfully", "user_id", user.Id.String())
 	return user, tokens, nil
 }
 
 // SignIn authenticates a user
-func (s *Service) SignIn(ctx context.Context, req *entities.SignInRequest, ipAddress, userAgent string) (*entities.User, *entities.TokenResponse, error) {
+func (s *Service) SignIn(ctx context.Context, req *SignInRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
 	// Get user by email
 	user, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		s.logger.Warn("user not found", "email", req.Email)
-		return nil, nil, entities.ErrInvalidCredentials
+		return nil, nil, ErrInvalidCredentials
 	}
 
 	// Verify password
 	if err := s.verifyPassword(req.Password, user.PasswordHash); err != nil {
-		s.logger.Warn("invalid password", "user_id", user.ID.String())
-		return nil, nil, entities.ErrInvalidCredentials
+		s.logger.Warn("invalid password", "user_id", user.Id.String())
+		return nil, nil, ErrInvalidCredentials
 	}
 
 	// Generate tokens
@@ -138,15 +168,19 @@ func (s *Service) SignIn(ctx context.Context, req *entities.SignInRequest, ipAdd
 	}
 
 	// Create session
-	session := &entities.Session{
-		ID:        uuid.New(),
-		UserID:    user.ID,
-		Token:     tokens.RefreshToken,
-		IPAddress: &ipAddress,
-		UserAgent: &userAgent,
-		ExpiresAt: time.Now().Add(s.config.SessionTokenExpiry),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	sessionNow := time.Now()
+	session := &Session{
+		SessionEntity: api.SessionEntity{
+			Id:                   uuid.New(),
+			UserId:               user.Id.String(),
+			Token:                tokens.RefreshToken,
+			ExpiresAt:            sessionNow.Add(s.config.SessionTokenExpiry).Format(time.RFC3339),
+			CreatedAt:            sessionNow,
+			UpdatedAt:            sessionNow,
+			ActiveOrganizationId: "",
+			IpAddress:            ipAddress,
+			UserAgent:            userAgent,
+		},
 	}
 
 	if err := s.repo.CreateSession(ctx, session); err != nil {
@@ -154,7 +188,7 @@ func (s *Service) SignIn(ctx context.Context, req *entities.SignInRequest, ipAdd
 		return nil, nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	s.logger.Info("user signed in successfully", "user_id", user.ID.String())
+	s.logger.Info("user signed in successfully", "user_id", user.Id.String())
 	return user, tokens, nil
 }
 
@@ -163,22 +197,22 @@ func (s *Service) SignOut(ctx context.Context, token string) error {
 	// Get session by token
 	session, err := s.repo.GetSessionByToken(ctx, token)
 	if err != nil {
-		return entities.ErrInvalidToken
+		return ErrInvalidToken
 	}
 
 	// Delete session
-	if err := s.repo.DeleteSession(ctx, session.ID); err != nil {
+	if err := s.repo.DeleteSession(ctx, session.Id); err != nil {
 		s.logger.Error("failed to delete session", "error", err)
 		return fmt.Errorf("failed to delete session: %w", err)
 	}
 
-	s.logger.Info("user signed out successfully", "user_id", session.UserID.String())
+	s.logger.Info("user signed out successfully", "user_id", session.UserId)
 	return nil
 }
 
 // ValidateToken validates a JWT token
-func (s *Service) ValidateToken(tokenString string) (*entities.Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &entities.Claims{}, func(token *jwt.Token) (interface{}, error) {
+func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -187,31 +221,32 @@ func (s *Service) ValidateToken(tokenString string) (*entities.Claims, error) {
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			return nil, entities.ErrTokenExpired
+			return nil, ErrTokenExpired
 		}
-		return nil, entities.ErrInvalidToken
+		return nil, ErrInvalidToken
 	}
 
-	claims, ok := token.Claims.(*entities.Claims)
+	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return nil, entities.ErrInvalidToken
+		return nil, ErrInvalidToken
 	}
 
 	return claims, nil
 }
 
 // RefreshToken refreshes an access token using a refresh token
-func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*entities.TokenResponse, error) {
+func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*TokenResponse, error) {
 	// Validate refresh token
 	claims, err := s.ValidateToken(refreshToken)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get user
-	user, err := s.repo.GetUserByID(ctx, claims.UserID)
+	// Get user (convert openapi_types.UUID to uuid.UUID)
+	userUUID, _ := uuid.Parse(claims.UserID.String())
+	user, err := s.repo.GetUserByID(ctx, userUUID)
 	if err != nil {
-		return nil, entities.ErrUserNotFound
+		return nil, ErrUserNotFound
 	}
 
 	// Generate new tokens
@@ -225,20 +260,20 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*entit
 }
 
 // generateTokens generates access and refresh tokens
-func (s *Service) generateTokens(user *entities.User) (*entities.TokenResponse, error) {
+func (s *Service) generateTokens(user *User) (*TokenResponse, error) {
 	now := time.Now()
 	expiresAt := now.Add(s.config.AccessTokenExpiry)
 
 	// Create access token claims
-	accessClaims := &entities.Claims{
-		UserID: user.ID,
-		Email:  user.Email,
+	accessClaims := &Claims{
+		UserID: user.Id,
+		Email:  string(user.Email),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 			Issuer:    "archesai",
-			Subject:   user.ID.String(),
+			Subject:   user.Id.String(),
 			ID:        uuid.New().String(),
 		},
 	}
@@ -251,15 +286,15 @@ func (s *Service) generateTokens(user *entities.User) (*entities.TokenResponse, 
 	}
 
 	// Create refresh token claims
-	refreshClaims := &entities.Claims{
-		UserID: user.ID,
-		Email:  user.Email,
+	refreshClaims := &Claims{
+		UserID: user.Id,
+		Email:  string(user.Email),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.config.RefreshTokenExpiry)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
 			Issuer:    "archesai",
-			Subject:   user.ID.String(),
+			Subject:   user.Id.String(),
 			ID:        uuid.New().String(),
 		},
 	}
@@ -271,7 +306,7 @@ func (s *Service) generateTokens(user *entities.User) (*entities.TokenResponse, 
 		return nil, fmt.Errorf("failed to sign refresh token: %w", err)
 	}
 
-	return &entities.TokenResponse{
+	return &TokenResponse{
 		AccessToken:  accessTokenString,
 		RefreshToken: refreshTokenString,
 		TokenType:    "Bearer",
@@ -292,12 +327,12 @@ func (s *Service) verifyPassword(password, hash string) error {
 }
 
 // GetUser retrieves a user by ID
-func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*entities.User, error) {
+func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	return s.repo.GetUserByID(ctx, id)
 }
 
 // UpdateUser updates user information
-func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *entities.UpdateUserRequest) (*entities.User, error) {
+func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserRequest) (*User, error) {
 	// Get existing user
 	user, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
@@ -309,7 +344,7 @@ func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *entities.Up
 		user.Name = *req.Name
 	}
 	if req.Image != nil {
-		user.Image = req.Image
+		user.Image = *req.Image
 	}
 	user.UpdatedAt = time.Now()
 
@@ -327,15 +362,15 @@ func (s *Service) DeleteUser(ctx context.Context, id uuid.UUID) error {
 }
 
 // ListUsers lists users with pagination
-func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*entities.User, error) {
+func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*User, error) {
 	return s.repo.ListUsers(ctx, limit, offset)
 }
 
 // GetUserSessions retrieves all sessions for a user
-func (s *Service) GetUserSessions(_ context.Context, _ uuid.UUID) ([]*entities.Session, error) {
+func (s *Service) GetUserSessions(_ context.Context, _ uuid.UUID) ([]*Session, error) {
 	// TODO: Add ListSessionsByUser query to auth.sql
 	// For now, return empty slice
-	return []*entities.Session{}, nil
+	return []*Session{}, nil
 }
 
 // RevokeSession revokes a specific session
@@ -351,4 +386,29 @@ func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
 	}
 	s.logger.Info("expired sessions cleaned up")
 	return nil
+}
+
+// ValidateSession validates a session token and returns the session
+func (s *Service) ValidateSession(ctx context.Context, token string) (*Session, error) {
+	session, err := s.repo.GetSessionByToken(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse and check if session is expired
+	expiresAt, err := time.Parse(time.RFC3339, session.ExpiresAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid session expiry format: %w", err)
+	}
+
+	if time.Now().After(expiresAt) {
+		return nil, ErrSessionExpired
+	}
+
+	return session, nil
+}
+
+// DeleteUserSessions deletes all sessions for a user
+func (s *Service) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
+	return s.repo.DeleteUserSessions(ctx, userID)
 }

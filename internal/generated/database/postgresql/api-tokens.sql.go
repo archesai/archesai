@@ -34,7 +34,7 @@ RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, las
 `
 
 type CreateApiTokenParams struct {
-	UserID              string             `json:"user_id"`
+	UserId              string             `json:"user_id"`
 	Name                *string            `json:"name"`
 	Key                 string             `json:"key"`
 	Prefix              *string            `json:"prefix"`
@@ -52,7 +52,7 @@ type CreateApiTokenParams struct {
 
 func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, createApiToken,
-		arg.UserID,
+		arg.UserId,
 		arg.Name,
 		arg.Key,
 		arg.Prefix,
@@ -69,7 +69,7 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 	)
 	var i ApiToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Enabled,
@@ -89,7 +89,7 @@ func (q *Queries) CreateApiToken(ctx context.Context, arg CreateApiTokenParams) 
 		&i.Remaining,
 		&i.RequestCount,
 		&i.Start,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -123,7 +123,7 @@ func (q *Queries) GetApiToken(ctx context.Context, id string) (ApiToken, error) 
 	row := q.db.QueryRow(ctx, getApiToken, id)
 	var i ApiToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Enabled,
@@ -143,7 +143,7 @@ func (q *Queries) GetApiToken(ctx context.Context, id string) (ApiToken, error) 
 		&i.Remaining,
 		&i.RequestCount,
 		&i.Start,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -157,7 +157,7 @@ func (q *Queries) GetApiTokenByKey(ctx context.Context, key string) (ApiToken, e
 	row := q.db.QueryRow(ctx, getApiTokenByKey, key)
 	var i ApiToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Enabled,
@@ -177,7 +177,7 @@ func (q *Queries) GetApiTokenByKey(ctx context.Context, key string) (ApiToken, e
 		&i.Remaining,
 		&i.RequestCount,
 		&i.Start,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -203,7 +203,7 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 	for rows.Next() {
 		var i ApiToken
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Enabled,
@@ -223,7 +223,7 @@ func (q *Queries) ListApiTokens(ctx context.Context, arg ListApiTokensParams) ([
 			&i.Remaining,
 			&i.RequestCount,
 			&i.Start,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -243,13 +243,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListApiTokensByUserParams struct {
-	UserID string `json:"user_id"`
+	UserId string `json:"user_id"`
 	Limit  int32  `json:"limit"`
 	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUserParams) ([]ApiToken, error) {
-	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listApiTokensByUser, arg.UserId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +258,7 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 	for rows.Next() {
 		var i ApiToken
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Enabled,
@@ -278,7 +278,7 @@ func (q *Queries) ListApiTokensByUser(ctx context.Context, arg ListApiTokensByUs
 			&i.Remaining,
 			&i.RequestCount,
 			&i.Start,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -306,7 +306,7 @@ RETURNING id, created_at, updated_at, enabled, expires_at, key, last_refill, las
 `
 
 type UpdateApiTokenParams struct {
-	ID                  string             `json:"id"`
+	Id                  string             `json:"id"`
 	Name                *string            `json:"name"`
 	Enabled             pgtype.Bool        `json:"enabled"`
 	ExpiresAt           pgtype.Timestamptz `json:"expires_at"`
@@ -319,7 +319,7 @@ type UpdateApiTokenParams struct {
 
 func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (ApiToken, error) {
 	row := q.db.QueryRow(ctx, updateApiToken,
-		arg.ID,
+		arg.Id,
 		arg.Name,
 		arg.Enabled,
 		arg.ExpiresAt,
@@ -331,7 +331,7 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 	)
 	var i ApiToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Enabled,
@@ -351,7 +351,7 @@ func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) 
 		&i.Remaining,
 		&i.RequestCount,
 		&i.Start,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }

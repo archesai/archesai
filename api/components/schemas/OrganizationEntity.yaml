@@ -20,17 +20,13 @@ allOf:
         x-go-validate: required,min=3,max=50,slug
       logo:
         description: The organization's logo URL
-        allOf:
-          - $ref: ./NullableString.yaml
-        example: https://example.com/org-logo.png
+        type: string
+        example: 'https://example.com/org-logo.png'
       billingEmail:
         description: Email address for billing communications
         type: string
         format: email
-        nullable: true
         example: billing@acme.com
-        x-go-type: '*string'
-        x-omitempty: true
       plan:
         description: The current subscription plan
         type: string
@@ -53,15 +49,15 @@ allOf:
         x-go-type: float64
       metadata:
         description: Custom metadata in JSON format
-        allOf:
-          - $ref: ./NullableString.yaml
+        type: string
+        example: '{"key": "value"}'
         x-go-type: '*json.RawMessage'
         x-go-import:
           path: encoding/json
       stripeCustomerId:
         description: Stripe customer identifier
-        allOf:
-          - $ref: ./NullableString.yaml
+        type: string
+        example: 'cus_1234567890'
         x-sensitive: true
     required:
       - name

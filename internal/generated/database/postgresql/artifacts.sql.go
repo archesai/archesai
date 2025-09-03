@@ -29,41 +29,41 @@ RETURNING id, created_at, updated_at, credits, description, mime_type, name, org
 `
 
 type CreateArtifactParams struct {
-	OrganizationID string  `json:"organization_id"`
+	OrganizationId string  `json:"organization_id"`
 	Name           *string `json:"name"`
 	Description    *string `json:"description"`
 	MimeType       string  `json:"mime_type"`
 	Url            *string `json:"url"`
 	Credits        int32   `json:"credits"`
 	PreviewImage   *string `json:"preview_image"`
-	ProducerID     *string `json:"producer_id"`
+	ProducerId     *string `json:"producer_id"`
 	Text           *string `json:"text"`
 }
 
 func (q *Queries) CreateArtifact(ctx context.Context, arg CreateArtifactParams) (Artifact, error) {
 	row := q.db.QueryRow(ctx, createArtifact,
-		arg.OrganizationID,
+		arg.OrganizationId,
 		arg.Name,
 		arg.Description,
 		arg.MimeType,
 		arg.Url,
 		arg.Credits,
 		arg.PreviewImage,
-		arg.ProducerID,
+		arg.ProducerId,
 		arg.Text,
 	)
 	var i Artifact
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
 		&i.MimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.PreviewImage,
-		&i.ProducerID,
+		&i.ProducerId,
 		&i.Text,
 		&i.Url,
 	)
@@ -99,16 +99,16 @@ func (q *Queries) GetArtifact(ctx context.Context, id string) (Artifact, error) 
 	row := q.db.QueryRow(ctx, getArtifact, id)
 	var i Artifact
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
 		&i.MimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.PreviewImage,
-		&i.ProducerID,
+		&i.ProducerId,
 		&i.Text,
 		&i.Url,
 	)
@@ -136,16 +136,16 @@ func (q *Queries) ListArtifacts(ctx context.Context, arg ListArtifactsParams) ([
 	for rows.Next() {
 		var i Artifact
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
 			&i.MimeType,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.PreviewImage,
-			&i.ProducerID,
+			&i.ProducerId,
 			&i.Text,
 			&i.Url,
 		); err != nil {
@@ -167,13 +167,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListArtifactsByOrganizationParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Limit          int32  `json:"limit"`
 	Offset         int32  `json:"offset"`
 }
 
 func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtifactsByOrganizationParams) ([]Artifact, error) {
-	rows, err := q.db.Query(ctx, listArtifactsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listArtifactsByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -182,16 +182,16 @@ func (q *Queries) ListArtifactsByOrganization(ctx context.Context, arg ListArtif
 	for rows.Next() {
 		var i Artifact
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
 			&i.MimeType,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.PreviewImage,
-			&i.ProducerID,
+			&i.ProducerId,
 			&i.Text,
 			&i.Url,
 		); err != nil {
@@ -213,13 +213,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListArtifactsByProducerParams struct {
-	ProducerID *string `json:"producer_id"`
+	ProducerId *string `json:"producer_id"`
 	Limit      int32   `json:"limit"`
 	Offset     int32   `json:"offset"`
 }
 
 func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifactsByProducerParams) ([]Artifact, error) {
-	rows, err := q.db.Query(ctx, listArtifactsByProducer, arg.ProducerID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listArtifactsByProducer, arg.ProducerId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -228,16 +228,16 @@ func (q *Queries) ListArtifactsByProducer(ctx context.Context, arg ListArtifacts
 	for rows.Next() {
 		var i Artifact
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Credits,
 			&i.Description,
 			&i.MimeType,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.PreviewImage,
-			&i.ProducerID,
+			&i.ProducerId,
 			&i.Text,
 			&i.Url,
 		); err != nil {
@@ -266,7 +266,7 @@ RETURNING id, created_at, updated_at, credits, description, mime_type, name, org
 `
 
 type UpdateArtifactParams struct {
-	ID           string      `json:"id"`
+	Id           string      `json:"id"`
 	Name         *string     `json:"name"`
 	Description  *string     `json:"description"`
 	MimeType     *string     `json:"mime_type"`
@@ -278,7 +278,7 @@ type UpdateArtifactParams struct {
 
 func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) (Artifact, error) {
 	row := q.db.QueryRow(ctx, updateArtifact,
-		arg.ID,
+		arg.Id,
 		arg.Name,
 		arg.Description,
 		arg.MimeType,
@@ -289,16 +289,16 @@ func (q *Queries) UpdateArtifact(ctx context.Context, arg UpdateArtifactParams) 
 	)
 	var i Artifact
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Credits,
 		&i.Description,
 		&i.MimeType,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.PreviewImage,
-		&i.ProducerID,
+		&i.ProducerId,
 		&i.Text,
 		&i.Url,
 	)

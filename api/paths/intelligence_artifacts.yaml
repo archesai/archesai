@@ -18,19 +18,10 @@ post:
             text:
               description: The artifact text
               type: string
-              nullable: true
-              example: example-string
-              minLength: 1
-            url:
-              description: The artifact URL
-              type: string
-              nullable: true
               example: example-string
               minLength: 1
           required:
-            - name
             - text
-            - url
     required: true
   security:
     - bearerAuth: []

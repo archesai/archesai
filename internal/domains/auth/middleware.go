@@ -1,4 +1,3 @@
-// Package auth provides authentication and authorization middleware.
 package auth
 
 import (
@@ -8,23 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/internal/domains/auth/entities"
-	"github.com/archesai/archesai/internal/domains/auth/services"
 	"github.com/labstack/echo/v4"
 )
 
-// ContextKey is a type for context keys
-type ContextKey string
-
-const (
-	// UserContextKey is the context key for the authenticated user
-	UserContextKey ContextKey = "user"
-	// ClaimsContextKey is the context key for JWT claims
-	ClaimsContextKey ContextKey = "claims"
-)
-
 // Middleware creates an authentication middleware
-func Middleware(authService *services.Service, logger *slog.Logger) echo.MiddlewareFunc {
+func Middleware(authService *Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -45,7 +32,7 @@ func Middleware(authService *services.Service, logger *slog.Logger) echo.Middlew
 			claims, err := authService.ValidateToken(token)
 			if err != nil {
 				logger.Warn("invalid token", "error", err)
-				if err == entities.ErrTokenExpired {
+				if err == ErrTokenExpired {
 					return echo.NewHTTPError(http.StatusUnauthorized, "token expired")
 				}
 				return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
@@ -67,7 +54,7 @@ func Middleware(authService *services.Service, logger *slog.Logger) echo.Middlew
 
 // OptionalAuthMiddleware creates an optional authentication middleware
 // It validates the token if present but doesn't require it
-func OptionalAuthMiddleware(authService *services.Service, logger *slog.Logger) echo.MiddlewareFunc {
+func OptionalAuthMiddleware(authService *Service, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -106,7 +93,7 @@ func OptionalAuthMiddleware(authService *services.Service, logger *slog.Logger) 
 func RequireRole(roles ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(ClaimsContextKey)).(*entities.Claims)
+			claims, ok := c.Get(string(ClaimsContextKey)).(*Claims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
@@ -114,7 +101,8 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 			// Check if user has required role
 			hasRole := false
 			for _, role := range roles {
-				if claims.Role == role {
+				// FIX ME
+				if claims.Email == role {
 					hasRole = true
 					break
 				}
@@ -133,12 +121,13 @@ func RequireRole(roles ...string) echo.MiddlewareFunc {
 func RequireOrganization() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			claims, ok := c.Get(string(ClaimsContextKey)).(*entities.Claims)
+			claims, ok := c.Get(string(ClaimsContextKey)).(*Claims)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized, "missing authentication")
 			}
 
-			if claims.OrganizationID == nil {
+			// FIXME
+			if claims.Audience == nil {
 				return echo.NewHTTPError(http.StatusForbidden, "organization membership required")
 			}
 
@@ -174,8 +163,8 @@ func GetUserFromContext(c echo.Context) (string, bool) {
 }
 
 // GetClaimsFromContext retrieves the claims from the context
-func GetClaimsFromContext(c echo.Context) (*entities.Claims, bool) {
-	claims, ok := c.Get(string(ClaimsContextKey)).(*entities.Claims)
+func GetClaimsFromContext(c echo.Context) (*Claims, bool) {
+	claims, ok := c.Get(string(ClaimsContextKey)).(*Claims)
 	return claims, ok
 }
 

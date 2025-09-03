@@ -81,12 +81,10 @@ patch:
             description:
               description: The pipeline description
               type: string
-              nullable: true
               example: Example description text
             name:
               description: The pipeline name
               type: string
-              nullable: true
               example: Example Name
   parameters:
     - schema:

@@ -13,7 +13,6 @@ post:
             pipelineId:
               description: The pipeline ID associated with the run
               type: string
-              nullable: true
               example: example-id-123
               minLength: 1
           required:

@@ -27,34 +27,34 @@ RETURNING id, created_at, updated_at, active_organization_id, expires_at, ip_add
 `
 
 type CreateSessionParams struct {
-	UserID               string    `json:"user_id"`
+	UserId               string    `json:"user_id"`
 	Token                string    `json:"token"`
 	ExpiresAt            time.Time `json:"expires_at"`
-	ActiveOrganizationID *string   `json:"active_organization_id"`
+	ActiveOrganizationId *string   `json:"active_organization_id"`
 	IpAddress            *string   `json:"ip_address"`
 	UserAgent            *string   `json:"user_agent"`
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRow(ctx, createSession,
-		arg.UserID,
+		arg.UserId,
 		arg.Token,
 		arg.ExpiresAt,
-		arg.ActiveOrganizationID,
+		arg.ActiveOrganizationId,
 		arg.IpAddress,
 		arg.UserAgent,
 	)
 	var i Session
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.ActiveOrganizationId,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -88,15 +88,15 @@ func (q *Queries) GetSession(ctx context.Context, id string) (Session, error) {
 	row := q.db.QueryRow(ctx, getSession, id)
 	var i Session
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.ActiveOrganizationId,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -110,15 +110,15 @@ func (q *Queries) GetSessionByToken(ctx context.Context, token string) (Session,
 	row := q.db.QueryRow(ctx, getSessionByToken, token)
 	var i Session
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.ActiveOrganizationId,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -144,15 +144,15 @@ func (q *Queries) ListSessions(ctx context.Context, arg ListSessionsParams) ([]S
 	for rows.Next() {
 		var i Session
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationID,
+			&i.ActiveOrganizationId,
 			&i.ExpiresAt,
 			&i.IpAddress,
 			&i.Token,
 			&i.UserAgent,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -172,13 +172,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListSessionsByUserParams struct {
-	UserID string `json:"user_id"`
+	UserId string `json:"user_id"`
 	Limit  int32  `json:"limit"`
 	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUserParams) ([]Session, error) {
-	rows, err := q.db.Query(ctx, listSessionsByUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listSessionsByUser, arg.UserId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -187,15 +187,15 @@ func (q *Queries) ListSessionsByUser(ctx context.Context, arg ListSessionsByUser
 	for rows.Next() {
 		var i Session
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.ActiveOrganizationID,
+			&i.ActiveOrganizationId,
 			&i.ExpiresAt,
 			&i.IpAddress,
 			&i.Token,
 			&i.UserAgent,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -217,24 +217,24 @@ RETURNING id, created_at, updated_at, active_organization_id, expires_at, ip_add
 `
 
 type UpdateSessionParams struct {
-	ID                   string             `json:"id"`
+	Id                   string             `json:"id"`
 	ExpiresAt            pgtype.Timestamptz `json:"expires_at"`
-	ActiveOrganizationID *string            `json:"active_organization_id"`
+	ActiveOrganizationId *string            `json:"active_organization_id"`
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
-	row := q.db.QueryRow(ctx, updateSession, arg.ID, arg.ExpiresAt, arg.ActiveOrganizationID)
+	row := q.db.QueryRow(ctx, updateSession, arg.Id, arg.ExpiresAt, arg.ActiveOrganizationId)
 	var i Session
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.ActiveOrganizationID,
+		&i.ActiveOrganizationId,
 		&i.ExpiresAt,
 		&i.IpAddress,
 		&i.Token,
 		&i.UserAgent,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }

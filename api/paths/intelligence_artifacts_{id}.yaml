@@ -86,12 +86,10 @@ patch:
             text:
               description: The artifact text
               type: string
-              nullable: true
               example: example-string
             url:
               description: The artifact URL
               type: string
-              nullable: true
               example: example-string
   parameters:
     - schema:

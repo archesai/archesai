@@ -81,7 +81,6 @@ patch:
             activeOrganizationId:
               description: The active organization ID
               type: string
-              nullable: true
               example: example-id-123
               minLength: 1
           required:

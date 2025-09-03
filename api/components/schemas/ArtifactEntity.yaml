@@ -30,7 +30,6 @@ properties:
   description:
     description: The artifact's description
     type: string
-    nullable: true
     example: Example description text
     minLength: 1
   mimeType:
@@ -41,7 +40,6 @@ properties:
   name:
     description: The name of the artifact, used for display purposes
     type: string
-    nullable: true
     example: Example Name
     minLength: 1
   organizationId:
@@ -54,25 +52,16 @@ properties:
       The URL of the preview image for this artifact. This is used for
       displaying a thumbnail in the UI.
     type: string
-    nullable: true
     example: example-string
     minLength: 1
   producerId:
     description: The ID of the run that produced this artifact, if applicable
     type: string
-    nullable: true
     example: example-id-123
     minLength: 1
   text:
     description: The artifact text
     type: string
-    nullable: true
-    example: example-string
-    minLength: 1
-  url:
-    description: The artifact URL
-    type: string
-    nullable: true
     example: example-string
     minLength: 1
 required:
@@ -80,12 +69,7 @@ required:
   - id
   - updatedAt
   - credits
-  - description
   - mimeType
-  - name
   - organizationId
-  - previewImage
-  - producerId
   - text
-  - url
 additionalProperties: false

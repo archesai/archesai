@@ -81,7 +81,6 @@ patch:
             billingEmail:
               description: The billing email to use for the organization
               type: string
-              nullable: true
               example: example-string
             organizationId:
               description: The ID of the item

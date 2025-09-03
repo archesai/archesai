@@ -20,19 +20,19 @@ RETURNING id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type CreatePipelineStepParams struct {
-	PipelineID string `json:"pipeline_id"`
-	ToolID     string `json:"tool_id"`
+	PipelineId string `json:"pipeline_id"`
+	ToolId     string `json:"tool_id"`
 }
 
 func (q *Queries) CreatePipelineStep(ctx context.Context, arg CreatePipelineStepParams) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, createPipelineStep, arg.PipelineID, arg.ToolID)
+	row := q.db.QueryRow(ctx, createPipelineStep, arg.PipelineId, arg.ToolId)
 	var i PipelineStep
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineID,
-		&i.ToolID,
+		&i.PipelineId,
+		&i.ToolId,
 	)
 	return i, err
 }
@@ -66,11 +66,11 @@ func (q *Queries) GetPipelineStep(ctx context.Context, id string) (PipelineStep,
 	row := q.db.QueryRow(ctx, getPipelineStep, id)
 	var i PipelineStep
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineID,
-		&i.ToolID,
+		&i.PipelineId,
+		&i.ToolId,
 	)
 	return i, err
 }
@@ -96,11 +96,11 @@ func (q *Queries) ListPipelineSteps(ctx context.Context, arg ListPipelineStepsPa
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineID,
-			&i.ToolID,
+			&i.PipelineId,
+			&i.ToolId,
 		); err != nil {
 			return nil, err
 		}
@@ -120,13 +120,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListPipelineStepsByPipelineParams struct {
-	PipelineID string `json:"pipeline_id"`
+	PipelineId string `json:"pipeline_id"`
 	Limit      int32  `json:"limit"`
 	Offset     int32  `json:"offset"`
 }
 
 func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipelineStepsByPipelineParams) ([]PipelineStep, error) {
-	rows, err := q.db.Query(ctx, listPipelineStepsByPipeline, arg.PipelineID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelineStepsByPipeline, arg.PipelineId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -135,11 +135,11 @@ func (q *Queries) ListPipelineStepsByPipeline(ctx context.Context, arg ListPipel
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineID,
-			&i.ToolID,
+			&i.PipelineId,
+			&i.ToolId,
 		); err != nil {
 			return nil, err
 		}
@@ -159,13 +159,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListPipelineStepsByToolParams struct {
-	ToolID string `json:"tool_id"`
+	ToolId string `json:"tool_id"`
 	Limit  int32  `json:"limit"`
 	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineStepsByToolParams) ([]PipelineStep, error) {
-	rows, err := q.db.Query(ctx, listPipelineStepsByTool, arg.ToolID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listPipelineStepsByTool, arg.ToolId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -174,11 +174,11 @@ func (q *Queries) ListPipelineStepsByTool(ctx context.Context, arg ListPipelineS
 	for rows.Next() {
 		var i PipelineStep
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.PipelineID,
-			&i.ToolID,
+			&i.PipelineId,
+			&i.ToolId,
 		); err != nil {
 			return nil, err
 		}
@@ -199,19 +199,19 @@ RETURNING id, created_at, updated_at, pipeline_id, tool_id
 `
 
 type UpdatePipelineStepParams struct {
-	ID     string  `json:"id"`
-	ToolID *string `json:"tool_id"`
+	Id     string  `json:"id"`
+	ToolId *string `json:"tool_id"`
 }
 
 func (q *Queries) UpdatePipelineStep(ctx context.Context, arg UpdatePipelineStepParams) (PipelineStep, error) {
-	row := q.db.QueryRow(ctx, updatePipelineStep, arg.ID, arg.ToolID)
+	row := q.db.QueryRow(ctx, updatePipelineStep, arg.Id, arg.ToolId)
 	var i PipelineStep
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.PipelineID,
-		&i.ToolID,
+		&i.PipelineId,
+		&i.ToolId,
 	)
 	return i, err
 }

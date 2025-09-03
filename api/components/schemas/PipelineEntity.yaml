@@ -13,12 +13,9 @@ allOf:
         x-go-validate: required,min=1,max=255
       description:
         description: Detailed description of the pipeline's purpose
-        allOf:
-          - $ref: ./NullableString.yaml
+        type: string
         maxLength: 1000
-        example: >-
-          Processes incoming data through validation, transformation, and
-          storage steps
+        example: 'Processes incoming data through validation, transformation, and storage steps'
     required:
       - name
     additionalProperties: false

@@ -21,21 +21,21 @@ RETURNING id, created_at, updated_at, organization_id, role, user_id
 `
 
 type CreateMemberParams struct {
-	UserID         string `json:"user_id"`
-	OrganizationID string `json:"organization_id"`
+	UserId         string `json:"user_id"`
+	OrganizationId string `json:"organization_id"`
 	Role           Role   `json:"role"`
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
-	row := q.db.QueryRow(ctx, createMember, arg.UserID, arg.OrganizationID, arg.Role)
+	row := q.db.QueryRow(ctx, createMember, arg.UserId, arg.OrganizationId, arg.Role)
 	var i Member
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.Role,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -69,12 +69,12 @@ func (q *Queries) GetMember(ctx context.Context, id string) (Member, error) {
 	row := q.db.QueryRow(ctx, getMember, id)
 	var i Member
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.Role,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -85,20 +85,20 @@ WHERE user_id = $1 AND organization_id = $2 LIMIT 1
 `
 
 type GetMemberByUserAndOrgParams struct {
-	UserID         string `json:"user_id"`
-	OrganizationID string `json:"organization_id"`
+	UserId         string `json:"user_id"`
+	OrganizationId string `json:"organization_id"`
 }
 
 func (q *Queries) GetMemberByUserAndOrg(ctx context.Context, arg GetMemberByUserAndOrgParams) (Member, error) {
-	row := q.db.QueryRow(ctx, getMemberByUserAndOrg, arg.UserID, arg.OrganizationID)
+	row := q.db.QueryRow(ctx, getMemberByUserAndOrg, arg.UserId, arg.OrganizationId)
 	var i Member
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.Role,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }
@@ -124,12 +124,12 @@ func (q *Queries) ListMembers(ctx context.Context, arg ListMembersParams) ([]Mem
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.Role,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -149,13 +149,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListMembersByOrganizationParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Limit          int32  `json:"limit"`
 	Offset         int32  `json:"offset"`
 }
 
 func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembersByOrganizationParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -164,12 +164,12 @@ func (q *Queries) ListMembersByOrganization(ctx context.Context, arg ListMembers
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.Role,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -189,13 +189,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListMembersByUserParams struct {
-	UserID string `json:"user_id"`
+	UserId string `json:"user_id"`
 	Limit  int32  `json:"limit"`
 	Offset int32  `json:"offset"`
 }
 
 func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listMembersByUser, arg.UserId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +204,12 @@ func (q *Queries) ListMembersByUser(ctx context.Context, arg ListMembersByUserPa
 	for rows.Next() {
 		var i Member
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationID,
+			&i.OrganizationId,
 			&i.Role,
-			&i.UserID,
+			&i.UserId,
 		); err != nil {
 			return nil, err
 		}
@@ -231,20 +231,20 @@ RETURNING id, created_at, updated_at, organization_id, role, user_id
 `
 
 type UpdateMemberParams struct {
-	ID   string   `json:"id"`
+	Id   string   `json:"id"`
 	Role NullRole `json:"role"`
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
-	row := q.db.QueryRow(ctx, updateMember, arg.ID, arg.Role)
+	row := q.db.QueryRow(ctx, updateMember, arg.Id, arg.Role)
 	var i Member
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
+		&i.OrganizationId,
 		&i.Role,
-		&i.UserID,
+		&i.UserId,
 	)
 	return i, err
 }

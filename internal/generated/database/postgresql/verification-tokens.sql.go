@@ -33,7 +33,7 @@ func (q *Queries) CreateVerificationToken(ctx context.Context, arg CreateVerific
 	row := q.db.QueryRow(ctx, createVerificationToken, arg.Identifier, arg.Value, arg.ExpiresAt)
 	var i VerificationToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -72,7 +72,7 @@ func (q *Queries) GetVerificationToken(ctx context.Context, id string) (Verifica
 	row := q.db.QueryRow(ctx, getVerificationToken, id)
 	var i VerificationToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -96,7 +96,7 @@ func (q *Queries) GetVerificationTokenByValue(ctx context.Context, arg GetVerifi
 	row := q.db.QueryRow(ctx, getVerificationTokenByValue, arg.Identifier, arg.Value)
 	var i VerificationToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
@@ -127,7 +127,7 @@ func (q *Queries) ListVerificationTokens(ctx context.Context, arg ListVerificati
 	for rows.Next() {
 		var i VerificationToken
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
@@ -167,7 +167,7 @@ func (q *Queries) ListVerificationTokensByIdentifier(ctx context.Context, arg Li
 	for rows.Next() {
 		var i VerificationToken
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ExpiresAt,
@@ -195,16 +195,16 @@ RETURNING id, created_at, updated_at, expires_at, identifier, value
 `
 
 type UpdateVerificationTokenParams struct {
-	ID        string             `json:"id"`
+	Id        string             `json:"id"`
 	Value     *string            `json:"value"`
 	ExpiresAt pgtype.Timestamptz `json:"expires_at"`
 }
 
 func (q *Queries) UpdateVerificationToken(ctx context.Context, arg UpdateVerificationTokenParams) (VerificationToken, error) {
-	row := q.db.QueryRow(ctx, updateVerificationToken, arg.ID, arg.Value, arg.ExpiresAt)
+	row := q.db.QueryRow(ctx, updateVerificationToken, arg.Id, arg.Value, arg.ExpiresAt)
 	var i VerificationToken
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,

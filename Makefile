@@ -1,5 +1,5 @@
 # Variables
-MAKEFLAGS += -j4
+MAKEFLAGS += -j4 --no-print-directory
 OUTPUT_PATH=bin/api
 MAIN_PATH=cmd/api/main.go
 MIGRATION_PATH=internal/database/migrations
@@ -10,7 +10,13 @@ GREEN=\033[0;32m
 YELLOW=\033[0;33m
 NC=\033[0m # No Color
 
-.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint lint-go openapi-lint openapi-stats openapi-bundle fmt cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install docker-run docker-stop deps install-tools test-coverage migrate-up migrate-down migrate-create node-deps go-deps node-update-deps go-update-deps update-deps config-defaults
+.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint lint-go openapi-lint openapi-stats openapi-bundle cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install docker-run docker-stop deps install-tools test-coverage migrate-up migrate-down migrate-create node-deps go-deps node-update-deps go-update-deps update-deps generate-defaults generate-converters format format-go format-node
+
+all: ## Default target: generate code and lint
+	@make generate 
+	@make lint
+	@make format
+	@echo -e "${GREEN}All tasks complete!${NC}"
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -33,7 +39,7 @@ dev: ## Run the application with hot reload (requires air)
 	@go tool air
 
 # Code Generation
-generate: sqlc oapi config-defaults ## Generate all code (sqlc + OpenAPI)
+generate: sqlc oapi generate-defaults generate-converters ## Generate all code (sqlc + OpenAPI + converters)
 	@echo -e "${GREEN}All code generation complete!${NC}"
 
 sqlc: ## Generate database code with sqlc
@@ -47,10 +53,16 @@ oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "${GREEN}OpenAPI generation complete!${NC}"
 
 # Config generation
-config-defaults: ## Generate config defaults from OpenAPI schema
+generate-defaults: ## Generate config defaults from OpenAPI schema
 	@echo -e "${YELLOW}Generating config defaults from OpenAPI...${NC}"
-	@go run cmd/config-defaults/main.go
+	@go run cmd/generate-defaults/main.go
 	@echo -e "${GREEN}Config defaults generated!${NC}"
+
+# Converter generation
+generate-converters: ## Generate converters between layers
+	@echo -e "${YELLOW}Generating converters...${NC}"
+	@go run cmd/generate-converters/main.go
+	@echo -e "${GREEN}Converters generated!${NC}"
 
 # Testing
 test: ## Run tests
@@ -115,10 +127,19 @@ openapi-split: openapi-lint ## Split OpenAPI specification into multiple files
 	@echo -e "${GREEN}OpenAPI split into  api/split/${NC}"
 
 # Code Formatting
-fmt: ## Format code
+format: format-go format-node ## Format all code
+	@echo -e "${GREEN}All code formatted!${NC}"
+
+format-go: ## Format code
 	@echo -e "${YELLOW}Formatting code...${NC}"
 	@go fmt ./...
 	@echo -e "${GREEN}Formatting complete!${NC}"
+
+format-node: ## Format Node.js code
+	@echo -e "${YELLOW}Formatting Node.js code...${NC}"
+	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
+	@pnpm format:fix
+	@echo -e "${GREEN}Node.js code formatted!${NC}"
 
 # Utilities
 clean: ## Clean build artifacts

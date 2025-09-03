@@ -20,19 +20,19 @@ RETURNING id, created_at, updated_at, name, organization_id
 `
 
 type CreateLabelParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Name           string `json:"name"`
 }
 
 func (q *Queries) CreateLabel(ctx context.Context, arg CreateLabelParams) (Label, error) {
-	row := q.db.QueryRow(ctx, createLabel, arg.OrganizationID, arg.Name)
+	row := q.db.QueryRow(ctx, createLabel, arg.OrganizationId, arg.Name)
 	var i Label
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 	)
 	return i, err
 }
@@ -66,11 +66,11 @@ func (q *Queries) GetLabel(ctx context.Context, id string) (Label, error) {
 	row := q.db.QueryRow(ctx, getLabel, id)
 	var i Label
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 	)
 	return i, err
 }
@@ -81,19 +81,19 @@ WHERE organization_id = $1 AND name = $2 LIMIT 1
 `
 
 type GetLabelByNameParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Name           string `json:"name"`
 }
 
 func (q *Queries) GetLabelByName(ctx context.Context, arg GetLabelByNameParams) (Label, error) {
-	row := q.db.QueryRow(ctx, getLabelByName, arg.OrganizationID, arg.Name)
+	row := q.db.QueryRow(ctx, getLabelByName, arg.OrganizationId, arg.Name)
 	var i Label
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 	)
 	return i, err
 }
@@ -119,11 +119,11 @@ func (q *Queries) ListLabels(ctx context.Context, arg ListLabelsParams) ([]Label
 	for rows.Next() {
 		var i Label
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 		); err != nil {
 			return nil, err
 		}
@@ -143,13 +143,13 @@ LIMIT $2 OFFSET $3
 `
 
 type ListLabelsByOrganizationParams struct {
-	OrganizationID string `json:"organization_id"`
+	OrganizationId string `json:"organization_id"`
 	Limit          int32  `json:"limit"`
 	Offset         int32  `json:"offset"`
 }
 
 func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsByOrganizationParams) ([]Label, error) {
-	rows, err := q.db.Query(ctx, listLabelsByOrganization, arg.OrganizationID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, listLabelsByOrganization, arg.OrganizationId, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -158,11 +158,11 @@ func (q *Queries) ListLabelsByOrganization(ctx context.Context, arg ListLabelsBy
 	for rows.Next() {
 		var i Label
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Name,
-			&i.OrganizationID,
+			&i.OrganizationId,
 		); err != nil {
 			return nil, err
 		}
@@ -183,19 +183,19 @@ RETURNING id, created_at, updated_at, name, organization_id
 `
 
 type UpdateLabelParams struct {
-	ID   string  `json:"id"`
+	Id   string  `json:"id"`
 	Name *string `json:"name"`
 }
 
 func (q *Queries) UpdateLabel(ctx context.Context, arg UpdateLabelParams) (Label, error) {
-	row := q.db.QueryRow(ctx, updateLabel, arg.ID, arg.Name)
+	row := q.db.QueryRow(ctx, updateLabel, arg.Id, arg.Name)
 	var i Label
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.OrganizationID,
+		&i.OrganizationId,
 	)
 	return i, err
 }

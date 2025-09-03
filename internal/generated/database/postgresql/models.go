@@ -205,23 +205,23 @@ func AllRunStatusValues() []RunStatus {
 }
 
 type Account struct {
-	ID                    string             `json:"id"`
+	Id                    string             `json:"id"`
 	CreatedAt             time.Time          `json:"created_at"`
 	UpdatedAt             time.Time          `json:"updated_at"`
 	AccessToken           *string            `json:"access_token"`
 	AccessTokenExpiresAt  pgtype.Timestamptz `json:"access_token_expires_at"`
-	AccountID             string             `json:"account_id"`
-	IDToken               *string            `json:"id_token"`
+	AccountId             string             `json:"account_id"`
+	IdToken               *string            `json:"id_token"`
 	Password              *string            `json:"password"`
-	ProviderID            string             `json:"provider_id"`
+	ProviderId            string             `json:"provider_id"`
 	RefreshToken          *string            `json:"refresh_token"`
 	RefreshTokenExpiresAt pgtype.Timestamptz `json:"refresh_token_expires_at"`
 	Scope                 *string            `json:"scope"`
-	UserID                string             `json:"user_id"`
+	UserId                string             `json:"user_id"`
 }
 
 type ApiToken struct {
-	ID                  string             `json:"id"`
+	Id                  string             `json:"id"`
 	CreatedAt           time.Time          `json:"created_at"`
 	UpdatedAt           time.Time          `json:"updated_at"`
 	Enabled             bool               `json:"enabled"`
@@ -241,60 +241,60 @@ type ApiToken struct {
 	Remaining           pgtype.Int4        `json:"remaining"`
 	RequestCount        int32              `json:"request_count"`
 	Start               *string            `json:"start"`
-	UserID              string             `json:"user_id"`
+	UserId              string             `json:"user_id"`
 }
 
 type Artifact struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Credits        int32     `json:"credits"`
 	Description    *string   `json:"description"`
 	MimeType       string    `json:"mime_type"`
 	Name           *string   `json:"name"`
-	OrganizationID string    `json:"organization_id"`
+	OrganizationId string    `json:"organization_id"`
 	PreviewImage   *string   `json:"preview_image"`
-	ProducerID     *string   `json:"producer_id"`
+	ProducerId     *string   `json:"producer_id"`
 	Text           *string   `json:"text"`
 	Url            *string   `json:"url"`
 }
 
 type Invitation struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Email          string    `json:"email"`
 	ExpiresAt      time.Time `json:"expires_at"`
-	InviterID      string    `json:"inviter_id"`
-	OrganizationID string    `json:"organization_id"`
+	InviterId      string    `json:"inviter_id"`
+	OrganizationId string    `json:"organization_id"`
 	Role           Role      `json:"role"`
 	Status         string    `json:"status"`
 }
 
 type Label struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Name           string    `json:"name"`
-	OrganizationID string    `json:"organization_id"`
+	OrganizationId string    `json:"organization_id"`
 }
 
 type LabelToArtifact struct {
-	LabelID    string `json:"label_id"`
-	ArtifactID string `json:"artifact_id"`
+	LabelId    string `json:"label_id"`
+	ArtifactId string `json:"artifact_id"`
 }
 
 type Member struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-	OrganizationID string    `json:"organization_id"`
+	OrganizationId string    `json:"organization_id"`
 	Role           Role      `json:"role"`
-	UserID         string    `json:"user_id"`
+	UserId         string    `json:"user_id"`
 }
 
 type Organization struct {
-	ID               string    `json:"id"`
+	Id               string    `json:"id"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
 	BillingEmail     *string   `json:"billing_email"`
@@ -303,75 +303,75 @@ type Organization struct {
 	Metadata         *string   `json:"metadata"`
 	Name             string    `json:"name"`
 	Plan             PlanType  `json:"plan"`
-	StripeCustomerID *string   `json:"stripe_customer_id"`
+	StripeCustomerId *string   `json:"stripe_customer_id"`
 }
 
 type Pipeline struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Description    *string   `json:"description"`
 	Name           *string   `json:"name"`
-	OrganizationID string    `json:"organization_id"`
+	OrganizationId string    `json:"organization_id"`
 }
 
 type PipelineStep struct {
-	ID         string    `json:"id"`
+	Id         string    `json:"id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
-	PipelineID string    `json:"pipeline_id"`
-	ToolID     string    `json:"tool_id"`
+	PipelineId string    `json:"pipeline_id"`
+	ToolId     string    `json:"tool_id"`
 }
 
 type PipelineStepToDependency struct {
-	PipelineStepID string `json:"pipeline_step_id"`
-	PrerequisiteID string `json:"prerequisite_id"`
+	PipelineStepId string `json:"pipeline_step_id"`
+	PrerequisiteId string `json:"prerequisite_id"`
 }
 
 type Run struct {
-	ID             string             `json:"id"`
+	Id             string             `json:"id"`
 	CreatedAt      time.Time          `json:"created_at"`
 	UpdatedAt      time.Time          `json:"updated_at"`
 	CompletedAt    pgtype.Timestamptz `json:"completed_at"`
 	Error          *string            `json:"error"`
-	OrganizationID string             `json:"organization_id"`
-	PipelineID     *string            `json:"pipeline_id"`
+	OrganizationId string             `json:"organization_id"`
+	PipelineId     *string            `json:"pipeline_id"`
 	Progress       float64            `json:"progress"`
 	StartedAt      pgtype.Timestamptz `json:"started_at"`
 	Status         RunStatus          `json:"status"`
-	ToolID         string             `json:"tool_id"`
+	ToolId         string             `json:"tool_id"`
 }
 
 type RunToArtifact struct {
-	RunID      string `json:"run_id"`
-	ArtifactID string `json:"artifact_id"`
+	RunId      string `json:"run_id"`
+	ArtifactId string `json:"artifact_id"`
 }
 
 type Session struct {
-	ID                   string    `json:"id"`
+	Id                   string    `json:"id"`
 	CreatedAt            time.Time `json:"created_at"`
 	UpdatedAt            time.Time `json:"updated_at"`
-	ActiveOrganizationID *string   `json:"active_organization_id"`
+	ActiveOrganizationId *string   `json:"active_organization_id"`
 	ExpiresAt            time.Time `json:"expires_at"`
 	IpAddress            *string   `json:"ip_address"`
 	Token                string    `json:"token"`
 	UserAgent            *string   `json:"user_agent"`
-	UserID               string    `json:"user_id"`
+	UserId               string    `json:"user_id"`
 }
 
 type Tool struct {
-	ID             string    `json:"id"`
+	Id             string    `json:"id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Description    string    `json:"description"`
 	InputMimeType  string    `json:"input_mime_type"`
 	Name           string    `json:"name"`
-	OrganizationID string    `json:"organization_id"`
+	OrganizationId string    `json:"organization_id"`
 	OutputMimeType string    `json:"output_mime_type"`
 }
 
 type User struct {
-	ID            string    `json:"id"`
+	Id            string    `json:"id"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Email         string    `json:"email"`
@@ -381,7 +381,7 @@ type User struct {
 }
 
 type VerificationToken struct {
-	ID         string    `json:"id"`
+	Id         string    `json:"id"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	ExpiresAt  time.Time `json:"expires_at"`

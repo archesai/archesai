@@ -35,12 +35,8 @@ properties:
     format: uri
     description: URI identifying the specific occurrence
     example: https://api.example.com/auth/users/123
-    x-omitempty: true
   errors:
     description: Additional validation errors for specific fields
     type: array
-    nullable: true
     items:
       $ref: ./ValidationError.yaml
-    x-omitempty: true
-x-go-name: ProblemDetails

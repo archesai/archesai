@@ -24,7 +24,6 @@ properties:
   activeOrganizationId:
     description: The active organization ID
     type: string
-    nullable: true
     example: example-id-123
     minLength: 1
   expiresAt:
@@ -35,7 +34,6 @@ properties:
   ipAddress:
     description: The IP address of the session
     type: string
-    nullable: true
     example: example-string
     minLength: 1
   token:
@@ -46,7 +44,6 @@ properties:
   userAgent:
     description: The user agent of the session
     type: string
-    nullable: true
     example: example-string
     minLength: 1
   userId:

@@ -9,10 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/archesai/archesai/internal/domains/auth/adapters/postgres"
-	"github.com/archesai/archesai/internal/domains/auth/handlers"
-	"github.com/archesai/archesai/internal/domains/auth/repositories"
-	"github.com/archesai/archesai/internal/domains/auth/services"
+	"github.com/archesai/archesai/internal/domains/auth"
 	"github.com/archesai/archesai/internal/generated/api"
 	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
 	sqlitegen "github.com/archesai/archesai/internal/generated/database/sqlite"
@@ -52,9 +49,9 @@ type Container struct {
 	Server        *server.Server // The HTTP server
 
 	// Auth feature
-	AuthRepository repositories.Repository
-	AuthService    *services.Service
-	AuthHandler    *handlers.Handler
+	AuthRepository auth.Repository
+	AuthService    *auth.Service
+	AuthHandler    *auth.Handler
 
 	// TODO: Add other features as they are implemented
 	// IntelligenceRepository intelligence.Repository
@@ -120,7 +117,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	// Create queries based on database type
 	var pgQueries *postgresqlgen.Queries
 	var sqliteQueries *sqlitegen.Queries
-	var authRepo repositories.Repository
+	var authRepo auth.Repository
 
 	// Determine actual database type
 	var dbType database.Type
@@ -135,7 +132,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresqlgen.New(pool)
-			authRepo = postgres.NewRepository(pgQueries)
+			authRepo = auth.NewPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
@@ -157,13 +154,13 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		return nil, fmt.Errorf("failed to parse refresh token TTL: %w", err)
 	}
 
-	authConfig := services.Config{
+	authConfig := auth.Config{
 		JWTSecret:          cfg.GetJWTSecret(),
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := services.NewService(authRepo, authConfig, logger)
-	authHandler := handlers.NewHandler(authService, logger)
+	authService := auth.NewService(authRepo, authConfig, logger)
+	authHandler := auth.NewHandler(authService, logger)
 
 	// TODO: Initialize other features
 	// intelligenceRepo := intelligencepostgresql.NewRepository(db)

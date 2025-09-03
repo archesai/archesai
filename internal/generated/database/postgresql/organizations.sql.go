@@ -33,7 +33,7 @@ type CreateOrganizationParams struct {
 	Credits          int32    `json:"credits"`
 	Logo             *string  `json:"logo"`
 	Metadata         *string  `json:"metadata"`
-	StripeCustomerID *string  `json:"stripe_customer_id"`
+	StripeCustomerId *string  `json:"stripe_customer_id"`
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) (Organization, error) {
@@ -44,11 +44,11 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		arg.Credits,
 		arg.Logo,
 		arg.Metadata,
-		arg.StripeCustomerID,
+		arg.StripeCustomerId,
 	)
 	var i Organization
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.BillingEmail,
@@ -57,7 +57,7 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		&i.Metadata,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
+		&i.StripeCustomerId,
 	)
 	return i, err
 }
@@ -81,7 +81,7 @@ func (q *Queries) GetOrganization(ctx context.Context, id string) (Organization,
 	row := q.db.QueryRow(ctx, getOrganization, id)
 	var i Organization
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.BillingEmail,
@@ -90,7 +90,7 @@ func (q *Queries) GetOrganization(ctx context.Context, id string) (Organization,
 		&i.Metadata,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
+		&i.StripeCustomerId,
 	)
 	return i, err
 }
@@ -116,7 +116,7 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 	for rows.Next() {
 		var i Organization
 		if err := rows.Scan(
-			&i.ID,
+			&i.Id,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.BillingEmail,
@@ -125,7 +125,7 @@ func (q *Queries) ListOrganizations(ctx context.Context, arg ListOrganizationsPa
 			&i.Metadata,
 			&i.Name,
 			&i.Plan,
-			&i.StripeCustomerID,
+			&i.StripeCustomerId,
 		); err != nil {
 			return nil, err
 		}
@@ -152,30 +152,30 @@ RETURNING id, created_at, updated_at, billing_email, credits, logo, metadata, na
 `
 
 type UpdateOrganizationParams struct {
-	ID               string       `json:"id"`
+	Id               string       `json:"id"`
 	Name             *string      `json:"name"`
 	BillingEmail     *string      `json:"billing_email"`
 	Plan             NullPlanType `json:"plan"`
 	Credits          pgtype.Int4  `json:"credits"`
 	Logo             *string      `json:"logo"`
 	Metadata         *string      `json:"metadata"`
-	StripeCustomerID *string      `json:"stripe_customer_id"`
+	StripeCustomerId *string      `json:"stripe_customer_id"`
 }
 
 func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganizationParams) (Organization, error) {
 	row := q.db.QueryRow(ctx, updateOrganization,
-		arg.ID,
+		arg.Id,
 		arg.Name,
 		arg.BillingEmail,
 		arg.Plan,
 		arg.Credits,
 		arg.Logo,
 		arg.Metadata,
-		arg.StripeCustomerID,
+		arg.StripeCustomerId,
 	)
 	var i Organization
 	err := row.Scan(
-		&i.ID,
+		&i.Id,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.BillingEmail,
@@ -184,7 +184,7 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 		&i.Metadata,
 		&i.Name,
 		&i.Plan,
-		&i.StripeCustomerID,
+		&i.StripeCustomerId,
 	)
 	return i, err
 }

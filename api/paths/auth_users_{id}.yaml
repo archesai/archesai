@@ -86,7 +86,6 @@ patch:
             image:
               description: The user's avatar image URL
               type: string
-              nullable: true
               example: example-string
   parameters:
     - schema:
