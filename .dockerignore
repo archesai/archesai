@@ -20,5 +20,5 @@
 **/prettierrc
 **/.npmrc
 **/Makefile
-**/clouddeploy.yaml
+**/deployments/gcp/clouddeploy.yaml
 **/README.md

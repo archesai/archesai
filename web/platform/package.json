@@ -19,19 +19,26 @@
     "@archesai/client": "workspace:*",
     "@archesai/schemas": "workspace:*",
     "@archesai/ui": "workspace:*",
-    "@tailwindcss/vite": "catalog:vite",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-query-devtools": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-router-devtools": "catalog:tanstack",
     "@tanstack/react-router-ssr-query": "catalog:tanstack",
     "@tanstack/react-start": "catalog:tanstack",
-    "@vitejs/plugin-react": "catalog:vite",
     "@xyflow/react": "catalog:",
     "motion": "catalog:ui",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
-    "rollup-plugin-visualizer": "catalog:vite",
     "vite": "catalog:vite"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:test",
+    "@tailwindcss/vite": "catalog:vite",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:vite",
+    "babel-plugin-react-compiler": "catalog:vite",
+    "rollup-plugin-visualizer": "catalog:vite"
   }
 }

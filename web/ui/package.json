@@ -39,7 +39,6 @@
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
     "@tanstack/react-table": "catalog:tanstack",
-    "@tanstack/table-core": "catalog:tanstack",
     "class-variance-authority": "catalog:ui",
     "clsx": "catalog:ui",
     "cmdk": "catalog:ui",
@@ -58,5 +57,13 @@
     "tailwind-merge": "catalog:ui",
     "vaul": "catalog:ui",
     "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@fontsource/geist": "catalog:ui",
+    "@fontsource/geist-mono": "catalog:ui",
+    "@tanstack/table-core": "catalog:tanstack",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19"
   }
 }

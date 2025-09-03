@@ -17,5 +17,10 @@
   "dependencies": {
     "@tanstack/react-query": "catalog:tanstack",
     "qs": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/qs": "catalog:",
+    "orval": "catalog:client"
   }
 }

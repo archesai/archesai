@@ -80,7 +80,6 @@ func (s *Server) setupMiddleware() {
 	// 	fmt.Fprintf(os.Stderr, "Error loading swagger spec\n: %s", err)
 	// 	os.Exit(1)
 	// }
-
 	// s.echo.Use(echomiddleware.OapiRequestValidator(swagger))
 
 	// Recover middleware
@@ -96,36 +95,14 @@ func (s *Server) setupMiddleware() {
 	}))
 
 	// CORS middleware
-	// 	  const allowedOrigins = configService.get('api.cors.origins').split(',')
-	//   await app.register(cors, {
-	//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-	//     credentials: true,
-	//     maxAge: 86400,
-	//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-	//     origin: allowedOrigins
-	//   })
 	s.echo.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     s.config.AllowedOrigins,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Request-ID"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Request-ID", "X-Requested-With"},
 		AllowCredentials: true,
 		ExposeHeaders:    []string{"X-Request-ID"},
 		MaxAge:           86400,
 	}))
-
-	// FIXME
-	// // Security Middlewares
-	// await httpInstance.register(helmet, {
-	//   contentSecurityPolicy: {
-	//     directives: {
-	//       defaultSrc: [`'self'`],
-	//       fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
-	//       imgSrc: [`'self'`, 'data:'],
-	//       scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
-	//       styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
-	//     }
-	//   }
-	// })
 
 	// Compression middleware
 	s.echo.Use(middleware.GzipWithConfig(middleware.GzipConfig{
@@ -143,7 +120,16 @@ func (s *Server) setupMiddleware() {
 		HSTSMaxAge:            31536000,
 		HSTSExcludeSubdomains: false,
 		ContentSecurityPolicy: "default-src 'self'",
-		ReferrerPolicy:        "strict-origin-when-cross-origin",
+		// FIXME - adjust ContentSecurityPolicy as needed
+		//     directives: {
+		//       defaultSrc: [`'self'`],
+		//       fontSrc: [`'self'`, 'fonts.scalar.com', 'data:'],
+		//       imgSrc: [`'self'`, 'data:'],
+		//       scriptSrc: [`'self'`, `https: 'unsafe-inline'`, `'unsafe-eval'`],
+		//       styleSrc: [`'self'`, `'unsafe-inline'`, 'fonts.scalar.com']
+		//     }
+		//   }
+		ReferrerPolicy: "strict-origin-when-cross-origin",
 	}))
 
 	// Rate limiting (basic example - consider using a Redis-based solution in production)
