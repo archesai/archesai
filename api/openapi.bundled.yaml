@@ -21,37 +21,23 @@ security:
   - sessionCookie: []
 tags:
   - name: Accounts
-    description: Account management operations
-  - name: Artifacts
-    description: Intelligence artifact operations
+    description: User account management
   - name: Auth
     description: Authentication and authorization operations
   - name: Config
     description: Configuration management
+  - name: Content
+    description: Content artifacts and labels
   - name: Health
     description: Health check operations
-  - name: Infrastructure
-    description: Infrastructure management operations
-  - name: Intelligence
-    description: AI and intelligence operations
-  - name: Invitations
-    description: User invitation management
-  - name: Labels
-    description: Label management operations
-  - name: Members
-    description: Organization member management
   - name: Organizations
-    description: Organization management operations
-  - name: Pipelines
-    description: Pipeline management operations
-  - name: Runs
-    description: Pipeline run operations
+    description: Organization management, membership, and invitations
   - name: Sessions
-    description: Session management operations
-  - name: Tools
-    description: Tool management operations
+    description: User session management
   - name: Users
-    description: User management operations
+    description: User profile management
+  - name: Workflows
+    description: Pipeline workflows, runs, and tools
 paths:
   /auth/accounts:
     get:
@@ -467,622 +453,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /auth/invitations:
-    post:
-      operationId: createInvitation
-      summary: Create a new invitation
-      tags:
-        - Invitations
-      description: Create a new invitation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  description: The email of the invitated user
-                  type: string
-                  example: example-string
-                  minLength: 1
-                role:
-                  description: The role of the invitation
-                  type: string
-                  enum:
-                    - admin
-                    - owner
-                    - member
-                  example: admin
-                  minLength: 1
-              required:
-                - email
-                - role
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/InvitationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyInvitations
-      summary: Find many invitations
-      tags:
-        - Invitations
-      description: Find many invitations
-      parameters:
-        - $ref: '#/components/parameters/InvitationsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/InvitationsSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/InvitationEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /auth/invitations/{id}:
-    delete:
-      operationId: deleteInvitation
-      summary: Delete an invitation
-      tags:
-        - Invitations
-      description: Delete an invitation
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/InvitationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOneInvitation
-      summary: Find an invitation
-      tags:
-        - Invitations
-      description: Find an invitation
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/InvitationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateInvitation
-      summary: Update an invitation
-      tags:
-        - Invitations
-      description: Update an invitation
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  description: The email of the invitated user
-                  type: string
-                  example: example-string
-                role:
-                  description: The role of the invitation
-                  type: string
-                  enum:
-                    - admin
-                    - owner
-                    - member
-                  example: admin
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/InvitationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /auth/members:
-    post:
-      operationId: createMember
-      summary: Create a new member
-      tags:
-        - Members
-      description: Create a new member
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                role:
-                  description: The role of the member
-                  type: string
-                  enum:
-                    - admin
-                    - owner
-                    - member
-                  example: admin
-                  minLength: 1
-              required:
-                - role
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/MemberEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyMembers
-      summary: Find many members
-      tags:
-        - Members
-      description: Find many members
-      parameters:
-        - $ref: '#/components/parameters/MembersFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/MembersSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MemberEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /auth/members/{id}:
-    delete:
-      operationId: deleteMember
-      summary: Delete a member
-      tags:
-        - Members
-      description: Delete a member
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/MemberEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOneMember
-      summary: Find a member
-      tags:
-        - Members
-      description: Find a member
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/MemberEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateMember
-      summary: Update a member
-      tags:
-        - Members
-      description: Update a member
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                role:
-                  description: The role of the member
-                  type: string
-                  enum:
-                    - admin
-                    - owner
-                    - member
-                  example: admin
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/MemberEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /auth/organizations:
-    post:
-      operationId: createOrganization
-      summary: Create a new organization
-      tags:
-        - Organizations
-      description: Create a new organization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                billingEmail:
-                  description: The billing email to use for the organization
-                  type: string
-                  example: example-string
-                  minLength: 1
-                organizationId:
-                  description: The ID of the item
-                  type: string
-                  format: uuid
-                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-                  example: 550e8400-e29b-41d4-a716-446655440000
-                  minLength: 36
-              required:
-                - billingEmail
-                - organizationId
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/OrganizationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyOrganizations
-      summary: Find many organizations
-      tags:
-        - Organizations
-      description: Find many organizations
-      parameters:
-        - $ref: '#/components/parameters/OrganizationsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/OrganizationsSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/OrganizationEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /auth/organizations/{id}:
-    delete:
-      operationId: deleteOrganization
-      summary: Delete an organization
-      tags:
-        - Organizations
-      description: Delete an organization
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/OrganizationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOneOrganization
-      summary: Find an organization
-      tags:
-        - Organizations
-      description: Find an organization
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/OrganizationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateOrganization
-      summary: Update an organization
-      tags:
-        - Organizations
-      description: Update an organization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                billingEmail:
-                  description: The billing email to use for the organization
-                  type: string
-                  example: example-string
-                organizationId:
-                  description: The ID of the item
-                  type: string
-                  format: uuid
-                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-                  example: 550e8400-e29b-41d4-a716-446655440000
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/OrganizationEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
   /auth/sessions:
     get:
       operationId: findManySessions
@@ -1396,12 +766,1309 @@ paths:
                 additionalProperties: false
         '404':
           $ref: '#/components/responses/NotFound'
-  /intelligence/artifacts:
+  /organizations:
+    post:
+      operationId: createOrganization
+      summary: Create a new organization
+      tags:
+        - Organizations
+      description: Create a new organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                billingEmail:
+                  description: The billing email to use for the organization
+                  type: string
+                  example: example-string
+                  minLength: 1
+                organizationId:
+                  description: The ID of the item
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                  minLength: 36
+              required:
+                - billingEmail
+                - organizationId
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyOrganizations
+      summary: Find many organizations
+      tags:
+        - Organizations
+      description: Find many organizations
+      parameters:
+        - $ref: '#/components/parameters/OrganizationsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/OrganizationsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganizationEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /organizations/{id}:
+    delete:
+      operationId: deleteOrganization
+      summary: Delete an organization
+      tags:
+        - Organizations
+      description: Delete an organization
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOneOrganization
+      summary: Find an organization
+      tags:
+        - Organizations
+      description: Find an organization
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateOrganization
+      summary: Update an organization
+      tags:
+        - Organizations
+      description: Update an organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                billingEmail:
+                  description: The billing email to use for the organization
+                  type: string
+                  example: example-string
+                organizationId:
+                  description: The ID of the item
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  example: 550e8400-e29b-41d4-a716-446655440000
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/OrganizationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /organizations/{id}/members:
+    post:
+      operationId: createMember
+      summary: Create a new member
+      tags:
+        - Organizations
+      description: Create a new member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Organization ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  description: The role of the member
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+                  example: admin
+                  minLength: 1
+              required:
+                - role
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyMembers
+      summary: Find many members
+      tags:
+        - Organizations
+      description: Find many members
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Organization ID
+        - $ref: '#/components/parameters/MembersFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/MembersSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MemberEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /organizations/{id}/members/{memberId}:
+    delete:
+      operationId: deleteMember
+      summary: Delete a member
+      tags:
+        - Organizations
+      description: Delete a member
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: memberId
+          required: true
+          description: The unique identifier of the member.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOneMember
+      summary: Find a member
+      tags:
+        - Organizations
+      description: Find a member
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: memberId
+          required: true
+          description: The unique identifier of the member.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateMember
+      summary: Update a member
+      tags:
+        - Organizations
+      description: Update a member
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  description: The role of the member
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+                  example: admin
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: memberId
+          required: true
+          description: The unique identifier of the member.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MemberEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /organizations/{id}/invitations:
+    post:
+      operationId: createInvitation
+      summary: Create a new invitation
+      tags:
+        - Organizations
+      description: Create a new invitation
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email of the invitated user
+                  type: string
+                  example: example-string
+                  minLength: 1
+                role:
+                  description: The role of the invitation
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+                  example: admin
+                  minLength: 1
+              required:
+                - email
+                - role
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyInvitations
+      summary: Find many invitations
+      tags:
+        - Organizations
+      description: Find many invitations
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - $ref: '#/components/parameters/InvitationsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/InvitationsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InvitationEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /organizations/{id}/invitations/{invitationId}:
+    delete:
+      operationId: deleteInvitation
+      summary: Delete an invitation
+      tags:
+        - Organizations
+      description: Delete an invitation
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: invitationId
+          required: true
+          description: The unique identifier of the invitation.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOneInvitation
+      summary: Find an invitation
+      tags:
+        - Organizations
+      description: Find an invitation
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: invitationId
+          required: true
+          description: The unique identifier of the invitation.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateInvitation
+      summary: Update an invitation
+      tags:
+        - Organizations
+      description: Update an invitation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  description: The email of the invitated user
+                  type: string
+                  example: example-string
+                role:
+                  description: The role of the invitation
+                  type: string
+                  enum:
+                    - admin
+                    - owner
+                    - member
+                  example: admin
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the organization.
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: invitationId
+          required: true
+          description: The unique identifier of the invitation.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workflows/pipelines:
+    post:
+      operationId: createPipeline
+      summary: Create a new pipeline
+      tags:
+        - Workflows
+      description: Create a new pipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  example: Example description text
+                  minLength: 1
+                name:
+                  description: The pipeline name
+                  type: string
+                  example: Example Name
+                  minLength: 1
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyPipelines
+      summary: Find many pipelines
+      tags:
+        - Workflows
+      description: Find many pipelines
+      parameters:
+        - $ref: '#/components/parameters/PipelinesFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/PipelinesSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PipelineEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workflows/pipelines/{id}:
+    delete:
+      operationId: deletePipeline
+      summary: Delete a pipeline
+      tags:
+        - Workflows
+      description: Delete a pipeline
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOnePipeline
+      summary: Find a pipeline
+      tags:
+        - Workflows
+      description: Find a pipeline
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updatePipeline
+      summary: Update a pipeline
+      tags:
+        - Workflows
+      description: Update a pipeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The pipeline description
+                  type: string
+                  example: Example description text
+                name:
+                  description: The pipeline name
+                  type: string
+                  example: Example Name
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PipelineEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workflows/runs:
+    post:
+      operationId: createRun
+      summary: Create a new run
+      tags:
+        - Workflows
+      description: Create a new run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  description: The pipeline ID associated with the run
+                  type: string
+                  example: example-id-123
+                  minLength: 1
+              required:
+                - pipelineId
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyRuns
+      summary: Find many runs
+      tags:
+        - Workflows
+      description: Find many runs
+      parameters:
+        - $ref: '#/components/parameters/RunsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/RunsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RunEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workflows/runs/{id}:
+    delete:
+      operationId: deleteRun
+      summary: Delete a run
+      tags:
+        - Workflows
+      description: Delete a run
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOneRun
+      summary: Find a run
+      tags:
+        - Workflows
+      description: Find a run
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateRun
+      summary: Update a run
+      tags:
+        - Workflows
+      description: Update a run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pipelineId:
+                  description: The pipeline ID associated with the run
+                  type: string
+                  example: example-id-123
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/RunEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /workflows/tools:
+    post:
+      operationId: createTool
+      summary: Create a new tool
+      tags:
+        - Workflows
+      description: Create a new tool
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The tool description
+                  type: string
+                  minLength: 1
+                  example: Example description text
+                name:
+                  description: The name of the tool
+                  type: string
+                  minLength: 1
+                  example: Example Name
+              required:
+                - description
+                - name
+        required: true
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ToolEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: findManyTools
+      summary: Find many tools
+      tags:
+        - Workflows
+      description: Find many tools
+      parameters:
+        - $ref: '#/components/parameters/ToolsFilter'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/ToolsSort'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ToolEntity'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        description: Total number of items in the collection
+                        type: number
+                        example: 42
+                    required:
+                      - total
+                    additionalProperties: false
+                required:
+                  - data
+                  - meta
+                additionalProperties: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /workflows/tools/{id}:
+    delete:
+      operationId: deleteTool
+      summary: Delete a tool
+      tags:
+        - Workflows
+      description: Delete a tool
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ToolEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: getOneTool
+      summary: Find a tool
+      tags:
+        - Workflows
+      description: Find a tool
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ToolEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateTool
+      summary: Update a tool
+      tags:
+        - Workflows
+      description: Update a tool
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  description: The tool description
+                  type: string
+                  minLength: 1
+                  example: Example description text
+                name:
+                  description: The name of the tool
+                  type: string
+                  minLength: 1
+                  example: Example Name
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            example: 550e8400-e29b-41d4-a716-446655440000
+          in: path
+          name: id
+          required: true
+          description: The unique identifier of the resource.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ToolEntity'
+                required:
+                  - data
+                additionalProperties: false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /content/artifacts:
     post:
       operationId: createArtifact
       summary: Create a new artifact
       tags:
-        - Artifacts
+        - Content
       description: Create a new artifact
       requestBody:
         content:
@@ -1445,7 +2112,7 @@ paths:
       operationId: findManyArtifacts
       summary: Find many artifacts
       tags:
-        - Artifacts
+        - Content
       description: Find many artifacts
       parameters:
         - $ref: '#/components/parameters/ArtifactsFilter'
@@ -1483,12 +2150,12 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /intelligence/artifacts/{id}:
+  /content/artifacts/{id}:
     delete:
       operationId: deleteArtifact
       summary: Delete an artifact
       tags:
-        - Artifacts
+        - Content
       description: Delete an artifact
       parameters:
         - schema:
@@ -1521,7 +2188,7 @@ paths:
       operationId: getOneArtifact
       summary: Find an artifact
       tags:
-        - Artifacts
+        - Content
       description: Find an artifact
       parameters:
         - schema:
@@ -1554,7 +2221,7 @@ paths:
       operationId: updateArtifact
       summary: Update an artifact
       tags:
-        - Artifacts
+        - Content
       description: Update an artifact
       requestBody:
         content:
@@ -1602,12 +2269,12 @@ paths:
                 additionalProperties: false
         '404':
           $ref: '#/components/responses/NotFound'
-  /intelligence/labels:
+  /content/labels:
     post:
       operationId: createLabel
       summary: Create a new label
       tags:
-        - Labels
+        - Content
       description: Create a new label
       requestBody:
         content:
@@ -1646,7 +2313,7 @@ paths:
       operationId: findManyLabels
       summary: Find many labels
       tags:
-        - Labels
+        - Content
       description: Find many labels
       parameters:
         - $ref: '#/components/parameters/LabelsFilter'
@@ -1684,12 +2351,12 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  /intelligence/labels/{id}:
+  /content/labels/{id}:
     delete:
       operationId: deleteLabel
       summary: Delete a label
       tags:
-        - Labels
+        - Content
       description: Delete a label
       parameters:
         - schema:
@@ -1722,7 +2389,7 @@ paths:
       operationId: getOneLabel
       summary: Find a label
       tags:
-        - Labels
+        - Content
       description: Find a label
       parameters:
         - schema:
@@ -1755,7 +2422,7 @@ paths:
       operationId: updateLabel
       summary: Update a label
       tags:
-        - Labels
+        - Content
       description: Update a label
       requestBody:
         content:
@@ -1790,601 +2457,6 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/LabelEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /intelligence/pipelines:
-    post:
-      operationId: createPipeline
-      summary: Create a new pipeline
-      tags:
-        - Pipelines
-      description: Create a new pipeline
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                description:
-                  description: The pipeline description
-                  type: string
-                  example: Example description text
-                  minLength: 1
-                name:
-                  description: The pipeline name
-                  type: string
-                  example: Example Name
-                  minLength: 1
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/PipelineEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyPipelines
-      summary: Find many pipelines
-      tags:
-        - Pipelines
-      description: Find many pipelines
-      parameters:
-        - $ref: '#/components/parameters/PipelinesFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PipelinesSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PipelineEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /intelligence/pipelines/{id}:
-    delete:
-      operationId: deletePipeline
-      summary: Delete a pipeline
-      tags:
-        - Pipelines
-      description: Delete a pipeline
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/PipelineEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOnePipeline
-      summary: Find a pipeline
-      tags:
-        - Pipelines
-      description: Find a pipeline
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/PipelineEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updatePipeline
-      summary: Update a pipeline
-      tags:
-        - Pipelines
-      description: Update a pipeline
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                description:
-                  description: The pipeline description
-                  type: string
-                  example: Example description text
-                name:
-                  description: The pipeline name
-                  type: string
-                  example: Example Name
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/PipelineEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /intelligence/runs:
-    post:
-      operationId: createRun
-      summary: Create a new run
-      tags:
-        - Runs
-      description: Create a new run
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                pipelineId:
-                  description: The pipeline ID associated with the run
-                  type: string
-                  example: example-id-123
-                  minLength: 1
-              required:
-                - pipelineId
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/RunEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyRuns
-      summary: Find many runs
-      tags:
-        - Runs
-      description: Find many runs
-      parameters:
-        - $ref: '#/components/parameters/RunsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/RunsSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/RunEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /intelligence/runs/{id}:
-    delete:
-      operationId: deleteRun
-      summary: Delete a run
-      tags:
-        - Runs
-      description: Delete a run
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/RunEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOneRun
-      summary: Find a run
-      tags:
-        - Runs
-      description: Find a run
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/RunEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateRun
-      summary: Update a run
-      tags:
-        - Runs
-      description: Update a run
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                pipelineId:
-                  description: The pipeline ID associated with the run
-                  type: string
-                  example: example-id-123
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/RunEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /intelligence/tools:
-    post:
-      operationId: createTool
-      summary: Create a new tool
-      tags:
-        - Tools
-      description: Create a new tool
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                description:
-                  description: The tool description
-                  type: string
-                  minLength: 1
-                  example: Example description text
-                name:
-                  description: The name of the tool
-                  type: string
-                  minLength: 1
-                  example: Example Name
-              required:
-                - description
-                - name
-        required: true
-      security:
-        - bearerAuth: []
-      responses:
-        '201':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ToolEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-    get:
-      operationId: findManyTools
-      summary: Find many tools
-      tags:
-        - Tools
-      description: Find many tools
-      parameters:
-        - $ref: '#/components/parameters/ToolsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/ToolsSort'
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ToolEntity'
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        description: Total number of items in the collection
-                        type: number
-                        example: 42
-                    required:
-                      - total
-                    additionalProperties: false
-                required:
-                  - data
-                  - meta
-                additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /intelligence/tools/{id}:
-    delete:
-      operationId: deleteTool
-      summary: Delete a tool
-      tags:
-        - Tools
-      description: Delete a tool
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ToolEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    get:
-      operationId: getOneTool
-      summary: Find a tool
-      tags:
-        - Tools
-      description: Find a tool
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ToolEntity'
-                required:
-                  - data
-                additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      operationId: updateTool
-      summary: Update a tool
-      tags:
-        - Tools
-      description: Update a tool
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                description:
-                  description: The tool description
-                  type: string
-                  minLength: 1
-                  example: Example description text
-                name:
-                  description: The name of the tool
-                  type: string
-                  minLength: 1
-                  example: Example Name
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-            example: 550e8400-e29b-41d4-a716-446655440000
-          in: path
-          name: id
-          required: true
-          description: The unique identifier of the resource.
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ToolEntity'
                 required:
                   - data
                 additionalProperties: false
@@ -2729,124 +2801,6 @@ components:
         - userAgent
         - userId
       additionalProperties: false
-    InvitationEntity:
-      description: Schema for Invitation entity
-      type: object
-      properties:
-        createdAt:
-          description: The date this item was created
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-        id:
-          description: The ID of the item
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          example: 550e8400-e29b-41d4-a716-446655440000
-          minLength: 36
-        updatedAt:
-          description: The date this item was last updated
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-        email:
-          description: The email of the invitated user
-          type: string
-          example: example-string
-          minLength: 1
-        expiresAt:
-          description: The date and time when the invitation expires
-          type: string
-          minLength: 1
-          example: example-string
-        inviterId:
-          description: The user id of the inviter
-          type: string
-          minLength: 1
-          example: example-id-123
-        organizationId:
-          description: The name of the organization the token belongs to
-          type: string
-          minLength: 1
-          example: example-id-123
-        role:
-          description: The role of the invitation
-          type: string
-          enum:
-            - admin
-            - owner
-            - member
-          example: admin
-          minLength: 1
-        status:
-          description: The status of the invitation, e.g., pending, accepted, declined
-          type: string
-          minLength: 1
-          example: example-string
-      required:
-        - createdAt
-        - id
-        - updatedAt
-        - email
-        - expiresAt
-        - inviterId
-        - organizationId
-        - role
-        - status
-      additionalProperties: false
-    MemberEntity:
-      description: Schema for Member entity
-      type: object
-      properties:
-        createdAt:
-          description: The date this item was created
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-        id:
-          description: The ID of the item
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          example: 550e8400-e29b-41d4-a716-446655440000
-          minLength: 36
-        updatedAt:
-          description: The date this item was last updated
-          type: string
-          format: date-time
-          example: '2024-01-15T09:30:00Z'
-          minLength: 1
-        organizationId:
-          description: The organization name
-          type: string
-          minLength: 1
-          example: example-id-123
-        role:
-          description: The role of the member
-          type: string
-          enum:
-            - admin
-            - owner
-            - member
-          example: admin
-          minLength: 1
-        userId:
-          description: The user id
-          type: string
-          minLength: 1
-          example: example-id-123
-      required:
-        - createdAt
-        - id
-        - updatedAt
-        - organizationId
-        - role
-        - userId
-      additionalProperties: false
     OrganizationEntity:
       description: Schema for Organization entity
       allOf:
@@ -2915,8 +2869,8 @@ components:
             - plan
             - credits
           additionalProperties: false
-    ArtifactEntity:
-      description: Schema for Artifact entity
+    MemberEntity:
+      description: Schema for Member entity
       type: object
       properties:
         createdAt:
@@ -2938,56 +2892,35 @@ components:
           format: date-time
           example: '2024-01-15T09:30:00Z'
           minLength: 1
-        credits:
-          description: The number of credits required to access this artifact. This is used for metering and billing purposes.
-          type: number
-          example: 42
-        description:
-          description: The artifact's description
-          type: string
-          example: Example description text
-          minLength: 1
-        mimeType:
-          description: The MIME type of the artifact, e.g. image/png
-          type: string
-          minLength: 1
-          example: example-string
-        name:
-          description: The name of the artifact, used for display purposes
-          type: string
-          example: Example Name
-          minLength: 1
         organizationId:
           description: The organization name
           type: string
           minLength: 1
           example: example-id-123
-        previewImage:
-          description: The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+        role:
+          description: The role of the member
           type: string
-          example: example-string
+          enum:
+            - admin
+            - owner
+            - member
+          example: admin
           minLength: 1
-        producerId:
-          description: The ID of the run that produced this artifact, if applicable
+        userId:
+          description: The user id
           type: string
+          minLength: 1
           example: example-id-123
-          minLength: 1
-        text:
-          description: The artifact text
-          type: string
-          example: example-string
-          minLength: 1
       required:
         - createdAt
         - id
         - updatedAt
-        - credits
-        - mimeType
         - organizationId
-        - text
+        - role
+        - userId
       additionalProperties: false
-    LabelEntity:
-      description: Schema for Label entity
+    InvitationEntity:
+      description: Schema for Invitation entity
       type: object
       properties:
         createdAt:
@@ -3009,22 +2942,50 @@ components:
           format: date-time
           example: '2024-01-15T09:30:00Z'
           minLength: 1
-        name:
-          description: The name of the label
+        email:
+          description: The email of the invitated user
+          type: string
+          example: example-string
+          minLength: 1
+        expiresAt:
+          description: The date and time when the invitation expires
           type: string
           minLength: 1
-          example: Example Name
-        organizationId:
-          description: The organization name
+          example: example-string
+        inviterId:
+          description: The user id of the inviter
           type: string
           minLength: 1
           example: example-id-123
+        organizationId:
+          description: The name of the organization the token belongs to
+          type: string
+          minLength: 1
+          example: example-id-123
+        role:
+          description: The role of the invitation
+          type: string
+          enum:
+            - admin
+            - owner
+            - member
+          example: admin
+          minLength: 1
+        status:
+          description: The status of the invitation, e.g., pending, accepted, declined
+          type: string
+          minLength: 1
+          example: example-string
       required:
         - createdAt
         - id
         - updatedAt
-        - name
+        - email
+        - expiresAt
+        - inviterId
         - organizationId
+        - role
+        - status
       additionalProperties: false
     OrganizationReference:
       type: object
@@ -3191,6 +3152,117 @@ components:
         - name
         - organizationId
         - outputMimeType
+      additionalProperties: false
+    ArtifactEntity:
+      description: Schema for Artifact entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+        credits:
+          description: The number of credits required to access this artifact. This is used for metering and billing purposes.
+          type: number
+          example: 42
+        description:
+          description: The artifact's description
+          type: string
+          example: Example description text
+          minLength: 1
+        mimeType:
+          description: The MIME type of the artifact, e.g. image/png
+          type: string
+          minLength: 1
+          example: example-string
+        name:
+          description: The name of the artifact, used for display purposes
+          type: string
+          example: Example Name
+          minLength: 1
+        organizationId:
+          description: The organization name
+          type: string
+          minLength: 1
+          example: example-id-123
+        previewImage:
+          description: The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
+          type: string
+          example: example-string
+          minLength: 1
+        producerId:
+          description: The ID of the run that produced this artifact, if applicable
+          type: string
+          example: example-id-123
+          minLength: 1
+        text:
+          description: The artifact text
+          type: string
+          example: example-string
+          minLength: 1
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - credits
+        - mimeType
+        - organizationId
+        - text
+      additionalProperties: false
+    LabelEntity:
+      description: Schema for Label entity
+      type: object
+      properties:
+        createdAt:
+          description: The date this item was created
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+        id:
+          description: The ID of the item
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          example: 550e8400-e29b-41d4-a716-446655440000
+          minLength: 36
+        updatedAt:
+          description: The date this item was last updated
+          type: string
+          format: date-time
+          example: '2024-01-15T09:30:00Z'
+          minLength: 1
+        name:
+          description: The name of the label
+          type: string
+          minLength: 1
+          example: Example Name
+        organizationId:
+          description: The organization name
+          type: string
+          minLength: 1
+          example: example-id-123
+      required:
+        - createdAt
+        - id
+        - updatedAt
+        - name
+        - organizationId
       additionalProperties: false
     CORSConfig:
       description: CORS configuration for the API server
@@ -4276,148 +4348,6 @@ components:
               example: asc
               minLength: 1
       description: The sort parameter
-    InvitationsFilter:
-      in: query
-      name: filter
-      required: false
-      style: deepObject
-      explode: true
-      schema:
-        $ref: '#/components/schemas/FilterNode'
-      description: |
-        Filter invitations by field values. Supported fields:
-        - createdAt, id, updatedAt, email, expiresAt
-        - inviterId, organizationId, role, status
-    InvitationsSort:
-      in: query
-      name: sort
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: array
-        items:
-          type: object
-          required:
-            - field
-            - order
-          properties:
-            field:
-              type: string
-              enum:
-                - createdAt
-                - id
-                - updatedAt
-                - email
-                - expiresAt
-                - inviterId
-                - organizationId
-                - role
-                - status
-              example: createdAt
-              minLength: 1
-            order:
-              type: string
-              enum:
-                - asc
-                - desc
-              example: asc
-              minLength: 1
-      description: The sort parameter
-    MembersFilter:
-      in: query
-      name: filter
-      required: false
-      style: deepObject
-      explode: true
-      schema:
-        $ref: '#/components/schemas/FilterNode'
-      description: |
-        Filter members by field values. Supported fields:
-        - createdAt, id, updatedAt, organizationId, role, userId
-    MembersSort:
-      in: query
-      name: sort
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: array
-        items:
-          type: object
-          required:
-            - field
-            - order
-          properties:
-            field:
-              type: string
-              enum:
-                - createdAt
-                - id
-                - updatedAt
-                - organizationId
-                - role
-                - userId
-              example: createdAt
-              minLength: 1
-            order:
-              type: string
-              enum:
-                - asc
-                - desc
-              example: asc
-              minLength: 1
-      description: The sort parameter
-    OrganizationsFilter:
-      in: query
-      name: filter
-      required: false
-      style: deepObject
-      explode: true
-      schema:
-        $ref: '#/components/schemas/FilterNode'
-      description: |
-        Filter organizations by field values. Supported fields:
-        - createdAt, id, updatedAt, billingEmail, credits, logo
-        - metadata, name, plan, slug, stripeCustomerId
-    OrganizationsSort:
-      in: query
-      name: sort
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: array
-        items:
-          type: object
-          required:
-            - field
-            - order
-          properties:
-            field:
-              type: string
-              enum:
-                - createdAt
-                - id
-                - updatedAt
-                - billingEmail
-                - credits
-                - logo
-                - metadata
-                - name
-                - plan
-                - slug
-                - stripeCustomerId
-              example: createdAt
-              minLength: 1
-            order:
-              type: string
-              enum:
-                - asc
-                - desc
-              example: asc
-              minLength: 1
-      description: The sort parameter
     SessionsFilter:
       in: query
       name: filter
@@ -4511,7 +4441,7 @@ components:
               example: asc
               minLength: 1
       description: The sort parameter
-    ArtifactsFilter:
+    OrganizationsFilter:
       in: query
       name: filter
       required: false
@@ -4520,10 +4450,10 @@ components:
       schema:
         $ref: '#/components/schemas/FilterNode'
       description: |
-        Filter artifacts by field values. Supported fields:
-        - createdAt, id, updatedAt, credits, description, mimeType
-        - name, organizationId, previewImage, producerId, text, url
-    ArtifactsSort:
+        Filter organizations by field values. Supported fields:
+        - createdAt, id, updatedAt, billingEmail, credits, logo
+        - metadata, name, plan, slug, stripeCustomerId
+    OrganizationsSort:
       in: query
       name: sort
       required: false
@@ -4543,15 +4473,14 @@ components:
                 - createdAt
                 - id
                 - updatedAt
+                - billingEmail
                 - credits
-                - description
-                - mimeType
+                - logo
+                - metadata
                 - name
-                - organizationId
-                - previewImage
-                - producerId
-                - text
-                - url
+                - plan
+                - slug
+                - stripeCustomerId
               example: createdAt
               minLength: 1
             order:
@@ -4562,7 +4491,7 @@ components:
               example: asc
               minLength: 1
       description: The sort parameter
-    LabelsFilter:
+    MembersFilter:
       in: query
       name: filter
       required: false
@@ -4571,9 +4500,9 @@ components:
       schema:
         $ref: '#/components/schemas/FilterNode'
       description: |
-        Filter labels by field values. Supported fields:
-        - createdAt, id, updatedAt, name, organizationId
-    LabelsSort:
+        Filter members by field values. Supported fields:
+        - createdAt, id, updatedAt, organizationId, role, userId
+    MembersSort:
       in: query
       name: sort
       required: false
@@ -4593,8 +4522,57 @@ components:
                 - createdAt
                 - id
                 - updatedAt
-                - name
                 - organizationId
+                - role
+                - userId
+              example: createdAt
+              minLength: 1
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+              minLength: 1
+      description: The sort parameter
+    InvitationsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: |
+        Filter invitations by field values. Supported fields:
+        - createdAt, id, updatedAt, email, expiresAt
+        - inviterId, organizationId, role, status
+    InvitationsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - email
+                - expiresAt
+                - inviterId
+                - organizationId
+                - role
+                - status
               example: createdAt
               minLength: 1
             order:
@@ -4736,6 +4714,100 @@ components:
                 - name
                 - organizationId
                 - outputMimeType
+              example: createdAt
+              minLength: 1
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+              minLength: 1
+      description: The sort parameter
+    ArtifactsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: |
+        Filter artifacts by field values. Supported fields:
+        - createdAt, id, updatedAt, credits, description, mimeType
+        - name, organizationId, previewImage, producerId, text, url
+    ArtifactsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - credits
+                - description
+                - mimeType
+                - name
+                - organizationId
+                - previewImage
+                - producerId
+                - text
+                - url
+              example: createdAt
+              minLength: 1
+            order:
+              type: string
+              enum:
+                - asc
+                - desc
+              example: asc
+              minLength: 1
+      description: The sort parameter
+    LabelsFilter:
+      in: query
+      name: filter
+      required: false
+      style: deepObject
+      explode: true
+      schema:
+        $ref: '#/components/schemas/FilterNode'
+      description: |
+        Filter labels by field values. Supported fields:
+        - createdAt, id, updatedAt, name, organizationId
+    LabelsSort:
+      in: query
+      name: sort
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: object
+          required:
+            - field
+            - order
+          properties:
+            field:
+              type: string
+              enum:
+                - createdAt
+                - id
+                - updatedAt
+                - name
+                - organizationId
               example: createdAt
               minLength: 1
             order:

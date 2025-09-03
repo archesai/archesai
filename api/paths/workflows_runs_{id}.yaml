@@ -1,9 +1,9 @@
 delete:
-  operationId: deleteMember
-  summary: Delete a member
+  operationId: deleteRun
+  summary: Delete a run
   tags:
-    - Members
-  description: Delete a member
+    - Workflows
+  description: Delete a run
   parameters:
     - schema:
         type: string
@@ -26,18 +26,18 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/MemberEntity.yaml
+                $ref: ../components/schemas/RunEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneMember
-  summary: Find a member
+  operationId: getOneRun
+  summary: Find a run
   tags:
-    - Members
-  description: Find a member
+    - Workflows
+  description: Find a run
   parameters:
     - schema:
         type: string
@@ -60,32 +60,28 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/MemberEntity.yaml
+                $ref: ../components/schemas/RunEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateMember
-  summary: Update a member
+  operationId: updateRun
+  summary: Update a run
   tags:
-    - Members
-  description: Update a member
+    - Workflows
+  description: Update a run
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            role:
-              description: The role of the member
+            pipelineId:
+              description: The pipeline ID associated with the run
               type: string
-              enum:
-                - admin
-                - owner
-                - member
-              example: admin
+              example: example-id-123
   parameters:
     - schema:
         type: string
@@ -108,7 +104,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/MemberEntity.yaml
+                $ref: ../components/schemas/RunEntity.yaml
             required:
               - data
             additionalProperties: false

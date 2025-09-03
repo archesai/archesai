@@ -10,6 +10,9 @@ import (
 	"time"
 
 	"github.com/archesai/archesai/internal/domains/auth"
+	"github.com/archesai/archesai/internal/domains/content"
+	"github.com/archesai/archesai/internal/domains/organizations"
+	"github.com/archesai/archesai/internal/domains/workflows"
 	"github.com/archesai/archesai/internal/generated/api"
 	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
 	sqlitegen "github.com/archesai/archesai/internal/generated/database/sqlite"
@@ -28,14 +31,17 @@ func RegisterRoutes(e *echo.Echo, container *Container) {
 	// Register auth routes
 	container.AuthHandler.RegisterRoutes(v1)
 
-	// TODO: Register other feature routes as they are implemented
-	// Example for intelligence feature:
-	// intelligenceGroup := v1.Group("/intelligence")
-	// artifacts.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
-	// labels.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
-	// pipelines.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
-	// runs.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
-	// tools.RegisterHandlers(intelligenceGroup, container.IntelligenceHandler)
+	// Register organizations routes
+	orgGroup := v1.Group("/organizations")
+	container.OrganizationsHandler.RegisterRoutes(orgGroup)
+
+	// Register workflows routes
+	workflowsGroup := v1.Group("/workflows")
+	container.WorkflowsHandler.RegisterRoutes(workflowsGroup)
+
+	// Register content routes
+	contentGroup := v1.Group("/content")
+	container.ContentHandler.RegisterRoutes(contentGroup)
 }
 
 // Container holds all application dependencies
@@ -48,15 +54,25 @@ type Container struct {
 	Config        *config.Config
 	Server        *server.Server // The HTTP server
 
-	// Auth feature
+	// Auth domain
 	AuthRepository auth.Repository
 	AuthService    *auth.Service
 	AuthHandler    *auth.Handler
 
-	// TODO: Add other features as they are implemented
-	// IntelligenceRepository intelligence.Repository
-	// IntelligenceService    intelligence.Service
-	// IntelligenceHandler    *intelligencehttp.Handler
+	// Organizations domain
+	OrganizationsRepository organizations.Repository
+	OrganizationsService    *organizations.Service
+	OrganizationsHandler    *organizations.Handler
+
+	// Workflows domain
+	WorkflowsRepository workflows.Repository
+	WorkflowsService    *workflows.Service
+	WorkflowsHandler    *workflows.Handler
+
+	// Content domain
+	ContentRepository content.Repository
+	ContentService    *content.Service
+	ContentHandler    *content.Handler
 }
 
 // NewContainer creates and initializes all application dependencies
@@ -118,6 +134,9 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	var pgQueries *postgresqlgen.Queries
 	var sqliteQueries *sqlitegen.Queries
 	var authRepo auth.Repository
+	var organizationsRepo organizations.Repository
+	var workflowsRepo workflows.Repository
+	var contentRepo content.Repository
 
 	// Determine actual database type
 	var dbType database.Type
@@ -133,14 +152,21 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresqlgen.New(pool)
 			authRepo = auth.NewPostgresRepository(pgQueries)
+			organizationsRepo = organizations.NewPostgresRepository(pgQueries)
+			workflowsRepo = workflows.NewPostgresRepository(pgQueries)
+			contentRepo = content.NewPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
 	case database.TypeSQLite:
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlitegen.New(sqlDB)
-			// TODO: Create SQLite auth repository when available
-			logger.Warn("SQLite repositories not yet implemented, auth features may not work")
+			// TODO: Create SQLite repositories when available
+			logger.Warn("SQLite repositories not yet implemented, features may not work")
+			// authRepo = auth.NewSQLiteRepository(sqliteQueries)
+			// organizationsRepo = organizations.NewSQLiteRepository(sqliteQueries)
+			// workflowsRepo = workflows.NewSQLiteRepository(sqliteQueries)
+			// contentRepo = content.NewSQLiteRepository(sqliteQueries)
 		}
 	}
 
@@ -162,10 +188,17 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	authService := auth.NewService(authRepo, authConfig, logger)
 	authHandler := auth.NewHandler(authService, logger)
 
-	// TODO: Initialize other features
-	// intelligenceRepo := intelligencepostgresql.NewRepository(db)
-	// intelligenceService := intelligenceusecase.NewService(intelligenceRepo, logger)
-	// intelligenceHandler := intelligencehttp.NewHandler(intelligenceService, logger)
+	// Initialize organizations domain
+	organizationsService := organizations.NewService(organizationsRepo, logger)
+	organizationsHandler := organizations.NewHandler(organizationsService, logger)
+
+	// Initialize workflows domain
+	workflowsService := workflows.NewService(workflowsRepo, logger)
+	workflowsHandler := workflows.NewHandler(workflowsService, logger)
+
+	// Initialize content domain
+	contentService := content.NewService(contentRepo, logger)
+	contentHandler := content.NewHandler(contentService, logger)
 
 	// Create the HTTP server
 	serverConfig := &server.Config{
@@ -185,15 +218,25 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		Config:        cfg,
 		Server:        httpServer,
 
-		// Auth feature
+		// Auth domain
 		AuthRepository: authRepo,
 		AuthService:    authService,
 		AuthHandler:    authHandler,
 
-		// TODO: Add other features
-		// IntelligenceRepository: intelligenceRepo,
-		// IntelligenceService:    intelligenceService,
-		// IntelligenceHandler:    intelligenceHandler,
+		// Organizations domain
+		OrganizationsRepository: organizationsRepo,
+		OrganizationsService:    organizationsService,
+		OrganizationsHandler:    organizationsHandler,
+
+		// Workflows domain
+		WorkflowsRepository: workflowsRepo,
+		WorkflowsService:    workflowsService,
+		WorkflowsHandler:    workflowsHandler,
+
+		// Content domain
+		ContentRepository: contentRepo,
+		ContentService:    contentService,
+		ContentHandler:    contentHandler,
 	}
 
 	// Register all application routes

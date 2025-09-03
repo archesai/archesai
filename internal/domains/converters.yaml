@@ -31,8 +31,8 @@ converters:
       ProviderId: 'api.AccountEntityProviderId(from.ProviderId)'
       IdToken: 'handleNullableString(from.IdToken)'
 
-  # Admin domain converters
-  - name: AdminOrganizationDBToAPI
+  # Organizations domain converters
+  - name: OrganizationDBToAPI
     from: postgresql.Organization
     to: api.OrganizationEntity
     automap: true
@@ -45,7 +45,7 @@ converters:
       Name: 'from.Name' # Not nullable in DB
       StripeCustomerId: 'handleNullableString(from.StripeCustomerId)' # Already a pointer
 
-  # Pipeline domain converters
+  # Workflows domain converters
   - name: PipelineDBToAPI
     from: postgresql.Pipeline
     to: api.PipelineEntity
@@ -53,25 +53,6 @@ converters:
     overrides:
       Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
       OrganizationId: 'openapi_types.UUID(uuid.MustParse(from.OrganizationId))'
-
-  - name: ArtifactDBToAPI
-    from: postgresql.Artifact
-    to: api.ArtifactEntity
-    automap: true
-    overrides:
-      Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
-      Credits: 'float32(from.Credits)'
-      OrganizationId: 'from.OrganizationId'
-      ProducerId: 'handleNullableString(from.ProducerId)'
-
-  - name: LabelDBToAPI
-    from: postgresql.Label
-    to: api.LabelEntity
-    automap: true
-    overrides:
-      Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
-      OrganizationId: 'from.OrganizationId'
-      Name: 'from.Name'
 
   - name: RunDBToAPI
     from: postgresql.Run
@@ -115,3 +96,23 @@ converters:
       InviterId: 'from.InviterId' # API expects string, not UUID
       Email: 'from.Email' # API expects string, not Email type
       Role: 'api.InvitationEntityRole(from.Role)' # Use correct type
+
+  # Content domain converters
+  - name: ArtifactDBToAPI
+    from: postgresql.Artifact
+    to: api.ArtifactEntity
+    automap: true
+    overrides:
+      Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
+      Credits: 'float32(from.Credits)'
+      OrganizationId: 'from.OrganizationId'
+      ProducerId: 'handleNullableString(from.ProducerId)'
+
+  - name: LabelDBToAPI
+    from: postgresql.Label
+    to: api.LabelEntity
+    automap: true
+    overrides:
+      Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
+      OrganizationId: 'from.OrganizationId'
+      Name: 'from.Name'

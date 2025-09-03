@@ -1,22 +1,25 @@
 post:
-  operationId: createRun
-  summary: Create a new run
+  operationId: createPipeline
+  summary: Create a new pipeline
   tags:
-    - Runs
-  description: Create a new run
+    - Workflows
+  description: Create a new pipeline
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            pipelineId:
-              description: The pipeline ID associated with the run
+            description:
+              description: The pipeline description
               type: string
-              example: example-id-123
+              example: Example description text
               minLength: 1
-          required:
-            - pipelineId
+            name:
+              description: The pipeline name
+              type: string
+              example: Example Name
+              minLength: 1
     required: true
   security:
     - bearerAuth: []
@@ -29,7 +32,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/PipelineEntity.yaml
             required:
               - data
             additionalProperties: false
@@ -38,15 +41,15 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: findManyRuns
-  summary: Find many runs
+  operationId: findManyPipelines
+  summary: Find many pipelines
   tags:
-    - Runs
-  description: Find many runs
+    - Workflows
+  description: Find many pipelines
   parameters:
-    - $ref: ../components/parameters/RunsFilter.yaml
+    - $ref: ../components/parameters/PipelinesFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml
-    - $ref: ../components/parameters/RunsSort.yaml
+    - $ref: ../components/parameters/PipelinesSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -60,7 +63,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/RunEntity.yaml
+                  $ref: ../components/schemas/PipelineEntity.yaml
               meta:
                 type: object
                 properties:

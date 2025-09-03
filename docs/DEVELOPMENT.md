@@ -9,16 +9,15 @@ ArchesAI is a Go-based API platform that follows domain-driven design principles
 ```
 archesai/
 ├── api/                        # OpenAPI specifications
-│   └── specifications/         # Organized by domain & feature
-│       ├── auth/              # Authentication endpoints
-│       ├── intelligence/      # AI/ML endpoints
-│       ├── admin/             # Config & health endpoints
-│       └── common/            # Shared schemas & parameters
+│   ├── components/            # Shared OpenAPI components
+│   ├── paths/                 # API endpoints organized by resource
+│   └── openapi.yaml           # Main OpenAPI specification
 ├── internal/                   # Private application code
-│   ├── domains/               # Business domains (recommended)
-│   │   ├── auth/             # User auth & session management
-│   │   ├── intelligence/     # AI pipelines, tools, runs
-│   │   └── admin/            # Configuration & health
+│   ├── domains/               # Business domains (4 domains)
+│   │   ├── auth/             # Authentication & user management
+│   │   ├── organizations/    # Organization & membership management
+│   │   ├── workflows/        # Pipeline workflows, runs, and tools
+│   │   └── content/          # Content artifacts and labels
 │   ├── infrastructure/       # Shared infrastructure
 │   │   ├── database/         # DB connection & migrations
 │   │   ├── server/           # HTTP server setup
@@ -60,31 +59,97 @@ archesai/
 - External concerns (HTTP, DB) depend on business logic
 - Business logic doesn't depend on external systems
 
-## Domain Structure
+## Domain Structure (Flat Go-Centric Pattern)
 
-Each domain follows a consistent structure:
+Each domain follows a flat, Go-centric structure:
 
 ```
 domains/auth/
-├── entities/           # Domain models & business rules
-│   ├── user.go        # User aggregate
-│   ├── session.go     # Session entity
-│   └── errors.go      # Domain-specific errors
-├── services/          # Business logic & use cases
-│   ├── auth.go        # Authentication service
-│   └── user.go        # User management service
-├── repositories/      # Data access interfaces
-│   ├── user.go        # User repository interface
-│   └── session.go     # Session repository interface
-├── handlers/          # HTTP request handlers
-│   ├── auth.go        # Auth endpoints (/login, /logout)
-│   └── user.go        # User CRUD endpoints
-└── adapters/          # External integrations
-    ├── postgres/      # Database implementations
-    │   ├── user.go    # User repository implementation
-    │   └── session.go # Session repository implementation
-    └── firebase/      # Firebase Auth integration (optional)
-        └── auth.go
+├── auth.go            # Package documentation and shared constants
+├── entities.go        # Domain models (often embedding API types)
+├── service.go         # Business logic & Repository interface definition
+├── repository.go      # PostgreSQL implementation of Repository
+├── handler.go         # HTTP handlers implementing OpenAPI interfaces
+├── middleware.go      # Domain-specific middleware (optional)
+└── converters/        # Generated type converters (DO NOT EDIT)
+    └── converters.gen.go
+```
+
+### File Responsibilities
+
+**auth.go** - Package entry point:
+
+```go
+// Package auth provides authentication and authorization functionality.
+package auth
+
+// Shared constants
+type ContextKey string
+
+const (
+    UserContextKey   ContextKey = "user"
+    ClaimsContextKey ContextKey = "claims"
+)
+```
+
+**entities.go** - Domain models:
+
+```go
+// User extends the API type with domain-specific fields
+type User struct {
+    api.UserEntity
+    PasswordHash string `json:"-"`
+}
+
+// Domain-specific errors
+var (
+    ErrInvalidCredentials = errors.New("invalid credentials")
+    ErrUserNotFound      = errors.New("user not found")
+)
+```
+
+**service.go** - Business logic (consumer defines interface):
+
+```go
+// Repository interface defined by the service (consumer)
+type Repository interface {
+    GetUserByEmail(ctx context.Context, email string) (*User, error)
+    CreateUser(ctx context.Context, user *User) error
+}
+
+// Service contains business logic
+type Service struct {
+    repo Repository
+    jwt  *config.JWTConfig
+}
+```
+
+**repository.go** - Database implementation:
+
+```go
+// Compile-time interface check
+var _ Repository = (*PostgresRepository)(nil)
+
+type PostgresRepository struct {
+    q postgresql.Querier
+}
+
+func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+    // Implementation using sqlc-generated queries
+}
+```
+
+**handler.go** - HTTP handlers:
+
+```go
+type Handler struct {
+    service *Service
+}
+
+// Implements generated OpenAPI interface
+func (h *Handler) PostAuthSignIn(ctx echo.Context) error {
+    // Handle sign-in request
+}
 ```
 
 ## Development Workflow
@@ -421,18 +486,36 @@ metrics.Counter("auth.login.attempts").Inc()
 metrics.Histogram("auth.login.duration").Observe(duration.Seconds())
 ```
 
-## Migration from Current Structure
+## Code Generation Strategy
 
-To migrate from the current structure to the recommended domain-based structure:
+ArchesAI heavily leverages code generation to reduce boilerplate:
 
-1. **Create domain directories** under `internal/domains/`
-2. **Move auth logic** from `internal/auth/` to `internal/domains/auth/`
-3. **Create intelligence domain** for AI/ML features
-4. **Move infrastructure** to `internal/infrastructure/`
-5. **Update import paths** throughout codebase
-6. **Update dependency injection** in `app/container.go`
+1. **sqlc** - Generates type-safe database queries from SQL
+2. **oapi-codegen** - Generates server interfaces from OpenAPI spec
+3. **generate-defaults** - Generates config with defaults from OpenAPI
+4. **generate-converters** - Generates type converters between layers
 
-The migration can be done incrementally - start with one domain and gradually migrate others.
+### Converter Configuration
+
+The `internal/domains/converters.yaml` file configures type conversions:
+
+```yaml
+converters:
+  - name: PipelineDBToAPI
+    from: postgresql.Pipeline
+    to: api.PipelineEntity
+    automap: true # Automatically map matching fields
+    fields:
+      # Only specify fields that need custom conversion
+      OrganizationId: 'openapi_types.UUID(uuid.MustParse(from.OrganizationId))'
+```
+
+### Benefits of Code Generation
+
+- **Type Safety**: Compile-time checking for database queries and API contracts
+- **Reduced Boilerplate**: Auto-generate repetitive conversion code
+- **Consistency**: Ensure uniform patterns across domains
+- **Maintainability**: Changes to schemas automatically propagate
 
 ## Contributing
 

@@ -24,15 +24,18 @@ make build
 make run
 
 # Code generation (required after API/DB schema changes)
-make generate  # Runs both sqlc and oapi-codegen
+make generate  # Runs all generators (sqlc, oapi, defaults, converters)
 make sqlc      # Generate database code from SQL queries
 make oapi      # Generate server code from OpenAPI spec
+make generate-defaults   # Generate config defaults from OpenAPI
+make generate-converters # Generate type converters
 
 # Testing and quality
 make test             # Run tests
 make test-coverage    # Generate coverage report
 make lint            # Run all linters (Go + OpenAPI)
 make lint-go        # Run Go linter only
+make format          # Format all code
 
 # Database migrations
 make migrate-up      # Apply migrations
@@ -77,7 +80,7 @@ vitest run path/to/test.spec.ts
 
 ### Backend Architecture (Go)
 
-The Go backend follows Domain-Driven Design with clean architecture:
+The Go backend follows Domain-Driven Design with a flat, Go-centric structure:
 
 ```
 cmd/api/          # Application entry point
@@ -87,17 +90,39 @@ internal/
   app/            # Application layer - dependency injection, route registration
     deps.go       # Container with all dependencies
 
-  domains/        # Business logic organized by domain
-    auth/         # Authentication domain
-      entities/   # Domain models
-      handlers/   # HTTP handlers implementing OpenAPI interfaces
-      services/   # Business logic
-      repositories/  # Data access interfaces
-      adapters/postgres/  # PostgreSQL implementation
-      middleware.go       # Auth middleware
+  domains/        # Business logic organized by domain (flat structure)
+    auth/         # Authentication and user management domain
+      auth.go     # Package docs and shared constants
+      entities.go # Domain models (extending API types)
+      service.go  # Business logic with Repository interface
+      repository.go # PostgreSQL implementation
+      handler.go  # HTTP handlers implementing OpenAPI interfaces
+      middleware.go # Auth middleware
+      converters/ # Generated type converters (DO NOT EDIT)
 
-    admin/        # Admin domain (similar structure)
-    intelligence/ # AI/ML features domain
+    organizations/ # Organization, membership, and invitation management
+      organizations.go # Package docs and shared constants
+      entities.go     # Domain models (extending API types)
+      service.go      # Business logic with Repository interface
+      repository.go   # PostgreSQL implementation
+      handler.go      # HTTP handlers implementing OpenAPI interfaces
+      converters/     # Generated type converters (DO NOT EDIT)
+
+    workflows/    # Pipeline workflows, runs, and tools domain
+      workflows.go # Package docs and shared constants
+      entities.go  # Domain models (extending API types)
+      service.go   # Business logic with Repository interface
+      repository.go # PostgreSQL implementation
+      handler.go   # HTTP handlers implementing OpenAPI interfaces
+      converters/  # Generated type converters (DO NOT EDIT)
+
+    content/      # Content artifacts and labels domain
+      content.go  # Package docs and shared constants
+      entities.go # Domain models (extending API types)
+      service.go  # Business logic with Repository interface
+      repository.go # PostgreSQL implementation
+      handler.go  # HTTP handlers implementing OpenAPI interfaces
+      converters/ # Generated type converters (DO NOT EDIT)
 
   generated/      # Generated code (DO NOT EDIT)
     api/          # OpenAPI server stubs
@@ -108,6 +133,25 @@ internal/
     database/     # Database connection, migrations, queries
     server/       # HTTP server setup
 ```
+
+### Domain Pattern
+
+Each domain follows a consistent flat structure where:
+
+- **{domain}.go**: Package documentation and shared constants
+- **entities.go**: Domain models, often embedding API types with additional fields
+- **service.go**: Business logic, defines Repository interface (consumer defines interface pattern)
+- **repository.go**: Database implementation of Repository interface
+- **handler.go**: HTTP handlers satisfying generated OpenAPI interfaces
+- **middleware.go**: Domain-specific middleware (optional - auth only)
+- **converters/**: Generated converters between DB and API types
+
+### Current Domains
+
+1. **auth**: Authentication and user management (users, sessions, accounts)
+2. **organizations**: Organization, membership, and invitation management
+3. **workflows**: Pipeline workflows, runs, and tools (formerly pipelines)
+4. **content**: Content artifacts and labels (formerly knowledge)
 
 ### Frontend Architecture (TypeScript/React)
 
@@ -220,11 +264,47 @@ ARCHESAI_SERVER_HOST=0.0.0.0
 - Run `make test` (Go) or `pnpm test` (TS) before commits
 - Coverage reports: `make test-coverage` (Go), `pnpm test:coverage` (TS)
 
+## Code Generators
+
+ArchesAI uses multiple code generators to reduce boilerplate and ensure type safety:
+
+### 1. sqlc (Database → Go)
+
+- **Config**: `internal/infrastructure/database/sqlc.yaml`
+- **Input**: SQL queries in `internal/infrastructure/database/queries/*.sql`
+- **Output**: Type-safe query functions in `internal/generated/database/postgresql/`
+- **Usage**: Access via `container.Queries` in services
+
+### 2. oapi-codegen (OpenAPI → Go)
+
+- **Config**: `internal/generated/api/generate.go`
+- **Input**: `api/openapi.bundled.yaml`
+- **Output**: Server interfaces and types in `internal/generated/api/`
+- **Usage**: Implement interfaces in domain handlers
+
+### 3. generate-defaults (OpenAPI → Go Config)
+
+- **Source**: `cmd/generate-defaults/main.go`
+- **Input**: OpenAPI schema definitions
+- **Output**: `internal/infrastructure/config/defaults.gen.go`
+- **Purpose**: Generate config struct with default values from OpenAPI
+
+### 4. generate-converters (YAML → Go Converters)
+
+- **Source**: `cmd/generate-converters/main.go`
+- **Config**: `internal/domains/converters.yaml`
+- **Output**: `internal/domains/*/converters/converters.gen.go`
+- **Features**:
+  - Automap: Automatically maps fields with matching names
+  - Type-aware conversions (nullable handling, UUID parsing)
+  - Deterministic output (alphabetically sorted fields)
+
 ## Important Notes
 
-- **Generated Code**: Never edit files in `internal/generated/` - they are overwritten
+- **Generated Code**: Never edit files in `internal/generated/` or `*/converters.gen.go` - they are overwritten
 - **OpenAPI First**: API changes start in OpenAPI spec, not code
 - **Type Safety**: Both Go (sqlc) and TypeScript (orval) use code generation for type safety
 - **Monorepo**: Use pnpm workspaces - dependencies are shared via catalog in `pnpm-workspace.yaml`
 - **Domain Boundaries**: Keep domains isolated - communicate through interfaces
 - **Migration Safety**: Always review migrations before applying to production
+- **Interface Pattern**: Consumer defines interface (e.g., Service defines Repository interface)

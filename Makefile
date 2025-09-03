@@ -64,6 +64,12 @@ generate-converters: ## Generate converters between layers
 	@go run cmd/generate-converters/main.go
 	@echo -e "${GREEN}Converters generated!${NC}"
 
+# Domain scaffolding
+generate-domain: ## Generate a new domain scaffold (usage: make generate-domain name=billing tables=subscription,invoice)
+	@echo -e "${YELLOW}Generating domain: $(name)...${NC}"
+	@go run cmd/generate-domain/main.go -name=$(name) -tables="$(tables)" -desc="$(desc)" $(if $(auth),-auth) $(if $(events),-events)
+	@echo -e "${GREEN}Domain $(name) generated!${NC}"
+
 # Testing
 test: ## Run tests
 	@echo -e "${YELLOW}Running tests...${NC}"

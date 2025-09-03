@@ -1,9 +1,9 @@
 delete:
-  operationId: deleteTool
-  summary: Delete a tool
+  operationId: deletePipeline
+  summary: Delete a pipeline
   tags:
-    - Tools
-  description: Delete a tool
+    - Workflows
+  description: Delete a pipeline
   parameters:
     - schema:
         type: string
@@ -26,18 +26,18 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/ToolEntity.yaml
+                $ref: ../components/schemas/PipelineEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneTool
-  summary: Find a tool
+  operationId: getOnePipeline
+  summary: Find a pipeline
   tags:
-    - Tools
-  description: Find a tool
+    - Workflows
+  description: Find a pipeline
   parameters:
     - schema:
         type: string
@@ -60,18 +60,18 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/ToolEntity.yaml
+                $ref: ../components/schemas/PipelineEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateTool
-  summary: Update a tool
+  operationId: updatePipeline
+  summary: Update a pipeline
   tags:
-    - Tools
-  description: Update a tool
+    - Workflows
+  description: Update a pipeline
   requestBody:
     content:
       application/json:
@@ -79,14 +79,12 @@ patch:
           type: object
           properties:
             description:
-              description: The tool description
+              description: The pipeline description
               type: string
-              minLength: 1
               example: Example description text
             name:
-              description: The name of the tool
+              description: The pipeline name
               type: string
-              minLength: 1
               example: Example Name
   parameters:
     - schema:
@@ -110,7 +108,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/ToolEntity.yaml
+                $ref: ../components/schemas/PipelineEntity.yaml
             required:
               - data
             additionalProperties: false

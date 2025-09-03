@@ -127,7 +127,7 @@ func main() {
 	}
 
 	// Generate converters for each domain
-	domains := []string{"auth", "admin", "pipelines"}
+	domains := []string{"auth", "organizations", "workflows", "content"}
 	for _, domain := range domains {
 		if err := generateDomainConverters(domain, config); err != nil {
 			log.Printf("Failed to generate converters for %s: %v", domain, err)
@@ -141,16 +141,19 @@ func generateDomainConverters(domain string, config Config) error {
 	// Filter converters for this domain
 	var domainConverters []ConverterSpec
 	for _, conv := range config.Converters {
-		// Check if converter name starts with domain or matches special cases
+		// Check if converter name starts with domain or matches domain-specific patterns
 		nameLower := strings.ToLower(conv.Name)
-		if strings.HasPrefix(nameLower, domain) ||
-			(domain == "pipelines" && (strings.HasPrefix(nameLower, "pipeline") ||
-				strings.HasPrefix(nameLower, "artifact") ||
-				strings.HasPrefix(nameLower, "label") ||
-				strings.HasPrefix(nameLower, "run") ||
-				strings.HasPrefix(nameLower, "tool") ||
+		domainMatch := strings.HasPrefix(nameLower, domain) ||
+			(domain == "organizations" && (strings.HasPrefix(nameLower, "organization") ||
 				strings.HasPrefix(nameLower, "member") ||
-				strings.HasPrefix(nameLower, "invitation"))) {
+				strings.HasPrefix(nameLower, "invitation"))) ||
+			(domain == "workflows" && (strings.HasPrefix(nameLower, "pipeline") ||
+				strings.HasPrefix(nameLower, "run") ||
+				strings.HasPrefix(nameLower, "tool"))) ||
+			(domain == "content" && (strings.HasPrefix(nameLower, "artifact") ||
+				strings.HasPrefix(nameLower, "label")))
+
+		if domainMatch {
 			spec := buildConverterSpec(conv)
 			domainConverters = append(domainConverters, spec)
 		}

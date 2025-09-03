@@ -1,9 +1,9 @@
 post:
-  operationId: createArtifact
-  summary: Create a new artifact
+  operationId: createLabel
+  summary: Create a new label
   tags:
-    - Artifacts
-  description: Create a new artifact
+    - Content
+  description: Create a new label
   requestBody:
     content:
       application/json:
@@ -11,17 +11,12 @@ post:
           type: object
           properties:
             name:
-              description: The name of the artifact
+              description: The name of the label
               type: string
               minLength: 1
               example: Example Name
-            text:
-              description: The artifact text
-              type: string
-              example: example-string
-              minLength: 1
           required:
-            - text
+            - name
     required: true
   security:
     - bearerAuth: []
@@ -34,7 +29,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/ArtifactEntity.yaml
+                $ref: ../components/schemas/LabelEntity.yaml
             required:
               - data
             additionalProperties: false
@@ -43,15 +38,15 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: findManyArtifacts
-  summary: Find many artifacts
+  operationId: findManyLabels
+  summary: Find many labels
   tags:
-    - Artifacts
-  description: Find many artifacts
+    - Content
+  description: Find many labels
   parameters:
-    - $ref: ../components/parameters/ArtifactsFilter.yaml
+    - $ref: ../components/parameters/LabelsFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml
-    - $ref: ../components/parameters/ArtifactsSort.yaml
+    - $ref: ../components/parameters/LabelsSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -65,7 +60,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/ArtifactEntity.yaml
+                  $ref: ../components/schemas/LabelEntity.yaml
               meta:
                 type: object
                 properties:

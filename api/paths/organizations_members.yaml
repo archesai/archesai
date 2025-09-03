@@ -1,22 +1,24 @@
 post:
-  operationId: createInvitation
-  summary: Create a new invitation
+  operationId: createMember
+  summary: Create a new member
   tags:
-    - Invitations
-  description: Create a new invitation
+    - Organizations
+  description: Create a new member
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Organization ID
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            email:
-              description: The email of the invitated user
-              type: string
-              example: example-string
-              minLength: 1
             role:
-              description: The role of the invitation
+              description: The role of the member
               type: string
               enum:
                 - admin
@@ -25,7 +27,6 @@ post:
               example: admin
               minLength: 1
           required:
-            - email
             - role
     required: true
   security:
@@ -39,7 +40,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/InvitationEntity.yaml
+                $ref: ../components/schemas/MemberEntity.yaml
             required:
               - data
             additionalProperties: false
@@ -48,15 +49,21 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: findManyInvitations
-  summary: Find many invitations
+  operationId: findManyMembers
+  summary: Find many members
   tags:
-    - Invitations
-  description: Find many invitations
+    - Organizations
+  description: Find many members
   parameters:
-    - $ref: ../components/parameters/InvitationsFilter.yaml
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      description: Organization ID
+    - $ref: ../components/parameters/MembersFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml
-    - $ref: ../components/parameters/InvitationsSort.yaml
+    - $ref: ../components/parameters/MembersSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -70,7 +77,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/InvitationEntity.yaml
+                  $ref: ../components/schemas/MemberEntity.yaml
               meta:
                 type: object
                 properties:

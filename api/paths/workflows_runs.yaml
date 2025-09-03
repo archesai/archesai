@@ -1,22 +1,22 @@
 post:
-  operationId: createLabel
-  summary: Create a new label
+  operationId: createRun
+  summary: Create a new run
   tags:
-    - Labels
-  description: Create a new label
+    - Workflows
+  description: Create a new run
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            name:
-              description: The name of the label
+            pipelineId:
+              description: The pipeline ID associated with the run
               type: string
+              example: example-id-123
               minLength: 1
-              example: Example Name
           required:
-            - name
+            - pipelineId
     required: true
   security:
     - bearerAuth: []
@@ -29,7 +29,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/RunEntity.yaml
             required:
               - data
             additionalProperties: false
@@ -38,15 +38,15 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: findManyLabels
-  summary: Find many labels
+  operationId: findManyRuns
+  summary: Find many runs
   tags:
-    - Labels
-  description: Find many labels
+    - Workflows
+  description: Find many runs
   parameters:
-    - $ref: ../components/parameters/LabelsFilter.yaml
+    - $ref: ../components/parameters/RunsFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml
-    - $ref: ../components/parameters/LabelsSort.yaml
+    - $ref: ../components/parameters/RunsSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -60,7 +60,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/LabelEntity.yaml
+                  $ref: ../components/schemas/RunEntity.yaml
               meta:
                 type: object
                 properties:

@@ -28,6 +28,7 @@ rules:
       - email-change
       - request
       - verify
+      - content
   spec-strict-refs: error
   operation-4xx-problem-details-rfc7807: error
   operation-description: error

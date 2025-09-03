@@ -1,26 +1,27 @@
 post:
-  operationId: createMember
-  summary: Create a new member
+  operationId: createArtifact
+  summary: Create a new artifact
   tags:
-    - Members
-  description: Create a new member
+    - Content
+  description: Create a new artifact
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            role:
-              description: The role of the member
+            name:
+              description: The name of the artifact
               type: string
-              enum:
-                - admin
-                - owner
-                - member
-              example: admin
+              minLength: 1
+              example: Example Name
+            text:
+              description: The artifact text
+              type: string
+              example: example-string
               minLength: 1
           required:
-            - role
+            - text
     required: true
   security:
     - bearerAuth: []
@@ -33,7 +34,7 @@ post:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/MemberEntity.yaml
+                $ref: ../components/schemas/ArtifactEntity.yaml
             required:
               - data
             additionalProperties: false
@@ -42,15 +43,15 @@ post:
     '401':
       $ref: ../components/responses/Unauthorized.yaml
 get:
-  operationId: findManyMembers
-  summary: Find many members
+  operationId: findManyArtifacts
+  summary: Find many artifacts
   tags:
-    - Members
-  description: Find many members
+    - Content
+  description: Find many artifacts
   parameters:
-    - $ref: ../components/parameters/MembersFilter.yaml
+    - $ref: ../components/parameters/ArtifactsFilter.yaml
     - $ref: ../components/parameters/PageQuery.yaml
-    - $ref: ../components/parameters/MembersSort.yaml
+    - $ref: ../components/parameters/ArtifactsSort.yaml
   security:
     - bearerAuth: []
   responses:
@@ -64,7 +65,7 @@ get:
               data:
                 type: array
                 items:
-                  $ref: ../components/schemas/MemberEntity.yaml
+                  $ref: ../components/schemas/ArtifactEntity.yaml
               meta:
                 type: object
                 properties:

@@ -2,7 +2,7 @@ delete:
   operationId: deleteArtifact
   summary: Delete an artifact
   tags:
-    - Artifacts
+    - Content
   description: Delete an artifact
   parameters:
     - schema:
@@ -36,7 +36,7 @@ get:
   operationId: getOneArtifact
   summary: Find an artifact
   tags:
-    - Artifacts
+    - Content
   description: Find an artifact
   parameters:
     - schema:
@@ -70,7 +70,7 @@ patch:
   operationId: updateArtifact
   summary: Update an artifact
   tags:
-    - Artifacts
+    - Content
   description: Update an artifact
   requestBody:
     content:

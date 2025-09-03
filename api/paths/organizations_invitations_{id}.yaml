@@ -1,9 +1,9 @@
 delete:
-  operationId: deleteRun
-  summary: Delete a run
+  operationId: deleteInvitation
+  summary: Delete an invitation
   tags:
-    - Runs
-  description: Delete a run
+    - Organizations
+  description: Delete an invitation
   parameters:
     - schema:
         type: string
@@ -14,7 +14,17 @@ delete:
       in: path
       name: id
       required: true
-      description: The unique identifier of the resource.
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
   security:
     - bearerAuth: []
   responses:
@@ -26,18 +36,18 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/InvitationEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneRun
-  summary: Find a run
+  operationId: getOneInvitation
+  summary: Find an invitation
   tags:
-    - Runs
-  description: Find a run
+    - Organizations
+  description: Find an invitation
   parameters:
     - schema:
         type: string
@@ -48,7 +58,17 @@ get:
       in: path
       name: id
       required: true
-      description: The unique identifier of the resource.
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
   security:
     - bearerAuth: []
   responses:
@@ -60,28 +80,36 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/InvitationEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateRun
-  summary: Update a run
+  operationId: updateInvitation
+  summary: Update an invitation
   tags:
-    - Runs
-  description: Update a run
+    - Organizations
+  description: Update an invitation
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
-            pipelineId:
-              description: The pipeline ID associated with the run
+            email:
+              description: The email of the invitated user
               type: string
-              example: example-id-123
+              example: example-string
+            role:
+              description: The role of the invitation
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
   parameters:
     - schema:
         type: string
@@ -92,7 +120,17 @@ patch:
       in: path
       name: id
       required: true
-      description: The unique identifier of the resource.
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
   security:
     - bearerAuth: []
   responses:
@@ -104,7 +142,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/RunEntity.yaml
+                $ref: ../components/schemas/InvitationEntity.yaml
             required:
               - data
             additionalProperties: false

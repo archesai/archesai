@@ -2,7 +2,7 @@ post:
   operationId: createTool
   summary: Create a new tool
   tags:
-    - Tools
+    - Workflows
   description: Create a new tool
   requestBody:
     content:
@@ -47,7 +47,7 @@ get:
   operationId: findManyTools
   summary: Find many tools
   tags:
-    - Tools
+    - Workflows
   description: Find many tools
   parameters:
     - $ref: ../components/parameters/ToolsFilter.yaml

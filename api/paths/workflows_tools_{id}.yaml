@@ -1,9 +1,9 @@
 delete:
-  operationId: deleteLabel
-  summary: Delete a label
+  operationId: deleteTool
+  summary: Delete a tool
   tags:
-    - Labels
-  description: Delete a label
+    - Workflows
+  description: Delete a tool
   parameters:
     - schema:
         type: string
@@ -26,18 +26,18 @@ delete:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/ToolEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 get:
-  operationId: getOneLabel
-  summary: Find a label
+  operationId: getOneTool
+  summary: Find a tool
   tags:
-    - Labels
-  description: Find a label
+    - Workflows
+  description: Find a tool
   parameters:
     - schema:
         type: string
@@ -60,26 +60,31 @@ get:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/ToolEntity.yaml
             required:
               - data
             additionalProperties: false
     '404':
       $ref: ../components/responses/NotFound.yaml
 patch:
-  operationId: updateLabel
-  summary: Update a label
+  operationId: updateTool
+  summary: Update a tool
   tags:
-    - Labels
-  description: Update a label
+    - Workflows
+  description: Update a tool
   requestBody:
     content:
       application/json:
         schema:
           type: object
           properties:
+            description:
+              description: The tool description
+              type: string
+              minLength: 1
+              example: Example description text
             name:
-              description: The name of the label
+              description: The name of the tool
               type: string
               minLength: 1
               example: Example Name
@@ -105,7 +110,7 @@ patch:
             type: object
             properties:
               data:
-                $ref: ../components/schemas/LabelEntity.yaml
+                $ref: ../components/schemas/ToolEntity.yaml
             required:
               - data
             additionalProperties: false

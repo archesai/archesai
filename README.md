@@ -29,10 +29,12 @@ jobs:
         with:
           rdme: openapi https://api.archesai.com/-json --key=${{ secrets.README_SECRET }} --id=64837ab02aa53c002a2ceccd -->
 
-REPOSITORES WITH INCLUDES
+REPOSITORIES WITH INCLUDES
 
-- UserRepository
-- PipelineRepository
+- UserRepository (Auth Domain)
+- OrganizationRepository (Organizations Domain)
+- PipelineRepository (Workflows Domain)
+- ArtifactRepository (Content Domain)
 
 ## Installing Minikube
 
@@ -182,11 +184,12 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 - **Intuitive Query Interface:** User-friendly tools for querying indexed data with ease.
 - **Data Transformation Tools:** Flexible tools to transform data to meet specific business requirements.
 
-### Pipeline Building
+### Workflow Building
 
-- **Custom Pipelines:** Design and implement data processing pipelines using individual tools.
+- **Custom Workflows:** Design and implement data processing workflows using individual tools through the workflows domain.
 - **Automation:** Automate complex data workflows tailored to organizational needs.
-- **Directed Acyclical Graph**: The pipelines are DAGs, so you can represent all possible pipelines.
+- **Directed Acyclical Graph**: The workflows are DAGs, so you can represent all possible processing chains.
+- **Pipeline Runs:** Track and monitor workflow execution with detailed run history and status.
 
 ### Support and Consulting
 
@@ -217,10 +220,12 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 
 ### Technology Stack
 
-- **Backend:** PostgreSQL with vector extensions for efficient storage and querying of embeddings, managed via Prisma ORM.
-- **Frontend:** Modern JavaScript frameworks such as React or Vue for responsive and user-friendly interfaces.
-- **AI Models:** Proprietary and third-party AI models for data transformation and embedding.
-- **Cloud Infrastructure:** Reliable and scalable cloud services like AWS, Azure, or GCP to ensure performance and uptime.
+- **Backend:** Go with Echo framework, Domain-Driven Design architecture with four domains (auth, organizations, workflows, content)
+- **Database:** PostgreSQL with vector extensions for efficient storage and querying of embeddings, type-safe queries with sqlc
+- **Frontend:** TypeScript/React with TanStack Router, built with Vite in a monorepo structure
+- **API:** OpenAPI-first development with automatic code generation for type safety
+- **AI Models:** Proprietary and third-party AI models for data transformation and embedding
+- **Cloud Infrastructure:** Kubernetes-native with Helm charts for scalable deployment
 
 ## Use Cases by Industry
 

@@ -1,0 +1,112 @@
+post:
+  operationId: createInvitation
+  summary: Create a new invitation
+  tags:
+    - Organizations
+  description: Create a new invitation
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email of the invitated user
+              type: string
+              example: example-string
+              minLength: 1
+            role:
+              description: The role of the invitation
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+              minLength: 1
+          required:
+            - email
+            - role
+    required: true
+  security:
+    - bearerAuth: []
+  responses:
+    '201':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/InvitationEntity.yaml
+            required:
+              - data
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml
+get:
+  operationId: findManyInvitations
+  summary: Find many invitations
+  tags:
+    - Organizations
+  description: Find many invitations
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        pattern: >-
+          ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - $ref: ../components/parameters/InvitationsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/InvitationsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/InvitationEntity.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of items in the collection
+                    type: number
+                    example: 42
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    '400':
+      $ref: ../components/responses/BadRequest.yaml
+    '401':
+      $ref: ../components/responses/Unauthorized.yaml

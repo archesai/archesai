@@ -22,37 +22,23 @@ security:
   - sessionCookie: []
 tags:
   - name: Accounts
-    description: Account management operations
-  - name: Artifacts
-    description: Intelligence artifact operations
+    description: User account management
   - name: Auth
     description: Authentication and authorization operations
   - name: Config
     description: Configuration management
+  - name: Content
+    description: Content artifacts and labels
   - name: Health
     description: Health check operations
-  - name: Infrastructure
-    description: Infrastructure management operations
-  - name: Intelligence
-    description: AI and intelligence operations
-  - name: Invitations
-    description: User invitation management
-  - name: Labels
-    description: Label management operations
-  - name: Members
-    description: Organization member management
   - name: Organizations
-    description: Organization management operations
-  - name: Pipelines
-    description: Pipeline management operations
-  - name: Runs
-    description: Pipeline run operations
+    description: Organization management, membership, and invitations
   - name: Sessions
-    description: Session management operations
-  - name: Tools
-    description: Tool management operations
+    description: User session management
   - name: Users
-    description: User management operations
+    description: User profile management
+  - name: Workflows
+    description: Pipeline workflows, runs, and tools
 paths:
   /auth/accounts:
     $ref: paths/auth_accounts.yaml
@@ -76,18 +62,6 @@ paths:
     $ref: paths/auth_email-change_request.yaml
   /auth/email-change/verify:
     $ref: paths/auth_email-change_verify.yaml
-  /auth/invitations:
-    $ref: paths/auth_invitations.yaml
-  /auth/invitations/{id}:
-    $ref: paths/auth_invitations_{id}.yaml
-  /auth/members:
-    $ref: paths/auth_members.yaml
-  /auth/members/{id}:
-    $ref: paths/auth_members_{id}.yaml
-  /auth/organizations:
-    $ref: paths/auth_organizations.yaml
-  /auth/organizations/{id}:
-    $ref: paths/auth_organizations_{id}.yaml
   /auth/sessions:
     $ref: paths/auth_sessions.yaml
   /auth/sessions/{id}:
@@ -96,26 +70,41 @@ paths:
     $ref: paths/auth_users.yaml
   /auth/users/{id}:
     $ref: paths/auth_users_{id}.yaml
-  /intelligence/artifacts:
-    $ref: paths/intelligence_artifacts.yaml
-  /intelligence/artifacts/{id}:
-    $ref: paths/intelligence_artifacts_{id}.yaml
-  /intelligence/labels:
-    $ref: paths/intelligence_labels.yaml
-  /intelligence/labels/{id}:
-    $ref: paths/intelligence_labels_{id}.yaml
-  /intelligence/pipelines:
-    $ref: paths/intelligence_pipelines.yaml
-  /intelligence/pipelines/{id}:
-    $ref: paths/intelligence_pipelines_{id}.yaml
-  /intelligence/runs:
-    $ref: paths/intelligence_runs.yaml
-  /intelligence/runs/{id}:
-    $ref: paths/intelligence_runs_{id}.yaml
-  /intelligence/tools:
-    $ref: paths/intelligence_tools.yaml
-  /intelligence/tools/{id}:
-    $ref: paths/intelligence_tools_{id}.yaml
+  # Organizations domain
+  /organizations:
+    $ref: paths/organizations.yaml
+  /organizations/{id}:
+    $ref: paths/organizations_{id}.yaml
+  /organizations/{id}/members:
+    $ref: paths/organizations_members.yaml
+  /organizations/{id}/members/{memberId}:
+    $ref: paths/organizations_members_{id}.yaml
+  /organizations/{id}/invitations:
+    $ref: paths/organizations_invitations.yaml
+  /organizations/{id}/invitations/{invitationId}:
+    $ref: paths/organizations_invitations_{id}.yaml
+  # Workflows domain
+  /workflows/pipelines:
+    $ref: paths/workflows_pipelines.yaml
+  /workflows/pipelines/{id}:
+    $ref: paths/workflows_pipelines_{id}.yaml
+  /workflows/runs:
+    $ref: paths/workflows_runs.yaml
+  /workflows/runs/{id}:
+    $ref: paths/workflows_runs_{id}.yaml
+  /workflows/tools:
+    $ref: paths/workflows_tools.yaml
+  /workflows/tools/{id}:
+    $ref: paths/workflows_tools_{id}.yaml
+  # Content domain
+  /content/artifacts:
+    $ref: paths/content_artifacts.yaml
+  /content/artifacts/{id}:
+    $ref: paths/content_artifacts_{id}.yaml
+  /content/labels:
+    $ref: paths/content_labels.yaml
+  /content/labels/{id}:
+    $ref: paths/content_labels_{id}.yaml
   /config:
     $ref: paths/config.yaml
   /health:

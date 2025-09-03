@@ -122,90 +122,6 @@ const (
 	AccountsFindManyParamsSortOrderDesc AccountsFindManyParamsSortOrder = "desc"
 )
 
-// Defines values for FindManyInvitationsParamsSortField.
-const (
-	FindManyInvitationsParamsSortFieldCreatedAt      FindManyInvitationsParamsSortField = "createdAt"
-	FindManyInvitationsParamsSortFieldEmail          FindManyInvitationsParamsSortField = "email"
-	FindManyInvitationsParamsSortFieldExpiresAt      FindManyInvitationsParamsSortField = "expiresAt"
-	FindManyInvitationsParamsSortFieldId             FindManyInvitationsParamsSortField = "id"
-	FindManyInvitationsParamsSortFieldInviterId      FindManyInvitationsParamsSortField = "inviterId"
-	FindManyInvitationsParamsSortFieldOrganizationId FindManyInvitationsParamsSortField = "organizationId"
-	FindManyInvitationsParamsSortFieldRole           FindManyInvitationsParamsSortField = "role"
-	FindManyInvitationsParamsSortFieldStatus         FindManyInvitationsParamsSortField = "status"
-	FindManyInvitationsParamsSortFieldUpdatedAt      FindManyInvitationsParamsSortField = "updatedAt"
-)
-
-// Defines values for FindManyInvitationsParamsSortOrder.
-const (
-	FindManyInvitationsParamsSortOrderAsc  FindManyInvitationsParamsSortOrder = "asc"
-	FindManyInvitationsParamsSortOrderDesc FindManyInvitationsParamsSortOrder = "desc"
-)
-
-// Defines values for CreateInvitationJSONBodyRole.
-const (
-	CreateInvitationJSONBodyRoleAdmin  CreateInvitationJSONBodyRole = "admin"
-	CreateInvitationJSONBodyRoleMember CreateInvitationJSONBodyRole = "member"
-	CreateInvitationJSONBodyRoleOwner  CreateInvitationJSONBodyRole = "owner"
-)
-
-// Defines values for UpdateInvitationJSONBodyRole.
-const (
-	UpdateInvitationJSONBodyRoleAdmin  UpdateInvitationJSONBodyRole = "admin"
-	UpdateInvitationJSONBodyRoleMember UpdateInvitationJSONBodyRole = "member"
-	UpdateInvitationJSONBodyRoleOwner  UpdateInvitationJSONBodyRole = "owner"
-)
-
-// Defines values for FindManyMembersParamsSortField.
-const (
-	FindManyMembersParamsSortFieldCreatedAt      FindManyMembersParamsSortField = "createdAt"
-	FindManyMembersParamsSortFieldId             FindManyMembersParamsSortField = "id"
-	FindManyMembersParamsSortFieldOrganizationId FindManyMembersParamsSortField = "organizationId"
-	FindManyMembersParamsSortFieldRole           FindManyMembersParamsSortField = "role"
-	FindManyMembersParamsSortFieldUpdatedAt      FindManyMembersParamsSortField = "updatedAt"
-	FindManyMembersParamsSortFieldUserId         FindManyMembersParamsSortField = "userId"
-)
-
-// Defines values for FindManyMembersParamsSortOrder.
-const (
-	FindManyMembersParamsSortOrderAsc  FindManyMembersParamsSortOrder = "asc"
-	FindManyMembersParamsSortOrderDesc FindManyMembersParamsSortOrder = "desc"
-)
-
-// Defines values for CreateMemberJSONBodyRole.
-const (
-	CreateMemberJSONBodyRoleAdmin  CreateMemberJSONBodyRole = "admin"
-	CreateMemberJSONBodyRoleMember CreateMemberJSONBodyRole = "member"
-	CreateMemberJSONBodyRoleOwner  CreateMemberJSONBodyRole = "owner"
-)
-
-// Defines values for UpdateMemberJSONBodyRole.
-const (
-	UpdateMemberJSONBodyRoleAdmin  UpdateMemberJSONBodyRole = "admin"
-	UpdateMemberJSONBodyRoleMember UpdateMemberJSONBodyRole = "member"
-	UpdateMemberJSONBodyRoleOwner  UpdateMemberJSONBodyRole = "owner"
-)
-
-// Defines values for FindManyOrganizationsParamsSortField.
-const (
-	FindManyOrganizationsParamsSortFieldBillingEmail     FindManyOrganizationsParamsSortField = "billingEmail"
-	FindManyOrganizationsParamsSortFieldCreatedAt        FindManyOrganizationsParamsSortField = "createdAt"
-	FindManyOrganizationsParamsSortFieldCredits          FindManyOrganizationsParamsSortField = "credits"
-	FindManyOrganizationsParamsSortFieldId               FindManyOrganizationsParamsSortField = "id"
-	FindManyOrganizationsParamsSortFieldLogo             FindManyOrganizationsParamsSortField = "logo"
-	FindManyOrganizationsParamsSortFieldMetadata         FindManyOrganizationsParamsSortField = "metadata"
-	FindManyOrganizationsParamsSortFieldName             FindManyOrganizationsParamsSortField = "name"
-	FindManyOrganizationsParamsSortFieldPlan             FindManyOrganizationsParamsSortField = "plan"
-	FindManyOrganizationsParamsSortFieldSlug             FindManyOrganizationsParamsSortField = "slug"
-	FindManyOrganizationsParamsSortFieldStripeCustomerId FindManyOrganizationsParamsSortField = "stripeCustomerId"
-	FindManyOrganizationsParamsSortFieldUpdatedAt        FindManyOrganizationsParamsSortField = "updatedAt"
-)
-
-// Defines values for FindManyOrganizationsParamsSortOrder.
-const (
-	FindManyOrganizationsParamsSortOrderAsc  FindManyOrganizationsParamsSortOrder = "asc"
-	FindManyOrganizationsParamsSortOrderDesc FindManyOrganizationsParamsSortOrder = "desc"
-)
-
 // Defines values for FindManySessionsParamsSortField.
 const (
 	FindManySessionsParamsSortFieldActiveOrganizationId FindManySessionsParamsSortField = "activeOrganizationId"
@@ -277,6 +193,90 @@ const (
 const (
 	FindManyLabelsParamsSortOrderAsc  FindManyLabelsParamsSortOrder = "asc"
 	FindManyLabelsParamsSortOrderDesc FindManyLabelsParamsSortOrder = "desc"
+)
+
+// Defines values for FindManyOrganizationsParamsSortField.
+const (
+	FindManyOrganizationsParamsSortFieldBillingEmail     FindManyOrganizationsParamsSortField = "billingEmail"
+	FindManyOrganizationsParamsSortFieldCreatedAt        FindManyOrganizationsParamsSortField = "createdAt"
+	FindManyOrganizationsParamsSortFieldCredits          FindManyOrganizationsParamsSortField = "credits"
+	FindManyOrganizationsParamsSortFieldId               FindManyOrganizationsParamsSortField = "id"
+	FindManyOrganizationsParamsSortFieldLogo             FindManyOrganizationsParamsSortField = "logo"
+	FindManyOrganizationsParamsSortFieldMetadata         FindManyOrganizationsParamsSortField = "metadata"
+	FindManyOrganizationsParamsSortFieldName             FindManyOrganizationsParamsSortField = "name"
+	FindManyOrganizationsParamsSortFieldPlan             FindManyOrganizationsParamsSortField = "plan"
+	FindManyOrganizationsParamsSortFieldSlug             FindManyOrganizationsParamsSortField = "slug"
+	FindManyOrganizationsParamsSortFieldStripeCustomerId FindManyOrganizationsParamsSortField = "stripeCustomerId"
+	FindManyOrganizationsParamsSortFieldUpdatedAt        FindManyOrganizationsParamsSortField = "updatedAt"
+)
+
+// Defines values for FindManyOrganizationsParamsSortOrder.
+const (
+	FindManyOrganizationsParamsSortOrderAsc  FindManyOrganizationsParamsSortOrder = "asc"
+	FindManyOrganizationsParamsSortOrderDesc FindManyOrganizationsParamsSortOrder = "desc"
+)
+
+// Defines values for FindManyInvitationsParamsSortField.
+const (
+	FindManyInvitationsParamsSortFieldCreatedAt      FindManyInvitationsParamsSortField = "createdAt"
+	FindManyInvitationsParamsSortFieldEmail          FindManyInvitationsParamsSortField = "email"
+	FindManyInvitationsParamsSortFieldExpiresAt      FindManyInvitationsParamsSortField = "expiresAt"
+	FindManyInvitationsParamsSortFieldId             FindManyInvitationsParamsSortField = "id"
+	FindManyInvitationsParamsSortFieldInviterId      FindManyInvitationsParamsSortField = "inviterId"
+	FindManyInvitationsParamsSortFieldOrganizationId FindManyInvitationsParamsSortField = "organizationId"
+	FindManyInvitationsParamsSortFieldRole           FindManyInvitationsParamsSortField = "role"
+	FindManyInvitationsParamsSortFieldStatus         FindManyInvitationsParamsSortField = "status"
+	FindManyInvitationsParamsSortFieldUpdatedAt      FindManyInvitationsParamsSortField = "updatedAt"
+)
+
+// Defines values for FindManyInvitationsParamsSortOrder.
+const (
+	FindManyInvitationsParamsSortOrderAsc  FindManyInvitationsParamsSortOrder = "asc"
+	FindManyInvitationsParamsSortOrderDesc FindManyInvitationsParamsSortOrder = "desc"
+)
+
+// Defines values for CreateInvitationJSONBodyRole.
+const (
+	CreateInvitationJSONBodyRoleAdmin  CreateInvitationJSONBodyRole = "admin"
+	CreateInvitationJSONBodyRoleMember CreateInvitationJSONBodyRole = "member"
+	CreateInvitationJSONBodyRoleOwner  CreateInvitationJSONBodyRole = "owner"
+)
+
+// Defines values for UpdateInvitationJSONBodyRole.
+const (
+	UpdateInvitationJSONBodyRoleAdmin  UpdateInvitationJSONBodyRole = "admin"
+	UpdateInvitationJSONBodyRoleMember UpdateInvitationJSONBodyRole = "member"
+	UpdateInvitationJSONBodyRoleOwner  UpdateInvitationJSONBodyRole = "owner"
+)
+
+// Defines values for FindManyMembersParamsSortField.
+const (
+	FindManyMembersParamsSortFieldCreatedAt      FindManyMembersParamsSortField = "createdAt"
+	FindManyMembersParamsSortFieldId             FindManyMembersParamsSortField = "id"
+	FindManyMembersParamsSortFieldOrganizationId FindManyMembersParamsSortField = "organizationId"
+	FindManyMembersParamsSortFieldRole           FindManyMembersParamsSortField = "role"
+	FindManyMembersParamsSortFieldUpdatedAt      FindManyMembersParamsSortField = "updatedAt"
+	FindManyMembersParamsSortFieldUserId         FindManyMembersParamsSortField = "userId"
+)
+
+// Defines values for FindManyMembersParamsSortOrder.
+const (
+	FindManyMembersParamsSortOrderAsc  FindManyMembersParamsSortOrder = "asc"
+	FindManyMembersParamsSortOrderDesc FindManyMembersParamsSortOrder = "desc"
+)
+
+// Defines values for CreateMemberJSONBodyRole.
+const (
+	CreateMemberJSONBodyRoleAdmin  CreateMemberJSONBodyRole = "admin"
+	CreateMemberJSONBodyRoleMember CreateMemberJSONBodyRole = "member"
+	CreateMemberJSONBodyRoleOwner  CreateMemberJSONBodyRole = "owner"
+)
+
+// Defines values for UpdateMemberJSONBodyRole.
+const (
+	UpdateMemberJSONBodyRoleAdmin  UpdateMemberJSONBodyRole = "admin"
+	UpdateMemberJSONBodyRoleMember UpdateMemberJSONBodyRole = "member"
+	UpdateMemberJSONBodyRoleOwner  UpdateMemberJSONBodyRole = "owner"
 )
 
 // Defines values for FindManyPipelinesParamsSortField.
@@ -1507,125 +1507,6 @@ type ConfirmEmailVerificationJSONBody struct {
 	Token string `json:"token" yaml:"token"`
 }
 
-// FindManyInvitationsParams defines parameters for FindManyInvitations.
-type FindManyInvitationsParams struct {
-	// Filter Filter invitations by field values. Supported fields:
-	// - createdAt, id, updatedAt, email, expiresAt
-	// - inviterId, organizationId, role, status
-	Filter InvitationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
-
-	// Page The page parameter
-	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
-
-	// Sort The sort parameter
-	Sort InvitationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
-}
-
-// FindManyInvitationsParamsSortField defines parameters for FindManyInvitations.
-type FindManyInvitationsParamsSortField string
-
-// FindManyInvitationsParamsSortOrder defines parameters for FindManyInvitations.
-type FindManyInvitationsParamsSortOrder string
-
-// CreateInvitationJSONBody defines parameters for CreateInvitation.
-type CreateInvitationJSONBody struct {
-	// Email The email of the invitated user
-	Email string `json:"email" yaml:"email"`
-
-	// Role The role of the invitation
-	Role CreateInvitationJSONBodyRole `json:"role" yaml:"role"`
-}
-
-// CreateInvitationJSONBodyRole defines parameters for CreateInvitation.
-type CreateInvitationJSONBodyRole string
-
-// UpdateInvitationJSONBody defines parameters for UpdateInvitation.
-type UpdateInvitationJSONBody struct {
-	// Email The email of the invitated user
-	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
-
-	// Role The role of the invitation
-	Role UpdateInvitationJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
-}
-
-// UpdateInvitationJSONBodyRole defines parameters for UpdateInvitation.
-type UpdateInvitationJSONBodyRole string
-
-// FindManyMembersParams defines parameters for FindManyMembers.
-type FindManyMembersParams struct {
-	// Filter Filter members by field values. Supported fields:
-	// - createdAt, id, updatedAt, organizationId, role, userId
-	Filter MembersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
-
-	// Page The page parameter
-	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
-
-	// Sort The sort parameter
-	Sort MembersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
-}
-
-// FindManyMembersParamsSortField defines parameters for FindManyMembers.
-type FindManyMembersParamsSortField string
-
-// FindManyMembersParamsSortOrder defines parameters for FindManyMembers.
-type FindManyMembersParamsSortOrder string
-
-// CreateMemberJSONBody defines parameters for CreateMember.
-type CreateMemberJSONBody struct {
-	// Role The role of the member
-	Role CreateMemberJSONBodyRole `json:"role" yaml:"role"`
-}
-
-// CreateMemberJSONBodyRole defines parameters for CreateMember.
-type CreateMemberJSONBodyRole string
-
-// UpdateMemberJSONBody defines parameters for UpdateMember.
-type UpdateMemberJSONBody struct {
-	// Role The role of the member
-	Role UpdateMemberJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
-}
-
-// UpdateMemberJSONBodyRole defines parameters for UpdateMember.
-type UpdateMemberJSONBodyRole string
-
-// FindManyOrganizationsParams defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParams struct {
-	// Filter Filter organizations by field values. Supported fields:
-	// - createdAt, id, updatedAt, billingEmail, credits, logo
-	// - metadata, name, plan, slug, stripeCustomerId
-	Filter OrganizationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
-
-	// Page The page parameter
-	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
-
-	// Sort The sort parameter
-	Sort OrganizationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
-}
-
-// FindManyOrganizationsParamsSortField defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParamsSortField string
-
-// FindManyOrganizationsParamsSortOrder defines parameters for FindManyOrganizations.
-type FindManyOrganizationsParamsSortOrder string
-
-// CreateOrganizationJSONBody defines parameters for CreateOrganization.
-type CreateOrganizationJSONBody struct {
-	// BillingEmail The billing email to use for the organization
-	BillingEmail string `json:"billingEmail" yaml:"billingEmail"`
-
-	// OrganizationId The ID of the item
-	OrganizationId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
-}
-
-// UpdateOrganizationJSONBody defines parameters for UpdateOrganization.
-type UpdateOrganizationJSONBody struct {
-	// BillingEmail The billing email to use for the organization
-	BillingEmail string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
-
-	// OrganizationId The ID of the item
-	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
-}
-
 // RequestPasswordResetJSONBody defines parameters for RequestPasswordReset.
 type RequestPasswordResetJSONBody struct {
 	// Email The e-mail to send the password reset token to
@@ -1788,6 +1669,125 @@ type UpdateLabelJSONBody struct {
 	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
+// FindManyOrganizationsParams defines parameters for FindManyOrganizations.
+type FindManyOrganizationsParams struct {
+	// Filter Filter organizations by field values. Supported fields:
+	// - createdAt, id, updatedAt, billingEmail, credits, logo
+	// - metadata, name, plan, slug, stripeCustomerId
+	Filter OrganizationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
+
+	// Page The page parameter
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
+
+	// Sort The sort parameter
+	Sort OrganizationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
+}
+
+// FindManyOrganizationsParamsSortField defines parameters for FindManyOrganizations.
+type FindManyOrganizationsParamsSortField string
+
+// FindManyOrganizationsParamsSortOrder defines parameters for FindManyOrganizations.
+type FindManyOrganizationsParamsSortOrder string
+
+// CreateOrganizationJSONBody defines parameters for CreateOrganization.
+type CreateOrganizationJSONBody struct {
+	// BillingEmail The billing email to use for the organization
+	BillingEmail string `json:"billingEmail" yaml:"billingEmail"`
+
+	// OrganizationId The ID of the item
+	OrganizationId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
+}
+
+// UpdateOrganizationJSONBody defines parameters for UpdateOrganization.
+type UpdateOrganizationJSONBody struct {
+	// BillingEmail The billing email to use for the organization
+	BillingEmail string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
+
+	// OrganizationId The ID of the item
+	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
+}
+
+// FindManyInvitationsParams defines parameters for FindManyInvitations.
+type FindManyInvitationsParams struct {
+	// Filter Filter invitations by field values. Supported fields:
+	// - createdAt, id, updatedAt, email, expiresAt
+	// - inviterId, organizationId, role, status
+	Filter InvitationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
+
+	// Page The page parameter
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
+
+	// Sort The sort parameter
+	Sort InvitationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
+}
+
+// FindManyInvitationsParamsSortField defines parameters for FindManyInvitations.
+type FindManyInvitationsParamsSortField string
+
+// FindManyInvitationsParamsSortOrder defines parameters for FindManyInvitations.
+type FindManyInvitationsParamsSortOrder string
+
+// CreateInvitationJSONBody defines parameters for CreateInvitation.
+type CreateInvitationJSONBody struct {
+	// Email The email of the invitated user
+	Email string `json:"email" yaml:"email"`
+
+	// Role The role of the invitation
+	Role CreateInvitationJSONBodyRole `json:"role" yaml:"role"`
+}
+
+// CreateInvitationJSONBodyRole defines parameters for CreateInvitation.
+type CreateInvitationJSONBodyRole string
+
+// UpdateInvitationJSONBody defines parameters for UpdateInvitation.
+type UpdateInvitationJSONBody struct {
+	// Email The email of the invitated user
+	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
+
+	// Role The role of the invitation
+	Role UpdateInvitationJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
+}
+
+// UpdateInvitationJSONBodyRole defines parameters for UpdateInvitation.
+type UpdateInvitationJSONBodyRole string
+
+// FindManyMembersParams defines parameters for FindManyMembers.
+type FindManyMembersParams struct {
+	// Filter Filter members by field values. Supported fields:
+	// - createdAt, id, updatedAt, organizationId, role, userId
+	Filter MembersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
+
+	// Page The page parameter
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
+
+	// Sort The sort parameter
+	Sort MembersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
+}
+
+// FindManyMembersParamsSortField defines parameters for FindManyMembers.
+type FindManyMembersParamsSortField string
+
+// FindManyMembersParamsSortOrder defines parameters for FindManyMembers.
+type FindManyMembersParamsSortOrder string
+
+// CreateMemberJSONBody defines parameters for CreateMember.
+type CreateMemberJSONBody struct {
+	// Role The role of the member
+	Role CreateMemberJSONBodyRole `json:"role" yaml:"role"`
+}
+
+// CreateMemberJSONBodyRole defines parameters for CreateMember.
+type CreateMemberJSONBodyRole string
+
+// UpdateMemberJSONBody defines parameters for UpdateMember.
+type UpdateMemberJSONBody struct {
+	// Role The role of the member
+	Role UpdateMemberJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
+}
+
+// UpdateMemberJSONBodyRole defines parameters for UpdateMember.
+type UpdateMemberJSONBodyRole string
+
 // FindManyPipelinesParams defines parameters for FindManyPipelines.
 type FindManyPipelinesParams struct {
 	// Filter Filter pipelines by field values. Supported fields:
@@ -1904,24 +1904,6 @@ type ConfirmEmailChangeJSONRequestBody ConfirmEmailChangeJSONBody
 // ConfirmEmailVerificationJSONRequestBody defines body for ConfirmEmailVerification for application/json ContentType.
 type ConfirmEmailVerificationJSONRequestBody ConfirmEmailVerificationJSONBody
 
-// CreateInvitationJSONRequestBody defines body for CreateInvitation for application/json ContentType.
-type CreateInvitationJSONRequestBody CreateInvitationJSONBody
-
-// UpdateInvitationJSONRequestBody defines body for UpdateInvitation for application/json ContentType.
-type UpdateInvitationJSONRequestBody UpdateInvitationJSONBody
-
-// CreateMemberJSONRequestBody defines body for CreateMember for application/json ContentType.
-type CreateMemberJSONRequestBody CreateMemberJSONBody
-
-// UpdateMemberJSONRequestBody defines body for UpdateMember for application/json ContentType.
-type UpdateMemberJSONRequestBody UpdateMemberJSONBody
-
-// CreateOrganizationJSONRequestBody defines body for CreateOrganization for application/json ContentType.
-type CreateOrganizationJSONRequestBody CreateOrganizationJSONBody
-
-// UpdateOrganizationJSONRequestBody defines body for UpdateOrganization for application/json ContentType.
-type UpdateOrganizationJSONRequestBody UpdateOrganizationJSONBody
-
 // RequestPasswordResetJSONRequestBody defines body for RequestPasswordReset for application/json ContentType.
 type RequestPasswordResetJSONRequestBody RequestPasswordResetJSONBody
 
@@ -1951,6 +1933,24 @@ type CreateLabelJSONRequestBody CreateLabelJSONBody
 
 // UpdateLabelJSONRequestBody defines body for UpdateLabel for application/json ContentType.
 type UpdateLabelJSONRequestBody UpdateLabelJSONBody
+
+// CreateOrganizationJSONRequestBody defines body for CreateOrganization for application/json ContentType.
+type CreateOrganizationJSONRequestBody CreateOrganizationJSONBody
+
+// UpdateOrganizationJSONRequestBody defines body for UpdateOrganization for application/json ContentType.
+type UpdateOrganizationJSONRequestBody UpdateOrganizationJSONBody
+
+// CreateInvitationJSONRequestBody defines body for CreateInvitation for application/json ContentType.
+type CreateInvitationJSONRequestBody CreateInvitationJSONBody
+
+// UpdateInvitationJSONRequestBody defines body for UpdateInvitation for application/json ContentType.
+type UpdateInvitationJSONRequestBody UpdateInvitationJSONBody
+
+// CreateMemberJSONRequestBody defines body for CreateMember for application/json ContentType.
+type CreateMemberJSONRequestBody CreateMemberJSONBody
+
+// UpdateMemberJSONRequestBody defines body for UpdateMember for application/json ContentType.
+type UpdateMemberJSONRequestBody UpdateMemberJSONBody
 
 // CreatePipelineJSONRequestBody defines body for CreatePipeline for application/json ContentType.
 type CreatePipelineJSONRequestBody CreatePipelineJSONBody
