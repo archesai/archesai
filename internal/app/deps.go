@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/archesai/archesai/internal/domains/auth/adapters/postgres"
@@ -71,13 +70,13 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 
 	// Parse log level
 	switch cfg.Logging.Level {
-	case "debug":
+	case api.LoggingConfigLevelDebug:
 		logLevel = slog.LevelDebug
-	case "info":
+	case api.LoggingConfigLevelInfo:
 		logLevel = slog.LevelInfo
-	case "warn":
+	case api.LoggingConfigLevelWarn:
 		logLevel = slog.LevelWarn
-	case "error":
+	case api.LoggingConfigLevelError:
 		logLevel = slog.LevelError
 	default:
 		logLevel = slog.LevelInfo
@@ -101,58 +100,18 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	slog.SetDefault(logger)
 
 	// Initialize database
-	var dbType database.Type
-	if cfg.Database.Type != nil {
-		dbType = database.ParseTypeString(string(*cfg.Database.Type))
-	} else {
-		// Auto-detect from URL
-		url := cfg.Database.Url
-		if strings.HasPrefix(url, "postgresql://") || strings.HasPrefix(url, "postgres://") {
-			dbType = database.TypePostgreSQL
-		} else if strings.HasPrefix(url, "sqlite://") || strings.Contains(url, ".db") || url == ":memory:" {
-			dbType = database.TypeSQLite
-		} else {
-			dbType = database.TypePostgreSQL // default
-		}
-	}
-
-	// Create database config
-	dbConfig := &database.Config{
-		URL:  cfg.Database.Url,
-		Type: dbType,
-	}
-
-	// Apply optional configuration
-	if cfg.Database.MaxConns != nil {
-		dbConfig.PgMaxConns = int32(*cfg.Database.MaxConns)
-	}
-	if cfg.Database.MinConns != nil {
-		dbConfig.PgMinConns = int32(*cfg.Database.MinConns)
-	}
-	if cfg.Database.ConnMaxLifetime != nil {
-		dbConfig.ConnMaxLifetime = *cfg.Database.ConnMaxLifetime
-	}
-	if cfg.Database.ConnMaxIdleTime != nil {
-		dbConfig.ConnMaxIdleTime = *cfg.Database.ConnMaxIdleTime
-	}
-	if cfg.Database.HealthCheckPeriod != nil {
-		dbConfig.PgHealthCheckPeriod = *cfg.Database.HealthCheckPeriod
-	}
-	if cfg.Database.RunMigrations != nil {
-		dbConfig.RunMigrations = *cfg.Database.RunMigrations
-	}
-
 	dbFactory := database.NewFactory(logger)
-	db, err := dbFactory.Create(dbConfig)
+	db, err := dbFactory.Create(&cfg.Database)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	// Run migrations if enabled
-	if dbConfig.RunMigrations {
+	if cfg.Database.RunMigrations {
 		if err := database.RunMigrations(db, logger); err != nil {
 			logger.Error("failed to run migrations", "error", err)
-			if cfg.Server.Environment != "development" {
+			isProduction := cfg.Api.Environment == "production"
+			if isProduction {
 				return nil, fmt.Errorf("failed to run migrations: %w", err)
 			}
 		}
@@ -163,7 +122,15 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	var sqliteQueries *sqlitegen.Queries
 	var authRepo repositories.Repository
 
-	switch dbConfig.Type {
+	// Determine actual database type
+	var dbType database.Type
+	if cfg.Database.Type != "" {
+		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
+	} else {
+		dbType = database.DetectTypeFromURL(cfg.Database.Url)
+	}
+
+	switch dbType {
 	case database.TypePostgreSQL:
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
@@ -181,10 +148,19 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	}
 
 	// Initialize auth feature
+	accessTokenTTL, err := cfg.GetAccessTokenTTL()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse access token TTL: %w", err)
+	}
+	refreshTokenTTL, err := cfg.GetRefreshTokenTTL()
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse refresh token TTL: %w", err)
+	}
+
 	authConfig := services.Config{
-		JWTSecret:          cfg.Auth.JWTSecret,
-		AccessTokenExpiry:  cfg.Auth.AccessTokenTTL,
-		RefreshTokenExpiry: cfg.Auth.RefreshTokenTTL,
+		JWTSecret:          cfg.GetJWTSecret(),
+		AccessTokenExpiry:  accessTokenTTL,
+		RefreshTokenExpiry: refreshTokenTTL,
 	}
 	authService := services.NewService(authRepo, authConfig, logger)
 	authHandler := handlers.NewHandler(authService, logger)
@@ -196,9 +172,9 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 
 	// Create the HTTP server
 	serverConfig := &server.Config{
-		Port:           fmt.Sprintf("%d", cfg.Server.Port),
+		Port:           fmt.Sprintf("%d", int(cfg.Api.Port)),
 		AllowedOrigins: cfg.GetAllowedOrigins(),
-		DocsEnabled:    cfg.Server.DocsEnabled,
+		DocsEnabled:    cfg.Api.Docs,
 	}
 	httpServer := server.NewServer(serverConfig, logger)
 
@@ -252,7 +228,7 @@ func (c *Container) registerRoutes() {
 	c.Server.SetReadinessCheck(c.readinessCheck)
 
 	// Setup API documentation if enabled
-	if c.Config.Server.DocsEnabled {
+	if c.Config.Api.Docs {
 		swagger, err := api.GetSwagger()
 		if err != nil {
 			c.Logger.Error("failed to load OpenAPI spec", "error", err)

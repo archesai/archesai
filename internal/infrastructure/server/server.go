@@ -9,6 +9,9 @@ import (
 	"os/signal"
 	"time"
 
+	echomiddleware "github.com/oapi-codegen/echo-middleware"
+
+	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -75,12 +78,12 @@ func (s *Server) setupMiddleware() {
 
 	// Use our validation middleware to check all requests against the
 	// OpenAPI schema.
-	// swagger, err := GetSwagger()
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Error loading swagger spec\n: %s", err)
-	// 	os.Exit(1)
-	// }
-	// s.echo.Use(echomiddleware.OapiRequestValidator(swagger))
+	swagger, err := api.GetSwagger()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error loading swagger spec\n: %s", err)
+		os.Exit(1)
+	}
+	s.echo.Use(echomiddleware.OapiRequestValidator(swagger))
 
 	// Recover middleware
 	s.echo.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{

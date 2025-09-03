@@ -4,7 +4,7 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"strings"
 )
 
 // Type represents the database type
@@ -79,58 +79,25 @@ type Stats struct {
 	MaxLifetimeClosed int64
 }
 
-// Config holds database configuration
-type Config struct {
-	URL                 string
-	Type                Type
-	PgMaxConns          int32
-	PgMinConns          int32
-	ConnMaxLifetime     string
-	ConnMaxIdleTime     string
-	PgHealthCheckPeriod string
-	RunMigrations       bool
-}
-
-// DefaultConfig returns default configuration for the specified database type
-func DefaultConfig(dbType Type) *Config {
-	switch dbType {
-	case TypePostgreSQL:
-		return &Config{
-			Type:                TypePostgreSQL,
-			PgMaxConns:          25,
-			PgMinConns:          5,
-			ConnMaxLifetime:     "1h",
-			ConnMaxIdleTime:     "30m",
-			PgHealthCheckPeriod: "1m",
-		}
-	case TypeSQLite:
-		return &Config{
-			Type:            TypeSQLite,
-			ConnMaxLifetime: "0",
-			ConnMaxIdleTime: "0",
-		}
-	default:
-		return nil
-	}
-}
-
-// ParseType parses a string into a database Type
-func ParseType(s string) (Type, error) {
+// ParseTypeFromString converts a string to database Type
+func ParseTypeFromString(s string) Type {
 	switch s {
 	case "postgresql", "postgres", "pg":
-		return TypePostgreSQL, nil
+		return TypePostgreSQL
 	case "sqlite", "sqlite3":
-		return TypeSQLite, nil
+		return TypeSQLite
 	default:
-		return "", fmt.Errorf("unknown database type: %s", s)
+		return TypePostgreSQL // Default to PostgreSQL
 	}
 }
 
-// ParseTypeString converts a string to Type (returns TypePostgreSQL as default)
-func ParseTypeString(s string) Type {
-	t, err := ParseType(s)
-	if err != nil {
+// DetectTypeFromURL auto-detects database type from connection URL
+func DetectTypeFromURL(url string) Type {
+	if strings.HasPrefix(url, "postgresql://") || strings.HasPrefix(url, "postgres://") {
 		return TypePostgreSQL
 	}
-	return t
+	if strings.HasPrefix(url, "sqlite://") || strings.Contains(url, ".db") || url == ":memory:" {
+		return TypeSQLite
+	}
+	return TypePostgreSQL // Default to PostgreSQL
 }

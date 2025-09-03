@@ -4,6 +4,8 @@ package database
 import (
 	"fmt"
 	"log/slog"
+
+	"github.com/archesai/archesai/internal/generated/api"
 )
 
 // Factory creates database instances based on configuration
@@ -19,53 +21,37 @@ func NewFactory(logger *slog.Logger) *Factory {
 }
 
 // Create creates a new database connection based on the provided configuration
-func (f *Factory) Create(cfg *Config) (Database, error) {
+func (f *Factory) Create(cfg *api.DatabaseConfig) (Database, error) {
 	if cfg == nil {
 		return nil, fmt.Errorf("database config is nil")
 	}
 
-	switch cfg.Type {
+	// Determine database type from config or URL
+	var dbType Type
+	if cfg.Type != "" {
+		dbType = ParseTypeFromString(string(cfg.Type))
+	} else {
+		dbType = DetectTypeFromURL(cfg.Url)
+	}
+
+	switch dbType {
 	case TypePostgreSQL:
 		return NewPostgreSQL(cfg, f.logger)
 	case TypeSQLite:
 		return NewSQLite(cfg, f.logger)
 	default:
-		return nil, fmt.Errorf("unsupported database type: %s", cfg.Type)
+		return nil, fmt.Errorf("unsupported database type: %s", dbType)
 	}
 }
 
 // CreateFromURL creates a database connection from a connection URL
 // It auto-detects the database type from the URL scheme
 func (f *Factory) CreateFromURL(url string) (Database, error) {
-	dbType, err := detectTypeFromURL(url)
-	if err != nil {
-		return nil, err
+	dbType := DetectTypeFromURL(url)
+	cfg := &api.DatabaseConfig{
+		Enabled: true,
+		Url:     url,
+		Type:    api.DatabaseConfigType(dbType),
 	}
-
-	cfg := DefaultConfig(dbType)
-	cfg.URL = url
-
 	return f.Create(cfg)
-}
-
-// detectTypeFromURL detects the database type from the connection URL
-func detectTypeFromURL(url string) (Type, error) {
-	switch {
-	case len(url) >= 11 && url[:11] == "postgresql:":
-		return TypePostgreSQL, nil
-	case len(url) >= 9 && url[:9] == "postgres:":
-		return TypePostgreSQL, nil
-	case len(url) >= 4 && url[:4] == "pg:":
-		return TypePostgreSQL, nil
-	case len(url) >= 7 && url[:7] == "sqlite:":
-		return TypeSQLite, nil
-	case len(url) >= 8 && url[:8] == "sqlite3:":
-		return TypeSQLite, nil
-	case len(url) >= 7 && url[:7] == "file://":
-		return TypeSQLite, nil
-	case len(url) >= 10 && url[:10] == ":memory:":
-		return TypeSQLite, nil
-	default:
-		return "", fmt.Errorf("cannot detect database type from URL: %s", url)
-	}
 }

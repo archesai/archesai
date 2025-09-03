@@ -10,17 +10,23 @@ properties:
     example: true
   email:
     $ref: ./EmailConfig.yaml
+  environment:
+    description: Deployment environment (development, staging, production)
+    type: string
+    enum: [development, staging, production]
+    default: development
+    example: development
   host:
     description: The host address on which the API server will listen
     type: string
     default: 0.0.0.0
     minLength: 1
-    example: example-string
+    example: 0.0.0.0
   port:
     description: The port on which the API server will listen
     type: number
     default: 3001
-    example: 42
+    example: 3001
   validate:
     description: Enable or disable request validation
     type: boolean

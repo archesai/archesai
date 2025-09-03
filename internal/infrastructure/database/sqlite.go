@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/archesai/archesai/internal/generated/api"
 	_ "modernc.org/sqlite" // Pure Go SQLite driver
 )
 
@@ -15,15 +16,14 @@ import (
 type SQLite struct {
 	db     *sql.DB
 	logger *slog.Logger
-	cfg    *Config
 }
 
 // NewSQLite creates a new SQLite database connection
-func NewSQLite(cfg *Config, logger *slog.Logger) (Database, error) {
+func NewSQLite(cfg *api.DatabaseConfig, logger *slog.Logger) (Database, error) {
 	ctx := context.Background()
 
 	// Parse connection URL
-	connStr := cfg.URL
+	connStr := cfg.Url
 	if connStr == "" {
 		connStr = ":memory:" // Default to in-memory database
 	}
@@ -60,7 +60,7 @@ func NewSQLite(cfg *Config, logger *slog.Logger) (Database, error) {
 	}
 
 	// Configure SQLite pragmas
-	if err := configureSQLitePragmas(db, cfg); err != nil {
+	if err := configureSQLitePragmas(db); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to configure SQLite pragmas: %w", err)
 	}
@@ -72,12 +72,11 @@ func NewSQLite(cfg *Config, logger *slog.Logger) (Database, error) {
 	return &SQLite{
 		db:     db,
 		logger: logger,
-		cfg:    cfg,
 	}, nil
 }
 
 // configureSQLitePragmas sets SQLite-specific pragmas for performance and reliability
-func configureSQLitePragmas(db *sql.DB, _ *Config) error {
+func configureSQLitePragmas(db *sql.DB) error {
 	pragmas := []string{
 		"PRAGMA journal_mode = WAL",
 		"PRAGMA synchronous = NORMAL",

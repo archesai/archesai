@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,27 +20,28 @@ type PostgreSQL struct {
 	pool   *pgxpool.Pool
 	sqlDB  *sql.DB // For stdlib compatibility when needed
 	logger *slog.Logger
-	cfg    *Config
 }
 
 // NewPostgreSQL creates a new PostgreSQL database connection
-func NewPostgreSQL(cfg *Config, logger *slog.Logger) (Database, error) {
+func NewPostgreSQL(cfg *api.DatabaseConfig, logger *slog.Logger) (Database, error) {
 	ctx := context.Background()
 
 	// Parse the connection string
-	poolConfig, err := pgxpool.ParseConfig(cfg.URL)
+	poolConfig, err := pgxpool.ParseConfig(cfg.Url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse database URL: %w", err)
 	}
 
-	// Configure connection pool
-	poolConfig.MaxConns = cfg.PgMaxConns
-	if poolConfig.MaxConns == 0 {
+	// Configure connection pool with defaults
+	if cfg.MaxConns > 0 {
+		poolConfig.MaxConns = int32(cfg.MaxConns)
+	} else {
 		poolConfig.MaxConns = 25
 	}
 
-	poolConfig.MinConns = cfg.PgMinConns
-	if poolConfig.MinConns == 0 {
+	if cfg.MinConns > 0 {
+		poolConfig.MinConns = int32(cfg.MinConns)
+	} else {
 		poolConfig.MinConns = 5
 	}
 
@@ -57,8 +59,8 @@ func NewPostgreSQL(cfg *Config, logger *slog.Logger) (Database, error) {
 		}
 	}
 
-	if cfg.PgHealthCheckPeriod != "" {
-		duration, err := time.ParseDuration(cfg.PgHealthCheckPeriod)
+	if cfg.HealthCheckPeriod != "" {
+		duration, err := time.ParseDuration(cfg.HealthCheckPeriod)
 		if err == nil {
 			poolConfig.HealthCheckPeriod = duration
 		}
@@ -77,7 +79,7 @@ func NewPostgreSQL(cfg *Config, logger *slog.Logger) (Database, error) {
 	}
 
 	// Create stdlib connection for compatibility
-	sqlDB, err := sql.Open("pgx", cfg.URL)
+	sqlDB, err := sql.Open("pgx", cfg.Url)
 	if err != nil {
 		pool.Close()
 		return nil, fmt.Errorf("failed to create stdlib connection: %w", err)
@@ -92,7 +94,6 @@ func NewPostgreSQL(cfg *Config, logger *slog.Logger) (Database, error) {
 		pool:   pool,
 		sqlDB:  sqlDB,
 		logger: logger,
-		cfg:    cfg,
 	}, nil
 }
 

@@ -15,6 +15,13 @@ const (
 	SessionCookieScopes = "sessionCookie.Scopes"
 )
 
+// Defines values for APIConfigEnvironment.
+const (
+	Development APIConfigEnvironment = "development"
+	Production  APIConfigEnvironment = "production"
+	Staging     APIConfigEnvironment = "staging"
+)
+
 // Defines values for AccountEntityProviderId.
 const (
 	Apple     AccountEntityProviderId = "apple"
@@ -329,70 +336,76 @@ const (
 // APIConfig Configuration schema for the API server
 type APIConfig struct {
 	// Cors CORS configuration for the API server
-	Cors CORSConfig `json:"cors"`
+	Cors CORSConfig `json:"cors" yaml:"cors"`
 
 	// Docs Enable or disable API documentation
-	Docs bool `json:"docs"`
+	Docs bool `json:"docs" yaml:"docs"`
 
 	// Email Email configuration for sending emails
-	Email EmailConfig `json:"email"`
+	Email EmailConfig `json:"email" yaml:"email"`
+
+	// Environment Deployment environment (development, staging, production)
+	Environment APIConfigEnvironment `json:"environment,omitempty,omitzero" yaml:"environment,omitempty"`
 
 	// Host The host address on which the API server will listen
-	Host string `json:"host"`
+	Host string `json:"host" yaml:"host"`
 
 	// Image Container image configuration
-	Image ImageConfig `json:"image"`
+	Image ImageConfig `json:"image" yaml:"image"`
 
 	// Port The port on which the API server will listen
-	Port float32 `json:"port"`
+	Port float32 `json:"port" yaml:"port"`
 
 	// Resources Kubernetes resource configuration
-	Resources ResourceConfig `json:"resources"`
+	Resources ResourceConfig `json:"resources" yaml:"resources"`
 
 	// Validate Enable or disable request validation
-	Validate bool `json:"validate"`
+	Validate bool `json:"validate" yaml:"validate"`
 }
+
+// APIConfigEnvironment Deployment environment (development, staging, production)
+type APIConfigEnvironment string
 
 // AccountEntity defines model for AccountEntity.
 type AccountEntity struct {
 	// AccessToken The OAuth access token
-	AccessToken *NullableString `json:"accessToken,omitempty"`
+	AccessToken NullableString `json:"accessToken,omitempty,omitzero" yaml:"accessToken,omitempty"`
 
 	// AccessTokenExpiresAt The access token expiration timestamp
-	AccessTokenExpiresAt *NullableDateTime `json:"accessTokenExpiresAt,omitempty"`
+	AccessTokenExpiresAt NullableDateTime `json:"accessTokenExpiresAt,omitempty,omitzero" yaml:"accessTokenExpiresAt,omitempty"`
 
 	// AccountId The unique identifier for the account from the provider
-	AccountId string `json:"accountId"`
+	AccountId string `json:"accountId" yaml:"accountId"`
 
 	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Id Universally Unique Identifier
-	Id UUID `json:"id"`
+	Id UUID `json:"id" yaml:"id"`
 
 	// IdToken The OpenID Connect ID token
-	IdToken *NullableString `json:"idToken,omitempty"`
+	IdToken NullableString `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
 
 	// Password The hashed password (only for local authentication)
-	Password *NullableString `json:"password,omitempty"`
+	Password NullableString `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
 
 	// ProviderId The authentication provider identifier
-	ProviderId AccountEntityProviderId `json:"providerId"`
+	ProviderId AccountEntityProviderId `json:"providerId" yaml:"providerId"`
 
 	// RefreshToken The OAuth refresh token
-	RefreshToken *NullableString `json:"refreshToken,omitempty"`
+	RefreshToken NullableString `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
 
 	// RefreshTokenExpiresAt The refresh token expiration timestamp
-	RefreshTokenExpiresAt *NullableDateTime `json:"refreshTokenExpiresAt,omitempty"`
+	RefreshTokenExpiresAt NullableDateTime `json:"refreshTokenExpiresAt,omitempty,omitzero" yaml:"refreshTokenExpiresAt,omitempty"`
 
 	// Scope The OAuth scope granted
-	Scope *NullableString `json:"scope,omitempty"`
+	Scope NullableString `json:"scope,omitempty,omitzero" yaml:"scope,omitempty"`
 
 	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId The user ID this account belongs to
-	UserId UUID `json:"userId"`
+	UserId UUID `json:"userId" yaml:"userId"`
 }
 
 // AccountEntityProviderId The authentication provider identifier
@@ -401,175 +414,175 @@ type AccountEntityProviderId string
 // ArchesConfig Arches AI configuration schema
 type ArchesConfig struct {
 	// Api Configuration schema for the API server
-	Api APIConfig `json:"api"`
+	Api APIConfig `json:"api" yaml:"api"`
 
 	// Auth Authentication configuration for the API server
-	Auth AuthConfig `json:"auth"`
+	Auth AuthConfig `json:"auth" yaml:"auth"`
 
 	// Billing Billing configuration for Stripe
-	Billing BillingConfig `json:"billing"`
+	Billing BillingConfig `json:"billing" yaml:"billing"`
 
 	// Database Database configuration for PostgreSQL
-	Database DatabaseConfig `json:"database"`
+	Database DatabaseConfig `json:"database" yaml:"database"`
 
 	// Infrastructure Infrastructure configuration for Kubernetes deployments
-	Infrastructure InfrastructureConfig `json:"infrastructure"`
+	Infrastructure InfrastructureConfig `json:"infrastructure" yaml:"infrastructure"`
 
 	// Ingress Ingress configuration
-	Ingress IngressConfig `json:"ingress"`
+	Ingress IngressConfig `json:"ingress" yaml:"ingress"`
 
 	// Intelligence Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
-	Intelligence IntelligenceConfig `json:"intelligence"`
+	Intelligence IntelligenceConfig `json:"intelligence" yaml:"intelligence"`
 
 	// Logging Logging configuration
-	Logging LoggingConfig `json:"logging"`
+	Logging LoggingConfig `json:"logging" yaml:"logging"`
 
 	// Monitoring Monitoring configuration for Grafana and Loki
-	Monitoring MonitoringConfig `json:"monitoring"`
+	Monitoring MonitoringConfig `json:"monitoring" yaml:"monitoring"`
 
 	// Platform Platform configuration (host, image, resources)
-	Platform PlatformConfig `json:"platform"`
+	Platform PlatformConfig `json:"platform" yaml:"platform"`
 
 	// Redis Redis configuration
-	Redis RedisConfig `json:"redis"`
+	Redis RedisConfig `json:"redis" yaml:"redis"`
 
 	// Storage Object storage configuration for MinIO or S3-compatible services
-	Storage StorageConfig `json:"storage"`
+	Storage StorageConfig `json:"storage" yaml:"storage"`
 }
 
 // ArtifactEntity Schema for Artifact entity
 type ArtifactEntity struct {
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Credits The number of credits required to access this artifact. This is used for metering and billing purposes.
-	Credits float32 `json:"credits"`
+	Credits float32 `json:"credits" yaml:"credits"`
 
 	// Description The artifact's description
-	Description *string `json:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// MimeType The MIME type of the artifact, e.g. image/png
-	MimeType string `json:"mimeType"`
+	MimeType string `json:"mimeType" yaml:"mimeType"`
 
 	// Name The name of the artifact, used for display purposes
-	Name *string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-	PreviewImage *string `json:"previewImage"`
+	PreviewImage string `json:"previewImage" yaml:"previewImage"`
 
 	// ProducerId The ID of the run that produced this artifact, if applicable
-	ProducerId *string `json:"producerId"`
+	ProducerId string `json:"producerId" yaml:"producerId"`
 
 	// Text The artifact text
-	Text *string `json:"text"`
+	Text string `json:"text" yaml:"text"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// Url The artifact URL
-	Url *string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // AuthConfig Authentication configuration for the API server
 type AuthConfig struct {
 	// Enabled Enable authentication
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Firebase Firebase authentication configuration
-	Firebase *FirebaseAuth `json:"firebase,omitempty"`
+	Firebase FirebaseAuth `json:"firebase,omitempty,omitzero" yaml:"firebase,omitempty"`
 
 	// Local Local username/password authentication
-	Local *LocalAuth `json:"local,omitempty"`
+	Local LocalAuth `json:"local,omitempty,omitzero" yaml:"local,omitempty"`
 
 	// Twitter Twitter OAuth configuration
-	Twitter *TwitterAuth `json:"twitter,omitempty"`
+	Twitter TwitterAuth `json:"twitter,omitempty,omitzero" yaml:"twitter,omitempty"`
 }
 
 // BaseEntity defines model for BaseEntity.
 type BaseEntity struct {
 	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Id Universally Unique Identifier
-	Id UUID `json:"id"`
+	Id UUID `json:"id" yaml:"id"`
 
 	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // BillingConfig Billing configuration for Stripe
 type BillingConfig struct {
 	// Enabled Enable billing functionality
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Stripe Stripe payment configuration
-	Stripe *StripeConfig `json:"stripe,omitempty"`
+	Stripe StripeConfig `json:"stripe,omitempty,omitzero" yaml:"stripe,omitempty"`
 }
 
 // CORSConfig CORS configuration for the API server
 type CORSConfig struct {
 	// Origins A comma-separated list of allowed origins for CORS requests
-	Origins string `json:"origins"`
+	Origins string `json:"origins" yaml:"origins"`
 }
 
 // DatabaseAuth Database authentication credentials
 type DatabaseAuth struct {
 	// Database Database name
-	Database string `json:"database"`
+	Database string `json:"database" yaml:"database"`
 
 	// Password Database user password
-	Password string `json:"password"`
+	Password string `json:"password" yaml:"password"`
 }
 
 // DatabaseConfig Database configuration for PostgreSQL
 type DatabaseConfig struct {
 	// Auth Database authentication credentials
-	Auth *DatabaseAuth `json:"auth,omitempty"`
+	Auth DatabaseAuth `json:"auth,omitempty,omitzero" yaml:"auth,omitempty"`
 
 	// ConnMaxIdleTime Maximum connection idle time (e.g., "5m")
-	ConnMaxIdleTime *string `json:"connMaxIdleTime,omitempty"`
+	ConnMaxIdleTime string `json:"connMaxIdleTime,omitempty,omitzero" yaml:"connMaxIdleTime,omitempty"`
 
 	// ConnMaxLifetime Maximum connection lifetime (e.g., "30m")
-	ConnMaxLifetime *string `json:"connMaxLifetime,omitempty"`
+	ConnMaxLifetime string `json:"connMaxLifetime,omitempty,omitzero" yaml:"connMaxLifetime,omitempty"`
 
 	// Enabled Enable database
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// HealthCheckPeriod Health check period for connections (PostgreSQL)
-	HealthCheckPeriod *string `json:"healthCheckPeriod,omitempty"`
+	HealthCheckPeriod string `json:"healthCheckPeriod,omitempty,omitzero" yaml:"healthCheckPeriod,omitempty"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed database deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// MaxConns Maximum number of connections in pool (PostgreSQL)
-	MaxConns *int `json:"maxConns,omitempty"`
+	MaxConns int `json:"maxConns,omitempty,omitzero" yaml:"maxConns,omitempty"`
 
 	// MinConns Minimum number of connections in pool (PostgreSQL)
-	MinConns *int `json:"minConns,omitempty"`
+	MinConns int `json:"minConns,omitempty,omitzero" yaml:"minConns,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence *PersistenceConfig `json:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 
 	// RunMigrations Automatically run database migrations on startup
-	RunMigrations *bool `json:"runMigrations,omitempty"`
+	RunMigrations bool `json:"runMigrations,omitempty,omitzero" yaml:"runMigrations,omitempty"`
 
 	// Type Database type (postgresql or sqlite)
-	Type *DatabaseConfigType `json:"type,omitempty"`
+	Type DatabaseConfigType `json:"type,omitempty,omitzero" yaml:"type,omitempty"`
 
 	// Url Database connection URL/string
-	Url string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // DatabaseConfigType Database type (postgresql or sqlite)
@@ -578,31 +591,31 @@ type DatabaseConfigType string
 // DevServiceConfig Development service port forwarding configuration
 type DevServiceConfig struct {
 	// Enabled Enable dev port forwarding
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Port Local port for forwarding
-	Port float32 `json:"port"`
+	Port float32 `json:"port" yaml:"port"`
 }
 
 // DevelopmentConfig Development environment configuration
 type DevelopmentConfig struct {
 	// Api Development service port forwarding configuration
-	Api DevServiceConfig `json:"api"`
+	Api DevServiceConfig `json:"api" yaml:"api"`
 
 	// HostIP Host IP address for dev port forwarding
-	HostIP string `json:"hostIP"`
+	HostIP string `json:"hostIP" yaml:"hostIP"`
 
 	// Loki Development service port forwarding configuration
-	Loki DevServiceConfig `json:"loki"`
+	Loki DevServiceConfig `json:"loki" yaml:"loki"`
 
 	// Platform Development service port forwarding configuration
-	Platform DevServiceConfig `json:"platform"`
+	Platform DevServiceConfig `json:"platform" yaml:"platform"`
 
 	// Postgres Development service port forwarding configuration
-	Postgres DevServiceConfig `json:"postgres"`
+	Postgres DevServiceConfig `json:"postgres" yaml:"postgres"`
 
 	// Redis Development service port forwarding configuration
-	Redis DevServiceConfig `json:"redis"`
+	Redis DevServiceConfig `json:"redis" yaml:"redis"`
 }
 
 // Email defines model for Email.
@@ -611,22 +624,22 @@ type Email = openapi_types.Email
 // EmailConfig Email configuration for sending emails
 type EmailConfig struct {
 	// Enabled Enable email functionality
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Password Password for the email service
-	Password *string `json:"password,omitempty"`
+	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
 
 	// Service Email service provider (e.g., "gmail", "sendgrid", etc.)
-	Service *string `json:"service,omitempty"`
+	Service string `json:"service,omitempty,omitzero" yaml:"service,omitempty"`
 
 	// User Username for the email service
-	User *string `json:"user,omitempty"`
+	User string `json:"user,omitempty,omitzero" yaml:"user,omitempty"`
 }
 
 // EmbeddingConfig Configuration for text embedding generation
 type EmbeddingConfig struct {
 	// Type The embedding provider to use for vector embeddings
-	Type EmbeddingConfigType `json:"type"`
+	Type EmbeddingConfigType `json:"type" yaml:"type"`
 }
 
 // EmbeddingConfigType The embedding provider to use for vector embeddings
@@ -638,54 +651,54 @@ type FilterNode = interface{}
 // FirebaseAuth Firebase authentication configuration
 type FirebaseAuth struct {
 	// ClientEmail Firebase service account client email address
-	ClientEmail *string `json:"clientEmail,omitempty"`
+	ClientEmail string `json:"clientEmail,omitempty,omitzero" yaml:"clientEmail,omitempty"`
 
 	// Enabled Enable Firebase authentication
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// PrivateKey Firebase service account private key (PEM format)
-	PrivateKey *string `json:"privateKey,omitempty"`
+	PrivateKey string `json:"privateKey,omitempty,omitzero" yaml:"privateKey,omitempty"`
 
 	// ProjectId Firebase project ID for authentication
-	ProjectId *string `json:"projectId,omitempty"`
+	ProjectId string `json:"projectId,omitempty,omitzero" yaml:"projectId,omitempty"`
 }
 
 // GrafanaConfig Grafana monitoring dashboard configuration
 type GrafanaConfig struct {
 	// Enabled Enable Grafana
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed Grafana deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // HealthResponse defines model for HealthResponse.
 type HealthResponse struct {
 	Services struct {
-		Database string `json:"database"`
-		Email    string `json:"email"`
-		Redis    string `json:"redis"`
-	} `json:"services"`
-	Timestamp string  `json:"timestamp"`
-	Uptime    float32 `json:"uptime"`
+		Database string `json:"database" yaml:"database"`
+		Email    string `json:"email" yaml:"email"`
+		Redis    string `json:"redis" yaml:"redis"`
+	} `json:"services" yaml:"services"`
+	Timestamp string  `json:"timestamp" yaml:"timestamp"`
+	Uptime    float32 `json:"uptime" yaml:"uptime"`
 }
 
 // ImageConfig Container image configuration
 type ImageConfig struct {
 	// PullPolicy Kubernetes image pull policy
-	PullPolicy ImageConfigPullPolicy `json:"pullPolicy"`
+	PullPolicy ImageConfigPullPolicy `json:"pullPolicy" yaml:"pullPolicy"`
 
 	// Repository Container image repository
-	Repository string `json:"repository"`
+	Repository string `json:"repository" yaml:"repository"`
 
 	// Tag Container image tag
-	Tag string `json:"tag"`
+	Tag string `json:"tag" yaml:"tag"`
 }
 
 // ImageConfigPullPolicy Kubernetes image pull policy
@@ -694,91 +707,91 @@ type ImageConfigPullPolicy string
 // ImagesConfig Container image configuration
 type ImagesConfig struct {
 	// ImagePullSecrets List of Kubernetes secrets for pulling private images
-	ImagePullSecrets []string `json:"imagePullSecrets"`
+	ImagePullSecrets []string `json:"imagePullSecrets" yaml:"imagePullSecrets"`
 
 	// ImageRegistry Custom container registry URL (leave empty for Docker Hub)
-	ImageRegistry string `json:"imageRegistry"`
+	ImageRegistry string `json:"imageRegistry" yaml:"imageRegistry"`
 }
 
 // InfrastructureConfig Infrastructure configuration for Kubernetes deployments
 type InfrastructureConfig struct {
 	// Development Development environment configuration
-	Development DevelopmentConfig `json:"development"`
+	Development DevelopmentConfig `json:"development" yaml:"development"`
 
 	// Images Container image configuration
-	Images ImagesConfig `json:"images"`
+	Images ImagesConfig `json:"images" yaml:"images"`
 
 	// Migrations Database migration configuration
-	Migrations MigrationsConfig `json:"migrations"`
+	Migrations MigrationsConfig `json:"migrations" yaml:"migrations"`
 
 	// Namespace Kubernetes namespace where all resources will be deployed
-	Namespace string `json:"namespace"`
+	Namespace string `json:"namespace" yaml:"namespace"`
 
 	// ServiceAccount Kubernetes service account configuration
-	ServiceAccount ServiceAccountConfig `json:"serviceAccount"`
+	ServiceAccount ServiceAccountConfig `json:"serviceAccount" yaml:"serviceAccount"`
 }
 
 // IngressConfig Ingress configuration
 type IngressConfig struct {
 	// Domain Primary domain name for ingress routing
-	Domain *string `json:"domain,omitempty"`
+	Domain string `json:"domain,omitempty,omitzero" yaml:"domain,omitempty"`
 
 	// Enabled Enable ingress
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Tls TLS configuration
-	Tls *TLSConfig `json:"tls,omitempty"`
+	Tls TLSConfig `json:"tls,omitempty,omitzero" yaml:"tls,omitempty"`
 }
 
 // IntelligenceConfig Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
 type IntelligenceConfig struct {
 	// Embedding Configuration for text embedding generation
-	Embedding EmbeddingConfig `json:"embedding"`
+	Embedding EmbeddingConfig `json:"embedding" yaml:"embedding"`
 
 	// Llm Large Language Model configuration
-	Llm LLMConfig `json:"llm"`
+	Llm LLMConfig `json:"llm" yaml:"llm"`
 
 	// Runpod RunPod serverless GPU configuration
-	Runpod RunPodConfig `json:"runpod"`
+	Runpod RunPodConfig `json:"runpod" yaml:"runpod"`
 
 	// Scraper Web scraping service configuration
-	Scraper ScraperConfig `json:"scraper"`
+	Scraper ScraperConfig `json:"scraper" yaml:"scraper"`
 
 	// Speech Speech recognition and TTS services
-	Speech SpeechConfig `json:"speech"`
+	Speech SpeechConfig `json:"speech" yaml:"speech"`
 
 	// Unstructured Unstructured.io service for document parsing
-	Unstructured UnstructuredConfig `json:"unstructured"`
+	Unstructured UnstructuredConfig `json:"unstructured" yaml:"unstructured"`
 }
 
 // InvitationEntity Schema for Invitation entity
 type InvitationEntity struct {
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Email The email of the invitated user
-	Email string `json:"email"`
+	Email string `json:"email" yaml:"email"`
 
 	// ExpiresAt The date and time when the invitation expires
-	ExpiresAt string `json:"expiresAt"`
+	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// InviterId The user id of the inviter
-	InviterId string `json:"inviterId"`
+	InviterId string `json:"inviterId" yaml:"inviterId"`
 
 	// OrganizationId The name of the organization the token belongs to
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the invitation
-	Role InvitationEntityRole `json:"role"`
+	Role InvitationEntityRole `json:"role" yaml:"role"`
 
 	// Status The status of the invitation, e.g., pending, accepted, declined
-	Status string `json:"status"`
+	Status string `json:"status" yaml:"status"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // InvitationEntityRole The role of the invitation
@@ -787,13 +800,13 @@ type InvitationEntityRole string
 // LLMConfig Large Language Model configuration
 type LLMConfig struct {
 	// Endpoint LLM service endpoint URL
-	Endpoint *string `json:"endpoint,omitempty"`
+	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty"`
 
 	// Token Authentication token for LLM service
-	Token *string `json:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
 
 	// Type LLM provider type
-	Type LLMConfigType `json:"type"`
+	Type LLMConfigType `json:"type" yaml:"type"`
 }
 
 // LLMConfigType LLM provider type
@@ -802,34 +815,43 @@ type LLMConfigType string
 // LabelEntity Schema for Label entity
 type LabelEntity struct {
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// Name The name of the label
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // LocalAuth Local username/password authentication
 type LocalAuth struct {
+	// AccessTokenTtl Access token time-to-live duration (e.g., "15m", "1h")
+	AccessTokenTtl string `json:"accessTokenTtl" yaml:"accessTokenTtl"`
+
 	// Enabled Enable local authentication
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
+
+	// JwtSecret Secret key for JWT token signing
+	JwtSecret string `json:"jwtSecret" yaml:"jwtSecret"`
+
+	// RefreshTokenTtl Refresh token time-to-live duration (e.g., "7d", "168h")
+	RefreshTokenTtl string `json:"refreshTokenTtl" yaml:"refreshTokenTtl"`
 }
 
 // LoggingConfig Logging configuration
 type LoggingConfig struct {
 	// Level Minimum log level to output
-	Level LoggingConfigLevel `json:"level"`
+	Level LoggingConfigLevel `json:"level" yaml:"level"`
 
 	// Pretty Enable pretty-printed logs for development
-	Pretty bool `json:"pretty"`
+	Pretty bool `json:"pretty" yaml:"pretty"`
 }
 
 // LoggingConfigLevel Minimum log level to output
@@ -838,40 +860,40 @@ type LoggingConfigLevel string
 // LokiConfig Loki log aggregation service configuration
 type LokiConfig struct {
 	// Enabled Enable Loki
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Host Loki host URL
-	Host *string `json:"host,omitempty"`
+	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed Loki deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // MemberEntity Schema for Member entity
 type MemberEntity struct {
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// Role The role of the member
-	Role MemberEntityRole `json:"role"`
+	Role MemberEntityRole `json:"role" yaml:"role"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// UserId The user id
-	UserId string `json:"userId"`
+	UserId string `json:"userId" yaml:"userId"`
 }
 
 // MemberEntityRole The role of the member
@@ -880,16 +902,16 @@ type MemberEntityRole string
 // MigrationsConfig Database migration configuration
 type MigrationsConfig struct {
 	// Enabled Enable automatic DB migrations
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 }
 
 // MonitoringConfig Monitoring configuration for Grafana and Loki
 type MonitoringConfig struct {
 	// Grafana Grafana monitoring dashboard configuration
-	Grafana GrafanaConfig `json:"grafana"`
+	Grafana GrafanaConfig `json:"grafana" yaml:"grafana"`
 
 	// Loki Loki log aggregation service configuration
-	Loki LokiConfig `json:"loki"`
+	Loki LokiConfig `json:"loki" yaml:"loki"`
 }
 
 // NullableDateTime defines model for NullableDateTime.
@@ -901,37 +923,37 @@ type NullableString = *string
 // OrganizationEntity defines model for OrganizationEntity.
 type OrganizationEntity struct {
 	// BillingEmail Email address for billing communications
-	BillingEmail **string `json:"billingEmail,omitempty"`
+	BillingEmail *string `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
 
 	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Credits Available credits for this organization
-	Credits float64 `json:"credits"`
+	Credits float64 `json:"credits" yaml:"credits"`
 
 	// Id Universally Unique Identifier
-	Id UUID `json:"id"`
+	Id UUID `json:"id" yaml:"id"`
 
 	// Logo The organization's logo URL
-	Logo *NullableString `json:"logo,omitempty"`
+	Logo NullableString `json:"logo,omitempty,omitzero" yaml:"logo,omitempty"`
 
 	// Metadata Custom metadata in JSON format
-	Metadata *NullableString `json:"metadata,omitempty"`
+	Metadata NullableString `json:"metadata,omitempty,omitzero" yaml:"metadata,omitempty"`
 
 	// Name The organization's display name
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// Plan The current subscription plan
-	Plan OrganizationEntityPlan `json:"plan"`
+	Plan OrganizationEntityPlan `json:"plan" yaml:"plan"`
 
 	// Slug URL-friendly unique identifier for the organization
-	Slug string `json:"slug"`
+	Slug string `json:"slug" yaml:"slug"`
 
 	// StripeCustomerId Stripe customer identifier
-	StripeCustomerId *NullableString `json:"stripeCustomerId,omitempty"`
+	StripeCustomerId NullableString `json:"stripeCustomerId,omitempty,omitzero" yaml:"stripeCustomerId,omitempty"`
 
 	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // OrganizationEntityPlan The current subscription plan
@@ -940,173 +962,173 @@ type OrganizationEntityPlan string
 // OrganizationReference defines model for OrganizationReference.
 type OrganizationReference struct {
 	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId"`
+	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
 }
 
 // Page Pagination (page number & size)
 type Page struct {
-	Number *int `json:"number,omitempty"`
-	Size   *int `json:"size,omitempty"`
+	Number int `json:"number,omitempty,omitzero" yaml:"number,omitempty"`
+	Size   int `json:"size,omitempty,omitzero" yaml:"size,omitempty"`
 }
 
 // PersistenceConfig Persistent storage configuration
 type PersistenceConfig struct {
 	// Enabled Enable persistent storage
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Size Size of persistent volume
-	Size string `json:"size"`
+	Size string `json:"size" yaml:"size"`
 }
 
 // PipelineEntity defines model for PipelineEntity.
 type PipelineEntity struct {
 	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Description Detailed description of the pipeline's purpose
-	Description *NullableString `json:"description,omitempty"`
+	Description NullableString `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Id Universally Unique Identifier
-	Id UUID `json:"id"`
+	Id UUID `json:"id" yaml:"id"`
 
 	// Name The pipeline's display name
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId"`
+	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
 
 	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // PlatformConfig Platform configuration (host, image, resources)
 type PlatformConfig struct {
 	// Enabled Enable platform service
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Host Host address where the platform service will be accessible
-	Host *string `json:"host,omitempty"`
+	Host string `json:"host,omitempty,omitzero" yaml:"host,omitempty"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed platform deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // ProblemDetails RFC 7807 (Problem Details) compliant error response
 type ProblemDetails struct {
 	// Detail Human-readable explanation specific to this occurrence
-	Detail string `json:"detail"`
+	Detail string `json:"detail" yaml:"detail"`
 
 	// Errors Additional validation errors for specific fields
-	Errors *[]ValidationError `json:"errors,omitempty"`
+	Errors []ValidationError `json:"errors,omitempty,omitzero" yaml:"errors,omitempty"`
 
 	// Instance URI identifying the specific occurrence
-	Instance *string `json:"instance,omitempty"`
+	Instance string `json:"instance,omitempty,omitzero" yaml:"instance,omitempty"`
 
 	// Status HTTP status code
-	Status int `json:"status"`
+	Status int `json:"status" yaml:"status"`
 
 	// Title Short, human-readable summary
-	Title string `json:"title"`
+	Title string `json:"title" yaml:"title"`
 
 	// Type URI identifying the problem type
-	Type string `json:"type"`
+	Type string `json:"type" yaml:"type"`
 }
 
 // RedisConfig Redis configuration
 type RedisConfig struct {
 	// Auth Redis authentication password
-	Auth string `json:"auth"`
+	Auth string `json:"auth" yaml:"auth"`
 
 	// Ca Certificate Authority for TLS (optional)
-	Ca *string `json:"ca,omitempty"`
+	Ca string `json:"ca,omitempty,omitzero" yaml:"ca,omitempty"`
 
 	// Enabled Enable Redis
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Host Redis hostname or IP
-	Host string `json:"host"`
+	Host string `json:"host" yaml:"host"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed Redis deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence *PersistenceConfig `json:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
 
 	// Port Redis port number
-	Port float32 `json:"port"`
+	Port float32 `json:"port" yaml:"port"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // ResourceConfig Kubernetes resource configuration
 type ResourceConfig struct {
 	// Limits Resource limits
-	Limits ResourceLimits `json:"limits"`
+	Limits ResourceLimits `json:"limits" yaml:"limits"`
 
 	// Requests Resource requests
-	Requests ResourceRequests `json:"requests"`
+	Requests ResourceRequests `json:"requests" yaml:"requests"`
 }
 
 // ResourceLimits Resource limits
 type ResourceLimits struct {
 	// Cpu Maximum CPU allocation
-	Cpu string `json:"cpu"`
+	Cpu string `json:"cpu" yaml:"cpu"`
 
 	// Memory Maximum memory allocation
-	Memory string `json:"memory"`
+	Memory string `json:"memory" yaml:"memory"`
 }
 
 // ResourceRequests Resource requests
 type ResourceRequests struct {
 	// Cpu Requested CPU allocation
-	Cpu string `json:"cpu"`
+	Cpu string `json:"cpu" yaml:"cpu"`
 
 	// Memory Requested memory allocation
-	Memory string `json:"memory"`
+	Memory string `json:"memory" yaml:"memory"`
 }
 
 // RunEntity Schema for Run entity
 type RunEntity struct {
 	// CompletedAt The timestamp when the run completed
-	CompletedAt *time.Time `json:"completedAt"`
+	CompletedAt time.Time `json:"completedAt" yaml:"completedAt"`
 
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Error The error message
-	Error *string `json:"error"`
+	Error string `json:"error" yaml:"error"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// PipelineId The pipeline ID associated with the run
-	PipelineId *string `json:"pipelineId"`
+	PipelineId string `json:"pipelineId" yaml:"pipelineId"`
 
 	// Progress The percent progress of the run
-	Progress float32 `json:"progress"`
+	Progress float32 `json:"progress" yaml:"progress"`
 
 	// StartedAt The timestamp when the run started
-	StartedAt *time.Time      `json:"startedAt"`
-	Status    RunEntityStatus `json:"status"`
+	StartedAt time.Time       `json:"startedAt" yaml:"startedAt"`
+	Status    RunEntityStatus `json:"status" yaml:"status"`
 
 	// ToolId The tool ID associated with the run
-	ToolId string `json:"toolId"`
+	ToolId string `json:"toolId" yaml:"toolId"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // RunEntityStatus defines model for RunEntity.Status.
@@ -1115,169 +1137,169 @@ type RunEntityStatus string
 // RunPodConfig RunPod serverless GPU configuration
 type RunPodConfig struct {
 	// Enabled Enable RunPod integration
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Token RunPod API token
-	Token *string `json:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
 }
 
 // ScraperConfig Web scraping service configuration
 type ScraperConfig struct {
 	// Enabled Enable scraper service
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Endpoint Web scraper service endpoint URL
-	Endpoint *string `json:"endpoint,omitempty"`
+	Endpoint string `json:"endpoint,omitempty,omitzero" yaml:"endpoint,omitempty"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed scraper deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // ServiceAccountConfig Kubernetes service account configuration
 type ServiceAccountConfig struct {
 	// Create Create dedicated service account
-	Create bool `json:"create"`
+	Create bool `json:"create" yaml:"create"`
 
 	// Name Custom service account name
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // SessionEntity Schema for Session entity
 type SessionEntity struct {
 	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId *string `json:"activeOrganizationId"`
+	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// ExpiresAt The expiration date of the session
-	ExpiresAt string `json:"expiresAt"`
+	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// IpAddress The IP address of the session
-	IpAddress *string `json:"ipAddress"`
+	IpAddress string `json:"ipAddress" yaml:"ipAddress"`
 
 	// Token The session token
-	Token string `json:"token"`
+	Token string `json:"token" yaml:"token"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 
 	// UserAgent The user agent of the session
-	UserAgent *string `json:"userAgent"`
+	UserAgent string `json:"userAgent" yaml:"userAgent"`
 
 	// UserId The ID of the user associated with the session
-	UserId string `json:"userId"`
+	UserId string `json:"userId" yaml:"userId"`
 }
 
 // SpeechConfig Speech recognition and TTS services
 type SpeechConfig struct {
 	// Enabled Enable speech services
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Token Speech-to-text service API token
-	Token *string `json:"token,omitempty"`
+	Token string `json:"token,omitempty,omitzero" yaml:"token,omitempty"`
 }
 
 // StorageConfig Object storage configuration for MinIO or S3-compatible services
 type StorageConfig struct {
 	// Accesskey MinIO/S3 access key ID
-	Accesskey string `json:"accesskey"`
+	Accesskey string `json:"accesskey" yaml:"accesskey"`
 
 	// Bucket S3 bucket name
-	Bucket string `json:"bucket"`
+	Bucket string `json:"bucket" yaml:"bucket"`
 
 	// Enabled Enable object storage
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Endpoint MinIO server endpoint URL
-	Endpoint string `json:"endpoint"`
+	Endpoint string `json:"endpoint" yaml:"endpoint"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed storage deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Persistence Persistent storage configuration
-	Persistence *PersistenceConfig `json:"persistence,omitempty"`
+	Persistence PersistenceConfig `json:"persistence,omitempty,omitzero" yaml:"persistence,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 
 	// Secretkey MinIO/S3 secret access key
-	Secretkey string `json:"secretkey"`
+	Secretkey string `json:"secretkey" yaml:"secretkey"`
 }
 
 // StripeConfig Stripe payment configuration
 type StripeConfig struct {
 	// Token Stripe secret API key
-	Token string `json:"token"`
+	Token string `json:"token" yaml:"token"`
 
 	// Whsec Stripe webhook endpoint secret
-	Whsec string `json:"whsec"`
+	Whsec string `json:"whsec" yaml:"whsec"`
 }
 
 // TLSConfig TLS configuration
 type TLSConfig struct {
 	// Enabled Enable TLS/SSL
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Issuer Cert-manager ClusterIssuer
-	Issuer *string `json:"issuer,omitempty"`
+	Issuer string `json:"issuer,omitempty,omitzero" yaml:"issuer,omitempty"`
 
 	// SecretName Kubernetes secret name for TLS certificates
-	SecretName string `json:"secretName"`
+	SecretName string `json:"secretName" yaml:"secretName"`
 }
 
 // ToolEntity Schema for Tool entity
 type ToolEntity struct {
 	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Description The tool description
-	Description string `json:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// Id The ID of the item
-	Id openapi_types.UUID `json:"id"`
+	Id openapi_types.UUID `json:"id" yaml:"id"`
 
 	// InputMimeType The MIME type of the input for the tool, e.g. text/plain
-	InputMimeType string `json:"inputMimeType"`
+	InputMimeType string `json:"inputMimeType" yaml:"inputMimeType"`
 
 	// Name The name of the tool
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId"`
+	OrganizationId string `json:"organizationId" yaml:"organizationId"`
 
 	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
-	OutputMimeType string `json:"outputMimeType"`
+	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
 
 	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // TwitterAuth Twitter OAuth configuration
 type TwitterAuth struct {
 	// CallbackURL OAuth callback URL
-	CallbackURL *string `json:"callbackURL,omitempty"`
+	CallbackURL string `json:"callbackURL,omitempty,omitzero" yaml:"callbackURL,omitempty"`
 
 	// ConsumerKey Twitter API consumer key
-	ConsumerKey *string `json:"consumerKey,omitempty"`
+	ConsumerKey string `json:"consumerKey,omitempty,omitzero" yaml:"consumerKey,omitempty"`
 
 	// ConsumerSecret Twitter API consumer secret
-	ConsumerSecret *string `json:"consumerSecret,omitempty"`
+	ConsumerSecret string `json:"consumerSecret,omitempty,omitzero" yaml:"consumerSecret,omitempty"`
 
 	// Enabled Enable Twitter OAuth
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 }
 
 // UUID Universally Unique Identifier
@@ -1286,52 +1308,52 @@ type UUID = uuid.UUID
 // UnstructuredConfig Unstructured.io service for document parsing
 type UnstructuredConfig struct {
 	// Enabled Enable unstructured document parsing
-	Enabled bool `json:"enabled"`
+	Enabled bool `json:"enabled" yaml:"enabled"`
 
 	// Image Container image configuration
-	Image *ImageConfig `json:"image,omitempty"`
+	Image ImageConfig `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Managed Use managed unstructured deployment
-	Managed *bool `json:"managed,omitempty"`
+	Managed bool `json:"managed,omitempty,omitzero" yaml:"managed,omitempty"`
 
 	// Resources Kubernetes resource configuration
-	Resources *ResourceConfig `json:"resources,omitempty"`
+	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
 // UserEntity defines model for UserEntity.
 type UserEntity struct {
 	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
 
 	// Email The user's email address
-	Email Email `json:"email"`
+	Email Email `json:"email" yaml:"email"`
 
 	// EmailVerified Whether the user's email has been verified
-	EmailVerified bool `json:"emailVerified"`
+	EmailVerified bool `json:"emailVerified" yaml:"emailVerified"`
 
 	// Id Universally Unique Identifier
-	Id UUID `json:"id"`
+	Id UUID `json:"id" yaml:"id"`
 
 	// Image The user's avatar image URL
-	Image *NullableString `json:"image,omitempty"`
+	Image NullableString `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
 
 	// Name The user's display name
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // ValidationError Individual field validation error
 type ValidationError struct {
 	// Field The field path that failed validation
-	Field string `json:"field"`
+	Field string `json:"field" yaml:"field"`
 
 	// Message Human-readable error message
-	Message string `json:"message"`
+	Message string `json:"message" yaml:"message"`
 
 	// Value The invalid value that was provided
-	Value *interface{} `json:"value,omitempty"`
+	Value interface{} `json:"value,omitempty,omitzero" yaml:"value,omitempty"`
 }
 
 // AccountsFilter A recursive filter node that can be a condition or group
@@ -1339,8 +1361,8 @@ type AccountsFilter = FilterNode
 
 // AccountsSort defines model for AccountsSort.
 type AccountsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // ArtifactsFilter A recursive filter node that can be a condition or group
@@ -1348,8 +1370,8 @@ type ArtifactsFilter = FilterNode
 
 // ArtifactsSort defines model for ArtifactsSort.
 type ArtifactsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // InvitationsFilter A recursive filter node that can be a condition or group
@@ -1357,8 +1379,8 @@ type InvitationsFilter = FilterNode
 
 // InvitationsSort defines model for InvitationsSort.
 type InvitationsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // LabelsFilter A recursive filter node that can be a condition or group
@@ -1366,8 +1388,8 @@ type LabelsFilter = FilterNode
 
 // LabelsSort defines model for LabelsSort.
 type LabelsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // MembersFilter A recursive filter node that can be a condition or group
@@ -1375,8 +1397,8 @@ type MembersFilter = FilterNode
 
 // MembersSort defines model for MembersSort.
 type MembersSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // OrganizationsFilter A recursive filter node that can be a condition or group
@@ -1384,8 +1406,8 @@ type OrganizationsFilter = FilterNode
 
 // OrganizationsSort defines model for OrganizationsSort.
 type OrganizationsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // PageQuery Pagination (page number & size)
@@ -1396,8 +1418,8 @@ type PipelinesFilter = FilterNode
 
 // PipelinesSort defines model for PipelinesSort.
 type PipelinesSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // RunsFilter A recursive filter node that can be a condition or group
@@ -1405,8 +1427,8 @@ type RunsFilter = FilterNode
 
 // RunsSort defines model for RunsSort.
 type RunsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // SessionsFilter A recursive filter node that can be a condition or group
@@ -1414,8 +1436,8 @@ type SessionsFilter = FilterNode
 
 // SessionsSort defines model for SessionsSort.
 type SessionsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // ToolsFilter A recursive filter node that can be a condition or group
@@ -1423,8 +1445,8 @@ type ToolsFilter = FilterNode
 
 // ToolsSort defines model for ToolsSort.
 type ToolsSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // UsersFilter A recursive filter node that can be a condition or group
@@ -1432,8 +1454,8 @@ type UsersFilter = FilterNode
 
 // UsersSort defines model for UsersSort.
 type UsersSort = []struct {
-	Field string `json:"field"`
-	Order string `json:"order"`
+	Field string `json:"field" yaml:"field"`
+	Order string `json:"order" yaml:"order"`
 }
 
 // BadRequest RFC 7807 (Problem Details) compliant error response
@@ -1451,13 +1473,13 @@ type AccountsFindManyParams struct {
 	// - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
 	// - accountId, idToken, password, providerId, refreshToken
 	// - refreshTokenExpiresAt, scope, userId
-	Filter *AccountsFilter `json:"filter,omitempty"`
+	Filter AccountsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *AccountsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort AccountsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // AccountsFindManyParamsSortField defines parameters for AccountsFindMany.
@@ -1469,28 +1491,28 @@ type AccountsFindManyParamsSortOrder string
 // RequestEmailChangeJSONBody defines parameters for RequestEmailChange.
 type RequestEmailChangeJSONBody struct {
 	// NewEmail The e-mail to send the confirmation token to
-	NewEmail openapi_types.Email `json:"newEmail"`
+	NewEmail openapi_types.Email `json:"newEmail" yaml:"newEmail"`
 
 	// UserId The user ID of the user requesting the email change
-	UserId openapi_types.UUID `json:"userId"`
+	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
 }
 
 // ConfirmEmailChangeJSONBody defines parameters for ConfirmEmailChange.
 type ConfirmEmailChangeJSONBody struct {
 	// NewEmail The e-mail to send the confirmation token to
-	NewEmail openapi_types.Email `json:"newEmail"`
+	NewEmail openapi_types.Email `json:"newEmail" yaml:"newEmail"`
 
 	// Token The password reset token
-	Token string `json:"token"`
+	Token string `json:"token" yaml:"token"`
 
 	// UserId The user ID of the user requesting the email change
-	UserId openapi_types.UUID `json:"userId"`
+	UserId openapi_types.UUID `json:"userId" yaml:"userId"`
 }
 
 // ConfirmEmailVerificationJSONBody defines parameters for ConfirmEmailVerification.
 type ConfirmEmailVerificationJSONBody struct {
 	// Token The password reset token
-	Token string `json:"token"`
+	Token string `json:"token" yaml:"token"`
 }
 
 // FindManyInvitationsParams defines parameters for FindManyInvitations.
@@ -1498,13 +1520,13 @@ type FindManyInvitationsParams struct {
 	// Filter Filter invitations by field values. Supported fields:
 	// - createdAt, id, updatedAt, email, expiresAt
 	// - inviterId, organizationId, role, status
-	Filter *InvitationsFilter `json:"filter,omitempty"`
+	Filter InvitationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *InvitationsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort InvitationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyInvitationsParamsSortField defines parameters for FindManyInvitations.
@@ -1516,10 +1538,10 @@ type FindManyInvitationsParamsSortOrder string
 // CreateInvitationJSONBody defines parameters for CreateInvitation.
 type CreateInvitationJSONBody struct {
 	// Email The email of the invitated user
-	Email string `json:"email"`
+	Email string `json:"email" yaml:"email"`
 
 	// Role The role of the invitation
-	Role CreateInvitationJSONBodyRole `json:"role"`
+	Role CreateInvitationJSONBodyRole `json:"role" yaml:"role"`
 }
 
 // CreateInvitationJSONBodyRole defines parameters for CreateInvitation.
@@ -1528,10 +1550,10 @@ type CreateInvitationJSONBodyRole string
 // UpdateInvitationJSONBody defines parameters for UpdateInvitation.
 type UpdateInvitationJSONBody struct {
 	// Email The email of the invitated user
-	Email *string `json:"email,omitempty"`
+	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
 
 	// Role The role of the invitation
-	Role *UpdateInvitationJSONBodyRole `json:"role,omitempty"`
+	Role UpdateInvitationJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
 }
 
 // UpdateInvitationJSONBodyRole defines parameters for UpdateInvitation.
@@ -1541,13 +1563,13 @@ type UpdateInvitationJSONBodyRole string
 type FindManyMembersParams struct {
 	// Filter Filter members by field values. Supported fields:
 	// - createdAt, id, updatedAt, organizationId, role, userId
-	Filter *MembersFilter `json:"filter,omitempty"`
+	Filter MembersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *MembersSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort MembersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyMembersParamsSortField defines parameters for FindManyMembers.
@@ -1559,7 +1581,7 @@ type FindManyMembersParamsSortOrder string
 // CreateMemberJSONBody defines parameters for CreateMember.
 type CreateMemberJSONBody struct {
 	// Role The role of the member
-	Role CreateMemberJSONBodyRole `json:"role"`
+	Role CreateMemberJSONBodyRole `json:"role" yaml:"role"`
 }
 
 // CreateMemberJSONBodyRole defines parameters for CreateMember.
@@ -1568,7 +1590,7 @@ type CreateMemberJSONBodyRole string
 // UpdateMemberJSONBody defines parameters for UpdateMember.
 type UpdateMemberJSONBody struct {
 	// Role The role of the member
-	Role *UpdateMemberJSONBodyRole `json:"role,omitempty"`
+	Role UpdateMemberJSONBodyRole `json:"role,omitempty,omitzero" yaml:"role,omitempty"`
 }
 
 // UpdateMemberJSONBodyRole defines parameters for UpdateMember.
@@ -1579,13 +1601,13 @@ type FindManyOrganizationsParams struct {
 	// Filter Filter organizations by field values. Supported fields:
 	// - createdAt, id, updatedAt, billingEmail, credits, logo
 	// - metadata, name, plan, slug, stripeCustomerId
-	Filter *OrganizationsFilter `json:"filter,omitempty"`
+	Filter OrganizationsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *OrganizationsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort OrganizationsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyOrganizationsParamsSortField defines parameters for FindManyOrganizations.
@@ -1597,34 +1619,34 @@ type FindManyOrganizationsParamsSortOrder string
 // CreateOrganizationJSONBody defines parameters for CreateOrganization.
 type CreateOrganizationJSONBody struct {
 	// BillingEmail The billing email to use for the organization
-	BillingEmail *string `json:"billingEmail"`
+	BillingEmail string `json:"billingEmail" yaml:"billingEmail"`
 
 	// OrganizationId The ID of the item
-	OrganizationId openapi_types.UUID `json:"organizationId"`
+	OrganizationId openapi_types.UUID `json:"organizationId" yaml:"organizationId"`
 }
 
 // UpdateOrganizationJSONBody defines parameters for UpdateOrganization.
 type UpdateOrganizationJSONBody struct {
 	// BillingEmail The billing email to use for the organization
-	BillingEmail *string `json:"billingEmail"`
+	BillingEmail string `json:"billingEmail,omitzero" yaml:"billingEmail"`
 
 	// OrganizationId The ID of the item
-	OrganizationId *openapi_types.UUID `json:"organizationId,omitempty"`
+	OrganizationId openapi_types.UUID `json:"organizationId,omitempty,omitzero" yaml:"organizationId,omitempty"`
 }
 
 // RequestPasswordResetJSONBody defines parameters for RequestPasswordReset.
 type RequestPasswordResetJSONBody struct {
 	// Email The e-mail to send the password reset token to
-	Email string `json:"email"`
+	Email string `json:"email" yaml:"email"`
 }
 
 // ConfirmPasswordResetJSONBody defines parameters for ConfirmPasswordReset.
 type ConfirmPasswordResetJSONBody struct {
 	// NewPassword The new password
-	NewPassword string `json:"newPassword"`
+	NewPassword string `json:"newPassword" yaml:"newPassword"`
 
 	// Token The password reset token
-	Token string `json:"token"`
+	Token string `json:"token" yaml:"token"`
 }
 
 // FindManySessionsParams defines parameters for FindManySessions.
@@ -1632,13 +1654,13 @@ type FindManySessionsParams struct {
 	// Filter Filter sessions by field values. Supported fields:
 	// - createdAt, id, updatedAt, activeOrganizationId, expiresAt
 	// - ipAddress, token, userAgent, userId
-	Filter *SessionsFilter `json:"filter,omitempty"`
+	Filter SessionsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *SessionsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort SessionsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManySessionsParamsSortField defines parameters for FindManySessions.
@@ -1650,41 +1672,41 @@ type FindManySessionsParamsSortOrder string
 // UpdateSessionJSONBody defines parameters for UpdateSession.
 type UpdateSessionJSONBody struct {
 	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId *string `json:"activeOrganizationId"`
+	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
 }
 
 // LoginJSONBody defines parameters for Login.
 type LoginJSONBody struct {
 	// Email The email address associated with the account
-	Email openapi_types.Email `json:"email"`
+	Email openapi_types.Email `json:"email" yaml:"email"`
 
 	// Password The password for the account
-	Password string `json:"password"`
+	Password string `json:"password" yaml:"password"`
 }
 
 // RegisterJSONBody defines parameters for Register.
 type RegisterJSONBody struct {
 	// Email The email address associated with the account
-	Email openapi_types.Email `json:"email"`
+	Email openapi_types.Email `json:"email" yaml:"email"`
 
 	// Name The name of the user creating the account
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// Password The password for the account
-	Password string `json:"password"`
+	Password string `json:"password" yaml:"password"`
 }
 
 // FindManyUsersParams defines parameters for FindManyUsers.
 type FindManyUsersParams struct {
 	// Filter Filter users by field values. Supported fields:
 	// - createdAt, id, updatedAt, email, emailVerified, image, name
-	Filter *UsersFilter `json:"filter,omitempty"`
+	Filter UsersFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *UsersSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort UsersSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyUsersParamsSortField defines parameters for FindManyUsers.
@@ -1696,10 +1718,10 @@ type FindManyUsersParamsSortOrder string
 // UpdateUserJSONBody defines parameters for UpdateUser.
 type UpdateUserJSONBody struct {
 	// Email The user's e-mail
-	Email *string `json:"email,omitempty"`
+	Email string `json:"email,omitempty,omitzero" yaml:"email,omitempty"`
 
 	// Image The user's avatar image URL
-	Image *string `json:"image"`
+	Image string `json:"image,omitzero" yaml:"image"`
 }
 
 // FindManyArtifactsParams defines parameters for FindManyArtifacts.
@@ -1707,13 +1729,13 @@ type FindManyArtifactsParams struct {
 	// Filter Filter artifacts by field values. Supported fields:
 	// - createdAt, id, updatedAt, credits, description, mimeType
 	// - name, organizationId, previewImage, producerId, text, url
-	Filter *ArtifactsFilter `json:"filter,omitempty"`
+	Filter ArtifactsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *ArtifactsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort ArtifactsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyArtifactsParamsSortField defines parameters for FindManyArtifacts.
@@ -1725,38 +1747,38 @@ type FindManyArtifactsParamsSortOrder string
 // CreateArtifactJSONBody defines parameters for CreateArtifact.
 type CreateArtifactJSONBody struct {
 	// Name The name of the artifact
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// Text The artifact text
-	Text *string `json:"text"`
+	Text string `json:"text" yaml:"text"`
 
 	// Url The artifact URL
-	Url *string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // UpdateArtifactJSONBody defines parameters for UpdateArtifact.
 type UpdateArtifactJSONBody struct {
 	// Name The name of the artifact
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 
 	// Text The artifact text
-	Text *string `json:"text"`
+	Text string `json:"text,omitzero" yaml:"text"`
 
 	// Url The artifact URL
-	Url *string `json:"url"`
+	Url string `json:"url,omitzero" yaml:"url"`
 }
 
 // FindManyLabelsParams defines parameters for FindManyLabels.
 type FindManyLabelsParams struct {
 	// Filter Filter labels by field values. Supported fields:
 	// - createdAt, id, updatedAt, name, organizationId
-	Filter *LabelsFilter `json:"filter,omitempty"`
+	Filter LabelsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *LabelsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort LabelsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyLabelsParamsSortField defines parameters for FindManyLabels.
@@ -1768,26 +1790,26 @@ type FindManyLabelsParamsSortOrder string
 // CreateLabelJSONBody defines parameters for CreateLabel.
 type CreateLabelJSONBody struct {
 	// Name The name of the label
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // UpdateLabelJSONBody defines parameters for UpdateLabel.
 type UpdateLabelJSONBody struct {
 	// Name The name of the label
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
 // FindManyPipelinesParams defines parameters for FindManyPipelines.
 type FindManyPipelinesParams struct {
 	// Filter Filter pipelines by field values. Supported fields:
 	// - createdAt, id, updatedAt, description, name, organizationId
-	Filter *PipelinesFilter `json:"filter,omitempty"`
+	Filter PipelinesFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *PipelinesSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort PipelinesSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyPipelinesParamsSortField defines parameters for FindManyPipelines.
@@ -1799,19 +1821,19 @@ type FindManyPipelinesParamsSortOrder string
 // CreatePipelineJSONBody defines parameters for CreatePipeline.
 type CreatePipelineJSONBody struct {
 	// Description The pipeline description
-	Description *string `json:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// Name The pipeline name
-	Name *string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // UpdatePipelineJSONBody defines parameters for UpdatePipeline.
 type UpdatePipelineJSONBody struct {
 	// Description The pipeline description
-	Description *string `json:"description"`
+	Description string `json:"description,omitzero" yaml:"description"`
 
 	// Name The pipeline name
-	Name *string `json:"name"`
+	Name string `json:"name,omitzero" yaml:"name"`
 }
 
 // FindManyRunsParams defines parameters for FindManyRuns.
@@ -1819,13 +1841,13 @@ type FindManyRunsParams struct {
 	// Filter Filter runs by field values. Supported fields:
 	// - createdAt, id, updatedAt, completedAt, error, organizationId
 	// - pipelineId, progress, startedAt, status, toolId
-	Filter *RunsFilter `json:"filter,omitempty"`
+	Filter RunsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *RunsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort RunsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyRunsParamsSortField defines parameters for FindManyRuns.
@@ -1837,13 +1859,13 @@ type FindManyRunsParamsSortOrder string
 // CreateRunJSONBody defines parameters for CreateRun.
 type CreateRunJSONBody struct {
 	// PipelineId The pipeline ID associated with the run
-	PipelineId *string `json:"pipelineId"`
+	PipelineId string `json:"pipelineId" yaml:"pipelineId"`
 }
 
 // UpdateRunJSONBody defines parameters for UpdateRun.
 type UpdateRunJSONBody struct {
 	// PipelineId The pipeline ID associated with the run
-	PipelineId *string `json:"pipelineId"`
+	PipelineId string `json:"pipelineId,omitzero" yaml:"pipelineId"`
 }
 
 // FindManyToolsParams defines parameters for FindManyTools.
@@ -1851,13 +1873,13 @@ type FindManyToolsParams struct {
 	// Filter Filter tools by field values. Supported fields:
 	// - createdAt, id, updatedAt, description, inputMimeType
 	// - name, organizationId, outputMimeType
-	Filter *ToolsFilter `json:"filter,omitempty"`
+	Filter ToolsFilter `json:"filter,omitempty,omitzero" yaml:"filter,omitempty"`
 
 	// Page The page parameter
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+	Page PageQuery `form:"page,omitempty" json:"page,omitempty,omitzero" yaml:"page,omitempty"`
 
 	// Sort The sort parameter
-	Sort *ToolsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Sort ToolsSort `form:"sort,omitempty" json:"sort,omitempty,omitzero" yaml:"sort,omitempty"`
 }
 
 // FindManyToolsParamsSortField defines parameters for FindManyTools.
@@ -1869,19 +1891,19 @@ type FindManyToolsParamsSortOrder string
 // CreateToolJSONBody defines parameters for CreateTool.
 type CreateToolJSONBody struct {
 	// Description The tool description
-	Description string `json:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// Name The name of the tool
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 }
 
 // UpdateToolJSONBody defines parameters for UpdateTool.
 type UpdateToolJSONBody struct {
 	// Description The tool description
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
 
 	// Name The name of the tool
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
 }
 
 // RequestEmailChangeJSONRequestBody defines body for RequestEmailChange for application/json ContentType.

@@ -176,13 +176,13 @@ func (h *Handler) UpdateUser(ctx echo.Context, id openapi_types.UUID) error {
 
 	// Map to domain request
 	domainReq := &entities.UpdateUserRequest{}
-	if req.Email != nil {
+	if req.Email != "" {
 		// Note: Email update might need special handling (verification, etc.)
 		// For now, we'll skip email updates via this endpoint
 		h.logger.Info("email update requested but skipped", "user_id", id)
 	}
-	if req.Image != nil {
-		domainReq.Image = req.Image
+	if req.Image != "" {
+		domainReq.Image = &req.Image
 	}
 
 	user, err := h.service.UpdateUser(ctx.Request().Context(), userID, domainReq)

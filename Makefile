@@ -10,7 +10,7 @@ GREEN=\033[0;32m
 YELLOW=\033[0;33m
 NC=\033[0m # No Color
 
-.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint lint-go openapi-lint openapi-stats openapi-bundle fmt cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install docker-run docker-stop deps install-tools test-coverage migrate-up migrate-down migrate-create node-deps go-deps node-update-deps go-update-deps update-deps
+.PHONY: help build run test clean clean-generated migrate generate sqlc oapi dev lint lint-go openapi-lint openapi-stats openapi-bundle fmt cluster-start cluster-stop skaffold-dev skaffold-start skaffold-stop cluster-upgrade cluster-install docker-run docker-stop deps install-tools test-coverage migrate-up migrate-down migrate-create node-deps go-deps node-update-deps go-update-deps update-deps config-defaults
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'
@@ -33,7 +33,7 @@ dev: ## Run the application with hot reload (requires air)
 	@go tool air
 
 # Code Generation
-generate: sqlc oapi ## Generate all code (sqlc + OpenAPI)
+generate: sqlc oapi config-defaults ## Generate all code (sqlc + OpenAPI)
 	@echo -e "${GREEN}All code generation complete!${NC}"
 
 sqlc: ## Generate database code with sqlc
@@ -41,10 +41,16 @@ sqlc: ## Generate database code with sqlc
 	@cd internal/generated/database && go generate
 	@echo -e "${GREEN}sqlc generation complete!${NC}"
 
-oapi: ## Generate OpenAPI server code
+oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "${YELLOW}Generating OpenAPI server code...${NC}"
 	@cd internal/generated/api && go generate
 	@echo -e "${GREEN}OpenAPI generation complete!${NC}"
+
+# Config generation
+config-defaults: ## Generate config defaults from OpenAPI schema
+	@echo -e "${YELLOW}Generating config defaults from OpenAPI...${NC}"
+	@go run cmd/config-defaults/main.go
+	@echo -e "${GREEN}Config defaults generated!${NC}"
 
 # Testing
 test: ## Run tests
@@ -98,14 +104,14 @@ openapi-stats: ## Show OpenAPI specification statistics
 	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml  stats api/openapi.yaml
 	@echo -e "${GREEN}OpenAPI statistics complete!${NC}"
 
-openapi-bundle: ## Bundle OpenAPI specification into a single file
+openapi-bundle: openapi-lint ## Bundle OpenAPI specification into a single file
 	@echo -e "${YELLOW}Bundling OpenAPI specification...${NC}"
 	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml  bundle api/openapi.yaml -o api/openapi.bundled.yaml
 	@echo -e "${GREEN}OpenAPI bundled to api/openapi.bundled.yaml${NC}"
 
-openapi-split: ## Split OpenAPI specification into multiple files
+openapi-split: openapi-lint ## Split OpenAPI specification into multiple files
 	@echo -e "${YELLOW}Splitting OpenAPI specification...${NC}"
-	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml  split api/openapi.bundled.yaml --outDir api
+	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml  split api/openapi.bundled.yaml --outDir api/split
 	@echo -e "${GREEN}OpenAPI split into  api/split/${NC}"
 
 # Code Formatting

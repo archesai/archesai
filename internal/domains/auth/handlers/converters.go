@@ -20,9 +20,7 @@ func convertToGeneratedUser(u *entities.User) api.UserEntity {
 
 	// Add optional fields if they exist
 	if u.Image != nil {
-		// NullableString is *string, and Image field expects *NullableString (**string)
-		nullableStr := u.Image
-		user.Image = &nullableStr
+		user.Image = u.Image
 	}
 
 	return user
@@ -38,20 +36,18 @@ func convertToGeneratedUsers(domainUsers []*entities.User) []api.UserEntity {
 }
 
 // convertPagination converts generated pagination params to domain options
-func convertPagination(page *api.Page) (limit, offset int32) {
+func convertPagination(page api.Page) (limit, offset int32) {
 	limit = 50 // default
 	offset = 0 // default
 
-	if page != nil {
-		if page.Size != nil {
-			limit = int32(*page.Size)
-			if limit > 100 {
-				limit = 100 // max limit
-			}
+	if page.Size > 0 {
+		limit = int32(page.Size)
+		if limit > 100 {
+			limit = 100 // max limit
 		}
-		if page.Number != nil && *page.Number > 0 {
-			offset = int32(*page.Number-1) * limit
-		}
+	}
+	if page.Number > 0 {
+		offset = int32(page.Number-1) * limit
 	}
 
 	return limit, offset

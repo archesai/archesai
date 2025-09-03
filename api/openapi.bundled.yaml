@@ -3395,17 +3395,26 @@ components:
           example: true
         email:
           $ref: '#/components/schemas/EmailConfig'
+        environment:
+          description: Deployment environment (development, staging, production)
+          type: string
+          enum:
+            - development
+            - staging
+            - production
+          default: development
+          example: development
         host:
           description: The host address on which the API server will listen
           type: string
           default: 0.0.0.0
           minLength: 1
-          example: example-string
+          example: 0.0.0.0
         port:
           description: The port on which the API server will listen
           type: number
           default: 3001
-          example: 42
+          example: 3001
         validate:
           description: Enable or disable request validation
           type: boolean
@@ -3460,8 +3469,31 @@ components:
           type: boolean
           default: true
           example: true
+        jwtSecret:
+          description: Secret key for JWT token signing
+          type: string
+          default: change-me-in-production
+          minLength: 32
+          example: your-256-bit-secret-key-here-change-in-production
+        accessTokenTtl:
+          description: Access token time-to-live duration (e.g., "15m", "1h")
+          type: string
+          pattern: ^(\d+[smhd])+$
+          minLength: 2
+          default: 15m
+          example: 15m
+        refreshTokenTtl:
+          description: Refresh token time-to-live duration (e.g., "7d", "168h")
+          type: string
+          pattern: ^(\d+[smhd])+$
+          minLength: 2
+          default: 168h
+          example: 168h
       required:
         - enabled
+        - jwtSecret
+        - accessTokenTtl
+        - refreshTokenTtl
       additionalProperties: false
     TwitterAuth:
       description: Twitter OAuth configuration
