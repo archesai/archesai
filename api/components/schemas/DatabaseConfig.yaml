@@ -12,6 +12,44 @@ properties:
     default: postgresql://admin:password@localhost:5432/archesai-db?schema=public
     minLength: 1
     example: example-string
+  type:
+    description: Database type (postgresql or sqlite)
+    type: string
+    enum: [postgresql, sqlite]
+    default: postgresql
+    example: postgresql
+  maxConns:
+    description: Maximum number of connections in pool (PostgreSQL)
+    type: integer
+    minimum: 1
+    default: 25
+    example: 25
+  minConns:
+    description: Minimum number of connections in pool (PostgreSQL)
+    type: integer
+    minimum: 0
+    default: 5
+    example: 5
+  connMaxLifetime:
+    description: Maximum connection lifetime (e.g., "30m")
+    type: string
+    pattern: '^(\d+[smh])+$'
+    example: 30m
+  connMaxIdleTime:
+    description: Maximum connection idle time (e.g., "5m")
+    type: string
+    pattern: '^(\d+[smh])+$'
+    example: 5m
+  healthCheckPeriod:
+    description: Health check period for connections (PostgreSQL)
+    type: string
+    pattern: '^(\d+[smh])+$'
+    example: 30s
+  runMigrations:
+    description: Automatically run database migrations on startup
+    type: boolean
+    default: false
+    example: true
   managed:
     description: Use managed database deployment
     type: boolean

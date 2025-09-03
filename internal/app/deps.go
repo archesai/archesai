@@ -2,10 +2,12 @@
 package app
 
 import (
+	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/archesai/archesai/internal/domains/auth/adapters/postgres"
@@ -14,9 +16,11 @@ import (
 	"github.com/archesai/archesai/internal/domains/auth/services"
 	"github.com/archesai/archesai/internal/generated/api"
 	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
+	sqlitegen "github.com/archesai/archesai/internal/generated/database/sqlite"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/database"
 	"github.com/archesai/archesai/internal/infrastructure/server"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
 
@@ -41,11 +45,12 @@ func RegisterRoutes(e *echo.Echo, container *Container) {
 // Container holds all application dependencies
 type Container struct {
 	// Infrastructure
-	DB      *database.DB
-	Queries *postgresqlgen.Queries
-	Logger  *slog.Logger
-	Config  *config.Config
-	Server  *server.Server // The HTTP server
+	DB            database.Database
+	PgQueries     *postgresqlgen.Queries // PostgreSQL queries (if using PostgreSQL)
+	SqliteQueries *sqlitegen.Queries     // SQLite queries (if using SQLite)
+	Logger        *slog.Logger
+	Config        *config.Config
+	Server        *server.Server // The HTTP server
 
 	// Auth feature
 	AuthRepository repositories.Repository
@@ -96,19 +101,86 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	slog.SetDefault(logger)
 
 	// Initialize database
-	dbConfig := database.Config{
-		URL: cfg.Database.URL,
+	var dbType database.Type
+	if cfg.Database.Type != nil {
+		dbType = database.ParseTypeString(string(*cfg.Database.Type))
+	} else {
+		// Auto-detect from URL
+		url := cfg.Database.Url
+		if strings.HasPrefix(url, "postgresql://") || strings.HasPrefix(url, "postgres://") {
+			dbType = database.TypePostgreSQL
+		} else if strings.HasPrefix(url, "sqlite://") || strings.Contains(url, ".db") || url == ":memory:" {
+			dbType = database.TypeSQLite
+		} else {
+			dbType = database.TypePostgreSQL // default
+		}
 	}
-	db, err := database.NewConnection(dbConfig, logger)
+
+	// Create database config
+	dbConfig := &database.Config{
+		URL:  cfg.Database.Url,
+		Type: dbType,
+	}
+
+	// Apply optional configuration
+	if cfg.Database.MaxConns != nil {
+		dbConfig.PgMaxConns = int32(*cfg.Database.MaxConns)
+	}
+	if cfg.Database.MinConns != nil {
+		dbConfig.PgMinConns = int32(*cfg.Database.MinConns)
+	}
+	if cfg.Database.ConnMaxLifetime != nil {
+		dbConfig.ConnMaxLifetime = *cfg.Database.ConnMaxLifetime
+	}
+	if cfg.Database.ConnMaxIdleTime != nil {
+		dbConfig.ConnMaxIdleTime = *cfg.Database.ConnMaxIdleTime
+	}
+	if cfg.Database.HealthCheckPeriod != nil {
+		dbConfig.PgHealthCheckPeriod = *cfg.Database.HealthCheckPeriod
+	}
+	if cfg.Database.RunMigrations != nil {
+		dbConfig.RunMigrations = *cfg.Database.RunMigrations
+	}
+
+	dbFactory := database.NewFactory(logger)
+	db, err := dbFactory.Create(dbConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Create queries instance for sqlc
-	queries := postgresqlgen.New(db)
+	// Run migrations if enabled
+	if dbConfig.RunMigrations {
+		if err := database.RunMigrations(db, logger); err != nil {
+			logger.Error("failed to run migrations", "error", err)
+			if cfg.Server.Environment != "development" {
+				return nil, fmt.Errorf("failed to run migrations: %w", err)
+			}
+		}
+	}
+
+	// Create queries based on database type
+	var pgQueries *postgresqlgen.Queries
+	var sqliteQueries *sqlitegen.Queries
+	var authRepo repositories.Repository
+
+	switch dbConfig.Type {
+	case database.TypePostgreSQL:
+		// Get the underlying pgxpool for PostgreSQL
+		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
+			pgQueries = postgresqlgen.New(pool)
+			authRepo = postgres.NewRepository(pgQueries)
+		} else {
+			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
+		}
+	case database.TypeSQLite:
+		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
+			sqliteQueries = sqlitegen.New(sqlDB)
+			// TODO: Create SQLite auth repository when available
+			logger.Warn("SQLite repositories not yet implemented, auth features may not work")
+		}
+	}
 
 	// Initialize auth feature
-	authRepo := postgres.NewRepository(queries)
 	authConfig := services.Config{
 		JWTSecret:          cfg.Auth.JWTSecret,
 		AccessTokenExpiry:  cfg.Auth.AccessTokenTTL,
@@ -133,11 +205,12 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	// Create container with all dependencies
 	container := &Container{
 		// Infrastructure
-		DB:      db,
-		Queries: queries,
-		Logger:  logger,
-		Config:  cfg,
-		Server:  httpServer,
+		DB:            db,
+		PgQueries:     pgQueries,
+		SqliteQueries: sqliteQueries,
+		Logger:        logger,
+		Config:        cfg,
+		Server:        httpServer,
 
 		// Auth feature
 		AuthRepository: authRepo,
@@ -160,7 +233,9 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 func (c *Container) Close() error {
 	// Close database connection
 	if c.DB != nil {
-		c.DB.Close()
+		if err := c.DB.Close(); err != nil {
+			c.Logger.Error("failed to close database connection", "error", err)
+		}
 	}
 
 	// Logger cleanup not needed for slog (it uses os.Stdout/Stderr)

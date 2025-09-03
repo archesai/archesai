@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/archesai/archesai/internal/generated/api"
 	"github.com/spf13/viper"
 )
 
@@ -16,7 +17,7 @@ type Config struct {
 	// Simplified fields for easy access
 	Server   ServerConfig
 	Auth     AuthConfig
-	Database DatabaseConfig
+	Database api.DatabaseConfig
 	Logging  LoggingConfig
 }
 
@@ -25,6 +26,7 @@ type ServerConfig struct {
 	Host        string
 	Port        int
 	DocsEnabled bool
+	Environment string
 }
 
 // AuthConfig holds authentication and JWT configuration.
@@ -32,11 +34,6 @@ type AuthConfig struct {
 	JWTSecret       string
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration
-}
-
-// DatabaseConfig holds database connection configuration.
-type DatabaseConfig struct {
-	URL string
 }
 
 // LoggingConfig holds logging configuration options.
@@ -67,21 +64,50 @@ func Load() (*Config, error) {
 		}
 	}
 
+	// Build database config
+	dbType := api.DatabaseConfigType(v.GetString("database.type"))
+	maxConns := v.GetInt("database.max_conns")
+	minConns := v.GetInt("database.min_conns")
+	runMigrations := v.GetBool("database.run_migrations")
+
+	databaseConfig := api.DatabaseConfig{
+		Enabled:       true,
+		Url:           v.GetString("database.url"),
+		Type:          &dbType,
+		MaxConns:      &maxConns,
+		MinConns:      &minConns,
+		RunMigrations: &runMigrations,
+	}
+
+	if lifetime := v.GetDuration("database.conn_max_lifetime"); lifetime > 0 {
+		lifetimeStr := lifetime.String()
+		databaseConfig.ConnMaxLifetime = &lifetimeStr
+	}
+
+	if idleTime := v.GetDuration("database.conn_max_idle_time"); idleTime > 0 {
+		idleTimeStr := idleTime.String()
+		databaseConfig.ConnMaxIdleTime = &idleTimeStr
+	}
+
+	if period := v.GetDuration("database.health_check_period"); period > 0 {
+		periodStr := period.String()
+		databaseConfig.HealthCheckPeriod = &periodStr
+	}
+
 	return &Config{
 		v: v,
 		Server: ServerConfig{
 			Host:        v.GetString("api.host"),
 			Port:        v.GetInt("api.port"),
 			DocsEnabled: v.GetBool("api.docs"),
+			Environment: v.GetString("api.environment"),
 		},
 		Auth: AuthConfig{
 			JWTSecret:       v.GetString("auth.jwt_secret"),
 			AccessTokenTTL:  v.GetDuration("auth.access_token_ttl"),
 			RefreshTokenTTL: v.GetDuration("auth.refresh_token_ttl"),
 		},
-		Database: DatabaseConfig{
-			URL: v.GetString("database.url"),
-		},
+		Database: databaseConfig,
 		Logging: LoggingConfig{
 			Level:  v.GetString("logging.level"),
 			Pretty: v.GetBool("logging.pretty"),
@@ -96,6 +122,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("api.docs", true)
 	v.SetDefault("api.validate", true)
 	v.SetDefault("api.cors.origins", "http://localhost:3000")
+	v.SetDefault("api.environment", "development")
 
 	// Auth defaults
 	v.SetDefault("auth.jwt_secret", "change-me-in-production")
@@ -104,6 +131,13 @@ func setDefaults(v *viper.Viper) {
 
 	// Database defaults
 	v.SetDefault("database.url", "postgres://postgres:postgres@localhost:5432/archesai?sslmode=disable")
+	v.SetDefault("database.type", "postgresql")
+	v.SetDefault("database.max_conns", 25)
+	v.SetDefault("database.min_conns", 5)
+	v.SetDefault("database.conn_max_lifetime", "1h")
+	v.SetDefault("database.conn_max_idle_time", "30m")
+	v.SetDefault("database.health_check_period", "30s")
+	v.SetDefault("database.run_migrations", false)
 
 	// Logging defaults
 	v.SetDefault("logging.level", "info")

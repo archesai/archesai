@@ -24,6 +24,12 @@ const (
 	Microsoft AccountEntityProviderId = "microsoft"
 )
 
+// Defines values for DatabaseConfigType.
+const (
+	Postgresql DatabaseConfigType = "postgresql"
+	Sqlite     DatabaseConfigType = "sqlite"
+)
+
 // Defines values for EmbeddingConfigType.
 const (
 	EmbeddingConfigTypeOllama EmbeddingConfigType = "ollama"
@@ -526,8 +532,17 @@ type DatabaseConfig struct {
 	// Auth Database authentication credentials
 	Auth *DatabaseAuth `json:"auth,omitempty"`
 
+	// ConnMaxIdleTime Maximum connection idle time (e.g., "5m")
+	ConnMaxIdleTime *string `json:"connMaxIdleTime,omitempty"`
+
+	// ConnMaxLifetime Maximum connection lifetime (e.g., "30m")
+	ConnMaxLifetime *string `json:"connMaxLifetime,omitempty"`
+
 	// Enabled Enable database
 	Enabled bool `json:"enabled"`
+
+	// HealthCheckPeriod Health check period for connections (PostgreSQL)
+	HealthCheckPeriod *string `json:"healthCheckPeriod,omitempty"`
 
 	// Image Container image configuration
 	Image *ImageConfig `json:"image,omitempty"`
@@ -535,15 +550,30 @@ type DatabaseConfig struct {
 	// Managed Use managed database deployment
 	Managed *bool `json:"managed,omitempty"`
 
+	// MaxConns Maximum number of connections in pool (PostgreSQL)
+	MaxConns *int `json:"maxConns,omitempty"`
+
+	// MinConns Minimum number of connections in pool (PostgreSQL)
+	MinConns *int `json:"minConns,omitempty"`
+
 	// Persistence Persistent storage configuration
 	Persistence *PersistenceConfig `json:"persistence,omitempty"`
 
 	// Resources Kubernetes resource configuration
 	Resources *ResourceConfig `json:"resources,omitempty"`
 
+	// RunMigrations Automatically run database migrations on startup
+	RunMigrations *bool `json:"runMigrations,omitempty"`
+
+	// Type Database type (postgresql or sqlite)
+	Type *DatabaseConfigType `json:"type,omitempty"`
+
 	// Url Database connection URL/string
 	Url string `json:"url"`
 }
+
+// DatabaseConfigType Database type (postgresql or sqlite)
+type DatabaseConfigType string
 
 // DevServiceConfig Development service port forwarding configuration
 type DevServiceConfig struct {
