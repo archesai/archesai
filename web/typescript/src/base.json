@@ -9,7 +9,7 @@
     "composite": true,
     "customConditions": ["development"],
     "declaration": true,
-    "declarationDir": "${configDir}/dist",
+    "declarationDir": "${configDir}/.cache",
     "declarationMap": true,
     "disableReferencedProjectLoad": false,
     "disableSolutionSearching": false,
@@ -55,6 +55,7 @@
     "strict": true,
     "target": "esnext",
     "types": ["node"],
+    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.tsbuildinfo",
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,
     "verbatimModuleSyntax": true

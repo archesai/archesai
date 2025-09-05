@@ -3,8 +3,10 @@
   "permissions": {
     "allow": [
       "Bash(make generate:*)",
-      "Bash(make lint:*)",
-      "Bash(make lint-go:*)"
+      "Bash(make format:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(make lint:*)"
     ],
     "ask": [],
     "deny": []

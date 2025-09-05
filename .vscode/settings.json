@@ -1,21 +1,15 @@
 {
   "eslint.workingDirectories": [{ "pattern": "web/*/" }],
   "files.exclude": {
-    "**/.cache": false,
-    "**/.coverage": false,
-    "**/.nitro": false,
-    "**/.output": false,
-    "**/.tanstack": false,
-    "**/bin": false,
-    "**/dist": false,
-    "**/node_modules": false
+    "**/.cache": true,
+    "**/.coverage": true,
+    "**/.nitro": true,
+    "**/.output": true,
+    "**/.tanstack": true,
+    "**/node_modules": true
   },
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",
     "./web/ui/src/styles/globals.css": "./web/ui/src/**"
-  },
-  "yaml.schemas": {
-    "https://raw.githubusercontent.com/evilmartians/lefthook/master/schema.json": "file:///home/jonathan/Projects/archesai/.lefthook.yaml",
-    "https://goreleaser.com/static/schema.json": "file:///home/jonathan/Projects/archesai/.goreleaser.yaml"
   }
 }

@@ -2,10 +2,13 @@
 pre-commit:
   parallel: true
   commands:
-    golangci-lint:
-      glob: "*.go"
-      run: golangci-lint run --fix {staged_files}
-      stage_fixed: true
+    # golangci-lint:
+    #   glob: "*.go"
+    #   run: golangci-lint run --fix {staged_files}
+    #   stage_fixed: true
+
+    lint:
+      run: make lint
 
     go-mod-tidy:
       glob: "go.{mod,sum}"

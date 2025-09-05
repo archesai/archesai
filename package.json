@@ -9,7 +9,7 @@
     "clean:deps": "pnpm -r exec sh -c 'rm -rf node_modules pnpm-lock.yaml'",
     "generate": "pnpm -r generate",
     "dev": "pnpm -r dev",
-    "format": "pnpm -r exec prettier --ignore-path ../../.gitignore '**/*.{css,html,js,json,md,ts,tsx,yaml}' --check --write --log-level warn --cache --cache-location .cache/.prettiercache",
+    "format": "pnpm prettier . --write --check --log-level warn --cache --cache-location .cache/.prettiercache",
     "postinstall": "pnpm dlx sherif --fix",
     "lint": "pnpm -r lint --cache --cache-location .cache/.eslintcache",
     "test": "pnpm -r test",

@@ -32,7 +32,6 @@ const base = defineConfig(
       parser: tseslint.parser,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: path.join(import.meta.dirname, "../../../"),
       },
       sourceType: "module",
     },
