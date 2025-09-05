@@ -19,9 +19,9 @@ rules:
       - health
       - auth
       - config
-      - sign-up
-      - sign-in
-      - sign-out
+      - login
+      - register
+      - logout
       - intelligence
       - password-reset
       - email-verification

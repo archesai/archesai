@@ -4,11 +4,12 @@ output: types.gen.go
 generate:
   models: true
 output-options:
-  skip-prune: true
   yaml-tags: true
-  name-normalizer: ToCamelCase
   prefer-skip-optional-pointer: true
   prefer-skip-optional-pointer-with-omitzero: true
   prefer-skip-optional-pointer-on-container-types: true
   include-tags:
-    - Content
+    - Auth
+    - Users
+    - Sessions
+    - Accounts

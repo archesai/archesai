@@ -12,7 +12,7 @@ SERVER_OUTPUT := bin/archesai
 CODEGEN_OUTPUT := bin/codegen
 
 # Database Configuration.
-MIGRATION_PATH := internal/storage/database/migrations
+MIGRATION_PATH := internal/database/migrations
 
 # Terminal Colors
 GREEN := \033[0;32m
@@ -95,7 +95,7 @@ generate: generate-sqlc generate-oapi generate-defaults generate-adapters ## Gen
 .PHONY: generate-sqlc
 generate-sqlc: ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/storage/database && go generate
+	@cd internal/database && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-oapi
@@ -240,6 +240,7 @@ format-node: ## Format Node.js/TypeScript code
 openapi-bundle: lint-openapi ## Bundle OpenAPI into single file
 	@echo -e "$(YELLOW)▶ Bundling OpenAPI spec...$(NC)"
 	@pnpm --package=@redocly/cli dlx redocly --config api/redocly.yaml bundle api/openapi.yaml -o api/openapi.bundled.yaml
+	@pnpm prettier --write api/openapi.bundled.yaml
 	@echo -e "$(GREEN)✓ OpenAPI bundled: api/openapi.bundled.yaml$(NC)"
 
 .PHONY: openapi-split

@@ -1,6 +1,7 @@
 package container
 
 import (
+	authhttp "github.com/archesai/archesai/internal/auth/adapters/http"
 	"github.com/labstack/echo/v4"
 )
 
@@ -9,8 +10,9 @@ func (c *Container) RegisterRoutes(e *echo.Echo) {
 	// API v1 group
 	v1 := e.Group("/api/v1")
 
-	// Register auth routes
-	c.AuthHandler.RegisterRoutes(v1)
+	// Register auth routes using StrictHandler pattern
+	strictAuthHandler := authhttp.NewStrictHandlerWithMiddleware(c.AuthHandler)
+	authhttp.RegisterHandlers(v1, strictAuthHandler)
 
 	// Register organizations routes
 	orgGroup := v1.Group("/organizations")

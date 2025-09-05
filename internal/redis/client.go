@@ -1,20 +1,11 @@
-// Package redis provides Redis infrastructure for caching, queuing, sessions, and pub/sub
 package redis
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/redis/go-redis/v9"
-)
-
-var (
-	// ErrNoRedisConfig is returned when no Redis configuration is provided
-	ErrNoRedisConfig = errors.New("no Redis configuration provided")
-	// ErrNotInitialized is returned when Redis client is not initialized
-	ErrNotInitialized = errors.New("redis client not initialized")
 )
 
 // Client wraps the Redis client with domain-specific functionality

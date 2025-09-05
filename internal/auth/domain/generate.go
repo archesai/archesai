@@ -2,4 +2,4 @@
 package domain
 
 // Generate types for auth domain (Auth, Users, Sessions, Accounts tags)
-//go:generate go tool oapi-codegen --config=oapi-codegen.yaml ../../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=models.cfg.yaml ../../../api/openapi.bundled.yaml

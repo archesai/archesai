@@ -55,8 +55,8 @@ func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
 	}
 }
 
-// SignUp creates a new user account
-func (s *Service) SignUp(ctx context.Context, req *SignUpRequest) (*User, *TokenResponse, error) {
+// Register creates a new user account
+func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *TokenResponse, error) {
 	// Check if user already exists
 	existingUser, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err == nil && existingUser != nil {
@@ -123,8 +123,8 @@ func (s *Service) SignUp(ctx context.Context, req *SignUpRequest) (*User, *Token
 	return user, tokens, nil
 }
 
-// SignIn authenticates a user
-func (s *Service) SignIn(ctx context.Context, req *SignInRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
+// Login authenticates a user
+func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
 	// Get user by email
 	user, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
@@ -170,8 +170,8 @@ func (s *Service) SignIn(ctx context.Context, req *SignInRequest, ipAddress, use
 	return user, tokens, nil
 }
 
-// SignOut invalidates a user session
-func (s *Service) SignOut(ctx context.Context, token string) error {
+// Logout invalidates a user session
+func (s *Service) Logout(ctx context.Context, token string) error {
 	// Get session by token
 	session, err := s.repo.GetSessionByToken(ctx, token)
 	if err != nil {

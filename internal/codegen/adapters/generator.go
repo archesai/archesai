@@ -380,7 +380,7 @@ func (g *Generator) analyzeAdapters(domain string, adapters []AdapterSpec) Templ
 	// Determine required imports
 	imports := []string{
 		fmt.Sprintf(`"github.com/archesai/archesai/internal/%s/domain"`, domain),
-		`"github.com/archesai/archesai/internal/storage/database/postgresql"`,
+		`"github.com/archesai/archesai/internal/database/postgresql"`,
 	}
 
 	// Add conditional imports

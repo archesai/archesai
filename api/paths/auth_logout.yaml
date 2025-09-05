@@ -6,6 +6,6 @@ post:
   description: This endpoint will log you out of the current session
   responses:
     "204":
-      $ref: ../components/responses/NotFound.yaml
+      $ref: ../components/responses/NoContent.yaml
     "401":
       $ref: ../components/responses/Unauthorized.yaml

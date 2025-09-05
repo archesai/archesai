@@ -5,11 +5,8 @@ package config
 
 import (
 	"encoding/json"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/oapi-codegen/runtime"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -22,15 +19,6 @@ const (
 	Development APIConfigEnvironment = "development"
 	Production  APIConfigEnvironment = "production"
 	Staging     APIConfigEnvironment = "staging"
-)
-
-// Defines values for AccountEntityProviderId.
-const (
-	Apple     AccountEntityProviderId = "apple"
-	Github    AccountEntityProviderId = "github"
-	Google    AccountEntityProviderId = "google"
-	Local     AccountEntityProviderId = "local"
-	Microsoft AccountEntityProviderId = "microsoft"
 )
 
 // Defines values for DatabaseConfigType.
@@ -52,13 +40,6 @@ const (
 	Never        ImageConfigPullPolicy = "Never"
 )
 
-// Defines values for InvitationEntityRole.
-const (
-	InvitationEntityRoleAdmin  InvitationEntityRole = "admin"
-	InvitationEntityRoleMember InvitationEntityRole = "member"
-	InvitationEntityRoleOwner  InvitationEntityRole = "owner"
-)
-
 // Defines values for LLMConfigType.
 const (
 	LLMConfigTypeOllama LLMConfigType = "ollama"
@@ -74,30 +55,6 @@ const (
 	Silent LoggingConfigLevel = "silent"
 	Trace  LoggingConfigLevel = "trace"
 	Warn   LoggingConfigLevel = "warn"
-)
-
-// Defines values for MemberEntityRole.
-const (
-	MemberEntityRoleAdmin  MemberEntityRole = "admin"
-	MemberEntityRoleMember MemberEntityRole = "member"
-	MemberEntityRoleOwner  MemberEntityRole = "owner"
-)
-
-// Defines values for OrganizationEntityPlan.
-const (
-	BASIC     OrganizationEntityPlan = "BASIC"
-	FREE      OrganizationEntityPlan = "FREE"
-	PREMIUM   OrganizationEntityPlan = "PREMIUM"
-	STANDARD  OrganizationEntityPlan = "STANDARD"
-	UNLIMITED OrganizationEntityPlan = "UNLIMITED"
-)
-
-// Defines values for RunEntityStatus.
-const (
-	COMPLETED  RunEntityStatus = "COMPLETED"
-	FAILED     RunEntityStatus = "FAILED"
-	PROCESSING RunEntityStatus = "PROCESSING"
-	QUEUED     RunEntityStatus = "QUEUED"
 )
 
 // APIConfig Configuration schema for the API server
@@ -132,51 +89,6 @@ type APIConfig struct {
 
 // APIConfigEnvironment Deployment environment (development, staging, production)
 type APIConfigEnvironment string
-
-// AccountEntity defines model for AccountEntity.
-type AccountEntity struct {
-	// AccessToken The OAuth access token
-	AccessToken string `json:"accessToken,omitempty,omitzero" yaml:"accessToken,omitempty"`
-
-	// AccessTokenExpiresAt The access token expiration timestamp
-	AccessTokenExpiresAt time.Time `json:"accessTokenExpiresAt,omitempty,omitzero" yaml:"accessTokenExpiresAt,omitempty"`
-
-	// AccountId The unique identifier for the account from the provider
-	AccountId string `json:"accountId" yaml:"accountId"`
-
-	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
-
-	// IdToken The OpenID Connect ID token
-	IdToken string `json:"idToken,omitempty,omitzero" yaml:"idToken,omitempty"`
-
-	// Password The hashed password (only for local authentication)
-	Password string `json:"password,omitempty,omitzero" yaml:"password,omitempty"`
-
-	// ProviderId The authentication provider identifier
-	ProviderId AccountEntityProviderId `json:"providerId" yaml:"providerId"`
-
-	// RefreshToken The OAuth refresh token
-	RefreshToken string `json:"refreshToken,omitempty,omitzero" yaml:"refreshToken,omitempty"`
-
-	// RefreshTokenExpiresAt The refresh token expiration timestamp
-	RefreshTokenExpiresAt time.Time `json:"refreshTokenExpiresAt,omitempty,omitzero" yaml:"refreshTokenExpiresAt,omitempty"`
-
-	// Scope The OAuth scope granted
-	Scope string `json:"scope,omitempty,omitzero" yaml:"scope,omitempty"`
-
-	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UserId The user ID this account belongs to
-	UserId UUID `json:"userId" yaml:"userId"`
-}
-
-// AccountEntityProviderId The authentication provider identifier
-type AccountEntityProviderId string
 
 // ArchesConfig Arches AI configuration schema
 type ArchesConfig struct {
@@ -217,42 +129,6 @@ type ArchesConfig struct {
 	Storage StorageConfig `json:"storage" yaml:"storage"`
 }
 
-// ArtifactEntity Schema for Artifact entity
-type ArtifactEntity struct {
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Credits The number of credits required to access this artifact. This is used for metering and billing purposes.
-	Credits float32 `json:"credits" yaml:"credits"`
-
-	// Description The artifact's description
-	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// MimeType The MIME type of the artifact, e.g. image/png
-	MimeType string `json:"mimeType" yaml:"mimeType"`
-
-	// Name The name of the artifact, used for display purposes
-	Name string `json:"name,omitempty,omitzero" yaml:"name,omitempty"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// PreviewImage The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
-	PreviewImage string `json:"previewImage,omitempty,omitzero" yaml:"previewImage,omitempty"`
-
-	// ProducerId The ID of the run that produced this artifact, if applicable
-	ProducerId string `json:"producerId,omitempty,omitzero" yaml:"producerId,omitempty"`
-
-	// Text The artifact text
-	Text string `json:"text" yaml:"text"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
-
 // AuthConfig Authentication configuration for the API server
 type AuthConfig struct {
 	// Enabled Enable authentication
@@ -266,18 +142,6 @@ type AuthConfig struct {
 
 	// Twitter Twitter OAuth configuration
 	Twitter TwitterAuth `json:"twitter,omitempty,omitzero" yaml:"twitter,omitempty"`
-}
-
-// BaseEntity defines model for BaseEntity.
-type BaseEntity struct {
-	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
-
-	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // BillingConfig Billing configuration for Stripe
@@ -382,9 +246,6 @@ type DevelopmentConfig struct {
 	Redis DevServiceConfig `json:"redis" yaml:"redis"`
 }
 
-// Email defines model for Email.
-type Email = openapi_types.Email
-
 // EmailConfig Email configuration for sending emails
 type EmailConfig struct {
 	// Enabled Enable email functionality
@@ -408,9 +269,6 @@ type EmbeddingConfig struct {
 
 // EmbeddingConfigType The embedding provider to use for vector embeddings
 type EmbeddingConfigType string
-
-// FilterNode A recursive filter node that can be a condition or group
-type FilterNode = interface{}
 
 // FirebaseAuth Firebase authentication configuration
 type FirebaseAuth struct {
@@ -440,17 +298,6 @@ type GrafanaConfig struct {
 
 	// Resources Kubernetes resource configuration
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
-}
-
-// HealthResponse defines model for HealthResponse.
-type HealthResponse struct {
-	Services struct {
-		Database string `json:"database" yaml:"database"`
-		Email    string `json:"email" yaml:"email"`
-		Redis    string `json:"redis" yaml:"redis"`
-	} `json:"services" yaml:"services"`
-	Timestamp string  `json:"timestamp" yaml:"timestamp"`
-	Uptime    float32 `json:"uptime" yaml:"uptime"`
 }
 
 // ImageConfig Container image configuration
@@ -528,39 +375,6 @@ type IntelligenceConfig struct {
 	Unstructured UnstructuredConfig `json:"unstructured" yaml:"unstructured"`
 }
 
-// InvitationEntity Schema for Invitation entity
-type InvitationEntity struct {
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Email The email of the invitated user
-	Email string `json:"email" yaml:"email"`
-
-	// ExpiresAt The date and time when the invitation expires
-	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// InviterId The user id of the inviter
-	InviterId string `json:"inviterId" yaml:"inviterId"`
-
-	// OrganizationId The name of the organization the token belongs to
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// Role The role of the invitation
-	Role InvitationEntityRole `json:"role" yaml:"role"`
-
-	// Status The status of the invitation, e.g., pending, accepted, declined
-	Status string `json:"status" yaml:"status"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
-
-// InvitationEntityRole The role of the invitation
-type InvitationEntityRole string
-
 // LLMConfig Large Language Model configuration
 type LLMConfig struct {
 	// Endpoint LLM service endpoint URL
@@ -575,24 +389,6 @@ type LLMConfig struct {
 
 // LLMConfigType LLM provider type
 type LLMConfigType string
-
-// LabelEntity Schema for Label entity
-type LabelEntity struct {
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// Name The name of the label
-	Name string `json:"name" yaml:"name"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
 
 // LocalAuth Local username/password authentication
 type LocalAuth struct {
@@ -639,30 +435,6 @@ type LokiConfig struct {
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
 }
 
-// MemberEntity Schema for Member entity
-type MemberEntity struct {
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// Role The role of the member
-	Role MemberEntityRole `json:"role" yaml:"role"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UserId The user id
-	UserId string `json:"userId" yaml:"userId"`
-}
-
-// MemberEntityRole The role of the member
-type MemberEntityRole string
-
 // MigrationsConfig Database migration configuration
 type MigrationsConfig struct {
 	// Enabled Enable automatic DB migrations
@@ -678,57 +450,6 @@ type MonitoringConfig struct {
 	Loki LokiConfig `json:"loki" yaml:"loki"`
 }
 
-// OrganizationEntity defines model for OrganizationEntity.
-type OrganizationEntity struct {
-	// BillingEmail Email address for billing communications
-	BillingEmail openapi_types.Email `json:"billingEmail,omitempty,omitzero" yaml:"billingEmail,omitempty"`
-
-	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Credits Available credits for this organization
-	Credits float32 `json:"credits" yaml:"credits"`
-
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
-
-	// Logo The organization's logo URL
-	Logo string `json:"logo,omitempty,omitzero" yaml:"logo,omitempty"`
-
-	// Metadata Custom metadata in JSON format
-	Metadata map[string]interface{} `json:"metadata" yaml:"metadata"`
-
-	// Name The organization's display name
-	Name string `json:"name" yaml:"name"`
-
-	// Plan The current subscription plan
-	Plan OrganizationEntityPlan `json:"plan" yaml:"plan"`
-
-	// Slug URL-friendly unique identifier for the organization
-	Slug string `json:"slug" yaml:"slug"`
-
-	// StripeCustomerId Stripe customer identifier
-	StripeCustomerId string `json:"stripeCustomerId,omitempty,omitzero" yaml:"stripeCustomerId,omitempty"`
-
-	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
-
-// OrganizationEntityPlan The current subscription plan
-type OrganizationEntityPlan string
-
-// OrganizationReference defines model for OrganizationReference.
-type OrganizationReference struct {
-	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
-}
-
-// Page Pagination (page number & size)
-type Page struct {
-	Number int `json:"number,omitempty,omitzero" yaml:"number,omitempty"`
-	Size   int `json:"size,omitempty,omitzero" yaml:"size,omitempty"`
-}
-
 // PersistenceConfig Persistent storage configuration
 type PersistenceConfig struct {
 	// Enabled Enable persistent storage
@@ -736,27 +457,6 @@ type PersistenceConfig struct {
 
 	// Size Size of persistent volume
 	Size string `json:"size" yaml:"size"`
-}
-
-// PipelineEntity defines model for PipelineEntity.
-type PipelineEntity struct {
-	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Description Detailed description of the pipeline's purpose
-	Description string `json:"description,omitempty,omitzero" yaml:"description,omitempty"`
-
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
-
-	// Name The pipeline's display name
-	Name string `json:"name" yaml:"name"`
-
-	// OrganizationId Universally Unique Identifier
-	OrganizationId UUID `json:"organizationId" yaml:"organizationId"`
-
-	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // PlatformConfig Platform configuration (host, image, resources)
@@ -855,43 +555,6 @@ type ResourceRequests struct {
 	Memory string `json:"memory" yaml:"memory"`
 }
 
-// RunEntity Schema for Run entity
-type RunEntity struct {
-	// CompletedAt The timestamp when the run completed
-	CompletedAt time.Time `json:"completedAt,omitempty,omitzero" yaml:"completedAt,omitempty"`
-
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Error The error message
-	Error string `json:"error,omitempty,omitzero" yaml:"error,omitempty"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// PipelineId The pipeline ID associated with the run
-	PipelineId string `json:"pipelineId" yaml:"pipelineId"`
-
-	// Progress The percent progress of the run
-	Progress float32 `json:"progress" yaml:"progress"`
-
-	// StartedAt The timestamp when the run started
-	StartedAt time.Time       `json:"startedAt,omitempty,omitzero" yaml:"startedAt,omitempty"`
-	Status    RunEntityStatus `json:"status" yaml:"status"`
-
-	// ToolId The tool ID associated with the run
-	ToolId string `json:"toolId" yaml:"toolId"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
-
-// RunEntityStatus defines model for RunEntity.Status.
-type RunEntityStatus string
-
 // RunPodConfig RunPod serverless GPU configuration
 type RunPodConfig struct {
 	// Enabled Enable RunPod integration
@@ -926,36 +589,6 @@ type ServiceAccountConfig struct {
 
 	// Name Custom service account name
 	Name string `json:"name" yaml:"name"`
-}
-
-// SessionEntity Schema for Session entity
-type SessionEntity struct {
-	// ActiveOrganizationId The active organization ID
-	ActiveOrganizationId string `json:"activeOrganizationId" yaml:"activeOrganizationId"`
-
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// ExpiresAt The expiration date of the session
-	ExpiresAt string `json:"expiresAt" yaml:"expiresAt"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// IpAddress The IP address of the session
-	IpAddress string `json:"ipAddress" yaml:"ipAddress"`
-
-	// Token The session token
-	Token string `json:"token" yaml:"token"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UserAgent The user agent of the session
-	UserAgent string `json:"userAgent" yaml:"userAgent"`
-
-	// UserId The ID of the user associated with the session
-	UserId string `json:"userId" yaml:"userId"`
 }
 
 // SpeechConfig Speech recognition and TTS services
@@ -1018,33 +651,6 @@ type TLSConfig struct {
 	SecretName string `json:"secretName" yaml:"secretName"`
 }
 
-// ToolEntity Schema for Tool entity
-type ToolEntity struct {
-	// CreatedAt The date this item was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Description The tool description
-	Description string `json:"description" yaml:"description"`
-
-	// Id The ID of the item
-	Id openapi_types.UUID `json:"id" yaml:"id"`
-
-	// InputMimeType The MIME type of the input for the tool, e.g. text/plain
-	InputMimeType string `json:"inputMimeType" yaml:"inputMimeType"`
-
-	// Name The name of the tool
-	Name string `json:"name" yaml:"name"`
-
-	// OrganizationId The organization name
-	OrganizationId string `json:"organizationId" yaml:"organizationId"`
-
-	// OutputMimeType The MIME type of the output for the tool, e.g. text/plain
-	OutputMimeType string `json:"outputMimeType" yaml:"outputMimeType"`
-
-	// UpdatedAt The date this item was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-}
-
 // TwitterAuth Twitter OAuth configuration
 type TwitterAuth struct {
 	// CallbackURL OAuth callback URL
@@ -1060,9 +666,6 @@ type TwitterAuth struct {
 	Enabled bool `json:"enabled" yaml:"enabled"`
 }
 
-// UUID Universally Unique Identifier
-type UUID = uuid.UUID
-
 // UnstructuredConfig Unstructured.io service for document parsing
 type UnstructuredConfig struct {
 	// Enabled Enable unstructured document parsing
@@ -1076,30 +679,6 @@ type UnstructuredConfig struct {
 
 	// Resources Kubernetes resource configuration
 	Resources ResourceConfig `json:"resources,omitempty,omitzero" yaml:"resources,omitempty"`
-}
-
-// UserEntity defines model for UserEntity.
-type UserEntity struct {
-	// CreatedAt The date and time when the resource was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
-
-	// Email The user's email address
-	Email Email `json:"email" yaml:"email"`
-
-	// EmailVerified Whether the user's email has been verified
-	EmailVerified bool `json:"emailVerified" yaml:"emailVerified"`
-
-	// Id Universally Unique Identifier
-	Id UUID `json:"id" yaml:"id"`
-
-	// Image The user's avatar image URL
-	Image string `json:"image,omitempty,omitzero" yaml:"image,omitempty"`
-
-	// Name The user's display name
-	Name string `json:"name" yaml:"name"`
-
-	// UpdatedAt The date and time when the resource was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
 }
 
 // ValidationError Individual field validation error
@@ -1128,116 +707,8 @@ type ValidationError_Value struct {
 	union json.RawMessage
 }
 
-// AccountsFilter A recursive filter node that can be a condition or group
-type AccountsFilter = FilterNode
-
-// AccountsSort defines model for AccountsSort.
-type AccountsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// ArtifactsFilter A recursive filter node that can be a condition or group
-type ArtifactsFilter = FilterNode
-
-// ArtifactsSort defines model for ArtifactsSort.
-type ArtifactsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// InvitationsFilter A recursive filter node that can be a condition or group
-type InvitationsFilter = FilterNode
-
-// InvitationsSort defines model for InvitationsSort.
-type InvitationsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// LabelsFilter A recursive filter node that can be a condition or group
-type LabelsFilter = FilterNode
-
-// LabelsSort defines model for LabelsSort.
-type LabelsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// MembersFilter A recursive filter node that can be a condition or group
-type MembersFilter = FilterNode
-
-// MembersSort defines model for MembersSort.
-type MembersSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// OrganizationsFilter A recursive filter node that can be a condition or group
-type OrganizationsFilter = FilterNode
-
-// OrganizationsSort defines model for OrganizationsSort.
-type OrganizationsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// PageQuery Pagination (page number & size)
-type PageQuery = Page
-
-// PipelinesFilter A recursive filter node that can be a condition or group
-type PipelinesFilter = FilterNode
-
-// PipelinesSort defines model for PipelinesSort.
-type PipelinesSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// RunsFilter A recursive filter node that can be a condition or group
-type RunsFilter = FilterNode
-
-// RunsSort defines model for RunsSort.
-type RunsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// SessionsFilter A recursive filter node that can be a condition or group
-type SessionsFilter = FilterNode
-
-// SessionsSort defines model for SessionsSort.
-type SessionsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// ToolsFilter A recursive filter node that can be a condition or group
-type ToolsFilter = FilterNode
-
-// ToolsSort defines model for ToolsSort.
-type ToolsSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
-// UsersFilter A recursive filter node that can be a condition or group
-type UsersFilter = FilterNode
-
-// UsersSort defines model for UsersSort.
-type UsersSort = []struct {
-	Field string `json:"field" yaml:"field"`
-	Order string `json:"order" yaml:"order"`
-}
-
 // BadRequest RFC 7807 (Problem Details) compliant error response
 type BadRequest = Problem
-
-// NotFound RFC 7807 (Problem Details) compliant error response
-type NotFound = Problem
-
-// Unauthorized RFC 7807 (Problem Details) compliant error response
-type Unauthorized = Problem
 
 // AsValidationErrorValue0 returns the union data inside the ValidationError_Value as a ValidationErrorValue0
 func (t ValidationError_Value) AsValidationErrorValue0() (ValidationErrorValue0, error) {

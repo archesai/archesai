@@ -3,8 +3,8 @@ package adapters
 
 import (
 	"encoding/json"
+	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/organizations/domain"
-	"github.com/archesai/archesai/internal/storage/database/postgresql"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"time"

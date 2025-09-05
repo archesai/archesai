@@ -47,15 +47,15 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// SignUpRequest represents a sign-up request
-type SignUpRequest struct {
+// RegisterRequest represents a register request
+type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8"`
 	Name     string `json:"name" validate:"required"`
 }
 
-// SignInRequest represents a sign-in request
-type SignInRequest struct {
+// LoginRequest represents a login request
+type LoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }

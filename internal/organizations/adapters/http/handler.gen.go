@@ -4,12 +4,15 @@
 package http
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	. "github.com/archesai/archesai/internal/organizations/domain"
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
+	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -484,4 +487,1041 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/organizations/:id/members/:memberId", wrapper.GetOneMember)
 	router.PATCH(baseURL+"/organizations/:id/members/:memberId", wrapper.UpdateMember)
 
+}
+
+type BadRequestApplicationProblemPlusJSONResponse Problem
+
+type NotFoundApplicationProblemPlusJSONResponse Problem
+
+type UnauthorizedApplicationProblemPlusJSONResponse Problem
+
+type FindManyOrganizationsRequestObject struct {
+	Params FindManyOrganizationsParams
+}
+
+type FindManyOrganizationsResponseObject interface {
+	VisitFindManyOrganizationsResponse(w http.ResponseWriter) error
+}
+
+type FindManyOrganizations200JSONResponse struct {
+	Data []OrganizationEntity `json:"data"`
+	Meta struct {
+		// Total Total number of items in the collection
+		Total float32 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response FindManyOrganizations200JSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyOrganizations400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyOrganizations400ApplicationProblemPlusJSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyOrganizations401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyOrganizations401ApplicationProblemPlusJSONResponse) VisitFindManyOrganizationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateOrganizationRequestObject struct {
+	Body *CreateOrganizationJSONRequestBody
+}
+
+type CreateOrganizationResponseObject interface {
+	VisitCreateOrganizationResponse(w http.ResponseWriter) error
+}
+
+type CreateOrganization201JSONResponse struct {
+	// Data Schema for Organization entity
+	Data OrganizationEntity `json:"data"`
+}
+
+func (response CreateOrganization201JSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateOrganization400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateOrganization400ApplicationProblemPlusJSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateOrganization401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateOrganization401ApplicationProblemPlusJSONResponse) VisitCreateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteOrganizationRequestObject struct {
+	Id openapi_types.UUID `json:"id"`
+}
+
+type DeleteOrganizationResponseObject interface {
+	VisitDeleteOrganizationResponse(w http.ResponseWriter) error
+}
+
+type DeleteOrganization200JSONResponse struct {
+	// Data Schema for Organization entity
+	Data OrganizationEntity `json:"data"`
+}
+
+func (response DeleteOrganization200JSONResponse) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteOrganization404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteOrganization404ApplicationProblemPlusJSONResponse) VisitDeleteOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneOrganizationRequestObject struct {
+	Id openapi_types.UUID `json:"id"`
+}
+
+type GetOneOrganizationResponseObject interface {
+	VisitGetOneOrganizationResponse(w http.ResponseWriter) error
+}
+
+type GetOneOrganization200JSONResponse struct {
+	// Data Schema for Organization entity
+	Data OrganizationEntity `json:"data"`
+}
+
+func (response GetOneOrganization200JSONResponse) VisitGetOneOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneOrganization404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetOneOrganization404ApplicationProblemPlusJSONResponse) VisitGetOneOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateOrganizationRequestObject struct {
+	Id   openapi_types.UUID `json:"id"`
+	Body *UpdateOrganizationJSONRequestBody
+}
+
+type UpdateOrganizationResponseObject interface {
+	VisitUpdateOrganizationResponse(w http.ResponseWriter) error
+}
+
+type UpdateOrganization200JSONResponse struct {
+	// Data Schema for Organization entity
+	Data OrganizationEntity `json:"data"`
+}
+
+func (response UpdateOrganization200JSONResponse) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateOrganization404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateOrganization404ApplicationProblemPlusJSONResponse) VisitUpdateOrganizationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyInvitationsRequestObject struct {
+	Id     openapi_types.UUID `json:"id"`
+	Params FindManyInvitationsParams
+}
+
+type FindManyInvitationsResponseObject interface {
+	VisitFindManyInvitationsResponse(w http.ResponseWriter) error
+}
+
+type FindManyInvitations200JSONResponse struct {
+	Data []InvitationEntity `json:"data"`
+	Meta struct {
+		// Total Total number of items in the collection
+		Total float32 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response FindManyInvitations200JSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyInvitations400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyInvitations400ApplicationProblemPlusJSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyInvitations401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyInvitations401ApplicationProblemPlusJSONResponse) VisitFindManyInvitationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateInvitationRequestObject struct {
+	Id   openapi_types.UUID `json:"id"`
+	Body *CreateInvitationJSONRequestBody
+}
+
+type CreateInvitationResponseObject interface {
+	VisitCreateInvitationResponse(w http.ResponseWriter) error
+}
+
+type CreateInvitation201JSONResponse struct {
+	// Data Schema for Invitation entity
+	Data InvitationEntity `json:"data"`
+}
+
+func (response CreateInvitation201JSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateInvitation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInvitation400ApplicationProblemPlusJSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateInvitation401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateInvitation401ApplicationProblemPlusJSONResponse) VisitCreateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteInvitationRequestObject struct {
+	Id           openapi_types.UUID `json:"id"`
+	InvitationId openapi_types.UUID `json:"invitationId"`
+}
+
+type DeleteInvitationResponseObject interface {
+	VisitDeleteInvitationResponse(w http.ResponseWriter) error
+}
+
+type DeleteInvitation200JSONResponse struct {
+	// Data Schema for Invitation entity
+	Data InvitationEntity `json:"data"`
+}
+
+func (response DeleteInvitation200JSONResponse) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteInvitation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteInvitation404ApplicationProblemPlusJSONResponse) VisitDeleteInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneInvitationRequestObject struct {
+	Id           openapi_types.UUID `json:"id"`
+	InvitationId openapi_types.UUID `json:"invitationId"`
+}
+
+type GetOneInvitationResponseObject interface {
+	VisitGetOneInvitationResponse(w http.ResponseWriter) error
+}
+
+type GetOneInvitation200JSONResponse struct {
+	// Data Schema for Invitation entity
+	Data InvitationEntity `json:"data"`
+}
+
+func (response GetOneInvitation200JSONResponse) VisitGetOneInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneInvitation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetOneInvitation404ApplicationProblemPlusJSONResponse) VisitGetOneInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateInvitationRequestObject struct {
+	Id           openapi_types.UUID `json:"id"`
+	InvitationId openapi_types.UUID `json:"invitationId"`
+	Body         *UpdateInvitationJSONRequestBody
+}
+
+type UpdateInvitationResponseObject interface {
+	VisitUpdateInvitationResponse(w http.ResponseWriter) error
+}
+
+type UpdateInvitation200JSONResponse struct {
+	// Data Schema for Invitation entity
+	Data InvitationEntity `json:"data"`
+}
+
+func (response UpdateInvitation200JSONResponse) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateInvitation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateInvitation404ApplicationProblemPlusJSONResponse) VisitUpdateInvitationResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyMembersRequestObject struct {
+	Id     string `json:"id"`
+	Params FindManyMembersParams
+}
+
+type FindManyMembersResponseObject interface {
+	VisitFindManyMembersResponse(w http.ResponseWriter) error
+}
+
+type FindManyMembers200JSONResponse struct {
+	Data []MemberEntity `json:"data"`
+	Meta struct {
+		// Total Total number of items in the collection
+		Total float32 `json:"total"`
+	} `json:"meta"`
+}
+
+func (response FindManyMembers200JSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyMembers400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyMembers400ApplicationProblemPlusJSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type FindManyMembers401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response FindManyMembers401ApplicationProblemPlusJSONResponse) VisitFindManyMembersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateMemberRequestObject struct {
+	Id   string `json:"id"`
+	Body *CreateMemberJSONRequestBody
+}
+
+type CreateMemberResponseObject interface {
+	VisitCreateMemberResponse(w http.ResponseWriter) error
+}
+
+type CreateMember201JSONResponse struct {
+	// Data Schema for Member entity
+	Data MemberEntity `json:"data"`
+}
+
+func (response CreateMember201JSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateMember400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember400ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateMember401ApplicationProblemPlusJSONResponse struct {
+	UnauthorizedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember401ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(401)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteMemberRequestObject struct {
+	Id       openapi_types.UUID `json:"id"`
+	MemberId openapi_types.UUID `json:"memberId"`
+}
+
+type DeleteMemberResponseObject interface {
+	VisitDeleteMemberResponse(w http.ResponseWriter) error
+}
+
+type DeleteMember200JSONResponse struct {
+	// Data Schema for Member entity
+	Data MemberEntity `json:"data"`
+}
+
+func (response DeleteMember200JSONResponse) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type DeleteMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteMember404ApplicationProblemPlusJSONResponse) VisitDeleteMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneMemberRequestObject struct {
+	Id       openapi_types.UUID `json:"id"`
+	MemberId openapi_types.UUID `json:"memberId"`
+}
+
+type GetOneMemberResponseObject interface {
+	VisitGetOneMemberResponse(w http.ResponseWriter) error
+}
+
+type GetOneMember200JSONResponse struct {
+	// Data Schema for Member entity
+	Data MemberEntity `json:"data"`
+}
+
+func (response GetOneMember200JSONResponse) VisitGetOneMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetOneMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetOneMember404ApplicationProblemPlusJSONResponse) VisitGetOneMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateMemberRequestObject struct {
+	Id       openapi_types.UUID `json:"id"`
+	MemberId openapi_types.UUID `json:"memberId"`
+	Body     *UpdateMemberJSONRequestBody
+}
+
+type UpdateMemberResponseObject interface {
+	VisitUpdateMemberResponse(w http.ResponseWriter) error
+}
+
+type UpdateMember200JSONResponse struct {
+	// Data Schema for Member entity
+	Data MemberEntity `json:"data"`
+}
+
+func (response UpdateMember200JSONResponse) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type UpdateMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateMember404ApplicationProblemPlusJSONResponse) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+// StrictServerInterface represents all server handlers.
+type StrictServerInterface interface {
+	// Find many organizations
+	// (GET /organizations)
+	FindManyOrganizations(ctx context.Context, request FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error)
+	// Create a new organization
+	// (POST /organizations)
+	CreateOrganization(ctx context.Context, request CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error)
+	// Delete an organization
+	// (DELETE /organizations/{id})
+	DeleteOrganization(ctx context.Context, request DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error)
+	// Find an organization
+	// (GET /organizations/{id})
+	GetOneOrganization(ctx context.Context, request GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error)
+	// Update an organization
+	// (PATCH /organizations/{id})
+	UpdateOrganization(ctx context.Context, request UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error)
+	// Find many invitations
+	// (GET /organizations/{id}/invitations)
+	FindManyInvitations(ctx context.Context, request FindManyInvitationsRequestObject) (FindManyInvitationsResponseObject, error)
+	// Create a new invitation
+	// (POST /organizations/{id}/invitations)
+	CreateInvitation(ctx context.Context, request CreateInvitationRequestObject) (CreateInvitationResponseObject, error)
+	// Delete an invitation
+	// (DELETE /organizations/{id}/invitations/{invitationId})
+	DeleteInvitation(ctx context.Context, request DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error)
+	// Find an invitation
+	// (GET /organizations/{id}/invitations/{invitationId})
+	GetOneInvitation(ctx context.Context, request GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error)
+	// Update an invitation
+	// (PATCH /organizations/{id}/invitations/{invitationId})
+	UpdateInvitation(ctx context.Context, request UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error)
+	// Find many members
+	// (GET /organizations/{id}/members)
+	FindManyMembers(ctx context.Context, request FindManyMembersRequestObject) (FindManyMembersResponseObject, error)
+	// Create a new member
+	// (POST /organizations/{id}/members)
+	CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
+	// Delete a member
+	// (DELETE /organizations/{id}/members/{memberId})
+	DeleteMember(ctx context.Context, request DeleteMemberRequestObject) (DeleteMemberResponseObject, error)
+	// Find a member
+	// (GET /organizations/{id}/members/{memberId})
+	GetOneMember(ctx context.Context, request GetOneMemberRequestObject) (GetOneMemberResponseObject, error)
+	// Update a member
+	// (PATCH /organizations/{id}/members/{memberId})
+	UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error)
+}
+
+type StrictHandlerFunc = strictecho.StrictEchoHandlerFunc
+type StrictMiddlewareFunc = strictecho.StrictEchoMiddlewareFunc
+
+func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareFunc) ServerInterface {
+	return &strictHandler{ssi: ssi, middlewares: middlewares}
+}
+
+type strictHandler struct {
+	ssi         StrictServerInterface
+	middlewares []StrictMiddlewareFunc
+}
+
+// FindManyOrganizations operation middleware
+func (sh *strictHandler) FindManyOrganizations(ctx echo.Context, params FindManyOrganizationsParams) error {
+	var request FindManyOrganizationsRequestObject
+
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.FindManyOrganizations(ctx.Request().Context(), request.(FindManyOrganizationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FindManyOrganizations")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(FindManyOrganizationsResponseObject); ok {
+		return validResponse.VisitFindManyOrganizationsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateOrganization operation middleware
+func (sh *strictHandler) CreateOrganization(ctx echo.Context) error {
+	var request CreateOrganizationRequestObject
+
+	var body CreateOrganizationJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateOrganization(ctx.Request().Context(), request.(CreateOrganizationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateOrganization")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreateOrganizationResponseObject); ok {
+		return validResponse.VisitCreateOrganizationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// DeleteOrganization operation middleware
+func (sh *strictHandler) DeleteOrganization(ctx echo.Context, id openapi_types.UUID) error {
+	var request DeleteOrganizationRequestObject
+
+	request.Id = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteOrganization(ctx.Request().Context(), request.(DeleteOrganizationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteOrganization")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(DeleteOrganizationResponseObject); ok {
+		return validResponse.VisitDeleteOrganizationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetOneOrganization operation middleware
+func (sh *strictHandler) GetOneOrganization(ctx echo.Context, id openapi_types.UUID) error {
+	var request GetOneOrganizationRequestObject
+
+	request.Id = id
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetOneOrganization(ctx.Request().Context(), request.(GetOneOrganizationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetOneOrganization")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetOneOrganizationResponseObject); ok {
+		return validResponse.VisitGetOneOrganizationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// UpdateOrganization operation middleware
+func (sh *strictHandler) UpdateOrganization(ctx echo.Context, id openapi_types.UUID) error {
+	var request UpdateOrganizationRequestObject
+
+	request.Id = id
+
+	var body UpdateOrganizationJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateOrganization(ctx.Request().Context(), request.(UpdateOrganizationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateOrganization")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(UpdateOrganizationResponseObject); ok {
+		return validResponse.VisitUpdateOrganizationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// FindManyInvitations operation middleware
+func (sh *strictHandler) FindManyInvitations(ctx echo.Context, id openapi_types.UUID, params FindManyInvitationsParams) error {
+	var request FindManyInvitationsRequestObject
+
+	request.Id = id
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.FindManyInvitations(ctx.Request().Context(), request.(FindManyInvitationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FindManyInvitations")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(FindManyInvitationsResponseObject); ok {
+		return validResponse.VisitFindManyInvitationsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateInvitation operation middleware
+func (sh *strictHandler) CreateInvitation(ctx echo.Context, id openapi_types.UUID) error {
+	var request CreateInvitationRequestObject
+
+	request.Id = id
+
+	var body CreateInvitationJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateInvitation(ctx.Request().Context(), request.(CreateInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateInvitation")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreateInvitationResponseObject); ok {
+		return validResponse.VisitCreateInvitationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// DeleteInvitation operation middleware
+func (sh *strictHandler) DeleteInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error {
+	var request DeleteInvitationRequestObject
+
+	request.Id = id
+	request.InvitationId = invitationId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteInvitation(ctx.Request().Context(), request.(DeleteInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteInvitation")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(DeleteInvitationResponseObject); ok {
+		return validResponse.VisitDeleteInvitationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetOneInvitation operation middleware
+func (sh *strictHandler) GetOneInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error {
+	var request GetOneInvitationRequestObject
+
+	request.Id = id
+	request.InvitationId = invitationId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetOneInvitation(ctx.Request().Context(), request.(GetOneInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetOneInvitation")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetOneInvitationResponseObject); ok {
+		return validResponse.VisitGetOneInvitationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// UpdateInvitation operation middleware
+func (sh *strictHandler) UpdateInvitation(ctx echo.Context, id openapi_types.UUID, invitationId openapi_types.UUID) error {
+	var request UpdateInvitationRequestObject
+
+	request.Id = id
+	request.InvitationId = invitationId
+
+	var body UpdateInvitationJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateInvitation(ctx.Request().Context(), request.(UpdateInvitationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateInvitation")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(UpdateInvitationResponseObject); ok {
+		return validResponse.VisitUpdateInvitationResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// FindManyMembers operation middleware
+func (sh *strictHandler) FindManyMembers(ctx echo.Context, id string, params FindManyMembersParams) error {
+	var request FindManyMembersRequestObject
+
+	request.Id = id
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.FindManyMembers(ctx.Request().Context(), request.(FindManyMembersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FindManyMembers")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(FindManyMembersResponseObject); ok {
+		return validResponse.VisitFindManyMembersResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// CreateMember operation middleware
+func (sh *strictHandler) CreateMember(ctx echo.Context, id string) error {
+	var request CreateMemberRequestObject
+
+	request.Id = id
+
+	var body CreateMemberJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateMember(ctx.Request().Context(), request.(CreateMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateMember")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreateMemberResponseObject); ok {
+		return validResponse.VisitCreateMemberResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// DeleteMember operation middleware
+func (sh *strictHandler) DeleteMember(ctx echo.Context, id openapi_types.UUID, memberId openapi_types.UUID) error {
+	var request DeleteMemberRequestObject
+
+	request.Id = id
+	request.MemberId = memberId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteMember(ctx.Request().Context(), request.(DeleteMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteMember")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(DeleteMemberResponseObject); ok {
+		return validResponse.VisitDeleteMemberResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetOneMember operation middleware
+func (sh *strictHandler) GetOneMember(ctx echo.Context, id openapi_types.UUID, memberId openapi_types.UUID) error {
+	var request GetOneMemberRequestObject
+
+	request.Id = id
+	request.MemberId = memberId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetOneMember(ctx.Request().Context(), request.(GetOneMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetOneMember")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetOneMemberResponseObject); ok {
+		return validResponse.VisitGetOneMemberResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// UpdateMember operation middleware
+func (sh *strictHandler) UpdateMember(ctx echo.Context, id openapi_types.UUID, memberId openapi_types.UUID) error {
+	var request UpdateMemberRequestObject
+
+	request.Id = id
+	request.MemberId = memberId
+
+	var body UpdateMemberJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateMember(ctx.Request().Context(), request.(UpdateMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateMember")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(UpdateMemberResponseObject); ok {
+		return validResponse.VisitUpdateMemberResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("unexpected response type: %T", response)
+	}
+	return nil
 }

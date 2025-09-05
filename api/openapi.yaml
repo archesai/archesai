@@ -44,12 +44,12 @@ paths:
     $ref: paths/auth_accounts.yaml
   /auth/accounts/{id}:
     $ref: paths/auth_accounts_{id}.yaml
-  /auth/sign-up:
-    $ref: paths/auth_sign-up.yaml
-  /auth/sign-in:
-    $ref: paths/auth_sign-in.yaml
-  /auth/sign-out:
-    $ref: paths/auth_sign-out.yaml
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/login:
+    $ref: paths/auth_login.yaml
+  /auth/logout:
+    $ref: paths/auth_logout.yaml
   /auth/email-verification/verify:
     $ref: paths/auth_email-verification_verify.yaml
   /auth/email-verification/request:

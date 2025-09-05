@@ -1,5 +1,16 @@
-// Package postgres provides database implementations and utilities for PostgreSQL and SQLite
-package postgres
+// Package database provides data persistence infrastructure including
+// database connections, query generation, and migrations.
+//
+// The package includes:
+// - Database abstraction layer supporting PostgreSQL and SQLite
+// - Type-safe query generation using sqlc
+// - Database migrations using golang-migrate
+// - Connection pooling and health checks
+// - Transaction management
+package database
+
+// Generate database queries from SQL files
+//go:generate sqlc generate
 
 import (
 	"context"

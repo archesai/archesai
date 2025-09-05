@@ -2,7 +2,7 @@
 package adapters
 
 import (
-	"github.com/archesai/archesai/internal/storage/database/postgresql"
+	"github.com/archesai/archesai/internal/database/postgresql"
 	"github.com/archesai/archesai/internal/workflows/domain"
 	"github.com/google/uuid"
 )

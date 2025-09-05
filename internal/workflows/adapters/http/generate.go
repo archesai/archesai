@@ -2,4 +2,4 @@
 package http
 
 // Generate server interfaces for workflows domain (Workflows tag)
-//go:generate go tool oapi-codegen --config=oapi-codegen.yaml ../../../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=server.cfg.yaml ../../../../api/openapi.bundled.yaml

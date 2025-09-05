@@ -2,14 +2,11 @@
 package: http
 output: handler.gen.go
 additional-imports:
-  - package: github.com/archesai/archesai/internal/auth/domain
+  - package: github.com/archesai/archesai/internal/organizations/domain
     alias: .
 generate:
   echo-server: true
+  strict-server: true
 output-options:
-  skip-prune: true
   include-tags:
-    - Auth
-    - Users
-    - Sessions
-    - Accounts
+    - Organizations

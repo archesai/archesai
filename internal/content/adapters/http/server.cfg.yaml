@@ -6,7 +6,7 @@ additional-imports:
     alias: .
 generate:
   echo-server: true
+  strict-server: true
 output-options:
-  skip-prune: true
   include-tags:
     - Content

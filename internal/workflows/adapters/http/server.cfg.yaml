@@ -2,11 +2,11 @@
 package: http
 output: handler.gen.go
 additional-imports:
-  - package: github.com/archesai/archesai/internal/organizations/domain
+  - package: github.com/archesai/archesai/internal/workflows/domain
     alias: .
 generate:
   echo-server: true
+  strict-server: true
 output-options:
-  skip-prune: true
   include-tags:
-    - Organizations
+    - Workflows

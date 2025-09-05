@@ -18,14 +18,14 @@ import (
 	contentinfra "github.com/archesai/archesai/internal/content/adapters/postgres"
 	contentsqlite "github.com/archesai/archesai/internal/content/adapters/sqlite"
 	contentcore "github.com/archesai/archesai/internal/content/domain"
+	"github.com/archesai/archesai/internal/database"
+	postgresqlgen "github.com/archesai/archesai/internal/database/postgresql"
+	sqlitegen "github.com/archesai/archesai/internal/database/sqlite"
 	orghandlers "github.com/archesai/archesai/internal/organizations/adapters/http"
 	orginfra "github.com/archesai/archesai/internal/organizations/adapters/postgres"
 	orgsqlite "github.com/archesai/archesai/internal/organizations/adapters/sqlite"
 	orgcore "github.com/archesai/archesai/internal/organizations/domain"
 	serverhttp "github.com/archesai/archesai/internal/server/http"
-	postgres "github.com/archesai/archesai/internal/storage/database"
-	postgresqlgen "github.com/archesai/archesai/internal/storage/database/postgresql"
-	sqlitegen "github.com/archesai/archesai/internal/storage/database/sqlite"
 	workflowhandlers "github.com/archesai/archesai/internal/workflows/adapters/http"
 	workflowinfra "github.com/archesai/archesai/internal/workflows/adapters/postgres"
 	workflowsqlite "github.com/archesai/archesai/internal/workflows/adapters/sqlite"
@@ -37,7 +37,7 @@ import (
 // Container holds all application dependencies
 type Container struct {
 	// Infrastructure
-	DB            postgres.Database
+	DB            database.Database
 	PgQueries     *postgresqlgen.Queries // PostgreSQL queries (if using PostgreSQL)
 	SqliteQueries *sqlitegen.Queries     // SQLite queries (if using SQLite)
 	Logger        *slog.Logger
@@ -103,7 +103,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	slog.SetDefault(logger)
 
 	// Initialize database
-	dbFactory := postgres.NewFactory(logger)
+	dbFactory := database.NewFactory(logger)
 	db, err := dbFactory.Create(&cfg.Database)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
@@ -111,7 +111,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 
 	// Run migrations if enabled
 	if cfg.Database.RunMigrations {
-		if err := postgres.RunMigrations(db, logger); err != nil {
+		if err := database.RunMigrations(db, logger); err != nil {
 			logger.Error("failed to run migrations", "error", err)
 			isProduction := cfg.Api.Environment == "production"
 			if isProduction {
@@ -129,15 +129,15 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	var contentRepo contentcore.Repository
 
 	// Determine actual database type
-	var dbType postgres.Type
+	var dbType database.Type
 	if cfg.Database.Type != "" {
-		dbType = postgres.ParseTypeFromString(string(cfg.Database.Type))
+		dbType = database.ParseTypeFromString(string(cfg.Database.Type))
 	} else {
-		dbType = postgres.DetectTypeFromURL(cfg.Database.Url)
+		dbType = database.DetectTypeFromURL(cfg.Database.Url)
 	}
 
 	switch dbType {
-	case postgres.TypePostgreSQL:
+	case database.TypePostgreSQL:
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresqlgen.New(pool)
@@ -148,7 +148,7 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
-	case postgres.TypeSQLite:
+	case database.TypeSQLite:
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlitegen.New(sqlDB)
 			// Use SQLite repositories

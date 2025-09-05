@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/content/domain"
-	postgresqlgen "github.com/archesai/archesai/internal/storage/database/postgresql"
-	sqlitegen "github.com/archesai/archesai/internal/storage/database/sqlite"
+	postgresqlgen "github.com/archesai/archesai/internal/database/postgresql"
+	sqlitegen "github.com/archesai/archesai/internal/database/sqlite"
 	"github.com/google/uuid"
 )
 

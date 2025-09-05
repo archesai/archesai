@@ -146,7 +146,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
       description: Delete an account
-  /auth/sign-up:
+  /auth/register:
     post:
       operationId: register
       summary: Register
@@ -196,7 +196,7 @@ paths:
                 additionalProperties: false
         "401":
           $ref: "#/components/responses/Unauthorized"
-  /auth/sign-in:
+  /auth/login:
     post:
       operationId: login
       summary: Login
@@ -240,7 +240,7 @@ paths:
                 additionalProperties: false
         "401":
           $ref: "#/components/responses/Unauthorized"
-  /auth/sign-out:
+  /auth/logout:
     post:
       operationId: logout
       summary: Logout
@@ -249,7 +249,7 @@ paths:
       description: This endpoint will log you out of the current session
       responses:
         "204":
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/NoContent"
         "401":
           $ref: "#/components/responses/Unauthorized"
   /auth/email-verification/verify:

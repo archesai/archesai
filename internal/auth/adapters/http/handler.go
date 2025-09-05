@@ -2,12 +2,20 @@
 package http
 
 import (
+	"context"
+	"fmt"
 	"log/slog"
-	"net/http"
 
 	"github.com/archesai/archesai/internal/auth/domain"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
+)
+
+// Context keys for request metadata
+const (
+	ipAddressKey contextKey = "ip_address"
+	userAgentKey contextKey = "user_agent"
+	authTokenKey contextKey = "auth_token"
 )
 
 // Handler handles HTTP requests for auth operations
@@ -24,270 +32,309 @@ func NewHandler(service *domain.Service, logger *slog.Logger) *Handler {
 	}
 }
 
-// Register handles user registration (implements ServerInterface)
-func (h *Handler) Register(c echo.Context) error {
-	var req domain.RegisterJSONBody
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
-	}
-
-	if err := c.Validate(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	user, tokens, err := h.service.SignUp(c.Request().Context(), &domain.SignUpRequest{
-		Email:    string(req.Email),
-		Password: req.Password,
-		Name:     req.Name,
+// Register handles user registration (implements StrictServerInterface)
+func (h *Handler) Register(ctx context.Context, req RegisterRequestObject) (RegisterResponseObject, error) {
+	user, _, err := h.service.Register(ctx, &domain.RegisterRequest{
+		Email:    string(req.Body.Email),
+		Password: req.Body.Password,
+		Name:     req.Body.Name,
 	})
 	if err != nil {
 		switch err {
 		case domain.ErrUserExists:
-			return echo.NewHTTPError(http.StatusConflict, "User already exists")
+			// Return 401 Unauthorized (there's no 409 response defined)
+			return Register401ApplicationProblemPlusJSONResponse{
+				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+					Detail: "User already exists",
+					Status: 401,
+					Title:  "User already exists",
+				},
+			}, nil
 		default:
-			h.logger.Error("failed to sign up user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			h.logger.Error("failed to register user", "error", err)
+			// Return error for 500 Internal Server Error
+			return nil, err
 		}
 	}
 
-	response := map[string]interface{}{
-		"user":   user,
-		"tokens": tokens,
-	}
-
-	return c.JSON(http.StatusCreated, response)
+	return Register201JSONResponse{
+		Data: user.UserEntity,
+	}, nil
 }
 
-// Login handles user authentication (implements ServerInterface)
-func (h *Handler) Login(c echo.Context) error {
-	var req domain.LoginJSONBody
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
+// Login handles user authentication (implements StrictServerInterface)
+func (h *Handler) Login(ctx context.Context, req LoginRequestObject) (LoginResponseObject, error) {
+	// Extract IP address and user agent from context (set by middleware)
+	ipAddress := "unknown"
+	userAgent := "unknown"
+
+	if ip := ctx.Value(ipAddressKey); ip != nil {
+		if ipStr, ok := ip.(string); ok {
+			ipAddress = ipStr
+		}
 	}
 
-	if err := c.Validate(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	if ua := ctx.Value(userAgentKey); ua != nil {
+		if uaStr, ok := ua.(string); ok {
+			userAgent = uaStr
+		}
 	}
 
-	ipAddress := c.RealIP()
-	userAgent := c.Request().UserAgent()
-
-	user, tokens, err := h.service.SignIn(c.Request().Context(), &domain.SignInRequest{
-		Email:    string(req.Email),
-		Password: req.Password,
+	user, _, err := h.service.Login(ctx, &domain.LoginRequest{
+		Email:    string(req.Body.Email),
+		Password: req.Body.Password,
 	}, ipAddress, userAgent)
 	if err != nil {
 		switch err {
 		case domain.ErrInvalidCredentials:
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid credentials")
+			return Login401ApplicationProblemPlusJSONResponse{
+				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+					Detail: "Invalid credentials",
+					Status: 401,
+					Title:  "Invalid credentials",
+				},
+			}, nil
 		default:
-			h.logger.Error("failed to sign in user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			h.logger.Error("failed to login user", "error", err)
+			return nil, err
 		}
 	}
 
-	response := map[string]interface{}{
-		"user":   user,
-		"tokens": tokens,
-	}
-
-	return c.JSON(http.StatusOK, response)
+	return Login200JSONResponse{
+		Data: user.UserEntity,
+	}, nil
 }
 
-// SignOut handles user logout
-func (h *Handler) SignOut(c echo.Context) error {
-	token := c.Request().Header.Get("Authorization")
+// Logout handles user logout (implements StrictServerInterface)
+func (h *Handler) Logout(ctx context.Context, _ LogoutRequestObject) (LogoutResponseObject, error) {
+	// Extract token from context (set by auth middleware)
+	token := ""
+	if t := ctx.Value(authTokenKey); t != nil {
+		if tokenStr, ok := t.(string); ok {
+			token = tokenStr
+		}
+	}
+
 	if token == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "Missing authorization token")
+		return Logout401ApplicationProblemPlusJSONResponse{
+			UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+				Detail: "Missing authorization token",
+				Status: 401,
+				Title:  "Missing authorization token",
+			},
+		}, nil
 	}
 
-	// Remove "Bearer " prefix if present
-	if len(token) > 7 && token[:7] == "Bearer " {
-		token = token[7:]
-	}
-
-	err := h.service.SignOut(c.Request().Context(), token)
+	err := h.service.Logout(ctx, token)
 	if err != nil {
 		switch err {
 		case domain.ErrInvalidToken:
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
+			return Logout401ApplicationProblemPlusJSONResponse{
+				UnauthorizedApplicationProblemPlusJSONResponse: UnauthorizedApplicationProblemPlusJSONResponse{
+					Detail: "Invalid token",
+					Status: 401,
+					Title:  "Invalid token",
+				},
+			}, nil
 		default:
-			h.logger.Error("failed to sign out user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			h.logger.Error("failed to logout user", "error", err)
+			return nil, err
 		}
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "Signed out successfully"})
+	return Logout204Response{}, nil
 }
 
-// RefreshToken handles token refresh
-func (h *Handler) RefreshToken(c echo.Context) error {
-	var req struct {
-		RefreshToken string `json:"refresh_token" validate:"required"`
-	}
+// contextMiddleware injects HTTP request details into context for StrictServerInterface methods
+func contextMiddleware(f strictecho.StrictEchoHandlerFunc, _ string) strictecho.StrictEchoHandlerFunc {
+	return func(ctx echo.Context, request interface{}) (interface{}, error) {
+		// Create new context with request details
+		newCtx := context.WithValue(ctx.Request().Context(), ipAddressKey, ctx.RealIP())
+		newCtx = context.WithValue(newCtx, userAgentKey, ctx.Request().UserAgent())
 
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
-	}
-
-	if err := c.Validate(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	tokens, err := h.service.RefreshToken(c.Request().Context(), req.RefreshToken)
-	if err != nil {
-		switch err {
-		case domain.ErrInvalidToken, domain.ErrTokenExpired:
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired refresh token")
-		case domain.ErrUserNotFound:
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
-		default:
-			h.logger.Error("failed to refresh token", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		// Extract auth token if present
+		authHeader := ctx.Request().Header.Get("Authorization")
+		if authHeader != "" {
+			// Remove "Bearer " prefix if present
+			token := authHeader
+			if len(token) > 7 && token[:7] == "Bearer " {
+				token = token[7:]
+			}
+			newCtx = context.WithValue(newCtx, authTokenKey, token)
 		}
-	}
 
-	return c.JSON(http.StatusOK, tokens)
+		// Create new request with enriched context
+		enrichedCtx := ctx.Request().WithContext(newCtx)
+		ctx.SetRequest(enrichedCtx)
+
+		return f(ctx, request)
+	}
 }
 
-// GetOneUser handles getting a single user
-func (h *Handler) GetOneUser(ctx echo.Context, id uuid.UUID) error {
-	userID := id
+// NewStrictHandlerWithMiddleware creates a StrictHandler with auth-specific middleware
+func NewStrictHandlerWithMiddleware(handler StrictServerInterface) ServerInterface {
+	return NewStrictHandler(handler, []StrictMiddlewareFunc{contextMiddleware})
+}
 
-	user, err := h.service.GetUser(ctx.Request().Context(), userID)
+// GetOneUser handles getting a single user (implements StrictServerInterface)
+func (h *Handler) GetOneUser(ctx context.Context, req GetOneUserRequestObject) (GetOneUserResponseObject, error) {
+	user, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+			return GetOneUser404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Title:  "User not found",
+					Status: 404,
+					Type:   "user-not-found",
+				},
+			}, nil
 		default:
 			h.logger.Error("failed to get user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			return nil, err
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	return GetOneUser200JSONResponse{
+		Data: user.UserEntity,
+	}, nil
 }
 
-// UpdateUser handles updating a user
-func (h *Handler) UpdateUser(ctx echo.Context, id uuid.UUID) error {
-	userID := id
-
-	var req domain.UpdateUserJSONRequestBody
-	if err := ctx.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
-	}
-
-	// Map to domain request
-	domainReq := &domain.UpdateUserRequest{}
-	if req.Email != "" {
-		// Note: Email update might need special handling (verification, etc.)
-		// For now, we'll skip email updates via this endpoint
-		h.logger.Info("email update requested but skipped", "user_id", id)
-	}
-	if req.Image != "" {
-		domainReq.Image = &req.Image
-	}
-
-	// TODO: Implement UpdateUser with proper type mapping
-	// For now, just get the user
-	user, err := h.service.GetUser(ctx.Request().Context(), userID)
+// UpdateUser handles updating a user (implements StrictServerInterface)
+func (h *Handler) UpdateUser(ctx context.Context, req UpdateUserRequestObject) (UpdateUserResponseObject, error) {
+	// TODO: Implement actual user update logic
+	// For now, just return the existing user
+	user, err := h.service.GetUser(ctx, req.Id)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+			return UpdateUser404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Title:  "User not found",
+					Status: 404,
+					Type:   "user-not-found",
+				},
+			}, nil
 		default:
 			h.logger.Error("failed to update user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			return nil, err
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	return UpdateUser200JSONResponse{
+		Data: user.UserEntity,
+	}, nil
 }
 
-// DeleteUser handles user deletion
-func (h *Handler) DeleteUser(ctx echo.Context, id uuid.UUID) error {
-	userID := id
-
-	err := h.service.DeleteUser(ctx.Request().Context(), userID)
+// DeleteUser handles user deletion (implements StrictServerInterface)
+func (h *Handler) DeleteUser(ctx context.Context, req DeleteUserRequestObject) (DeleteUserResponseObject, error) {
+	err := h.service.DeleteUser(ctx, req.Id)
 	if err != nil {
 		switch err {
 		case domain.ErrUserNotFound:
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+			return DeleteUser404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Title:  "User not found",
+					Status: 404,
+					Type:   "user-not-found",
+				},
+			}, nil
 		default:
 			h.logger.Error("failed to delete user", "error", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+			return nil, err
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]string{"message": "User deleted successfully"})
+	return DeleteUser200JSONResponse{
+		Data: domain.UserEntity{Id: req.Id}, // Placeholder response
+	}, nil
 }
 
-// FindManyUsers handles listing users with pagination
-func (h *Handler) FindManyUsers(ctx echo.Context, params domain.FindManyUsersParams) error {
+// FindManyUsers handles listing users with pagination (implements StrictServerInterface)
+func (h *Handler) FindManyUsers(ctx context.Context, req FindManyUsersRequestObject) (FindManyUsersResponseObject, error) {
 	// Use converter functions for pagination
-	limit, offset := convertPagination(params.Page)
+	limit, offset := convertPagination(req.Params.Page)
 
-	// TODO: Apply filter and sort if needed
-	// filter := convertFilter(params.Filter)
-	// orderBy, orderDir := convertSort(params.Sort)
-
-	domainUsers, err := h.service.ListUsers(ctx.Request().Context(), limit, offset)
+	domainUsers, err := h.service.ListUsers(ctx, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list users", "error", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		return nil, err
 	}
 
 	// Convert domain users to generated types
 	userEntities := convertToGeneratedUsers(domainUsers)
 
-	response := map[string]interface{}{
-		"data":   userEntities,
-		"total":  len(userEntities),
-		"limit":  limit,
-		"offset": offset,
-	}
-
-	return ctx.JSON(http.StatusOK, response)
+	return FindManyUsers200JSONResponse{
+		Data: userEntities,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{Total: float32(len(userEntities))},
+	}, nil
 }
 
-// RegisterRoutes registers auth routes with the Echo router
-func (h *Handler) RegisterRoutes(e *echo.Group) {
-	// Authentication routes
-	e.POST("/auth/sign-up", h.Register)
-	e.POST("/auth/sign-in", h.Login)
-	e.POST("/auth/sign-out", h.SignOut)
-	e.POST("/auth/refresh", h.RefreshToken)
+// AccountsFindMany handles listing accounts (stub implementation)
+func (h *Handler) AccountsFindMany(_ context.Context, _ AccountsFindManyRequestObject) (AccountsFindManyResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
 
-	// User CRUD routes
-	e.GET("/auth/users", func(ctx echo.Context) error {
-		// Parse query parameters into FindManyUsersParams
-		var params domain.FindManyUsersParams
-		if err := (&echo.DefaultBinder{}).BindQueryParams(ctx, &params); err != nil {
-			return err
-		}
-		return h.FindManyUsers(ctx, params)
-	})
-	e.GET("/auth/users/:id", func(ctx echo.Context) error {
-		id, err := uuid.Parse(ctx.Param("id"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
-		}
-		return h.GetOneUser(ctx, id)
-	})
-	e.PATCH("/auth/users/:id", func(ctx echo.Context) error {
-		id, err := uuid.Parse(ctx.Param("id"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
-		}
-		return h.UpdateUser(ctx, id)
-	})
-	e.DELETE("/auth/users/:id", func(ctx echo.Context) error {
-		id, err := uuid.Parse(ctx.Param("id"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid UUID")
-		}
-		return h.DeleteUser(ctx, id)
-	})
+// AccountsDelete handles account deletion (stub implementation)
+func (h *Handler) AccountsDelete(_ context.Context, _ AccountsDeleteRequestObject) (AccountsDeleteResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// AccountsGetOne handles getting a single account (stub implementation)
+func (h *Handler) AccountsGetOne(_ context.Context, _ AccountsGetOneRequestObject) (AccountsGetOneResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// RequestEmailChange handles email change requests (stub implementation)
+func (h *Handler) RequestEmailChange(_ context.Context, _ RequestEmailChangeRequestObject) (RequestEmailChangeResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// ConfirmEmailChange handles email change confirmation (stub implementation)
+func (h *Handler) ConfirmEmailChange(_ context.Context, _ ConfirmEmailChangeRequestObject) (ConfirmEmailChangeResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// RequestEmailVerification handles email verification requests (stub implementation)
+func (h *Handler) RequestEmailVerification(_ context.Context, _ RequestEmailVerificationRequestObject) (RequestEmailVerificationResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// ConfirmEmailVerification handles email verification confirmation (stub implementation)
+func (h *Handler) ConfirmEmailVerification(_ context.Context, _ ConfirmEmailVerificationRequestObject) (ConfirmEmailVerificationResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// RequestPasswordReset handles password reset requests (stub implementation)
+func (h *Handler) RequestPasswordReset(_ context.Context, _ RequestPasswordResetRequestObject) (RequestPasswordResetResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// ConfirmPasswordReset handles password reset confirmation (stub implementation)
+func (h *Handler) ConfirmPasswordReset(_ context.Context, _ ConfirmPasswordResetRequestObject) (ConfirmPasswordResetResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// FindManySessions handles listing sessions (stub implementation)
+func (h *Handler) FindManySessions(_ context.Context, _ FindManySessionsRequestObject) (FindManySessionsResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// DeleteSession handles session deletion (stub implementation)
+func (h *Handler) DeleteSession(_ context.Context, _ DeleteSessionRequestObject) (DeleteSessionResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// GetOneSession handles getting a single session (stub implementation)
+func (h *Handler) GetOneSession(_ context.Context, _ GetOneSessionRequestObject) (GetOneSessionResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
+// UpdateSession handles session updates (stub implementation)
+func (h *Handler) UpdateSession(_ context.Context, _ UpdateSessionRequestObject) (UpdateSessionResponseObject, error) {
+	return nil, fmt.Errorf("not implemented")
 }
 
 // Helper converter functions
