@@ -11,7 +11,7 @@ MAKEFLAGS += -j4 --no-print-directory
 SERVER_OUTPUT := bin/archesai
 CODEGEN_OUTPUT := bin/codegen
 
-# Database Configuration  
+# Database Configuration.
 MIGRATION_PATH := internal/infrastructure/database/migrations
 
 # Terminal Colors
@@ -223,7 +223,7 @@ format-go: ## Format Go code
 format-node: ## Format Node.js/TypeScript code
 	@echo -e "$(YELLOW)▶ Formatting Node.js code...$(NC)"
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
-	@pnpm format:fix
+	@pnpm format
 	@echo -e "$(GREEN)✓ Node.js code formatted!$(NC)"
 
 # ------------------------------------------

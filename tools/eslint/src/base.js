@@ -2,7 +2,6 @@
 // https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/typescript-eslint/src/configs/stylistic-type-checked.ts
 
 import path from 'node:path'
-import type { ConfigArray } from 'typescript-eslint'
 
 import { includeIgnoreFile } from '@eslint/compat'
 import eslint from '@eslint/js'
@@ -10,15 +9,14 @@ import prettier from 'eslint-config-prettier'
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 import { importX } from 'eslint-plugin-import-x'
 import perfectionist from 'eslint-plugin-perfectionist'
+import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-const base: ConfigArray = tseslint.config(
+const base = defineConfig(
   {
     name: 'ignore .gitignored',
-    ...includeIgnoreFile(
-      path.join(import.meta.dirname, '../../../../.gitignore')
-    )
+    ...includeIgnoreFile(path.join(import.meta.dirname, '../../../.gitignore'))
   },
   // TypeScript config
   {
@@ -34,7 +32,7 @@ const base: ConfigArray = tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: path.join(import.meta.dirname, '../../../../')
+        tsconfigRootDir: path.join(import.meta.dirname, '../../../')
       },
       sourceType: 'module'
     },
@@ -130,7 +128,7 @@ const base: ConfigArray = tseslint.config(
   }
 )
 
-function banImportExtension(extension: string) {
+function banImportExtension(extension) {
   const message = `Unexpected use of file extension (.${extension}) in import`
   const literalAttributeMatcher = `Literal[value=/\\.${extension}$/]`
   return [

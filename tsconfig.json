@@ -3,12 +3,6 @@
   "files": [],
   "references": [
     {
-      "path": "./tools/eslint"
-    },
-    {
-      "path": "./tools/prettier"
-    },
-    {
       "path": "./web/platform"
     },
     {

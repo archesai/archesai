@@ -1,10 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "declarationDir": "${configDir}/.cache/tsc/spec",
     "isolatedDeclarations": false,
-    "outDir": "${configDir}/.cache/dist/spec",
-    "tsBuildInfoFile": "${configDir}/.cache/tsc/spec/tsconfig.spec.tsbuildinfo",
     "types": ["node", "vitest/globals"]
   },
   "include": [

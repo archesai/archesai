@@ -23,7 +23,7 @@ import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
 import { SmartLink } from '#components/smart-links'
 import getServerSession from '#lib/get-headers'
-import globalsCss from '../styles/globals.css?url'
+import globalsCss from '#styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient

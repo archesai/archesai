@@ -56,8 +56,7 @@ pnpm build # Build all packages
 pnpm lint       # Run ESLint on all packages
 pnpm lint:fix   # Fix linting issues
 pnpm typecheck  # TypeScript type checking
-pnpm format     # Check Prettier formatting
-pnpm format:fix # Fix formatting issues
+pnpm format     # Fix Prettier formatting
 
 # Client SDK generation
 pnpm client:generate # Generate TypeScript client from OpenAPI

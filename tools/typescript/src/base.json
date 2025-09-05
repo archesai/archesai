@@ -54,7 +54,6 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "tsBuildInfoFile": "${configDir}/.cache/tsc/base/tsconfig.tsbuildinfo",
     "types": ["node"],
     "useDefineForClassFields": true,
     "useUnknownInCatchVariables": true,

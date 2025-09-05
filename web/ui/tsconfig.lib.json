@@ -4,9 +4,5 @@
     "../../tools/typescript/src/react.json",
     "../../tools/typescript/src/lib.json"
   ],
-  "references": [
-    {
-      "path": "../../tools/eslint"
-    }
-  ]
+  "references": []
 }

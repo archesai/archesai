@@ -4,15 +4,14 @@
     { "pattern": "tools/*/" }
   ],
   "files.exclude": {
-    "**/.cache": true,
-    "**/.coverage": true,
-    "**/.nitro": true,
-    "**/.output": true,
-    "**/.tanstack": true,
-    "**/bin": true,
-    "**/dist": true,
-    "**/node_modules": true,
-    "**/tmp": true
+    "**/.cache": false,
+    "**/.coverage": false,
+    "**/.nitro": false,
+    "**/.output": false,
+    "**/.tanstack": false,
+    "**/bin": false,
+    "**/dist": false,
+    "**/node_modules": false
   },
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",

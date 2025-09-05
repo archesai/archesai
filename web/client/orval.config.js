@@ -1,5 +1,3 @@
-import type { ConfigExternal } from 'orval'
-
 import { defineConfig } from 'orval'
 
 export default defineConfig({
@@ -43,4 +41,4 @@ export default defineConfig({
       // propertySortOrder: 'Alphabetical'
     }
   }
-} satisfies ConfigExternal)
+})

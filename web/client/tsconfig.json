@@ -7,9 +7,6 @@
     },
     {
       "path": "./tsconfig.spec.json"
-    },
-    {
-      "path": "../../tools/eslint"
     }
   ]
 }

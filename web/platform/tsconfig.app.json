@@ -10,9 +10,6 @@
     },
     {
       "path": "../client/tsconfig.lib.json"
-    },
-    {
-      "path": "../../tools/eslint"
     }
   ]
 }

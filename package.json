@@ -10,17 +10,16 @@
     "clean:node_modules": "pnpm -r exec sh -c 'rm -rf node_modules'",
     "client:generate": "pnpm --filter @archesai/client client:generate",
     "dev:platform": "pnpm -F @archesai/platform dev",
-    "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --list-different",
-    "format:fix": "prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{js,ts,tsx,json,css,md,yaml,gitignore,prettierignore}' --write --list-different",
-    "preinstall": "only-allow pnpm",
-    "postinstall": "sherif",
+    "format": "pnpm prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{css,html,js,json,jsonc,md,ts,tsx,yml,yaml}' --write --log-level warn --check",
+    "preinstall": "pnpm only-allow pnpm",
+    "postinstall": "pnpm sherif",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint --fix",
-    "prepare": "husky",
+    "prepare": "pnpm husky",
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test --coverage",
     "test:ui": "pnpm -r test --ui",
-    "typecheck": "tsc --build --emitDeclarationOnly"
+    "typecheck": "pnpm tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier",
   "devDependencies": {

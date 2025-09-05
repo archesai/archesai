@@ -14,9 +14,6 @@
   "files": [],
   "references": [
     {
-      "path": "../../tools/eslint"
-    },
-    {
       "path": "./tsconfig.lib.json"
     },
     {

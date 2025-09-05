@@ -1,10 +1,8 @@
-import type { ConfigArray } from 'typescript-eslint'
-
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import reactPlugin from 'eslint-plugin-react'
 import hooksPlugin from 'eslint-plugin-react-hooks'
+import { defineConfig } from 'eslint/config'
 import globals from 'globals'
-import tseslint from 'typescript-eslint'
 
 const reactFlatConfig = reactPlugin.configs.flat.recommended
 const reactJsxRuntimeConfig = reactPlugin.configs.flat['jsx-runtime']
@@ -14,7 +12,7 @@ if (!reactFlatConfig || !reactJsxRuntimeConfig) {
   )
 }
 
-const react: ConfigArray = tseslint.config({
+const react = defineConfig({
   extends: [
     hooksPlugin.configs.recommended,
     reactFlatConfig,

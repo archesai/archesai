@@ -58,7 +58,7 @@ export default defineConfig({
   },
   test: {
     coverage: {
-      provider: 'v8' as const,
+      provider: 'v8',
       reportsDirectory: '.coverage'
     },
     environment: 'node',

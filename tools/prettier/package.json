@@ -4,24 +4,12 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
-  "imports": {
-    "#*": "./src/*.ts"
-  },
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./src/index.js",
     "./package.json": "./package.json"
-  },
-  "scripts": {
-    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
-    "prettier-plugin-packagejson": "catalog:prettier",
-    "prettier-plugin-sh": "catalog:prettier",
-    "prettier-plugin-sort-json": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:"
   }
 }

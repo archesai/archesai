@@ -4,15 +4,10 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
-  "imports": {
-    "#*": "./src/*.ts"
-  },
   "exports": {
-    ".": "./src/index.ts",
+    "./base": "./src/base.js",
+    "./react": "./src/react.js",
     "./package.json": "./package.json"
-  },
-  "scripts": {
-    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "dependencies": {
     "@eslint/compat": "catalog:eslint",
@@ -26,8 +21,5 @@
     "eslint-plugin-react-hooks": "catalog:eslint",
     "globals": "catalog:eslint",
     "typescript-eslint": "catalog:eslint"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:"
   }
 }
