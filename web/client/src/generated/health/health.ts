@@ -16,70 +16,70 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from "@tanstack/react-query"
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
-import type { BadRequestResponse, HealthResponse } from "../orval.schemas"
+import type { BadRequestResponse, HealthResponse } from "../orval.schemas";
 
-import { customFetch } from "../../fetcher"
+import { customFetch } from "../../fetcher";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Check the health status of the application
  * @summary Health check endpoint
  */
 export const getGetHealthUrl = () => {
-  return `/health`
-}
+  return `/health`;
+};
 
 export const getHealth = async (
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<HealthResponse> => {
   return customFetch<HealthResponse>(getGetHealthUrl(), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetHealthQueryKey = () => {
-  return [`/health`] as const
-}
+  return [`/health`] as const;
+};
 
 export const getGetHealthQueryOptions = <
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetHealthQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetHealthQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({
-    signal
-  }) => getHealth({ signal, ...requestOptions })
+    signal,
+  }) => getHealth({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getHealth>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetHealthQueryResult = NonNullable<
   Awaited<ReturnType<typeof getHealth>>
->
-export type GetHealthQueryError = BadRequestResponse
+>;
+export type GetHealthQueryError = BadRequestResponse;
 
 export function useGetHealth<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options: {
     query: Partial<
@@ -92,16 +92,16 @@ export function useGetHealth<
           Awaited<ReturnType<typeof getHealth>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetHealth<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
@@ -114,60 +114,60 @@ export function useGetHealth<
           Awaited<ReturnType<typeof getHealth>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetHealth<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Health check endpoint
  */
 
 export function useGetHealth<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetHealthQueryOptions(options)
+  const queryOptions = getGetHealthQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetHealthSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(options?: {
   query?: Partial<
     UseSuspenseQueryOptions<
@@ -175,32 +175,32 @@ export const getGetHealthSuspenseQueryOptions = <
       TError,
       TData
     >
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetHealthQueryKey()
+  const queryKey = queryOptions?.queryKey ?? getGetHealthQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({
-    signal
-  }) => getHealth({ signal, ...requestOptions })
+    signal,
+  }) => getHealth({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getHealth>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetHealthSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getHealth>>
->
-export type GetHealthSuspenseQueryError = BadRequestResponse
+>;
+export type GetHealthSuspenseQueryError = BadRequestResponse;
 
 export function useGetHealthSuspense<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options: {
     query: Partial<
@@ -209,16 +209,16 @@ export function useGetHealthSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetHealthSuspense<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
@@ -227,16 +227,16 @@ export function useGetHealthSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetHealthSuspense<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
@@ -245,20 +245,20 @@ export function useGetHealthSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Health check endpoint
  */
 
 export function useGetHealthSuspense<
   TData = Awaited<ReturnType<typeof getHealth>>,
-  TError = BadRequestResponse
+  TError = BadRequestResponse,
 >(
   options?: {
     query?: Partial<
@@ -267,23 +267,23 @@ export function useGetHealthSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetHealthSuspenseQueryOptions(options)
+  const queryOptions = getGetHealthSuspenseQueryOptions(options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }

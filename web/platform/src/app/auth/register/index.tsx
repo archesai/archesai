@@ -1,27 +1,27 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 
-import type { RegisterBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { RegisterBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
-import { useRegister } from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Input } from "@archesai/ui/components/shadcn/input"
+import { useRegister } from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Input } from "@archesai/ui/components/shadcn/input";
 
-import { TermsIndicator } from "#components/terms-indicator"
+import { TermsIndicator } from "#components/terms-indicator";
 
 type RegisterFormData = RegisterBody & {
-  confirmPassword: string
-}
+  confirmPassword: string;
+};
 
 export const Route = createFileRoute("/auth/register/")({
-  component: RegisterPage
-})
+  component: RegisterPage,
+});
 
 export default function RegisterPage(): JSX.Element {
-  const router = useRouter()
-  const { mutateAsync: register } = useRegister()
+  const router = useRouter();
+  const { mutateAsync: register } = useRegister();
 
   const formFields: FormFieldConfig<RegisterFormData>[] = [
     {
@@ -33,7 +33,7 @@ export default function RegisterPage(): JSX.Element {
           {...field}
           type="text"
         />
-      )
+      ),
     },
     {
       defaultValue: "",
@@ -44,7 +44,7 @@ export default function RegisterPage(): JSX.Element {
           {...field}
           type="email"
         />
-      )
+      ),
     },
     {
       defaultValue: "",
@@ -55,7 +55,7 @@ export default function RegisterPage(): JSX.Element {
           {...field}
           type="password"
         />
-      )
+      ),
     },
     {
       defaultValue: "",
@@ -66,9 +66,9 @@ export default function RegisterPage(): JSX.Element {
           {...field}
           type="password"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <>
@@ -82,12 +82,12 @@ export default function RegisterPage(): JSX.Element {
             data: {
               email: data.email,
               name: data.name,
-              password: data.password
-            }
-          })
+              password: data.password,
+            },
+          });
           await router.navigate({
-            to: "/"
-          })
+            to: "/",
+          });
         }}
         postContent={
           <div className="text-center text-sm">
@@ -105,5 +105,5 @@ export default function RegisterPage(): JSX.Element {
       />
       <TermsIndicator />
     </>
-  )
+  );
 }

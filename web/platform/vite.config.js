@@ -1,8 +1,8 @@
-import tailwindcss from "@tailwindcss/vite"
-import { tanstackStart } from "@tanstack/react-start/plugin/vite"
-import viteReact from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
 // import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig } from "vite"
+import { defineConfig } from "vite";
 
 // const clientViz = visualizer({
 //   brotliSize: true,
@@ -25,8 +25,8 @@ export default defineConfig({
       customViteReactPlugin: true,
       tsr: {
         enableRouteTreeFormatting: true,
-        routesDirectory: "src/app"
-      }
+        routesDirectory: "src/app",
+      },
     }),
     viteReact({
       babel: {
@@ -34,12 +34,12 @@ export default defineConfig({
           [
             "babel-plugin-react-compiler",
             {
-              target: "19"
-            }
-          ]
-        ]
-      }
-    })
+              target: "19",
+            },
+          ],
+        ],
+      },
+    }),
     // client-only visualizer
     // {
     //   ...clientViz,
@@ -54,17 +54,17 @@ export default defineConfig({
   server: {
     allowedHosts: ["platform.archesai.dev"],
     host: "0.0.0.0",
-    port: 3000
+    port: 3000,
   },
   test: {
     coverage: {
       provider: "v8",
-      reportsDirectory: ".coverage"
+      reportsDirectory: ".coverage",
     },
     environment: "node",
     globals: true,
     include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     reporters: ["default"],
-    watch: false
-  }
-})
+    watch: false,
+  },
+});

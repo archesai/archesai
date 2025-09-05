@@ -1,23 +1,23 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import type { UpdateUserBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { UpdateUserBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
 import {
   useGetOneSessionSuspense,
   useGetOneUserSuspense,
-  useUpdateUser
-} from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Input } from "@archesai/ui/components/shadcn/input"
-import { USER_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  useUpdateUser,
+} from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Input } from "@archesai/ui/components/shadcn/input";
+import { USER_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
 export default function UserForm(): JSX.Element {
-  const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: sessionData } = useGetOneSessionSuspense("current")
+  const { mutateAsync: updateUser } = useUpdateUser();
+  const { data: sessionData } = useGetOneSessionSuspense("current");
   const { data: userData } = useGetOneUserSuspense(
-    sessionData.data.userId || "current"
-  )
+    sessionData.data.userId || "current",
+  );
 
   const formFields: FormFieldConfig<UpdateUserBody>[] = [
     {
@@ -30,7 +30,7 @@ export default function UserForm(): JSX.Element {
           {...field}
           type="email"
         />
-      )
+      ),
     },
     {
       defaultValue: userData.data.image ?? "",
@@ -42,9 +42,9 @@ export default function UserForm(): JSX.Element {
           {...field}
           type="url"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <GenericForm<never, UpdateUserBody>
@@ -55,11 +55,11 @@ export default function UserForm(): JSX.Element {
       onSubmitUpdate={async (data) => {
         await updateUser({
           data,
-          id: userData.data.id || ""
-        })
+          id: userData.data.id || "",
+        });
       }}
       showCard={true}
       title="Profile"
     />
-  )
+  );
 }

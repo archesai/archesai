@@ -1,38 +1,38 @@
-import type { ClassValue } from "clsx"
+import type { ClassValue } from "clsx";
 
-import { clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]): string {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function stringToColor(str: string): string {
   if (str.includes("video")) {
-    return "text-green-600"
+    return "text-green-600";
   } else if (
     str.includes("audio") ||
     str.includes("music") ||
     str.includes("speech")
   ) {
-    return "text-purple-600"
+    return "text-purple-600";
   } else if (str.includes("image")) {
-    return "text-blue-900"
+    return "text-blue-900";
   } else if (str.includes("application")) {
-    return "text-blue-800"
+    return "text-blue-800";
   } else if (str.includes("text")) {
-    return "text-green-600"
+    return "text-green-600";
   } else {
-    let hash = 0
+    let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash)
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
-    let color = "#"
+    let color = "#";
     for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff
-      color += ("00" + value.toString(16)).slice(-2)
+      const value = (hash >> (i * 8)) & 0xff;
+      color += ("00" + value.toString(16)).slice(-2);
     }
-    return color
+    return color;
   }
 }
 
@@ -45,5 +45,5 @@ export function toSentenceCase(str: string): string {
     .trim() // Remove leading/trailing spaces
     .split(" ") // Split the string into words
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
-    .join(" ") // Join the words back into a single string
+    .join(" "); // Join the words back into a single string
 }

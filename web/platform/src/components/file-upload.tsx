@@ -1,33 +1,33 @@
-import type { DragEvent, JSX } from "react"
+import type { DragEvent, JSX } from "react";
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion } from "motion/react"
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
-import { UploadCloudIcon } from "@archesai/ui/components/custom/icons"
-import { cn } from "@archesai/ui/lib/utils"
+import { UploadCloudIcon } from "@archesai/ui/components/custom/icons";
+import { cn } from "@archesai/ui/lib/utils";
 
 interface FileError {
-  code: string
-  message: string
+  code: string;
+  message: string;
 }
 
-type FileStatus = "dragging" | "error" | "idle" | "uploading"
+type FileStatus = "dragging" | "error" | "idle" | "uploading";
 
 interface FileUploadProps {
-  acceptedFileTypes?: string[]
-  className?: string
-  currentFile?: File | null
-  maxFileSize?: number
-  onFileRemove?: () => void
-  onUploadError?: (error: FileError) => void
-  onUploadSuccess?: (file: File) => void
+  acceptedFileTypes?: string[];
+  className?: string;
+  currentFile?: File | null;
+  maxFileSize?: number;
+  onFileRemove?: () => void;
+  onUploadError?: (error: FileError) => void;
+  onUploadSuccess?: (file: File) => void;
   /** Duration in milliseconds for the upload simulation. Defaults to 2000ms (2s), 0 for no simulation */
-  uploadDelay?: number
-  validateFile?: (file: File) => FileError | null
+  uploadDelay?: number;
+  validateFile?: (file: File) => FileError | null;
 }
 
-const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const UPLOAD_STEP_SIZE = 5
+const DEFAULT_MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const UPLOAD_STEP_SIZE = 5;
 const FILE_SIZES = [
   "Bytes",
   "KB",
@@ -37,17 +37,17 @@ const FILE_SIZES = [
   "PB",
   "EB",
   "ZB",
-  "YB"
-] as const
+  "YB",
+] as const;
 
 const formatBytes = (bytes: number, decimals = 2): string => {
-  if (!bytes) return "0 Bytes"
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  const unit = FILE_SIZES[i] ?? FILE_SIZES[FILE_SIZES.length - 1]
-  return `${Number.parseFloat((bytes / k ** i).toFixed(dm)).toString()} ${unit?.toString() ?? ""}`
-}
+  if (!bytes) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const unit = FILE_SIZES[i] ?? FILE_SIZES[FILE_SIZES.length - 1];
+  return `${Number.parseFloat((bytes / k ** i).toFixed(dm)).toString()} ${unit?.toString() ?? ""}`;
+};
 
 const UploadIllustration = () => (
   <div className="relative h-16 w-16">
@@ -135,7 +135,7 @@ const UploadIllustration = () => (
       </g>
     </svg>
   </div>
-)
+);
 
 const UploadingAnimation = ({ progress }: { progress: number }) => (
   <div className="relative h-16 w-16">
@@ -308,7 +308,7 @@ const UploadingAnimation = ({ progress }: { progress: number }) => (
       </g>
     </svg>
   </div>
-)
+);
 
 export default function FileUpload({
   acceptedFileTypes = [],
@@ -319,190 +319,190 @@ export default function FileUpload({
   onUploadError = () => ({}),
   onUploadSuccess = () => ({}),
   uploadDelay = 2000,
-  validateFile = () => null
+  validateFile = () => null,
 }: FileUploadProps): JSX.Element {
-  const [file, setFile] = useState<File | null>(initialFile)
-  const [status, setStatus] = useState<FileStatus>("idle")
-  const [progress, setProgress] = useState(0)
-  const [error, setError] = useState<FileError | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const uploadIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [file, setFile] = useState<File | null>(initialFile);
+  const [status, setStatus] = useState<FileStatus>("idle");
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<FileError | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
       if (uploadIntervalRef.current) {
-        clearInterval(uploadIntervalRef.current)
+        clearInterval(uploadIntervalRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const validateFileSize = useCallback(
     (file: File): FileError | null => {
       if (file.size > maxFileSize) {
         return {
           code: "FILE_TOO_LARGE",
-          message: `File size exceeds ${formatBytes(maxFileSize)}`
-        }
+          message: `File size exceeds ${formatBytes(maxFileSize)}`,
+        };
       }
-      return null
+      return null;
     },
-    [maxFileSize]
-  )
+    [maxFileSize],
+  );
 
   const validateFileType = useCallback(
     (file: File): FileError | null => {
-      if (!acceptedFileTypes.length) return null
+      if (!acceptedFileTypes.length) return null;
 
-      const fileType = file.type.toLowerCase()
+      const fileType = file.type.toLowerCase();
       if (
         !acceptedFileTypes.some((type) => fileType.match(type.toLowerCase()))
       ) {
         return {
           code: "INVALID_FILE_TYPE",
-          message: `File type must be ${acceptedFileTypes.join(", ")}`
-        }
+          message: `File type must be ${acceptedFileTypes.join(", ")}`,
+        };
       }
-      return null
+      return null;
     },
-    [acceptedFileTypes]
-  )
+    [acceptedFileTypes],
+  );
 
   const handleError = useCallback(
     (error: FileError) => {
-      setError(error)
-      setStatus("error")
-      onUploadError(error)
+      setError(error);
+      setStatus("error");
+      onUploadError(error);
 
       setTimeout(() => {
-        setError(null)
-        setStatus("idle")
-      }, 3000)
+        setError(null);
+        setStatus("idle");
+      }, 3000);
     },
-    [onUploadError]
-  )
+    [onUploadError],
+  );
 
   const simulateUpload = useCallback(
     (uploadingFile: File) => {
-      let currentProgress = 0
+      let currentProgress = 0;
 
       if (uploadIntervalRef.current) {
-        clearInterval(uploadIntervalRef.current)
+        clearInterval(uploadIntervalRef.current);
       }
 
       uploadIntervalRef.current = setInterval(
         () => {
-          currentProgress += UPLOAD_STEP_SIZE
+          currentProgress += UPLOAD_STEP_SIZE;
           if (currentProgress >= 100) {
             if (uploadIntervalRef.current) {
-              clearInterval(uploadIntervalRef.current)
+              clearInterval(uploadIntervalRef.current);
             }
-            setProgress(0)
-            setStatus("idle")
-            setFile(null)
-            onUploadSuccess(uploadingFile)
+            setProgress(0);
+            setStatus("idle");
+            setFile(null);
+            onUploadSuccess(uploadingFile);
           } else {
             setStatus((prevStatus) => {
               if (prevStatus === "uploading") {
-                setProgress(currentProgress)
-                return "uploading"
+                setProgress(currentProgress);
+                return "uploading";
               }
               if (uploadIntervalRef.current) {
-                clearInterval(uploadIntervalRef.current)
+                clearInterval(uploadIntervalRef.current);
               }
-              return prevStatus
-            })
+              return prevStatus;
+            });
           }
         },
-        uploadDelay / (100 / UPLOAD_STEP_SIZE)
-      )
+        uploadDelay / (100 / UPLOAD_STEP_SIZE),
+      );
     },
-    [onUploadSuccess, uploadDelay]
-  )
+    [onUploadSuccess, uploadDelay],
+  );
 
   const handleFileSelect = useCallback(
     (selectedFile: File | null) => {
-      if (!selectedFile) return
+      if (!selectedFile) return;
 
       // Reset error state
-      setError(null)
+      setError(null);
 
       // Validate file
-      const sizeError = validateFileSize(selectedFile)
+      const sizeError = validateFileSize(selectedFile);
       if (sizeError) {
-        handleError(sizeError)
-        return
+        handleError(sizeError);
+        return;
       }
 
-      const typeError = validateFileType(selectedFile)
+      const typeError = validateFileType(selectedFile);
       if (typeError) {
-        handleError(typeError)
-        return
+        handleError(typeError);
+        return;
       }
 
-      const customError = validateFile(selectedFile)
+      const customError = validateFile(selectedFile);
       if (customError) {
-        handleError(customError)
-        return
+        handleError(customError);
+        return;
       }
 
-      setFile(selectedFile)
-      setStatus("uploading")
-      setProgress(0)
-      simulateUpload(selectedFile)
+      setFile(selectedFile);
+      setStatus("uploading");
+      setProgress(0);
+      simulateUpload(selectedFile);
     },
     [
       simulateUpload,
       validateFileSize,
       validateFileType,
       validateFile,
-      handleError
-    ]
-  )
+      handleError,
+    ],
+  );
 
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setStatus((prev) => (prev !== "uploading" ? "dragging" : prev))
-  }, [])
+    e.preventDefault();
+    e.stopPropagation();
+    setStatus((prev) => (prev !== "uploading" ? "dragging" : prev));
+  }, []);
 
   const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setStatus((prev) => (prev === "dragging" ? "idle" : prev))
-  }, [])
+    e.preventDefault();
+    e.stopPropagation();
+    setStatus((prev) => (prev === "dragging" ? "idle" : prev));
+  }, []);
 
   const handleDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (status === "uploading") return
-      setStatus("idle")
-      const droppedFile = e.dataTransfer.files[0]
-      if (droppedFile) handleFileSelect(droppedFile)
+      e.preventDefault();
+      e.stopPropagation();
+      if (status === "uploading") return;
+      setStatus("idle");
+      const droppedFile = e.dataTransfer.files[0];
+      if (droppedFile) handleFileSelect(droppedFile);
     },
-    [status, handleFileSelect]
-  )
+    [status, handleFileSelect],
+  );
 
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const selectedFile = e.target.files?.[0]
-      handleFileSelect(selectedFile ?? null)
-      e.target.value = ""
+      const selectedFile = e.target.files?.[0];
+      handleFileSelect(selectedFile ?? null);
+      e.target.value = "";
     },
-    [handleFileSelect]
-  )
+    [handleFileSelect],
+  );
 
   const triggerFileInput = useCallback(() => {
-    if (status === "uploading") return
-    fileInputRef.current?.click()
-  }, [status])
+    if (status === "uploading") return;
+    fileInputRef.current?.click();
+  }, [status]);
 
   const resetState = useCallback(() => {
-    setFile(null)
-    setStatus("idle")
-    setProgress(0)
-    onFileRemove()
-  }, [onFileRemove])
+    setFile(null);
+    setStatus("idle");
+    setProgress(0);
+    onFileRemove();
+  }, [onFileRemove]);
 
   return (
     <div
@@ -517,13 +517,13 @@ export default function FileUpload({
           <div
             className={cn(
               "relative mx-auto w-full overflow-hidden rounded-lg border border-gray-100 bg-white dark:border-white/[0.08] dark:bg-black/50",
-              error ? "border-red-500/50" : ""
+              error ? "border-red-500/50" : "",
             )}
           >
             <div
               className={cn(
                 "absolute inset-0 transition-opacity duration-300",
-                status === "dragging" ? "opacity-100" : "opacity-0"
+                status === "dragging" ? "opacity-100" : "opacity-0",
               )}
             >
               <div className="absolute inset-x-0 top-0 h-[20%] bg-gradient-to-b from-blue-500/10 to-transparent" />
@@ -542,7 +542,7 @@ export default function FileUpload({
                     animate={{
                       opacity: status === "dragging" ? 0.8 : 1,
                       scale: status === "dragging" ? 0.98 : 1,
-                      y: 0
+                      y: 0,
                     }}
                     className="absolute inset-0 flex flex-col items-center justify-center p-6"
                     exit={{ opacity: 0, y: -10 }}
@@ -650,7 +650,7 @@ export default function FileUpload({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-FileUpload.displayName = "FileUpload"
+FileUpload.displayName = "FileUpload";

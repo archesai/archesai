@@ -1,13 +1,13 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
 
-import ArtifactDataTable from "#components/datatables/artifact-datatable"
+import ArtifactDataTable from "#components/datatables/artifact-datatable";
 
 export const Route = createFileRoute("/_app/artifacts/")({
-  component: ArtifactsPage
-})
+  component: ArtifactsPage,
+});
 
 export default function ArtifactsPage(): JSX.Element {
-  return <ArtifactDataTable />
+  return <ArtifactDataTable />;
 }

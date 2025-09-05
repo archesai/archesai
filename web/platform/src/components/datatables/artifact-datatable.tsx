@@ -1,38 +1,38 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import type {
   ArtifactEntity,
   ArtifactsFilterParameter,
   ArtifactsSortParameter,
-  PageQueryParameter
-} from "@archesai/client"
-import type { SearchQuery } from "@archesai/ui/types/entities"
+  PageQueryParameter,
+} from "@archesai/client";
+import type { SearchQuery } from "@archesai/ui/types/entities";
 
-import { getFindManyArtifactsSuspenseQueryOptions } from "@archesai/client"
+import { getFindManyArtifactsSuspenseQueryOptions } from "@archesai/client";
 import {
   CalendarIcon,
   FileIcon,
-  TextIcon
-} from "@archesai/ui/components/custom/icons"
-import { Timestamp } from "@archesai/ui/components/custom/timestamp"
-import { DataTable } from "@archesai/ui/components/datatable/data-table"
-import { Badge } from "@archesai/ui/components/shadcn/badge"
-import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  TextIcon,
+} from "@archesai/ui/components/custom/icons";
+import { Timestamp } from "@archesai/ui/components/custom/timestamp";
+import { DataTable } from "@archesai/ui/components/datatable/data-table";
+import { Badge } from "@archesai/ui/components/shadcn/badge";
+import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
-import ArtifactForm from "#components/forms/artifact-form"
+import ArtifactForm from "#components/forms/artifact-form";
 
 export default function ArtifactDataTable(): JSX.Element {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getQueryOptions = (query: SearchQuery) => {
     return getFindManyArtifactsSuspenseQueryOptions({
       filter: query.filter as unknown as ArtifactsFilterParameter,
       page: query.page as PageQueryParameter,
-      sort: query.sort as ArtifactsSortParameter
-    })
-  }
+      sort: query.sort as ArtifactsSortParameter,
+    });
+  };
 
   return (
     <DataTable<ArtifactEntity>
@@ -45,27 +45,27 @@ export default function ArtifactDataTable(): JSX.Element {
                 <Link
                   className="text-blue-500 hover:underline"
                   params={{
-                    artifactId: row.original.id
+                    artifactId: row.original.id,
                   }}
                   to={`/artifacts/$artifactId`}
                 >
                   {row.original.name}
                 </Link>
               </div>
-            )
+            );
           },
           enableColumnFilter: true,
           id: "name",
           meta: {
             filterVariant: "text",
             icon: TextIcon,
-            label: "Name"
-          }
+            label: "Name",
+          },
         },
         {
           accessorKey: "mimeType",
           cell: ({ row }) => {
-            return <Badge variant={"secondary"}>{row.original.mimeType}</Badge>
+            return <Badge variant={"secondary"}>{row.original.mimeType}</Badge>;
           },
           enableColumnFilter: true,
           enableHiding: false,
@@ -78,9 +78,9 @@ export default function ArtifactDataTable(): JSX.Element {
               { label: "Text", value: "text" },
               { label: "Image", value: "image" },
               { label: "Audio", value: "audio" },
-              { label: "Video", value: "video" }
-            ]
-          }
+              { label: "Video", value: "video" },
+            ],
+          },
         },
         {
           accessorKey: "producer",
@@ -89,10 +89,10 @@ export default function ArtifactDataTable(): JSX.Element {
               <Link
                 className="text-blue-500 hover:underline"
                 params={{
-                  artifactId: row.original.id
+                  artifactId: row.original.id,
                 }}
                 search={{
-                  selectedRunId: row.original.producerId
+                  selectedRunId: row.original.producerId,
                 }}
                 to={`/artifacts/$artifactId`}
               >
@@ -100,7 +100,7 @@ export default function ArtifactDataTable(): JSX.Element {
               </Link>
             ) : (
               <div className="text-muted-foreground">None</div>
-            )
+            );
           },
           enableColumnFilter: true,
           enableSorting: true,
@@ -108,13 +108,13 @@ export default function ArtifactDataTable(): JSX.Element {
           meta: {
             filterVariant: "text",
             icon: TextIcon,
-            label: "Producer"
-          }
+            label: "Producer",
+          },
         },
         {
           accessorKey: "createdAt",
           cell: ({ row }) => {
-            return <Timestamp date={row.original.createdAt} />
+            return <Timestamp date={row.original.createdAt} />;
           },
           enableColumnFilter: true,
           enableSorting: true,
@@ -122,9 +122,9 @@ export default function ArtifactDataTable(): JSX.Element {
           meta: {
             filterVariant: "date",
             icon: CalendarIcon,
-            label: "Created"
-          }
-        }
+            label: "Created",
+          },
+        },
       ]}
       createForm={ArtifactForm}
       entityKey={ARTIFACT_ENTITY_KEY}
@@ -140,16 +140,16 @@ export default function ArtifactDataTable(): JSX.Element {
               width={256}
             /> */}
           </div>
-        )
+        );
       }}
       handleSelect={async (artifact) => {
         await navigate({
           params: { artifactId: artifact.id },
-          to: `/artifacts/$artifactId`
-        })
+          to: `/artifacts/$artifactId`,
+        });
       }}
       icon={<FileIcon size={24} />}
       updateForm={ArtifactForm}
     />
-  )
+  );
 }

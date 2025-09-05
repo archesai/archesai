@@ -1,13 +1,13 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import type { SiteRoute } from "#lib/site-config.interface"
+import type { SiteRoute } from "#lib/site-config.interface";
 
 export const TitleAndDescription = ({
-  siteRoute
+  siteRoute,
 }: {
-  siteRoute: SiteRoute
+  siteRoute: SiteRoute;
 }): JSX.Element | null => {
-  if (!siteRoute.title) return null
+  if (!siteRoute.title) return null;
   return (
     <div className="container flex items-center gap-3 border-b px-4 py-3">
       <siteRoute.Icon className="h-8 w-8" />
@@ -18,5 +18,5 @@ export const TitleAndDescription = ({
         <p className="text-sm text-muted-foreground">{siteRoute.description}</p>
       </div>
     </div>
-  )
-}
+  );
+};

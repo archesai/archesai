@@ -1,37 +1,37 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 
-import type { UserEntity } from "#types/entities"
+import type { UserEntity } from "#types/entities";
 
-import { RocketIcon } from "#components/custom/icons"
-import { Alert, AlertTitle } from "#components/shadcn/alert"
+import { RocketIcon } from "#components/custom/icons";
+import { Alert, AlertTitle } from "#components/shadcn/alert";
 
 export interface VerifyEmailAlertProps {
-  onRequestEmailVerification: () => Promise<void>
-  user?: UserEntity
+  onRequestEmailVerification: () => Promise<void>;
+  user?: UserEntity;
 }
 
 export function VerifyEmailAlert({
   onRequestEmailVerification,
-  user
+  user,
 }: VerifyEmailAlertProps): JSX.Element | null {
   const handleRequestEmailVerification = async () => {
     try {
-      await onRequestEmailVerification()
+      await onRequestEmailVerification();
       toast("Email verification sent", {
-        description: "Please check your inbox for the verification email"
-      })
+        description: "Please check your inbox for the verification email",
+      });
     } catch (error) {
       toast("Error sending verification email", {
         description:
-          error instanceof Error ? error.message : "An error occurred"
-      })
+          error instanceof Error ? error.message : "An error occurred",
+      });
     }
-  }
+  };
 
   if (!user || user.emailVerified) {
-    return null
+    return null;
   }
 
   return (
@@ -54,5 +54,5 @@ export function VerifyEmailAlert({
         </span>
       </AlertTitle>
     </Alert>
-  )
+  );
 }

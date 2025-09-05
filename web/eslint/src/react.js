@@ -1,15 +1,15 @@
-import pluginQuery from "@tanstack/eslint-plugin-query"
-import reactPlugin from "eslint-plugin-react"
-import hooksPlugin from "eslint-plugin-react-hooks"
-import { defineConfig } from "eslint/config"
-import globals from "globals"
+import pluginQuery from "@tanstack/eslint-plugin-query";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
+import { defineConfig } from "eslint/config";
+import globals from "globals";
 
-const reactFlatConfig = reactPlugin.configs.flat.recommended
-const reactJsxRuntimeConfig = reactPlugin.configs.flat["jsx-runtime"]
+const reactFlatConfig = reactPlugin.configs.flat.recommended;
+const reactJsxRuntimeConfig = reactPlugin.configs.flat["jsx-runtime"];
 if (!reactFlatConfig || !reactJsxRuntimeConfig) {
   throw new Error(
-    "React flat configs are not available. Please check the eslint-plugin-react version."
-  )
+    "React flat configs are not available. Please check the eslint-plugin-react version.",
+  );
 }
 
 const react = defineConfig({
@@ -17,21 +17,21 @@ const react = defineConfig({
     hooksPlugin.configs.recommended,
     reactFlatConfig,
     reactJsxRuntimeConfig,
-    ...pluginQuery.configs["flat/recommended"]
+    ...pluginQuery.configs["flat/recommended"],
   ],
   files: ["**/*.{ts,tsx}"],
   languageOptions: {
     globals: {
       ...globals.browser,
-      ...globals.serviceworker
-    }
+      ...globals.serviceworker,
+    },
   },
   name: "react",
   rules: {
     "react-hooks/react-compiler": "error",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
   },
-  settings: { react: { version: "detect" } }
-})
+  settings: { react: { version: "detect" } },
+});
 
-export { react }
+export { react };

@@ -1,4 +1,4 @@
-"use no memo"
+"use no memo";
 
 import type {
   AccessorKeyColumnDef,
@@ -10,28 +10,28 @@ import type {
   TableOptions,
   TableState,
   Updater,
-  VisibilityState
-} from "@tanstack/react-table"
+  VisibilityState,
+} from "@tanstack/react-table";
 
-import { useCallback, useMemo, useState } from "react"
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
+import { useCallback, useMemo, useState } from "react";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
 import type {
-  BaseEntity //FilterNode
-} from "#types/entities"
+  BaseEntity, //FilterNode
+} from "#types/entities";
 
-import { DataTableColumnHeader } from "#components/datatable/components/data-table-column-header"
-import { Checkbox } from "#components/shadcn/checkbox"
+import { DataTableColumnHeader } from "#components/datatable/components/data-table-column-header";
+import { Checkbox } from "#components/shadcn/checkbox";
 // import { useDebouncedCallback } from '#hooks/use-debounced-callback'
-import { useFilterState } from "#hooks/use-filter-state"
-import { toSentenceCase } from "#lib/utils"
+import { useFilterState } from "#hooks/use-filter-state";
+import { toSentenceCase } from "#lib/utils";
 
-const DEBOUNCE_MS = 300
-const THROTTLE_MS = 50
+const DEBOUNCE_MS = 300;
+const THROTTLE_MS = 50;
 
 export interface ExtendedColumnSort<TData extends BaseEntity>
   extends Omit<ColumnSort, "id"> {
-  id: Extract<keyof TData, string>
+  id: Extract<keyof TData, string>;
 }
 
 interface useDataTableProps<TEntity extends BaseEntity>
@@ -45,26 +45,26 @@ interface useDataTableProps<TEntity extends BaseEntity>
       | "state"
     >,
     Required<Pick<TableOptions<TEntity>, "pageCount">> {
-  clearOnDefault?: boolean
-  debounceMs?: number
-  enableAdvancedFilter?: boolean
-  history?: "push" | "replace"
+  clearOnDefault?: boolean;
+  debounceMs?: number;
+  enableAdvancedFilter?: boolean;
+  history?: "push" | "replace";
   initialState?: Omit<Partial<TableState>, "sorting"> & {
-    sorting?: ExtendedColumnSort<TEntity>[]
-  }
-  scroll?: boolean
-  shallow?: boolean
-  startTransition?: React.TransitionStartFunction
-  throttleMs?: number
+    sorting?: ExtendedColumnSort<TEntity>[];
+  };
+  scroll?: boolean;
+  shallow?: boolean;
+  startTransition?: React.TransitionStartFunction;
+  throttleMs?: number;
 }
 
 export function useDataTable<TData extends BaseEntity>(
-  props: useDataTableProps<TData>
+  props: useDataTableProps<TData>,
 ): {
-  debounceMs: number
-  shallow: boolean
-  table: ReturnType<typeof useReactTable<TData>>
-  throttleMs: number
+  debounceMs: number;
+  shallow: boolean;
+  table: ReturnType<typeof useReactTable<TData>>;
+  throttleMs: number;
 } {
   const {
     // clearOnDefault = false,
@@ -79,14 +79,14 @@ export function useDataTable<TData extends BaseEntity>(
     // startTransition,
     throttleMs = THROTTLE_MS,
     ...tableProps
-  } = props
+  } = props;
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(
-    initialState?.rowSelection ?? {}
-  )
+    initialState?.rowSelection ?? {},
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    initialState?.columnVisibility ?? {}
-  )
+    initialState?.columnVisibility ?? {},
+  );
 
   const {
     // filter,
@@ -96,41 +96,41 @@ export function useDataTable<TData extends BaseEntity>(
     setPage,
     setPageSize,
     setSorting,
-    sorting
-  } = useFilterState<TData>()
+    sorting,
+  } = useFilterState<TData>();
 
   const pagination: PaginationState = useMemo(() => {
     return {
       pageIndex: pageNumber - 1, // zero-based index -> one-based index
-      pageSize: pageSize
-    }
-  }, [pageNumber, pageSize])
+      pageSize: pageSize,
+    };
+  }, [pageNumber, pageSize]);
 
   const onPaginationChange = useCallback(
     (updaterOrValue: Updater<PaginationState>) => {
       if (typeof updaterOrValue === "function") {
-        const newPagination = updaterOrValue(pagination)
-        setPage(newPagination.pageIndex + 1)
-        setPageSize(newPagination.pageSize)
+        const newPagination = updaterOrValue(pagination);
+        setPage(newPagination.pageIndex + 1);
+        setPageSize(newPagination.pageSize);
       } else {
-        setPage(updaterOrValue.pageIndex + 1)
-        setPageSize(updaterOrValue.pageSize)
+        setPage(updaterOrValue.pageIndex + 1);
+        setPageSize(updaterOrValue.pageSize);
       }
     },
-    [pagination, setPage, setPageSize]
-  )
+    [pagination, setPage, setPageSize],
+  );
 
   const onSortingChange = useCallback(
     (updaterOrValue: Updater<SortingState>) => {
       if (typeof updaterOrValue === "function") {
-        const newSorting = updaterOrValue(sorting)
-        setSorting(newSorting as ExtendedColumnSort<TData>[])
+        const newSorting = updaterOrValue(sorting);
+        setSorting(newSorting as ExtendedColumnSort<TData>[]);
       } else {
-        setSorting(updaterOrValue as ExtendedColumnSort<TData>[])
+        setSorting(updaterOrValue as ExtendedColumnSort<TData>[]);
       }
     },
-    [sorting, setSorting]
-  )
+    [sorting, setSorting],
+  );
 
   // const filterableColumns = useMemo(() => {
   //   if (enableAdvancedFilter) return []
@@ -147,7 +147,7 @@ export function useDataTable<TData extends BaseEntity>(
   // )
 
   const initialColumnFilters: ColumnFiltersState = useMemo(() => {
-    if (enableAdvancedFilter) return []
+    if (enableAdvancedFilter) return [];
 
     // return Object.entries(filter).reduce<ColumnFiltersState>(
     //   (filters, [key, value]) => {
@@ -167,21 +167,21 @@ export function useDataTable<TData extends BaseEntity>(
     //   },
     //   []
     // )
-    return []
-  }, [enableAdvancedFilter])
+    return [];
+  }, [enableAdvancedFilter]);
 
   const [columnFilters, setColumnFilters] =
-    useState<ColumnFiltersState>(initialColumnFilters)
+    useState<ColumnFiltersState>(initialColumnFilters);
 
   const onColumnFiltersChange = useCallback(
     (updaterOrValue: Updater<ColumnFiltersState>) => {
-      if (enableAdvancedFilter) return
+      if (enableAdvancedFilter) return;
 
       setColumnFilters((prev) => {
         const next =
           typeof updaterOrValue === "function"
             ? updaterOrValue(prev)
-            : updaterOrValue
+            : updaterOrValue;
 
         // const filterUpdates = next.reduce<
         //   Record<string, null | string | string[]>
@@ -199,11 +199,11 @@ export function useDataTable<TData extends BaseEntity>(
         // }
 
         // debouncedSetFilterValues(filterUpdates)
-        return next
-      })
+        return next;
+      });
     },
-    [enableAdvancedFilter]
-  )
+    [enableAdvancedFilter],
+  );
 
   const enhancedColumns = useMemo<AccessorKeyColumnDef<TData>[]>(
     () => [
@@ -216,7 +216,7 @@ export function useDataTable<TData extends BaseEntity>(
               aria-label="Select row"
               checked={row.getIsSelected()}
               onCheckedChange={(value) => {
-                row.toggleSelected(!!value)
+                row.toggleSelected(!!value);
               }}
             />
           </div>
@@ -233,12 +233,12 @@ export function useDataTable<TData extends BaseEntity>(
               }
               className="translate-y-0.5"
               onCheckedChange={(value) => {
-                table.toggleAllPageRowsSelected(!!value)
+                table.toggleAllPageRowsSelected(!!value);
               }}
             />
           </div>
         ),
-        id: "select"
+        id: "select",
       },
       ...columns.map((column) => ({
         ...column,
@@ -250,7 +250,7 @@ export function useDataTable<TData extends BaseEntity>(
               column={col}
               title={toSentenceCase(column.meta?.label?.toString() ?? "")}
             />
-          ))
+          )),
         // header:
         //   column.header ??
         //   (({ column: col }) => (
@@ -259,10 +259,10 @@ export function useDataTable<TData extends BaseEntity>(
         //       title={toSentenceCase(column.meta?.label.toString())}
         //     />
         //   ))
-      }))
+      })),
     ],
-    [columns]
-  )
+    [columns],
+  );
 
   // Create table with minimal state - let filterState handle pagination/sorting
   const table = useReactTable({
@@ -270,7 +270,7 @@ export function useDataTable<TData extends BaseEntity>(
     columns: enhancedColumns,
     defaultColumn: {
       ...tableProps.defaultColumn,
-      enableColumnFilter: false
+      enableColumnFilter: false,
     },
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
@@ -289,9 +289,9 @@ export function useDataTable<TData extends BaseEntity>(
       columnVisibility,
       pagination,
       rowSelection,
-      sorting
-    }
-  })
+      sorting,
+    },
+  });
 
-  return { debounceMs, shallow, table, throttleMs }
+  return { debounceMs, shallow, table, throttleMs };
 }

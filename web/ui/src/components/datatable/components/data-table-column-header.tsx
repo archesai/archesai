@@ -1,39 +1,39 @@
-import type { Column } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Column } from "@tanstack/react-table";
+import type { JSX } from "react";
 
 import {
   ChevronDownIcon,
   ChevronsUpDownIcon,
   ChevronUpIcon,
   EyeOffIcon,
-  XCircleIcon
-} from "#components/custom/icons"
+  XCircleIcon,
+} from "#components/custom/icons";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from "#components/shadcn/dropdown-menu"
-import { cn } from "#lib/utils"
+  DropdownMenuTrigger,
+} from "#components/shadcn/dropdown-menu";
+import { cn } from "#lib/utils";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
-  column: Column<TData, TValue>
-  title: string
+  column: Column<TData, TValue>;
+  title: string;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   className,
   column,
-  title
+  title,
 }: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
   if (!column.getCanSort()) {
-    return <div className={cn(className, "text-xs")}>{title}</div>
+    return <div className={cn(className, "text-xs")}>{title}</div>;
   }
 
   if (!column.getCanSort() && !column.getCanHide()) {
-    return <div className={cn(className)}>{title}</div>
+    return <div className={cn(className)}>{title}</div>;
   }
 
   return (
@@ -41,7 +41,7 @@ export function DataTableColumnHeader<TData, TValue>({
       <DropdownMenuTrigger
         className={cn(
           "-ml-1.5 flex h-8 items-center gap-1.5 rounded-md px-2 py-1.5 hover:bg-accent focus:ring-1 focus:ring-ring focus:outline-none data-[state=open]:bg-accent [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
-          className
+          className,
         )}
       >
         {title}
@@ -64,7 +64,7 @@ export function DataTableColumnHeader<TData, TValue>({
               checked={column.getIsSorted() === "asc"}
               className="relative pr-8 pl-2 [&_svg]:text-muted-foreground [&>span:first-child]:right-2 [&>span:first-child]:left-auto"
               onClick={() => {
-                column.toggleSorting(false)
+                column.toggleSorting(false);
               }}
             >
               <ChevronUpIcon />
@@ -74,7 +74,7 @@ export function DataTableColumnHeader<TData, TValue>({
               checked={column.getIsSorted() === "desc"}
               className="relative pr-8 pl-2 [&_svg]:text-muted-foreground [&>span:first-child]:right-2 [&>span:first-child]:left-auto"
               onClick={() => {
-                column.toggleSorting(true)
+                column.toggleSorting(true);
               }}
             >
               <ChevronDownIcon />
@@ -84,7 +84,7 @@ export function DataTableColumnHeader<TData, TValue>({
               <DropdownMenuItem
                 className="pl-2 [&_svg]:text-muted-foreground"
                 onClick={() => {
-                  column.clearSorting()
+                  column.clearSorting();
                 }}
               >
                 <XCircleIcon />
@@ -98,7 +98,7 @@ export function DataTableColumnHeader<TData, TValue>({
             checked={!column.getIsVisible()}
             className="relative pr-8 pl-2 [&_svg]:text-muted-foreground [&>span:first-child]:right-2 [&>span:first-child]:left-auto"
             onClick={() => {
-              column.toggleVisibility(false)
+              column.toggleVisibility(false);
             }}
           >
             <EyeOffIcon />
@@ -107,5 +107,5 @@ export function DataTableColumnHeader<TData, TValue>({
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

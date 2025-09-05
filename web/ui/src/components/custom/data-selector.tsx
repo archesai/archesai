@@ -1,44 +1,44 @@
-import type { UseSuspenseQueryOptions } from "@tanstack/react-query"
-import type { JSX } from "react"
+import type { UseSuspenseQueryOptions } from "@tanstack/react-query";
+import type { JSX } from "react";
 
-import { useState } from "react"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-import type { LucideIcon } from "#components/custom/icons"
-import type { BaseEntity } from "#types/entities"
+import type { LucideIcon } from "#components/custom/icons";
+import type { BaseEntity } from "#types/entities";
 
 import {
   CheckCircle2Icon,
   PlusSquareIcon,
-  SortAscIcon
-} from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+  SortAscIcon,
+} from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
-  CommandList
-} from "#components/shadcn/command"
-import { HoverCard, HoverCardContent } from "#components/shadcn/hover-card"
+  CommandList,
+} from "#components/shadcn/command";
+import { HoverCard, HoverCardContent } from "#components/shadcn/hover-card";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "#components/shadcn/popover"
-import { cn } from "#lib/utils"
+  PopoverTrigger,
+} from "#components/shadcn/popover";
+import { cn } from "#lib/utils";
 
 interface DataSelectorProps<TItem extends BaseEntity> {
-  getItemDetails?: (item: TItem) => React.ReactNode
-  icons?: { color: string; Icon: LucideIcon; name: string }[]
-  isMultiSelect?: boolean
-  itemType: string
-  organizationId?: string
-  selectedData: TItem | TItem[] | undefined
-  setSelectedData: (data: TItem | TItem[] | undefined) => void
+  getItemDetails?: (item: TItem) => React.ReactNode;
+  icons?: { color: string; Icon: LucideIcon; name: string }[];
+  isMultiSelect?: boolean;
+  itemType: string;
+  organizationId?: string;
+  selectedData: TItem | TItem[] | undefined;
+  setSelectedData: (data: TItem | TItem[] | undefined) => void;
   useFindMany: UseSuspenseQueryOptions<{
-    data: TItem[]
-  }>
+    data: TItem[];
+  }>;
 }
 
 export function DataSelector<TItem extends BaseEntity>({
@@ -48,14 +48,14 @@ export function DataSelector<TItem extends BaseEntity>({
   itemType,
   selectedData,
   setSelectedData,
-  useFindMany
+  useFindMany,
 }: DataSelectorProps<TItem>): JSX.Element {
   const {
-    data: { data }
-  } = useSuspenseQuery(useFindMany)
-  const [open, setOpen] = useState(false)
-  const [hoveredItem, setHoveredItem] = useState<TItem | undefined>()
-  const [searchTerm, setSearchTerm] = useState("")
+    data: { data },
+  } = useSuspenseQuery(useFindMany);
+  const [open, setOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<TItem | undefined>();
+  const [searchTerm, setSearchTerm] = useState("");
 
   // item.name.toLowerCase().includes(searchTerm.toLowerCase())
 
@@ -66,27 +66,27 @@ export function DataSelector<TItem extends BaseEntity>({
         ? selectedData
         : selectedData
           ? [selectedData]
-          : []
-      const isSelected = selectedArray.some((i) => i.id === item.id)
+          : [];
+      const isSelected = selectedArray.some((i) => i.id === item.id);
       if (isSelected) {
-        setSelectedData(selectedArray.filter((i) => i.id !== item.id))
+        setSelectedData(selectedArray.filter((i) => i.id !== item.id));
       } else {
-        setSelectedData([...selectedArray, item])
+        setSelectedData([...selectedArray, item]);
       }
     } else {
-      setSelectedData(item)
-      setOpen(false) // Close popover on single select
+      setSelectedData(item);
+      setOpen(false); // Close popover on single select
     }
-  }
+  };
 
   // Handler for removing selected item (for multi-select)
   const handleRemove = (item: TItem) => {
     if (isMultiSelect && Array.isArray(selectedData)) {
-      setSelectedData(selectedData.filter((i) => i.id !== item.id))
+      setSelectedData(selectedData.filter((i) => i.id !== item.id));
     } else {
-      setSelectedData(undefined)
+      setSelectedData(undefined);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -110,7 +110,7 @@ export function DataSelector<TItem extends BaseEntity>({
                   (Array.isArray(selectedData) && selectedData.length > 0) ||
                     !isMultiSelect
                     ? ""
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {isMultiSelect ? (
@@ -124,21 +124,21 @@ export function DataSelector<TItem extends BaseEntity>({
                     {icons
                       ?.filter((x) => x.name === (selectedData as TItem).id)
                       .map((x, i) => {
-                        const iconColor = x.color
+                        const iconColor = x.color;
                         return (
                           <x.Icon
                             className={cn(
                               "mx-auto h-4 w-4",
-                              iconColor.startsWith("text-") ? iconColor : ""
+                              iconColor.startsWith("text-") ? iconColor : "",
                             )}
                             key={i}
                             style={{
                               ...(iconColor.startsWith("#")
                                 ? { color: iconColor }
-                                : {})
+                                : {}),
                             }}
                           />
-                        )
+                        );
                       })}
                     {(selectedData as TItem).id}
                   </div>
@@ -156,7 +156,7 @@ export function DataSelector<TItem extends BaseEntity>({
           <Command>
             <CommandInput
               onInput={(e) => {
-                setSearchTerm(e.currentTarget.value)
+                setSearchTerm(e.currentTarget.value);
               }}
               placeholder={`Search ${itemType.toLowerCase()}...`}
               value={searchTerm}
@@ -168,13 +168,13 @@ export function DataSelector<TItem extends BaseEntity>({
                   className={cn("flex items-center justify-between")}
                   key={item.id}
                   onMouseEnter={() => {
-                    setHoveredItem(item)
+                    setHoveredItem(item);
                   }}
                   onMouseLeave={() => {
-                    setHoveredItem(undefined)
+                    setHoveredItem(undefined);
                   }}
                   onSelect={() => {
-                    handleSelect(item)
+                    handleSelect(item);
                   }}
                 >
                   <div className="flex items-center gap-1">
@@ -182,21 +182,21 @@ export function DataSelector<TItem extends BaseEntity>({
                     {icons
                       ?.filter((x) => x.name === item.id)
                       .map((x, i) => {
-                        const iconColor = x.color
+                        const iconColor = x.color;
                         return (
                           <x.Icon
                             className={cn(
                               "mx-auto h-4 w-4",
-                              iconColor.startsWith("text-") ? iconColor : ""
+                              iconColor.startsWith("text-") ? iconColor : "",
                             )}
                             key={i}
                             style={{
                               ...(iconColor.startsWith("#")
                                 ? { color: iconColor }
-                                : {})
+                                : {}),
                             }}
                           />
-                        )
+                        );
                       })}
                     <p>{item.id}</p>
                   </div>
@@ -238,7 +238,7 @@ export function DataSelector<TItem extends BaseEntity>({
                 <button
                   className="ml-1 text-red-500 hover:text-red-700"
                   onClick={() => {
-                    handleRemove(item)
+                    handleRemove(item);
                   }}
                   type="button"
                 >
@@ -249,5 +249,5 @@ export function DataSelector<TItem extends BaseEntity>({
           </div>
         )}
     </div>
-  )
+  );
 }

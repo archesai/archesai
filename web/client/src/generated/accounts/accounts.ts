@@ -19,11 +19,11 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from "@tanstack/react-query"
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import qs from "qs"
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import qs from "qs";
 
 import type {
   AccountsDelete200,
@@ -32,12 +32,12 @@ import type {
   AccountsGetOne200,
   BadRequestResponse,
   NotFoundResponse,
-  UnauthorizedResponse
-} from "../orval.schemas"
+  UnauthorizedResponse,
+} from "../orval.schemas";
 
-import { customFetch } from "../../fetcher"
+import { customFetch } from "../../fetcher";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Find many accounts
@@ -46,33 +46,33 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 export const getAccountsFindManyUrl = (params?: AccountsFindManyParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/auth/accounts?${stringifiedParams}`
-    : `/auth/accounts`
-}
+    : `/auth/accounts`;
+};
 
 export const accountsFindMany = async (
   params?: AccountsFindManyParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<AccountsFindMany200> => {
   return customFetch<AccountsFindMany200>(getAccountsFindManyUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getAccountsFindManyQueryKey = (
-  params?: AccountsFindManyParams
+  params?: AccountsFindManyParams,
 ) => {
-  return [`/auth/accounts`, ...(params ? [params] : [])] as const
-}
+  return [`/auth/accounts`, ...(params ? [params] : [])] as const;
+};
 
 export const getAccountsFindManyQueryOptions = <
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -82,35 +82,36 @@ export const getAccountsFindManyQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params)
+  const queryKey =
+    queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountsFindMany>>
-  > = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions })
+  > = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof accountsFindMany>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type AccountsFindManyQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountsFindMany>>
->
+>;
 export type AccountsFindManyQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useAccountsFindMany<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | AccountsFindManyParams,
   options: {
@@ -128,16 +129,16 @@ export function useAccountsFindMany<
           Awaited<ReturnType<typeof accountsFindMany>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsFindMany<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -155,16 +156,16 @@ export function useAccountsFindMany<
           Awaited<ReturnType<typeof accountsFindMany>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsFindMany<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -174,20 +175,20 @@ export function useAccountsFindMany<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many accounts
  */
 
 export function useAccountsFindMany<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -197,28 +198,28 @@ export function useAccountsFindMany<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getAccountsFindManyQueryOptions(params, options)
+  const queryOptions = getAccountsFindManyQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getAccountsFindManySuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -228,35 +229,36 @@ export const getAccountsFindManySuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params)
+  const queryKey =
+    queryOptions?.queryKey ?? getAccountsFindManyQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountsFindMany>>
-  > = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions })
+  > = ({ signal }) => accountsFindMany(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof accountsFindMany>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type AccountsFindManySuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountsFindMany>>
->
+>;
 export type AccountsFindManySuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useAccountsFindManySuspense<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | AccountsFindManyParams,
   options: {
@@ -266,16 +268,16 @@ export function useAccountsFindManySuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsFindManySuspense<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -285,16 +287,16 @@ export function useAccountsFindManySuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsFindManySuspense<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -304,20 +306,20 @@ export function useAccountsFindManySuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many accounts
  */
 
 export function useAccountsFindManySuspense<
   TData = Awaited<ReturnType<typeof accountsFindMany>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: AccountsFindManyParams,
   options?: {
@@ -327,25 +329,25 @@ export function useAccountsFindManySuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getAccountsFindManySuspenseQueryOptions(params, options)
+  const queryOptions = getAccountsFindManySuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -353,63 +355,63 @@ export function useAccountsFindManySuspense<
  * @summary Find an account
  */
 export const getAccountsGetOneUrl = (id: string | undefined | null) => {
-  return `/auth/accounts/${id}`
-}
+  return `/auth/accounts/${id}`;
+};
 
 export const accountsGetOne = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<AccountsGetOne200> => {
   return customFetch<AccountsGetOne200>(getAccountsGetOneUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getAccountsGetOneQueryKey = (id?: string | undefined | null) => {
-  return [`/auth/accounts/${id}`] as const
-}
+  return [`/auth/accounts/${id}`] as const;
+};
 
 export const getAccountsGetOneQueryOptions = <
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsGetOne>>> = ({
-    signal
-  }) => accountsGetOne(id, { signal, ...requestOptions })
+    signal,
+  }) => accountsGetOne(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountsGetOne>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type AccountsGetOneQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountsGetOne>>
->
-export type AccountsGetOneQueryError = NotFoundResponse
+>;
+export type AccountsGetOneQueryError = NotFoundResponse;
 
 export function useAccountsGetOne<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -423,16 +425,16 @@ export function useAccountsGetOne<
           Awaited<ReturnType<typeof accountsGetOne>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsGetOne<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -446,62 +448,62 @@ export function useAccountsGetOne<
           Awaited<ReturnType<typeof accountsGetOne>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsGetOne<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an account
  */
 
 export function useAccountsGetOne<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountsGetOne>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getAccountsGetOneQueryOptions(id, options)
+  const queryOptions = getAccountsGetOneQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getAccountsGetOneSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -511,33 +513,33 @@ export const getAccountsGetOneSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getAccountsGetOneQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof accountsGetOne>>> = ({
-    signal
-  }) => accountsGetOne(id, { signal, ...requestOptions })
+    signal,
+  }) => accountsGetOne(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof accountsGetOne>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type AccountsGetOneSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountsGetOne>>
->
-export type AccountsGetOneSuspenseQueryError = NotFoundResponse
+>;
+export type AccountsGetOneSuspenseQueryError = NotFoundResponse;
 
 export function useAccountsGetOneSuspense<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -547,16 +549,16 @@ export function useAccountsGetOneSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsGetOneSuspense<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -566,16 +568,16 @@ export function useAccountsGetOneSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useAccountsGetOneSuspense<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -585,20 +587,20 @@ export function useAccountsGetOneSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an account
  */
 
 export function useAccountsGetOneSuspense<
   TData = Awaited<ReturnType<typeof accountsGetOne>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -608,25 +610,25 @@ export function useAccountsGetOneSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getAccountsGetOneSuspenseQueryOptions(id, options)
+  const queryOptions = getAccountsGetOneSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -634,69 +636,69 @@ export function useAccountsGetOneSuspense<
  * @summary Delete an account
  */
 export const getAccountsDeleteUrl = (id: string | undefined | null) => {
-  return `/auth/accounts/${id}`
-}
+  return `/auth/accounts/${id}`;
+};
 
 export const accountsDelete = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<AccountsDelete200> => {
   return customFetch<AccountsDelete200>(getAccountsDeleteUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getAccountsDeleteMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof accountsDelete>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof accountsDelete>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["accountsDelete"]
+  const mutationKey = ["accountsDelete"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof accountsDelete>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return accountsDelete(id, requestOptions)
-  }
+    return accountsDelete(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type AccountsDeleteMutationResult = NonNullable<
   Awaited<ReturnType<typeof accountsDelete>>
->
+>;
 
-export type AccountsDeleteMutationError = NotFoundResponse
+export type AccountsDeleteMutationError = NotFoundResponse;
 
 /**
  * @summary Delete an account
  */
 export const useAccountsDelete = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -704,17 +706,17 @@ export const useAccountsDelete = <
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof accountsDelete>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getAccountsDeleteMutationOptions(options)
+  const mutationOptions = getAccountsDeleteMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};

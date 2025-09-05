@@ -1,60 +1,60 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { toast } from "sonner"
+import { toast } from "sonner";
 
-import { ArchesLogo } from "#components/custom/arches-logo"
-import { ChevronsUpDownIcon, PlusSquareIcon } from "#components/custom/icons"
-import { Badge } from "#components/shadcn/badge"
+import { ArchesLogo } from "#components/custom/arches-logo";
+import { ChevronsUpDownIcon, PlusSquareIcon } from "#components/custom/icons";
+import { Badge } from "#components/shadcn/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "#components/shadcn/dropdown-menu"
+  DropdownMenuTrigger,
+} from "#components/shadcn/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar
-} from "#components/shadcn/sidebar"
+  useSidebar,
+} from "#components/shadcn/sidebar";
 
 interface OrganizationButtonProps {
   memberships?: {
     data: {
-      id: string
-      organizationId: string
-    }[]
-  }
+      id: string;
+      organizationId: string;
+    }[];
+  };
   onUpdateSession?: (
     data: {
       data: {
-        activeOrganizationId: string
-      }
-      id: string
+        activeOrganizationId: string;
+      };
+      id: string;
     },
     options?: {
-      onSuccess?: () => void
-    }
-  ) => Promise<void>
+      onSuccess?: () => void;
+    },
+  ) => Promise<void>;
   session?: {
-    activeOrganizationId?: null | string
-    id: string
-  }
+    activeOrganizationId?: null | string;
+    id: string;
+  };
   user?: {
-    email: string
-    id: string
-    name: string
-  }
+    email: string;
+    id: string;
+    name: string;
+  };
 }
 
 export function OrganizationButton({
   memberships,
   onUpdateSession,
-  session
+  session,
 }: OrganizationButtonProps): JSX.Element {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -90,18 +90,18 @@ export function OrganizationButton({
                     await onUpdateSession(
                       {
                         data: {
-                          activeOrganizationId: membership.organizationId
+                          activeOrganizationId: membership.organizationId,
                         },
-                        id: session.id
+                        id: session.id,
                       },
                       {
                         onSuccess: () => {
                           toast.success(
-                            `Switched to organization: ${membership.organizationId}`
-                          )
-                        }
-                      }
-                    )
+                            `Switched to organization: ${membership.organizationId}`,
+                          );
+                        },
+                      },
+                    );
                   }
                 }}
               >
@@ -123,5 +123,5 @@ export function OrganizationButton({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

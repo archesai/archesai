@@ -19,11 +19,11 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from "@tanstack/react-query"
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import qs from "qs"
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -52,85 +52,85 @@ import type {
   UpdateRun200,
   UpdateRunBody,
   UpdateTool200,
-  UpdateToolBody
-} from "../orval.schemas"
+  UpdateToolBody,
+} from "../orval.schemas";
 
-import { customFetch } from "../../fetcher"
+import { customFetch } from "../../fetcher";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Create a new pipeline
  * @summary Create a new pipeline
  */
 export const getCreatePipelineUrl = () => {
-  return `/workflows/pipelines`
-}
+  return `/workflows/pipelines`;
+};
 
 export const createPipeline = async (
   createPipelineBody: CreatePipelineBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreatePipeline201> => {
   return customFetch<CreatePipeline201>(getCreatePipelineUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createPipelineBody)
-  })
-}
+    body: JSON.stringify(createPipelineBody),
+  });
+};
 
 export const getCreatePipelineMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createPipeline>>,
     TError,
     { data: CreatePipelineBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createPipeline>>,
   TError,
   { data: CreatePipelineBody },
   TContext
 > => {
-  const mutationKey = ["createPipeline"]
+  const mutationKey = ["createPipeline"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createPipeline>>,
     { data: CreatePipelineBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createPipeline(data, requestOptions)
-  }
+    return createPipeline(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreatePipelineMutationResult = NonNullable<
   Awaited<ReturnType<typeof createPipeline>>
->
-export type CreatePipelineMutationBody = CreatePipelineBody
+>;
+export type CreatePipelineMutationBody = CreatePipelineBody;
 export type CreatePipelineMutationError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new pipeline
  */
 export const useCreatePipeline = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -138,20 +138,20 @@ export const useCreatePipeline = <
       TError,
       { data: CreatePipelineBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createPipeline>>,
   TError,
   { data: CreatePipelineBody },
   TContext
 > => {
-  const mutationOptions = getCreatePipelineMutationOptions(options)
+  const mutationOptions = getCreatePipelineMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many pipelines
  * @summary Find many pipelines
@@ -159,33 +159,33 @@ export const useCreatePipeline = <
 export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/workflows/pipelines?${stringifiedParams}`
-    : `/workflows/pipelines`
-}
+    : `/workflows/pipelines`;
+};
 
 export const findManyPipelines = async (
   params?: FindManyPipelinesParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyPipelines200> => {
   return customFetch<FindManyPipelines200>(getFindManyPipelinesUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyPipelinesQueryKey = (
-  params?: FindManyPipelinesParams
+  params?: FindManyPipelinesParams,
 ) => {
-  return [`/workflows/pipelines`, ...(params ? [params] : [])] as const
-}
+  return [`/workflows/pipelines`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyPipelinesQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -195,36 +195,36 @@ export const getFindManyPipelinesQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyPipelines>>
-  > = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions })
+  > = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyPipelines>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyPipelinesQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyPipelines>>
->
+>;
 export type FindManyPipelinesQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyPipelines<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyPipelinesParams,
   options: {
@@ -242,16 +242,16 @@ export function useFindManyPipelines<
           Awaited<ReturnType<typeof findManyPipelines>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyPipelines<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -269,16 +269,16 @@ export function useFindManyPipelines<
           Awaited<ReturnType<typeof findManyPipelines>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyPipelines<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -288,20 +288,20 @@ export function useFindManyPipelines<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many pipelines
  */
 
 export function useFindManyPipelines<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -311,28 +311,28 @@ export function useFindManyPipelines<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyPipelinesQueryOptions(params, options)
+  const queryOptions = getFindManyPipelinesQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyPipelinesSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -342,36 +342,36 @@ export const getFindManyPipelinesSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyPipelinesQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyPipelines>>
-  > = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions })
+  > = ({ signal }) => findManyPipelines(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyPipelines>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyPipelinesSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyPipelines>>
->
+>;
 export type FindManyPipelinesSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyPipelinesSuspense<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyPipelinesParams,
   options: {
@@ -381,16 +381,16 @@ export function useFindManyPipelinesSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyPipelinesSuspense<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -400,16 +400,16 @@ export function useFindManyPipelinesSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyPipelinesSuspense<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -419,20 +419,20 @@ export function useFindManyPipelinesSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many pipelines
  */
 
 export function useFindManyPipelinesSuspense<
   TData = Awaited<ReturnType<typeof findManyPipelines>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyPipelinesParams,
   options?: {
@@ -442,25 +442,28 @@ export function useFindManyPipelinesSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyPipelinesSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyPipelinesSuspenseQueryOptions(
+    params,
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -468,69 +471,69 @@ export function useFindManyPipelinesSuspense<
  * @summary Delete a pipeline
  */
 export const getDeletePipelineUrl = (id: string | undefined | null) => {
-  return `/workflows/pipelines/${id}`
-}
+  return `/workflows/pipelines/${id}`;
+};
 
 export const deletePipeline = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeletePipeline200> => {
   return customFetch<DeletePipeline200>(getDeletePipelineUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeletePipelineMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deletePipeline>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deletePipeline>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deletePipeline"]
+  const mutationKey = ["deletePipeline"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deletePipeline>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deletePipeline(id, requestOptions)
-  }
+    return deletePipeline(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeletePipelineMutationResult = NonNullable<
   Awaited<ReturnType<typeof deletePipeline>>
->
+>;
 
-export type DeletePipelineMutationError = NotFoundResponse
+export type DeletePipelineMutationError = NotFoundResponse;
 
 /**
  * @summary Delete a pipeline
  */
 export const useDeletePipeline = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -538,82 +541,82 @@ export const useDeletePipeline = <
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deletePipeline>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeletePipelineMutationOptions(options)
+  const mutationOptions = getDeletePipelineMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find a pipeline
  * @summary Find a pipeline
  */
 export const getGetOnePipelineUrl = (id: string | undefined | null) => {
-  return `/workflows/pipelines/${id}`
-}
+  return `/workflows/pipelines/${id}`;
+};
 
 export const getOnePipeline = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOnePipeline200> => {
   return customFetch<GetOnePipeline200>(getGetOnePipelineUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOnePipelineQueryKey = (id?: string | undefined | null) => {
-  return [`/workflows/pipelines/${id}`] as const
-}
+  return [`/workflows/pipelines/${id}`] as const;
+};
 
 export const getGetOnePipelineQueryOptions = <
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOnePipeline>>> = ({
-    signal
-  }) => getOnePipeline(id, { signal, ...requestOptions })
+    signal,
+  }) => getOnePipeline(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOnePipeline>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOnePipelineQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOnePipeline>>
->
-export type GetOnePipelineQueryError = NotFoundResponse
+>;
+export type GetOnePipelineQueryError = NotFoundResponse;
 
 export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -627,16 +630,16 @@ export function useGetOnePipeline<
           Awaited<ReturnType<typeof getOnePipeline>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -650,62 +653,62 @@ export function useGetOnePipeline<
           Awaited<ReturnType<typeof getOnePipeline>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a pipeline
  */
 
 export function useGetOnePipeline<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOnePipeline>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOnePipelineQueryOptions(id, options)
+  const queryOptions = getGetOnePipelineQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOnePipelineSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -715,33 +718,33 @@ export const getGetOnePipelineSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOnePipelineQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOnePipeline>>> = ({
-    signal
-  }) => getOnePipeline(id, { signal, ...requestOptions })
+    signal,
+  }) => getOnePipeline(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOnePipeline>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOnePipelineSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOnePipeline>>
->
-export type GetOnePipelineSuspenseQueryError = NotFoundResponse
+>;
+export type GetOnePipelineSuspenseQueryError = NotFoundResponse;
 
 export function useGetOnePipelineSuspense<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -751,16 +754,16 @@ export function useGetOnePipelineSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOnePipelineSuspense<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -770,16 +773,16 @@ export function useGetOnePipelineSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOnePipelineSuspense<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -789,20 +792,20 @@ export function useGetOnePipelineSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a pipeline
  */
 
 export function useGetOnePipelineSuspense<
   TData = Awaited<ReturnType<typeof getOnePipeline>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -812,25 +815,25 @@ export function useGetOnePipelineSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOnePipelineSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOnePipelineSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -838,72 +841,72 @@ export function useGetOnePipelineSuspense<
  * @summary Update a pipeline
  */
 export const getUpdatePipelineUrl = (id: string | undefined | null) => {
-  return `/workflows/pipelines/${id}`
-}
+  return `/workflows/pipelines/${id}`;
+};
 
 export const updatePipeline = async (
   id: string | undefined | null,
   updatePipelineBody: UpdatePipelineBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdatePipeline200> => {
   return customFetch<UpdatePipeline200>(getUpdatePipelineUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updatePipelineBody)
-  })
-}
+    body: JSON.stringify(updatePipelineBody),
+  });
+};
 
 export const getUpdatePipelineMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updatePipeline>>,
     TError,
     { id: string | undefined | null; data: UpdatePipelineBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updatePipeline>>,
   TError,
   { id: string | undefined | null; data: UpdatePipelineBody },
   TContext
 > => {
-  const mutationKey = ["updatePipeline"]
+  const mutationKey = ["updatePipeline"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updatePipeline>>,
     { id: string | undefined | null; data: UpdatePipelineBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updatePipeline(id, data, requestOptions)
-  }
+    return updatePipeline(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdatePipelineMutationResult = NonNullable<
   Awaited<ReturnType<typeof updatePipeline>>
->
-export type UpdatePipelineMutationBody = UpdatePipelineBody
-export type UpdatePipelineMutationError = NotFoundResponse
+>;
+export type UpdatePipelineMutationBody = UpdatePipelineBody;
+export type UpdatePipelineMutationError = NotFoundResponse;
 
 /**
  * @summary Update a pipeline
  */
 export const useUpdatePipeline = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -911,90 +914,90 @@ export const useUpdatePipeline = <
       TError,
       { id: string | undefined | null; data: UpdatePipelineBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updatePipeline>>,
   TError,
   { id: string | undefined | null; data: UpdatePipelineBody },
   TContext
 > => {
-  const mutationOptions = getUpdatePipelineMutationOptions(options)
+  const mutationOptions = getUpdatePipelineMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Create a new run
  * @summary Create a new run
  */
 export const getCreateRunUrl = () => {
-  return `/workflows/runs`
-}
+  return `/workflows/runs`;
+};
 
 export const createRun = async (
   createRunBody: CreateRunBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateRun201> => {
   return customFetch<CreateRun201>(getCreateRunUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createRunBody)
-  })
-}
+    body: JSON.stringify(createRunBody),
+  });
+};
 
 export const getCreateRunMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createRun>>,
     TError,
     { data: CreateRunBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createRun>>,
   TError,
   { data: CreateRunBody },
   TContext
 > => {
-  const mutationKey = ["createRun"]
+  const mutationKey = ["createRun"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createRun>>,
     { data: CreateRunBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createRun(data, requestOptions)
-  }
+    return createRun(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateRunMutationResult = NonNullable<
   Awaited<ReturnType<typeof createRun>>
->
-export type CreateRunMutationBody = CreateRunBody
-export type CreateRunMutationError = BadRequestResponse | UnauthorizedResponse
+>;
+export type CreateRunMutationBody = CreateRunBody;
+export type CreateRunMutationError = BadRequestResponse | UnauthorizedResponse;
 
 /**
  * @summary Create a new run
  */
 export const useCreateRun = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -1002,20 +1005,20 @@ export const useCreateRun = <
       TError,
       { data: CreateRunBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createRun>>,
   TError,
   { data: CreateRunBody },
   TContext
 > => {
-  const mutationOptions = getCreateRunMutationOptions(options)
+  const mutationOptions = getCreateRunMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many runs
  * @summary Find many runs
@@ -1023,63 +1026,63 @@ export const useCreateRun = <
 export const getFindManyRunsUrl = (params?: FindManyRunsParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/workflows/runs?${stringifiedParams}`
-    : `/workflows/runs`
-}
+    : `/workflows/runs`;
+};
 
 export const findManyRuns = async (
   params?: FindManyRunsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyRuns200> => {
   return customFetch<FindManyRuns200>(getFindManyRunsUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyRunsQueryKey = (params?: FindManyRunsParams) => {
-  return [`/workflows/runs`, ...(params ? [params] : [])] as const
-}
+  return [`/workflows/runs`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyRunsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyRuns>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyRunsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyRunsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyRuns>>> = ({
-    signal
-  }) => findManyRuns(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyRuns(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyRuns>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyRunsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyRuns>>
->
-export type FindManyRunsQueryError = BadRequestResponse | UnauthorizedResponse
+>;
+export type FindManyRunsQueryError = BadRequestResponse | UnauthorizedResponse;
 
 export function useFindManyRuns<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyRunsParams,
   options: {
@@ -1093,16 +1096,16 @@ export function useFindManyRuns<
           Awaited<ReturnType<typeof findManyRuns>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyRuns<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
@@ -1116,62 +1119,62 @@ export function useFindManyRuns<
           Awaited<ReturnType<typeof findManyRuns>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyRuns<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyRuns>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many runs
  */
 
 export function useFindManyRuns<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyRuns>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyRunsQueryOptions(params, options)
+  const queryOptions = getFindManyRunsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyRunsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
@@ -1181,35 +1184,35 @@ export const getFindManyRunsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyRunsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyRunsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyRuns>>> = ({
-    signal
-  }) => findManyRuns(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyRuns(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyRuns>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyRunsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyRuns>>
->
+>;
 export type FindManyRunsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyRunsSuspense<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyRunsParams,
   options: {
@@ -1219,16 +1222,16 @@ export function useFindManyRunsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyRunsSuspense<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
@@ -1238,16 +1241,16 @@ export function useFindManyRunsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyRunsSuspense<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
@@ -1257,20 +1260,20 @@ export function useFindManyRunsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many runs
  */
 
 export function useFindManyRunsSuspense<
   TData = Awaited<ReturnType<typeof findManyRuns>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyRunsParams,
   options?: {
@@ -1280,25 +1283,25 @@ export function useFindManyRunsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyRunsSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyRunsSuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1306,62 +1309,62 @@ export function useFindManyRunsSuspense<
  * @summary Delete a run
  */
 export const getDeleteRunUrl = (id: string | undefined | null) => {
-  return `/workflows/runs/${id}`
-}
+  return `/workflows/runs/${id}`;
+};
 
 export const deleteRun = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteRun200> => {
   return customFetch<DeleteRun200>(getDeleteRunUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteRunMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteRun>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteRun>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteRun"]
+  const mutationKey = ["deleteRun"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteRun>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deleteRun(id, requestOptions)
-  }
+    return deleteRun(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteRunMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteRun>>
->
+>;
 
-export type DeleteRunMutationError = NotFoundResponse
+export type DeleteRunMutationError = NotFoundResponse;
 
 /**
  * @summary Delete a run
@@ -1373,80 +1376,80 @@ export const useDeleteRun = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteRun>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteRunMutationOptions(options)
+  const mutationOptions = getDeleteRunMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find a run
  * @summary Find a run
  */
 export const getGetOneRunUrl = (id: string | undefined | null) => {
-  return `/workflows/runs/${id}`
-}
+  return `/workflows/runs/${id}`;
+};
 
 export const getOneRun = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneRun200> => {
   return customFetch<GetOneRun200>(getGetOneRunUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneRunQueryKey = (id?: string | undefined | null) => {
-  return [`/workflows/runs/${id}`] as const
-}
+  return [`/workflows/runs/${id}`] as const;
+};
 
 export const getGetOneRunQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneRunQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneRunQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneRun>>> = ({
-    signal
-  }) => getOneRun(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneRun(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
-}
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
 
 export type GetOneRunQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneRun>>
->
-export type GetOneRunQueryError = NotFoundResponse
+>;
+export type GetOneRunQueryError = NotFoundResponse;
 
 export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -1460,16 +1463,16 @@ export function useGetOneRun<
           Awaited<ReturnType<typeof getOneRun>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1483,62 +1486,62 @@ export function useGetOneRun<
           Awaited<ReturnType<typeof getOneRun>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a run
  */
 
 export function useGetOneRun<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneRun>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneRunQueryOptions(id, options)
+  const queryOptions = getGetOneRunQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneRunSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1548,33 +1551,33 @@ export const getGetOneRunSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneRunQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneRunQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneRun>>> = ({
-    signal
-  }) => getOneRun(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneRun(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneRun>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneRunSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneRun>>
->
-export type GetOneRunSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneRunSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneRunSuspense<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -1584,16 +1587,16 @@ export function useGetOneRunSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneRunSuspense<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1603,16 +1606,16 @@ export function useGetOneRunSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneRunSuspense<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1622,20 +1625,20 @@ export function useGetOneRunSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a run
  */
 
 export function useGetOneRunSuspense<
   TData = Awaited<ReturnType<typeof getOneRun>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1645,25 +1648,25 @@ export function useGetOneRunSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneRunSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneRunSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1671,65 +1674,65 @@ export function useGetOneRunSuspense<
  * @summary Update a run
  */
 export const getUpdateRunUrl = (id: string | undefined | null) => {
-  return `/workflows/runs/${id}`
-}
+  return `/workflows/runs/${id}`;
+};
 
 export const updateRun = async (
   id: string | undefined | null,
   updateRunBody: UpdateRunBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateRun200> => {
   return customFetch<UpdateRun200>(getUpdateRunUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateRunBody)
-  })
-}
+    body: JSON.stringify(updateRunBody),
+  });
+};
 
 export const getUpdateRunMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateRun>>,
     TError,
     { id: string | undefined | null; data: UpdateRunBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateRun>>,
   TError,
   { id: string | undefined | null; data: UpdateRunBody },
   TContext
 > => {
-  const mutationKey = ["updateRun"]
+  const mutationKey = ["updateRun"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateRun>>,
     { id: string | undefined | null; data: UpdateRunBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updateRun(id, data, requestOptions)
-  }
+    return updateRun(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateRunMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateRun>>
->
-export type UpdateRunMutationBody = UpdateRunBody
-export type UpdateRunMutationError = NotFoundResponse
+>;
+export type UpdateRunMutationBody = UpdateRunBody;
+export type UpdateRunMutationError = NotFoundResponse;
 
 /**
  * @summary Update a run
@@ -1741,90 +1744,90 @@ export const useUpdateRun = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null; data: UpdateRunBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateRun>>,
   TError,
   { id: string | undefined | null; data: UpdateRunBody },
   TContext
 > => {
-  const mutationOptions = getUpdateRunMutationOptions(options)
+  const mutationOptions = getUpdateRunMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Create a new tool
  * @summary Create a new tool
  */
 export const getCreateToolUrl = () => {
-  return `/workflows/tools`
-}
+  return `/workflows/tools`;
+};
 
 export const createTool = async (
   createToolBody: CreateToolBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateTool201> => {
   return customFetch<CreateTool201>(getCreateToolUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createToolBody)
-  })
-}
+    body: JSON.stringify(createToolBody),
+  });
+};
 
 export const getCreateToolMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createTool>>,
     TError,
     { data: CreateToolBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createTool>>,
   TError,
   { data: CreateToolBody },
   TContext
 > => {
-  const mutationKey = ["createTool"]
+  const mutationKey = ["createTool"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createTool>>,
     { data: CreateToolBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createTool(data, requestOptions)
-  }
+    return createTool(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateToolMutationResult = NonNullable<
   Awaited<ReturnType<typeof createTool>>
->
-export type CreateToolMutationBody = CreateToolBody
-export type CreateToolMutationError = BadRequestResponse | UnauthorizedResponse
+>;
+export type CreateToolMutationBody = CreateToolBody;
+export type CreateToolMutationError = BadRequestResponse | UnauthorizedResponse;
 
 /**
  * @summary Create a new tool
  */
 export const useCreateTool = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -1832,20 +1835,20 @@ export const useCreateTool = <
       TError,
       { data: CreateToolBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createTool>>,
   TError,
   { data: CreateToolBody },
   TContext
 > => {
-  const mutationOptions = getCreateToolMutationOptions(options)
+  const mutationOptions = getCreateToolMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many tools
  * @summary Find many tools
@@ -1853,63 +1856,63 @@ export const useCreateTool = <
 export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/workflows/tools?${stringifiedParams}`
-    : `/workflows/tools`
-}
+    : `/workflows/tools`;
+};
 
 export const findManyTools = async (
   params?: FindManyToolsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyTools200> => {
   return customFetch<FindManyTools200>(getFindManyToolsUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyToolsQueryKey = (params?: FindManyToolsParams) => {
-  return [`/workflows/tools`, ...(params ? [params] : [])] as const
-}
+  return [`/workflows/tools`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyToolsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyToolsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyToolsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyTools>>> = ({
-    signal
-  }) => findManyTools(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyTools(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyTools>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyToolsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyTools>>
->
-export type FindManyToolsQueryError = BadRequestResponse | UnauthorizedResponse
+>;
+export type FindManyToolsQueryError = BadRequestResponse | UnauthorizedResponse;
 
 export function useFindManyTools<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyToolsParams,
   options: {
@@ -1923,16 +1926,16 @@ export function useFindManyTools<
           Awaited<ReturnType<typeof findManyTools>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyTools<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
@@ -1946,62 +1949,62 @@ export function useFindManyTools<
           Awaited<ReturnType<typeof findManyTools>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyTools<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many tools
  */
 
 export function useFindManyTools<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyTools>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyToolsQueryOptions(params, options)
+  const queryOptions = getFindManyToolsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyToolsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
@@ -2011,35 +2014,35 @@ export const getFindManyToolsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyToolsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyToolsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyTools>>> = ({
-    signal
-  }) => findManyTools(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyTools(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyTools>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyToolsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyTools>>
->
+>;
 export type FindManyToolsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyToolsSuspense<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyToolsParams,
   options: {
@@ -2049,16 +2052,16 @@ export function useFindManyToolsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyToolsSuspense<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
@@ -2068,16 +2071,16 @@ export function useFindManyToolsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyToolsSuspense<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
@@ -2087,20 +2090,20 @@ export function useFindManyToolsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many tools
  */
 
 export function useFindManyToolsSuspense<
   TData = Awaited<ReturnType<typeof findManyTools>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyToolsParams,
   options?: {
@@ -2110,25 +2113,25 @@ export function useFindManyToolsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyToolsSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyToolsSuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -2136,62 +2139,62 @@ export function useFindManyToolsSuspense<
  * @summary Delete a tool
  */
 export const getDeleteToolUrl = (id: string | undefined | null) => {
-  return `/workflows/tools/${id}`
-}
+  return `/workflows/tools/${id}`;
+};
 
 export const deleteTool = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteTool200> => {
   return customFetch<DeleteTool200>(getDeleteToolUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteToolMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteTool>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteTool>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteTool"]
+  const mutationKey = ["deleteTool"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteTool>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deleteTool(id, requestOptions)
-  }
+    return deleteTool(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteToolMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteTool>>
->
+>;
 
-export type DeleteToolMutationError = NotFoundResponse
+export type DeleteToolMutationError = NotFoundResponse;
 
 /**
  * @summary Delete a tool
@@ -2203,82 +2206,82 @@ export const useDeleteTool = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteTool>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteToolMutationOptions(options)
+  const mutationOptions = getDeleteToolMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find a tool
  * @summary Find a tool
  */
 export const getGetOneToolUrl = (id: string | undefined | null) => {
-  return `/workflows/tools/${id}`
-}
+  return `/workflows/tools/${id}`;
+};
 
 export const getOneTool = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneTool200> => {
   return customFetch<GetOneTool200>(getGetOneToolUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneToolQueryKey = (id?: string | undefined | null) => {
-  return [`/workflows/tools/${id}`] as const
-}
+  return [`/workflows/tools/${id}`] as const;
+};
 
 export const getGetOneToolQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneToolQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneToolQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneTool>>> = ({
-    signal
-  }) => getOneTool(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneTool(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneTool>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneToolQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneTool>>
->
-export type GetOneToolQueryError = NotFoundResponse
+>;
+export type GetOneToolQueryError = NotFoundResponse;
 
 export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -2292,16 +2295,16 @@ export function useGetOneTool<
           Awaited<ReturnType<typeof getOneTool>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -2315,62 +2318,62 @@ export function useGetOneTool<
           Awaited<ReturnType<typeof getOneTool>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a tool
  */
 
 export function useGetOneTool<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneTool>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneToolQueryOptions(id, options)
+  const queryOptions = getGetOneToolQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneToolSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -2380,33 +2383,33 @@ export const getGetOneToolSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneToolQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneToolQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneTool>>> = ({
-    signal
-  }) => getOneTool(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneTool(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneTool>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneToolSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneTool>>
->
-export type GetOneToolSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneToolSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneToolSuspense<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -2416,16 +2419,16 @@ export function useGetOneToolSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneToolSuspense<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -2435,16 +2438,16 @@ export function useGetOneToolSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneToolSuspense<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -2454,20 +2457,20 @@ export function useGetOneToolSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a tool
  */
 
 export function useGetOneToolSuspense<
   TData = Awaited<ReturnType<typeof getOneTool>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -2477,25 +2480,25 @@ export function useGetOneToolSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneToolSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneToolSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -2503,65 +2506,65 @@ export function useGetOneToolSuspense<
  * @summary Update a tool
  */
 export const getUpdateToolUrl = (id: string | undefined | null) => {
-  return `/workflows/tools/${id}`
-}
+  return `/workflows/tools/${id}`;
+};
 
 export const updateTool = async (
   id: string | undefined | null,
   updateToolBody: UpdateToolBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateTool200> => {
   return customFetch<UpdateTool200>(getUpdateToolUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateToolBody)
-  })
-}
+    body: JSON.stringify(updateToolBody),
+  });
+};
 
 export const getUpdateToolMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateTool>>,
     TError,
     { id: string | undefined | null; data: UpdateToolBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateTool>>,
   TError,
   { id: string | undefined | null; data: UpdateToolBody },
   TContext
 > => {
-  const mutationKey = ["updateTool"]
+  const mutationKey = ["updateTool"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateTool>>,
     { id: string | undefined | null; data: UpdateToolBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updateTool(id, data, requestOptions)
-  }
+    return updateTool(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateToolMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateTool>>
->
-export type UpdateToolMutationBody = UpdateToolBody
-export type UpdateToolMutationError = NotFoundResponse
+>;
+export type UpdateToolMutationBody = UpdateToolBody;
+export type UpdateToolMutationError = NotFoundResponse;
 
 /**
  * @summary Update a tool
@@ -2573,17 +2576,17 @@ export const useUpdateTool = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null; data: UpdateToolBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateTool>>,
   TError,
   { id: string | undefined | null; data: UpdateToolBody },
   TContext
 > => {
-  const mutationOptions = getUpdateToolMutationOptions(options)
+  const mutationOptions = getUpdateToolMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};

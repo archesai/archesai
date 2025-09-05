@@ -1,24 +1,24 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { Suspense } from "react"
-import { createFileRoute } from "@tanstack/react-router"
+import { Suspense } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
-import { useGetOneArtifactSuspense } from "@archesai/client"
-import { ArtifactViewer } from "@archesai/ui/components/custom/artifact-viewer"
-import { Card } from "@archesai/ui/components/shadcn/card"
+import { useGetOneArtifactSuspense } from "@archesai/client";
+import { ArtifactViewer } from "@archesai/ui/components/custom/artifact-viewer";
+import { Card } from "@archesai/ui/components/shadcn/card";
 
 import {
   ArtifactDetailsBody,
-  ArtifactDetailsHeader
-} from "#app/_app/artifacts/$artifactId/-details"
+  ArtifactDetailsHeader,
+} from "#app/_app/artifacts/$artifactId/-details";
 
 export const Route = createFileRoute("/_app/artifacts/$artifactId/")({
-  component: ArtifactDetailsPage
-})
+  component: ArtifactDetailsPage,
+});
 
 export default function ArtifactDetailsPage(): JSX.Element {
-  const params = Route.useParams()
-  const artifactId = params.artifactId
+  const params = Route.useParams();
+  const artifactId = params.artifactId;
 
   return (
     <div className="flex h-full w-full gap-4">
@@ -39,17 +39,17 @@ export default function ArtifactDetailsPage(): JSX.Element {
         </Suspense>
       </Card>
     </div>
-  )
+  );
 }
 
 function ArtifactViewerWrapper({
-  artifactId
+  artifactId,
 }: {
-  artifactId: string
+  artifactId: string;
 }): JSX.Element {
   const {
-    data: { data: artifact }
-  } = useGetOneArtifactSuspense(artifactId)
+    data: { data: artifact },
+  } = useGetOneArtifactSuspense(artifactId);
 
-  return <ArtifactViewer artifact={artifact} />
+  return <ArtifactViewer artifact={artifact} />;
 }

@@ -1,36 +1,37 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useState } from "react"
+import { useState } from "react";
 
-import type { CreateArtifactBody, UpdateArtifactBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { CreateArtifactBody, UpdateArtifactBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
 import {
   createArtifact,
   updateArtifact,
-  useGetOneArtifactSuspense
-} from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
+  useGetOneArtifactSuspense,
+} from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
 // import ImportCard from '@archesai/ui/components/custom/import-card'
-import { Input } from "@archesai/ui/components/shadcn/input"
+import { Input } from "@archesai/ui/components/shadcn/input";
 import {
   Tabs,
   TabsContent,
   TabsList,
-  TabsTrigger
-} from "@archesai/ui/components/shadcn/tabs"
-import { Textarea } from "@archesai/ui/components/shadcn/textarea"
-import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  TabsTrigger,
+} from "@archesai/ui/components/shadcn/tabs";
+import { Textarea } from "@archesai/ui/components/shadcn/textarea";
+import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
 export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
-  const [tab, setTab] = useState<"file" | "text" | "url">("file")
+  const [tab, setTab] = useState<"file" | "text" | "url">("file");
 
-  const { data: existingContentResponse, error } = useGetOneArtifactSuspense(id)
+  const { data: existingContentResponse, error } =
+    useGetOneArtifactSuspense(id);
 
   if (error) {
-    return <div>Content not found</div>
+    return <div>Content not found</div>;
   }
-  const content = existingContentResponse.data
+  const content = existingContentResponse.data;
 
   const formFields: FormFieldConfig[] = [
     {
@@ -44,7 +45,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
           placeholder="Content name here..."
           type="text"
         />
-      )
+      ),
     },
     {
       description:
@@ -56,7 +57,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
           <TabsList className="grid w-full grid-cols-3 px-1">
             <TabsTrigger
               onClick={() => {
-                setTab("text")
+                setTab("text");
               }}
               value="text"
             >
@@ -64,7 +65,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
-                setTab("file")
+                setTab("file");
               }}
               value="file"
             >
@@ -72,7 +73,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
-                setTab("url")
+                setTab("url");
               }}
               value="url"
             >
@@ -102,9 +103,9 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
             /> */}
           </TabsContent>
         </Tabs>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <GenericForm<CreateArtifactBody, UpdateArtifactBody>
@@ -113,12 +114,12 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
       fields={formFields}
       isUpdateForm={!!id}
       onSubmitCreate={async (createArtifactDto) => {
-        await createArtifact(createArtifactDto)
+        await createArtifact(createArtifactDto);
       }}
       onSubmitUpdate={async (updateContentDto) => {
-        await updateArtifact(id, updateContentDto)
+        await updateArtifact(id, updateContentDto);
       }}
       title="Configuration"
     />
-  )
+  );
 }

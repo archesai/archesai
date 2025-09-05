@@ -1,21 +1,21 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useQueryClient } from "@tanstack/react-query"
-import { useNavigate, useRouter } from "@tanstack/react-router"
-import { toast } from "sonner"
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useRouter } from "@tanstack/react-router";
+import { toast } from "sonner";
 
-import type { UserEntity } from "#types/entities"
+import type { UserEntity } from "#types/entities";
 
 import {
   BadgeCheckIcon,
   ChevronsUpDownIcon,
   CreditCardIcon,
   LogOutIcon,
-  SparklesIcon
-} from "#components/custom/icons"
-import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar"
-import { Badge } from "#components/shadcn/badge"
-import { Button } from "#components/shadcn/button"
+  SparklesIcon,
+} from "#components/custom/icons";
+import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
+import { Badge } from "#components/shadcn/badge";
+import { Button } from "#components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,45 +28,45 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger
-} from "#components/shadcn/dropdown-menu"
+  DropdownMenuTrigger,
+} from "#components/shadcn/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar
-} from "#components/shadcn/sidebar"
+  useSidebar,
+} from "#components/shadcn/sidebar";
 
 interface UserButtonProps {
   memberships?: {
     data: {
-      id: string
-      organizationId: string
-    }[]
-  }
-  onLogout?: () => Promise<void>
+      id: string;
+      organizationId: string;
+    }[];
+  };
+  onLogout?: () => Promise<void>;
   onUpdateUser?: (
     data: {
-      data: UserEntity
-      id: string
+      data: UserEntity;
+      id: string;
     },
     options?: {
-      onSuccess?: () => void
-    }
-  ) => Promise<void>
+      onSuccess?: () => void;
+    },
+  ) => Promise<void>;
   sessionData?: {
     session: {
-      activeOrganizationId?: null | string
-    }
+      activeOrganizationId?: null | string;
+    };
     user: {
-      email: string
-      id: string
-      image?: null | string
-      name: string
-    }
-  }
-  side?: "bottom" | "left" | "right" | "top"
-  size?: "default" | "lg" | "sm" | null | undefined
+      email: string;
+      id: string;
+      image?: null | string;
+      name: string;
+    };
+  };
+  side?: "bottom" | "left" | "right" | "top";
+  size?: "default" | "lg" | "sm" | null | undefined;
 }
 
 export function UserButton({
@@ -74,13 +74,13 @@ export function UserButton({
   onLogout,
   onUpdateUser,
   sessionData,
-  size = "lg"
+  size = "lg",
 }: UserButtonProps): JSX.Element {
-  const defaultOrgname = "Arches Platform"
-  const { isMobile } = useSidebar()
-  const navigation = useNavigate()
-  const router = useRouter()
-  const queryClient = useQueryClient()
+  const defaultOrgname = "Arches Platform";
+  const { isMobile } = useSidebar();
+  const navigation = useNavigate();
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   // If no session data is provided, render a placeholder
   if (!sessionData) {
@@ -98,7 +98,7 @@ export function UserButton({
           </Button>
         </SidebarMenuItem>
       </SidebarMenu>
-    )
+    );
   }
 
   return (
@@ -196,17 +196,17 @@ export function UserButton({
                           await onUpdateUser(
                             {
                               data: {} as UserEntity,
-                              id: sessionData.user.id
+                              id: sessionData.user.id,
                             },
                             {
                               onSuccess: () => {
                                 toast("Organization changed", {
                                   description: `You have
-                              switched to ${membership.organizationId}`
-                                })
-                              }
-                            }
-                          )
+                              switched to ${membership.organizationId}`,
+                                });
+                              },
+                            },
+                          );
                         }
                       }}
                     >
@@ -240,16 +240,16 @@ export function UserButton({
             <DropdownMenuItem
               onClick={async () => {
                 if (onLogout) {
-                  await onLogout()
+                  await onLogout();
                 }
                 await navigation({
-                  to: "/auth/login"
-                })
-                await router.invalidate()
-                await queryClient.invalidateQueries()
+                  to: "/auth/login",
+                });
+                await router.invalidate();
+                await queryClient.invalidateQueries();
                 toast("Logged out successfully", {
-                  description: "You have been logged out."
-                })
+                  description: "You have been logged out.",
+                });
               }}
             >
               <LogOutIcon />
@@ -259,5 +259,5 @@ export function UserButton({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

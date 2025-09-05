@@ -1,4 +1,4 @@
-import { AspectRatio as AspectRatioPrimitive } from "radix-ui"
+import { AspectRatio as AspectRatioPrimitive } from "radix-ui";
 
 function AspectRatio({
   ...props
@@ -8,7 +8,7 @@ function AspectRatio({
       data-slot="aspect-ratio"
       {...props}
     />
-  )
+  );
 }
 
-export { AspectRatio }
+export { AspectRatio };

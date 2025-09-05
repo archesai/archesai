@@ -1,46 +1,46 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useState } from "react"
+import { useState } from "react";
 
-import type { RunEntity } from "#types/entities"
+import type { RunEntity } from "#types/entities";
 
 import {
   BanIcon,
   CheckCircle2Icon,
   ClockArrowUpIcon,
-  Loader2Icon
-} from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+  Loader2Icon,
+} from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "#components/shadcn/popover"
+  PopoverTrigger,
+} from "#components/shadcn/popover";
 
 export const StatusTypeEnumButton = ({
   onClick,
-  run
+  run,
 }: {
-  onClick?: () => void
-  run: RunEntity
-  size?: "lg" | "sm"
+  onClick?: () => void;
+  run: RunEntity;
+  size?: "lg" | "sm";
 }): JSX.Element => {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const renderIcon = () => {
     switch (run.status) {
       case "completed":
-        return <CheckCircle2Icon className="text-green-500" />
+        return <CheckCircle2Icon className="text-green-500" />;
       case "failed":
-        return <BanIcon className="text-destructive" />
+        return <BanIcon className="text-destructive" />;
       case "pending":
-        return <ClockArrowUpIcon className="text-orange-400" />
+        return <ClockArrowUpIcon className="text-orange-400" />;
       case "running":
-        return <Loader2Icon className="animate-spin text-primary" />
+        return <Loader2Icon className="animate-spin text-primary" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <Popover
@@ -88,5 +88,5 @@ export const StatusTypeEnumButton = ({
         )}
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};

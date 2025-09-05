@@ -1,11 +1,11 @@
-"use no memo"
+"use no memo";
 
-import type { Table as ReactTable } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Table as ReactTable } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import { flexRender } from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
 import {
   Table,
@@ -13,17 +13,17 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from "#components/shadcn/table"
+  TableRow,
+} from "#components/shadcn/table";
 
 export interface TableViewProps<TEntity extends BaseEntity> {
-  table: ReactTable<TEntity>
+  table: ReactTable<TEntity>;
 }
 
 export function TableView<TEntity extends BaseEntity>(
-  props: TableViewProps<TEntity>
+  props: TableViewProps<TEntity>,
 ): JSX.Element {
-  const columns = props.table.getAllColumns()
+  const columns = props.table.getAllColumns();
   return (
     <div>
       <Table>
@@ -36,7 +36,7 @@ export function TableView<TEntity extends BaseEntity>(
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext()
+                        header.getContext(),
                       )}
                 </TableHead>
               ))}
@@ -70,5 +70,5 @@ export function TableView<TEntity extends BaseEntity>(
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

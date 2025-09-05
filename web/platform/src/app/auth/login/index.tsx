@@ -1,26 +1,26 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useQueryClient } from "@tanstack/react-query"
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 
-import type { LoginBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { LoginBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
-import { useLogin } from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Button } from "@archesai/ui/components/shadcn/button"
-import { Input } from "@archesai/ui/components/shadcn/input"
+import { useLogin } from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Button } from "@archesai/ui/components/shadcn/button";
+import { Input } from "@archesai/ui/components/shadcn/input";
 
-import { TermsIndicator } from "#components/terms-indicator"
+import { TermsIndicator } from "#components/terms-indicator";
 
 export const Route = createFileRoute("/auth/login/")({
-  component: LoginPage
-})
+  component: LoginPage,
+});
 
 export default function LoginPage(): JSX.Element {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const { mutateAsync: login } = useLogin()
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { mutateAsync: login } = useLogin();
 
   const formFields: FormFieldConfig<LoginBody>[] = [
     {
@@ -34,7 +34,7 @@ export default function LoginPage(): JSX.Element {
           {...field}
           type="email"
         />
-      )
+      ),
     },
     {
       defaultValue: "",
@@ -47,9 +47,9 @@ export default function LoginPage(): JSX.Element {
           placeholder="Enter your password..."
           type="password"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <>
@@ -62,12 +62,12 @@ export default function LoginPage(): JSX.Element {
           await login({
             data: {
               email: data.email,
-              password: data.password
-            }
-          })
-          await router.invalidate()
-          queryClient.clear()
-          await router.navigate({ to: "/" })
+              password: data.password,
+            },
+          });
+          await router.invalidate();
+          queryClient.clear();
+          await router.navigate({ to: "/" });
         }}
         postContent={
           <div className="text-center text-sm">
@@ -126,5 +126,5 @@ export default function LoginPage(): JSX.Element {
       />
       <TermsIndicator />
     </>
-  )
+  );
 }

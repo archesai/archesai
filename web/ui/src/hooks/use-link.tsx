@@ -1,87 +1,87 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { LinkProps as TanStackLinkProps } from "@tanstack/react-router"
-import type { ComponentPropsWithoutRef, ReactNode } from "react"
+import type { LinkProps as TanStackLinkProps } from "@tanstack/react-router";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { createContext, useCallback, useContext } from "react"
+import { createContext, useCallback, useContext } from "react";
 
 export interface AnalyticsLinkProps {
   // Analytics tracking
-  trackClick?: boolean
-  trackingAction?: string
-  trackingCategory?: string
-  trackingLabel?: string
-  trackingValue?: number
+  trackClick?: boolean;
+  trackingAction?: string;
+  trackingCategory?: string;
+  trackingLabel?: string;
+  trackingValue?: number;
 }
 
 export interface BaseLinkProps
   extends Omit<ComponentPropsWithoutRef<"a">, "href" | "onClick"> {
-  children: ReactNode
-  href: string
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
+  children: ReactNode;
+  href: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface ExternalLinkProps {
-  download?: boolean | string
-  external?: boolean
-  newTab?: boolean
-  noOpener?: boolean
-  noReferrer?: boolean
+  download?: boolean | string;
+  external?: boolean;
+  newTab?: boolean;
+  noOpener?: boolean;
+  noReferrer?: boolean;
 }
 
 export type FilterUndefined<T> = {
-  [K in keyof T as T[K] extends undefined ? never : K]: T[K]
-}
+  [K in keyof T as T[K] extends undefined ? never : K]: T[K];
+};
 
-export type LinkComponent = React.ComponentType<SmartLinkProps>
+export type LinkComponent = React.ComponentType<SmartLinkProps>;
 
 export type SmartLinkProps = AnalyticsLinkProps &
   BaseLinkProps &
   ExternalLinkProps &
-  TanStackRouterProps
+  TanStackRouterProps;
 
 export interface TanStackRouterProps {
-  disabled?: TanStackLinkProps["disabled"]
-  hash?: TanStackLinkProps["hash"]
-  mask?: TanStackLinkProps["mask"]
-  params?: TanStackLinkProps["params"]
-  preload?: TanStackLinkProps["preload"]
-  preloadDelay?: TanStackLinkProps["preloadDelay"]
-  preserveSearch?: boolean
-  replace?: TanStackLinkProps["replace"]
-  resetScroll?: TanStackLinkProps["resetScroll"]
-  resetSearch?: boolean
-  search?: TanStackLinkProps["search"]
-  state?: TanStackLinkProps["state"]
+  disabled?: TanStackLinkProps["disabled"];
+  hash?: TanStackLinkProps["hash"];
+  mask?: TanStackLinkProps["mask"];
+  params?: TanStackLinkProps["params"];
+  preload?: TanStackLinkProps["preload"];
+  preloadDelay?: TanStackLinkProps["preloadDelay"];
+  preserveSearch?: boolean;
+  replace?: TanStackLinkProps["replace"];
+  resetScroll?: TanStackLinkProps["resetScroll"];
+  resetSearch?: boolean;
+  search?: TanStackLinkProps["search"];
+  state?: TanStackLinkProps["state"];
 }
 
 // Context definition
 interface LinkContextType {
-  isExternalUrl?: (url: string) => boolean
-  Link: LinkComponent
+  isExternalUrl?: (url: string) => boolean;
+  Link: LinkComponent;
   trackEvent?: (
     category: string,
     action: string,
     label?: string,
-    value?: number
-  ) => void
+    value?: number,
+  ) => void;
 }
 
 export function filterUndefined<T extends Record<string, unknown>>(
-  obj: T
+  obj: T,
 ): FilterUndefined<T> {
   return Object.fromEntries(
-    Object.entries(obj).filter(([_, value]) => value !== undefined)
-  ) as FilterUndefined<T>
+    Object.entries(obj).filter(([_, value]) => value !== undefined),
+  ) as FilterUndefined<T>;
 }
 
-const LinkContext = createContext<LinkContextType | undefined>(undefined)
+const LinkContext = createContext<LinkContextType | undefined>(undefined);
 
 export function buildTanStackProps(
   props: TanStackRouterProps & {
-    className?: string
-    href: string
-    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
-  }
+    className?: string;
+    href: string;
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  },
 ): TanStackLinkProps {
   const {
     className,
@@ -96,26 +96,26 @@ export function buildTanStackProps(
     replace,
     resetScroll,
     search,
-    state
-  } = props
+    state,
+  } = props;
 
   // Build props object with only defined values
-  const tanstackProps: Record<string, unknown> = { to: href }
+  const tanstackProps: Record<string, unknown> = { to: href };
 
-  if (search !== undefined) tanstackProps.search = search
-  if (params !== undefined) tanstackProps.params = params
-  if (hash !== undefined) tanstackProps.hash = hash
-  if (state !== undefined) tanstackProps.state = state
-  if (mask !== undefined) tanstackProps.mask = mask
-  if (replace !== undefined) tanstackProps.replace = replace
-  if (resetScroll !== undefined) tanstackProps.resetScroll = resetScroll
-  if (preload !== undefined) tanstackProps.preload = preload
-  if (preloadDelay !== undefined) tanstackProps.preloadDelay = preloadDelay
-  if (disabled !== undefined) tanstackProps.disabled = disabled
-  if (className !== undefined) tanstackProps.className = className
-  if (onClick !== undefined) tanstackProps.onClick = onClick
+  if (search !== undefined) tanstackProps.search = search;
+  if (params !== undefined) tanstackProps.params = params;
+  if (hash !== undefined) tanstackProps.hash = hash;
+  if (state !== undefined) tanstackProps.state = state;
+  if (mask !== undefined) tanstackProps.mask = mask;
+  if (replace !== undefined) tanstackProps.replace = replace;
+  if (resetScroll !== undefined) tanstackProps.resetScroll = resetScroll;
+  if (preload !== undefined) tanstackProps.preload = preload;
+  if (preloadDelay !== undefined) tanstackProps.preloadDelay = preloadDelay;
+  if (disabled !== undefined) tanstackProps.disabled = disabled;
+  if (className !== undefined) tanstackProps.className = className;
+  if (onClick !== undefined) tanstackProps.onClick = onClick;
 
-  return tanstackProps as TanStackLinkProps
+  return tanstackProps as TanStackLinkProps;
 }
 
 // Default implementations
@@ -128,17 +128,17 @@ const defaultIsExternalUrl = (url: string): boolean => {
       url.startsWith("tel:") ||
       url.startsWith("ftp://") ||
       url.startsWith("//")
-    )
+    );
   } catch {
-    return false
+    return false;
   }
-}
+};
 
 const defaultTrackEvent = (
   category: string,
   action: string,
   label?: string,
-  value?: number
+  value?: number,
 ) => {
   // Default analytics implementation
   if (typeof window !== "undefined") {
@@ -158,10 +158,10 @@ const defaultTrackEvent = (
 
     // Console log for development
     if (process.env.COLLECT === "development") {
-      console.debug("📊 Analytics Event:", { action, category, label, value })
+      console.debug("📊 Analytics Event:", { action, category, label, value });
     }
   }
-}
+};
 
 // Default anchor link component
 const DefaultLink: LinkComponent = ({
@@ -178,10 +178,10 @@ const DefaultLink: LinkComponent = ({
   trackingLabel,
   ...props
 }) => {
-  const context = useContext(LinkContext)
+  const context = useContext(LinkContext);
   const isExternal =
-    context?.isExternalUrl?.(href) ?? defaultIsExternalUrl(href)
-  const trackEvent = context?.trackEvent ?? defaultTrackEvent
+    context?.isExternalUrl?.(href) ?? defaultIsExternalUrl(href);
+  const trackEvent = context?.trackEvent ?? defaultTrackEvent;
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -191,12 +191,12 @@ const DefaultLink: LinkComponent = ({
           trackingCategory,
           trackingAction,
           trackingLabel ?? href,
-          undefined
-        )
+          undefined,
+        );
       }
 
       // Call original onClick
-      onClick?.(e)
+      onClick?.(e);
     },
     [
       trackClick,
@@ -205,9 +205,9 @@ const DefaultLink: LinkComponent = ({
       trackingLabel,
       href,
       trackEvent,
-      onClick
-    ]
-  )
+      onClick,
+    ],
+  );
 
   // Build props for external links
   const externalProps =
@@ -217,9 +217,9 @@ const DefaultLink: LinkComponent = ({
             [noOpener && "noopener", noReferrer && "noreferrer"]
               .filter(Boolean)
               .join(" ") || undefined,
-          target: newTab ? "_blank" : undefined
+          target: newTab ? "_blank" : undefined,
         }
-      : {}
+      : {};
 
   return (
     <a
@@ -230,58 +230,58 @@ const DefaultLink: LinkComponent = ({
     >
       {children}
     </a>
-  )
-}
+  );
+};
 
 // Hook to access the Link component
 export const useLinkComponent = (): LinkComponent => {
-  const context = useContext(LinkContext)
-  return context?.Link ?? DefaultLink
-}
+  const context = useContext(LinkContext);
+  return context?.Link ?? DefaultLink;
+};
 
 // Hook to access full context
 export const useLinkContext = (): {
-  hasProvider: boolean
-  isExternalUrl: (url: string) => boolean
-  Link: LinkComponent
+  hasProvider: boolean;
+  isExternalUrl: (url: string) => boolean;
+  Link: LinkComponent;
   trackEvent: (
     category: string,
     action: string,
     label?: string,
-    value?: number
-  ) => void
+    value?: number,
+  ) => void;
 } => {
-  const context = useContext(LinkContext)
+  const context = useContext(LinkContext);
   return {
     hasProvider: !!context,
     isExternalUrl: context?.isExternalUrl ?? defaultIsExternalUrl,
     Link: context?.Link ?? DefaultLink,
-    trackEvent: context?.trackEvent ?? defaultTrackEvent
-  }
-}
+    trackEvent: context?.trackEvent ?? defaultTrackEvent,
+  };
+};
 
 // Provider component
 interface LinkProviderProps {
-  children: ReactNode
-  isExternalUrl?: (url: string) => boolean
-  Link?: LinkComponent
+  children: ReactNode;
+  isExternalUrl?: (url: string) => boolean;
+  Link?: LinkComponent;
   trackEvent?: (
     category: string,
     action: string,
     label?: string,
-    value?: number
-  ) => void
+    value?: number,
+  ) => void;
 }
 
 export const LinkProvider: React.FC<LinkProviderProps> = ({
   children,
   isExternalUrl = defaultIsExternalUrl,
   Link = DefaultLink,
-  trackEvent = defaultTrackEvent
+  trackEvent = defaultTrackEvent,
 }) => {
   return (
     <LinkContext.Provider value={{ isExternalUrl, Link, trackEvent }}>
       {children}
     </LinkContext.Provider>
-  )
-}
+  );
+};

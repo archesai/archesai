@@ -1,42 +1,42 @@
-"use no memo"
+"use no memo";
 
-import type { Table } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Table } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import * as React from "react"
+import * as React from "react";
 
 // import { toast } from 'sonner'
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
-import { DownloadIcon, TrashIcon } from "#components/custom/icons"
+import { DownloadIcon, TrashIcon } from "#components/custom/icons";
 import {
   DataTableActionBar,
   DataTableActionBarAction,
-  DataTableActionBarSelection
-} from "#components/datatable/components/data-table-action-bar"
-import { Separator } from "#components/shadcn/separator"
-import { exportTableToCSV } from "#lib/export"
+  DataTableActionBarSelection,
+} from "#components/datatable/components/data-table-action-bar";
+import { Separator } from "#components/shadcn/separator";
+import { exportTableToCSV } from "#lib/export";
 
-const _actions = ["export", "delete"] as const
+const _actions = ["export", "delete"] as const;
 
-type Action = (typeof _actions)[number]
+type Action = (typeof _actions)[number];
 
 interface TableActionBarProps<TEntity extends BaseEntity> {
-  table: Table<TEntity>
+  table: Table<TEntity>;
 }
 
 export function TasksTableActionBar<TEntity extends BaseEntity>({
-  table
+  table,
 }: TableActionBarProps<TEntity>): JSX.Element {
-  const rows = table.getFilteredSelectedRowModel().rows
-  const [isPending, startTransition] = React.useTransition()
-  const [currentAction, setCurrentAction] = React.useState<Action | null>(null)
+  const rows = table.getFilteredSelectedRowModel().rows;
+  const [isPending, startTransition] = React.useTransition();
+  const [currentAction, setCurrentAction] = React.useState<Action | null>(null);
 
   const getIsActionPending = React.useCallback(
     (action: Action) => isPending && currentAction === action,
-    [isPending, currentAction]
-  )
+    [isPending, currentAction],
+  );
 
   // const onUpdate = React.useCallback(
   //   ({
@@ -64,14 +64,14 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
   // )
 
   const onExport = React.useCallback(() => {
-    setCurrentAction("export")
+    setCurrentAction("export");
     startTransition(() => {
       exportTableToCSV(table, {
         excludeColumns: ["select", "actions"],
-        onlySelected: true
-      })
-    })
-  }, [table])
+        onlySelected: true,
+      });
+    });
+  }, [table]);
 
   // const onDelete = React.useCallback(() => {
   //   setCurrentAction('delete')
@@ -173,5 +173,5 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
         </DataTableActionBarAction>
       </div>
     </DataTableActionBar>
-  )
+  );
 }

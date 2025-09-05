@@ -1,6 +1,6 @@
-import { useCallback } from "react"
+import { useCallback } from "react";
 
-type PossibleRef<T> = React.Ref<T> | undefined
+type PossibleRef<T> = React.Ref<T> | undefined;
 
 /**
  * Composes multiple refs into a single callback ref.
@@ -9,31 +9,31 @@ type PossibleRef<T> = React.Ref<T> | undefined
 function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
   return (node) => {
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    const cleanups: ((() => void) | void)[] = []
+    const cleanups: ((() => void) | void)[] = [];
 
     for (const ref of refs) {
-      let cleanup
+      let cleanup;
       if (typeof ref === "function") {
-        cleanup = ref(node)
+        cleanup = ref(node);
       } else {
-        setRef(ref, node)
-        cleanup = undefined
+        setRef(ref, node);
+        cleanup = undefined;
       }
-      cleanups.push(cleanup)
+      cleanups.push(cleanup);
     }
 
     // Return a cleanup function in React 19 style if any ref returned one
     return () => {
       for (let i = 0; i < refs.length; i++) {
-        const cleanup = cleanups[i]
+        const cleanup = cleanups[i];
         if (typeof cleanup === "function") {
-          cleanup()
+          cleanup();
         } else {
-          setRef(refs[i], null)
+          setRef(refs[i], null);
         }
       }
-    }
-  }
+    };
+  };
 }
 
 /**
@@ -41,10 +41,10 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
  */
 function setRef<T>(ref: PossibleRef<T>, value: null | T): void {
   if (typeof ref === "function") {
-    ref(value)
+    ref(value);
   } else if (ref != null) {
     // ref object (e.g. useRef)
-    ref.current = value
+    ref.current = value;
   }
 }
 
@@ -55,10 +55,10 @@ function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
   // Create stable callback without dependencies since refs are passed directly
   return useCallback(
     (node: null | T) => {
-      return composeRefs(...refs)(node)
+      return composeRefs(...refs)(node);
     },
-    [refs]
-  )
+    [refs],
+  );
 }
 
-export { composeRefs, useComposedRefs }
+export { composeRefs, useComposedRefs };

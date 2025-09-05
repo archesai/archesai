@@ -1,30 +1,30 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
 import type {
   CreateOrganizationBody,
-  UpdateOrganizationMutationBody
-} from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+  UpdateOrganizationMutationBody,
+} from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
 import {
   useCreateOrganization,
   useGetOneOrganizationSuspense,
   useGetOneSessionSuspense,
-  useUpdateOrganization
-} from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Input } from "@archesai/ui/components/shadcn/input"
-import { ORGANIZATION_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  useUpdateOrganization,
+} from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Input } from "@archesai/ui/components/shadcn/input";
+import { ORGANIZATION_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
 export default function OrganizationForm(): JSX.Element {
   const {
-    data: { data: session }
-  } = useGetOneSessionSuspense("current")
-  const { mutateAsync: createOrganization } = useCreateOrganization()
-  const { mutateAsync: updateOrganization } = useUpdateOrganization()
+    data: { data: session },
+  } = useGetOneSessionSuspense("current");
+  const { mutateAsync: createOrganization } = useCreateOrganization();
+  const { mutateAsync: updateOrganization } = useUpdateOrganization();
   const {
-    data: { data: organization }
-  } = useGetOneOrganizationSuspense(session.activeOrganizationId)
+    data: { data: organization },
+  } = useGetOneOrganizationSuspense(session.activeOrganizationId);
 
   const formFields: FormFieldConfig[] = [
     {
@@ -38,7 +38,7 @@ export default function OrganizationForm(): JSX.Element {
           disabled={true}
           type="text"
         />
-      )
+      ),
     },
     {
       defaultValue: organization.billingEmail ?? "",
@@ -51,9 +51,9 @@ export default function OrganizationForm(): JSX.Element {
           disabled={true}
           type="email"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <GenericForm<CreateOrganizationBody, UpdateOrganizationMutationBody>
@@ -63,19 +63,19 @@ export default function OrganizationForm(): JSX.Element {
       isUpdateForm={true}
       onSubmitCreate={async (createOrganizationDto: CreateOrganizationBody) => {
         await createOrganization({
-          data: createOrganizationDto
-        })
+          data: createOrganizationDto,
+        });
       }}
       onSubmitUpdate={async (
-        updateOrganizationDto: UpdateOrganizationMutationBody
+        updateOrganizationDto: UpdateOrganizationMutationBody,
       ) => {
         await updateOrganization({
           data: updateOrganizationDto,
-          id: session.activeOrganizationId
-        })
+          id: session.activeOrganizationId,
+        });
       }}
       showCard={true}
       title={"Organiation"}
     />
-  )
+  );
 }

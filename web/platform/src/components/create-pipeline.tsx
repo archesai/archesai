@@ -1,9 +1,9 @@
-import type { Connection, Edge, Node } from "@xyflow/react"
-import type { JSX } from "react"
+import type { Connection, Edge, Node } from "@xyflow/react";
+import type { JSX } from "react";
 
 // import '@xyflow/react/dist/style.css'
 
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react";
 import {
   addEdge,
   Background,
@@ -14,21 +14,21 @@ import {
   Position,
   ReactFlow,
   useEdgesState,
-  useNodesState
-} from "@xyflow/react"
+  useNodesState,
+} from "@xyflow/react";
 
-import { Button } from "@archesai/ui/components/shadcn/button"
-import { Card } from "@archesai/ui/components/shadcn/card"
+import { Button } from "@archesai/ui/components/shadcn/button";
+import { Card } from "@archesai/ui/components/shadcn/card";
 
 // PipelineStepEntity doesn't exist in generated types yet
 interface PipelineStepEntity {
-  id: string
-  prerequisites: string[]
-  toolId: string
+  id: string;
+  prerequisites: string[];
+  toolId: string;
 }
 
 export default function CreatePipelinePage(): JSX.Element {
-  return <CreatePipelineContent />
+  return <CreatePipelineContent />;
 }
 
 function RunFormNode({ data }: { data: PipelineStepEntity }) {
@@ -49,22 +49,22 @@ function RunFormNode({ data }: { data: PipelineStepEntity }) {
         type="source"
       />
     </div>
-  )
+  );
 }
 
-const initialNodes: Node[] = []
-const initialEdges: Edge[] = []
+const initialNodes: Node[] = [];
+const initialEdges: Edge[] = [];
 
 export const CreatePipelineContent = (): JSX.Element => {
-  const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback(
     (params: Connection | Edge) => {
-      setEdges((edges) => addEdge<Edge>(params, edges))
+      setEdges((edges) => addEdge<Edge>(params, edges));
     },
-    [setEdges]
-  )
+    [setEdges],
+  );
 
   // useEffect(() => {
   //   if (pipelines?.data[0]) {
@@ -91,7 +91,7 @@ export const CreatePipelineContent = (): JSX.Element => {
   //   }
   // }, [pipelines, onConnect, setNodes])
 
-  const nodeTypes = useMemo(() => ({ runFormNode: RunFormNode }), [])
+  const nodeTypes = useMemo(() => ({ runFormNode: RunFormNode }), []);
 
   return (
     <ReactFlow
@@ -118,5 +118,5 @@ export const CreatePipelineContent = (): JSX.Element => {
         size={1}
       />
     </ReactFlow>
-  )
-}
+  );
+};

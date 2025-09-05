@@ -19,11 +19,11 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from "@tanstack/react-query"
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import qs from "qs"
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -44,85 +44,85 @@ import type {
   UpdateArtifact200,
   UpdateArtifactBody,
   UpdateLabel200,
-  UpdateLabelBody
-} from "../orval.schemas"
+  UpdateLabelBody,
+} from "../orval.schemas";
 
-import { customFetch } from "../../fetcher"
+import { customFetch } from "../../fetcher";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Create a new artifact
  * @summary Create a new artifact
  */
 export const getCreateArtifactUrl = () => {
-  return `/content/artifacts`
-}
+  return `/content/artifacts`;
+};
 
 export const createArtifact = async (
   createArtifactBody: CreateArtifactBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateArtifact201> => {
   return customFetch<CreateArtifact201>(getCreateArtifactUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createArtifactBody)
-  })
-}
+    body: JSON.stringify(createArtifactBody),
+  });
+};
 
 export const getCreateArtifactMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createArtifact>>,
     TError,
     { data: CreateArtifactBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createArtifact>>,
   TError,
   { data: CreateArtifactBody },
   TContext
 > => {
-  const mutationKey = ["createArtifact"]
+  const mutationKey = ["createArtifact"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createArtifact>>,
     { data: CreateArtifactBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createArtifact(data, requestOptions)
-  }
+    return createArtifact(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateArtifactMutationResult = NonNullable<
   Awaited<ReturnType<typeof createArtifact>>
->
-export type CreateArtifactMutationBody = CreateArtifactBody
+>;
+export type CreateArtifactMutationBody = CreateArtifactBody;
 export type CreateArtifactMutationError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new artifact
  */
 export const useCreateArtifact = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -130,20 +130,20 @@ export const useCreateArtifact = <
       TError,
       { data: CreateArtifactBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createArtifact>>,
   TError,
   { data: CreateArtifactBody },
   TContext
 > => {
-  const mutationOptions = getCreateArtifactMutationOptions(options)
+  const mutationOptions = getCreateArtifactMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many artifacts
  * @summary Find many artifacts
@@ -151,33 +151,33 @@ export const useCreateArtifact = <
 export const getFindManyArtifactsUrl = (params?: FindManyArtifactsParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/content/artifacts?${stringifiedParams}`
-    : `/content/artifacts`
-}
+    : `/content/artifacts`;
+};
 
 export const findManyArtifacts = async (
   params?: FindManyArtifactsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyArtifacts200> => {
   return customFetch<FindManyArtifacts200>(getFindManyArtifactsUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyArtifactsQueryKey = (
-  params?: FindManyArtifactsParams
+  params?: FindManyArtifactsParams,
 ) => {
-  return [`/content/artifacts`, ...(params ? [params] : [])] as const
-}
+  return [`/content/artifacts`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyArtifactsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -187,36 +187,36 @@ export const getFindManyArtifactsQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyArtifactsQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyArtifactsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyArtifacts>>
-  > = ({ signal }) => findManyArtifacts(params, { signal, ...requestOptions })
+  > = ({ signal }) => findManyArtifacts(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyArtifacts>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyArtifactsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyArtifacts>>
->
+>;
 export type FindManyArtifactsQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyArtifacts<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyArtifactsParams,
   options: {
@@ -234,16 +234,16 @@ export function useFindManyArtifacts<
           Awaited<ReturnType<typeof findManyArtifacts>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyArtifacts<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -261,16 +261,16 @@ export function useFindManyArtifacts<
           Awaited<ReturnType<typeof findManyArtifacts>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyArtifacts<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -280,20 +280,20 @@ export function useFindManyArtifacts<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many artifacts
  */
 
 export function useFindManyArtifacts<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -303,28 +303,28 @@ export function useFindManyArtifacts<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyArtifactsQueryOptions(params, options)
+  const queryOptions = getFindManyArtifactsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyArtifactsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -334,36 +334,36 @@ export const getFindManyArtifactsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyArtifactsQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyArtifactsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyArtifacts>>
-  > = ({ signal }) => findManyArtifacts(params, { signal, ...requestOptions })
+  > = ({ signal }) => findManyArtifacts(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyArtifacts>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyArtifactsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyArtifacts>>
->
+>;
 export type FindManyArtifactsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyArtifactsSuspense<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyArtifactsParams,
   options: {
@@ -373,16 +373,16 @@ export function useFindManyArtifactsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyArtifactsSuspense<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -392,16 +392,16 @@ export function useFindManyArtifactsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyArtifactsSuspense<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -411,20 +411,20 @@ export function useFindManyArtifactsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many artifacts
  */
 
 export function useFindManyArtifactsSuspense<
   TData = Awaited<ReturnType<typeof findManyArtifacts>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyArtifactsParams,
   options?: {
@@ -434,25 +434,28 @@ export function useFindManyArtifactsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyArtifactsSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyArtifactsSuspenseQueryOptions(
+    params,
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -460,69 +463,69 @@ export function useFindManyArtifactsSuspense<
  * @summary Delete an artifact
  */
 export const getDeleteArtifactUrl = (id: string | undefined | null) => {
-  return `/content/artifacts/${id}`
-}
+  return `/content/artifacts/${id}`;
+};
 
 export const deleteArtifact = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteArtifact200> => {
   return customFetch<DeleteArtifact200>(getDeleteArtifactUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteArtifactMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteArtifact>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteArtifact>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteArtifact"]
+  const mutationKey = ["deleteArtifact"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteArtifact>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deleteArtifact(id, requestOptions)
-  }
+    return deleteArtifact(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteArtifactMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteArtifact>>
->
+>;
 
-export type DeleteArtifactMutationError = NotFoundResponse
+export type DeleteArtifactMutationError = NotFoundResponse;
 
 /**
  * @summary Delete an artifact
  */
 export const useDeleteArtifact = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -530,82 +533,82 @@ export const useDeleteArtifact = <
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteArtifact>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteArtifactMutationOptions(options)
+  const mutationOptions = getDeleteArtifactMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find an artifact
  * @summary Find an artifact
  */
 export const getGetOneArtifactUrl = (id: string | undefined | null) => {
-  return `/content/artifacts/${id}`
-}
+  return `/content/artifacts/${id}`;
+};
 
 export const getOneArtifact = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneArtifact200> => {
   return customFetch<GetOneArtifact200>(getGetOneArtifactUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneArtifactQueryKey = (id?: string | undefined | null) => {
-  return [`/content/artifacts/${id}`] as const
-}
+  return [`/content/artifacts/${id}`] as const;
+};
 
 export const getGetOneArtifactQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneArtifactQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneArtifactQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneArtifact>>> = ({
-    signal
-  }) => getOneArtifact(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneArtifact(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneArtifact>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneArtifactQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneArtifact>>
->
-export type GetOneArtifactQueryError = NotFoundResponse
+>;
+export type GetOneArtifactQueryError = NotFoundResponse;
 
 export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -619,16 +622,16 @@ export function useGetOneArtifact<
           Awaited<ReturnType<typeof getOneArtifact>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -642,62 +645,62 @@ export function useGetOneArtifact<
           Awaited<ReturnType<typeof getOneArtifact>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an artifact
  */
 
 export function useGetOneArtifact<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneArtifact>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneArtifactQueryOptions(id, options)
+  const queryOptions = getGetOneArtifactQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneArtifactSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -707,33 +710,33 @@ export const getGetOneArtifactSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneArtifactQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneArtifactQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneArtifact>>> = ({
-    signal
-  }) => getOneArtifact(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneArtifact(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneArtifact>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneArtifactSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneArtifact>>
->
-export type GetOneArtifactSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneArtifactSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneArtifactSuspense<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -743,16 +746,16 @@ export function useGetOneArtifactSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneArtifactSuspense<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -762,16 +765,16 @@ export function useGetOneArtifactSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneArtifactSuspense<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -781,20 +784,20 @@ export function useGetOneArtifactSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an artifact
  */
 
 export function useGetOneArtifactSuspense<
   TData = Awaited<ReturnType<typeof getOneArtifact>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -804,25 +807,25 @@ export function useGetOneArtifactSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneArtifactSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneArtifactSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -830,72 +833,72 @@ export function useGetOneArtifactSuspense<
  * @summary Update an artifact
  */
 export const getUpdateArtifactUrl = (id: string | undefined | null) => {
-  return `/content/artifacts/${id}`
-}
+  return `/content/artifacts/${id}`;
+};
 
 export const updateArtifact = async (
   id: string | undefined | null,
   updateArtifactBody: UpdateArtifactBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateArtifact200> => {
   return customFetch<UpdateArtifact200>(getUpdateArtifactUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateArtifactBody)
-  })
-}
+    body: JSON.stringify(updateArtifactBody),
+  });
+};
 
 export const getUpdateArtifactMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateArtifact>>,
     TError,
     { id: string | undefined | null; data: UpdateArtifactBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateArtifact>>,
   TError,
   { id: string | undefined | null; data: UpdateArtifactBody },
   TContext
 > => {
-  const mutationKey = ["updateArtifact"]
+  const mutationKey = ["updateArtifact"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateArtifact>>,
     { id: string | undefined | null; data: UpdateArtifactBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updateArtifact(id, data, requestOptions)
-  }
+    return updateArtifact(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateArtifactMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateArtifact>>
->
-export type UpdateArtifactMutationBody = UpdateArtifactBody
-export type UpdateArtifactMutationError = NotFoundResponse
+>;
+export type UpdateArtifactMutationBody = UpdateArtifactBody;
+export type UpdateArtifactMutationError = NotFoundResponse;
 
 /**
  * @summary Update an artifact
  */
 export const useUpdateArtifact = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -903,90 +906,92 @@ export const useUpdateArtifact = <
       TError,
       { id: string | undefined | null; data: UpdateArtifactBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateArtifact>>,
   TError,
   { id: string | undefined | null; data: UpdateArtifactBody },
   TContext
 > => {
-  const mutationOptions = getUpdateArtifactMutationOptions(options)
+  const mutationOptions = getUpdateArtifactMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Create a new label
  * @summary Create a new label
  */
 export const getCreateLabelUrl = () => {
-  return `/content/labels`
-}
+  return `/content/labels`;
+};
 
 export const createLabel = async (
   createLabelBody: CreateLabelBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateLabel201> => {
   return customFetch<CreateLabel201>(getCreateLabelUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createLabelBody)
-  })
-}
+    body: JSON.stringify(createLabelBody),
+  });
+};
 
 export const getCreateLabelMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createLabel>>,
     TError,
     { data: CreateLabelBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createLabel>>,
   TError,
   { data: CreateLabelBody },
   TContext
 > => {
-  const mutationKey = ["createLabel"]
+  const mutationKey = ["createLabel"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createLabel>>,
     { data: CreateLabelBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createLabel(data, requestOptions)
-  }
+    return createLabel(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateLabelMutationResult = NonNullable<
   Awaited<ReturnType<typeof createLabel>>
->
-export type CreateLabelMutationBody = CreateLabelBody
-export type CreateLabelMutationError = BadRequestResponse | UnauthorizedResponse
+>;
+export type CreateLabelMutationBody = CreateLabelBody;
+export type CreateLabelMutationError =
+  | BadRequestResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new label
  */
 export const useCreateLabel = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -994,20 +999,20 @@ export const useCreateLabel = <
       TError,
       { data: CreateLabelBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createLabel>>,
   TError,
   { data: CreateLabelBody },
   TContext
 > => {
-  const mutationOptions = getCreateLabelMutationOptions(options)
+  const mutationOptions = getCreateLabelMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many labels
  * @summary Find many labels
@@ -1015,63 +1020,65 @@ export const useCreateLabel = <
 export const getFindManyLabelsUrl = (params?: FindManyLabelsParams) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/content/labels?${stringifiedParams}`
-    : `/content/labels`
-}
+    : `/content/labels`;
+};
 
 export const findManyLabels = async (
   params?: FindManyLabelsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyLabels200> => {
   return customFetch<FindManyLabels200>(getFindManyLabelsUrl(params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyLabelsQueryKey = (params?: FindManyLabelsParams) => {
-  return [`/content/labels`, ...(params ? [params] : [])] as const
-}
+  return [`/content/labels`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyLabelsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyLabels>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyLabelsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyLabelsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyLabels>>> = ({
-    signal
-  }) => findManyLabels(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyLabels(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyLabels>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyLabelsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyLabels>>
->
-export type FindManyLabelsQueryError = BadRequestResponse | UnauthorizedResponse
+>;
+export type FindManyLabelsQueryError =
+  | BadRequestResponse
+  | UnauthorizedResponse;
 
 export function useFindManyLabels<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyLabelsParams,
   options: {
@@ -1085,16 +1092,16 @@ export function useFindManyLabels<
           Awaited<ReturnType<typeof findManyLabels>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyLabels<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
@@ -1108,62 +1115,62 @@ export function useFindManyLabels<
           Awaited<ReturnType<typeof findManyLabels>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyLabels<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyLabels>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many labels
  */
 
 export function useFindManyLabels<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findManyLabels>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyLabelsQueryOptions(params, options)
+  const queryOptions = getFindManyLabelsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyLabelsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
@@ -1173,35 +1180,35 @@ export const getFindManyLabelsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindManyLabelsQueryKey(params)
+  const queryKey = queryOptions?.queryKey ?? getFindManyLabelsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyLabels>>> = ({
-    signal
-  }) => findManyLabels(params, { signal, ...requestOptions })
+    signal,
+  }) => findManyLabels(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyLabels>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyLabelsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyLabels>>
->
+>;
 export type FindManyLabelsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyLabelsSuspense<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyLabelsParams,
   options: {
@@ -1211,16 +1218,16 @@ export function useFindManyLabelsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyLabelsSuspense<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
@@ -1230,16 +1237,16 @@ export function useFindManyLabelsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyLabelsSuspense<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
@@ -1249,20 +1256,20 @@ export function useFindManyLabelsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many labels
  */
 
 export function useFindManyLabelsSuspense<
   TData = Awaited<ReturnType<typeof findManyLabels>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyLabelsParams,
   options?: {
@@ -1272,25 +1279,25 @@ export function useFindManyLabelsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyLabelsSuspenseQueryOptions(params, options)
+  const queryOptions = getFindManyLabelsSuspenseQueryOptions(params, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1298,62 +1305,62 @@ export function useFindManyLabelsSuspense<
  * @summary Delete a label
  */
 export const getDeleteLabelUrl = (id: string | undefined | null) => {
-  return `/content/labels/${id}`
-}
+  return `/content/labels/${id}`;
+};
 
 export const deleteLabel = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteLabel200> => {
   return customFetch<DeleteLabel200>(getDeleteLabelUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteLabelMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteLabel>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteLabel>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteLabel"]
+  const mutationKey = ["deleteLabel"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteLabel>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deleteLabel(id, requestOptions)
-  }
+    return deleteLabel(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteLabelMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteLabel>>
->
+>;
 
-export type DeleteLabelMutationError = NotFoundResponse
+export type DeleteLabelMutationError = NotFoundResponse;
 
 /**
  * @summary Delete a label
@@ -1365,82 +1372,82 @@ export const useDeleteLabel = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteLabel>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteLabelMutationOptions(options)
+  const mutationOptions = getDeleteLabelMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find a label
  * @summary Find a label
  */
 export const getGetOneLabelUrl = (id: string | undefined | null) => {
-  return `/content/labels/${id}`
-}
+  return `/content/labels/${id}`;
+};
 
 export const getOneLabel = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneLabel200> => {
   return customFetch<GetOneLabel200>(getGetOneLabelUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneLabelQueryKey = (id?: string | undefined | null) => {
-  return [`/content/labels/${id}`] as const
-}
+  return [`/content/labels/${id}`] as const;
+};
 
 export const getGetOneLabelQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneLabelQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneLabelQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneLabel>>> = ({
-    signal
-  }) => getOneLabel(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneLabel(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneLabel>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneLabelQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneLabel>>
->
-export type GetOneLabelQueryError = NotFoundResponse
+>;
+export type GetOneLabelQueryError = NotFoundResponse;
 
 export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -1454,16 +1461,16 @@ export function useGetOneLabel<
           Awaited<ReturnType<typeof getOneLabel>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1477,62 +1484,62 @@ export function useGetOneLabel<
           Awaited<ReturnType<typeof getOneLabel>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a label
  */
 
 export function useGetOneLabel<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneLabel>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneLabelQueryOptions(id, options)
+  const queryOptions = getGetOneLabelQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneLabelSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1542,33 +1549,33 @@ export const getGetOneLabelSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneLabelQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneLabelQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneLabel>>> = ({
-    signal
-  }) => getOneLabel(id, { signal, ...requestOptions })
+    signal,
+  }) => getOneLabel(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneLabel>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneLabelSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneLabel>>
->
-export type GetOneLabelSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneLabelSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneLabelSuspense<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -1578,16 +1585,16 @@ export function useGetOneLabelSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneLabelSuspense<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1597,16 +1604,16 @@ export function useGetOneLabelSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneLabelSuspense<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1616,20 +1623,20 @@ export function useGetOneLabelSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a label
  */
 
 export function useGetOneLabelSuspense<
   TData = Awaited<ReturnType<typeof getOneLabel>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -1639,25 +1646,25 @@ export function useGetOneLabelSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneLabelSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneLabelSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1665,65 +1672,65 @@ export function useGetOneLabelSuspense<
  * @summary Update a label
  */
 export const getUpdateLabelUrl = (id: string | undefined | null) => {
-  return `/content/labels/${id}`
-}
+  return `/content/labels/${id}`;
+};
 
 export const updateLabel = async (
   id: string | undefined | null,
   updateLabelBody: UpdateLabelBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateLabel200> => {
   return customFetch<UpdateLabel200>(getUpdateLabelUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateLabelBody)
-  })
-}
+    body: JSON.stringify(updateLabelBody),
+  });
+};
 
 export const getUpdateLabelMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateLabel>>,
     TError,
     { id: string | undefined | null; data: UpdateLabelBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateLabel>>,
   TError,
   { id: string | undefined | null; data: UpdateLabelBody },
   TContext
 > => {
-  const mutationKey = ["updateLabel"]
+  const mutationKey = ["updateLabel"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateLabel>>,
     { id: string | undefined | null; data: UpdateLabelBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updateLabel(id, data, requestOptions)
-  }
+    return updateLabel(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateLabelMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateLabel>>
->
-export type UpdateLabelMutationBody = UpdateLabelBody
-export type UpdateLabelMutationError = NotFoundResponse
+>;
+export type UpdateLabelMutationBody = UpdateLabelBody;
+export type UpdateLabelMutationError = NotFoundResponse;
 
 /**
  * @summary Update a label
@@ -1735,17 +1742,17 @@ export const useUpdateLabel = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null; data: UpdateLabelBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateLabel>>,
   TError,
   { id: string | undefined | null; data: UpdateLabelBody },
   TContext
 > => {
-  const mutationOptions = getUpdateLabelMutationOptions(options)
+  const mutationOptions = getUpdateLabelMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};

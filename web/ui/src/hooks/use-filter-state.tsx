@@ -1,6 +1,6 @@
-import type { SortingState } from "@tanstack/react-table"
+import type { SortingState } from "@tanstack/react-table";
 
-import { useNavigate, useSearch } from "@tanstack/react-router"
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import type {
   BaseEntity,
@@ -8,62 +8,62 @@ import type {
   FilterGroup,
   FilterNode,
   FilterValue,
-  SearchQuery
-} from "#types/entities"
-import type { FilterOperator } from "#types/simple-data-table"
+  SearchQuery,
+} from "#types/entities";
+import type { FilterOperator } from "#types/simple-data-table";
 
 /**
  * Simplified filter state management that supports your complex nested filters
  * but removes unnecessary frontend complexity.
  */
 export function useFilterState<TEntity extends BaseEntity>(): {
-  addCondition: (condition: FilterCondition) => void
-  addGroup: (operator: "and" | "or", conditions: FilterCondition[]) => void
-  addSort: (field: keyof TEntity, order: "asc" | "desc") => void
-  filter: FilterNode | undefined
-  hasFilters: boolean
-  hasSorting: boolean
-  isEmpty: boolean
-  pageNumber: number
-  pageSize: number
-  removeCondition: (field: keyof TEntity) => void
-  resetAll: () => void
-  resetFilters: () => void
-  resetPagination: () => void
-  resetSorting: () => void
-  searchQuery: SearchQuery
+  addCondition: (condition: FilterCondition) => void;
+  addGroup: (operator: "and" | "or", conditions: FilterCondition[]) => void;
+  addSort: (field: keyof TEntity, order: "asc" | "desc") => void;
+  filter: FilterNode | undefined;
+  hasFilters: boolean;
+  hasSorting: boolean;
+  isEmpty: boolean;
+  pageNumber: number;
+  pageSize: number;
+  removeCondition: (field: keyof TEntity) => void;
+  resetAll: () => void;
+  resetFilters: () => void;
+  resetPagination: () => void;
+  resetSorting: () => void;
+  searchQuery: SearchQuery;
   setCondition: (
     field: keyof TEntity,
     operator: FilterOperator,
-    value: FilterValue
-  ) => void
-  setFilter: (newFilter: FilterNode | undefined) => void
-  setPage: (page: number) => void
-  setPageSize: (size: number) => void
-  setSearchQuery: (query: SearchQuery) => void
-  setSorting: (newSorting: SortingState) => SortingState
-  sorting: SortingState
-  wrapInGroup: (operator: "and" | "or") => void
+    value: FilterValue,
+  ) => void;
+  setFilter: (newFilter: FilterNode | undefined) => void;
+  setPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  setSearchQuery: (query: SearchQuery) => void;
+  setSorting: (newSorting: SortingState) => SortingState;
+  sorting: SortingState;
+  wrapInGroup: (operator: "and" | "or") => void;
 } {
-  const search = useSearch({ strict: false }) as unknown
-  const navigate = useNavigate()
+  const search = useSearch({ strict: false }) as unknown;
+  const navigate = useNavigate();
 
   // Parse current search query
-  const searchQuery = search as SearchQuery
+  const searchQuery = search as SearchQuery;
 
   // Extract convenience values
-  const filter = searchQuery.filter
-  const pageNumber = searchQuery.page?.number ?? 1
-  const pageSize = searchQuery.page?.size ?? 10
+  const filter = searchQuery.filter;
+  const pageNumber = searchQuery.page?.number ?? 1;
+  const pageSize = searchQuery.page?.size ?? 10;
   const sorting: SortingState = (searchQuery.sort ?? []).map((s) => ({
     desc: s.order === "desc",
-    id: s.field
-  }))
+    id: s.field,
+  }));
 
   // Computed state
-  const hasFilters = !!filter
-  const hasSorting = (searchQuery.sort?.length ?? 0) > 0
-  const isEmpty = !hasFilters && !hasSorting && pageNumber === 1
+  const hasFilters = !!filter;
+  const hasSorting = (searchQuery.sort?.length ?? 0) > 0;
+  const isEmpty = !hasFilters && !hasSorting && pageNumber === 1;
 
   // Update search params
   const updateSearch = (updates: Partial<SearchQuery>) => {
@@ -75,36 +75,36 @@ export function useFilterState<TEntity extends BaseEntity>(): {
           ...updates,
           page: {
             ...prev.page,
-            ...updates.page
-          }
-        }) as never
-    })
-  }
+            ...updates.page,
+          },
+        }) as never,
+    });
+  };
 
   // Direct query manipulation
   const setSearchQuery = (query: SearchQuery) => {
     void navigate({
       replace: true,
-      search: () => query as never
-    })
-  }
+      search: () => query as never,
+    });
+  };
 
   // Filter operations
   const setFilter = (newFilter: FilterNode | undefined) => {
     if (!newFilter) {
-      const { filter: _, ...rest } = searchQuery
-      updateSearch(rest)
-      return
+      const { filter: _, ...rest } = searchQuery;
+      updateSearch(rest);
+      return;
     }
-    updateSearch({ filter: newFilter })
-  }
+    updateSearch({ filter: newFilter });
+  };
 
   const addCondition = (condition: FilterCondition) => {
-    const currentFilter = filter
+    const currentFilter = filter;
 
     if (!currentFilter) {
-      setFilter(condition)
-      return
+      setFilter(condition);
+      return;
     }
 
     if (currentFilter.type === "condition") {
@@ -112,138 +112,138 @@ export function useFilterState<TEntity extends BaseEntity>(): {
       setFilter({
         children: [currentFilter, condition],
         operator: "and",
-        type: "group"
-      })
+        type: "group",
+      });
     } else {
       // Add to existing group
-      const group = currentFilter
+      const group = currentFilter;
       setFilter({
         ...group,
-        children: [...group.children, condition]
-      })
+        children: [...group.children, condition],
+      });
     }
-  }
+  };
 
   const removeCondition = (field: keyof TEntity) => {
-    if (!filter) return
+    if (!filter) return;
 
     const removeFromNode = (node: FilterNode): FilterNode | undefined => {
       if (node.type === "condition") {
-        return node.field === field ? undefined : node
+        return node.field === field ? undefined : node;
       } else {
-        const group = node
+        const group = node;
         const filteredChildren = group.children
           .map(removeFromNode)
-          .filter((child): child is FilterNode => child !== undefined)
+          .filter((child): child is FilterNode => child !== undefined);
 
-        if (filteredChildren.length === 0) return undefined
-        if (filteredChildren.length === 1) return filteredChildren[0]
+        if (filteredChildren.length === 0) return undefined;
+        if (filteredChildren.length === 1) return filteredChildren[0];
 
         return {
           ...group,
-          children: filteredChildren
-        }
+          children: filteredChildren,
+        };
       }
-    }
+    };
 
-    setFilter(removeFromNode(filter))
-  }
+    setFilter(removeFromNode(filter));
+  };
 
   const setCondition = (
     field: keyof TEntity,
     operator: FilterOperator,
-    value: FilterValue
+    value: FilterValue,
   ) => {
     const condition: FilterCondition = {
       field: field as string,
       operator: operator,
       type: "condition",
-      value: value
-    }
+      value: value,
+    };
 
     // Remove existing condition for this field, then add new one
-    removeCondition(field)
-    addCondition(condition)
-  }
+    removeCondition(field);
+    addCondition(condition);
+  };
 
   const addGroup = (operator: "and" | "or", conditions: FilterCondition[]) => {
     const newGroup: FilterGroup = {
       children: conditions,
       operator,
-      type: "group"
-    }
+      type: "group",
+    };
 
     if (!filter) {
-      setFilter(newGroup)
+      setFilter(newGroup);
     } else {
       setFilter({
         children: [filter, newGroup],
         operator: "and",
-        type: "group"
-      })
+        type: "group",
+      });
     }
-  }
+  };
 
   const wrapInGroup = (operator: "and" | "or") => {
-    if (!filter) return
+    if (!filter) return;
 
     setFilter({
       children: [filter],
       operator,
-      type: "group"
-    })
-  }
+      type: "group",
+    });
+  };
 
   // Pagination
   const setPage = (page: number) => {
     updateSearch({
       page: {
-        number: page
-      }
-    })
-  }
+        number: page,
+      },
+    });
+  };
 
   const setPageSize = (size: number) => {
     updateSearch({
       page: {
-        size
-      }
-    })
-  }
+        size,
+      },
+    });
+  };
 
   // Sorting
   const setSorting = (newSorting: SortingState) => {
     updateSearch({
       sort: newSorting.map((s) => ({
         field: s.id,
-        order: s.desc ? "desc" : "asc"
-      }))
-    })
-    return newSorting
-  }
+        order: s.desc ? "desc" : "asc",
+      })),
+    });
+    return newSorting;
+  };
 
   const addSort = (field: keyof TEntity, order: "asc" | "desc") => {
-    const newSort = { desc: order === "desc", id: String(field) }
-    setSorting([...sorting.filter((s) => s.id !== String(field)), newSort])
-  }
+    const newSort = { desc: order === "desc", id: String(field) };
+    setSorting([...sorting.filter((s) => s.id !== String(field)), newSort]);
+  };
 
   // Reset operations
   const resetFilters = () => {
-    const { filter: _, ...rest } = searchQuery
-    setSearchQuery(rest)
-  }
+    const { filter: _, ...rest } = searchQuery;
+    setSearchQuery(rest);
+  };
 
   const resetPagination = () => {
-    updateSearch({ page: { number: 1, size: 10 } })
-  }
+    updateSearch({ page: { number: 1, size: 10 } });
+  };
 
   const resetSorting = () => {
-    updateSearch({ sort: [] })
-  }
+    updateSearch({ sort: [] });
+  };
 
   const resetAll = () => {
-    setSearchQuery({})
-  }
+    setSearchQuery({});
+  };
 
   return {
     addCondition,
@@ -268,6 +268,6 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     setSearchQuery,
     setSorting,
     sorting,
-    wrapInGroup
-  }
+    wrapInGroup,
+  };
 }

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router";
 
 export const TermsIndicator: React.FC = () => {
   return (
@@ -7,5 +7,5 @@ export const TermsIndicator: React.FC = () => {
       <Link to="/">Terms of Service</Link> and{" "}
       <Link to="/">Privacy Policy</Link>.
     </div>
-  )
-}
+  );
+};

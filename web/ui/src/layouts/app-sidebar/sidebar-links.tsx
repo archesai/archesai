@@ -1,15 +1,15 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { Link, useLocation, useRouter } from "@tanstack/react-router"
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
 
-import type { PageHeaderProps } from "#layouts/page-header/page-header"
+import type { PageHeaderProps } from "#layouts/page-header/page-header";
 
-import { ChevronRightIcon } from "#components/custom/icons"
+import { ChevronRightIcon } from "#components/custom/icons";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger
-} from "#components/shadcn/collapsible"
+  CollapsibleTrigger,
+} from "#components/shadcn/collapsible";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -19,13 +19,15 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem
-} from "#components/shadcn/sidebar"
+  SidebarMenuSubItem,
+} from "#components/shadcn/sidebar";
 
 export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
-  const router = useRouter()
-  const pathname = useLocation().pathname
-  const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))
+  const router = useRouter();
+  const pathname = useLocation().pathname;
+  const sections = Array.from(
+    new Set(siteRoutes.map((route) => route.section)),
+  );
   return (
     <>
       {sections.map((section) => {
@@ -38,9 +40,9 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                   .filter((rootRoute) => rootRoute.section === section)
                   .map((rootRoute, i) => {
                     const isActive = rootRoute.children?.some((route) =>
-                      router.state.location.pathname.startsWith(route.href)
-                    )
-                    const children = rootRoute.children ?? []
+                      router.state.location.pathname.startsWith(route.href),
+                    );
+                    const children = rootRoute.children ?? [];
 
                     if (!children.length) {
                       return (
@@ -59,7 +61,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
-                      )
+                      );
                     }
 
                     return (
@@ -99,13 +101,13 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                           </CollapsibleContent>
                         </SidebarMenuItem>
                       </Collapsible>
-                    )
+                    );
                   })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        )
+        );
       })}
     </>
-  )
+  );
 }

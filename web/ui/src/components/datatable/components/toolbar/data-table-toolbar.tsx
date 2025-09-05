@@ -1,42 +1,42 @@
-"use no memo"
+"use no memo";
 
-import type { Column, Table } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Column, Table } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
-import { XCircleIcon } from "#components/custom/icons"
-import { DataTableViewOptions } from "#components/datatable/components/data-table-view-options"
-import { DataTableDateFilter } from "#components/datatable/components/filters/data-table-date-filter"
-import { DataTableFacetedFilter } from "#components/datatable/components/filters/data-table-faceted-filter"
-import { DataTableSliderFilter } from "#components/datatable/components/filters/data-table-slider-filter"
-import { Button } from "#components/shadcn/button"
-import { Input } from "#components/shadcn/input"
-import { cn } from "#lib/utils"
+import { XCircleIcon } from "#components/custom/icons";
+import { DataTableViewOptions } from "#components/datatable/components/data-table-view-options";
+import { DataTableDateFilter } from "#components/datatable/components/filters/data-table-date-filter";
+import { DataTableFacetedFilter } from "#components/datatable/components/filters/data-table-faceted-filter";
+import { DataTableSliderFilter } from "#components/datatable/components/filters/data-table-slider-filter";
+import { Button } from "#components/shadcn/button";
+import { Input } from "#components/shadcn/input";
+import { cn } from "#lib/utils";
 
 export interface DataTableToolbarProps<TEntity extends BaseEntity> {
-  table: Table<TEntity>
+  table: Table<TEntity>;
 }
 
 interface DataTableToolbarFilterProps<TData> {
-  column: Column<TData>
+  column: Column<TData>;
 }
 
 export function DataTableToolbar<TEntity extends BaseEntity>(
-  props: DataTableToolbarProps<TEntity>
+  props: DataTableToolbarProps<TEntity>,
 ): JSX.Element {
-  const isFiltered = props.table.getState().columnFilters.length > 0
+  const isFiltered = props.table.getState().columnFilters.length > 0;
 
   const columns = useMemo(
     () => props.table.getAllColumns().filter((column) => column.getCanFilter()),
-    [props.table]
-  )
+    [props.table],
+  );
 
   const onReset = useCallback(() => {
-    props.table.resetColumnFilters()
-  }, [props.table])
+    props.table.resetColumnFilters();
+  }, [props.table]);
 
   return (
     <div
@@ -69,17 +69,17 @@ export function DataTableToolbar<TEntity extends BaseEntity>(
         <DataTableViewOptions table={props.table} />
       </div>
     </div>
-  )
+  );
 }
 
 function DataTableToolbarFilter<TData>({
-  column
+  column,
 }: DataTableToolbarFilterProps<TData>) {
   {
-    const columnMeta = column.columnDef.meta
+    const columnMeta = column.columnDef.meta;
 
     const onFilterRender = useCallback(() => {
-      if (!columnMeta?.filterVariant) return null
+      if (!columnMeta?.filterVariant) return null;
 
       switch (columnMeta.filterVariant) {
         case "date":
@@ -90,7 +90,7 @@ function DataTableToolbarFilter<TData>({
               multiple={columnMeta.filterVariant === "dateRange"}
               title={columnMeta.label ?? column.id}
             />
-          )
+          );
 
         case "multiSelect":
         case "select":
@@ -101,7 +101,7 @@ function DataTableToolbarFilter<TData>({
               options={columnMeta.options ?? []}
               title={columnMeta.label ?? column.id}
             />
-          )
+          );
 
         case "number":
           return (
@@ -110,7 +110,7 @@ function DataTableToolbarFilter<TData>({
                 className={cn("h-8 w-[120px]", columnMeta.unit && "pr-8")}
                 inputMode="numeric"
                 onChange={(event) => {
-                  column.setFilterValue(event.target.value)
+                  column.setFilterValue(event.target.value);
                 }}
                 placeholder={columnMeta.label}
                 type="number"
@@ -122,7 +122,7 @@ function DataTableToolbarFilter<TData>({
                 </span>
               )}
             </div>
-          )
+          );
 
         case "range":
           return (
@@ -130,25 +130,25 @@ function DataTableToolbarFilter<TData>({
               column={column}
               title={columnMeta.label ?? column.id}
             />
-          )
+          );
 
         case "text":
           return (
             <Input
               className="h-8 w-40 lg:w-56"
               onChange={(event) => {
-                column.setFilterValue(event.target.value)
+                column.setFilterValue(event.target.value);
               }}
               placeholder={columnMeta.label}
               value={((column.getFilterValue() as string) || undefined) ?? ""}
             />
-          )
+          );
 
         default:
-          return null
+          return null;
       }
-    }, [column, columnMeta])
+    }, [column, columnMeta]);
 
-    return onFilterRender()
+    return onFilterRender();
   }
 }

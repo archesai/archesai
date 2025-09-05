@@ -1,18 +1,18 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useTheme } from "next-themes"
+import { useTheme } from "next-themes";
 
-import { MoonIcon, SunIcon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { MoonIcon, SunIcon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 
 export function ThemeToggle(): JSX.Element {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme } = useTheme();
 
   return (
     <Button
       className="group/toggle extend-touch-target"
       onClick={() => {
-        setTheme(theme === "dark" ? "light" : "dark")
+        setTheme(theme === "dark" ? "light" : "dark");
       }}
       size="sm"
       title="Toggle theme"
@@ -22,5 +22,5 @@ export function ThemeToggle(): JSX.Element {
       <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
       <span className="sr-only">Toggle theme</span>
     </Button>
-  )
+  );
 }

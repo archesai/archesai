@@ -1,27 +1,27 @@
-"use no memo"
+"use no memo";
 
-import type { Table } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Table } from "@tanstack/react-table";
+import type { JSX } from "react";
 
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
-  ChevronsRightIcon
-} from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+  ChevronsRightIcon,
+} from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "#components/shadcn/select"
-import { cn } from "#lib/utils"
+  SelectValue,
+} from "#components/shadcn/select";
+import { cn } from "#lib/utils";
 
 interface DataTablePaginationProps<TData> extends React.ComponentProps<"div"> {
-  pageSizeOptions?: number[]
-  table: Table<TData>
+  pageSizeOptions?: number[];
+  table: Table<TData>;
 }
 
 export function DataTablePagination<TData>({
@@ -34,7 +34,7 @@ export function DataTablePagination<TData>({
     <div
       className={cn(
         "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8",
-        className
+        className,
       )}
       {...props}
     >
@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
           <p className="text-sm font-medium whitespace-nowrap">Rows per page</p>
           <Select
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
             value={table.getState().pagination.pageSize.toString()}
           >
@@ -76,7 +76,7 @@ export function DataTablePagination<TData>({
             className="hidden size-8 lg:flex"
             disabled={!table.getCanPreviousPage()}
             onClick={() => {
-              table.setPageIndex(0)
+              table.setPageIndex(0);
             }}
             size="icon"
             variant="ghost"
@@ -88,7 +88,7 @@ export function DataTablePagination<TData>({
             className="size-8"
             disabled={!table.getCanPreviousPage()}
             onClick={() => {
-              table.previousPage()
+              table.previousPage();
             }}
             size="icon"
             variant="ghost"
@@ -100,7 +100,7 @@ export function DataTablePagination<TData>({
             className="size-8"
             disabled={!table.getCanNextPage()}
             onClick={() => {
-              table.nextPage()
+              table.nextPage();
             }}
             size="icon"
             variant="ghost"
@@ -112,7 +112,7 @@ export function DataTablePagination<TData>({
             className="hidden size-8 lg:flex"
             disabled={!table.getCanNextPage()}
             onClick={() => {
-              table.setPageIndex(table.getPageCount() - 1)
+              table.setPageIndex(table.getPageCount() - 1);
             }}
             size="icon"
             variant="ghost"
@@ -122,5 +122,5 @@ export function DataTablePagination<TData>({
         </div>
       </div>
     </div>
-  )
+  );
 }

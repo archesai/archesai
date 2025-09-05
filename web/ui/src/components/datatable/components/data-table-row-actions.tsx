@@ -1,30 +1,30 @@
-import type { Table } from "@tanstack/table-core"
-import type { JSX } from "react"
+import type { Table } from "@tanstack/table-core";
+import type { JSX } from "react";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
-import { DeleteItems } from "#components/custom/delete-items"
-import { MoreHorizontalIcon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { DeleteItems } from "#components/custom/delete-items";
+import { MoreHorizontalIcon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from "#components/shadcn/dropdown-menu"
+  DropdownMenuTrigger,
+} from "#components/shadcn/dropdown-menu";
 
 export interface DataTableRowActionsProps<TEntity extends BaseEntity> {
-  deleteItem?: (id: string) => Promise<void>
-  getEditFormFromItem?: (item: TEntity) => React.ReactNode
-  row: { original: TEntity }
-  setFinalForm?: (form: React.ReactNode) => void
-  setFormOpen?: (open: boolean) => void
-  table: Table<TEntity>
+  deleteItem?: (id: string) => Promise<void>;
+  getEditFormFromItem?: (item: TEntity) => React.ReactNode;
+  row: { original: TEntity };
+  setFinalForm?: (form: React.ReactNode) => void;
+  setFormOpen?: (open: boolean) => void;
+  table: Table<TEntity>;
 }
 
 export function DataTableRowActions<TEntity extends BaseEntity>(
-  props: DataTableRowActionsProps<TEntity>
+  props: DataTableRowActionsProps<TEntity>,
 ): JSX.Element {
   return (
     <DropdownMenu>
@@ -46,13 +46,15 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
             <DropdownMenuItem
               onClick={() => {
                 if (!props.getEditFormFromItem) {
-                  throw new Error("getEditFormFromItem function is not defined")
+                  throw new Error(
+                    "getEditFormFromItem function is not defined",
+                  );
                 }
                 if (props.setFinalForm && props.setFormOpen) {
                   props.setFinalForm(
-                    props.getEditFormFromItem(props.row.original)
-                  )
-                  props.setFormOpen(true)
+                    props.getEditFormFromItem(props.row.original),
+                  );
+                  props.setFormOpen(true);
                 }
               }}
             >
@@ -64,7 +66,7 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
         {props.deleteItem ? (
           <DropdownMenuItem
             onSelect={(e) => {
-              e.preventDefault()
+              e.preventDefault();
             }}
           >
             <DeleteItems
@@ -76,5 +78,5 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

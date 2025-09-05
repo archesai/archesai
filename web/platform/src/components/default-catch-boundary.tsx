@@ -1,20 +1,20 @@
-import type { ErrorComponentProps } from "@tanstack/react-router"
-import type { JSX } from "react"
+import type { ErrorComponentProps } from "@tanstack/react-router";
+import type { JSX } from "react";
 
-import { useQueryClient } from "@tanstack/react-query"
-import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query";
+import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
 
-import { Button } from "@archesai/ui/components/shadcn/button"
+import { Button } from "@archesai/ui/components/shadcn/button";
 
 export function DefaultCatchBoundary({
-  error
+  error,
 }: ErrorComponentProps): JSX.Element {
-  const router = useRouter()
-  const queryClient = useQueryClient()
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const isRoot = useMatch({
     select: (state) => state.id === rootRouteId,
-    strict: false
-  })
+    strict: false,
+  });
 
   return (
     <div className="z-0 mb-16 flex h-full flex-col items-center justify-center gap-6 bg-primary/0 dark:bg-primary/0">
@@ -25,8 +25,8 @@ export function DefaultCatchBoundary({
       <div className="flex flex-wrap items-center gap-2">
         <Button
           onClick={async () => {
-            await router.invalidate()
-            await queryClient.invalidateQueries()
+            await router.invalidate();
+            await queryClient.invalidateQueries();
           }}
           size="sm"
           variant={"ghost"}
@@ -43,8 +43,8 @@ export function DefaultCatchBoundary({
           >
             <Link
               onClick={(e) => {
-                e.preventDefault()
-                window.history.back()
+                e.preventDefault();
+                window.history.back();
               }}
               to="/"
             >
@@ -54,5 +54,5 @@ export function DefaultCatchBoundary({
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useTransition } from "react"
-import { toast } from "sonner"
+import { useTransition } from "react";
+import { toast } from "sonner";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
-import { Loader2Icon, TrashIcon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { Loader2Icon, TrashIcon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Dialog,
   DialogClose,
@@ -15,46 +15,46 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
-} from "#components/shadcn/dialog"
-import { ScrollArea } from "#components/shadcn/scroll-area"
-import { Separator } from "#components/shadcn/separator"
+  DialogTrigger,
+} from "#components/shadcn/dialog";
+import { ScrollArea } from "#components/shadcn/scroll-area";
+import { Separator } from "#components/shadcn/separator";
 
 interface DeleteItemsProps<TEntity extends BaseEntity>
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  deleteItem: (id: string) => Promise<void>
-  entityKey: string
-  items: TEntity[]
-  showTrigger?: boolean
+  deleteItem: (id: string) => Promise<void>;
+  entityKey: string;
+  items: TEntity[];
+  showTrigger?: boolean;
 }
 
 export const DeleteItems = <TEntity extends BaseEntity>(
-  props: DeleteItemsProps<TEntity>
+  props: DeleteItemsProps<TEntity>,
 ): JSX.Element => {
-  const [isDeletePending, startDeleteTransition] = useTransition()
+  const [isDeletePending, startDeleteTransition] = useTransition();
 
   function onDelete() {
     startDeleteTransition(async () => {
       for (const item of props.items) {
         try {
-          await props.deleteItem(item.id)
-          toast(t(`The ${props.entityKey} has been removed`))
+          await props.deleteItem(item.id);
+          toast(t(`The ${props.entityKey} has been removed`));
         } catch (error: unknown) {
           if (error instanceof Error) {
             toast(t(`Could not remove ${props.entityKey}`), {
-              description: error.message
-            })
-            props.onOpenChange?.(false)
-            toast.success("Tasks deleted")
+              description: error.message,
+            });
+            props.onOpenChange?.(false);
+            toast.success("Tasks deleted");
           } else {
-            console.error(error)
+            console.error(error);
           }
         }
       }
-    })
+    });
   }
 
-  const t = (text: string) => text
+  const t = (text: string) => text;
 
   return (
     <Dialog {...props}>
@@ -86,7 +86,7 @@ export const DeleteItems = <TEntity extends BaseEntity>(
           <TrashIcon className="text-destructive" />
           <p className="text-center">
             {t(
-              `Are you sure you want to permanently delete the following ${props.entityKey}${props.items.length > 1 ? "s" : ""}?`
+              `Are you sure you want to permanently delete the following ${props.entityKey}${props.items.length > 1 ? "s" : ""}?`,
             )}
           </p>
           <ScrollArea>
@@ -119,5 +119,5 @@ export const DeleteItems = <TEntity extends BaseEntity>(
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

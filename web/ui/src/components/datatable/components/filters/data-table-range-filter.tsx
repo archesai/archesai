@@ -1,22 +1,22 @@
-import type { Column } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Column } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo } from "react";
 
-import type { BaseEntity, FilterCondition } from "#types/entities"
+import type { BaseEntity, FilterCondition } from "#types/entities";
 
-import { Input } from "#components/shadcn/input"
-import { cn } from "#lib/utils"
+import { Input } from "#components/shadcn/input";
+import { cn } from "#lib/utils";
 
 interface DataTableRangeFilterProps<TData extends BaseEntity>
   extends React.ComponentProps<"div"> {
-  column: Column<TData>
-  filter: FilterCondition & { id: string }
-  inputId: string
+  column: Column<TData>;
+  filter: FilterCondition & { id: string };
+  inputId: string;
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition, "type">>
-  ) => void
+    updates: Partial<Omit<FilterCondition, "type">>,
+  ) => void;
 }
 
 export function DataTableRangeFilter<TData extends BaseEntity>({
@@ -27,45 +27,45 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
   onFilterUpdate,
   ...props
 }: DataTableRangeFilterProps<TData>): JSX.Element {
-  const meta = column.columnDef.meta
+  const meta = column.columnDef.meta;
 
   const [min, max] = useMemo(() => {
-    const range = column.columnDef.meta?.range
-    if (range) return range
+    const range = column.columnDef.meta?.range;
+    if (range) return range;
 
-    const values = column.getFacetedMinMaxValues()
-    if (!values) return [0, 100]
+    const values = column.getFacetedMinMaxValues();
+    if (!values) return [0, 100];
 
-    return [values[0], values[1]]
-  }, [column])
+    return [values[0], values[1]];
+  }, [column]);
 
   const formatValue = useCallback(
     (value: boolean | null | number | string | undefined) => {
-      if (value === undefined || value === null || value === "") return ""
-      const numValue = Number(value)
+      if (value === undefined || value === null || value === "") return "";
+      const numValue = Number(value);
       return Number.isNaN(numValue)
         ? ""
         : numValue.toLocaleString(undefined, {
-            maximumFractionDigits: 0
-          })
+            maximumFractionDigits: 0,
+          });
     },
-    []
-  )
+    [],
+  );
 
   const value = useMemo(() => {
-    if (Array.isArray(filter.value)) return filter.value.map(formatValue)
-    return [formatValue(filter.value as number | string | undefined), ""]
-  }, [filter.value, formatValue])
+    if (Array.isArray(filter.value)) return filter.value.map(formatValue);
+    return [formatValue(filter.value as number | string | undefined), ""];
+  }, [filter.value, formatValue]);
 
   const onRangeValueChange = useCallback(
     (value: string, isMin?: boolean) => {
-      const numValue = Number(value)
+      const numValue = Number(value);
       const currentValues = Array.isArray(filter.value)
         ? filter.value
-        : ["", ""]
+        : ["", ""];
       const otherValue = isMin
         ? String(currentValues[1] ?? "")
-        : String(currentValues[0] ?? "")
+        : String(currentValues[0] ?? "");
 
       if (
         value === "" ||
@@ -75,12 +75,12 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
             : numValue <= max && numValue >= (Number(otherValue) || min)))
       ) {
         onFilterUpdate(filter.id, {
-          value: isMin ? [value, otherValue] : [otherValue, value]
-        })
+          value: isMin ? [value, otherValue] : [otherValue, value],
+        });
       }
     },
-    [filter.id, filter.value, min, max, onFilterUpdate]
-  )
+    [filter.id, filter.value, min, max, onFilterUpdate],
+  );
 
   return (
     <div
@@ -100,7 +100,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
         max={max}
         min={min}
         onChange={(event) => {
-          onRangeValueChange(event.target.value, true)
+          onRangeValueChange(event.target.value, true);
         }}
         placeholder={min.toString()}
         type="number"
@@ -118,11 +118,11 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
         max={max}
         min={min}
         onChange={(event) => {
-          onRangeValueChange(event.target.value)
+          onRangeValueChange(event.target.value);
         }}
         placeholder={max.toString()}
         type="number"
       />
     </div>
-  )
+  );
 }

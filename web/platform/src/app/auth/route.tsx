@@ -1,24 +1,29 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
 
-import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo"
+import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
 
 export const Route = createFileRoute("/auth")({
   beforeLoad: ({ context }) => {
-    const REDIRECT_URL = "/"
+    const REDIRECT_URL = "/";
     if (context.session?.data) {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({
-        to: REDIRECT_URL
-      })
+        to: REDIRECT_URL,
+      });
     }
     return {
-      redirectUrl: REDIRECT_URL
-    }
+      redirectUrl: REDIRECT_URL,
+    };
   },
-  component: AuthenticationLayout
-})
+  component: AuthenticationLayout,
+});
 
 export default function AuthenticationLayout(): JSX.Element {
   return (
@@ -28,5 +33,5 @@ export default function AuthenticationLayout(): JSX.Element {
       </Link>
       <Outlet />
     </div>
-  )
+  );
 }

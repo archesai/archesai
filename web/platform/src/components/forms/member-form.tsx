@@ -1,34 +1,34 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import type { CreateMemberBody, UpdateMemberBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { CreateMemberBody, UpdateMemberBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
 import {
   createMember,
   updateMember,
   useGetOneMemberSuspense,
-  useGetOneSessionSuspense
-} from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { FormControl } from "@archesai/ui/components/shadcn/form"
-import { Input } from "@archesai/ui/components/shadcn/input"
+  useGetOneSessionSuspense,
+} from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { FormControl } from "@archesai/ui/components/shadcn/form";
+import { Input } from "@archesai/ui/components/shadcn/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@archesai/ui/components/shadcn/select"
-import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  SelectValue,
+} from "@archesai/ui/components/shadcn/select";
+import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
 export default function MemberForm({ id }: { id?: string }): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense("current")
+  const { data: sessionData } = useGetOneSessionSuspense("current");
   const memberQuery = useGetOneMemberSuspense(
     sessionData.data.activeOrganizationId,
-    id
-  )
+    id,
+  );
 
-  const member = id ? memberQuery.data.data : null
+  const member = id ? memberQuery.data.data : null;
 
   const formFields: FormFieldConfig[] = [
     {
@@ -42,7 +42,7 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
           disabled={true}
           type="text"
         />
-      )
+      ),
     },
     {
       defaultValue: member?.role,
@@ -64,12 +64,12 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
             {[
               {
                 id: "ADMIN",
-                name: "Admin"
+                name: "Admin",
               },
               {
                 id: "USER",
-                name: "User"
-              }
+                name: "User",
+              },
             ].map((option) => (
               <SelectItem
                 key={option.id}
@@ -80,10 +80,10 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
             ))}
           </SelectContent>
         </Select>
-      )
+      ),
       // validationRule: Type.Union([Type.Literal('ADMIN'), Type.Literal('USER')])
-    }
-  ]
+    },
+  ];
 
   return (
     <GenericForm<CreateMemberBody, UpdateMemberBody>
@@ -94,15 +94,15 @@ export default function MemberForm({ id }: { id?: string }): JSX.Element {
       onSubmitCreate={async (createMemberDto) => {
         await createMember(
           sessionData.data.activeOrganizationId,
-          createMemberDto
-        )
+          createMemberDto,
+        );
       }}
       onSubmitUpdate={async (data) => {
         if (id) {
-          await updateMember(sessionData.data.activeOrganizationId, id, data)
+          await updateMember(sessionData.data.activeOrganizationId, id, data);
         }
       }}
       title="Configuration"
     />
-  )
+  );
 }

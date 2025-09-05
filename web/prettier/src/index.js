@@ -18,17 +18,15 @@ const prettierConfig = {
     "",
     "^#",
     "^[../]",
-    "^[./]"
+    "^[./]",
   ],
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
   ],
-  semi: false,
   singleAttributePerLine: true,
   tailwindFunctions: ["cn", "cva"],
   tailwindStylesheet: "./src/styles/globals.css",
-  trailingComma: "none"
-}
+};
 
-export default prettierConfig
+export default prettierConfig;

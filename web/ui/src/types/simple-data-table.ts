@@ -1,6 +1,6 @@
-import type { Row, RowData } from "@tanstack/react-table"
+import type { Row, RowData } from "@tanstack/react-table";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
 export type FilterVariant =
   | "boolean"
@@ -10,36 +10,36 @@ export type FilterVariant =
   | "number"
   | "range"
   | "select"
-  | "text"
+  | "text";
 
 export interface Option {
-  count?: number
-  icon?: React.FC<React.SVGProps<SVGSVGElement>>
-  label: string
-  value: string
+  count?: number;
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+  label: string;
+  value: string;
 }
 
 // Extend TanStack Table column meta for filter configuration
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant?: FilterVariant
-    icon?: React.FC<React.SVGProps<SVGSVGElement>>
-    label?: string
-    options?: Option[]
-    placeholder?: string
-    range?: [number, number]
-    unit?: string
+    filterVariant?: FilterVariant;
+    icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+    label?: string;
+    options?: Option[];
+    placeholder?: string;
+    range?: [number, number];
+    unit?: string;
   }
 }
 
 // Row action interface for data tables
 export interface DataTableRowAction<TData> {
-  icon?: React.FC<React.SVGProps<SVGSVGElement>>
-  label?: string
-  onClick?: (row: Row<TData>) => void
-  row: Row<TData>
-  variant: "create" | "custom" | "delete" | "update" | "view"
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+  label?: string;
+  onClick?: (row: Row<TData>) => void;
+  row: Row<TData>;
+  variant: "create" | "custom" | "delete" | "update" | "view";
 }
 
 // Filter operators mapped to your SearchQuery DTO
@@ -53,52 +53,52 @@ export const FILTER_OPERATORS = {
     "gt",
     "gte",
     "isBetween",
-    "isRelativeToToday"
+    "isRelativeToToday",
   ],
   multiSelect: ["inArray", "notInArray"],
   number: ["eq", "ne", "lt", "lte", "gt", "gte", "isBetween"],
   select: ["eq", "ne", "inArray", "notInArray"],
-  text: ["iLike", "notILike", "eq", "ne", "isEmpty", "isNotEmpty"]
-} as const
+  text: ["iLike", "notILike", "eq", "ne", "isEmpty", "isNotEmpty"],
+} as const;
 
 // Utility type for extracting column keys
 export type ColumnKey<TEntity extends BaseEntity> = Extract<
   keyof TEntity,
   string
->
+>;
 // Data table configuration
 export interface DataTableConfig {
-  allowNestedFilters: boolean
+  allowNestedFilters: boolean;
   // Pagination
-  defaultPageSize: number
+  defaultPageSize: number;
 
-  enableBulkActions: boolean
+  enableBulkActions: boolean;
   // Export
-  enableExport: boolean
+  enableExport: boolean;
 
   // Selection
-  enableSelection: boolean
-  exportFormats: string[]
+  enableSelection: boolean;
+  exportFormats: string[];
 
   // Filters
-  maxFilters: number
-  pageSizeOptions: number[]
+  maxFilters: number;
+  pageSizeOptions: number[];
 }
 
 export type FilterOperator =
-  (typeof FILTER_OPERATORS)[keyof typeof FILTER_OPERATORS][number]
+  (typeof FILTER_OPERATORS)[keyof typeof FILTER_OPERATORS][number];
 
 // Simple filter condition interface (matches your DTO)
 export interface SimpleFilterCondition<TEntity extends BaseEntity> {
-  field: keyof TEntity
-  operator: FilterOperator
+  field: keyof TEntity;
+  operator: FilterOperator;
   value:
     | (boolean | number | string)[]
     | boolean
     | number
     | string
     | { from: number | string; to: number | string }
-    | { unit: "days" | "months" | "weeks" | "years"; value: number }
+    | { unit: "days" | "months" | "weeks" | "years"; value: number };
 }
 
 export const DEFAULT_DATA_TABLE_CONFIG: DataTableConfig = {
@@ -109,19 +109,19 @@ export const DEFAULT_DATA_TABLE_CONFIG: DataTableConfig = {
   enableSelection: true,
   exportFormats: ["csv", "json"],
   maxFilters: 10,
-  pageSizeOptions: [10, 20, 50, 100]
-}
+  pageSizeOptions: [10, 20, 50, 100],
+};
 
 // Helper functions for filter operations
 export function getDefaultFilterOperator(
-  filterVariant: FilterVariant
+  filterVariant: FilterVariant,
 ): FilterOperator {
-  const operators = getFilterOperators(filterVariant)
-  return operators[0]?.value ?? (filterVariant === "text" ? "iLike" : "eq")
+  const operators = getFilterOperators(filterVariant);
+  return operators[0]?.value ?? (filterVariant === "text" ? "iLike" : "eq");
 }
 
 export function getFilterOperators(
-  filterVariant: FilterVariant
+  filterVariant: FilterVariant,
 ): { label: string; value: FilterOperator }[] {
   const operatorMap: Record<
     FilterVariant,
@@ -129,7 +129,7 @@ export function getFilterOperators(
   > = {
     boolean: [
       { label: "equals", value: "eq" },
-      { label: "does not equal", value: "ne" }
+      { label: "does not equal", value: "ne" },
     ],
     date: [
       { label: "equals", value: "eq" },
@@ -139,12 +139,12 @@ export function getFilterOperators(
       { label: "after", value: "gt" },
       { label: "after or on", value: "gte" },
       { label: "is between", value: "isBetween" },
-      { label: "is relative to today", value: "isRelativeToToday" }
+      { label: "is relative to today", value: "isRelativeToToday" },
     ],
     dateRange: [],
     multiSelect: [
       { label: "is in", value: "inArray" },
-      { label: "is not in", value: "notInArray" }
+      { label: "is not in", value: "notInArray" },
     ],
     number: [
       { label: "equals", value: "eq" },
@@ -153,14 +153,14 @@ export function getFilterOperators(
       { label: "less than or equal", value: "lte" },
       { label: "greater than", value: "gt" },
       { label: "greater than or equal", value: "gte" },
-      { label: "is between", value: "isBetween" }
+      { label: "is between", value: "isBetween" },
     ],
     range: [],
     select: [
       { label: "equals", value: "eq" },
       { label: "does not equal", value: "ne" },
       { label: "is in", value: "inArray" },
-      { label: "is not in", value: "notInArray" }
+      { label: "is not in", value: "notInArray" },
     ],
     text: [
       { label: "contains", value: "iLike" },
@@ -168,9 +168,9 @@ export function getFilterOperators(
       { label: "equals", value: "eq" },
       { label: "does not equal", value: "ne" },
       { label: "is empty", value: "isEmpty" },
-      { label: "is not empty", value: "isNotEmpty" }
-    ]
-  }
+      { label: "is not empty", value: "isNotEmpty" },
+    ],
+  };
 
-  return operatorMap[filterVariant]
+  return operatorMap[filterVariant];
 }

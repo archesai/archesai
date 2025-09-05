@@ -1,6 +1,6 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useLocation } from "@tanstack/react-router"
+import { useLocation } from "@tanstack/react-router";
 
 import {
   Breadcrumb,
@@ -8,28 +8,28 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
-} from "#components/shadcn/breadcrumb"
+  BreadcrumbSeparator,
+} from "#components/shadcn/breadcrumb";
 
 export const BreadCrumbs = (): JSX.Element => {
-  const location = useLocation()
+  const location = useLocation();
 
   // Split the pathname into segments and create breadcrumbs
-  const pathSegments = location.pathname.split("/").filter(Boolean)
+  const pathSegments = location.pathname.split("/").filter(Boolean);
 
   const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = "/" + pathSegments.slice(0, index + 1).join("/")
+    const path = "/" + pathSegments.slice(0, index + 1).join("/");
     const title = segment
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
+      .join(" ");
 
     return {
       isLast: index === pathSegments.length - 1,
       path,
-      title
-    }
-  })
+      title,
+    };
+  });
 
   return (
     <>
@@ -55,5 +55,5 @@ export const BreadCrumbs = (): JSX.Element => {
         </BreadcrumbList>
       </Breadcrumb>
     </>
-  )
-}
+  );
+};

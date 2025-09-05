@@ -1,12 +1,12 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useCallback, useEffect, useState } from "react"
-import { useTheme } from "next-themes"
+import { useCallback, useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
-import type { SiteRoute } from "#lib/site-config.interface"
+import type { SiteRoute } from "#lib/site-config.interface";
 
-import { LaptopIcon, MoonIcon, SunIcon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { LaptopIcon, MoonIcon, SunIcon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,27 +14,27 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator
-} from "#components/shadcn/command"
-import { DialogDescription, DialogTitle } from "#components/shadcn/dialog"
-import { cn } from "#lib/utils"
+  CommandSeparator,
+} from "#components/shadcn/command";
+import { DialogDescription, DialogTitle } from "#components/shadcn/dialog";
+import { cn } from "#lib/utils";
 
 interface DialogProps {
-  children?: React.ReactNode
-  defaultOpen?: boolean
-  modal?: boolean
-  onOpenChange?(open: boolean): void
-  open?: boolean
+  children?: React.ReactNode;
+  defaultOpen?: boolean;
+  modal?: boolean;
+  onOpenChange?(open: boolean): void;
+  open?: boolean;
 }
 
 export function CommandMenu({
   siteRoutes,
   ...props
 }: DialogProps & {
-  siteRoutes: SiteRoute[]
+  siteRoutes: SiteRoute[];
 }): JSX.Element {
-  const [open, setOpen] = useState(false)
-  const { setTheme } = useTheme()
+  const [open, setOpen] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -45,33 +45,33 @@ export function CommandMenu({
           e.target instanceof HTMLTextAreaElement ||
           e.target instanceof HTMLSelectElement
         ) {
-          return
+          return;
         }
 
-        e.preventDefault()
-        setOpen((open) => !open)
+        e.preventDefault();
+        setOpen((open) => !open);
       }
-    }
+    };
 
-    document.addEventListener("keydown", down)
+    document.addEventListener("keydown", down);
     return () => {
-      document.removeEventListener("keydown", down)
-    }
-  }, [])
+      document.removeEventListener("keydown", down);
+    };
+  }, []);
 
   const runCommand = useCallback((command: () => unknown) => {
-    setOpen(false)
-    command()
-  }, [])
+    setOpen(false);
+    command();
+  }, []);
 
   return (
     <div>
       <Button
         className={cn(
-          "h-8 w-full justify-between gap-2 rounded-lg text-sm font-normal text-muted-foreground md:text-sm"
+          "h-8 w-full justify-between gap-2 rounded-lg text-sm font-normal text-muted-foreground md:text-sm",
         )}
         onClick={() => {
-          setOpen(true)
+          setOpen(true);
         }}
         variant="outline"
         {...props}
@@ -108,13 +108,13 @@ export function CommandMenu({
                   key={route.href}
                   onClick={() => {
                     runCommand(() => {
-                      window.location.href = route.href
-                    })
+                      window.location.href = route.href;
+                    });
                   }}
                   onSelect={() => {
                     runCommand(() => {
-                      window.location.href = route.href
-                    })
+                      window.location.href = route.href;
+                    });
                   }}
                   value={route.title}
                 >
@@ -132,8 +132,8 @@ export function CommandMenu({
                 key={theme}
                 onSelect={() => {
                   runCommand(() => {
-                    setTheme(theme)
-                  })
+                    setTheme(theme);
+                  });
                 }}
               >
                 {theme === "light" && <SunIcon className="h-5 w-5" />}
@@ -146,5 +146,5 @@ export function CommandMenu({
         </CommandList>
       </CommandDialog>
     </div>
-  )
+  );
 }

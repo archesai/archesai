@@ -1,24 +1,24 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useGetOneArtifactSuspense } from "@archesai/client"
-import { Timestamp } from "@archesai/ui/components/custom/timestamp"
-import { Badge } from "@archesai/ui/components/shadcn/badge"
-import { Button } from "@archesai/ui/components/shadcn/button"
+import { useGetOneArtifactSuspense } from "@archesai/client";
+import { Timestamp } from "@archesai/ui/components/custom/timestamp";
+import { Badge } from "@archesai/ui/components/shadcn/badge";
+import { Button } from "@archesai/ui/components/shadcn/button";
 import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
-} from "@archesai/ui/components/shadcn/card"
+  CardTitle,
+} from "@archesai/ui/components/shadcn/card";
 
 export const ArtifactDetailsHeader = ({
-  artifactId
+  artifactId,
 }: {
-  artifactId: string
+  artifactId: string;
 }): JSX.Element => {
   const {
-    data: { data: artifact }
-  } = useGetOneArtifactSuspense(artifactId)
+    data: { data: artifact },
+  } = useGetOneArtifactSuspense(artifactId);
 
   return (
     <CardHeader>
@@ -40,17 +40,17 @@ export const ArtifactDetailsHeader = ({
       </CardTitle>
       <CardDescription>{artifact.description}</CardDescription>
     </CardHeader>
-  )
-}
+  );
+};
 
 export const ArtifactDetailsBody = ({
-  artifactId
+  artifactId,
 }: {
-  artifactId: string
+  artifactId: string;
 }): JSX.Element => {
   const {
-    data: { data: artifact }
-  } = useGetOneArtifactSuspense(artifactId)
+    data: { data: artifact },
+  } = useGetOneArtifactSuspense(artifactId);
 
   return (
     <CardContent>
@@ -63,5 +63,5 @@ export const ArtifactDetailsBody = ({
         )}
       </div>
     </CardContent>
-  )
-}
+  );
+};

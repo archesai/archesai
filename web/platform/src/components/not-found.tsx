@@ -1,20 +1,20 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { Link } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router";
 
-import { Button } from "@archesai/ui/components/shadcn/button"
+import { Button } from "@archesai/ui/components/shadcn/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
-} from "@archesai/ui/components/shadcn/card"
+  CardTitle,
+} from "@archesai/ui/components/shadcn/card";
 
 export default function NotFound({
-  children
+  children,
 }: {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }): JSX.Element {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -39,7 +39,7 @@ export default function NotFound({
             <Button
               className="flex-1"
               onClick={() => {
-                window.history.back()
+                window.history.back();
               }}
               type="button"
             >
@@ -49,5 +49,5 @@ export default function NotFound({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import type { CreateLabelBody, UpdateLabelBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { CreateLabelBody, UpdateLabelBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
 import {
   useCreateLabel,
   useGetOneLabelSuspense,
-  useUpdateLabel
-} from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Input } from "@archesai/ui/components/shadcn/input"
-import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants"
+  useUpdateLabel,
+} from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Input } from "@archesai/ui/components/shadcn/input";
+import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants";
 
 export default function LabelForm({ id }: { id?: string }): JSX.Element {
-  const { mutateAsync: updateLabel } = useUpdateLabel()
-  const { mutateAsync: createLabel } = useCreateLabel()
-  const { data: existingLabel } = useGetOneLabelSuspense(id)
+  const { mutateAsync: updateLabel } = useUpdateLabel();
+  const { mutateAsync: createLabel } = useCreateLabel();
+  const { data: existingLabel } = useGetOneLabelSuspense(id);
 
   const formFields: FormFieldConfig[] = [
     {
@@ -29,9 +29,9 @@ export default function LabelForm({ id }: { id?: string }): JSX.Element {
           {...field}
           type="text"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <GenericForm<CreateLabelBody, UpdateLabelBody>
@@ -41,16 +41,16 @@ export default function LabelForm({ id }: { id?: string }): JSX.Element {
       isUpdateForm={!!id}
       onSubmitCreate={async (createLabelDto) => {
         await createLabel({
-          data: createLabelDto
-        })
+          data: createLabelDto,
+        });
       }}
       onSubmitUpdate={async (data) => {
         await updateLabel({
           data: data,
-          id: id
-        })
+          id: id,
+        });
       }}
       title="Configuration"
     />
-  )
+  );
 }

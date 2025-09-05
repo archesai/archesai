@@ -1,10 +1,10 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useEffect, useState } from "react"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { motion } from "motion/react"
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion } from "motion/react";
 
-import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo"
+import { ArchesLogo } from "@archesai/ui/components/custom/arches-logo";
 import {
   ArrowRightIcon,
   BarChartIcon,
@@ -16,107 +16,107 @@ import {
   StarIcon,
   UsersIcon,
   XCircleIcon,
-  ZapIcon
-} from "@archesai/ui/components/custom/icons"
+  ZapIcon,
+} from "@archesai/ui/components/custom/icons";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger
-} from "@archesai/ui/components/shadcn/accordion"
-import { Badge } from "@archesai/ui/components/shadcn/badge"
-import { Button } from "@archesai/ui/components/shadcn/button"
-import { Card, CardContent } from "@archesai/ui/components/shadcn/card"
+  AccordionTrigger,
+} from "@archesai/ui/components/shadcn/accordion";
+import { Badge } from "@archesai/ui/components/shadcn/badge";
+import { Button } from "@archesai/ui/components/shadcn/button";
+import { Card, CardContent } from "@archesai/ui/components/shadcn/card";
 import {
   Tabs,
   TabsContent,
   TabsList,
-  TabsTrigger
-} from "@archesai/ui/components/shadcn/tabs"
+  TabsTrigger,
+} from "@archesai/ui/components/shadcn/tabs";
 
 export const Route = createFileRoute("/landing/")({
-  component: RouteComponent
-})
+  component: RouteComponent,
+});
 
 export default function LandingPage(): JSX.Element {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // const { resolvedTheme, setTheme } = useTheme()
-  const [_mounted, setMounted] = useState(false)
+  const [_mounted, setMounted] = useState(false);
 
   // const toggleTheme = useCallback(() => {
   //   setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
   // }, [resolvedTheme, setTheme])
 
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setIsScrolled(true)
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  }
+    show: { opacity: 1, y: 0 },
+  };
 
   const features = [
     {
       description:
         "Automate repetitive tasks and workflows to save time and reduce errors.",
       icon: <ZapIcon className="size-5" />,
-      title: "Smart Automation"
+      title: "Smart Automation",
     },
     {
       description:
         "Gain valuable insights with real-time data visualization and reporting.",
       icon: <BarChartIcon className="size-5" />,
-      title: "Advanced Analytics"
+      title: "Advanced Analytics",
     },
     {
       description:
         "Work together seamlessly with integrated communication tools.",
       icon: <UsersIcon className="size-5" />,
-      title: "Team Collaboration"
+      title: "Team Collaboration",
     },
     {
       description:
         "Keep your data safe with end-to-end encryption and compliance features.",
       icon: <ShieldIcon className="size-5" />,
-      title: "Enterprise Security"
+      title: "Enterprise Security",
     },
     {
       description:
         "Connect with your favorite tools through our extensive API ecosystem.",
       icon: <LayersIcon className="size-5" />,
-      title: "Seamless Integration"
+      title: "Seamless Integration",
     },
     {
       description:
         "Get help whenever you need it with our dedicated support team.",
       icon: <StarIcon className="size-5" />,
-      title: "24/7 Support"
-    }
-  ]
+      title: "24/7 Support",
+    },
+  ];
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-black">
@@ -191,7 +191,7 @@ export default function LandingPage(): JSX.Element {
             </Button> */}
             <Button
               onClick={() => {
-                setMobileMenuOpen(!mobileMenuOpen)
+                setMobileMenuOpen(!mobileMenuOpen);
               }}
               size="icon"
               variant="ghost"
@@ -217,7 +217,7 @@ export default function LandingPage(): JSX.Element {
               <Link
                 className="py-2 text-sm font-medium"
                 onClick={() => {
-                  setMobileMenuOpen(false)
+                  setMobileMenuOpen(false);
                 }}
                 search={{ scrollTo: "features" }}
                 to="/landing"
@@ -227,7 +227,7 @@ export default function LandingPage(): JSX.Element {
               <Link
                 className="py-2 text-sm font-medium"
                 onClick={() => {
-                  setMobileMenuOpen(false)
+                  setMobileMenuOpen(false);
                 }}
                 search={{ scrollTo: "testimonials" }}
                 to="/landing"
@@ -237,7 +237,7 @@ export default function LandingPage(): JSX.Element {
               <Link
                 className="py-2 text-sm font-medium"
                 onClick={() => {
-                  setMobileMenuOpen(false)
+                  setMobileMenuOpen(false);
                 }}
                 search={{ scrollTo: "pricing" }}
                 to="/landing"
@@ -247,7 +247,7 @@ export default function LandingPage(): JSX.Element {
               <Link
                 className="py-2 text-sm font-medium"
                 onClick={() => {
-                  setMobileMenuOpen(false)
+                  setMobileMenuOpen(false);
                 }}
                 search={{ scrollTo: "faq" }}
                 to="/landing"
@@ -258,7 +258,7 @@ export default function LandingPage(): JSX.Element {
                 <Link
                   className="py-2 text-sm font-medium"
                   onClick={() => {
-                    setMobileMenuOpen(false)
+                    setMobileMenuOpen(false);
                   }}
                   to="/"
                 >
@@ -471,20 +471,20 @@ export default function LandingPage(): JSX.Element {
                   description:
                     "Sign up in seconds with just your email. No credit card required to get started.",
                   step: "01",
-                  title: "Create Account"
+                  title: "Create Account",
                 },
                 {
                   description:
                     "Customize your workspace to match your team's unique workflow and requirements.",
                   step: "02",
-                  title: "Configure Workspace"
+                  title: "Configure Workspace",
                 },
                 {
                   description:
                     "Start using our powerful features to streamline processes and achieve your goals.",
                   step: "03",
-                  title: "Boost Productivity"
-                }
+                  title: "Boost Productivity",
+                },
               ].map((step, i) => (
                 <motion.div
                   className="relative z-10 flex flex-col items-center space-y-4 text-center"
@@ -540,43 +540,43 @@ export default function LandingPage(): JSX.Element {
                   quote:
                     "SaaSify has transformed how we manage our projects. The automation features have saved us countless hours of manual work.",
                   rating: 5,
-                  role: "Project Manager, TechCorp"
+                  role: "Project Manager, TechCorp",
                 },
                 {
                   author: "Michael Chen",
                   quote:
                     "The analytics dashboard provides insights we never had access to before. It's helped us make data-driven decisions that have improved our ROI.",
                   rating: 5,
-                  role: "Marketing Director, GrowthLabs"
+                  role: "Marketing Director, GrowthLabs",
                 },
                 {
                   author: "Emily Rodriguez",
                   quote:
                     "Customer support is exceptional. Any time we've had an issue, the team has been quick to respond and resolve it. Couldn't ask for better service.",
                   rating: 5,
-                  role: "Operations Lead, StartupX"
+                  role: "Operations Lead, StartupX",
                 },
                 {
                   author: "David Kim",
                   quote:
                     "We've tried several similar solutions, but none compare to the ease of use and comprehensive features of SaaSify. It's been a game-changer.",
                   rating: 5,
-                  role: "CEO, InnovateNow"
+                  role: "CEO, InnovateNow",
                 },
                 {
                   author: "Lisa Patel",
                   quote:
                     "The collaboration tools have made remote work so much easier for our team. We're more productive than ever despite being spread across different time zones.",
                   rating: 5,
-                  role: "HR Director, RemoteFirst"
+                  role: "HR Director, RemoteFirst",
                 },
                 {
                   author: "James Wilson",
                   quote:
                     "Implementation was seamless, and the ROI was almost immediate. We've reduced our operational costs by 30% since switching to SaaSify.",
                   rating: 5,
-                  role: "COO, ScaleUp Inc"
-                }
+                  role: "COO, ScaleUp Inc",
+                },
               ].map((testimonial, i) => (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -680,10 +680,10 @@ export default function LandingPage(): JSX.Element {
                           "Up to 5 team members",
                           "Basic analytics",
                           "5GB storage",
-                          "Email support"
+                          "Email support",
                         ],
                         name: "Starter",
-                        price: "$29"
+                        price: "$29",
                       },
                       {
                         cta: "Start Free Trial",
@@ -693,11 +693,11 @@ export default function LandingPage(): JSX.Element {
                           "Advanced analytics",
                           "25GB storage",
                           "Priority email support",
-                          "API access"
+                          "API access",
                         ],
                         name: "Professional",
                         popular: true,
-                        price: "$79"
+                        price: "$79",
                       },
                       {
                         cta: "Contact Sales",
@@ -709,11 +709,11 @@ export default function LandingPage(): JSX.Element {
                           "Unlimited storage",
                           "24/7 phone & email support",
                           "Advanced API access",
-                          "Custom integrations"
+                          "Custom integrations",
                         ],
                         name: "Enterprise",
-                        price: "$199"
-                      }
+                        price: "$199",
+                      },
                     ].map((plan, i) => (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -776,10 +776,10 @@ export default function LandingPage(): JSX.Element {
                           "Up to 5 team members",
                           "Basic analytics",
                           "5GB storage",
-                          "Email support"
+                          "Email support",
                         ],
                         name: "Starter",
-                        price: "$23"
+                        price: "$23",
                       },
                       {
                         cta: "Start Free Trial",
@@ -789,11 +789,11 @@ export default function LandingPage(): JSX.Element {
                           "Advanced analytics",
                           "25GB storage",
                           "Priority email support",
-                          "API access"
+                          "API access",
                         ],
                         name: "Professional",
                         popular: true,
-                        price: "$63"
+                        price: "$63",
                       },
                       {
                         cta: "Contact Sales",
@@ -805,11 +805,11 @@ export default function LandingPage(): JSX.Element {
                           "Unlimited storage",
                           "24/7 phone & email support",
                           "Advanced API access",
-                          "Custom integrations"
+                          "Custom integrations",
                         ],
                         name: "Enterprise",
-                        price: "$159"
-                      }
+                        price: "$159",
+                      },
                     ].map((plan, i) => (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -904,35 +904,35 @@ export default function LandingPage(): JSX.Element {
                   {
                     answer:
                       "Our 14-day free trial gives you full access to all features of your selected plan. No credit card is required to sign up, and you can cancel at any time during the trial period with no obligation.",
-                    question: "How does the 14-day free trial work?"
+                    question: "How does the 14-day free trial work?",
                   },
                   {
                     answer:
                       "Yes, you can upgrade or downgrade your plan at any time. If you upgrade, the new pricing will be prorated for the remainder of your billing cycle. If you downgrade, the new pricing will take effect at the start of your next billing cycle.",
-                    question: "Can I change plans later?"
+                    question: "Can I change plans later?",
                   },
                   {
                     answer:
                       "The number of usersIcon depends on your plan. The Starter plan allows up to 5 team members, the Professional plan allows up to 20, and the Enterprise plan has no limit on team members.",
                     question:
-                      "Is there a limit to how many usersIcon I can add?"
+                      "Is there a limit to how many usersIcon I can add?",
                   },
                   {
                     answer:
                       "Yes, we offer special pricing for nonprofits, educational institutions, and open-source projects. Please contact our sales team for more information.",
                     question:
-                      "Do you offer discounts for nonprofits or educational institutions?"
+                      "Do you offer discounts for nonprofits or educational institutions?",
                   },
                   {
                     answer:
                       "We take security very seriously. All data is encrypted both in transit and at rest. We use industry-standard security practices and regularly undergo security audits. Our platform is compliant with GDPR, CCPA, and other relevant regulations.",
-                    question: "How secure is my data?"
+                    question: "How secure is my data?",
                   },
                   {
                     answer:
                       "Support varies by plan. All plans include email support, with the Professional plan offering priority email support. The Enterprise plan includes 24/7 phone and email support. We also have an extensive knowledge base and community forum available to all users.",
-                    question: "What kind of support do you offer?"
-                  }
+                    question: "What kind of support do you offer?",
+                  },
                 ].map((faq, i) => (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -1234,9 +1234,9 @@ export default function LandingPage(): JSX.Element {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 function RouteComponent() {
-  return <LandingPage />
+  return <LandingPage />;
 }

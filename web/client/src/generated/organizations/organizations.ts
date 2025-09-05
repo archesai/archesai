@@ -19,11 +19,11 @@ import type {
   UseQueryOptions,
   UseQueryResult,
   UseSuspenseQueryOptions,
-  UseSuspenseQueryResult
-} from "@tanstack/react-query"
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import qs from "qs"
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -52,85 +52,85 @@ import type {
   UpdateMember200,
   UpdateMemberBody,
   UpdateOrganization200,
-  UpdateOrganizationBody
-} from "../orval.schemas"
+  UpdateOrganizationBody,
+} from "../orval.schemas";
 
-import { customFetch } from "../../fetcher"
+import { customFetch } from "../../fetcher";
 
-type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
  * Create a new organization
  * @summary Create a new organization
  */
 export const getCreateOrganizationUrl = () => {
-  return `/organizations`
-}
+  return `/organizations`;
+};
 
 export const createOrganization = async (
   createOrganizationBody: CreateOrganizationBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateOrganization201> => {
   return customFetch<CreateOrganization201>(getCreateOrganizationUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createOrganizationBody)
-  })
-}
+    body: JSON.stringify(createOrganizationBody),
+  });
+};
 
 export const getCreateOrganizationMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createOrganization>>,
     TError,
     { data: CreateOrganizationBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createOrganization>>,
   TError,
   { data: CreateOrganizationBody },
   TContext
 > => {
-  const mutationKey = ["createOrganization"]
+  const mutationKey = ["createOrganization"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createOrganization>>,
     { data: CreateOrganizationBody }
   > = (props) => {
-    const { data } = props ?? {}
+    const { data } = props ?? {};
 
-    return createOrganization(data, requestOptions)
-  }
+    return createOrganization(data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateOrganizationMutationResult = NonNullable<
   Awaited<ReturnType<typeof createOrganization>>
->
-export type CreateOrganizationMutationBody = CreateOrganizationBody
+>;
+export type CreateOrganizationMutationBody = CreateOrganizationBody;
 export type CreateOrganizationMutationError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new organization
  */
 export const useCreateOrganization = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -138,59 +138,59 @@ export const useCreateOrganization = <
       TError,
       { data: CreateOrganizationBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createOrganization>>,
   TError,
   { data: CreateOrganizationBody },
   TContext
 > => {
-  const mutationOptions = getCreateOrganizationMutationOptions(options)
+  const mutationOptions = getCreateOrganizationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many organizations
  * @summary Find many organizations
  */
 export const getFindManyOrganizationsUrl = (
-  params?: FindManyOrganizationsParams
+  params?: FindManyOrganizationsParams,
 ) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/organizations?${stringifiedParams}`
-    : `/organizations`
-}
+    : `/organizations`;
+};
 
 export const findManyOrganizations = async (
   params?: FindManyOrganizationsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyOrganizations200> => {
   return customFetch<FindManyOrganizations200>(
     getFindManyOrganizationsUrl(params),
     {
       ...options,
-      method: "GET"
-    }
-  )
-}
+      method: "GET",
+    },
+  );
+};
 
 export const getFindManyOrganizationsQueryKey = (
-  params?: FindManyOrganizationsParams
+  params?: FindManyOrganizationsParams,
 ) => {
-  return [`/organizations`, ...(params ? [params] : [])] as const
-}
+  return [`/organizations`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyOrganizationsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -200,37 +200,37 @@ export const getFindManyOrganizationsQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyOrganizations>>
   > = ({ signal }) =>
-    findManyOrganizations(params, { signal, ...requestOptions })
+    findManyOrganizations(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyOrganizations>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyOrganizationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyOrganizations>>
->
+>;
 export type FindManyOrganizationsQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyOrganizations<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyOrganizationsParams,
   options: {
@@ -248,16 +248,16 @@ export function useFindManyOrganizations<
           Awaited<ReturnType<typeof findManyOrganizations>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyOrganizations<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -275,16 +275,16 @@ export function useFindManyOrganizations<
           Awaited<ReturnType<typeof findManyOrganizations>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyOrganizations<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -294,20 +294,20 @@ export function useFindManyOrganizations<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many organizations
  */
 
 export function useFindManyOrganizations<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -317,28 +317,28 @@ export function useFindManyOrganizations<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyOrganizationsQueryOptions(params, options)
+  const queryOptions = getFindManyOrganizationsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyOrganizationsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -348,37 +348,37 @@ export const getFindManyOrganizationsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params)
+    queryOptions?.queryKey ?? getFindManyOrganizationsQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyOrganizations>>
   > = ({ signal }) =>
-    findManyOrganizations(params, { signal, ...requestOptions })
+    findManyOrganizations(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyOrganizations>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyOrganizationsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyOrganizations>>
->
+>;
 export type FindManyOrganizationsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyOrganizationsSuspense<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params: undefined | FindManyOrganizationsParams,
   options: {
@@ -388,16 +388,16 @@ export function useFindManyOrganizationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyOrganizationsSuspense<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -407,16 +407,16 @@ export function useFindManyOrganizationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyOrganizationsSuspense<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -426,20 +426,20 @@ export function useFindManyOrganizationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many organizations
  */
 
 export function useFindManyOrganizationsSuspense<
   TData = Awaited<ReturnType<typeof findManyOrganizations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   params?: FindManyOrganizationsParams,
   options?: {
@@ -449,28 +449,28 @@ export function useFindManyOrganizationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getFindManyOrganizationsSuspenseQueryOptions(
     params,
-    options
-  )
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -478,69 +478,69 @@ export function useFindManyOrganizationsSuspense<
  * @summary Delete an organization
  */
 export const getDeleteOrganizationUrl = (id: string | undefined | null) => {
-  return `/organizations/${id}`
-}
+  return `/organizations/${id}`;
+};
 
 export const deleteOrganization = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteOrganization200> => {
   return customFetch<DeleteOrganization200>(getDeleteOrganizationUrl(id), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteOrganizationMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteOrganization>>,
     TError,
     { id: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteOrganization>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteOrganization"]
+  const mutationKey = ["deleteOrganization"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteOrganization>>,
     { id: string | undefined | null }
   > = (props) => {
-    const { id } = props ?? {}
+    const { id } = props ?? {};
 
-    return deleteOrganization(id, requestOptions)
-  }
+    return deleteOrganization(id, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteOrganizationMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteOrganization>>
->
+>;
 
-export type DeleteOrganizationMutationError = NotFoundResponse
+export type DeleteOrganizationMutationError = NotFoundResponse;
 
 /**
  * @summary Delete an organization
  */
 export const useDeleteOrganization = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -548,47 +548,47 @@ export const useDeleteOrganization = <
       TError,
       { id: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteOrganization>>,
   TError,
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteOrganizationMutationOptions(options)
+  const mutationOptions = getDeleteOrganizationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find an organization
  * @summary Find an organization
  */
 export const getGetOneOrganizationUrl = (id: string | undefined | null) => {
-  return `/organizations/${id}`
-}
+  return `/organizations/${id}`;
+};
 
 export const getOneOrganization = async (
   id: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneOrganization200> => {
   return customFetch<GetOneOrganization200>(getGetOneOrganizationUrl(id), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneOrganizationQueryKey = (
-  id?: string | undefined | null
+  id?: string | undefined | null,
 ) => {
-  return [`/organizations/${id}`] as const
-}
+  return [`/organizations/${id}`] as const;
+};
 
 export const getGetOneOrganizationQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -598,38 +598,38 @@ export const getGetOneOrganizationQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneOrganizationQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneOrganizationQueryKey(id);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getOneOrganization>>
-  > = ({ signal }) => getOneOrganization(id, { signal, ...requestOptions })
+  > = ({ signal }) => getOneOrganization(id, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneOrganization>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneOrganizationQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneOrganization>>
->
-export type GetOneOrganizationQueryError = NotFoundResponse
+>;
+export type GetOneOrganizationQueryError = NotFoundResponse;
 
 export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -647,16 +647,16 @@ export function useGetOneOrganization<
           Awaited<ReturnType<typeof getOneOrganization>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -674,16 +674,16 @@ export function useGetOneOrganization<
           Awaited<ReturnType<typeof getOneOrganization>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -693,20 +693,20 @@ export function useGetOneOrganization<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an organization
  */
 
 export function useGetOneOrganization<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -716,28 +716,28 @@ export function useGetOneOrganization<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneOrganizationQueryOptions(id, options)
+  const queryOptions = getGetOneOrganizationQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneOrganizationSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -747,33 +747,33 @@ export const getGetOneOrganizationSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetOneOrganizationQueryKey(id)
+  const queryKey = queryOptions?.queryKey ?? getGetOneOrganizationQueryKey(id);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getOneOrganization>>
-  > = ({ signal }) => getOneOrganization(id, { signal, ...requestOptions })
+  > = ({ signal }) => getOneOrganization(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneOrganization>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneOrganizationSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneOrganization>>
->
-export type GetOneOrganizationSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneOrganizationSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneOrganizationSuspense<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options: {
@@ -783,16 +783,16 @@ export function useGetOneOrganizationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneOrganizationSuspense<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -802,16 +802,16 @@ export function useGetOneOrganizationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneOrganizationSuspense<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -821,20 +821,20 @@ export function useGetOneOrganizationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an organization
  */
 
 export function useGetOneOrganizationSuspense<
   TData = Awaited<ReturnType<typeof getOneOrganization>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   options?: {
@@ -844,25 +844,25 @@ export function useGetOneOrganizationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneOrganizationSuspenseQueryOptions(id, options)
+  const queryOptions = getGetOneOrganizationSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -870,72 +870,72 @@ export function useGetOneOrganizationSuspense<
  * @summary Update an organization
  */
 export const getUpdateOrganizationUrl = (id: string | undefined | null) => {
-  return `/organizations/${id}`
-}
+  return `/organizations/${id}`;
+};
 
 export const updateOrganization = async (
   id: string | undefined | null,
   updateOrganizationBody: UpdateOrganizationBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateOrganization200> => {
   return customFetch<UpdateOrganization200>(getUpdateOrganizationUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateOrganizationBody)
-  })
-}
+    body: JSON.stringify(updateOrganizationBody),
+  });
+};
 
 export const getUpdateOrganizationMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateOrganization>>,
     TError,
     { id: string | undefined | null; data: UpdateOrganizationBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateOrganization>>,
   TError,
   { id: string | undefined | null; data: UpdateOrganizationBody },
   TContext
 > => {
-  const mutationKey = ["updateOrganization"]
+  const mutationKey = ["updateOrganization"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateOrganization>>,
     { id: string | undefined | null; data: UpdateOrganizationBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return updateOrganization(id, data, requestOptions)
-  }
+    return updateOrganization(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateOrganizationMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateOrganization>>
->
-export type UpdateOrganizationMutationBody = UpdateOrganizationBody
-export type UpdateOrganizationMutationError = NotFoundResponse
+>;
+export type UpdateOrganizationMutationBody = UpdateOrganizationBody;
+export type UpdateOrganizationMutationError = NotFoundResponse;
 
 /**
  * @summary Update an organization
  */
 export const useUpdateOrganization = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -943,93 +943,93 @@ export const useUpdateOrganization = <
       TError,
       { id: string | undefined | null; data: UpdateOrganizationBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateOrganization>>,
   TError,
   { id: string | undefined | null; data: UpdateOrganizationBody },
   TContext
 > => {
-  const mutationOptions = getUpdateOrganizationMutationOptions(options)
+  const mutationOptions = getUpdateOrganizationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Create a new member
  * @summary Create a new member
  */
 export const getCreateMemberUrl = (id: string | undefined | null) => {
-  return `/organizations/${id}/members`
-}
+  return `/organizations/${id}/members`;
+};
 
 export const createMember = async (
   id: string | undefined | null,
   createMemberBody: CreateMemberBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateMember201> => {
   return customFetch<CreateMember201>(getCreateMemberUrl(id), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createMemberBody)
-  })
-}
+    body: JSON.stringify(createMemberBody),
+  });
+};
 
 export const getCreateMemberMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createMember>>,
     TError,
     { id: string | undefined | null; data: CreateMemberBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createMember>>,
   TError,
   { id: string | undefined | null; data: CreateMemberBody },
   TContext
 > => {
-  const mutationKey = ["createMember"]
+  const mutationKey = ["createMember"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createMember>>,
     { id: string | undefined | null; data: CreateMemberBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return createMember(id, data, requestOptions)
-  }
+    return createMember(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateMemberMutationResult = NonNullable<
   Awaited<ReturnType<typeof createMember>>
->
-export type CreateMemberMutationBody = CreateMemberBody
+>;
+export type CreateMemberMutationBody = CreateMemberBody;
 export type CreateMemberMutationError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new member
  */
 export const useCreateMember = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -1037,59 +1037,59 @@ export const useCreateMember = <
       TError,
       { id: string | undefined | null; data: CreateMemberBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createMember>>,
   TError,
   { id: string | undefined | null; data: CreateMemberBody },
   TContext
 > => {
-  const mutationOptions = getCreateMemberMutationOptions(options)
+  const mutationOptions = getCreateMemberMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many members
  * @summary Find many members
  */
 export const getFindManyMembersUrl = (
   id: string | undefined | null,
-  params?: FindManyMembersParams
+  params?: FindManyMembersParams,
 ) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/organizations/${id}/members?${stringifiedParams}`
-    : `/organizations/${id}/members`
-}
+    : `/organizations/${id}/members`;
+};
 
 export const findManyMembers = async (
   id: string | undefined | null,
   params?: FindManyMembersParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyMembers200> => {
   return customFetch<FindManyMembers200>(getFindManyMembersUrl(id, params), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getFindManyMembersQueryKey = (
   id?: string | undefined | null,
-  params?: FindManyMembersParams
+  params?: FindManyMembersParams,
 ) => {
-  return [`/organizations/${id}/members`, ...(params ? [params] : [])] as const
-}
+  return [`/organizations/${id}/members`, ...(params ? [params] : [])] as const;
+};
 
 export const getFindManyMembersQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1100,41 +1100,41 @@ export const getFindManyMembersQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyMembersQueryKey(id, params)
+    queryOptions?.queryKey ?? getFindManyMembersQueryKey(id, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyMembers>>> = ({
-    signal
-  }) => findManyMembers(id, params, { signal, ...requestOptions })
+    signal,
+  }) => findManyMembers(id, params, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyMembers>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyMembersQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyMembers>>
->
+>;
 export type FindManyMembersQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyMembers<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params: undefined | FindManyMembersParams,
@@ -1153,16 +1153,16 @@ export function useFindManyMembers<
           Awaited<ReturnType<typeof findManyMembers>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyMembers<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1181,16 +1181,16 @@ export function useFindManyMembers<
           Awaited<ReturnType<typeof findManyMembers>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyMembers<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1201,20 +1201,20 @@ export function useFindManyMembers<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many members
  */
 
 export function useFindManyMembers<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1225,28 +1225,28 @@ export function useFindManyMembers<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyMembersQueryOptions(id, params, options)
+  const queryOptions = getFindManyMembersQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyMembersSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1257,36 +1257,36 @@ export const getFindManyMembersSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyMembersQueryKey(id, params)
+    queryOptions?.queryKey ?? getFindManyMembersQueryKey(id, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findManyMembers>>> = ({
-    signal
-  }) => findManyMembers(id, params, { signal, ...requestOptions })
+    signal,
+  }) => findManyMembers(id, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyMembers>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyMembersSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyMembers>>
->
+>;
 export type FindManyMembersSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyMembersSuspense<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params: undefined | FindManyMembersParams,
@@ -1297,16 +1297,16 @@ export function useFindManyMembersSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyMembersSuspense<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1317,16 +1317,16 @@ export function useFindManyMembersSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyMembersSuspense<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1337,20 +1337,20 @@ export function useFindManyMembersSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many members
  */
 
 export function useFindManyMembersSuspense<
   TData = Awaited<ReturnType<typeof findManyMembers>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyMembersParams,
@@ -1361,29 +1361,29 @@ export function useFindManyMembersSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getFindManyMembersSuspenseQueryOptions(
     id,
     params,
-    options
-  )
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1392,65 +1392,65 @@ export function useFindManyMembersSuspense<
  */
 export const getDeleteMemberUrl = (
   id: string | undefined | null,
-  memberId: string | undefined | null
+  memberId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/members/${memberId}`
-}
+  return `/organizations/${id}/members/${memberId}`;
+};
 
 export const deleteMember = async (
   id: string | undefined | null,
   memberId: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteMember200> => {
   return customFetch<DeleteMember200>(getDeleteMemberUrl(id, memberId), {
     ...options,
-    method: "DELETE"
-  })
-}
+    method: "DELETE",
+  });
+};
 
 export const getDeleteMemberMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteMember>>,
     TError,
     { id: string | undefined | null; memberId: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteMember>>,
   TError,
   { id: string | undefined | null; memberId: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteMember"]
+  const mutationKey = ["deleteMember"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteMember>>,
     { id: string | undefined | null; memberId: string | undefined | null }
   > = (props) => {
-    const { id, memberId } = props ?? {}
+    const { id, memberId } = props ?? {};
 
-    return deleteMember(id, memberId, requestOptions)
-  }
+    return deleteMember(id, memberId, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteMemberMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteMember>>
->
+>;
 
-export type DeleteMemberMutationError = NotFoundResponse
+export type DeleteMemberMutationError = NotFoundResponse;
 
 /**
  * @summary Delete a member
@@ -1462,91 +1462,91 @@ export const useDeleteMember = <TError = NotFoundResponse, TContext = unknown>(
       TError,
       { id: string | undefined | null; memberId: string | undefined | null },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteMember>>,
   TError,
   { id: string | undefined | null; memberId: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteMemberMutationOptions(options)
+  const mutationOptions = getDeleteMemberMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find a member
  * @summary Find a member
  */
 export const getGetOneMemberUrl = (
   id: string | undefined | null,
-  memberId: string | undefined | null
+  memberId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/members/${memberId}`
-}
+  return `/organizations/${id}/members/${memberId}`;
+};
 
 export const getOneMember = async (
   id: string | undefined | null,
   memberId: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneMember200> => {
   return customFetch<GetOneMember200>(getGetOneMemberUrl(id, memberId), {
     ...options,
-    method: "GET"
-  })
-}
+    method: "GET",
+  });
+};
 
 export const getGetOneMemberQueryKey = (
   id?: string | undefined | null,
-  memberId?: string | undefined | null
+  memberId?: string | undefined | null,
 ) => {
-  return [`/organizations/${id}/members/${memberId}`] as const
-}
+  return [`/organizations/${id}/members/${memberId}`] as const;
+};
 
 export const getGetOneMemberQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetOneMemberQueryKey(id, memberId)
+    queryOptions?.queryKey ?? getGetOneMemberQueryKey(id, memberId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneMember>>> = ({
-    signal
-  }) => getOneMember(id, memberId, { signal, ...requestOptions })
+    signal,
+  }) => getOneMember(id, memberId, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!(id && memberId),
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneMember>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneMemberQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneMember>>
->
-export type GetOneMemberQueryError = NotFoundResponse
+>;
+export type GetOneMemberQueryError = NotFoundResponse;
 
 export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1561,16 +1561,16 @@ export function useGetOneMember<
           Awaited<ReturnType<typeof getOneMember>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1585,64 +1585,64 @@ export function useGetOneMember<
           Awaited<ReturnType<typeof getOneMember>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a member
  */
 
 export function useGetOneMember<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof getOneMember>>, TError, TData>
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetOneMemberQueryOptions(id, memberId, options)
+  const queryOptions = getGetOneMemberQueryOptions(id, memberId, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneMemberSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1653,34 +1653,34 @@ export const getGetOneMemberSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetOneMemberQueryKey(id, memberId)
+    queryOptions?.queryKey ?? getGetOneMemberQueryKey(id, memberId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneMember>>> = ({
-    signal
-  }) => getOneMember(id, memberId, { signal, ...requestOptions })
+    signal,
+  }) => getOneMember(id, memberId, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneMember>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneMemberSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneMember>>
->
-export type GetOneMemberSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneMemberSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneMemberSuspense<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1691,16 +1691,16 @@ export function useGetOneMemberSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneMemberSuspense<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1711,16 +1711,16 @@ export function useGetOneMemberSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneMemberSuspense<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1731,20 +1731,20 @@ export function useGetOneMemberSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find a member
  */
 
 export function useGetOneMemberSuspense<
   TData = Awaited<ReturnType<typeof getOneMember>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   memberId: string | undefined | null,
@@ -1755,29 +1755,29 @@ export function useGetOneMemberSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetOneMemberSuspenseQueryOptions(
     id,
     memberId,
-    options
-  )
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -1786,80 +1786,80 @@ export function useGetOneMemberSuspense<
  */
 export const getUpdateMemberUrl = (
   id: string | undefined | null,
-  memberId: string | undefined | null
+  memberId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/members/${memberId}`
-}
+  return `/organizations/${id}/members/${memberId}`;
+};
 
 export const updateMember = async (
   id: string | undefined | null,
   memberId: string | undefined | null,
   updateMemberBody: UpdateMemberBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateMember200> => {
   return customFetch<UpdateMember200>(getUpdateMemberUrl(id, memberId), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateMemberBody)
-  })
-}
+    body: JSON.stringify(updateMemberBody),
+  });
+};
 
 export const getUpdateMemberMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateMember>>,
     TError,
     {
-      id: string | undefined | null
-      memberId: string | undefined | null
-      data: UpdateMemberBody
+      id: string | undefined | null;
+      memberId: string | undefined | null;
+      data: UpdateMemberBody;
     },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateMember>>,
   TError,
   {
-    id: string | undefined | null
-    memberId: string | undefined | null
-    data: UpdateMemberBody
+    id: string | undefined | null;
+    memberId: string | undefined | null;
+    data: UpdateMemberBody;
   },
   TContext
 > => {
-  const mutationKey = ["updateMember"]
+  const mutationKey = ["updateMember"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateMember>>,
     {
-      id: string | undefined | null
-      memberId: string | undefined | null
-      data: UpdateMemberBody
+      id: string | undefined | null;
+      memberId: string | undefined | null;
+      data: UpdateMemberBody;
     }
   > = (props) => {
-    const { id, memberId, data } = props ?? {}
+    const { id, memberId, data } = props ?? {};
 
-    return updateMember(id, memberId, data, requestOptions)
-  }
+    return updateMember(id, memberId, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateMemberMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateMember>>
->
-export type UpdateMemberMutationBody = UpdateMemberBody
-export type UpdateMemberMutationError = NotFoundResponse
+>;
+export type UpdateMemberMutationBody = UpdateMemberBody;
+export type UpdateMemberMutationError = NotFoundResponse;
 
 /**
  * @summary Update a member
@@ -1870,102 +1870,102 @@ export const useUpdateMember = <TError = NotFoundResponse, TContext = unknown>(
       Awaited<ReturnType<typeof updateMember>>,
       TError,
       {
-        id: string | undefined | null
-        memberId: string | undefined | null
-        data: UpdateMemberBody
+        id: string | undefined | null;
+        memberId: string | undefined | null;
+        data: UpdateMemberBody;
       },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateMember>>,
   TError,
   {
-    id: string | undefined | null
-    memberId: string | undefined | null
-    data: UpdateMemberBody
+    id: string | undefined | null;
+    memberId: string | undefined | null;
+    data: UpdateMemberBody;
   },
   TContext
 > => {
-  const mutationOptions = getUpdateMemberMutationOptions(options)
+  const mutationOptions = getUpdateMemberMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Create a new invitation
  * @summary Create a new invitation
  */
 export const getCreateInvitationUrl = (id: string | undefined | null) => {
-  return `/organizations/${id}/invitations`
-}
+  return `/organizations/${id}/invitations`;
+};
 
 export const createInvitation = async (
   id: string | undefined | null,
   createInvitationBody: CreateInvitationBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<CreateInvitation201> => {
   return customFetch<CreateInvitation201>(getCreateInvitationUrl(id), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createInvitationBody)
-  })
-}
+    body: JSON.stringify(createInvitationBody),
+  });
+};
 
 export const getCreateInvitationMutationOptions = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof createInvitation>>,
     TError,
     { id: string | undefined | null; data: CreateInvitationBody },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof createInvitation>>,
   TError,
   { id: string | undefined | null; data: CreateInvitationBody },
   TContext
 > => {
-  const mutationKey = ["createInvitation"]
+  const mutationKey = ["createInvitation"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof createInvitation>>,
     { id: string | undefined | null; data: CreateInvitationBody }
   > = (props) => {
-    const { id, data } = props ?? {}
+    const { id, data } = props ?? {};
 
-    return createInvitation(id, data, requestOptions)
-  }
+    return createInvitation(id, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type CreateInvitationMutationResult = NonNullable<
   Awaited<ReturnType<typeof createInvitation>>
->
-export type CreateInvitationMutationBody = CreateInvitationBody
+>;
+export type CreateInvitationMutationBody = CreateInvitationBody;
 export type CreateInvitationMutationError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 /**
  * @summary Create a new invitation
  */
 export const useCreateInvitation = <
   TError = BadRequestResponse | UnauthorizedResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
@@ -1973,65 +1973,65 @@ export const useCreateInvitation = <
       TError,
       { id: string | undefined | null; data: CreateInvitationBody },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof createInvitation>>,
   TError,
   { id: string | undefined | null; data: CreateInvitationBody },
   TContext
 > => {
-  const mutationOptions = getCreateInvitationMutationOptions(options)
+  const mutationOptions = getCreateInvitationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find many invitations
  * @summary Find many invitations
  */
 export const getFindManyInvitationsUrl = (
   id: string | undefined | null,
-  params?: FindManyInvitationsParams
+  params?: FindManyInvitationsParams,
 ) => {
   const stringifiedParams = qs.stringify(params || {}, {
     skipNulls: false,
-    strictNullHandling: true
-  })
+    strictNullHandling: true,
+  });
 
   return stringifiedParams.length > 0
     ? `/organizations/${id}/invitations?${stringifiedParams}`
-    : `/organizations/${id}/invitations`
-}
+    : `/organizations/${id}/invitations`;
+};
 
 export const findManyInvitations = async (
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<FindManyInvitations200> => {
   return customFetch<FindManyInvitations200>(
     getFindManyInvitationsUrl(id, params),
     {
       ...options,
-      method: "GET"
-    }
-  )
-}
+      method: "GET",
+    },
+  );
+};
 
 export const getFindManyInvitationsQueryKey = (
   id?: string | undefined | null,
-  params?: FindManyInvitationsParams
+  params?: FindManyInvitationsParams,
 ) => {
   return [
     `/organizations/${id}/invitations`,
-    ...(params ? [params] : [])
-  ] as const
-}
+    ...(params ? [params] : []),
+  ] as const;
+};
 
 export const getFindManyInvitationsQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2042,42 +2042,42 @@ export const getFindManyInvitationsQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyInvitationsQueryKey(id, params)
+    queryOptions?.queryKey ?? getFindManyInvitationsQueryKey(id, params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyInvitations>>
   > = ({ signal }) =>
-    findManyInvitations(id, params, { signal, ...requestOptions })
+    findManyInvitations(id, params, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof findManyInvitations>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyInvitationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyInvitations>>
->
+>;
 export type FindManyInvitationsQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyInvitations<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params: undefined | FindManyInvitationsParams,
@@ -2096,16 +2096,16 @@ export function useFindManyInvitations<
           Awaited<ReturnType<typeof findManyInvitations>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyInvitations<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2124,16 +2124,16 @@ export function useFindManyInvitations<
           Awaited<ReturnType<typeof findManyInvitations>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyInvitations<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2144,20 +2144,20 @@ export function useFindManyInvitations<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many invitations
  */
 
 export function useFindManyInvitations<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2168,28 +2168,28 @@ export function useFindManyInvitations<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFindManyInvitationsQueryOptions(id, params, options)
+  const queryOptions = getFindManyInvitationsQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getFindManyInvitationsSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2200,37 +2200,37 @@ export const getFindManyInvitationsSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getFindManyInvitationsQueryKey(id, params)
+    queryOptions?.queryKey ?? getFindManyInvitationsQueryKey(id, params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof findManyInvitations>>
   > = ({ signal }) =>
-    findManyInvitations(id, params, { signal, ...requestOptions })
+    findManyInvitations(id, params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof findManyInvitations>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type FindManyInvitationsSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof findManyInvitations>>
->
+>;
 export type FindManyInvitationsSuspenseQueryError =
   | BadRequestResponse
-  | UnauthorizedResponse
+  | UnauthorizedResponse;
 
 export function useFindManyInvitationsSuspense<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params: undefined | FindManyInvitationsParams,
@@ -2241,16 +2241,16 @@ export function useFindManyInvitationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyInvitationsSuspense<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2261,16 +2261,16 @@ export function useFindManyInvitationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useFindManyInvitationsSuspense<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2281,20 +2281,20 @@ export function useFindManyInvitationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find many invitations
  */
 
 export function useFindManyInvitationsSuspense<
   TData = Awaited<ReturnType<typeof findManyInvitations>>,
-  TError = BadRequestResponse | UnauthorizedResponse
+  TError = BadRequestResponse | UnauthorizedResponse,
 >(
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
@@ -2305,29 +2305,29 @@ export function useFindManyInvitationsSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getFindManyInvitationsSuspenseQueryOptions(
     id,
     params,
-    options
-  )
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -2336,134 +2336,134 @@ export function useFindManyInvitationsSuspense<
  */
 export const getDeleteInvitationUrl = (
   id: string | undefined | null,
-  invitationId: string | undefined | null
+  invitationId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/invitations/${invitationId}`
-}
+  return `/organizations/${id}/invitations/${invitationId}`;
+};
 
 export const deleteInvitation = async (
   id: string | undefined | null,
   invitationId: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<DeleteInvitation200> => {
   return customFetch<DeleteInvitation200>(
     getDeleteInvitationUrl(id, invitationId),
     {
       ...options,
-      method: "DELETE"
-    }
-  )
-}
+      method: "DELETE",
+    },
+  );
+};
 
 export const getDeleteInvitationMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof deleteInvitation>>,
     TError,
     { id: string | undefined | null; invitationId: string | undefined | null },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof deleteInvitation>>,
   TError,
   { id: string | undefined | null; invitationId: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ["deleteInvitation"]
+  const mutationKey = ["deleteInvitation"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof deleteInvitation>>,
     { id: string | undefined | null; invitationId: string | undefined | null }
   > = (props) => {
-    const { id, invitationId } = props ?? {}
+    const { id, invitationId } = props ?? {};
 
-    return deleteInvitation(id, invitationId, requestOptions)
-  }
+    return deleteInvitation(id, invitationId, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type DeleteInvitationMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteInvitation>>
->
+>;
 
-export type DeleteInvitationMutationError = NotFoundResponse
+export type DeleteInvitationMutationError = NotFoundResponse;
 
 /**
  * @summary Delete an invitation
  */
 export const useDeleteInvitation = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteInvitation>>,
       TError,
       {
-        id: string | undefined | null
-        invitationId: string | undefined | null
+        id: string | undefined | null;
+        invitationId: string | undefined | null;
       },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof deleteInvitation>>,
   TError,
   { id: string | undefined | null; invitationId: string | undefined | null },
   TContext
 > => {
-  const mutationOptions = getDeleteInvitationMutationOptions(options)
+  const mutationOptions = getDeleteInvitationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Find an invitation
  * @summary Find an invitation
  */
 export const getGetOneInvitationUrl = (
   id: string | undefined | null,
-  invitationId: string | undefined | null
+  invitationId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/invitations/${invitationId}`
-}
+  return `/organizations/${id}/invitations/${invitationId}`;
+};
 
 export const getOneInvitation = async (
   id: string | undefined | null,
   invitationId: string | undefined | null,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<GetOneInvitation200> => {
   return customFetch<GetOneInvitation200>(
     getGetOneInvitationUrl(id, invitationId),
     {
       ...options,
-      method: "GET"
-    }
-  )
-}
+      method: "GET",
+    },
+  );
+};
 
 export const getGetOneInvitationQueryKey = (
   id?: string | undefined | null,
-  invitationId?: string | undefined | null
+  invitationId?: string | undefined | null,
 ) => {
-  return [`/organizations/${id}/invitations/${invitationId}`] as const
-}
+  return [`/organizations/${id}/invitations/${invitationId}`] as const;
+};
 
 export const getGetOneInvitationQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2474,40 +2474,40 @@ export const getGetOneInvitationQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetOneInvitationQueryKey(id, invitationId)
+    queryOptions?.queryKey ?? getGetOneInvitationQueryKey(id, invitationId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getOneInvitation>>
   > = ({ signal }) =>
-    getOneInvitation(id, invitationId, { signal, ...requestOptions })
+    getOneInvitation(id, invitationId, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!(id && invitationId),
-    ...queryOptions
+    ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getOneInvitation>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneInvitationQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneInvitation>>
->
-export type GetOneInvitationQueryError = NotFoundResponse
+>;
+export type GetOneInvitationQueryError = NotFoundResponse;
 
 export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2526,16 +2526,16 @@ export function useGetOneInvitation<
           Awaited<ReturnType<typeof getOneInvitation>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2554,16 +2554,16 @@ export function useGetOneInvitation<
           Awaited<ReturnType<typeof getOneInvitation>>
         >,
         "initialData"
-      >
-    request?: SecondParameter<typeof customFetch>
+      >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2574,20 +2574,20 @@ export function useGetOneInvitation<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an invitation
  */
 
 export function useGetOneInvitation<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2598,32 +2598,32 @@ export function useGetOneInvitation<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetOneInvitationQueryOptions(
     id,
     invitationId,
-    options
-  )
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
     TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 export const getGetOneInvitationSuspenseQueryOptions = <
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2634,35 +2634,35 @@ export const getGetOneInvitationSuspenseQueryOptions = <
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
-  }
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {}
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetOneInvitationQueryKey(id, invitationId)
+    queryOptions?.queryKey ?? getGetOneInvitationQueryKey(id, invitationId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getOneInvitation>>
   > = ({ signal }) =>
-    getOneInvitation(id, invitationId, { signal, ...requestOptions })
+    getOneInvitation(id, invitationId, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<
     Awaited<ReturnType<typeof getOneInvitation>>,
     TError,
     TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> }
-}
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
 export type GetOneInvitationSuspenseQueryResult = NonNullable<
   Awaited<ReturnType<typeof getOneInvitation>>
->
-export type GetOneInvitationSuspenseQueryError = NotFoundResponse
+>;
+export type GetOneInvitationSuspenseQueryError = NotFoundResponse;
 
 export function useGetOneInvitationSuspense<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2673,16 +2673,16 @@ export function useGetOneInvitationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneInvitationSuspense<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2693,16 +2693,16 @@ export function useGetOneInvitationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 export function useGetOneInvitationSuspense<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2713,20 +2713,20 @@ export function useGetOneInvitationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
-}
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Find an invitation
  */
 
 export function useGetOneInvitationSuspense<
   TData = Awaited<ReturnType<typeof getOneInvitation>>,
-  TError = NotFoundResponse
+  TError = NotFoundResponse,
 >(
   id: string | undefined | null,
   invitationId: string | undefined | null,
@@ -2737,29 +2737,29 @@ export function useGetOneInvitationSuspense<
         TError,
         TData
       >
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>
+  queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getGetOneInvitationSuspenseQueryOptions(
     id,
     invitationId,
-    options
-  )
+    options,
+  );
 
   const query = useSuspenseQuery(
     queryOptions,
-    queryClient
+    queryClient,
   ) as UseSuspenseQueryResult<TData, TError> & {
-    queryKey: DataTag<QueryKey, TData, TError>
-  }
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
-  query.queryKey = queryOptions.queryKey
+  query.queryKey = queryOptions.queryKey;
 
-  return query
+  return query;
 }
 
 /**
@@ -2768,16 +2768,16 @@ export function useGetOneInvitationSuspense<
  */
 export const getUpdateInvitationUrl = (
   id: string | undefined | null,
-  invitationId: string | undefined | null
+  invitationId: string | undefined | null,
 ) => {
-  return `/organizations/${id}/invitations/${invitationId}`
-}
+  return `/organizations/${id}/invitations/${invitationId}`;
+};
 
 export const updateInvitation = async (
   id: string | undefined | null,
   invitationId: string | undefined | null,
   updateInvitationBody: UpdateInvitationBody,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<UpdateInvitation200> => {
   return customFetch<UpdateInvitation200>(
     getUpdateInvitationUrl(id, invitationId),
@@ -2785,99 +2785,99 @@ export const updateInvitation = async (
       ...options,
       method: "PATCH",
       headers: { "Content-Type": "application/json", ...options?.headers },
-      body: JSON.stringify(updateInvitationBody)
-    }
-  )
-}
+      body: JSON.stringify(updateInvitationBody),
+    },
+  );
+};
 
 export const getUpdateInvitationMutationOptions = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateInvitation>>,
     TError,
     {
-      id: string | undefined | null
-      invitationId: string | undefined | null
-      data: UpdateInvitationBody
+      id: string | undefined | null;
+      invitationId: string | undefined | null;
+      data: UpdateInvitationBody;
     },
     TContext
-  >
-  request?: SecondParameter<typeof customFetch>
+  >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateInvitation>>,
   TError,
   {
-    id: string | undefined | null
-    invitationId: string | undefined | null
-    data: UpdateInvitationBody
+    id: string | undefined | null;
+    invitationId: string | undefined | null;
+    data: UpdateInvitationBody;
   },
   TContext
 > => {
-  const mutationKey = ["updateInvitation"]
+  const mutationKey = ["updateInvitation"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined }
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateInvitation>>,
     {
-      id: string | undefined | null
-      invitationId: string | undefined | null
-      data: UpdateInvitationBody
+      id: string | undefined | null;
+      invitationId: string | undefined | null;
+      data: UpdateInvitationBody;
     }
   > = (props) => {
-    const { id, invitationId, data } = props ?? {}
+    const { id, invitationId, data } = props ?? {};
 
-    return updateInvitation(id, invitationId, data, requestOptions)
-  }
+    return updateInvitation(id, invitationId, data, requestOptions);
+  };
 
-  return { mutationFn, ...mutationOptions }
-}
+  return { mutationFn, ...mutationOptions };
+};
 
 export type UpdateInvitationMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateInvitation>>
->
-export type UpdateInvitationMutationBody = UpdateInvitationBody
-export type UpdateInvitationMutationError = NotFoundResponse
+>;
+export type UpdateInvitationMutationBody = UpdateInvitationBody;
+export type UpdateInvitationMutationError = NotFoundResponse;
 
 /**
  * @summary Update an invitation
  */
 export const useUpdateInvitation = <
   TError = NotFoundResponse,
-  TContext = unknown
+  TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateInvitation>>,
       TError,
       {
-        id: string | undefined | null
-        invitationId: string | undefined | null
-        data: UpdateInvitationBody
+        id: string | undefined | null;
+        invitationId: string | undefined | null;
+        data: UpdateInvitationBody;
       },
       TContext
-    >
-    request?: SecondParameter<typeof customFetch>
+    >;
+    request?: SecondParameter<typeof customFetch>;
   },
-  queryClient?: QueryClient
+  queryClient?: QueryClient,
 ): UseMutationResult<
   Awaited<ReturnType<typeof updateInvitation>>,
   TError,
   {
-    id: string | undefined | null
-    invitationId: string | undefined | null
-    data: UpdateInvitationBody
+    id: string | undefined | null;
+    invitationId: string | undefined | null;
+    data: UpdateInvitationBody;
   },
   TContext
 > => {
-  const mutationOptions = getUpdateInvitationMutationOptions(options)
+  const mutationOptions = getUpdateInvitationMutationOptions(options);
 
-  return useMutation(mutationOptions, queryClient)
-}
+  return useMutation(mutationOptions, queryClient);
+};

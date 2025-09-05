@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { createElement, useCallback, useMemo } from "react"
-import { Link as TanStackLink } from "@tanstack/react-router"
+import { createElement, useCallback, useMemo } from "react";
+import { Link as TanStackLink } from "@tanstack/react-router";
 
-import type { SmartLinkProps } from "@archesai/ui/hooks/use-link"
+import type { SmartLinkProps } from "@archesai/ui/hooks/use-link";
 
-import { filterUndefined, useLinkContext } from "@archesai/ui/hooks/use-link"
+import { filterUndefined, useLinkContext } from "@archesai/ui/hooks/use-link";
 
 /**
  * Smart Link that automatically chooses between:
@@ -47,11 +47,11 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   trackingValue,
   ...restProps
 }) => {
-  const { isExternalUrl, trackEvent } = useLinkContext()
+  const { isExternalUrl, trackEvent } = useLinkContext();
   // const routerState = useRouterState()
 
   // Determine if this is an external link
-  const isExternal = external ?? isExternalUrl(href)
+  const isExternal = external ?? isExternalUrl(href);
 
   // Check if we're currently navigating to this route
   // const isNavigating =
@@ -65,11 +65,11 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
           trackingCategory,
           trackingAction,
           trackingLabel ?? href,
-          trackingValue
-        )
+          trackingValue,
+        );
       }
 
-      onClick?.(e)
+      onClick?.(e);
     },
     [
       trackClick,
@@ -79,67 +79,67 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
       href,
       trackingValue,
       trackEvent,
-      onClick
-    ]
-  )
+      onClick,
+    ],
+  );
 
   // Handle search params
   const linkSearch = useMemo<
     boolean | Record<string, unknown> | undefined
   >(() => {
     if (preserveSearch && search === undefined) {
-      return true
+      return true;
     }
     if (resetSearch) {
-      return {}
+      return {};
     }
-    return search as Record<string, unknown> | undefined
-  }, [search, preserveSearch, resetSearch])
+    return search as Record<string, unknown> | undefined;
+  }, [search, preserveSearch, resetSearch]);
 
   // Build CSS classes
   const combinedClassName = useMemo(() => {
-    const classes = [className]
+    const classes = [className];
 
     // if (isNavigating) {
     //   classes.push('opacity-50', 'pointer-events-none')
     // }
 
     if (disabled) {
-      classes.push("opacity-50", "cursor-not-allowed", "pointer-events-none")
+      classes.push("opacity-50", "cursor-not-allowed", "pointer-events-none");
     }
 
-    return classes.filter(Boolean).join(" ") || undefined
+    return classes.filter(Boolean).join(" ") || undefined;
   }, [
     className,
     // isNavigating,
-    disabled
-  ])
+    disabled,
+  ]);
 
   // Filter out undefined values from rest props
-  const safeRestProps = useMemo(() => filterUndefined(restProps), [restProps])
+  const safeRestProps = useMemo(() => filterUndefined(restProps), [restProps]);
 
   // Build TanStack Router props safely
   const tanstackProps = useMemo(() => {
-    const props: Record<string, unknown> = { to: href }
+    const props: Record<string, unknown> = { to: href };
 
     // Only add properties if they're not undefined
-    if (linkSearch !== undefined) props.search = linkSearch
-    if (params !== undefined) props.params = params
-    if (hash !== undefined) props.hash = hash
-    if (state !== undefined) props.state = state
-    if (mask !== undefined) props.mask = mask
-    if (replace !== undefined) props.replace = replace
-    if (resetScroll !== undefined) props.resetScroll = resetScroll
-    props.preload = preload
-    if (preloadDelay !== undefined) props.preloadDelay = preloadDelay
-    if (disabled !== undefined) props.disabled = disabled
-    if (combinedClassName !== undefined) props.className = combinedClassName
-    props.onClick = handleClick
+    if (linkSearch !== undefined) props.search = linkSearch;
+    if (params !== undefined) props.params = params;
+    if (hash !== undefined) props.hash = hash;
+    if (state !== undefined) props.state = state;
+    if (mask !== undefined) props.mask = mask;
+    if (replace !== undefined) props.replace = replace;
+    if (resetScroll !== undefined) props.resetScroll = resetScroll;
+    props.preload = preload;
+    if (preloadDelay !== undefined) props.preloadDelay = preloadDelay;
+    if (disabled !== undefined) props.disabled = disabled;
+    if (combinedClassName !== undefined) props.className = combinedClassName;
+    props.onClick = handleClick;
 
     // Add safe rest props
-    Object.assign(props, safeRestProps)
+    Object.assign(props, safeRestProps);
 
-    return props
+    return props;
   }, [
     href,
     linkSearch,
@@ -154,8 +154,8 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
     disabled,
     combinedClassName,
     handleClick,
-    safeRestProps
-  ])
+    safeRestProps,
+  ]);
 
   // External link rendering
   if (isExternal) {
@@ -169,10 +169,10 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
           .filter(Boolean)
           .join(" ") || undefined,
       target: newTab ? "_blank" : undefined,
-      ...safeRestProps
-    })
+      ...safeRestProps,
+    });
 
-    return createElement("a", externalProps, children)
+    return createElement("a", externalProps, children);
   }
 
   // Internal link with TanStack Router
@@ -190,6 +190,6 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
     //     children
     //   )
     // : children
-    children
-  )
-}
+    children,
+  );
+};

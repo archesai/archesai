@@ -1,20 +1,20 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-import type { RequestPasswordResetBody } from "@archesai/client"
-import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
+import type { RequestPasswordResetBody } from "@archesai/client";
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form";
 
-import { useRequestPasswordReset } from "@archesai/client"
-import { GenericForm } from "@archesai/ui/components/custom/generic-form"
-import { Input } from "@archesai/ui/components/shadcn/input"
+import { useRequestPasswordReset } from "@archesai/client";
+import { GenericForm } from "@archesai/ui/components/custom/generic-form";
+import { Input } from "@archesai/ui/components/shadcn/input";
 
 export const Route = createFileRoute("/auth/forgot-password/")({
-  component: ForgotPasswordPage
-})
+  component: ForgotPasswordPage,
+});
 
 export default function ForgotPasswordPage(): JSX.Element {
-  const { mutateAsync: requestPasswordReset } = useRequestPasswordReset()
+  const { mutateAsync: requestPasswordReset } = useRequestPasswordReset();
 
   const formFields: FormFieldConfig<RequestPasswordResetBody>[] = [
     {
@@ -26,9 +26,9 @@ export default function ForgotPasswordPage(): JSX.Element {
           {...field}
           type="email"
         />
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <>
@@ -40,9 +40,9 @@ export default function ForgotPasswordPage(): JSX.Element {
         onSubmitCreate={async (data) => {
           await requestPasswordReset({
             data: {
-              email: data.email
-            }
-          })
+              email: data.email,
+            },
+          });
         }}
         postContent={
           <div className="text-center text-sm">
@@ -59,5 +59,5 @@ export default function ForgotPasswordPage(): JSX.Element {
         title="Forgot Password"
       />
     </>
-  )
+  );
 }

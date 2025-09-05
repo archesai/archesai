@@ -9,7 +9,7 @@
  * A recursive filter node that can be a condition or group
  */
 export interface FilterNode {
-  [key: string]: unknown
+  [key: string]: unknown;
 }
 
 /**
@@ -20,32 +20,32 @@ export interface Page {
    * @minimum 1
    * @maximum 9007199254740991
    */
-  number?: number
+  number?: number;
   /**
    * @minimum 1
    * @maximum 100
    */
-  size?: number
+  size?: number;
 }
 
 /**
  * Universally Unique Identifier
  * @minLength 36
  */
-export type Uuid = string
+export type Uuid = string;
 
 export interface BaseEntity {
-  id: Uuid
+  id: Uuid;
   /**
    * The date and time when the resource was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The date and time when the resource was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
 }
 
 /**
@@ -53,7 +53,7 @@ export interface BaseEntity {
  * @minLength 1
  */
 export type AccountEntityAllOfProviderId =
-  (typeof AccountEntityAllOfProviderId)[keyof typeof AccountEntityAllOfProviderId]
+  (typeof AccountEntityAllOfProviderId)[keyof typeof AccountEntityAllOfProviderId];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountEntityAllOfProviderId = {
@@ -61,47 +61,47 @@ export const AccountEntityAllOfProviderId = {
   google: "google",
   github: "github",
   microsoft: "microsoft",
-  apple: "apple"
-} as const
+  apple: "apple",
+} as const;
 
 export type AccountEntityAllOf = {
   /**
    * The unique identifier for the account from the provider
    * @minLength 1
    */
-  accountId: string
+  accountId: string;
   /** The user ID this account belongs to */
-  userId: Uuid
+  userId: Uuid;
   /**
    * The authentication provider identifier
    * @minLength 1
    */
-  providerId: AccountEntityAllOfProviderId
+  providerId: AccountEntityAllOfProviderId;
   /** The OAuth access token */
-  accessToken?: string
+  accessToken?: string;
   /** The access token expiration timestamp */
-  accessTokenExpiresAt?: string
+  accessTokenExpiresAt?: string;
   /** The OAuth refresh token */
-  refreshToken?: string
+  refreshToken?: string;
   /** The refresh token expiration timestamp */
-  refreshTokenExpiresAt?: string
+  refreshTokenExpiresAt?: string;
   /** The OpenID Connect ID token */
-  idToken?: string
+  idToken?: string;
   /** The hashed password (only for local authentication) */
-  password?: string
+  password?: string;
   /** The OAuth scope granted */
-  scope?: string
-}
+  scope?: string;
+};
 
 /**
  * Schema for Account entity (authentication provider account)
  */
-export type AccountEntity = BaseEntity & AccountEntityAllOf
+export type AccountEntity = BaseEntity & AccountEntityAllOf;
 
 /**
  * The invalid value that was provided
  */
-export type ValidationErrorValue = string | number | boolean
+export type ValidationErrorValue = string | number | boolean;
 
 /**
  * Individual field validation error
@@ -111,14 +111,14 @@ export interface ValidationError {
    * The field path that failed validation
    * @minLength 1
    */
-  field: string
+  field: string;
   /**
    * Human-readable error message
    * @minLength 1
    */
-  message: string
+  message: string;
   /** The invalid value that was provided */
-  value?: ValidationErrorValue
+  value?: ValidationErrorValue;
 }
 
 /**
@@ -130,52 +130,52 @@ export interface Problem {
    * @minimum 100
    * @maximum 599
    */
-  status: number
+  status: number;
   /**
    * URI identifying the problem type
    * @minLength 1
    */
-  type: string
+  type: string;
   /**
    * Short, human-readable summary
    * @minLength 1
    */
-  title: string
+  title: string;
   /**
    * Human-readable explanation specific to this occurrence
    * @minLength 1
    */
-  detail: string
+  detail: string;
   /** URI identifying the specific occurrence */
-  instance?: string
+  instance?: string;
   /** Additional validation errors for specific fields */
-  errors?: ValidationError[]
+  errors?: ValidationError[];
 }
 
 /**
  * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
  */
-export type Email = string
+export type Email = string;
 
 export type UserEntityAllOf = {
   /** The user's email address */
-  email: Email
+  email: Email;
   /** Whether the user's email has been verified */
-  emailVerified: boolean
+  emailVerified: boolean;
   /** The user's avatar image URL */
-  image?: string
+  image?: string;
   /**
    * The user's display name
    * @minLength 1
    * @maxLength 255
    */
-  name: string
-}
+  name: string;
+};
 
 /**
  * Schema for User entity
  */
-export type UserEntity = BaseEntity & UserEntityAllOf
+export type UserEntity = BaseEntity & UserEntityAllOf;
 
 /**
  * Schema for Session entity
@@ -185,47 +185,47 @@ export interface SessionEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The active organization ID
    * @minLength 1
    */
-  activeOrganizationId: string
+  activeOrganizationId: string;
   /**
    * The expiration date of the session
    * @minLength 1
    */
-  expiresAt: string
+  expiresAt: string;
   /**
    * The IP address of the session
    * @minLength 1
    */
-  ipAddress: string
+  ipAddress: string;
   /**
    * The session token
    * @minLength 1
    */
-  token: string
+  token: string;
   /**
    * The user agent of the session
    * @minLength 1
    */
-  userAgent: string
+  userAgent: string;
   /**
    * The ID of the user associated with the session
    * @minLength 1
    */
-  userId: string
+  userId: string;
 }
 
 /**
@@ -233,7 +233,7 @@ export interface SessionEntity {
  * @minLength 1
  */
 export type OrganizationEntityAllOfPlan =
-  (typeof OrganizationEntityAllOfPlan)[keyof typeof OrganizationEntityAllOfPlan]
+  (typeof OrganizationEntityAllOfPlan)[keyof typeof OrganizationEntityAllOfPlan];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationEntityAllOfPlan = {
@@ -241,13 +241,13 @@ export const OrganizationEntityAllOfPlan = {
   BASIC: "BASIC",
   STANDARD: "STANDARD",
   PREMIUM: "PREMIUM",
-  UNLIMITED: "UNLIMITED"
-} as const
+  UNLIMITED: "UNLIMITED",
+} as const;
 
 /**
  * Custom metadata in JSON format
  */
-export type OrganizationEntityAllOfMetadata = { [key: string]: unknown }
+export type OrganizationEntityAllOfMetadata = { [key: string]: unknown };
 
 export type OrganizationEntityAllOf = {
   /**
@@ -255,52 +255,52 @@ export type OrganizationEntityAllOf = {
    * @minLength 1
    * @maxLength 255
    */
-  name: string
+  name: string;
   /**
    * URL-friendly unique identifier for the organization
    * @minLength 3
    * @maxLength 50
    * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
    */
-  slug: string
+  slug: string;
   /** The organization's logo URL */
-  logo?: string
+  logo?: string;
   /** Email address for billing communications */
-  billingEmail?: string
+  billingEmail?: string;
   /**
    * The current subscription plan
    * @minLength 1
    */
-  plan: OrganizationEntityAllOfPlan
+  plan: OrganizationEntityAllOfPlan;
   /**
    * Available credits for this organization
    * @minimum 0
    */
-  credits: number
+  credits: number;
   /** Custom metadata in JSON format */
-  metadata: OrganizationEntityAllOfMetadata
+  metadata: OrganizationEntityAllOfMetadata;
   /** Stripe customer identifier */
-  stripeCustomerId?: string
-}
+  stripeCustomerId?: string;
+};
 
 /**
  * Schema for Organization entity
  */
-export type OrganizationEntity = BaseEntity & OrganizationEntityAllOf
+export type OrganizationEntity = BaseEntity & OrganizationEntityAllOf;
 
 /**
  * The role of the member
  * @minLength 1
  */
 export type MemberEntityRole =
-  (typeof MemberEntityRole)[keyof typeof MemberEntityRole]
+  (typeof MemberEntityRole)[keyof typeof MemberEntityRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MemberEntityRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 /**
  * Schema for Member entity
@@ -310,32 +310,32 @@ export interface MemberEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The organization name
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
   /**
    * The role of the member
    * @minLength 1
    */
-  role: MemberEntityRole
+  role: MemberEntityRole;
   /**
    * The user id
    * @minLength 1
    */
-  userId: string
+  userId: string;
 }
 
 /**
@@ -343,14 +343,14 @@ export interface MemberEntity {
  * @minLength 1
  */
 export type InvitationEntityRole =
-  (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole]
+  (typeof InvitationEntityRole)[keyof typeof InvitationEntityRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationEntityRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 /**
  * Schema for Invitation entity
@@ -360,52 +360,52 @@ export interface InvitationEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The email of the invitated user
    * @minLength 1
    */
-  email: string
+  email: string;
   /**
    * The date and time when the invitation expires
    * @minLength 1
    */
-  expiresAt: string
+  expiresAt: string;
   /**
    * The user id of the inviter
    * @minLength 1
    */
-  inviterId: string
+  inviterId: string;
   /**
    * The name of the organization the token belongs to
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
   /**
    * The role of the invitation
    * @minLength 1
    */
-  role: InvitationEntityRole
+  role: InvitationEntityRole;
   /**
    * The status of the invitation, e.g., pending, accepted, declined
    * @minLength 1
    */
-  status: string
+  status: string;
 }
 
 export interface OrganizationReference {
   /** The organization identifier */
-  organizationId: Uuid
+  organizationId: Uuid;
 }
 
 export type PipelineEntityAllOf = {
@@ -414,34 +414,34 @@ export type PipelineEntityAllOf = {
    * @minLength 1
    * @maxLength 255
    */
-  name: string
+  name: string;
   /**
    * Detailed description of the pipeline's purpose
    * @maxLength 1000
    */
-  description?: string
-}
+  description?: string;
+};
 
 /**
  * Schema for Pipeline entity
  */
 export type PipelineEntity = BaseEntity &
   OrganizationReference &
-  PipelineEntityAllOf
+  PipelineEntityAllOf;
 
 /**
  * @minLength 1
  */
 export type RunEntityStatus =
-  (typeof RunEntityStatus)[keyof typeof RunEntityStatus]
+  (typeof RunEntityStatus)[keyof typeof RunEntityStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunEntityStatus = {
   COMPLETED: "COMPLETED",
   FAILED: "FAILED",
   PROCESSING: "PROCESSING",
-  QUEUED: "QUEUED"
-} as const
+  QUEUED: "QUEUED",
+} as const;
 
 /**
  * Schema for Run entity
@@ -451,51 +451,51 @@ export interface RunEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The timestamp when the run completed
    * @minLength 1
    */
-  completedAt?: string
+  completedAt?: string;
   /**
    * The error message
    * @minLength 1
    */
-  error?: string
+  error?: string;
   /**
    * The organization name
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
   /**
    * The pipeline ID associated with the run
    * @minLength 1
    */
-  pipelineId: string
+  pipelineId: string;
   /** The percent progress of the run */
-  progress: number
+  progress: number;
   /**
    * The timestamp when the run started
    * @minLength 1
    */
-  startedAt?: string
+  startedAt?: string;
   /** @minLength 1 */
-  status: RunEntityStatus
+  status: RunEntityStatus;
   /**
    * The tool ID associated with the run
    * @minLength 1
    */
-  toolId: string
+  toolId: string;
 }
 
 /**
@@ -506,42 +506,42 @@ export interface ToolEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The tool description
    * @minLength 1
    */
-  description: string
+  description: string;
   /**
    * The MIME type of the input for the tool, e.g. text/plain
    * @minLength 1
    */
-  inputMimeType: string
+  inputMimeType: string;
   /**
    * The name of the tool
    * @minLength 1
    */
-  name: string
+  name: string;
   /**
    * The organization name
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
   /**
    * The MIME type of the output for the tool, e.g. text/plain
    * @minLength 1
    */
-  outputMimeType: string
+  outputMimeType: string;
 }
 
 /**
@@ -552,54 +552,54 @@ export interface ArtifactEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /** The number of credits required to access this artifact. This is used for metering and billing purposes. */
-  credits: number
+  credits: number;
   /**
    * The artifact's description
    * @minLength 1
    */
-  description?: string
+  description?: string;
   /**
    * The MIME type of the artifact, e.g. image/png
    * @minLength 1
    */
-  mimeType: string
+  mimeType: string;
   /**
    * The name of the artifact, used for display purposes
    * @minLength 1
    */
-  name?: string
+  name?: string;
   /**
    * The organization name
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
   /**
    * The URL of the preview image for this artifact. This is used for displaying a thumbnail in the UI.
    * @minLength 1
    */
-  previewImage?: string
+  previewImage?: string;
   /**
    * The ID of the run that produced this artifact, if applicable
    * @minLength 1
    */
-  producerId?: string
+  producerId?: string;
   /**
    * The artifact text
    * @minLength 1
    */
-  text: string
+  text: string;
 }
 
 /**
@@ -610,27 +610,27 @@ export interface LabelEntity {
    * The date this item was created
    * @minLength 1
    */
-  createdAt: string
+  createdAt: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  id: string
+  id: string;
   /**
    * The date this item was last updated
    * @minLength 1
    */
-  updatedAt: string
+  updatedAt: string;
   /**
    * The name of the label
    * @minLength 1
    */
-  name: string
+  name: string;
   /**
    * The organization name
    * @minLength 1
    */
-  organizationId: string
+  organizationId: string;
 }
 
 /**
@@ -641,7 +641,7 @@ export interface CORSConfig {
    * A comma-separated list of allowed origins for CORS requests
    * @minLength 1
    */
-  origins: string
+  origins: string;
 }
 
 /**
@@ -649,13 +649,13 @@ export interface CORSConfig {
  */
 export interface EmailConfig {
   /** Enable email functionality */
-  enabled: boolean
+  enabled: boolean;
   /** Email service provider (e.g., "gmail", "sendgrid", etc.) */
-  service?: string
+  service?: string;
   /** Username for the email service */
-  user?: string
+  user?: string;
   /** Password for the email service */
-  password?: string
+  password?: string;
 }
 
 /**
@@ -663,14 +663,14 @@ export interface EmailConfig {
  * @minLength 1
  */
 export type ImageConfigPullPolicy =
-  (typeof ImageConfigPullPolicy)[keyof typeof ImageConfigPullPolicy]
+  (typeof ImageConfigPullPolicy)[keyof typeof ImageConfigPullPolicy];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ImageConfigPullPolicy = {
   Always: "Always",
   IfNotPresent: "IfNotPresent",
-  Never: "Never"
-} as const
+  Never: "Never",
+} as const;
 
 /**
  * Container image configuration
@@ -680,17 +680,17 @@ export interface ImageConfig {
    * Kubernetes image pull policy
    * @minLength 1
    */
-  pullPolicy: ImageConfigPullPolicy
+  pullPolicy: ImageConfigPullPolicy;
   /**
    * Container image repository
    * @minLength 1
    */
-  repository: string
+  repository: string;
   /**
    * Container image tag
    * @minLength 1
    */
-  tag: string
+  tag: string;
 }
 
 /**
@@ -701,12 +701,12 @@ export interface ResourceLimits {
    * Maximum CPU allocation
    * @minLength 1
    */
-  cpu: string
+  cpu: string;
   /**
    * Maximum memory allocation
    * @minLength 1
    */
-  memory: string
+  memory: string;
 }
 
 /**
@@ -717,56 +717,56 @@ export interface ResourceRequests {
    * Requested CPU allocation
    * @minLength 1
    */
-  cpu: string
+  cpu: string;
   /**
    * Requested memory allocation
    * @minLength 1
    */
-  memory: string
+  memory: string;
 }
 
 /**
  * Kubernetes resource configuration
  */
 export interface ResourceConfig {
-  limits: ResourceLimits
-  requests: ResourceRequests
+  limits: ResourceLimits;
+  requests: ResourceRequests;
 }
 
 /**
  * Deployment environment (development, staging, production)
  */
 export type APIConfigEnvironment =
-  (typeof APIConfigEnvironment)[keyof typeof APIConfigEnvironment]
+  (typeof APIConfigEnvironment)[keyof typeof APIConfigEnvironment];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const APIConfigEnvironment = {
   development: "development",
   staging: "staging",
-  production: "production"
-} as const
+  production: "production",
+} as const;
 
 /**
  * Configuration schema for the API server
  */
 export interface APIConfig {
-  cors: CORSConfig
+  cors: CORSConfig;
   /** Enable or disable API documentation */
-  docs: boolean
-  email: EmailConfig
+  docs: boolean;
+  email: EmailConfig;
   /** Deployment environment (development, staging, production) */
-  environment?: APIConfigEnvironment
+  environment?: APIConfigEnvironment;
   /**
    * The host address on which the API server will listen
    * @minLength 1
    */
-  host: string
+  host: string;
   /** The port on which the API server will listen */
-  port: number
+  port: number;
   /** Enable or disable request validation */
-  validate: boolean
-  image: ImageConfig
-  resources: ResourceConfig
+  validate: boolean;
+  image: ImageConfig;
+  resources: ResourceConfig;
 }
 
 /**
@@ -774,19 +774,19 @@ export interface APIConfig {
  */
 export interface FirebaseAuth {
   /** Enable Firebase authentication */
-  enabled: boolean
+  enabled: boolean;
   /** Firebase service account client email address */
-  clientEmail?: string
+  clientEmail?: string;
   /**
    * Firebase service account private key (PEM format)
    * @minLength 1
    */
-  privateKey?: string
+  privateKey?: string;
   /**
    * Firebase project ID for authentication
    * @minLength 1
    */
-  projectId?: string
+  projectId?: string;
 }
 
 /**
@@ -794,24 +794,24 @@ export interface FirebaseAuth {
  */
 export interface LocalAuth {
   /** Enable local authentication */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Secret key for JWT token signing
    * @minLength 32
    */
-  jwtSecret: string
+  jwtSecret: string;
   /**
    * Access token time-to-live duration (e.g., "15m", "1h")
    * @minLength 2
    * @pattern ^(\d+[smhd])+$
    */
-  accessTokenTtl: string
+  accessTokenTtl: string;
   /**
    * Refresh token time-to-live duration (e.g., "7d", "168h")
    * @minLength 2
    * @pattern ^(\d+[smhd])+$
    */
-  refreshTokenTtl: string
+  refreshTokenTtl: string;
 }
 
 /**
@@ -819,22 +819,22 @@ export interface LocalAuth {
  */
 export interface TwitterAuth {
   /** Enable Twitter OAuth */
-  enabled: boolean
+  enabled: boolean;
   /**
    * OAuth callback URL
    * @minLength 1
    */
-  callbackURL?: string
+  callbackURL?: string;
   /**
    * Twitter API consumer key
    * @minLength 1
    */
-  consumerKey?: string
+  consumerKey?: string;
   /**
    * Twitter API consumer secret
    * @minLength 1
    */
-  consumerSecret?: string
+  consumerSecret?: string;
 }
 
 /**
@@ -842,10 +842,10 @@ export interface TwitterAuth {
  */
 export interface AuthConfig {
   /** Enable authentication */
-  enabled: boolean
-  firebase?: FirebaseAuth
-  local?: LocalAuth
-  twitter?: TwitterAuth
+  enabled: boolean;
+  firebase?: FirebaseAuth;
+  local?: LocalAuth;
+  twitter?: TwitterAuth;
 }
 
 /**
@@ -856,12 +856,12 @@ export interface StripeConfig {
    * Stripe secret API key
    * @minLength 1
    */
-  token: string
+  token: string;
   /**
    * Stripe webhook endpoint secret
    * @minLength 1
    */
-  whsec: string
+  whsec: string;
 }
 
 /**
@@ -869,8 +869,8 @@ export interface StripeConfig {
  */
 export interface BillingConfig {
   /** Enable billing functionality */
-  enabled: boolean
-  stripe?: StripeConfig
+  enabled: boolean;
+  stripe?: StripeConfig;
 }
 
 /**
@@ -881,12 +881,12 @@ export interface DatabaseAuth {
    * Database name
    * @minLength 1
    */
-  database: string
+  database: string;
   /**
    * Database user password
    * @minLength 1
    */
-  password: string
+  password: string;
 }
 
 /**
@@ -894,72 +894,72 @@ export interface DatabaseAuth {
  */
 export interface PersistenceConfig {
   /** Enable persistent storage */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Size of persistent volume
    * @minLength 1
    */
-  size: string
+  size: string;
 }
 
 /**
  * Database type (postgresql or sqlite)
  */
 export type DatabaseConfigType =
-  (typeof DatabaseConfigType)[keyof typeof DatabaseConfigType]
+  (typeof DatabaseConfigType)[keyof typeof DatabaseConfigType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DatabaseConfigType = {
   postgresql: "postgresql",
-  sqlite: "sqlite"
-} as const
+  sqlite: "sqlite",
+} as const;
 
 /**
  * Database configuration for PostgreSQL
  */
 export interface DatabaseConfig {
   /** Enable database */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Database connection URL/string
    * @minLength 1
    */
-  url: string
+  url: string;
   /** Database type (postgresql or sqlite) */
-  type?: DatabaseConfigType
+  type?: DatabaseConfigType;
   /**
    * Maximum number of connections in pool (PostgreSQL)
    * @minimum 1
    */
-  maxConns?: number
+  maxConns?: number;
   /**
    * Minimum number of connections in pool (PostgreSQL)
    * @minimum 0
    */
-  minConns?: number
+  minConns?: number;
   /**
    * Maximum connection lifetime (e.g., "30m")
    * @pattern ^(\d+[smh])+$
    */
-  connMaxLifetime?: string
+  connMaxLifetime?: string;
   /**
    * Maximum connection idle time (e.g., "5m")
    * @pattern ^(\d+[smh])+$
    */
-  connMaxIdleTime?: string
+  connMaxIdleTime?: string;
   /**
    * Health check period for connections (PostgreSQL)
    * @pattern ^(\d+[smh])+$
    */
-  healthCheckPeriod?: string
+  healthCheckPeriod?: string;
   /** Automatically run database migrations on startup */
-  runMigrations?: boolean
+  runMigrations?: boolean;
   /** Use managed database deployment */
-  managed?: boolean
-  auth?: DatabaseAuth
-  image?: ImageConfig
-  persistence?: PersistenceConfig
-  resources?: ResourceConfig
+  managed?: boolean;
+  auth?: DatabaseAuth;
+  image?: ImageConfig;
+  persistence?: PersistenceConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -967,25 +967,25 @@ export interface DatabaseConfig {
  */
 export interface DevServiceConfig {
   /** Enable dev port forwarding */
-  enabled: boolean
+  enabled: boolean;
   /** Local port for forwarding */
-  port: number
+  port: number;
 }
 
 /**
  * Development environment configuration
  */
 export interface DevelopmentConfig {
-  api: DevServiceConfig
+  api: DevServiceConfig;
   /**
    * Host IP address for dev port forwarding
    * @minLength 1
    */
-  hostIP: string
-  loki: DevServiceConfig
-  platform: DevServiceConfig
-  postgres: DevServiceConfig
-  redis: DevServiceConfig
+  hostIP: string;
+  loki: DevServiceConfig;
+  platform: DevServiceConfig;
+  postgres: DevServiceConfig;
+  redis: DevServiceConfig;
 }
 
 /**
@@ -993,12 +993,12 @@ export interface DevelopmentConfig {
  */
 export interface ImagesConfig {
   /** List of Kubernetes secrets for pulling private images */
-  imagePullSecrets: string[]
+  imagePullSecrets: string[];
   /**
    * Custom container registry URL (leave empty for Docker Hub)
    * @minLength 1
    */
-  imageRegistry: string
+  imageRegistry: string;
 }
 
 /**
@@ -1006,7 +1006,7 @@ export interface ImagesConfig {
  */
 export interface MigrationsConfig {
   /** Enable automatic DB migrations */
-  enabled: boolean
+  enabled: boolean;
 }
 
 /**
@@ -1014,27 +1014,27 @@ export interface MigrationsConfig {
  */
 export interface ServiceAccountConfig {
   /** Create dedicated service account */
-  create: boolean
+  create: boolean;
   /**
    * Custom service account name
    * @minLength 1
    */
-  name: string
+  name: string;
 }
 
 /**
  * Infrastructure configuration for Kubernetes deployments
  */
 export interface InfrastructureConfig {
-  development: DevelopmentConfig
-  images: ImagesConfig
-  migrations: MigrationsConfig
+  development: DevelopmentConfig;
+  images: ImagesConfig;
+  migrations: MigrationsConfig;
   /**
    * Kubernetes namespace where all resources will be deployed
    * @minLength 1
    */
-  namespace: string
-  serviceAccount: ServiceAccountConfig
+  namespace: string;
+  serviceAccount: ServiceAccountConfig;
 }
 
 /**
@@ -1042,17 +1042,17 @@ export interface InfrastructureConfig {
  */
 export interface TLSConfig {
   /** Enable TLS/SSL */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Cert-manager ClusterIssuer
    * @minLength 1
    */
-  issuer?: string
+  issuer?: string;
   /**
    * Kubernetes secret name for TLS certificates
    * @minLength 1
    */
-  secretName: string
+  secretName: string;
 }
 
 /**
@@ -1060,13 +1060,13 @@ export interface TLSConfig {
  */
 export interface IngressConfig {
   /** Enable ingress */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Primary domain name for ingress routing
    * @minLength 1
    */
-  domain?: string
-  tls?: TLSConfig
+  domain?: string;
+  tls?: TLSConfig;
 }
 
 /**
@@ -1074,13 +1074,13 @@ export interface IngressConfig {
  * @minLength 1
  */
 export type EmbeddingConfigType =
-  (typeof EmbeddingConfigType)[keyof typeof EmbeddingConfigType]
+  (typeof EmbeddingConfigType)[keyof typeof EmbeddingConfigType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EmbeddingConfigType = {
   openai: "openai",
-  ollama: "ollama"
-} as const
+  ollama: "ollama",
+} as const;
 
 /**
  * Configuration for text embedding generation
@@ -1090,20 +1090,20 @@ export interface EmbeddingConfig {
    * The embedding provider to use for vector embeddings
    * @minLength 1
    */
-  type: EmbeddingConfigType
+  type: EmbeddingConfigType;
 }
 
 /**
  * LLM provider type
  * @minLength 1
  */
-export type LLMConfigType = (typeof LLMConfigType)[keyof typeof LLMConfigType]
+export type LLMConfigType = (typeof LLMConfigType)[keyof typeof LLMConfigType];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LLMConfigType = {
   ollama: "ollama",
-  openai: "openai"
-} as const
+  openai: "openai",
+} as const;
 
 /**
  * Large Language Model configuration
@@ -1113,17 +1113,17 @@ export interface LLMConfig {
    * LLM provider type
    * @minLength 1
    */
-  type: LLMConfigType
+  type: LLMConfigType;
   /**
    * LLM service endpoint URL
    * @minLength 1
    */
-  endpoint?: string
+  endpoint?: string;
   /**
    * Authentication token for LLM service
    * @minLength 1
    */
-  token?: string
+  token?: string;
 }
 
 /**
@@ -1131,12 +1131,12 @@ export interface LLMConfig {
  */
 export interface RunPodConfig {
   /** Enable RunPod integration */
-  enabled: boolean
+  enabled: boolean;
   /**
    * RunPod API token
    * @minLength 1
    */
-  token?: string
+  token?: string;
 }
 
 /**
@@ -1144,16 +1144,16 @@ export interface RunPodConfig {
  */
 export interface ScraperConfig {
   /** Enable scraper service */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed scraper deployment */
-  managed?: boolean
+  managed?: boolean;
   /**
    * Web scraper service endpoint URL
    * @minLength 1
    */
-  endpoint?: string
-  image?: ImageConfig
-  resources?: ResourceConfig
+  endpoint?: string;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -1161,12 +1161,12 @@ export interface ScraperConfig {
  */
 export interface SpeechConfig {
   /** Enable speech services */
-  enabled: boolean
+  enabled: boolean;
   /**
    * Speech-to-text service API token
    * @minLength 1
    */
-  token?: string
+  token?: string;
 }
 
 /**
@@ -1174,23 +1174,23 @@ export interface SpeechConfig {
  */
 export interface UnstructuredConfig {
   /** Enable unstructured document parsing */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed unstructured deployment */
-  managed?: boolean
-  image?: ImageConfig
-  resources?: ResourceConfig
+  managed?: boolean;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
  * Intelligence configuration (LLMs, embeddings, scraper, speech, etc.)
  */
 export interface IntelligenceConfig {
-  embedding: EmbeddingConfig
-  llm: LLMConfig
-  runpod: RunPodConfig
-  scraper: ScraperConfig
-  speech: SpeechConfig
-  unstructured: UnstructuredConfig
+  embedding: EmbeddingConfig;
+  llm: LLMConfig;
+  runpod: RunPodConfig;
+  scraper: ScraperConfig;
+  speech: SpeechConfig;
+  unstructured: UnstructuredConfig;
 }
 
 /**
@@ -1198,7 +1198,7 @@ export interface IntelligenceConfig {
  * @minLength 1
  */
 export type LoggingConfigLevel =
-  (typeof LoggingConfigLevel)[keyof typeof LoggingConfigLevel]
+  (typeof LoggingConfigLevel)[keyof typeof LoggingConfigLevel];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LoggingConfigLevel = {
@@ -1208,8 +1208,8 @@ export const LoggingConfigLevel = {
   info: "info",
   debug: "debug",
   trace: "trace",
-  silent: "silent"
-} as const
+  silent: "silent",
+} as const;
 
 /**
  * Logging configuration
@@ -1219,9 +1219,9 @@ export interface LoggingConfig {
    * Minimum log level to output
    * @minLength 1
    */
-  level: LoggingConfigLevel
+  level: LoggingConfigLevel;
   /** Enable pretty-printed logs for development */
-  pretty: boolean
+  pretty: boolean;
 }
 
 /**
@@ -1229,11 +1229,11 @@ export interface LoggingConfig {
  */
 export interface GrafanaConfig {
   /** Enable Grafana */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed Grafana deployment */
-  managed?: boolean
-  image?: ImageConfig
-  resources?: ResourceConfig
+  managed?: boolean;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -1241,24 +1241,24 @@ export interface GrafanaConfig {
  */
 export interface LokiConfig {
   /** Enable Loki */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed Loki deployment */
-  managed?: boolean
+  managed?: boolean;
   /**
    * Loki host URL
    * @minLength 1
    */
-  host?: string
-  image?: ImageConfig
-  resources?: ResourceConfig
+  host?: string;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
  * Monitoring configuration for Grafana and Loki
  */
 export interface MonitoringConfig {
-  grafana: GrafanaConfig
-  loki: LokiConfig
+  grafana: GrafanaConfig;
+  loki: LokiConfig;
 }
 
 /**
@@ -1266,16 +1266,16 @@ export interface MonitoringConfig {
  */
 export interface PlatformConfig {
   /** Enable platform service */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed platform deployment */
-  managed?: boolean
+  managed?: boolean;
   /**
    * Host address where the platform service will be accessible
    * @minLength 1
    */
-  host?: string
-  image?: ImageConfig
-  resources?: ResourceConfig
+  host?: string;
+  image?: ImageConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -1283,29 +1283,29 @@ export interface PlatformConfig {
  */
 export interface RedisConfig {
   /** Enable Redis */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed Redis deployment */
-  managed?: boolean
+  managed?: boolean;
   /**
    * Redis authentication password
    * @minLength 1
    */
-  auth: string
+  auth: string;
   /**
    * Certificate Authority for TLS (optional)
    * @minLength 1
    */
-  ca?: string
+  ca?: string;
   /**
    * Redis hostname or IP
    * @minLength 1
    */
-  host: string
+  host: string;
   /** Redis port number */
-  port: number
-  image?: ImageConfig
-  persistence?: PersistenceConfig
-  resources?: ResourceConfig
+  port: number;
+  image?: ImageConfig;
+  persistence?: PersistenceConfig;
+  resources?: ResourceConfig;
 }
 
 /**
@@ -1313,92 +1313,92 @@ export interface RedisConfig {
  */
 export interface StorageConfig {
   /** Enable object storage */
-  enabled: boolean
+  enabled: boolean;
   /** Use managed storage deployment */
-  managed?: boolean
+  managed?: boolean;
   /**
    * MinIO/S3 access key ID
    * @minLength 1
    */
-  accesskey: string
+  accesskey: string;
   /**
    * S3 bucket name
    * @minLength 1
    */
-  bucket: string
+  bucket: string;
   /**
    * MinIO server endpoint URL
    * @minLength 1
    */
-  endpoint: string
+  endpoint: string;
   /**
    * MinIO/S3 secret access key
    * @minLength 1
    */
-  secretkey: string
-  image?: ImageConfig
-  persistence?: PersistenceConfig
-  resources?: ResourceConfig
+  secretkey: string;
+  image?: ImageConfig;
+  persistence?: PersistenceConfig;
+  resources?: ResourceConfig;
 }
 
 /**
  * Arches AI configuration schema
  */
 export interface ArchesConfig {
-  api: APIConfig
-  auth: AuthConfig
-  billing: BillingConfig
-  database: DatabaseConfig
-  infrastructure: InfrastructureConfig
-  ingress: IngressConfig
-  intelligence: IntelligenceConfig
-  logging: LoggingConfig
-  monitoring: MonitoringConfig
-  platform: PlatformConfig
-  redis: RedisConfig
-  storage: StorageConfig
+  api: APIConfig;
+  auth: AuthConfig;
+  billing: BillingConfig;
+  database: DatabaseConfig;
+  infrastructure: InfrastructureConfig;
+  ingress: IngressConfig;
+  intelligence: IntelligenceConfig;
+  logging: LoggingConfig;
+  monitoring: MonitoringConfig;
+  platform: PlatformConfig;
+  redis: RedisConfig;
+  storage: StorageConfig;
 }
 
 export type HealthResponseServices = {
   /** @minLength 1 */
-  database: string
+  database: string;
   /** @minLength 1 */
-  email: string
+  email: string;
   /** @minLength 1 */
-  redis: string
-}
+  redis: string;
+};
 
 export interface HealthResponse {
-  services: HealthResponseServices
+  services: HealthResponseServices;
   /** @minLength 1 */
-  timestamp: string
-  uptime: number
+  timestamp: string;
+  uptime: number;
 }
 
 /**
  * 400 Bad Request
  */
-export type BadRequestResponse = Problem
+export type BadRequestResponse = Problem;
 
 /**
  * 401 Unauthorized
  */
-export type UnauthorizedResponse = Problem
+export type UnauthorizedResponse = Problem;
 
 /**
  * 404 Not Found
  */
-export type NotFoundResponse = Problem
+export type NotFoundResponse = Problem;
 
 /**
  * 204 No Content
  */
-export type NoContentResponse = void
+export type NoContentResponse = void;
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type AccountsFilterParameter = { [key: string]: unknown }
+export type AccountsFilterParameter = { [key: string]: unknown };
 
 /**
  * Pagination (page number & size)
@@ -1408,19 +1408,19 @@ export type PageQueryParameter = {
    * @minimum 1
    * @maximum 9007199254740991
    */
-  number?: number
+  number?: number;
   /**
    * @minimum 1
    * @maximum 100
    */
-  size?: number
-}
+  size?: number;
+};
 
 /**
  * @minLength 1
  */
 export type AccountsSortParameterItemField =
-  (typeof AccountsSortParameterItemField)[keyof typeof AccountsSortParameterItemField]
+  (typeof AccountsSortParameterItemField)[keyof typeof AccountsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemField = {
@@ -1436,43 +1436,43 @@ export const AccountsSortParameterItemField = {
   refreshToken: "refreshToken",
   refreshTokenExpiresAt: "refreshTokenExpiresAt",
   scope: "scope",
-  userId: "userId"
-} as const
+  userId: "userId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type AccountsSortParameterItemOrder =
-  (typeof AccountsSortParameterItemOrder)[keyof typeof AccountsSortParameterItemOrder]
+  (typeof AccountsSortParameterItemOrder)[keyof typeof AccountsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type AccountsSortParameterItem = {
   /** @minLength 1 */
-  field: AccountsSortParameterItemField
+  field: AccountsSortParameterItemField;
   /** @minLength 1 */
-  order: AccountsSortParameterItemOrder
-}
+  order: AccountsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type AccountsSortParameter = AccountsSortParameterItem[]
+export type AccountsSortParameter = AccountsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type SessionsFilterParameter = { [key: string]: unknown }
+export type SessionsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type SessionsSortParameterItemField =
-  (typeof SessionsSortParameterItemField)[keyof typeof SessionsSortParameterItemField]
+  (typeof SessionsSortParameterItemField)[keyof typeof SessionsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemField = {
@@ -1484,43 +1484,43 @@ export const SessionsSortParameterItemField = {
   ipAddress: "ipAddress",
   token: "token",
   userAgent: "userAgent",
-  userId: "userId"
-} as const
+  userId: "userId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type SessionsSortParameterItemOrder =
-  (typeof SessionsSortParameterItemOrder)[keyof typeof SessionsSortParameterItemOrder]
+  (typeof SessionsSortParameterItemOrder)[keyof typeof SessionsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type SessionsSortParameterItem = {
   /** @minLength 1 */
-  field: SessionsSortParameterItemField
+  field: SessionsSortParameterItemField;
   /** @minLength 1 */
-  order: SessionsSortParameterItemOrder
-}
+  order: SessionsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type SessionsSortParameter = SessionsSortParameterItem[]
+export type SessionsSortParameter = SessionsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type UsersFilterParameter = { [key: string]: unknown }
+export type UsersFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type UsersSortParameterItemField =
-  (typeof UsersSortParameterItemField)[keyof typeof UsersSortParameterItemField]
+  (typeof UsersSortParameterItemField)[keyof typeof UsersSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemField = {
@@ -1530,43 +1530,43 @@ export const UsersSortParameterItemField = {
   email: "email",
   emailVerified: "emailVerified",
   image: "image",
-  name: "name"
-} as const
+  name: "name",
+} as const;
 
 /**
  * @minLength 1
  */
 export type UsersSortParameterItemOrder =
-  (typeof UsersSortParameterItemOrder)[keyof typeof UsersSortParameterItemOrder]
+  (typeof UsersSortParameterItemOrder)[keyof typeof UsersSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type UsersSortParameterItem = {
   /** @minLength 1 */
-  field: UsersSortParameterItemField
+  field: UsersSortParameterItemField;
   /** @minLength 1 */
-  order: UsersSortParameterItemOrder
-}
+  order: UsersSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type UsersSortParameter = UsersSortParameterItem[]
+export type UsersSortParameter = UsersSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type OrganizationsFilterParameter = { [key: string]: unknown }
+export type OrganizationsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type OrganizationsSortParameterItemField =
-  (typeof OrganizationsSortParameterItemField)[keyof typeof OrganizationsSortParameterItemField]
+  (typeof OrganizationsSortParameterItemField)[keyof typeof OrganizationsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemField = {
@@ -1580,43 +1580,43 @@ export const OrganizationsSortParameterItemField = {
   name: "name",
   plan: "plan",
   slug: "slug",
-  stripeCustomerId: "stripeCustomerId"
-} as const
+  stripeCustomerId: "stripeCustomerId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type OrganizationsSortParameterItemOrder =
-  (typeof OrganizationsSortParameterItemOrder)[keyof typeof OrganizationsSortParameterItemOrder]
+  (typeof OrganizationsSortParameterItemOrder)[keyof typeof OrganizationsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type OrganizationsSortParameterItem = {
   /** @minLength 1 */
-  field: OrganizationsSortParameterItemField
+  field: OrganizationsSortParameterItemField;
   /** @minLength 1 */
-  order: OrganizationsSortParameterItemOrder
-}
+  order: OrganizationsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type OrganizationsSortParameter = OrganizationsSortParameterItem[]
+export type OrganizationsSortParameter = OrganizationsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type MembersFilterParameter = { [key: string]: unknown }
+export type MembersFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type MembersSortParameterItemField =
-  (typeof MembersSortParameterItemField)[keyof typeof MembersSortParameterItemField]
+  (typeof MembersSortParameterItemField)[keyof typeof MembersSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemField = {
@@ -1625,43 +1625,43 @@ export const MembersSortParameterItemField = {
   updatedAt: "updatedAt",
   organizationId: "organizationId",
   role: "role",
-  userId: "userId"
-} as const
+  userId: "userId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type MembersSortParameterItemOrder =
-  (typeof MembersSortParameterItemOrder)[keyof typeof MembersSortParameterItemOrder]
+  (typeof MembersSortParameterItemOrder)[keyof typeof MembersSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type MembersSortParameterItem = {
   /** @minLength 1 */
-  field: MembersSortParameterItemField
+  field: MembersSortParameterItemField;
   /** @minLength 1 */
-  order: MembersSortParameterItemOrder
-}
+  order: MembersSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type MembersSortParameter = MembersSortParameterItem[]
+export type MembersSortParameter = MembersSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type InvitationsFilterParameter = { [key: string]: unknown }
+export type InvitationsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type InvitationsSortParameterItemField =
-  (typeof InvitationsSortParameterItemField)[keyof typeof InvitationsSortParameterItemField]
+  (typeof InvitationsSortParameterItemField)[keyof typeof InvitationsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemField = {
@@ -1673,43 +1673,43 @@ export const InvitationsSortParameterItemField = {
   inviterId: "inviterId",
   organizationId: "organizationId",
   role: "role",
-  status: "status"
-} as const
+  status: "status",
+} as const;
 
 /**
  * @minLength 1
  */
 export type InvitationsSortParameterItemOrder =
-  (typeof InvitationsSortParameterItemOrder)[keyof typeof InvitationsSortParameterItemOrder]
+  (typeof InvitationsSortParameterItemOrder)[keyof typeof InvitationsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type InvitationsSortParameterItem = {
   /** @minLength 1 */
-  field: InvitationsSortParameterItemField
+  field: InvitationsSortParameterItemField;
   /** @minLength 1 */
-  order: InvitationsSortParameterItemOrder
-}
+  order: InvitationsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type InvitationsSortParameter = InvitationsSortParameterItem[]
+export type InvitationsSortParameter = InvitationsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type PipelinesFilterParameter = { [key: string]: unknown }
+export type PipelinesFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type PipelinesSortParameterItemField =
-  (typeof PipelinesSortParameterItemField)[keyof typeof PipelinesSortParameterItemField]
+  (typeof PipelinesSortParameterItemField)[keyof typeof PipelinesSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemField = {
@@ -1718,43 +1718,43 @@ export const PipelinesSortParameterItemField = {
   updatedAt: "updatedAt",
   description: "description",
   name: "name",
-  organizationId: "organizationId"
-} as const
+  organizationId: "organizationId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type PipelinesSortParameterItemOrder =
-  (typeof PipelinesSortParameterItemOrder)[keyof typeof PipelinesSortParameterItemOrder]
+  (typeof PipelinesSortParameterItemOrder)[keyof typeof PipelinesSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type PipelinesSortParameterItem = {
   /** @minLength 1 */
-  field: PipelinesSortParameterItemField
+  field: PipelinesSortParameterItemField;
   /** @minLength 1 */
-  order: PipelinesSortParameterItemOrder
-}
+  order: PipelinesSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type PipelinesSortParameter = PipelinesSortParameterItem[]
+export type PipelinesSortParameter = PipelinesSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type RunsFilterParameter = { [key: string]: unknown }
+export type RunsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type RunsSortParameterItemField =
-  (typeof RunsSortParameterItemField)[keyof typeof RunsSortParameterItemField]
+  (typeof RunsSortParameterItemField)[keyof typeof RunsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemField = {
@@ -1768,43 +1768,43 @@ export const RunsSortParameterItemField = {
   progress: "progress",
   startedAt: "startedAt",
   status: "status",
-  toolId: "toolId"
-} as const
+  toolId: "toolId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type RunsSortParameterItemOrder =
-  (typeof RunsSortParameterItemOrder)[keyof typeof RunsSortParameterItemOrder]
+  (typeof RunsSortParameterItemOrder)[keyof typeof RunsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type RunsSortParameterItem = {
   /** @minLength 1 */
-  field: RunsSortParameterItemField
+  field: RunsSortParameterItemField;
   /** @minLength 1 */
-  order: RunsSortParameterItemOrder
-}
+  order: RunsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type RunsSortParameter = RunsSortParameterItem[]
+export type RunsSortParameter = RunsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type ToolsFilterParameter = { [key: string]: unknown }
+export type ToolsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type ToolsSortParameterItemField =
-  (typeof ToolsSortParameterItemField)[keyof typeof ToolsSortParameterItemField]
+  (typeof ToolsSortParameterItemField)[keyof typeof ToolsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemField = {
@@ -1815,43 +1815,43 @@ export const ToolsSortParameterItemField = {
   inputMimeType: "inputMimeType",
   name: "name",
   organizationId: "organizationId",
-  outputMimeType: "outputMimeType"
-} as const
+  outputMimeType: "outputMimeType",
+} as const;
 
 /**
  * @minLength 1
  */
 export type ToolsSortParameterItemOrder =
-  (typeof ToolsSortParameterItemOrder)[keyof typeof ToolsSortParameterItemOrder]
+  (typeof ToolsSortParameterItemOrder)[keyof typeof ToolsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type ToolsSortParameterItem = {
   /** @minLength 1 */
-  field: ToolsSortParameterItemField
+  field: ToolsSortParameterItemField;
   /** @minLength 1 */
-  order: ToolsSortParameterItemOrder
-}
+  order: ToolsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type ToolsSortParameter = ToolsSortParameterItem[]
+export type ToolsSortParameter = ToolsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type ArtifactsFilterParameter = { [key: string]: unknown }
+export type ArtifactsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type ArtifactsSortParameterItemField =
-  (typeof ArtifactsSortParameterItemField)[keyof typeof ArtifactsSortParameterItemField]
+  (typeof ArtifactsSortParameterItemField)[keyof typeof ArtifactsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemField = {
@@ -1866,43 +1866,43 @@ export const ArtifactsSortParameterItemField = {
   previewImage: "previewImage",
   producerId: "producerId",
   text: "text",
-  url: "url"
-} as const
+  url: "url",
+} as const;
 
 /**
  * @minLength 1
  */
 export type ArtifactsSortParameterItemOrder =
-  (typeof ArtifactsSortParameterItemOrder)[keyof typeof ArtifactsSortParameterItemOrder]
+  (typeof ArtifactsSortParameterItemOrder)[keyof typeof ArtifactsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type ArtifactsSortParameterItem = {
   /** @minLength 1 */
-  field: ArtifactsSortParameterItemField
+  field: ArtifactsSortParameterItemField;
   /** @minLength 1 */
-  order: ArtifactsSortParameterItemOrder
-}
+  order: ArtifactsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type ArtifactsSortParameter = ArtifactsSortParameterItem[]
+export type ArtifactsSortParameter = ArtifactsSortParameterItem[];
 
 /**
  * A recursive filter node that can be a condition or group
  */
-export type LabelsFilterParameter = { [key: string]: unknown }
+export type LabelsFilterParameter = { [key: string]: unknown };
 
 /**
  * @minLength 1
  */
 export type LabelsSortParameterItemField =
-  (typeof LabelsSortParameterItemField)[keyof typeof LabelsSortParameterItemField]
+  (typeof LabelsSortParameterItemField)[keyof typeof LabelsSortParameterItemField];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemField = {
@@ -1910,64 +1910,64 @@ export const LabelsSortParameterItemField = {
   id: "id",
   updatedAt: "updatedAt",
   name: "name",
-  organizationId: "organizationId"
-} as const
+  organizationId: "organizationId",
+} as const;
 
 /**
  * @minLength 1
  */
 export type LabelsSortParameterItemOrder =
-  (typeof LabelsSortParameterItemOrder)[keyof typeof LabelsSortParameterItemOrder]
+  (typeof LabelsSortParameterItemOrder)[keyof typeof LabelsSortParameterItemOrder];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemOrder = {
   asc: "asc",
-  desc: "desc"
-} as const
+  desc: "desc",
+} as const;
 
 export type LabelsSortParameterItem = {
   /** @minLength 1 */
-  field: LabelsSortParameterItemField
+  field: LabelsSortParameterItemField;
   /** @minLength 1 */
-  order: LabelsSortParameterItemOrder
-}
+  order: LabelsSortParameterItemOrder;
+};
 
 /**
  * The sort parameter
  */
-export type LabelsSortParameter = LabelsSortParameterItem[]
+export type LabelsSortParameter = LabelsSortParameterItem[];
 
 export type AccountsFindManyParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: AccountsFilterParameter
+  filter?: AccountsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: AccountsSortParameter
-}
+  sort?: AccountsSortParameter;
+};
 
 export type AccountsFindMany200Meta = {
-  total: number
-}
+  total: number;
+};
 
 export type AccountsFindMany200 = {
-  data: AccountEntity[]
-  meta: AccountsFindMany200Meta
-}
+  data: AccountEntity[];
+  meta: AccountsFindMany200Meta;
+};
 
 export type AccountsGetOne200 = {
-  data: AccountEntity
-}
+  data: AccountEntity;
+};
 
 export type AccountsDelete200 = {
-  data: AccountEntity
-}
+  data: AccountEntity;
+};
 
 export type RegisterBody = {
   /**
@@ -1975,22 +1975,22 @@ export type RegisterBody = {
    * @minLength 1
    * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
    */
-  email: string
+  email: string;
   /**
    * The name of the user creating the account
    * @minLength 1
    */
-  name: string
+  name: string;
   /**
    * The password for the account
    * @minLength 1
    */
-  password: string
-}
+  password: string;
+};
 
 export type Register201 = {
-  data: UserEntity
-}
+  data: UserEntity;
+};
 
 export type LoginBody = {
   /**
@@ -1998,51 +1998,51 @@ export type LoginBody = {
    * @minLength 1
    * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
    */
-  email: string
+  email: string;
   /**
    * The password for the account
    * @minLength 1
    */
-  password: string
-}
+  password: string;
+};
 
 export type Login200 = {
-  data: UserEntity
-}
+  data: UserEntity;
+};
 
 export type ConfirmEmailVerificationBody = {
   /**
    * The password reset token
    * @minLength 1
    */
-  token: string
-}
+  token: string;
+};
 
 export type ConfirmEmailVerification200 = {
-  session: SessionEntity
-  user: UserEntity
-}
+  session: SessionEntity;
+  user: UserEntity;
+};
 
 export type RequestPasswordResetBody = {
   /**
    * The e-mail to send the password reset token to
    * @minLength 1
    */
-  email: string
-}
+  email: string;
+};
 
 export type ConfirmPasswordResetBody = {
   /**
    * The new password
    * @minLength 1
    */
-  newPassword: string
+  newPassword: string;
   /**
    * The password reset token
    * @minLength 1
    */
-  token: string
-}
+  token: string;
+};
 
 export type RequestEmailChangeBody = {
   /**
@@ -2050,13 +2050,13 @@ export type RequestEmailChangeBody = {
    * @minLength 1
    * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
    */
-  newEmail: string
+  newEmail: string;
   /**
    * The user ID of the user requesting the email change
    * @minLength 36
    */
-  userId: string
-}
+  userId: string;
+};
 
 export type ConfirmEmailChangeBody = {
   /**
@@ -2064,642 +2064,642 @@ export type ConfirmEmailChangeBody = {
    * @minLength 1
    * @pattern ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
    */
-  newEmail: string
+  newEmail: string;
   /**
    * The password reset token
    * @minLength 1
    */
-  token: string
+  token: string;
   /**
    * The user ID of the user requesting the email change
    * @minLength 36
    */
-  userId: string
-}
+  userId: string;
+};
 
 export type FindManySessionsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: SessionsFilterParameter
+  filter?: SessionsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: SessionsSortParameter
-}
+  sort?: SessionsSortParameter;
+};
 
 export type FindManySessions200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManySessions200 = {
-  data: SessionEntity[]
-  meta: FindManySessions200Meta
-}
+  data: SessionEntity[];
+  meta: FindManySessions200Meta;
+};
 
 export type DeleteSession200 = {
-  data: SessionEntity
-}
+  data: SessionEntity;
+};
 
 export type GetOneSession200 = {
-  data: SessionEntity
-}
+  data: SessionEntity;
+};
 
 export type UpdateSessionBody = {
   /**
    * The active organization ID
    * @minLength 1
    */
-  activeOrganizationId: string
-}
+  activeOrganizationId: string;
+};
 
 export type UpdateSession200 = {
-  data: SessionEntity
-}
+  data: SessionEntity;
+};
 
 export type FindManyUsersParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: UsersFilterParameter
+  filter?: UsersFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: UsersSortParameter
-}
+  sort?: UsersSortParameter;
+};
 
 export type FindManyUsers200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyUsers200 = {
-  data: UserEntity[]
-  meta: FindManyUsers200Meta
-}
+  data: UserEntity[];
+  meta: FindManyUsers200Meta;
+};
 
 export type DeleteUser200 = {
-  data: UserEntity
-}
+  data: UserEntity;
+};
 
 export type GetOneUser200 = {
-  data: UserEntity
-}
+  data: UserEntity;
+};
 
 export type UpdateUserBody = {
   /**
    * The user's e-mail
    * @minLength 1
    */
-  email?: string
+  email?: string;
   /** The user's avatar image URL */
-  image?: string
-}
+  image?: string;
+};
 
 export type UpdateUser200 = {
-  data: UserEntity
-}
+  data: UserEntity;
+};
 
 export type CreateOrganizationBody = {
   /**
    * The billing email to use for the organization
    * @minLength 1
    */
-  billingEmail: string
+  billingEmail: string;
   /**
    * The ID of the item
    * @minLength 36
    */
-  organizationId: string
-}
+  organizationId: string;
+};
 
 export type CreateOrganization201 = {
-  data: OrganizationEntity
-}
+  data: OrganizationEntity;
+};
 
 export type FindManyOrganizationsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: OrganizationsFilterParameter
+  filter?: OrganizationsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: OrganizationsSortParameter
-}
+  sort?: OrganizationsSortParameter;
+};
 
 export type FindManyOrganizations200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyOrganizations200 = {
-  data: OrganizationEntity[]
-  meta: FindManyOrganizations200Meta
-}
+  data: OrganizationEntity[];
+  meta: FindManyOrganizations200Meta;
+};
 
 export type DeleteOrganization200 = {
-  data: OrganizationEntity
-}
+  data: OrganizationEntity;
+};
 
 export type GetOneOrganization200 = {
-  data: OrganizationEntity
-}
+  data: OrganizationEntity;
+};
 
 export type UpdateOrganizationBody = {
   /** The billing email to use for the organization */
-  billingEmail?: string
+  billingEmail?: string;
   /** The ID of the item */
-  organizationId?: string
-}
+  organizationId?: string;
+};
 
 export type UpdateOrganization200 = {
-  data: OrganizationEntity
-}
+  data: OrganizationEntity;
+};
 
 /**
  * The role of the member
  * @minLength 1
  */
 export type CreateMemberBodyRole =
-  (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole]
+  (typeof CreateMemberBodyRole)[keyof typeof CreateMemberBodyRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateMemberBodyRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 export type CreateMemberBody = {
   /**
    * The role of the member
    * @minLength 1
    */
-  role: CreateMemberBodyRole
-}
+  role: CreateMemberBodyRole;
+};
 
 export type CreateMember201 = {
-  data: MemberEntity
-}
+  data: MemberEntity;
+};
 
 export type FindManyMembersParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: MembersFilterParameter
+  filter?: MembersFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: MembersSortParameter
-}
+  sort?: MembersSortParameter;
+};
 
 export type FindManyMembers200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyMembers200 = {
-  data: MemberEntity[]
-  meta: FindManyMembers200Meta
-}
+  data: MemberEntity[];
+  meta: FindManyMembers200Meta;
+};
 
 export type DeleteMember200 = {
-  data: MemberEntity
-}
+  data: MemberEntity;
+};
 
 export type GetOneMember200 = {
-  data: MemberEntity
-}
+  data: MemberEntity;
+};
 
 /**
  * The role of the member
  */
 export type UpdateMemberBodyRole =
-  (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole]
+  (typeof UpdateMemberBodyRole)[keyof typeof UpdateMemberBodyRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateMemberBodyRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 export type UpdateMemberBody = {
   /** The role of the member */
-  role?: UpdateMemberBodyRole
-}
+  role?: UpdateMemberBodyRole;
+};
 
 export type UpdateMember200 = {
-  data: MemberEntity
-}
+  data: MemberEntity;
+};
 
 /**
  * The role of the invitation
  * @minLength 1
  */
 export type CreateInvitationBodyRole =
-  (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole]
+  (typeof CreateInvitationBodyRole)[keyof typeof CreateInvitationBodyRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateInvitationBodyRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 export type CreateInvitationBody = {
   /**
    * The email of the invitated user
    * @minLength 1
    */
-  email: string
+  email: string;
   /**
    * The role of the invitation
    * @minLength 1
    */
-  role: CreateInvitationBodyRole
-}
+  role: CreateInvitationBodyRole;
+};
 
 export type CreateInvitation201 = {
-  data: InvitationEntity
-}
+  data: InvitationEntity;
+};
 
 export type FindManyInvitationsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: InvitationsFilterParameter
+  filter?: InvitationsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: InvitationsSortParameter
-}
+  sort?: InvitationsSortParameter;
+};
 
 export type FindManyInvitations200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyInvitations200 = {
-  data: InvitationEntity[]
-  meta: FindManyInvitations200Meta
-}
+  data: InvitationEntity[];
+  meta: FindManyInvitations200Meta;
+};
 
 export type DeleteInvitation200 = {
-  data: InvitationEntity
-}
+  data: InvitationEntity;
+};
 
 export type GetOneInvitation200 = {
-  data: InvitationEntity
-}
+  data: InvitationEntity;
+};
 
 /**
  * The role of the invitation
  */
 export type UpdateInvitationBodyRole =
-  (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole]
+  (typeof UpdateInvitationBodyRole)[keyof typeof UpdateInvitationBodyRole];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateInvitationBodyRole = {
   admin: "admin",
   owner: "owner",
-  member: "member"
-} as const
+  member: "member",
+} as const;
 
 export type UpdateInvitationBody = {
   /** The email of the invitated user */
-  email?: string
+  email?: string;
   /** The role of the invitation */
-  role?: UpdateInvitationBodyRole
-}
+  role?: UpdateInvitationBodyRole;
+};
 
 export type UpdateInvitation200 = {
-  data: InvitationEntity
-}
+  data: InvitationEntity;
+};
 
 export type CreatePipelineBody = {
   /**
    * The pipeline description
    * @minLength 1
    */
-  description?: string
+  description?: string;
   /**
    * The pipeline name
    * @minLength 1
    */
-  name?: string
-}
+  name?: string;
+};
 
 export type CreatePipeline201 = {
-  data: PipelineEntity
-}
+  data: PipelineEntity;
+};
 
 export type FindManyPipelinesParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: PipelinesFilterParameter
+  filter?: PipelinesFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: PipelinesSortParameter
-}
+  sort?: PipelinesSortParameter;
+};
 
 export type FindManyPipelines200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyPipelines200 = {
-  data: PipelineEntity[]
-  meta: FindManyPipelines200Meta
-}
+  data: PipelineEntity[];
+  meta: FindManyPipelines200Meta;
+};
 
 export type DeletePipeline200 = {
-  data: PipelineEntity
-}
+  data: PipelineEntity;
+};
 
 export type GetOnePipeline200 = {
-  data: PipelineEntity
-}
+  data: PipelineEntity;
+};
 
 export type UpdatePipelineBody = {
   /** The pipeline description */
-  description?: string
+  description?: string;
   /** The pipeline name */
-  name?: string
-}
+  name?: string;
+};
 
 export type UpdatePipeline200 = {
-  data: PipelineEntity
-}
+  data: PipelineEntity;
+};
 
 export type CreateRunBody = {
   /**
    * The pipeline ID associated with the run
    * @minLength 1
    */
-  pipelineId: string
-}
+  pipelineId: string;
+};
 
 export type CreateRun201 = {
-  data: RunEntity
-}
+  data: RunEntity;
+};
 
 export type FindManyRunsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: RunsFilterParameter
+  filter?: RunsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: RunsSortParameter
-}
+  sort?: RunsSortParameter;
+};
 
 export type FindManyRuns200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyRuns200 = {
-  data: RunEntity[]
-  meta: FindManyRuns200Meta
-}
+  data: RunEntity[];
+  meta: FindManyRuns200Meta;
+};
 
 export type DeleteRun200 = {
-  data: RunEntity
-}
+  data: RunEntity;
+};
 
 export type GetOneRun200 = {
-  data: RunEntity
-}
+  data: RunEntity;
+};
 
 export type UpdateRunBody = {
   /** The pipeline ID associated with the run */
-  pipelineId?: string
-}
+  pipelineId?: string;
+};
 
 export type UpdateRun200 = {
-  data: RunEntity
-}
+  data: RunEntity;
+};
 
 export type CreateToolBody = {
   /**
    * The tool description
    * @minLength 1
    */
-  description: string
+  description: string;
   /**
    * The name of the tool
    * @minLength 1
    */
-  name: string
-}
+  name: string;
+};
 
 export type CreateTool201 = {
-  data: ToolEntity
-}
+  data: ToolEntity;
+};
 
 export type FindManyToolsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: ToolsFilterParameter
+  filter?: ToolsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: ToolsSortParameter
-}
+  sort?: ToolsSortParameter;
+};
 
 export type FindManyTools200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyTools200 = {
-  data: ToolEntity[]
-  meta: FindManyTools200Meta
-}
+  data: ToolEntity[];
+  meta: FindManyTools200Meta;
+};
 
 export type DeleteTool200 = {
-  data: ToolEntity
-}
+  data: ToolEntity;
+};
 
 export type GetOneTool200 = {
-  data: ToolEntity
-}
+  data: ToolEntity;
+};
 
 export type UpdateToolBody = {
   /**
    * The tool description
    * @minLength 1
    */
-  description?: string
+  description?: string;
   /**
    * The name of the tool
    * @minLength 1
    */
-  name?: string
-}
+  name?: string;
+};
 
 export type UpdateTool200 = {
-  data: ToolEntity
-}
+  data: ToolEntity;
+};
 
 export type CreateArtifactBody = {
   /**
    * The name of the artifact
    * @minLength 1
    */
-  name?: string
+  name?: string;
   /**
    * The artifact text
    * @minLength 1
    */
-  text: string
-}
+  text: string;
+};
 
 export type CreateArtifact201 = {
-  data: ArtifactEntity
-}
+  data: ArtifactEntity;
+};
 
 export type FindManyArtifactsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: ArtifactsFilterParameter
+  filter?: ArtifactsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: ArtifactsSortParameter
-}
+  sort?: ArtifactsSortParameter;
+};
 
 export type FindManyArtifacts200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyArtifacts200 = {
-  data: ArtifactEntity[]
-  meta: FindManyArtifacts200Meta
-}
+  data: ArtifactEntity[];
+  meta: FindManyArtifacts200Meta;
+};
 
 export type DeleteArtifact200 = {
-  data: ArtifactEntity
-}
+  data: ArtifactEntity;
+};
 
 export type GetOneArtifact200 = {
-  data: ArtifactEntity
-}
+  data: ArtifactEntity;
+};
 
 export type UpdateArtifactBody = {
   /**
    * The name of the artifact
    * @minLength 1
    */
-  name?: string
+  name?: string;
   /** The artifact text */
-  text?: string
+  text?: string;
   /** The artifact URL */
-  url?: string
-}
+  url?: string;
+};
 
 export type UpdateArtifact200 = {
-  data: ArtifactEntity
-}
+  data: ArtifactEntity;
+};
 
 export type CreateLabelBody = {
   /**
    * The name of the label
    * @minLength 1
    */
-  name: string
-}
+  name: string;
+};
 
 export type CreateLabel201 = {
-  data: LabelEntity
-}
+  data: LabelEntity;
+};
 
 export type FindManyLabelsParams = {
   /**
    * A recursive filter node that can be a condition or group
    */
-  filter?: LabelsFilterParameter
+  filter?: LabelsFilterParameter;
   /**
    * Pagination (page number & size)
    */
-  page?: PageQueryParameter
+  page?: PageQueryParameter;
   /**
    * The sort parameter
    */
-  sort?: LabelsSortParameter
-}
+  sort?: LabelsSortParameter;
+};
 
 export type FindManyLabels200Meta = {
   /** Total number of items in the collection */
-  total: number
-}
+  total: number;
+};
 
 export type FindManyLabels200 = {
-  data: LabelEntity[]
-  meta: FindManyLabels200Meta
-}
+  data: LabelEntity[];
+  meta: FindManyLabels200Meta;
+};
 
 export type DeleteLabel200 = {
-  data: LabelEntity
-}
+  data: LabelEntity;
+};
 
 export type GetOneLabel200 = {
-  data: LabelEntity
-}
+  data: LabelEntity;
+};
 
 export type UpdateLabelBody = {
   /**
    * The name of the label
    * @minLength 1
    */
-  name?: string
-}
+  name?: string;
+};
 
 export type UpdateLabel200 = {
-  data: LabelEntity
-}
+  data: LabelEntity;
+};

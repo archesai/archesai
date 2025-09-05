@@ -2,16 +2,16 @@ export const seo = ({
   description,
   image,
   keywords,
-  title
+  title,
 }: {
-  description?: string
-  image?: string
-  keywords?: string
-  title: string
+  description?: string;
+  image?: string;
+  keywords?: string;
+  title: string;
 }): {
-  content?: string
-  name?: string
-  title?: string
+  content?: string;
+  name?: string;
+  title?: string;
 }[] => {
   const tags = [
     { title },
@@ -41,10 +41,10 @@ export const seo = ({
           { content: image, name: "og:image" },
           { content: "600", name: "og:image:height" },
           { content: "800", name: "og:image:width" },
-          { content: "Arches AI", name: "og:image:alt" }
+          { content: "Arches AI", name: "og:image:alt" },
         ]
-      : [])
-  ]
+      : []),
+  ];
 
-  return tags
-}
+  return tags;
+};

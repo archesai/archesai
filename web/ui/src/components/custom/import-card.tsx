@@ -1,21 +1,21 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useRef, useState } from "react"
+import { useRef, useState } from "react";
 
 import {
   Loader2Icon,
   TrashIcon,
-  UploadCloudIcon
-} from "#components/custom/icons"
+  UploadCloudIcon,
+} from "#components/custom/icons";
 // import { toast } from 'sonner'
 
 // import type { ArtifactEntity } from '@archesai/schemas'
 
-import { Badge } from "#components/shadcn/badge"
-import { Button } from "#components/shadcn/button"
-import { Card } from "#components/shadcn/card"
-import { Progress } from "#components/shadcn/progress"
-import { cn } from "#lib/utils"
+import { Badge } from "#components/shadcn/badge";
+import { Button } from "#components/shadcn/button";
+import { Card } from "#components/shadcn/card";
+import { Progress } from "#components/shadcn/progress";
+import { cn } from "#lib/utils";
 
 export default function ImportCard(): JSX.Element {
   //   {
@@ -24,47 +24,47 @@ export default function ImportCard(): JSX.Element {
   //   cb?: (content: ArtifactEntity[]) => void
 
   // }
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [uploading, setUploading] = useState<boolean>(false)
-  const [dragActive, setDragActive] = useState<boolean>(false)
-  const [uploadProgress, setUploadProgress] = useState<number>(0)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [dragActive, setDragActive] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = (files: FileList | null) => {
     if (files) {
       const newFiles = Array.from(files).filter(
         (file) =>
           !selectedFiles.some(
-            (f) => f.name === file.name && f.size === file.size
-          )
-      )
-      setSelectedFiles((prev) => [...prev, ...newFiles])
+            (f) => f.name === file.name && f.size === file.size,
+          ),
+      );
+      setSelectedFiles((prev) => [...prev, ...newFiles]);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    setDragActive(false)
-    handleFiles(e.dataTransfer.files)
-  }
+    e.preventDefault();
+    setDragActive(false);
+    handleFiles(e.dataTransfer.files);
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    setDragActive(true)
-  }
+    e.preventDefault();
+    setDragActive(true);
+  };
 
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    setDragActive(false)
-  }
+    e.preventDefault();
+    setDragActive(false);
+  };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files)
-  }
+    handleFiles(e.target.files);
+  };
 
   const removeFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index))
-  }
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // const uploadFile = (
   //   file: File,
@@ -115,9 +115,9 @@ export default function ImportCard(): JSX.Element {
   // }
 
   const uploadFiles = () => {
-    if (selectedFiles.length === 0) return
-    setUploading(true)
-    setUploadProgress(0)
+    if (selectedFiles.length === 0) return;
+    setUploading(true);
+    setUploadProgress(0);
 
     // try {
     //   const urls = await Promise.all(
@@ -151,7 +151,7 @@ export default function ImportCard(): JSX.Element {
     //   })
     //   setUploading(false)
     // }
-  }
+  };
 
   return (
     <div
@@ -163,7 +163,7 @@ export default function ImportCard(): JSX.Element {
       <Card
         className={cn(
           "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-8 transition-colors duration-300",
-          dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400"
+          dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400",
         )}
         onClick={() => fileInputRef.current?.click()}
         onDragLeave={handleDragLeave}
@@ -207,7 +207,7 @@ export default function ImportCard(): JSX.Element {
                   aria-label={`Remove ${file.name}`}
                   className="text-red-500 hover:text-red-700 focus:outline-hidden"
                   onClick={() => {
-                    removeFile(idx)
+                    removeFile(idx);
                   }}
                 >
                   <TrashIcon className="h-5 w-5" />
@@ -246,5 +246,5 @@ export default function ImportCard(): JSX.Element {
         </div>
       )}
     </div>
-  )
+  );
 }

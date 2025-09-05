@@ -1,11 +1,11 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
 export function ArchesLogo({
   scale = 1,
-  size = "lg" as "lg" | "sm"
+  size = "lg" as "lg" | "sm",
 }: {
-  scale?: number
-  size?: "lg" | "sm"
+  scale?: number;
+  size?: "lg" | "sm";
 }): JSX.Element {
   const content =
     size === "sm" ? (
@@ -19,9 +19,9 @@ export function ArchesLogo({
         </div>
         <LargeLogo scale={scale * 1.25} />
       </div>
-    )
+    );
 
-  return content
+  return content;
 }
 
 const LargeLogo = ({ scale }: { scale: number }): JSX.Element => {
@@ -84,15 +84,15 @@ const LargeLogo = ({ scale }: { scale: number }): JSX.Element => {
         </g>
       </g>
     </svg>
-  )
-}
+  );
+};
 
 const SmallLogo = ({
   fill,
-  scale
+  scale,
 }: {
-  fill?: string
-  scale: number
+  fill?: string;
+  scale: number;
 }): JSX.Element => {
   return (
     <svg
@@ -202,5 +202,5 @@ const SmallLogo = ({
         </svg>
       </g>
     </svg>
-  )
-}
+  );
+};

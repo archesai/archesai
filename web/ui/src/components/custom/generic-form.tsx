@@ -1,19 +1,19 @@
-import type { JSX } from "react"
-import type { ControllerRenderProps, FieldValues } from "react-hook-form"
+import type { JSX } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
-import { Loader2Icon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { Loader2Icon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from "#components/shadcn/card"
+  CardTitle,
+} from "#components/shadcn/card";
 import {
   Form,
   FormControl,
@@ -21,52 +21,52 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
-} from "#components/shadcn/form"
-import { Separator } from "#components/shadcn/separator"
-import { cn } from "#lib/utils"
+  FormMessage,
+} from "#components/shadcn/form";
+import { Separator } from "#components/shadcn/separator";
+import { cn } from "#lib/utils";
 
 export interface FormFieldConfig<T extends FieldValues = FieldValues> {
-  defaultValue?: boolean | number | string | undefined
-  description?: string
-  ignoreOnCreate?: boolean
-  label: string
-  name: keyof T
-  renderControl: (field: ControllerRenderProps) => React.ReactNode
+  defaultValue?: boolean | number | string | undefined;
+  description?: string;
+  ignoreOnCreate?: boolean;
+  label: string;
+  name: keyof T;
+  renderControl: (field: ControllerRenderProps) => React.ReactNode;
 }
 
 type GenericFormProps<
   CreateDto extends FieldValues,
-  UpdateDto extends FieldValues
+  UpdateDto extends FieldValues,
 > = {
-  description?: string
-  entityKey: string
-  fields: FormFieldConfig<CreateDto | UpdateDto>[]
+  description?: string;
+  entityKey: string;
+  fields: FormFieldConfig<CreateDto | UpdateDto>[];
   /**
    * When supplied, `mutateOptions` is passed straight through.
    * Use it to wire in TanStack Query’s `useMutation` options and keep side-effects outside.
    */
-  mutateOptions?: Record<string, unknown>
-  postContent?: React.ReactNode
-  preContent?: React.ReactNode
-  showCard?: boolean
-  title?: string
+  mutateOptions?: Record<string, unknown>;
+  postContent?: React.ReactNode;
+  preContent?: React.ReactNode;
+  showCard?: boolean;
+  title?: string;
 } & (
   | {
-      isUpdateForm: false
-      onSubmitCreate: (d: CreateDto) => Promise<void>
-      onSubmitUpdate?: (d: UpdateDto) => Promise<void>
+      isUpdateForm: false;
+      onSubmitCreate: (d: CreateDto) => Promise<void>;
+      onSubmitUpdate?: (d: UpdateDto) => Promise<void>;
     }
   | {
-      isUpdateForm: true
-      onSubmitCreate?: (d: CreateDto) => Promise<void>
-      onSubmitUpdate: (d: UpdateDto) => Promise<void>
+      isUpdateForm: true;
+      onSubmitCreate?: (d: CreateDto) => Promise<void>;
+      onSubmitUpdate: (d: UpdateDto) => Promise<void>;
     }
-)
+);
 
 export function GenericForm<
   CreateDto extends FieldValues,
-  UpdateDto extends FieldValues
+  UpdateDto extends FieldValues,
 >(props: GenericFormProps<CreateDto, UpdateDto>): JSX.Element {
   const {
     description,
@@ -76,37 +76,37 @@ export function GenericForm<
     onSubmitCreate,
     onSubmitUpdate,
     showCard = false,
-    title
-  } = props
+    title,
+  } = props;
 
   /* ---------- memoised defaults & schema ---------- */
   const defaultValues = fields.reduce<Record<string, unknown>>((acc, f) => {
-    if (f.defaultValue !== undefined) acc[String(f.name)] = f.defaultValue
-    return acc
-  }, {})
+    if (f.defaultValue !== undefined) acc[String(f.name)] = f.defaultValue;
+    return acc;
+  }, {});
 
   /* ---------- form instance ---------- */
   const form = useForm({
     defaultValues,
-    mode: "onChange"
-  })
+    mode: "onChange",
+  });
 
   /* ---------- keep external defaults in sync ---------- */
   useEffect(() => {
-    form.reset(defaultValues)
-  }, [defaultValues, form])
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
 
   /* ---------- submit helpers ---------- */
   async function handleSubmit(values: FieldValues) {
     const run = isUpdateForm
       ? async () => {
-          await onSubmitUpdate(values as UpdateDto)
+          await onSubmitUpdate(values as UpdateDto);
         }
       : async () => {
-          await onSubmitCreate(values as CreateDto)
-        }
+          await onSubmitCreate(values as CreateDto);
+        };
 
-    await run()
+    await run();
   }
 
   return (
@@ -177,7 +177,7 @@ export function GenericForm<
               //   !!(form.formState.isSubmitting || !form.formState.isDirty)
               // }
               onClick={() => {
-                form.reset()
+                form.reset();
               }}
               size="sm"
               type="button"
@@ -189,7 +189,7 @@ export function GenericForm<
         </Card>
       </form>
     </Form>
-  )
+  );
 }
 
 // <FormItem>

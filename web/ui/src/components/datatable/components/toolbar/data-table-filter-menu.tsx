@@ -1,17 +1,17 @@
-"use no memo"
+"use no memo";
 
-import type { Column, Table } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Column, Table } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import * as React from "react"
+import * as React from "react";
 
 import type {
   BaseEntity,
   FilterCondition,
   FilterNode,
-  FilterValue
-} from "#types/entities"
-import type { FilterOperator } from "#types/simple-data-table"
+  FilterValue,
+} from "#types/entities";
+import type { FilterOperator } from "#types/simple-data-table";
 
 import {
   BadgeCheckIcon,
@@ -19,66 +19,66 @@ import {
   CheckIcon,
   ListFilterIcon,
   TextIcon,
-  XCircleIcon
-} from "#components/custom/icons"
-import { DataTableRangeFilter } from "#components/datatable/components/filters/data-table-range-filter"
-import { Button } from "#components/shadcn/button"
-import { Calendar } from "#components/shadcn/calendar"
+  XCircleIcon,
+} from "#components/custom/icons";
+import { DataTableRangeFilter } from "#components/datatable/components/filters/data-table-range-filter";
+import { Button } from "#components/shadcn/button";
+import { Calendar } from "#components/shadcn/calendar";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
-} from "#components/shadcn/command"
-import { Input } from "#components/shadcn/input"
+  CommandList,
+} from "#components/shadcn/command";
+import { Input } from "#components/shadcn/input";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "#components/shadcn/popover"
+  PopoverTrigger,
+} from "#components/shadcn/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "#components/shadcn/select"
-import { useFilterState } from "#hooks/use-filter-state"
-import { formatDate } from "#lib/format"
-import { cn } from "#lib/utils"
+  SelectValue,
+} from "#components/shadcn/select";
+import { useFilterState } from "#hooks/use-filter-state";
+import { formatDate } from "#lib/format";
+import { cn } from "#lib/utils";
 import {
   getDefaultFilterOperator,
-  getFilterOperators
-} from "#types/simple-data-table"
+  getFilterOperators,
+} from "#types/simple-data-table";
 
-const OPEN_MENU_SHORTCUT = "f"
-const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"]
+const OPEN_MENU_SHORTCUT = "f";
+const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"];
 
 interface DataTableFilterItemProps<TData extends BaseEntity> {
-  columns: Column<TData>[]
-  filter: FilterCondition & { id: string }
-  filterItemId: string
-  onFilterRemove: (filterId: string) => void
+  columns: Column<TData>[];
+  filter: FilterCondition & { id: string };
+  filterItemId: string;
+  onFilterRemove: (filterId: string) => void;
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition, "type">>
-  ) => void
+    updates: Partial<Omit<FilterCondition, "type">>,
+  ) => void;
 }
 
 interface DataTableFilterMenuProps<TData>
   extends React.ComponentProps<typeof PopoverContent> {
-  debounceMs?: number
-  shallow?: boolean
-  table: Table<TData>
-  throttleMs?: number
+  debounceMs?: number;
+  shallow?: boolean;
+  table: Table<TData>;
+  throttleMs?: number;
 }
 
 interface FilterValueSelectorProps<TData> {
-  column: Column<TData>
-  onSelect: (value: string) => void
-  value: string
+  column: Column<TData>;
+  onSelect: (value: string) => void;
+  value: string;
 }
 
 export function DataTableFilterMenu<TData extends BaseEntity>({
@@ -86,31 +86,31 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
   table,
   ...props
 }: DataTableFilterMenuProps<TData>): JSX.Element {
-  const id = React.useId()
+  const id = React.useId();
 
   const columns = React.useMemo(() => {
     return table
       .getAllColumns()
-      .filter((column) => column.columnDef.enableColumnFilter)
-  }, [table])
+      .filter((column) => column.columnDef.enableColumnFilter);
+  }, [table]);
 
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
   const [selectedColumn, setSelectedColumn] =
-    React.useState<Column<TData> | null>(null)
-  const [inputValue, setInputValue] = React.useState("")
-  const triggerRef = React.useRef<HTMLButtonElement>(null)
-  const inputRef = React.useRef<HTMLInputElement>(null)
+    React.useState<Column<TData> | null>(null);
+  const [inputValue, setInputValue] = React.useState("");
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const onOpenChange = React.useCallback((open: boolean) => {
-    setOpen(open)
+    setOpen(open);
 
     if (!open) {
       setTimeout(() => {
-        setSelectedColumn(null)
-        setInputValue("")
-      }, 100)
+        setSelectedColumn(null);
+        setInputValue("");
+      }, 100);
     }
-  }, [])
+  }, []);
 
   const onInputKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -119,89 +119,91 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         !inputValue &&
         selectedColumn
       ) {
-        event.preventDefault()
-        setSelectedColumn(null)
+        event.preventDefault();
+        setSelectedColumn(null);
       }
     },
-    [inputValue, selectedColumn]
-  )
+    [inputValue, selectedColumn],
+  );
 
   const { addCondition, filter, removeCondition, resetFilters, setCondition } =
-    useFilterState<TData>()
+    useFilterState<TData>();
 
   // Convert FilterNode to flat array for display
   const filters = React.useMemo(() => {
     const extractConditions = (
       node: FilterNode | undefined,
-      id = 0
+      id = 0,
     ): (FilterCondition & { id: string })[] => {
-      if (!node) return []
+      if (!node) return [];
       if (node.type === "condition") {
         return [
           {
             ...node,
-            id: `filter-${id.toString()}`
-          }
-        ]
+            id: `filter-${id.toString()}`,
+          },
+        ];
       } else {
         return node.children.flatMap((child, index) =>
-          extractConditions(child, id * 100 + index)
-        )
+          extractConditions(child, id * 100 + index),
+        );
       }
-    }
+    };
 
-    return extractConditions(filter)
-  }, [filter])
+    return extractConditions(filter);
+  }, [filter]);
 
   const onFilterAdd = React.useCallback(
     (column: Column<TData>, value: string) => {
       if (!value.trim() && column.columnDef.meta?.filterVariant !== "boolean") {
-        return
+        return;
       }
 
       const filterValue =
-        column.columnDef.meta?.filterVariant === "multiSelect" ? [value] : value
+        column.columnDef.meta?.filterVariant === "multiSelect"
+          ? [value]
+          : value;
 
       // Add condition directly
       addCondition({
         field: column.id,
         operator: getDefaultFilterOperator(
-          column.columnDef.meta?.filterVariant ?? "text"
+          column.columnDef.meta?.filterVariant ?? "text",
         ),
         type: "condition",
-        value: filterValue as FilterValue
-      })
+        value: filterValue as FilterValue,
+      });
 
-      setOpen(false)
+      setOpen(false);
 
       setTimeout(() => {
-        setSelectedColumn(null)
-        setInputValue("")
-      }, 100)
+        setSelectedColumn(null);
+        setInputValue("");
+      }, 100);
     },
-    [addCondition]
-  )
+    [addCondition],
+  );
 
   // Remove filter by field name
   const onFilterRemove = React.useCallback(
     (filterId: string) => {
-      const filterToRemove = filters.find((f) => f.id === filterId)
+      const filterToRemove = filters.find((f) => f.id === filterId);
       if (filterToRemove) {
-        removeCondition(filterToRemove.field as keyof TData)
+        removeCondition(filterToRemove.field as keyof TData);
       }
       requestAnimationFrame(() => {
-        triggerRef.current?.focus()
-      })
+        triggerRef.current?.focus();
+      });
     },
-    [filters, removeCondition]
-  )
+    [filters, removeCondition],
+  );
 
   // Update filter condition
   const onFilterUpdate = (
     filterId: string,
-    updates: Partial<Omit<FilterCondition, "type">>
+    updates: Partial<Omit<FilterCondition, "type">>,
   ) => {
-    const filterToUpdate = filters.find((f) => f.id === filterId)
+    const filterToUpdate = filters.find((f) => f.id === filterId);
     if (
       filterToUpdate &&
       updates.field &&
@@ -211,10 +213,10 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
       setCondition(
         updates.field as keyof TData,
         updates.operator as FilterOperator,
-        updates.value
-      )
+        updates.value,
+      );
     }
-  }
+  };
 
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -222,7 +224,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
       ) {
-        return
+        return;
       }
 
       if (
@@ -231,8 +233,8 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         !event.metaKey &&
         !event.shiftKey
       ) {
-        event.preventDefault()
-        setOpen(true)
+        event.preventDefault();
+        setOpen(true);
       }
 
       if (
@@ -241,16 +243,16 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         !open &&
         filters.length > 0
       ) {
-        event.preventDefault()
-        onFilterRemove(filters[filters.length - 1]?.id ?? "")
+        event.preventDefault();
+        onFilterRemove(filters[filters.length - 1]?.id ?? "");
       }
     }
 
-    window.addEventListener("keydown", onKeyDown)
+    window.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [open, filters, onFilterRemove])
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, filters, onFilterRemove]);
 
   const onTriggerKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -258,12 +260,12 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         REMOVE_FILTER_SHORTCUTS.includes(event.key.toLowerCase()) &&
         filters.length > 0
       ) {
-        event.preventDefault()
-        onFilterRemove(filters[filters.length - 1]?.id ?? "")
+        event.preventDefault();
+        onFilterRemove(filters[filters.length - 1]?.id ?? "");
       }
     },
-    [filters, onFilterRemove]
-  )
+    [filters, onFilterRemove],
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -334,7 +336,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
                   <FilterValueSelector
                     column={selectedColumn}
                     onSelect={(value) => {
-                      onFilterAdd(selectedColumn, value)
+                      onFilterAdd(selectedColumn, value);
                     }}
                     value={inputValue}
                   />
@@ -347,11 +349,11 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
                       <CommandItem
                         key={column.id}
                         onSelect={() => {
-                          setSelectedColumn(column)
-                          setInputValue("")
+                          setSelectedColumn(column);
+                          setInputValue("");
                           requestAnimationFrame(() => {
-                            inputRef.current?.focus()
-                          })
+                            inputRef.current?.focus();
+                          });
                         }}
                         value={column.id}
                       >
@@ -371,7 +373,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }
 
 function DataTableFilterItem<TData extends BaseEntity>({
@@ -379,21 +381,21 @@ function DataTableFilterItem<TData extends BaseEntity>({
   filter,
   filterItemId,
   onFilterRemove,
-  onFilterUpdate
+  onFilterUpdate,
 }: DataTableFilterItemProps<TData>) {
-  const [showFieldSelector, setShowFieldSelector] = React.useState(false)
-  const [showOperatorSelector, setShowOperatorSelector] = React.useState(false)
-  const [showValueSelector, setShowValueSelector] = React.useState(false)
+  const [showFieldSelector, setShowFieldSelector] = React.useState(false);
+  const [showOperatorSelector, setShowOperatorSelector] = React.useState(false);
+  const [showValueSelector, setShowValueSelector] = React.useState(false);
 
-  const column = columns.find((column) => column.id === filter.field)
+  const column = columns.find((column) => column.id === filter.field);
 
-  const operatorListboxId = `${filterItemId}-operator-listbox`
-  const inputId = `${filterItemId}-input`
+  const operatorListboxId = `${filterItemId}-operator-listbox`;
+  const inputId = `${filterItemId}-input`;
 
-  const columnMeta = column?.columnDef.meta
+  const columnMeta = column?.columnDef.meta;
   const filterOperators = getFilterOperators(
-    columnMeta?.filterVariant ?? "text"
-  )
+    columnMeta?.filterVariant ?? "text",
+  );
 
   const onItemKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -401,16 +403,16 @@ function DataTableFilterItem<TData extends BaseEntity>({
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
       ) {
-        return
+        return;
       }
 
       if (showFieldSelector || showOperatorSelector || showValueSelector) {
-        return
+        return;
       }
 
       if (REMOVE_FILTER_SHORTCUTS.includes(event.key.toLowerCase())) {
-        event.preventDefault()
-        onFilterRemove(filter.id)
+        event.preventDefault();
+        onFilterRemove(filter.id);
       }
     },
     [
@@ -418,11 +420,11 @@ function DataTableFilterItem<TData extends BaseEntity>({
       showFieldSelector,
       showOperatorSelector,
       showValueSelector,
-      onFilterRemove
-    ]
-  )
+      onFilterRemove,
+    ],
+  );
 
-  if (!column) return null
+  if (!column) return null;
 
   return (
     <div
@@ -464,12 +466,12 @@ function DataTableFilterItem<TData extends BaseEntity>({
                       onFilterUpdate(filter.id, {
                         field: column.id,
                         operator: getDefaultFilterOperator(
-                          column.columnDef.meta?.filterVariant ?? "text"
+                          column.columnDef.meta?.filterVariant ?? "text",
                         ),
-                        value: ""
-                      })
+                        value: "",
+                      });
 
-                      setShowFieldSelector(false)
+                      setShowFieldSelector(false);
                     }}
                     value={column.id}
                   >
@@ -482,7 +484,9 @@ function DataTableFilterItem<TData extends BaseEntity>({
                     <CheckIcon
                       className={cn(
                         "ml-auto",
-                        column.id === filter.field ? "opacity-100" : "opacity-0"
+                        column.id === filter.field
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
                   </CommandItem>
@@ -498,8 +502,8 @@ function DataTableFilterItem<TData extends BaseEntity>({
           onFilterUpdate(filter.id, {
             operator: value,
             value:
-              value === "isEmpty" || value === "isNotEmpty" ? "" : filter.value
-          })
+              value === "isEmpty" || value === "isNotEmpty" ? "" : filter.value,
+          });
         }}
         open={showOperatorSelector}
         value={filter.operator}
@@ -531,13 +535,13 @@ function DataTableFilterItem<TData extends BaseEntity>({
         inputId,
         onFilterUpdate,
         setShowValueSelector,
-        showValueSelector
+        showValueSelector,
       })}
       <Button
         aria-controls={filterItemId}
         className="h-full rounded-none rounded-r-md border border-l-0 px-1.5 font-normal dark:bg-input/30"
         onClick={() => {
-          onFilterRemove(filter.id)
+          onFilterRemove(filter.id);
         }}
         size="sm"
         variant="ghost"
@@ -545,15 +549,15 @@ function DataTableFilterItem<TData extends BaseEntity>({
         <XCircleIcon className="size-3.5" />
       </Button>
     </div>
-  )
+  );
 }
 
 function FilterValueSelector<TData>({
   column,
   onSelect,
-  value
+  value,
 }: FilterValueSelectorProps<TData>) {
-  const variant = column.columnDef.meta?.filterVariant ?? "text"
+  const variant = column.columnDef.meta?.filterVariant ?? "text";
 
   switch (variant) {
     case "boolean":
@@ -561,7 +565,7 @@ function FilterValueSelector<TData>({
         <CommandGroup>
           <CommandItem
             onSelect={() => {
-              onSelect("true")
+              onSelect("true");
             }}
             value="true"
           >
@@ -569,14 +573,14 @@ function FilterValueSelector<TData>({
           </CommandItem>
           <CommandItem
             onSelect={() => {
-              onSelect("false")
+              onSelect("false");
             }}
             value="false"
           >
             False
           </CommandItem>
         </CommandGroup>
-      )
+      );
 
     case "date":
       return (
@@ -584,11 +588,11 @@ function FilterValueSelector<TData>({
           captionLayout="dropdown"
           mode="single"
           onSelect={(date) => {
-            onSelect(date?.getTime().toString() ?? "")
+            onSelect(date?.getTime().toString() ?? "");
           }}
           selected={value ? new Date(value) : undefined}
         />
-      )
+      );
 
     case "multiSelect":
     case "select":
@@ -598,7 +602,7 @@ function FilterValueSelector<TData>({
             <CommandItem
               key={option.value}
               onSelect={() => {
-                onSelect(option.value)
+                onSelect(option.value);
               }}
               value={option.value}
             >
@@ -612,17 +616,17 @@ function FilterValueSelector<TData>({
             </CommandItem>
           ))}
         </CommandGroup>
-      )
+      );
 
     default: {
-      const isEmpty = !value.trim()
+      const isEmpty = !value.trim();
 
       return (
         <CommandGroup>
           <CommandItem
             disabled={isEmpty}
             onSelect={() => {
-              onSelect(value)
+              onSelect(value);
             }}
             value={value}
           >
@@ -639,7 +643,7 @@ function FilterValueSelector<TData>({
             )}
           </CommandItem>
         </CommandGroup>
-      )
+      );
     }
   }
 }
@@ -650,17 +654,17 @@ function onFilterInputRender<TData extends BaseEntity>({
   inputId,
   onFilterUpdate,
   setShowValueSelector,
-  showValueSelector
+  showValueSelector,
 }: {
-  column: Column<TData>
-  filter: FilterCondition & { id: string }
-  inputId: string
+  column: Column<TData>;
+  filter: FilterCondition & { id: string };
+  inputId: string;
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition, "type">>
-  ) => void
-  setShowValueSelector: (value: boolean) => void
-  showValueSelector: boolean
+    updates: Partial<Omit<FilterCondition, "type">>,
+  ) => void;
+  setShowValueSelector: (value: boolean) => void;
+  showValueSelector: boolean;
 }) {
   if (filter.operator === "isEmpty" || filter.operator === "isNotEmpty") {
     return (
@@ -673,19 +677,19 @@ function onFilterInputRender<TData extends BaseEntity>({
         id={inputId}
         role="status"
       />
-    )
+    );
   }
 
-  const variant = column.columnDef.meta?.filterVariant ?? "text"
+  const variant = column.columnDef.meta?.filterVariant ?? "text";
   switch (variant) {
     case "boolean": {
-      const inputListboxId = `${inputId}-listbox`
+      const inputListboxId = `${inputId}-listbox`;
 
       return (
         <Select
           onOpenChange={setShowValueSelector}
           onValueChange={(value: "false" | "true") => {
-            onFilterUpdate(filter.id, { value })
+            onFilterUpdate(filter.id, { value });
           }}
           open={showValueSelector}
           value={typeof filter.value === "string" ? filter.value : "true"}
@@ -702,25 +706,25 @@ function onFilterInputRender<TData extends BaseEntity>({
             <SelectItem value="false">False</SelectItem>
           </SelectContent>
         </Select>
-      )
+      );
     }
 
     case "date":
     case "dateRange": {
-      const inputListboxId = `${inputId}-listbox`
+      const inputListboxId = `${inputId}-listbox`;
 
       const dateValue = Array.isArray(filter.value)
         ? filter.value.filter(Boolean)
-        : [filter.value, filter.value].filter(Boolean)
+        : [filter.value, filter.value].filter(Boolean);
 
       const displayValue =
         filter.operator === "isBetween" && dateValue.length === 2
           ? `${formatDate(new Date(Number(dateValue[0])))} - ${formatDate(
-              new Date(Number(dateValue[1]))
+              new Date(Number(dateValue[1])),
             )}`
           : dateValue[0]
             ? formatDate(new Date(Number(dateValue[0])))
-            : "Pick date..."
+            : "Pick date...";
 
       return (
         <Popover
@@ -732,7 +736,7 @@ function onFilterInputRender<TData extends BaseEntity>({
               aria-controls={inputListboxId}
               className={cn(
                 "h-full rounded-none border px-1.5 font-normal dark:bg-input/30",
-                !filter.value && "text-muted-foreground"
+                !filter.value && "text-muted-foreground",
               )}
               id={inputId}
               size="sm"
@@ -756,20 +760,20 @@ function onFilterInputRender<TData extends BaseEntity>({
                     value: date
                       ? [
                           (date.from?.getTime() ?? "").toString(),
-                          (date.to?.getTime() ?? "").toString()
+                          (date.to?.getTime() ?? "").toString(),
                         ]
-                      : []
-                  })
+                      : [],
+                  });
                 }}
                 selected={
                   dateValue.length === 2
                     ? {
                         from: new Date(Number(dateValue[0])),
-                        to: new Date(Number(dateValue[1]))
+                        to: new Date(Number(dateValue[1])),
                       }
                     : {
                         from: new Date(),
-                        to: new Date()
+                        to: new Date(),
                       }
                 }
               />
@@ -779,8 +783,8 @@ function onFilterInputRender<TData extends BaseEntity>({
                 mode="single"
                 onSelect={(date) => {
                   onFilterUpdate(filter.id, {
-                    value: (date?.getTime() ?? "").toString()
-                  })
+                    value: (date?.getTime() ?? "").toString(),
+                  });
                 }}
                 selected={
                   dateValue[0] ? new Date(Number(dateValue[0])) : undefined
@@ -789,21 +793,21 @@ function onFilterInputRender<TData extends BaseEntity>({
             )}
           </PopoverContent>
         </Popover>
-      )
+      );
     }
 
     case "multiSelect":
     case "select": {
-      const inputListboxId = `${inputId}-listbox`
+      const inputListboxId = `${inputId}-listbox`;
 
-      const options = column.columnDef.meta?.options ?? []
+      const options = column.columnDef.meta?.options ?? [];
       const selectedValues = Array.isArray(filter.value)
         ? filter.value
-        : [filter.value]
+        : [filter.value];
 
       const selectedOptions = options.filter((option) =>
-        selectedValues.includes(option.value)
-      )
+        selectedValues.includes(option.value),
+      );
 
       return (
         <Popover
@@ -835,7 +839,7 @@ function onFilterInputRender<TData extends BaseEntity>({
                         >
                           <selectedOption.icon className="size-3.5" />
                         </div>
-                      ) : null
+                      ) : null,
                     )}
                   </div>
                   <span className="truncate">
@@ -866,10 +870,10 @@ function onFilterInputRender<TData extends BaseEntity>({
                             ? selectedValues.includes(option.value)
                               ? selectedValues.filter((v) => v !== option.value)
                               : [...selectedValues, option.value]
-                            : option.value
+                            : option.value;
                         onFilterUpdate(filter.id, {
-                          value: value
-                        })
+                          value: value,
+                        });
                       }}
                       value={option.value}
                     >
@@ -881,7 +885,7 @@ function onFilterInputRender<TData extends BaseEntity>({
                             "ml-auto",
                             selectedValues.includes(option.value)
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                       )}
@@ -892,7 +896,7 @@ function onFilterInputRender<TData extends BaseEntity>({
             </Command>
           </PopoverContent>
         </Popover>
-      )
+      );
     }
     case "number":
     case "range":
@@ -909,10 +913,10 @@ function onFilterInputRender<TData extends BaseEntity>({
             inputId={inputId}
             onFilterUpdate={onFilterUpdate}
           />
-        )
+        );
       }
 
-      const isNumber = variant === "number" || variant === "range"
+      const isNumber = variant === "number" || variant === "range";
 
       return (
         <Input
@@ -921,15 +925,15 @@ function onFilterInputRender<TData extends BaseEntity>({
           id={inputId}
           inputMode={isNumber ? "numeric" : undefined}
           onChange={(event) => {
-            onFilterUpdate(filter.id, { value: event.target.value })
+            onFilterUpdate(filter.id, { value: event.target.value });
           }}
           placeholder={column.columnDef.meta?.label ?? "Enter value..."}
           type={isNumber ? "number" : "text"}
         />
-      )
+      );
     }
 
     default:
-      return null
+      return null;
   }
 }

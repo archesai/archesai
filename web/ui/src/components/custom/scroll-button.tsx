@@ -1,29 +1,29 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
-import { ArrowUpToLineIcon } from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+import { ArrowUpToLineIcon } from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 
 export const ScrollButton = (): JSX.Element => {
-  const [showTopBtn, setShowTopBtn] = useState(false)
+  const [showTopBtn, setShowTopBtn] = useState(false);
 
   useEffect(() => {
     window.addEventListener("scroll", () => {
       if (window.scrollY > 400) {
-        setShowTopBtn(true)
+        setShowTopBtn(true);
       } else {
-        setShowTopBtn(false)
+        setShowTopBtn(false);
       }
-    })
-  }, [])
+    });
+  }, []);
 
   const goToTop = () => {
     window.scroll({
       left: 0,
-      top: 0
-    })
-  }
+      top: 0,
+    });
+  };
 
   return (
     <>
@@ -37,5 +37,5 @@ export const ScrollButton = (): JSX.Element => {
         </Button>
       )}
     </>
-  )
-}
+  );
+};

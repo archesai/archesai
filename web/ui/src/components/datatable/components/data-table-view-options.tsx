@@ -1,44 +1,44 @@
-"use no memo"
+"use no memo";
 
-import type { Table } from "@tanstack/react-table"
-import type { JSX } from "react"
+import type { Table } from "@tanstack/react-table";
+import type { JSX } from "react";
 
-import type { BaseEntity } from "#types/entities"
+import type { BaseEntity } from "#types/entities";
 
 import {
   CheckIcon,
   ChevronsUpDownIcon,
-  Settings2Icon
-} from "#components/custom/icons"
-import { Button } from "#components/shadcn/button"
+  Settings2Icon,
+} from "#components/custom/icons";
+import { Button } from "#components/shadcn/button";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
-} from "#components/shadcn/command"
+  CommandList,
+} from "#components/shadcn/command";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
-} from "#components/shadcn/popover"
-import { cn, toSentenceCase } from "#lib/utils"
+  PopoverTrigger,
+} from "#components/shadcn/popover";
+import { cn, toSentenceCase } from "#lib/utils";
 
 interface DataTableViewOptionsProps<TEntity extends BaseEntity> {
-  table: Table<TEntity>
+  table: Table<TEntity>;
 }
 
 export function DataTableViewOptions<TEntity extends BaseEntity>(
-  props: DataTableViewOptionsProps<TEntity>
+  props: DataTableViewOptionsProps<TEntity>,
 ): JSX.Element {
   const columns = props.table
     .getAllColumns()
     .filter(
       (column) =>
-        typeof column.accessorFn !== "undefined" && column.getCanHide()
-    )
+        typeof column.accessorFn !== "undefined" && column.getCanHide(),
+    );
 
   return (
     <Popover modal>
@@ -69,7 +69,7 @@ export function DataTableViewOptions<TEntity extends BaseEntity>(
                   <CommandItem
                     key={column.id}
                     onSelect={() => {
-                      column.toggleVisibility(!column.getIsVisible())
+                      column.toggleVisibility(!column.getIsVisible());
                     }}
                   >
                     <span className="truncate">
@@ -79,16 +79,16 @@ export function DataTableViewOptions<TEntity extends BaseEntity>(
                     <CheckIcon
                       className={cn(
                         "ml-auto size-4 shrink-0",
-                        column.getIsVisible() ? "opacity-100" : "opacity-0"
+                        column.getIsVisible() ? "opacity-100" : "opacity-0",
                       )}
                     />
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

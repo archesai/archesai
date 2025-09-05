@@ -1,4 +1,4 @@
-import type { SiteRoute } from "@archesai/ui/lib/site-config.interface"
+import type { SiteRoute } from "@archesai/ui/lib/site-config.interface";
 
 import {
   BookOpenIcon,
@@ -14,8 +14,8 @@ import {
   UserIcon,
   UsersIcon,
   Volume2Icon,
-  WorkflowIcon
-} from "@archesai/ui/components/custom/icons"
+  WorkflowIcon,
+} from "@archesai/ui/components/custom/icons";
 
 export const siteRoutes: SiteRoute[] = [
   {
@@ -23,21 +23,21 @@ export const siteRoutes: SiteRoute[] = [
     href: "/",
     Icon: SquareTerminalIcon,
     section: "Home",
-    title: "Dashboard"
+    title: "Dashboard",
   },
   {
     description: "Browse and manage your artifacts here.",
     href: "/artifacts",
     Icon: ServerIcon,
     section: "Data",
-    title: "Artifacts"
+    title: "Artifacts",
   },
   {
     description: "Explore and run tools.",
     href: "/tools",
     Icon: CpuIcon,
     section: "Build",
-    title: "Tools"
+    title: "Tools",
   },
   {
     description: "View and manage your pipelines.",
@@ -45,21 +45,21 @@ export const siteRoutes: SiteRoute[] = [
     Icon: WorkflowIcon,
     section: "Build",
     showInTabs: true,
-    title: "Pipelines"
+    title: "Pipelines",
   },
   {
     description: "View your previous runs.",
     href: "/runs",
     Icon: PackageCheckIcon,
     section: "Build",
-    title: "History"
+    title: "History",
   },
   {
     description: "Create and manage labels.",
     href: "/labels",
     Icon: TagsIcon,
     section: "Data",
-    title: "Labels"
+    title: "Labels",
   },
 
   {
@@ -67,7 +67,7 @@ export const siteRoutes: SiteRoute[] = [
     href: "/profile",
     Icon: UserIcon,
     section: "Settings",
-    title: "Account"
+    title: "Account",
   },
   {
     children: [
@@ -77,7 +77,7 @@ export const siteRoutes: SiteRoute[] = [
         Icon: Building2Icon,
         section: "Settings",
         showInTabs: true,
-        title: "General"
+        title: "General",
       },
       {
         description: "View and manage your organization's members.",
@@ -85,15 +85,15 @@ export const siteRoutes: SiteRoute[] = [
         Icon: UsersIcon,
         section: "Settings",
         showInTabs: true,
-        title: "Members"
-      }
+        title: "Members",
+      },
     ],
     href: "/organization",
     Icon: Settings2Icon,
     section: "Settings",
-    title: "Settings"
-  }
-]
+    title: "Settings",
+  },
+];
 
 export const toolBaseIcons: Record<
   | "create-embeddings"
@@ -107,13 +107,13 @@ export const toolBaseIcons: Record<
   "extract-text": TextIcon,
   summarize: BookOpenIcon,
   "text-to-image": ImageIcon,
-  "text-to-speech": Volume2Icon
-}
+  "text-to-speech": Volume2Icon,
+};
 
 export const siteMetadata = {
   description:
     "Arches AI is a platform that provides tools to transform data into various forms of content.",
   name: "Arches AI",
   ogImage: "https://ui.shadcn.com/og.jpg",
-  url: "https://archesai.com"
-}
+  url: "https://archesai.com",
+};

@@ -1,39 +1,39 @@
-import type { JSX } from "react"
+import type { JSX } from "react";
 
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router";
 
 import {
   useDeleteUser,
   useGetOneSessionSuspense,
   useGetOneUserSuspense,
-  useRequestPasswordReset
-} from "@archesai/client"
-import { Loader2Icon } from "@archesai/ui/components/custom/icons"
-import { Button } from "@archesai/ui/components/shadcn/button"
+  useRequestPasswordReset,
+} from "@archesai/client";
+import { Loader2Icon } from "@archesai/ui/components/custom/icons";
+import { Button } from "@archesai/ui/components/shadcn/button";
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from "@archesai/ui/components/shadcn/card"
-import { Separator } from "@archesai/ui/components/shadcn/separator"
+  CardTitle,
+} from "@archesai/ui/components/shadcn/card";
+import { Separator } from "@archesai/ui/components/shadcn/separator";
 
-import UserForm from "#components/forms/user-form"
+import UserForm from "#components/forms/user-form";
 
 export const Route = createFileRoute("/_app/profile/")({
-  component: ProfileSecuritySettingsPage
-})
+  component: ProfileSecuritySettingsPage,
+});
 
 export default function ProfileSecuritySettingsPage(): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense("current")
-  const { data: userData } = useGetOneUserSuspense(sessionData.data.userId)
+  const { data: sessionData } = useGetOneSessionSuspense("current");
+  const { data: userData } = useGetOneUserSuspense(sessionData.data.userId);
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
-    useDeleteUser()
+    useDeleteUser();
   const {
     isPending: requestPasswordResetPending,
-    mutateAsync: requestPasswordReset
-  } = useRequestPasswordReset()
+    mutateAsync: requestPasswordReset,
+  } = useRequestPasswordReset();
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,9 +55,9 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
               onClick={async () => {
                 await requestPasswordReset({
                   data: {
-                    email: userData.data.email
-                  }
-                })
+                    email: userData.data.email,
+                  },
+                });
               }}
               size={"sm"}
               type="submit"
@@ -83,8 +83,8 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
               disabled={deactivatePending}
               onClick={async () => {
                 await deactivateAccount({
-                  id: userData.data.id
-                })
+                  id: userData.data.id,
+                });
               }}
               size="sm"
               variant={"destructive"}
@@ -96,5 +96,5 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
         </Card>
       </div>
     </div>
-  )
+  );
 }
