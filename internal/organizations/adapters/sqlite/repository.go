@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/archesai/archesai/internal/organizations/domain"
-	"github.com/archesai/archesai/internal/storage/postgres/generated/sqlite"
+	"github.com/archesai/archesai/internal/storage/database/sqlite"
 	"github.com/google/uuid"
 )
 

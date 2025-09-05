@@ -177,7 +177,7 @@ func (g *Generator) generateStructFields(schema Schema, allSchemas map[string]Sc
 			if refSchema, ok := allSchemas[refName]; ok {
 				if refSchema.Type == "object" || refSchema.Type == "" {
 					// Object type - generate nested struct
-					lines = append(lines, fmt.Sprintf("%s%s: api.%s{", indentStr, fieldName, refName))
+					lines = append(lines, fmt.Sprintf("%s%s: %s{", indentStr, fieldName, refName))
 
 					nestedFields := g.generateStructFields(refSchema, allSchemas, indent+1)
 					if nestedFields != "" {

@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/auth/generated/api"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -74,7 +73,7 @@ func (s *Service) SignUp(ctx context.Context, req *SignUpRequest) (*User, *Token
 	// Create new user with embedded UserEntity
 	now := time.Now()
 	user := &User{
-		UserEntity: api.UserEntity{
+		UserEntity: UserEntity{
 			Id:            uuid.New(),
 			Email:         openapi_types.Email(req.Email),
 			Name:          req.Name,
@@ -101,7 +100,7 @@ func (s *Service) SignUp(ctx context.Context, req *SignUpRequest) (*User, *Token
 	// Create session
 	sessionNow := time.Now()
 	session := &Session{
-		SessionEntity: api.SessionEntity{
+		SessionEntity: SessionEntity{
 			Id:        uuid.New(),
 			UserId:    user.Id.String(),
 			Token:     tokens.RefreshToken,
@@ -149,7 +148,7 @@ func (s *Service) SignIn(ctx context.Context, req *SignInRequest, ipAddress, use
 	// Create session
 	sessionNow := time.Now()
 	session := &Session{
-		SessionEntity: api.SessionEntity{
+		SessionEntity: SessionEntity{
 			Id:                   uuid.New(),
 			UserId:               user.Id.String(),
 			Token:                tokens.RefreshToken,

@@ -2,8 +2,8 @@
 package adapters
 
 import (
-	"github.com/archesai/archesai/internal/auth/generated/api"
-	"github.com/archesai/archesai/internal/storage/postgres/generated/postgresql"
+	"github.com/archesai/archesai/internal/auth/domain"
+	"github.com/archesai/archesai/internal/storage/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	openapi_types "github.com/oapi-codegen/runtime/types"
@@ -33,18 +33,18 @@ func handleNullableTimestamp(ts pgtype.Timestamptz) time.Time {
 	return ts.Time
 }
 
-// AuthUserDBToAPI converts postgresql.User to api.UserEntity
-func AuthUserDBToAPI(from *postgresql.User) api.UserEntity {
-	return api.UserEntity{
+// AuthUserDBToAPI converts postgresql.User to domain.UserEntity
+func AuthUserDBToAPI(from *postgresql.User) domain.UserEntity {
+	return domain.UserEntity{
 		Email: openapi_types.Email(from.Email),
 		Id:    uuid.MustParse(from.Id),
 		Name:  from.Name,
 	}
 }
 
-// AuthSessionDBToAPI converts postgresql.Session to api.SessionEntity
-func AuthSessionDBToAPI(from *postgresql.Session) api.SessionEntity {
-	return api.SessionEntity{
+// AuthSessionDBToAPI converts postgresql.Session to domain.SessionEntity
+func AuthSessionDBToAPI(from *postgresql.Session) domain.SessionEntity {
+	return domain.SessionEntity{
 		ActiveOrganizationId: handleNullableString(from.ActiveOrganizationId),
 		ExpiresAt:            from.ExpiresAt.Format(time.RFC3339),
 		Id:                   uuid.MustParse(from.Id),
@@ -52,15 +52,15 @@ func AuthSessionDBToAPI(from *postgresql.Session) api.SessionEntity {
 	}
 }
 
-// AuthAccountDBToAPI converts postgresql.Account to api.AccountEntity
-func AuthAccountDBToAPI(from *postgresql.Account) api.AccountEntity {
-	return api.AccountEntity{
+// AuthAccountDBToAPI converts postgresql.Account to domain.AccountEntity
+func AuthAccountDBToAPI(from *postgresql.Account) domain.AccountEntity {
+	return domain.AccountEntity{
 		AccessTokenExpiresAt:  handleNullableTimestamp(from.AccessTokenExpiresAt),
 		AccountId:             from.AccountId,
 		Id:                    uuid.MustParse(from.Id),
 		IdToken:               handleNullableString(from.IdToken),
 		Password:              handleNullableString(from.Password),
-		ProviderId:            api.AccountEntityProviderId(from.ProviderId),
+		ProviderId:            domain.AccountEntityProviderId(from.ProviderId),
 		RefreshTokenExpiresAt: handleNullableTimestamp(from.RefreshTokenExpiresAt),
 		UserId:                uuid.MustParse(from.UserId),
 	}

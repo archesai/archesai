@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/storage/postgres/generated/sqlite"
+	"github.com/archesai/archesai/internal/storage/database/sqlite"
 	"github.com/archesai/archesai/internal/workflows/domain"
 	"github.com/google/uuid"
 )

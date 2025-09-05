@@ -3,7 +3,7 @@ adapters:
   # Auth domain adapters
   - name: AuthUserDBToAPI
     from: postgresql.User
-    to: api.UserEntity
+    to: domain.UserEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -12,7 +12,7 @@ adapters:
 
   - name: AuthSessionDBToAPI
     from: postgresql.Session
-    to: api.SessionEntity
+    to: domain.SessionEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -22,13 +22,13 @@ adapters:
 
   - name: AuthAccountDBToAPI
     from: postgresql.Account
-    to: api.AccountEntity
+    to: domain.AccountEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       AccountId: "from.AccountId" # API expects string
       UserId: "uuid.MustParse(from.UserId)" # API expects UUID
-      ProviderId: "api.AccountEntityProviderId(from.ProviderId)"
+      ProviderId: "domain.AccountEntityProviderId(from.ProviderId)"
       IdToken: "handleNullableString(from.IdToken)"
       Password: "handleNullableString(from.Password)"
       AccessTokenExpiresAt: "handleNullableTimestamp(from.AccessTokenExpiresAt)"
@@ -37,11 +37,11 @@ adapters:
   # Organizations domain adapters
   - name: OrganizationDBToAPI
     from: postgresql.Organization
-    to: api.OrganizationEntity
+    to: domain.OrganizationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
-      Plan: "api.OrganizationEntityPlan(from.Plan)"
+      Plan: "domain.OrganizationEntityPlan(from.Plan)"
       BillingEmail: "openapi_types.Email(handleNullableString(from.BillingEmail))"
       Credits: "float32(from.Credits)"
       Metadata: "handleNullableMetadata(from.Metadata)"
@@ -51,7 +51,7 @@ adapters:
   # Workflows domain adapters
   - name: PipelineDBToAPI
     from: postgresql.Pipeline
-    to: api.PipelineEntity
+    to: domain.PipelineEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -59,19 +59,19 @@ adapters:
 
   - name: RunDBToAPI
     from: postgresql.Run
-    to: api.RunEntity
+    to: domain.RunEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       PipelineId: "handleNullableString(from.PipelineId)"
       OrganizationId: "from.OrganizationId"
       ToolId: "from.ToolId"
-      Status: "api.RunEntityStatus(from.Status)"
+      Status: "domain.RunEntityStatus(from.Status)"
       Progress: "float32(from.Progress)"
 
   - name: ToolDBToAPI
     from: postgresql.Tool
-    to: api.ToolEntity
+    to: domain.ToolEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -81,30 +81,30 @@ adapters:
 
   - name: MemberDBToAPI
     from: postgresql.Member
-    to: api.MemberEntity
+    to: domain.MemberEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       UserId: "from.UserId" # API expects string, not UUID
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
-      Role: "api.MemberEntityRole(from.Role)" # Use correct type
+      Role: "domain.MemberEntityRole(from.Role)" # Use correct type
 
   - name: InvitationDBToAPI
     from: postgresql.Invitation
-    to: api.InvitationEntity
+    to: domain.InvitationEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
       OrganizationId: "from.OrganizationId" # API expects string, not UUID
       InviterId: "from.InviterId" # API expects string, not UUID
       Email: "from.Email" # API expects string, not Email type
-      Role: "api.InvitationEntityRole(from.Role)" # Use correct type
+      Role: "domain.InvitationEntityRole(from.Role)" # Use correct type
       ExpiresAt: "from.ExpiresAt.Format(time.RFC3339)" # Format as string
 
   # Content domain adapters
   - name: ArtifactDBToAPI
     from: postgresql.Artifact
-    to: api.ArtifactEntity
+    to: domain.ArtifactEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"
@@ -114,7 +114,7 @@ adapters:
 
   - name: LabelDBToAPI
     from: postgresql.Label
-    to: api.LabelEntity
+    to: domain.LabelEntity
     automap: true
     overrides:
       Id: "uuid.MustParse(from.Id)"

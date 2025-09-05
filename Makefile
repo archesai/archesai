@@ -12,7 +12,7 @@ SERVER_OUTPUT := bin/archesai
 CODEGEN_OUTPUT := bin/codegen
 
 # Database Configuration.
-MIGRATION_PATH := internal/storage/postgres/migrations
+MIGRATION_PATH := internal/storage/database/migrations
 
 # Terminal Colors
 GREEN := \033[0;32m
@@ -95,22 +95,28 @@ generate: generate-sqlc generate-oapi generate-defaults generate-adapters ## Gen
 .PHONY: generate-sqlc
 generate-sqlc: ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/storage/postgres && go generate
+	@cd internal/storage/database && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-oapi
 generate-oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
+	@echo "  Generating domain types..."
 	@for domain in auth organizations workflows content; do \
-		cd internal/$$domain/generated/api && \
+		cd internal/$$domain/domain && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
-	@for component in config health; do \
-		cd internal/$$component/generated/api && \
+	@echo "  Generating HTTP handlers..."
+	@for domain in auth organizations workflows content; do \
+		cd internal/$$domain/adapters/http && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
+	@echo "  Generating config types..."
+	@cd internal/config && \
+		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
+		cd - > /dev/null
 	@echo -e "$(GREEN)✓ OpenAPI generation complete!$(NC)"
 
 .PHONY: generate-defaults

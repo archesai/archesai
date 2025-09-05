@@ -6,13 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archesai/archesai/internal/config/generated/api"
 	"github.com/spf13/viper"
 )
 
 // Config wraps the generated ArchesConfig for easy access
 type Config struct {
-	*api.ArchesConfig
+	*ArchesConfig
 	v *viper.Viper
 }
 
@@ -55,7 +54,7 @@ func setupViper(v *viper.Viper) {
 }
 
 // applyViperOverrides applies configuration overrides from Viper to the config struct
-func applyViperOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyViperOverrides(config *ArchesConfig, v *viper.Viper) {
 	applyAPIOverrides(config, v)
 	applyAuthOverrides(config, v)
 	applyDatabaseOverrides(config, v)
@@ -70,7 +69,7 @@ func applyViperOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	applyBillingOverrides(config, v)
 }
 
-func applyAPIOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyAPIOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("api.host") {
 		config.Api.Host = v.GetString("api.host")
 	}
@@ -84,14 +83,14 @@ func applyAPIOverrides(config *api.ArchesConfig, v *viper.Viper) {
 		config.Api.Validate = v.GetBool("api.validate")
 	}
 	if v.IsSet("api.environment") {
-		config.Api.Environment = api.APIConfigEnvironment(v.GetString("api.environment"))
+		config.Api.Environment = APIConfigEnvironment(v.GetString("api.environment"))
 	}
 	if v.IsSet("api.cors.origins") {
 		config.Api.Cors.Origins = v.GetString("api.cors.origins")
 	}
 }
 
-func applyAuthOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyAuthOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("auth.enabled") {
 		config.Auth.Enabled = v.GetBool("auth.enabled")
 	}
@@ -109,7 +108,7 @@ func applyAuthOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyDatabaseOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyDatabaseOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("database.enabled") {
 		config.Database.Enabled = v.GetBool("database.enabled")
 	}
@@ -117,7 +116,7 @@ func applyDatabaseOverrides(config *api.ArchesConfig, v *viper.Viper) {
 		config.Database.Url = v.GetString("database.url")
 	}
 	if v.IsSet("database.type") {
-		config.Database.Type = api.DatabaseConfigType(v.GetString("database.type"))
+		config.Database.Type = DatabaseConfigType(v.GetString("database.type"))
 	}
 	if v.IsSet("database.max_conns") {
 		config.Database.MaxConns = v.GetInt("database.max_conns")
@@ -139,16 +138,16 @@ func applyDatabaseOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyLoggingOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyLoggingOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("logging.level") {
-		config.Logging.Level = api.LoggingConfigLevel(v.GetString("logging.level"))
+		config.Logging.Level = LoggingConfigLevel(v.GetString("logging.level"))
 	}
 	if v.IsSet("logging.pretty") {
 		config.Logging.Pretty = v.GetBool("logging.pretty")
 	}
 }
 
-func applyRedisOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyRedisOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("redis.enabled") {
 		config.Redis.Enabled = v.GetBool("redis.enabled")
 	}
@@ -163,7 +162,7 @@ func applyRedisOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyStorageOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyStorageOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("storage.enabled") {
 		config.Storage.Enabled = v.GetBool("storage.enabled")
 	}
@@ -181,7 +180,7 @@ func applyStorageOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyInfrastructureOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyInfrastructureOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("infrastructure.namespace") {
 		config.Infrastructure.Namespace = v.GetString("infrastructure.namespace")
 	}
@@ -190,13 +189,13 @@ func applyInfrastructureOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyPlatformOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyPlatformOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("platform.enabled") {
 		config.Platform.Enabled = v.GetBool("platform.enabled")
 	}
 }
 
-func applyIngressOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyIngressOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("ingress.enabled") {
 		config.Ingress.Enabled = v.GetBool("ingress.enabled")
 	}
@@ -205,9 +204,9 @@ func applyIngressOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyIntelligenceOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyIntelligenceOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("intelligence.llm.type") {
-		config.Intelligence.Llm.Type = api.LLMConfigType(v.GetString("intelligence.llm.type"))
+		config.Intelligence.Llm.Type = LLMConfigType(v.GetString("intelligence.llm.type"))
 	}
 	if v.IsSet("intelligence.llm.endpoint") {
 		config.Intelligence.Llm.Endpoint = v.GetString("intelligence.llm.endpoint")
@@ -216,11 +215,11 @@ func applyIntelligenceOverrides(config *api.ArchesConfig, v *viper.Viper) {
 		config.Intelligence.Llm.Token = v.GetString("intelligence.llm.token")
 	}
 	if v.IsSet("intelligence.embedding.type") {
-		config.Intelligence.Embedding.Type = api.EmbeddingConfigType(v.GetString("intelligence.embedding.type"))
+		config.Intelligence.Embedding.Type = EmbeddingConfigType(v.GetString("intelligence.embedding.type"))
 	}
 }
 
-func applyMonitoringOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyMonitoringOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("monitoring.grafana.enabled") {
 		config.Monitoring.Grafana.Enabled = v.GetBool("monitoring.grafana.enabled")
 	}
@@ -229,7 +228,7 @@ func applyMonitoringOverrides(config *api.ArchesConfig, v *viper.Viper) {
 	}
 }
 
-func applyBillingOverrides(config *api.ArchesConfig, v *viper.Viper) {
+func applyBillingOverrides(config *ArchesConfig, v *viper.Viper) {
 	if v.IsSet("billing.enabled") {
 		config.Billing.Enabled = v.GetBool("billing.enabled")
 	}

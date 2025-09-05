@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/organizations/generated/api"
 	"github.com/google/uuid"
 )
 
@@ -31,12 +30,12 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 	// Set default plan if not specified
 	plan := req.Plan
 	if plan == "" {
-		plan = api.OrganizationEntityPlan(DefaultPlan)
+		plan = OrganizationEntityPlan(DefaultPlan)
 	}
 
 	org := &Organization{
-		OrganizationEntity: api.OrganizationEntity{
-			Id:           api.UUID{}, // Will be set by repository
+		OrganizationEntity: OrganizationEntity{
+			Id:           UUID{}, // Will be set by repository
 			Name:         req.Name,
 			BillingEmail: req.BillingEmail,
 			Plan:         plan,
@@ -54,11 +53,11 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 
 	// Create initial owner member
 	member := &Member{
-		MemberEntity: api.MemberEntity{
+		MemberEntity: MemberEntity{
 			Id: uuid.UUID{}, // Will be set by repository
 			// Note: MemberEntity doesn't have UserId field in API
 			OrganizationId: createdOrg.Id.String(),
-			Role:           api.MemberEntityRoleOwner,
+			Role:           MemberEntityRoleOwner,
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},
@@ -142,7 +141,7 @@ func (s *Service) CreateMember(ctx context.Context, req *CreateMemberRequest, or
 	}
 
 	member := &Member{
-		MemberEntity: api.MemberEntity{
+		MemberEntity: MemberEntity{
 			Id: uuid.UUID{}, // Will be set by repository
 			// Note: MemberEntity doesn't have UserId field in API
 			OrganizationId: orgID,
@@ -229,7 +228,7 @@ func (s *Service) CreateInvitation(ctx context.Context, req *CreateInvitationReq
 	expiresAt := time.Now().AddDate(0, 0, 7).Format(time.RFC3339) // 7 days expiry
 
 	invitation := &Invitation{
-		InvitationEntity: api.InvitationEntity{
+		InvitationEntity: InvitationEntity{
 			Id:             uuid.UUID{}, // Will be set by repository
 			OrganizationId: orgID,
 			InviterId:      inviterID,
@@ -269,11 +268,11 @@ func (s *Service) AcceptInvitation(ctx context.Context, id uuid.UUID, _ string) 
 
 	// Create member
 	member := &Member{
-		MemberEntity: api.MemberEntity{
+		MemberEntity: MemberEntity{
 			Id: uuid.UUID{}, // Will be set by repository
 			// Note: MemberEntity doesn't have UserId field
 			OrganizationId: invitation.OrganizationId,
-			Role:           api.MemberEntityRole(invitation.Role),
+			Role:           MemberEntityRole(invitation.Role),
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},

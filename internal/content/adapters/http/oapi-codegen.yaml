@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
+package: http
+output: handler.gen.go
+additional-imports:
+  - package: github.com/archesai/archesai/internal/content/domain
+    alias: .
+generate:
+  echo-server: true
+output-options:
+  skip-prune: true
+  include-tags:
+    - Content

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/archesai/archesai/internal/auth/generated/api"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -24,21 +23,21 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-// User extends the generated API UserEntity with auth-specific fields
+// User extends the generated UserEntity with auth-specific fields
 type User struct {
-	api.UserEntity
+	UserEntity
 	PasswordHash string `json:"-"` // Never expose password hash
 }
 
-// Account extends the generated API AccountEntity with auth-specific fields
+// Account extends the generated AccountEntity with auth-specific fields
 type Account struct {
-	api.AccountEntity
+	AccountEntity
 	Password string `json:"-"` // Store hashed password for local accounts
 }
 
-// Session extends the generated API SessionEntity
+// Session extends the generated SessionEntity
 type Session struct {
-	api.SessionEntity
+	SessionEntity
 }
 
 // Claims represents JWT token claims
@@ -83,12 +82,12 @@ type TokenResponse struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-// NewAccount creates a new account from the API entity
-func NewAccount(entity api.AccountEntity) *Account {
+// NewAccount creates a new account from the entity
+func NewAccount(entity AccountEntity) *Account {
 	return &Account{AccountEntity: entity}
 }
 
-// NewSession creates a new session from the API entity
-func NewSession(entity api.SessionEntity) *Session {
+// NewSession creates a new session from the entity
+func NewSession(entity SessionEntity) *Session {
 	return &Session{SessionEntity: entity}
 }

@@ -7,7 +7,6 @@ import (
 
 	"github.com/archesai/archesai/internal/redis"
 	"github.com/archesai/archesai/internal/workflows/domain"
-	"github.com/archesai/archesai/internal/workflows/generated/api"
 )
 
 // QueueAdapter handles job queueing in Redis
@@ -69,6 +68,6 @@ func (q *QueueAdapter) MoveRun(run *domain.Run, fromStatus, toStatus string) err
 	}
 
 	// Add to new queue with updated status
-	run.Status = api.RunEntityStatus(toStatus)
+	run.Status = domain.RunEntityStatus(toStatus)
 	return q.EnqueueRun(run)
 }

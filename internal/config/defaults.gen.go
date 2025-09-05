@@ -2,238 +2,234 @@
 
 package config
 
-import (
-	"github.com/archesai/archesai/internal/config/generated/api"
-)
-
 // GetDefaultConfig returns a new ArchesConfig with all default values from OpenAPI schema
-func GetDefaultConfig() *api.ArchesConfig {
+func GetDefaultConfig() *ArchesConfig {
 
-	config := &api.ArchesConfig{
-		Api: api.APIConfig{
-			Cors: api.CORSConfig{
+	config := &ArchesConfig{
+		Api: APIConfig{
+			Cors: CORSConfig{
 				Origins: "https://platform.archesai.dev",
 			},
 			Docs: true,
-			Email: api.EmailConfig{
+			Email: EmailConfig{
 				Enabled: false,
 			},
 			Environment: "development",
 			Host:        "0.0.0.0",
-			Image: api.ImageConfig{
+			Image: ImageConfig{
 				PullPolicy: "IfNotPresent",
 				Tag:        "latest",
 			},
 			Port: 3001,
-			Resources: api.ResourceConfig{
-				Limits:   api.ResourceLimits{},
-				Requests: api.ResourceRequests{},
+			Resources: ResourceConfig{
+				Limits:   ResourceLimits{},
+				Requests: ResourceRequests{},
 			},
 			Validate: true,
 		},
-		Auth: api.AuthConfig{
+		Auth: AuthConfig{
 			Enabled: true,
-			Firebase: api.FirebaseAuth{
+			Firebase: FirebaseAuth{
 				Enabled: false,
 			},
-			Local: api.LocalAuth{
+			Local: LocalAuth{
 				AccessTokenTtl:  "15m",
 				Enabled:         true,
 				JwtSecret:       "change-me-in-production",
 				RefreshTokenTtl: "168h",
 			},
-			Twitter: api.TwitterAuth{
+			Twitter: TwitterAuth{
 				Enabled: false,
 			},
 		},
-		Billing: api.BillingConfig{
+		Billing: BillingConfig{
 			Enabled: false,
-			Stripe:  api.StripeConfig{},
+			Stripe:  StripeConfig{},
 		},
-		Database: api.DatabaseConfig{
-			Auth: api.DatabaseAuth{
+		Database: DatabaseConfig{
+			Auth: DatabaseAuth{
 				Database: "archesai-db",
 				Password: "password",
 			},
 			Enabled: true,
-			Image: api.ImageConfig{
+			Image: ImageConfig{
 				PullPolicy: "IfNotPresent",
 				Tag:        "latest",
 			},
 			Managed:  false,
 			MaxConns: 25,
 			MinConns: 5,
-			Persistence: api.PersistenceConfig{
+			Persistence: PersistenceConfig{
 				Enabled: true,
 				Size:    "10Gi",
 			},
-			Resources: api.ResourceConfig{
-				Limits:   api.ResourceLimits{},
-				Requests: api.ResourceRequests{},
+			Resources: ResourceConfig{
+				Limits:   ResourceLimits{},
+				Requests: ResourceRequests{},
 			},
 			RunMigrations: false,
 			Type:          "postgresql",
 			Url:           "postgresql://admin:password@localhost:5432/archesai-db?schema=public",
 		},
-		Infrastructure: api.InfrastructureConfig{
-			Development: api.DevelopmentConfig{
-				Api: api.DevServiceConfig{
+		Infrastructure: InfrastructureConfig{
+			Development: DevelopmentConfig{
+				Api: DevServiceConfig{
 					Enabled: false,
 				},
 				HostIP: "172.18.0.1",
-				Loki: api.DevServiceConfig{
+				Loki: DevServiceConfig{
 					Enabled: false,
 				},
-				Platform: api.DevServiceConfig{
+				Platform: DevServiceConfig{
 					Enabled: false,
 				},
-				Postgres: api.DevServiceConfig{
+				Postgres: DevServiceConfig{
 					Enabled: false,
 				},
-				Redis: api.DevServiceConfig{
+				Redis: DevServiceConfig{
 					Enabled: false,
 				},
 			},
-			Images: api.ImagesConfig{
+			Images: ImagesConfig{
 				ImagePullSecrets: []string{},
 				ImageRegistry:    "",
 			},
-			Migrations: api.MigrationsConfig{
+			Migrations: MigrationsConfig{
 				Enabled: false,
 			},
 			Namespace: "arches-system",
-			ServiceAccount: api.ServiceAccountConfig{
+			ServiceAccount: ServiceAccountConfig{
 				Create: true,
 				Name:   "",
 			},
 		},
-		Ingress: api.IngressConfig{
+		Ingress: IngressConfig{
 			Domain:  "archesai.dev",
 			Enabled: false,
-			Tls: api.TLSConfig{
+			Tls: TLSConfig{
 				Enabled:    true,
 				Issuer:     "letsencrypt-staging",
 				SecretName: "archesai-tls",
 			},
 		},
-		Intelligence: api.IntelligenceConfig{
-			Embedding: api.EmbeddingConfig{
+		Intelligence: IntelligenceConfig{
+			Embedding: EmbeddingConfig{
 				Type: "ollama",
 			},
-			Llm: api.LLMConfig{
+			Llm: LLMConfig{
 				Type: "ollama",
 			},
-			Runpod: api.RunPodConfig{
+			Runpod: RunPodConfig{
 				Enabled: false,
 			},
-			Scraper: api.ScraperConfig{
+			Scraper: ScraperConfig{
 				Enabled: false,
-				Image: api.ImageConfig{
+				Image: ImageConfig{
 					PullPolicy: "IfNotPresent",
 					Tag:        "latest",
 				},
 				Managed: false,
-				Resources: api.ResourceConfig{
-					Limits:   api.ResourceLimits{},
-					Requests: api.ResourceRequests{},
+				Resources: ResourceConfig{
+					Limits:   ResourceLimits{},
+					Requests: ResourceRequests{},
 				},
 			},
-			Speech: api.SpeechConfig{
+			Speech: SpeechConfig{
 				Enabled: false,
 			},
-			Unstructured: api.UnstructuredConfig{
+			Unstructured: UnstructuredConfig{
 				Enabled: false,
-				Image: api.ImageConfig{
+				Image: ImageConfig{
 					PullPolicy: "IfNotPresent",
 					Tag:        "latest",
 				},
 				Managed: false,
-				Resources: api.ResourceConfig{
-					Limits:   api.ResourceLimits{},
-					Requests: api.ResourceRequests{},
+				Resources: ResourceConfig{
+					Limits:   ResourceLimits{},
+					Requests: ResourceRequests{},
 				},
 			},
 		},
-		Logging: api.LoggingConfig{
+		Logging: LoggingConfig{
 			Level:  "info",
 			Pretty: false,
 		},
-		Monitoring: api.MonitoringConfig{
-			Grafana: api.GrafanaConfig{
+		Monitoring: MonitoringConfig{
+			Grafana: GrafanaConfig{
 				Enabled: false,
-				Image: api.ImageConfig{
+				Image: ImageConfig{
 					PullPolicy: "IfNotPresent",
 					Tag:        "latest",
 				},
 				Managed: false,
-				Resources: api.ResourceConfig{
-					Limits:   api.ResourceLimits{},
-					Requests: api.ResourceRequests{},
+				Resources: ResourceConfig{
+					Limits:   ResourceLimits{},
+					Requests: ResourceRequests{},
 				},
 			},
-			Loki: api.LokiConfig{
+			Loki: LokiConfig{
 				Enabled: false,
 				Host:    "http://localhost:3100",
-				Image: api.ImageConfig{
+				Image: ImageConfig{
 					PullPolicy: "IfNotPresent",
 					Tag:        "latest",
 				},
 				Managed: false,
-				Resources: api.ResourceConfig{
-					Limits:   api.ResourceLimits{},
-					Requests: api.ResourceRequests{},
+				Resources: ResourceConfig{
+					Limits:   ResourceLimits{},
+					Requests: ResourceRequests{},
 				},
 			},
 		},
-		Platform: api.PlatformConfig{
+		Platform: PlatformConfig{
 			Enabled: false,
 			Host:    "localhost",
-			Image: api.ImageConfig{
+			Image: ImageConfig{
 				PullPolicy: "IfNotPresent",
 				Tag:        "latest",
 			},
 			Managed: false,
-			Resources: api.ResourceConfig{
-				Limits:   api.ResourceLimits{},
-				Requests: api.ResourceRequests{},
+			Resources: ResourceConfig{
+				Limits:   ResourceLimits{},
+				Requests: ResourceRequests{},
 			},
 		},
-		Redis: api.RedisConfig{
+		Redis: RedisConfig{
 			Auth:    "password",
 			Enabled: false,
 			Host:    "localhost",
-			Image: api.ImageConfig{
+			Image: ImageConfig{
 				PullPolicy: "IfNotPresent",
 				Tag:        "latest",
 			},
 			Managed: false,
-			Persistence: api.PersistenceConfig{
+			Persistence: PersistenceConfig{
 				Enabled: true,
 				Size:    "10Gi",
 			},
 			Port: 6379,
-			Resources: api.ResourceConfig{
-				Limits:   api.ResourceLimits{},
-				Requests: api.ResourceRequests{},
+			Resources: ResourceConfig{
+				Limits:   ResourceLimits{},
+				Requests: ResourceRequests{},
 			},
 		},
-		Storage: api.StorageConfig{
+		Storage: StorageConfig{
 			Accesskey: "minioadmin",
 			Bucket:    "archesai",
 			Enabled:   false,
 			Endpoint:  "http://localhost:9000",
-			Image: api.ImageConfig{
+			Image: ImageConfig{
 				PullPolicy: "IfNotPresent",
 				Tag:        "latest",
 			},
 			Managed: false,
-			Persistence: api.PersistenceConfig{
+			Persistence: PersistenceConfig{
 				Enabled: true,
 				Size:    "10Gi",
 			},
-			Resources: api.ResourceConfig{
-				Limits:   api.ResourceLimits{},
-				Requests: api.ResourceRequests{},
+			Resources: ResourceConfig{
+				Limits:   ResourceLimits{},
+				Requests: ResourceRequests{},
 			},
 			Secretkey: "minioadmin",
 		},
@@ -243,7 +239,7 @@ func GetDefaultConfig() *api.ArchesConfig {
 }
 
 // GetDefaultConfigWithOverrides returns a config with defaults and applies common overrides
-func GetDefaultConfigWithOverrides() *api.ArchesConfig {
+func GetDefaultConfigWithOverrides() *ArchesConfig {
 	config := GetDefaultConfig()
 
 	// Apply common development overrides

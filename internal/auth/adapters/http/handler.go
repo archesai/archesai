@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/archesai/archesai/internal/auth/domain"
-	"github.com/archesai/archesai/internal/auth/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +26,7 @@ func NewHandler(service *domain.Service, logger *slog.Logger) *Handler {
 
 // Register handles user registration (implements ServerInterface)
 func (h *Handler) Register(c echo.Context) error {
-	var req api.RegisterJSONBody
+	var req domain.RegisterJSONBody
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -61,7 +60,7 @@ func (h *Handler) Register(c echo.Context) error {
 
 // Login handles user authentication (implements ServerInterface)
 func (h *Handler) Login(c echo.Context) error {
-	var req api.LoginJSONBody
+	var req domain.LoginJSONBody
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -173,7 +172,7 @@ func (h *Handler) GetOneUser(ctx echo.Context, id uuid.UUID) error {
 func (h *Handler) UpdateUser(ctx echo.Context, id uuid.UUID) error {
 	userID := id
 
-	var req api.UpdateUserJSONRequestBody
+	var req domain.UpdateUserJSONRequestBody
 	if err := ctx.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
 	}
@@ -224,7 +223,7 @@ func (h *Handler) DeleteUser(ctx echo.Context, id uuid.UUID) error {
 }
 
 // FindManyUsers handles listing users with pagination
-func (h *Handler) FindManyUsers(ctx echo.Context, params api.FindManyUsersParams) error {
+func (h *Handler) FindManyUsers(ctx echo.Context, params domain.FindManyUsersParams) error {
 	// Use converter functions for pagination
 	limit, offset := convertPagination(params.Page)
 
@@ -262,7 +261,7 @@ func (h *Handler) RegisterRoutes(e *echo.Group) {
 	// User CRUD routes
 	e.GET("/auth/users", func(ctx echo.Context) error {
 		// Parse query parameters into FindManyUsersParams
-		var params api.FindManyUsersParams
+		var params domain.FindManyUsersParams
 		if err := (&echo.DefaultBinder{}).BindQueryParams(ctx, &params); err != nil {
 			return err
 		}
@@ -294,8 +293,8 @@ func (h *Handler) RegisterRoutes(e *echo.Group) {
 // Helper converter functions
 
 // convertToGeneratedUsers converts a slice of domain Users to generated UserEntity
-func convertToGeneratedUsers(domainUsers []*domain.User) []api.UserEntity {
-	result := make([]api.UserEntity, len(domainUsers))
+func convertToGeneratedUsers(domainUsers []*domain.User) []domain.UserEntity {
+	result := make([]domain.UserEntity, len(domainUsers))
 	for i, u := range domainUsers {
 		result[i] = u.UserEntity
 	}
@@ -303,7 +302,7 @@ func convertToGeneratedUsers(domainUsers []*domain.User) []api.UserEntity {
 }
 
 // convertPagination converts generated pagination params to domain options
-func convertPagination(page api.Page) (limit, offset int32) {
+func convertPagination(page domain.Page) (limit, offset int32) {
 	limit = 50 // default
 	offset = 0 // default
 

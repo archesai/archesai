@@ -3,8 +3,6 @@ package domain
 
 import (
 	"errors"
-
-	"github.com/archesai/archesai/internal/content/generated/api"
 )
 
 // Domain constants
@@ -25,13 +23,13 @@ var (
 
 // Artifact extends the generated API ArtifactEntity with domain-specific fields
 type Artifact struct {
-	api.ArtifactEntity
+	ArtifactEntity
 	// Add any domain-specific fields that aren't in the API
 }
 
 // Label extends the generated API LabelEntity with domain-specific fields
 type Label struct {
-	api.LabelEntity
+	LabelEntity
 	// Add any domain-specific fields that aren't in the API
 }
 
@@ -64,12 +62,12 @@ type UpdateLabelRequest struct {
 }
 
 // NewArtifact creates a new artifact from the API entity
-func NewArtifact(entity api.ArtifactEntity) *Artifact {
+func NewArtifact(entity ArtifactEntity) *Artifact {
 	return &Artifact{ArtifactEntity: entity}
 }
 
 // NewLabel creates a new label from the API entity
-func NewLabel(entity api.LabelEntity) *Label {
+func NewLabel(entity LabelEntity) *Label {
 	return &Label{LabelEntity: entity}
 }
 

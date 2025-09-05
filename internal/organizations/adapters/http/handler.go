@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/archesai/archesai/internal/organizations/domain"
-	"github.com/archesai/archesai/internal/organizations/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -108,7 +107,7 @@ func (h *Handler) FindManyOrganizations(c echo.Context) error {
 	}
 
 	// Convert to API entities
-	data := make([]api.OrganizationEntity, len(orgs))
+	data := make([]domain.OrganizationEntity, len(orgs))
 	for i, org := range orgs {
 		data[i] = org.OrganizationEntity
 	}
@@ -269,7 +268,7 @@ func (h *Handler) FindManyMembers(c echo.Context) error {
 	}
 
 	// Convert to API entities
-	data := make([]api.MemberEntity, len(members))
+	data := make([]domain.MemberEntity, len(members))
 	for i, member := range members {
 		data[i] = member.MemberEntity
 	}
@@ -429,7 +428,7 @@ func (h *Handler) FindManyInvitations(c echo.Context) error {
 	}
 
 	// Convert to API entities
-	data := make([]api.InvitationEntity, len(invitations))
+	data := make([]domain.InvitationEntity, len(invitations))
 	for i, invitation := range invitations {
 		data[i] = invitation.InvitationEntity
 	}

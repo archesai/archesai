@@ -4,8 +4,6 @@ package domain
 import (
 	"errors"
 	"time"
-
-	"github.com/archesai/archesai/internal/workflows/generated/api"
 )
 
 // Domain errors
@@ -23,19 +21,19 @@ var (
 
 // Pipeline extends the generated API PipelineEntity with domain-specific fields
 type Pipeline struct {
-	api.PipelineEntity
+	PipelineEntity
 	// Add any domain-specific fields that aren't in the API
 }
 
 // Run extends the generated API RunEntity with domain-specific fields
 type Run struct {
-	api.RunEntity
+	RunEntity
 	// Add any domain-specific fields that aren't in the API
 }
 
 // Tool extends the generated API ToolEntity with domain-specific fields
 type Tool struct {
-	api.ToolEntity
+	ToolEntity
 	// Add any domain-specific fields that aren't in the API
 }
 
@@ -60,7 +58,7 @@ type CreateRunRequest struct {
 
 // UpdateRunRequest represents a request to update a run
 type UpdateRunRequest struct {
-	Status   *api.RunEntityStatus   `json:"status,omitempty"`
+	Status   *RunEntityStatus       `json:"status,omitempty"`
 	Progress *float32               `json:"progress,omitempty" validate:"omitempty,min=0,max=100"`
 	Output   map[string]interface{} `json:"output,omitempty"`
 }
@@ -80,38 +78,38 @@ type UpdateToolRequest struct {
 }
 
 // NewPipeline creates a new pipeline from the API entity
-func NewPipeline(entity api.PipelineEntity) *Pipeline {
+func NewPipeline(entity PipelineEntity) *Pipeline {
 	return &Pipeline{PipelineEntity: entity}
 }
 
 // NewRun creates a new run from the API entity
-func NewRun(entity api.RunEntity) *Run {
+func NewRun(entity RunEntity) *Run {
 	return &Run{RunEntity: entity}
 }
 
 // NewTool creates a new tool from the API entity
-func NewTool(entity api.ToolEntity) *Tool {
+func NewTool(entity ToolEntity) *Tool {
 	return &Tool{ToolEntity: entity}
 }
 
 // IsCompleted checks if a run is in a completed state
 func (r *Run) IsCompleted() bool {
-	return r.Status == api.COMPLETED || r.Status == api.FAILED
+	return r.Status == COMPLETED || r.Status == FAILED
 }
 
 // IsRunning checks if a run is currently executing
 func (r *Run) IsRunning() bool {
-	return r.Status == api.PROCESSING
+	return r.Status == PROCESSING
 }
 
 // CanStart checks if a run can be started
 func (r *Run) CanStart() bool {
-	return r.Status == api.QUEUED
+	return r.Status == QUEUED
 }
 
 // CanCancel checks if a run can be cancelled
 func (r *Run) CanCancel() bool {
-	return r.Status == api.PROCESSING || r.Status == api.QUEUED
+	return r.Status == PROCESSING || r.Status == QUEUED
 }
 
 // UpdateProgress updates the run's progress and validates the value

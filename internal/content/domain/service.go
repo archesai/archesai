@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/content/generated/api"
 	"github.com/google/uuid"
 )
 
@@ -39,7 +38,7 @@ func (s *Service) CreateArtifact(ctx context.Context, req *CreateArtifactRequest
 	}
 
 	artifact := &Artifact{
-		ArtifactEntity: api.ArtifactEntity{
+		ArtifactEntity: ArtifactEntity{
 			Id:             uuid.UUID{}, // Will be set by repository
 			Name:           name,
 			Text:           req.Text,
@@ -64,7 +63,7 @@ func (s *Service) CreateArtifact(ctx context.Context, req *CreateArtifactRequest
 			if err != nil {
 				// Create label if it doesn't exist
 				newLabel := &Label{
-					LabelEntity: api.LabelEntity{
+					LabelEntity: LabelEntity{
 						Id:             uuid.UUID{}, // Will be set by repository
 						Name:           labelName,
 						OrganizationId: orgID,
@@ -170,7 +169,7 @@ func (s *Service) CreateLabel(ctx context.Context, req *CreateLabelRequest, orgI
 	}
 
 	label := &Label{
-		LabelEntity: api.LabelEntity{
+		LabelEntity: LabelEntity{
 			Id:             uuid.UUID{}, // Will be set by repository
 			Name:           req.Name,
 			OrganizationId: orgID,

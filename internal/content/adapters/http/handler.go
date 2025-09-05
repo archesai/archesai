@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/archesai/archesai/internal/content/domain"
-	"github.com/archesai/archesai/internal/content/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -117,7 +116,7 @@ func (h *Handler) FindManyArtifacts(c echo.Context) error {
 			})
 		}
 
-		data := make([]api.ArtifactEntity, len(artifacts))
+		data := make([]domain.ArtifactEntity, len(artifacts))
 		for i, artifact := range artifacts {
 			data[i] = artifact.ArtifactEntity
 		}
@@ -138,7 +137,7 @@ func (h *Handler) FindManyArtifacts(c echo.Context) error {
 		})
 	}
 
-	data := make([]api.ArtifactEntity, len(artifacts))
+	data := make([]domain.ArtifactEntity, len(artifacts))
 	for i, artifact := range artifacts {
 		data[i] = artifact.ArtifactEntity
 	}

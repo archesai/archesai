@@ -358,10 +358,11 @@ func getTypeName(fullType string) string {
 }
 
 func getTypePrefix(fullType string) string {
-	if strings.Contains(fullType, "api.") {
-		return "api."
-	} else if strings.Contains(fullType, "postgresql.") {
-		return "postgresql."
+	if strings.Contains(fullType, ".") {
+		parts := strings.Split(fullType, ".")
+		if len(parts) > 1 {
+			return parts[0] + "."
+		}
 	}
 	return ""
 }
@@ -378,8 +379,8 @@ func (g *Generator) analyzeAdapters(domain string, adapters []AdapterSpec) Templ
 
 	// Determine required imports
 	imports := []string{
-		fmt.Sprintf(`"github.com/archesai/archesai/internal/%s/generated/api"`, domain),
-		`"github.com/archesai/archesai/internal/storage/postgres/generated/postgresql"`,
+		fmt.Sprintf(`"github.com/archesai/archesai/internal/%s/domain"`, domain),
+		`"github.com/archesai/archesai/internal/storage/database/postgresql"`,
 	}
 
 	// Add conditional imports

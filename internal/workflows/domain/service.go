@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/workflows/generated/api"
 	"github.com/google/uuid"
 )
 
@@ -29,11 +28,11 @@ func (s *Service) CreatePipeline(ctx context.Context, req *CreatePipelineRequest
 	s.logger.Debug("creating pipeline", "name", req.Name, "org", orgID)
 
 	pipeline := &Pipeline{
-		PipelineEntity: api.PipelineEntity{
-			Id:             api.UUID{}, // Will be set by repository
+		PipelineEntity: PipelineEntity{
+			Id:             UUID{}, // Will be set by repository
 			Name:           req.Name,
 			Description:    req.Description,
-			OrganizationId: api.UUID{}, // Convert orgID to UUID
+			OrganizationId: UUID{}, // Convert orgID to UUID
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},
@@ -121,12 +120,12 @@ func (s *Service) CreateRun(ctx context.Context, req *CreateRunRequest, orgID st
 	}
 
 	run := &Run{
-		RunEntity: api.RunEntity{
+		RunEntity: RunEntity{
 			Id:             uuid.UUID{}, // Will be set by repository
 			PipelineId:     pipelineID,
 			OrganizationId: orgID,
 			ToolId:         req.ToolID,
-			Status:         api.QUEUED, // Use QUEUED instead of Pending
+			Status:         QUEUED, // Use QUEUED instead of Pending
 			Progress:       0.0,
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
@@ -163,7 +162,7 @@ func (s *Service) StartRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 		return nil, fmt.Errorf("run cannot be started in current status: %s", run.Status)
 	}
 
-	run.Status = api.PROCESSING
+	run.Status = PROCESSING
 	run.StartedAt = time.Now()
 	run.UpdatedAt = time.Now()
 
@@ -207,7 +206,7 @@ func (s *Service) CompleteRun(ctx context.Context, id uuid.UUID, _ map[string]in
 		return nil, fmt.Errorf("run is not running")
 	}
 
-	run.Status = api.COMPLETED
+	run.Status = COMPLETED
 	run.Progress = 100.0
 	// Note: RunEntity doesn't have Output field in API
 	run.CompletedAt = time.Now()
@@ -233,7 +232,7 @@ func (s *Service) CancelRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 		return nil, fmt.Errorf("run cannot be cancelled in current status: %s", run.Status)
 	}
 
-	run.Status = api.FAILED // Use FAILED for cancelled runs
+	run.Status = FAILED // Use FAILED for cancelled runs
 	run.CompletedAt = time.Now()
 	run.UpdatedAt = time.Now()
 
@@ -269,7 +268,7 @@ func (s *Service) CreateTool(ctx context.Context, req *CreateToolRequest, orgID 
 	s.logger.Debug("creating tool", "name", req.Name, "org", orgID)
 
 	tool := &Tool{
-		ToolEntity: api.ToolEntity{
+		ToolEntity: ToolEntity{
 			Id:             uuid.UUID{}, // Will be set by repository
 			Name:           req.Name,
 			Description:    req.Description,

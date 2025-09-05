@@ -8,7 +8,7 @@ import (
 
 	"github.com/archesai/archesai/internal/auth/adapters"
 	"github.com/archesai/archesai/internal/auth/domain"
-	"github.com/archesai/archesai/internal/storage/postgres/generated/postgresql"
+	"github.com/archesai/archesai/internal/storage/database/postgresql"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"

@@ -2,14 +2,10 @@
 
 package config
 
-import (
-	"github.com/archesai/archesai/internal/config/generated/api"
-)
-
 // GetDefaultConfig returns a new ArchesConfig with all default values from OpenAPI schema
-func GetDefaultConfig() *api.ArchesConfig {
+func GetDefaultConfig() *ArchesConfig {
 
-	config := &api.ArchesConfig{
+	config := &ArchesConfig{
 {{.ConfigFields}}
 	}
 
@@ -17,7 +13,7 @@ func GetDefaultConfig() *api.ArchesConfig {
 }
 
 // GetDefaultConfigWithOverrides returns a config with defaults and applies common overrides
-func GetDefaultConfigWithOverrides() *api.ArchesConfig {
+func GetDefaultConfigWithOverrides() *ArchesConfig {
 	config := GetDefaultConfig()
 	
 	// Apply common development overrides

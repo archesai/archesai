@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/archesai/archesai/internal/workflows/domain"
-	"github.com/archesai/archesai/internal/workflows/generated/api"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -111,7 +110,7 @@ func (h *Handler) FindManyPipelines(c echo.Context) error {
 		})
 	}
 
-	data := make([]api.PipelineEntity, len(pipelines))
+	data := make([]domain.PipelineEntity, len(pipelines))
 	for i, pipeline := range pipelines {
 		data[i] = pipeline.PipelineEntity
 	}
@@ -270,7 +269,7 @@ func (h *Handler) FindManyRuns(c echo.Context) error {
 			})
 		}
 
-		data := make([]api.RunEntity, len(runs))
+		data := make([]domain.RunEntity, len(runs))
 		for i, run := range runs {
 			data[i] = run.RunEntity
 		}
@@ -291,7 +290,7 @@ func (h *Handler) FindManyRuns(c echo.Context) error {
 		})
 	}
 
-	data := make([]api.RunEntity, len(runs))
+	data := make([]domain.RunEntity, len(runs))
 	for i, run := range runs {
 		data[i] = run.RunEntity
 	}
@@ -469,7 +468,7 @@ func (h *Handler) FindManyTools(c echo.Context) error {
 		})
 	}
 
-	data := make([]api.ToolEntity, len(tools))
+	data := make([]domain.ToolEntity, len(tools))
 	for i, tool := range tools {
 		data[i] = tool.ToolEntity
 	}
