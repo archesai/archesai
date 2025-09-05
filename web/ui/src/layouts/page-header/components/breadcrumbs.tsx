@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useLocation } from '@tanstack/react-router'
 
 import {
@@ -9,7 +11,7 @@ import {
   BreadcrumbSeparator
 } from '#components/shadcn/breadcrumb'
 
-export const BreadCrumbs = () => {
+export const BreadCrumbs = (): JSX.Element => {
   const location = useLocation()
 
   // Split the pathname into segments and create breadcrumbs

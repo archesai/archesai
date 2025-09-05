@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import {
@@ -28,7 +29,7 @@ export function DataTablePagination<TData>({
   pageSizeOptions = [10, 20, 30, 40, 50],
   table,
   ...props
-}: DataTablePaginationProps<TData>) {
+}: DataTablePaginationProps<TData>): JSX.Element {
   return (
     <div
       className={cn(

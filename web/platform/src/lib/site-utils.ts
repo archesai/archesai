@@ -8,7 +8,11 @@ export const flattenRoutes = (routes: SiteRoute[]): SiteRoute[] => {
   )
 }
 
-export const getRouteMeta = (pathname: string) => {
+export const getRouteMeta = (pathname: string): {
+  description: string
+  Icon: React.ComponentType<Record<string, unknown>> | undefined
+  title: string
+} => {
   const allRoutes = flattenRoutes(siteRoutes)
   const matched = allRoutes.find((route) => route.href === pathname)
 

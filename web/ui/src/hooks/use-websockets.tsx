@@ -12,7 +12,7 @@ export const useWebsockets = ({
       queryKey: string[]
     }) => Promise<void>
   }
-}) => {
+}): void => {
   const defaultOrgname = 'Arches Platform'
 
   useEffect(() => {

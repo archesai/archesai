@@ -1,4 +1,5 @@
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
+import type { JSX } from 'react'
 
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -66,7 +67,7 @@ type GenericFormProps<
 export function GenericForm<
   CreateDto extends FieldValues,
   UpdateDto extends FieldValues
->(props: GenericFormProps<CreateDto, UpdateDto>) {
+>(props: GenericFormProps<CreateDto, UpdateDto>): JSX.Element {
   const {
     description,
     fields,

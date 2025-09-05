@@ -1,5 +1,6 @@
 import type { CreateLabelBody, UpdateLabelBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
+import type { JSX } from 'react'
 
 import {
   useCreateLabel,
@@ -10,7 +11,7 @@ import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 import { LABEL_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function LabelForm({ id }: { id?: string }) {
+export default function LabelForm({ id }: { id?: string }): JSX.Element {
   const { mutateAsync: updateLabel } = useUpdateLabel()
   const { mutateAsync: createLabel } = useCreateLabel()
   const { data: existingLabel } = useGetOneLabelSuspense(id)

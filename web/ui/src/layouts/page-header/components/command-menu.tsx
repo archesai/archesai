@@ -1,7 +1,8 @@
+import type { SiteRoute } from '#lib/site-config.interface'
+import type { JSX } from 'react'
+
 import { useCallback, useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
-
-import type { SiteRoute } from '#lib/site-config.interface'
 
 import { LaptopIcon, MoonIcon, SunIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
@@ -30,7 +31,7 @@ export function CommandMenu({
   ...props
 }: DialogProps & {
   siteRoutes: SiteRoute[]
-}) {
+}): JSX.Element {
   const [open, setOpen] = useState(false)
   const { setTheme } = useTheme()
 

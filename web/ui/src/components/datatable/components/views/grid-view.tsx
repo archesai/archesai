@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import { useState } from 'react'
@@ -22,7 +23,7 @@ export function GridView<TEntity extends BaseEntity>({
   gridHover,
   icon,
   table
-}: GridViewProps<TEntity>) {
+}: GridViewProps<TEntity>): JSX.Element {
   const data = table.getRowModel().rows
   const [hover, setHover] = useState(-1)
 

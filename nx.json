@@ -31,8 +31,8 @@
     },
     "lint": {
       "cache": true,
-      "dependsOn": ["^lint", "typecheck"],
-      "inputs": ["default", "^default"],
+      "dependsOn": ["^lint"],
+      "inputs": ["default"],
       "outputs": []
     },
     "start": {

@@ -1,4 +1,9 @@
-export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
+import type { JSX } from "react";
+
+export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }: {
+  scale?: number
+  size?: 'lg' | 'sm'
+}): JSX.Element {
   const content =
     size === 'sm' ?
       <div className='text-primary'>
@@ -14,7 +19,7 @@ export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }) {
   return content
 }
 
-const LargeLogo = ({ scale }: { scale: number }) => {
+const LargeLogo = ({ scale }: { scale: number }): JSX.Element => {
   return (
     <svg
       height={25 * scale}
@@ -77,7 +82,7 @@ const LargeLogo = ({ scale }: { scale: number }) => {
   )
 }
 
-const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }) => {
+const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }): JSX.Element => {
   return (
     <svg
       className='transition-all'

@@ -18,23 +18,24 @@ export const Route = createFileRoute('/_app/artifacts/$artifactId/')({
 
 export default function ArtifactDetailsPage(): JSX.Element {
   const params = Route.useParams()
+  const artifactId = params.artifactId
 
   return (
     <div className='flex h-full w-full gap-4'>
       {/*LEFT SIDE*/}
       <Card>
         <Suspense>
-          <ArtifactDetailsHeader artifactId={params.artifactId} />
+          <ArtifactDetailsHeader artifactId={artifactId} />
         </Suspense>
         <Suspense>
-          <ArtifactDetailsBody artifactId={params.artifactId} />
+          <ArtifactDetailsBody artifactId={artifactId} />
         </Suspense>
       </Card>
 
       {/*RIGHT SIDE*/}
       <Card className='w-1/2 overflow-hidden'>
         <Suspense>
-          <ArtifactViewerWrapper artifactId={params.artifactId} />
+          <ArtifactViewerWrapper artifactId={artifactId} />
         </Suspense>
       </Card>
     </div>

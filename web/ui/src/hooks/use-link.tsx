@@ -82,7 +82,7 @@ export function buildTanStackProps(
     href: string
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
   }
-) {
+): TanStackLinkProps {
   const {
     className,
     disabled,
@@ -240,7 +240,17 @@ export const useLinkComponent = (): LinkComponent => {
 }
 
 // Hook to access full context
-export const useLinkContext = () => {
+export const useLinkContext = (): {
+  hasProvider: boolean
+  isExternalUrl: (url: string) => boolean
+  Link: LinkComponent
+  trackEvent: (
+    category: string,
+    action: string,
+    label?: string,
+    value?: number
+  ) => void
+} => {
   const context = useContext(LinkContext)
   return {
     hasProvider: !!context,

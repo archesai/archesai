@@ -1,9 +1,10 @@
+import type { JSX } from 'react'
 import { GridIcon, ListIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 import { useToggleView } from '#hooks/use-toggle-view'
 import { cn } from '#lib/utils'
 
-export function ViewToggle() {
+export function ViewToggle(): JSX.Element {
   const { setView, view } = useToggleView()
   return (
     <div className='flex gap-2'>

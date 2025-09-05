@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Column, Table } from '@tanstack/react-table'
 
 import * as React from 'react'
@@ -84,7 +85,7 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
   align = 'start',
   table,
   ...props
-}: DataTableFilterMenuProps<TData>) {
+}: DataTableFilterMenuProps<TData>): JSX.Element {
   const id = React.useId()
 
   const columns = React.useMemo(() => {

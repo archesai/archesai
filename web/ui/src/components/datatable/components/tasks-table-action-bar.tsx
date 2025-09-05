@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import * as React from 'react'
@@ -27,7 +28,7 @@ interface TableActionBarProps<TEntity extends BaseEntity> {
 
 export function TasksTableActionBar<TEntity extends BaseEntity>({
   table
-}: TableActionBarProps<TEntity>) {
+}: TableActionBarProps<TEntity>): JSX.Element {
   const rows = table.getFilteredSelectedRowModel().rows
   const [isPending, startTransition] = React.useTransition()
   const [currentAction, setCurrentAction] = React.useState<Action | null>(null)

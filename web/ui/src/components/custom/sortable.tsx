@@ -11,6 +11,7 @@ import type {
   UniqueIdentifier
 } from '@dnd-kit/core'
 import type { SortableContextProps } from '@dnd-kit/sortable'
+import type { JSX } from 'react'
 
 import {
   createContext,
@@ -113,7 +114,7 @@ type SortableRootProps<T> = DndContextProps &
     value: T[]
   }
 
-function SortableRoot<T>(props: SortableRootProps<T>) {
+function SortableRoot<T>(props: SortableRootProps<T>): JSX.Element {
   const {
     accessibility,
     collisionDetection,
@@ -306,7 +307,7 @@ function SortableRoot<T>(props: SortableRootProps<T>) {
     <SortableRootContext.Provider
       value={contextValue as SortableRootContextValue<unknown>}
     >
-      {/* @ts-ignore */}
+      {/* @ts-ignore FIXME */}
       <DndContext
         collisionDetection={collisionDetection ?? config.collisionDetection}
         modifiers={modifiers ?? config.modifiers}
@@ -360,7 +361,7 @@ const SortableContent = forwardRef<HTMLDivElement, SortableContentProps>(
 
     return (
       <SortableContentContext.Provider value={true}>
-        {/* @ts-ignore */}
+        {/* @ts-ignore FIXME */}
         <SortableContext
           items={context.items}
           strategy={strategyProp ?? context.strategy}
@@ -444,7 +445,7 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
       setNodeRef,
       transform,
       transition
-      // @ts-ignore
+      // @ts-ignore FIXME
     } = useSortable({ disabled, id: value })
 
     const composedRef = useComposedRefs(forwardedRef, (node) => {
@@ -462,7 +463,7 @@ const SortableItem = forwardRef<HTMLDivElement, SortableItemProps>(
     }, [transform, transition, style])
 
     const itemContext = useMemo<SortableItemContextValue>(
-      // @ts-ignore
+      // @ts-ignore FIXME
       () => ({
         attributes,
         disabled,
@@ -575,7 +576,7 @@ interface SortableOverlayProps
   container?: DocumentFragment | Element | null
 }
 
-function SortableOverlay(props: SortableOverlayProps) {
+function SortableOverlay(props: SortableOverlayProps): JSX.Element | null {
   const { children, container: containerProp, ...overlayProps } = props
 
   const context = useSortableContext(OVERLAY_NAME)
@@ -590,7 +591,7 @@ function SortableOverlay(props: SortableOverlayProps) {
   if (!container) return null
 
   return ReactDOM.createPortal(
-    // @ts-ignore
+    // @ts-ignore FIXME
     <DragOverlay
       className={cn(!context.flatCursor && 'cursor-grabbing')}
       dropAnimation={dropAnimation}

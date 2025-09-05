@@ -1,4 +1,5 @@
 import type { SiteRoute } from '#lib/site-config.interface'
+import type { JSX } from 'react'
 
 import { UserButton } from '#components/custom/user-button'
 import { Separator } from '#components/shadcn/separator'
@@ -11,7 +12,7 @@ export interface PageHeaderProps {
   siteRoutes: SiteRoute[]
 }
 
-export const PageHeader = ({ siteRoutes }: PageHeaderProps) => {
+export const PageHeader = ({ siteRoutes }: PageHeaderProps): JSX.Element => {
   return (
     <header className='flex h-16 shrink-0 justify-between px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12'>
       <div className='flex items-center justify-start gap-2'>

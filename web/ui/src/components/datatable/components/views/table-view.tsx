@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table as ReactTable } from '@tanstack/react-table'
 
 import { flexRender } from '@tanstack/react-table'
@@ -21,7 +22,7 @@ export interface TableViewProps<TEntity extends BaseEntity> {
 
 export function TableView<TEntity extends BaseEntity>(
   props: TableViewProps<TEntity>
-) {
+): JSX.Element {
   const columns = props.table.getAllColumns()
   return (
     <div>

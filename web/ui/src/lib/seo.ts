@@ -8,20 +8,26 @@ export const seo = ({
   image?: string
   keywords?: string
   title: string
-}) => {
+}): {
+  content?: string
+  name?: string
+  title?: string
+}[] => {
   const tags = [
     { title },
-    { content: description, name: 'description' },
-    { content: keywords, name: 'keywords' },
+    ...(description ? [{ content: description, name: 'description' }] : []),
+    ...(keywords ? [{ content: keywords, name: 'keywords' }] : []),
 
     { content: title, name: 'twitter:title' },
-    { content: description, name: 'twitter:description' },
+    ...(description ?
+      [{ content: description, name: 'twitter:description' }]
+    : []),
     { content: 'https://www.archesai.com/', name: 'twitter:url' },
     { content: '@archesai', name: 'twitter:creator' },
     { content: '@archesai', name: 'twitter:site' },
 
     { content: title, name: 'og:title' },
-    { content: description, name: 'og:description' },
+    ...(description ? [{ content: description, name: 'og:description' }] : []),
     { content: 'https://www.archesai.com/', name: 'og:url' },
     { content: 'website', name: 'og:type' },
     ...(image ?

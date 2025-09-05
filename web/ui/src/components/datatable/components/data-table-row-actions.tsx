@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/table-core'
 
 import type { BaseEntity } from '#types/entities'
@@ -24,7 +25,7 @@ export interface DataTableRowActionsProps<TEntity extends BaseEntity> {
 
 export function DataTableRowActions<TEntity extends BaseEntity>(
   props: DataTableRowActionsProps<TEntity>
-) {
+): JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

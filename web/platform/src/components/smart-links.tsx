@@ -84,14 +84,14 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   )
 
   // Handle search params
-  const linkSearch = useMemo(() => {
+  const linkSearch = useMemo<boolean | Record<string, unknown> | undefined>(() => {
     if (preserveSearch && search === undefined) {
       return true
     }
     if (resetSearch) {
       return {}
     }
-    return search
+    return search as Record<string, unknown> | undefined
   }, [search, preserveSearch, resetSearch])
 
   // Build CSS classes

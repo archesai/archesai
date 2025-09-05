@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useRef, useState } from 'react'
 
 import {
@@ -15,7 +16,7 @@ import { Card } from '#components/shadcn/card'
 import { Progress } from '#components/shadcn/progress'
 import { cn } from '#lib/utils'
 
-export default function ImportCard() {
+export default function ImportCard(): JSX.Element {
   //   {
   //   cb
   // }: {

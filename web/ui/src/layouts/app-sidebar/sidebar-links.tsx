@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { Link, useLocation, useRouter } from '@tanstack/react-router'
 
 import type { PageHeaderProps } from '#layouts/page-header/page-header'
@@ -20,7 +22,7 @@ import {
   SidebarMenuSubItem
 } from '#components/shadcn/sidebar'
 
-export function SidebarLinks({ siteRoutes }: PageHeaderProps) {
+export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
   const router = useRouter()
   const pathname = useLocation().pathname
   const sections = Array.from(new Set(siteRoutes.map((route) => route.section)))

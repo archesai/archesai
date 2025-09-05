@@ -1,5 +1,6 @@
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
+import type { JSX } from 'react'
 
 import {
   createMember,
@@ -19,7 +20,7 @@ import {
 } from '@archesai/ui/components/shadcn/select'
 import { MEMBER_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function MemberForm({ id }: { id?: string }) {
+export default function MemberForm({ id }: { id?: string }): JSX.Element {
   const { data: sessionData } = useGetOneSessionSuspense('current')
   const memberQuery = useGetOneMemberSuspense(
     sessionData.data.activeOrganizationId,

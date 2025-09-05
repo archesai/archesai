@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { Link } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
@@ -9,7 +11,7 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 
-export default function NotFound({ children }: { children?: React.ReactNode }) {
+export default function NotFound({ children }: { children?: React.ReactNode }): JSX.Element {
   return (
     <div className='flex min-h-screen items-center justify-center p-4'>
       <Card className='w-full max-w-md text-center'>

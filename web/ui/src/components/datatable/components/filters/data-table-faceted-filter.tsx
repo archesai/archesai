@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Column } from '@tanstack/react-table'
 
 import * as React from 'react'
@@ -40,7 +41,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   multiple,
   options,
   title
-}: DataTableFacetedFilterProps<TData, TValue>) {
+}: DataTableFacetedFilterProps<TData, TValue>): JSX.Element {
   const [open, setOpen] = React.useState(false)
 
   const columnFilterValue = column?.getFilterValue()

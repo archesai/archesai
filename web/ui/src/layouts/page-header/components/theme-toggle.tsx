@@ -1,9 +1,11 @@
+import type { JSX } from 'react'
+
 import { useTheme } from 'next-themes'
 
 import { MoonIcon, SunIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 
-export function ThemeToggle() {
+export function ThemeToggle(): JSX.Element {
   const { setTheme, theme } = useTheme()
 
   return (

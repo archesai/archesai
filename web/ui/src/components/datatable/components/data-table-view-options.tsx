@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import type { BaseEntity } from '#types/entities'
@@ -31,7 +32,7 @@ interface DataTableViewOptionsProps<TEntity extends BaseEntity> {
 
 export function DataTableViewOptions<TEntity extends BaseEntity>(
   props: DataTableViewOptionsProps<TEntity>
-) {
+): JSX.Element {
   const columns = props.table
     .getAllColumns()
     .filter(

@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Column } from '@tanstack/react-table'
 
 import { useCallback, useId, useMemo } from 'react'
@@ -30,7 +31,7 @@ type RangeValue = [number, number]
 export function DataTableSliderFilter<TData>({
   column,
   title
-}: DataTableSliderFilterProps<TData>) {
+}: DataTableSliderFilterProps<TData>): JSX.Element {
   const id = useId()
 
   const columnFilterValue =

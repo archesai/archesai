@@ -13,6 +13,7 @@ import { DefaultCatchBoundary } from '#components/default-catch-boundary'
 import NotFound from '#components/not-found'
 import { routeTree } from '#routeTree.gen'
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createRouter() {
   if (typeof document !== 'undefined') {
     notifyManager.setScheduler(window.requestAnimationFrame)

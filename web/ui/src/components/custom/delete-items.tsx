@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
@@ -28,7 +30,7 @@ interface DeleteItemsProps<TEntity extends BaseEntity>
 
 export const DeleteItems = <TEntity extends BaseEntity>(
   props: DeleteItemsProps<TEntity>
-) => {
+): JSX.Element => {
   const [isDeletePending, startDeleteTransition] = useTransition()
 
   function onDelete() {

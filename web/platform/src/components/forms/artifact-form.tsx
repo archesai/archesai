@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useState } from 'react'
 
 import type { CreateArtifactBody, UpdateArtifactBody } from '@archesai/client'
@@ -20,7 +22,7 @@ import {
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
 import { ARTIFACT_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function ArtifactForm({ id }: { id?: string }) {
+export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
 
   const { data: existingContentResponse, error } = useGetOneArtifactSuspense(id)

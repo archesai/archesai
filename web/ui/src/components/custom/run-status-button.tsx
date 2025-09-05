@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useState } from 'react'
 
 import type { RunEntity } from '#types/entities'
@@ -22,7 +23,7 @@ export const StatusTypeEnumButton = ({
   onClick?: () => void
   run: RunEntity
   size?: 'lg' | 'sm'
-}) => {
+}): JSX.Element => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const renderIcon = () => {

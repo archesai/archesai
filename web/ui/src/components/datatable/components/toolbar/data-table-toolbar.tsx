@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Column, Table } from '@tanstack/react-table'
 
 import { useCallback, useMemo } from 'react'
@@ -25,7 +26,7 @@ interface DataTableToolbarFilterProps<TData> {
 
 export function DataTableToolbar<TEntity extends BaseEntity>(
   props: DataTableToolbarProps<TEntity>
-) {
+): JSX.Element {
   const isFiltered = props.table.getState().columnFilters.length > 0
 
   const columns = useMemo(

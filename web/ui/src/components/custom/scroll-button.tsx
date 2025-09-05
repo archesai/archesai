@@ -1,9 +1,10 @@
+import type { JSX } from 'react'
 import { useEffect, useState } from 'react'
 
 import { ArrowUpToLineIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
 
-export const ScrollButton = () => {
+export const ScrollButton = (): JSX.Element => {
   const [showTopBtn, setShowTopBtn] = useState(false)
 
   useEffect(() => {

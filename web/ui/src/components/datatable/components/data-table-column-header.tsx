@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Column } from '@tanstack/react-table'
 
 import {
@@ -26,7 +27,7 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
   column,
   title
-}: DataTableColumnHeaderProps<TData, TValue>) {
+}: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
   if (!column.getCanSort()) {
     return <div className={cn(className, 'text-xs')}>{title}</div>
   }

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { onlineManager } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-export function useOfflineIndicator() {
+export function useOfflineIndicator(): void {
   useEffect(() => {
     return onlineManager.subscribe(() => {
       if (onlineManager.isOnline()) {

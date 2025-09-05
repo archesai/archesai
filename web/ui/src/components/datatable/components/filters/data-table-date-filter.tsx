@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { Column } from '@tanstack/react-table'
 import type { DateRange } from 'react-day-picker'
 
@@ -26,7 +27,7 @@ export function DataTableDateFilter<TData>({
   column,
   multiple,
   title
-}: DataTableDateFilterProps<TData>) {
+}: DataTableDateFilterProps<TData>): JSX.Element {
   const columnFilterValue = column.getFilterValue()
 
   const selectedDates = useMemo<DateSelection>(() => {

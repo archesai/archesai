@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { toast } from 'sonner'
 
 import { ArchesLogo } from '#components/custom/arches-logo'
@@ -51,7 +53,7 @@ export function OrganizationButton({
   memberships,
   onUpdateSession,
   session
-}: OrganizationButtonProps) {
+}: OrganizationButtonProps): JSX.Element {
   const { isMobile } = useSidebar()
 
   return (

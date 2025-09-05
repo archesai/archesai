@@ -24,7 +24,11 @@ const setCookie = (name: string, value: string, days = 30) => {
 
 export const useToggleView = ({
   defaultView = 'table'
-}: { defaultView?: ViewType } = {}) => {
+}: { defaultView?: ViewType } = {}): {
+  setView: (newView: ViewType) => void
+  toggleView: () => void
+  view: ViewType
+} => {
   // Initialize from cookie or use default
   const getInitialView = (): ViewType => {
     const savedView = getCookie('viewType') as null | ViewType

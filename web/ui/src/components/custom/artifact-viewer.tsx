@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 interface ArtifactViewerProps {
   artifact: {
     mimeType: string
@@ -5,7 +7,7 @@ interface ArtifactViewerProps {
   }
 }
 
-export function ArtifactViewer({ artifact }: ArtifactViewerProps) {
+export function ArtifactViewer({ artifact }: ArtifactViewerProps): JSX.Element | null {
   let hoverContent: React.ReactNode = null
   if (
     artifact.mimeType.startsWith('video/') ||

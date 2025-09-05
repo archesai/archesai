@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
@@ -73,7 +74,7 @@ export function UserButton({
   onUpdateUser,
   sessionData,
   size = 'lg'
-}: UserButtonProps) {
+}: UserButtonProps): JSX.Element {
   const defaultOrgname = 'Arches Platform'
   const { isMobile } = useSidebar()
   const navigation = useNavigate()

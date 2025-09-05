@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import {
   createContext,
   useCallback,
@@ -52,7 +54,7 @@ interface FacetedProps<Multiple extends boolean = false>
 
 function Faceted<Multiple extends boolean = false>(
   props: FacetedProps<Multiple>
-) {
+): JSX.Element {
   const {
     children,
     multiple = false,
@@ -121,7 +123,7 @@ function Faceted<Multiple extends boolean = false>(
   )
 }
 
-function FacetedBadgeList(props: FacetedBadgeListProps) {
+function FacetedBadgeList(props: FacetedBadgeListProps): JSX.Element {
   const {
     badgeClassName,
     className,
@@ -183,7 +185,7 @@ function FacetedBadgeList(props: FacetedBadgeListProps) {
   )
 }
 
-function FacetedContent(props: React.ComponentProps<typeof PopoverContent>) {
+function FacetedContent(props: React.ComponentProps<typeof PopoverContent>): JSX.Element {
   const { children, className, ...contentProps } = props
 
   return (
@@ -200,7 +202,7 @@ function FacetedContent(props: React.ComponentProps<typeof PopoverContent>) {
   )
 }
 
-function FacetedTrigger(props: React.ComponentProps<typeof PopoverTrigger>) {
+function FacetedTrigger(props: React.ComponentProps<typeof PopoverTrigger>): JSX.Element {
   const { children, className, ...triggerProps } = props
 
   return (
@@ -233,7 +235,7 @@ interface FacetedItemProps extends React.ComponentProps<typeof CommandItem> {
   value: string
 }
 
-function FacetedItem(props: FacetedItemProps) {
+function FacetedItem(props: FacetedItemProps): JSX.Element {
   const { children, className, onSelect, value, ...itemProps } = props
   const context = useFacetedContext('FacetedItem')
 

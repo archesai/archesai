@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
 
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
@@ -40,7 +41,7 @@ function DataTableActionBar<TData>({
   table,
   visible: visibleProp,
   ...props
-}: DataTableActionBarProps<TData>) {
+}: DataTableActionBarProps<TData>): JSX.Element | null {
   const [mounted, setMounted] = useState(false)
 
   useLayoutEffect(() => {
@@ -99,7 +100,7 @@ function DataTableActionBarAction({
   size = 'sm',
   tooltip,
   ...props
-}: DataTableActionBarActionProps) {
+}: DataTableActionBarActionProps): JSX.Element {
   const trigger = (
     <Button
       className={cn(
@@ -135,7 +136,7 @@ function DataTableActionBarAction({
 
 function DataTableActionBarSelection<TData>({
   table
-}: DataTableActionBarSelectionProps<TData>) {
+}: DataTableActionBarSelectionProps<TData>): JSX.Element {
   const onClearSelection = useCallback(() => {
     table.toggleAllRowsSelected(false)
   }, [table])

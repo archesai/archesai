@@ -1,5 +1,6 @@
 'use no memo'
 
+import type { JSX } from 'react'
 import type { ColumnSort, SortDirection, Table } from '@tanstack/react-table'
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
@@ -61,7 +62,7 @@ interface DataTableSortListProps<TData>
 export function DataTableSortList<TData>({
   table,
   ...props
-}: DataTableSortListProps<TData>) {
+}: DataTableSortListProps<TData>): JSX.Element {
   const id = useId()
   const labelId = useId()
   const descriptionId = useId()

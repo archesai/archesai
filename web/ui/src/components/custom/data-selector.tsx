@@ -1,4 +1,5 @@
 import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
+import type { JSX } from 'react'
 
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
@@ -48,7 +49,7 @@ export function DataSelector<TItem extends BaseEntity>({
   selectedData,
   setSelectedData,
   useFindMany
-}: DataSelectorProps<TItem>) {
+}: DataSelectorProps<TItem>): JSX.Element {
   const {
     data: { data }
   } = useSuspenseQuery(useFindMany)

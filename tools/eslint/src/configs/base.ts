@@ -55,7 +55,7 @@ const base: ConfigArray = tseslint.config(
         'error',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
       ],
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-misused-promises': [
         2,

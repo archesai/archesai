@@ -1,6 +1,7 @@
-import { toast } from 'sonner'
-
 import type { UserEntity } from '#types/entities'
+import type { JSX } from 'react'
+
+import { toast } from 'sonner'
 
 import { RocketIcon } from '#components/custom/icons'
 import { Alert, AlertTitle } from '#components/shadcn/alert'
@@ -13,7 +14,7 @@ export interface VerifyEmailAlertProps {
 export function VerifyEmailAlert({
   onRequestEmailVerification,
   user
-}: VerifyEmailAlertProps) {
+}: VerifyEmailAlertProps): JSX.Element | null {
   const handleRequestEmailVerification = async () => {
     try {
       await onRequestEmailVerification()

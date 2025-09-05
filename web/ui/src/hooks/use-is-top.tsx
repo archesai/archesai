@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function useIsTop() {
+export function useIsTop(): boolean {
   const [isTop, setIsTop] = useState(true)
 
   useEffect(() => {

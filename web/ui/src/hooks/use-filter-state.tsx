@@ -16,7 +16,31 @@ import type { FilterOperator } from '#types/simple-data-table'
  * Simplified filter state management that supports your complex nested filters
  * but removes unnecessary frontend complexity.
  */
-export function useFilterState<TEntity extends BaseEntity>() {
+export function useFilterState<TEntity extends BaseEntity>(): {
+  addCondition: (condition: FilterCondition) => void;
+  addGroup: (operator: 'and' | 'or', conditions: FilterCondition[]) => void;
+  addSort: (field: keyof TEntity, order: 'asc' | 'desc') => void;
+  filter: FilterNode | undefined;
+  hasFilters: boolean;
+  hasSorting: boolean;
+  isEmpty: boolean;
+  pageNumber: number;
+  pageSize: number;
+  removeCondition: (field: keyof TEntity) => void;
+  resetAll: () => void;
+  resetFilters: () => void;
+  resetPagination: () => void;
+  resetSorting: () => void;
+  searchQuery: SearchQuery;
+  setCondition: (field: keyof TEntity, operator: FilterOperator, value: FilterValue) => void;
+  setFilter: (newFilter: FilterNode | undefined) => void;
+  setPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  setSearchQuery: (query: SearchQuery) => void;
+  setSorting: (newSorting: SortingState) => SortingState;
+  sorting: SortingState;
+  wrapInGroup: (operator: 'and' | 'or') => void;
+} {
   const search = useSearch({ strict: false }) as unknown
   const navigate = useNavigate()
 

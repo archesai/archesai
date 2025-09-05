@@ -3,11 +3,11 @@ import type { ClassValue } from 'clsx'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
-export function stringToColor(str: string) {
+export function stringToColor(str: string): string {
   if (str.includes('video')) {
     return 'text-green-600'
   } else if (
@@ -36,7 +36,7 @@ export function stringToColor(str: string) {
   }
 }
 
-export function toSentenceCase(str: string) {
+export function toSentenceCase(str: string): string {
   return str
     .replace(/_/g, ' ') // Replace underscores with spaces
     .replace(/([A-Z])/g, ' $1') // Add space before capital letters

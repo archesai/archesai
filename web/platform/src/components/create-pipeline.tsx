@@ -55,7 +55,7 @@ function RunFormNode({ data }: { data: PipelineStepEntity }) {
 const initialNodes: Node[] = []
 const initialEdges: Edge[] = []
 
-export const CreatePipelineContent = () => {
+export const CreatePipelineContent = (): JSX.Element => {
   const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
