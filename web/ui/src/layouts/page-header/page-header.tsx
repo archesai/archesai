@@ -1,5 +1,6 @@
-import type { SiteRoute } from '#lib/site-config.interface'
 import type { JSX } from 'react'
+
+import type { SiteRoute } from '#lib/site-config.interface'
 
 import { UserButton } from '#components/custom/user-button'
 import { Separator } from '#components/shadcn/separator'

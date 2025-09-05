@@ -185,7 +185,9 @@ function FacetedBadgeList(props: FacetedBadgeListProps): JSX.Element {
   )
 }
 
-function FacetedContent(props: React.ComponentProps<typeof PopoverContent>): JSX.Element {
+function FacetedContent(
+  props: React.ComponentProps<typeof PopoverContent>
+): JSX.Element {
   const { children, className, ...contentProps } = props
 
   return (
@@ -202,7 +204,9 @@ function FacetedContent(props: React.ComponentProps<typeof PopoverContent>): JSX
   )
 }
 
-function FacetedTrigger(props: React.ComponentProps<typeof PopoverTrigger>): JSX.Element {
+function FacetedTrigger(
+  props: React.ComponentProps<typeof PopoverTrigger>
+): JSX.Element {
   const { children, className, ...triggerProps } = props
 
   return (

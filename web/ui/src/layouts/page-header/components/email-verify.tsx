@@ -1,7 +1,8 @@
-import type { UserEntity } from '#types/entities'
 import type { JSX } from 'react'
 
 import { toast } from 'sonner'
+
+import type { UserEntity } from '#types/entities'
 
 import { RocketIcon } from '#components/custom/icons'
 import { Alert, AlertTitle } from '#components/shadcn/alert'

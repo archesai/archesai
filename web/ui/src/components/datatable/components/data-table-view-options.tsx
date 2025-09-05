@@ -1,7 +1,7 @@
 'use no memo'
 
-import type { JSX } from 'react'
 import type { Table } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 import type { BaseEntity } from '#types/entities'
 

@@ -1,6 +1,7 @@
+import type { JSX } from 'react'
+
 import type { CreateMemberBody, UpdateMemberBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
-import type { JSX } from 'react'
 
 import {
   createMember,

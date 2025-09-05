@@ -7,7 +7,6 @@
     "**/.cache": true,
     "**/.coverage": true,
     "**/.nitro": true,
-    "**/.nx": true,
     "**/.output": true,
     "**/.tanstack": true,
     "**/bin": true,

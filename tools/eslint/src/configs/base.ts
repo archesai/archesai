@@ -6,13 +6,11 @@ import type { ConfigArray } from 'typescript-eslint'
 
 import { includeIgnoreFile } from '@eslint/compat'
 import eslint from '@eslint/js'
-import nxPlugin from '@nx/eslint-plugin'
 import prettier from 'eslint-config-prettier'
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript'
 import { importX } from 'eslint-plugin-import-x'
 import perfectionist from 'eslint-plugin-perfectionist'
 import globals from 'globals'
-import jsoncParser from 'jsonc-eslint-parser'
 import tseslint from 'typescript-eslint'
 
 const base: ConfigArray = tseslint.config(
@@ -80,45 +78,6 @@ const base: ConfigArray = tseslint.config(
       ]
     }
   },
-  // NX config
-  ...(process.env.CI === 'true' ?
-    ([
-      {
-        files: ['**/*.{ts,tsx}'],
-        plugins: { '@nx': nxPlugin },
-        rules: {
-          '@nx/enforce-module-boundaries': [
-            'error',
-            {
-              allowCircularSelfDependency: true,
-              banTransitiveDependencies: true,
-              depConstraints: [
-                {
-                  onlyDependOnLibsWithTags: ['*'],
-                  sourceTag: '*'
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        files: ['{package,project,nx}.json'],
-        languageOptions: {
-          parser: jsoncParser
-        },
-        plugins: { '@nx': nxPlugin },
-        rules: {
-          '@nx/dependency-checks': [
-            'error',
-            {
-              ignoredDependencies: ['react-dom']
-            }
-          ]
-        }
-      }
-    ] satisfies ConfigArray)
-  : []),
   // Import plugin config
   {
     files: ['**/*.{ts,tsx}'],

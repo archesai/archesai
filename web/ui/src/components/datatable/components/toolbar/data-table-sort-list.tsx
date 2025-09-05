@@ -1,7 +1,7 @@
 'use no memo'
 
-import type { JSX } from 'react'
 import type { ColumnSort, SortDirection, Table } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 

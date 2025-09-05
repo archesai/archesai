@@ -60,7 +60,12 @@ interface useDataTableProps<TEntity extends BaseEntity>
 
 export function useDataTable<TData extends BaseEntity>(
   props: useDataTableProps<TData>
-): { debounceMs: number; shallow: boolean; table: ReturnType<typeof useReactTable<TData>>; throttleMs: number } {
+): {
+  debounceMs: number
+  shallow: boolean
+  table: ReturnType<typeof useReactTable<TData>>
+  throttleMs: number
+} {
   const {
     // clearOnDefault = false,
     columns,

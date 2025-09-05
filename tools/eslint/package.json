@@ -17,7 +17,6 @@
   "dependencies": {
     "@eslint/compat": "catalog:eslint",
     "@eslint/js": "catalog:eslint",
-    "@nx/eslint-plugin": "catalog:nx",
     "@tanstack/eslint-plugin-query": "catalog:eslint",
     "eslint-config-prettier": "catalog:eslint",
     "eslint-import-resolver-typescript": "catalog:eslint",
@@ -26,7 +25,6 @@
     "eslint-plugin-react": "catalog:eslint",
     "eslint-plugin-react-hooks": "catalog:eslint",
     "globals": "catalog:eslint",
-    "jsonc-eslint-parser": "catalog:eslint",
     "typescript-eslint": "catalog:eslint"
   },
   "devDependencies": {

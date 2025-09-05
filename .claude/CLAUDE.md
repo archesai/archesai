@@ -9,7 +9,7 @@ ArchesAI is a comprehensive data processing platform with a hybrid architecture:
 - **Backend**: Go API server using Echo framework with Domain-Driven Design
 - **Frontend**: TypeScript/React with TanStack Router, built with Vite
 - **Database**: PostgreSQL with vector extensions for embeddings
-- **Monorepo**: pnpm workspaces + Nx for TypeScript, standalone Go module
+- **Monorepo**: pnpm workspaces for TypeScript, standalone Go module
 
 ## Essential Development Commands
 
@@ -48,11 +48,9 @@ make migrate-create name=<migration_name>  # Create new migration
 ```bash
 # Development
 pnpm dev:platform # Run platform web app
-nx dev platform   # Alternative using Nx
 
 # Build
 pnpm build # Build all packages
-nx run-many -t build -t tsc:build
 
 # Quality checks
 pnpm lint       # Run ESLint on all packages

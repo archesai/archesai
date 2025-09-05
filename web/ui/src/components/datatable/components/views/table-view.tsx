@@ -1,7 +1,7 @@
 'use no memo'
 
-import type { JSX } from 'react'
 import type { Table as ReactTable } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 import { flexRender } from '@tanstack/react-table'
 

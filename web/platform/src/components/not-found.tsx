@@ -11,7 +11,11 @@ import {
   CardTitle
 } from '@archesai/ui/components/shadcn/card'
 
-export default function NotFound({ children }: { children?: React.ReactNode }): JSX.Element {
+export default function NotFound({
+  children
+}: {
+  children?: React.ReactNode
+}): JSX.Element {
   return (
     <div className='flex min-h-screen items-center justify-center p-4'>
       <Card className='w-full max-w-md text-center'>

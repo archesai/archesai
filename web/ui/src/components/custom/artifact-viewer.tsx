@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { JSX } from 'react'
 
 interface ArtifactViewerProps {
   artifact: {
@@ -7,7 +7,9 @@ interface ArtifactViewerProps {
   }
 }
 
-export function ArtifactViewer({ artifact }: ArtifactViewerProps): JSX.Element | null {
+export function ArtifactViewer({
+  artifact
+}: ArtifactViewerProps): JSX.Element | null {
   let hoverContent: React.ReactNode = null
   if (
     artifact.mimeType.startsWith('video/') ||

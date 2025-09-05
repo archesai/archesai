@@ -1,5 +1,6 @@
-import type { SiteRoute } from '#lib/site-config.interface'
 import type { JSX } from 'react'
+
+import type { SiteRoute } from '#lib/site-config.interface'
 
 export const TitleAndDescription = ({
   siteRoute

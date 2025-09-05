@@ -1,4 +1,5 @@
 import type { JSX } from 'react'
+
 import { format } from 'date-fns'
 
 export const Timestamp = ({ date }: { date: string }): JSX.Element => {

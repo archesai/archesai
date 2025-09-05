@@ -324,7 +324,6 @@ Located in `internal/infrastructure/database/queries/`:
 
 - `package.json` - Root package scripts
 - `pnpm-workspace.yaml` - Workspace configuration
-- `nx.json` - Nx configuration
 - `tsconfig.json` - TypeScript configuration
 
 ### API Configuration

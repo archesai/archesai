@@ -1,5 +1,6 @@
-import type { PageHeaderProps } from '#layouts/page-header/page-header'
 import type { JSX } from 'react'
+
+import type { PageHeaderProps } from '#layouts/page-header/page-header'
 
 import { SearchIcon } from '#components/custom/icons'
 import { UserButton } from '#components/custom/user-button'
@@ -38,7 +39,9 @@ export function AppSidebar({
   )
 }
 
-export function SearchForm({ ...props }: React.ComponentProps<'form'>): JSX.Element {
+export function SearchForm({
+  ...props
+}: React.ComponentProps<'form'>): JSX.Element {
   return (
     <form {...props}>
       <SidebarGroup>

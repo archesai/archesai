@@ -84,7 +84,9 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   )
 
   // Handle search params
-  const linkSearch = useMemo<boolean | Record<string, unknown> | undefined>(() => {
+  const linkSearch = useMemo<
+    boolean | Record<string, unknown> | undefined
+  >(() => {
     if (preserveSearch && search === undefined) {
       return true
     }

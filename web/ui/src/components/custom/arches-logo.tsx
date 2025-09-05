@@ -1,6 +1,9 @@
-import type { JSX } from "react";
+import type { JSX } from 'react'
 
-export function ArchesLogo({ scale = 1, size = 'lg' as 'lg' | 'sm' }: {
+export function ArchesLogo({
+  scale = 1,
+  size = 'lg' as 'lg' | 'sm'
+}: {
   scale?: number
   size?: 'lg' | 'sm'
 }): JSX.Element {
@@ -82,7 +85,13 @@ const LargeLogo = ({ scale }: { scale: number }): JSX.Element => {
   )
 }
 
-const SmallLogo = ({ fill, scale }: { fill?: string; scale: number }): JSX.Element => {
+const SmallLogo = ({
+  fill,
+  scale
+}: {
+  fill?: string
+  scale: number
+}): JSX.Element => {
   return (
     <svg
       className='transition-all'

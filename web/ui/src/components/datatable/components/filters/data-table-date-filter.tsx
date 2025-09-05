@@ -1,5 +1,5 @@
-import type { JSX } from 'react'
 import type { Column } from '@tanstack/react-table'
+import type { JSX } from 'react'
 import type { DateRange } from 'react-day-picker'
 
 import { useCallback, useMemo } from 'react'

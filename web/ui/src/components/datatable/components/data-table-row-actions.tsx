@@ -1,5 +1,5 @@
-import type { JSX } from 'react'
 import type { Table } from '@tanstack/table-core'
+import type { JSX } from 'react'
 
 import type { BaseEntity } from '#types/entities'
 
