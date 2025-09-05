@@ -1,160 +1,6 @@
-# Development Setup
+# Arches AI
 
-## GCP Setup
-
-### I forgot what this is but we need it
-
-https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#gsa
-
-```
-gcloud iam service-accounts add-iam-policy-binding \
---role="roles/iam.workloadIdentityUser" \
---member="serviceAccount:archesai.svc.id.goog[archesai-stage/cloud-sql-service-account]" \
-cloud-sql-proxy@archesai.iam.gserviceaccount.com
-```
-
-<!-- name: Cut Docs
-on:
-  workflow_dispatch:
-
-jobs:
-  rdme-openapi:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repo 📚
-        uses: actions/checkout@v3
-
-      - name: Run `openapi` command 🚀
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi https://api.archesai.com/-json --key=${{ secrets.README_SECRET }} --id=64837ab02aa53c002a2ceccd -->
-
-REPOSITORIES WITH INCLUDES
-
-- UserRepository (Auth Domain)
-- OrganizationRepository (Organizations Domain)
-- PipelineRepository (Workflows Domain)
-- ArtifactRepository (Content Domain)
-
-## Installing Minikube
-
-sudo apt install -y conntrack
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-minikube version
-sudo apt install -y kubectl
-kubectl get nodes
-
-### Check for rbac enabled
-
-```
-kubectl api-resources | grep 'RoleTypeEnum\|ClusterRoleTypeEnum'
-
-minikube dashboard
-
-sudo apt update
-sudo apt install -y nvidia-driver-<your-driver-version>
-```
-
-### Install nvidia docker
-
-Add the package repository
-
-```
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-```
-
-### Install the nvidia-docker package
-
-```
-sudo apt update
-sudo apt install -y nvidia-docker2
-```
-
-### Restart Docker
-
-sudo systemctl restart docker
-
-put this in /etc/docker/daemon.json
-
-```
-{
-    "default-runtime": "nvidia",
-    "runtimes": {
-        "nvidia": {
-            "path": "nvidia-container-runtime",
-            "runtimeArgs": []
-        }
-    }
-}
-
-
-minikube start --driver=docker --gpu
-
-```
-
-### Install k8s gpu device plugin
-
-https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file#prerequisites
-
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: gpu-test
-spec:
-  containers:
-  - name: gpu-container
-    image: nvidia/cuda:11.0-base
-    resources:
-      limits:
-        nvidia.com/gpu: 1 # Request 1 GPU
-    command: ["nvidia-smi"]
-```
-
-kubectl apply -f gpu-test.yaml
-
-kubectl logs gpu-test
-
-### Setting image pull secret
-
-```
-kubectl create secret docker-registry artifact-registry-key \
- --docker-server=us-east4-docker.pkg.dev \
- --docker-username=\_json_key \
- --docker-password="$(gcloud auth print-access-token)" \
- --docker-email=jonathan@archesai.com
-
-minikube mount $HOME:/host
-
-gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-east4-docker.pkg.dev
-
-cat /home/jonathan/.docker/config.json
-
-kubectl delete secret artifact-registry-key
-
-kubectl create secret generic artifact-registry-key \  INT ✘  minikube ⎈
---from-file=.dockerconfigjson=$HOME/.docker/config.json \
- --type=kubernetes.io/dockerconfigjson
-```
-
----
-
-# BUSINESS
-
-# Arches AI Design and Use Cases
-
-## TODO
-
-- Add pipeline ux for building stuff with connectors
-- Implement ability to save "forms" that can be run against content and extract data to fill out the form. this form type can then be used as input to other tools
-- Get labels to work better and add faceting
-- Notifications with websockets
-- [DONE] Fix websocket auth
-- Ensure that refresh tokens work as expected and write tests
-- Implement react flow to create pipelines with steps
+> A comprehensive data processing platform for managing, analyzing, and transforming diverse data assets
 
 ## Introduction
 
@@ -217,15 +63,6 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 
 - **APIs:** RESTful and GraphQL APIs for seamless integration with other tools and services.
 - **Third-Party Integrations:** Support for integrating with popular third-party applications and services.
-
-### Technology Stack
-
-- **Backend:** Go with Echo framework, Domain-Driven Design architecture with four domains (auth, organizations, workflows, content)
-- **Database:** PostgreSQL with vector extensions for efficient storage and querying of embeddings, type-safe queries with sqlc
-- **Frontend:** TypeScript/React with TanStack Router, built with Vite in a monorepo structure
-- **API:** OpenAPI-first development with automatic code generation for type safety
-- **AI Models:** Proprietary and third-party AI models for data transformation and embedding
-- **Cloud Infrastructure:** Kubernetes-native with Helm charts for scalable deployment
 
 ## Use Cases by Industry
 
@@ -295,70 +132,113 @@ kubectl create secret generic artifact-registry-key \  INT ✘  minikube �
 - **Market Analysis:** Analyze market trends to inform investment and development strategies.
 - **Customer Relationship Management:** Enhance client interactions through detailed data insights.
 
-## Conclusion
-
-Arches AI offers a versatile and powerful data processing platform designed to meet the diverse needs of businesses across various industries. By providing a comprehensive suite of tools for data management, transformation, and analysis, Arches AI empowers organizations to unlock the full potential of their data, drive innovation, and achieve strategic goals. Whether it's enhancing operational efficiency, enabling advanced analytics, or fostering data-driven decision-making, Arches AI is positioned to be an indispensable partner for businesses seeking to thrive in the data-centric landscape.
-
-# Project golang
-
-One Paragraph of project description goes here
-
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+### Prerequisites
 
-## MakeFile
+- Go 1.21+
+- PostgreSQL 15+ with vector extensions
+- Node.js 20+ and pnpm
+- Docker (optional, for containerized development)
 
-Run build make command with tests
+### Quick Start
 
-```bash
-make all
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/archesai/archesai.git
+   cd archesai
+   ```
+
+2. **Set up environment variables**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   # Backend
+   go mod download
+
+   # Frontend
+   pnpm install
+   ```
+
+4. **Run database migrations**
+
+   ```bash
+   make migrate-up
+   ```
+
+5. **Start development servers**
+
+   ```bash
+   # Backend API (with hot reload)
+   make dev
+
+   # Frontend (in another terminal)
+   pnpm dev:platform
+   ```
+
+6. **Access the application**
+   - API: http://localhost:8080
+   - Web UI: http://localhost:5173
+
+For detailed development instructions, architecture documentation, and contribution guidelines, see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+## Project Structure
+
+ArchesAI uses a hexagonal (ports and adapters) architecture with Domain-Driven Design principles:
+
+```
+archesai/
+├── api/                  # OpenAPI specifications
+├── cmd/                  # Application entry points
+├── internal/
+│   ├── app/             # Application assembly & dependency injection
+│   ├── domains/         # Business domains (hexagonal architecture)
+│   │   ├── auth/        # Authentication & authorization
+│   │   ├── organizations/ # Organization management
+│   │   ├── workflows/   # Pipeline workflows & tools
+│   │   └── content/     # Content artifacts & labels
+│   ├── infrastructure/  # Shared technical infrastructure
+│   └── generated/       # Generated code (OpenAPI, SQLC)
+├── web/                 # Frontend monorepo (pnpm workspaces)
+│   ├── platform/        # Main React application
+│   ├── client/          # Generated TypeScript API client
+│   └── ui/              # Shared component library
+└── docs/                # Documentation
 ```
 
-Build the application
+Each domain follows hexagonal architecture with:
 
-```bash
-make build
-```
+- `core/` - Business logic, entities, and ports
+- `infrastructure/` - Database implementations
+- `handlers/` - HTTP handlers
+- `adapters/` - Type converters
+- `generated/` - Domain-specific generated code
 
-Run the application
+## Technology Stack
 
-```bash
-make run
-```
+- **Backend**: Go with Echo framework, hexagonal architecture
+- **Database**: PostgreSQL with pgvector for embeddings
+- **Frontend**: React with TypeScript, TanStack Router, Vite
+- **Code Generation**: SQLC, OpenAPI generators, custom adapters
+- **Deployment**: Kubernetes with Helm charts
 
-Create DB container
+## Documentation
 
-```bash
-make docker-run
-```
+- [Development Guide](docs/DEVELOPMENT.md) - Architecture, patterns, and development workflow
+- [API Documentation](https://api.archesai.com/docs) - OpenAPI specification
+- [Contributing](CONTRIBUTING.md) - Contribution guidelines
 
-Shutdown DB Container
+## License
 
-```bash
-make docker-down
-```
+Proprietary - All rights reserved
 
-DB Integrations Test:
+## Support
 
-```bash
-make itest
-```
-
-Live reload the application:
-
-```bash
-make watch
-```
-
-Run the test suite:
-
-```bash
-make test
-```
-
-Clean up binary from the last build:
-
-```bash
-make clean
-```
+For support, consulting, or enterprise inquiries, contact support@archesai.com

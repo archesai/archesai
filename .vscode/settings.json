@@ -6,7 +6,9 @@
     "**/.nitro": true,
     "**/.output": true,
     "**/.tanstack": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/bin": true
   },
   "tailwindCSS.experimental.configFile": {
     "./web/platform/src/styles/globals.css": "./web/platform/src/**",
