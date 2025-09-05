@@ -1,8 +1,8 @@
 # Variables
 MAKEFLAGS += -j4 --no-print-directory
-OUTPUT_PATH=bin/api
-MAIN_PATH=cmd/api/main.go
-MIGRATION_PATH=internal/database/migrations
+SERVER_OUTPUT=bin/archesai
+CODEGEN_OUTPUT=bin/codegen
+MIGRATION_PATH=internal/infrastructure/database/migrations
 DATABASE_URL ?= postgres://localhost/archesai?sslmode=disable
 
 # Colors for output
@@ -25,17 +25,22 @@ help: ## Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  ${GREEN}%-15s${NC} %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 # Development Commands
-build: ## Build the application
-	@echo -e "${YELLOW}Building application...${NC}"
-	@go build -o $(OUTPUT_PATH) $(MAIN_PATH)
+build: ## Build both server and codegen binaries
+	@echo -e "${YELLOW}Building applications...${NC}"
+	@go build -o $(SERVER_OUTPUT) cmd/archesai/main.go
+	@go build -o $(CODEGEN_OUTPUT) cmd/codegen/main.go
 	@echo -e "${GREEN}Build complete!${NC}"
 
-run: ## Run the application
-	@echo -e "${YELLOW}Running application...${NC}"
-	@go run $(MAIN_PATH)
+run: ## Run the API server
+	@echo -e "${YELLOW}Running API server...${NC}"
+	@go run cmd/archesai/main.go api
 
-dev: ## Run the application with hot reload (requires air)
+dev: ## Run all services in development mode
 	@echo -e "${YELLOW}Running in development mode...${NC}"
+	@go run cmd/archesai/main.go all
+
+watch: ## Run with hot reload (requires air)
+	@echo -e "${YELLOW}Running with hot reload...${NC}"
 	@go tool air
 
 # Code Generation
@@ -91,17 +96,28 @@ test-coverage: ## Run tests with coverage report
 	@go tool cover -html=coverage.out -o coverage.html
 	@echo -e "${GREEN}Coverage report generated: coverage.html${NC}"
 
+# Server Commands
+api: ## Run the API server
+	@echo -e "${YELLOW}Starting API server...${NC}"
+	@go run cmd/archesai/main.go api
+
+web: ## Run the web UI server
+	@echo -e "${YELLOW}Starting web server...${NC}"
+	@go run cmd/archesai/main.go web
+
+worker: ## Run the background worker
+	@echo -e "${YELLOW}Starting worker...${NC}"
+	@go run cmd/archesai/main.go worker
+
 # Database Migrations
 migrate-up: ## Run database migrations up
 	@echo -e "${YELLOW}Running migrations up...${NC}"
-	@which migrate > /dev/null || (echo "Please install golang-migrate: https://github.com/golang-migrate/migrate" && exit 1)
-	@go tool migrate -path $(MIGRATION_PATH) -database "$(DATABASE_URL)" up
+	@go run cmd/archesai/main.go migrate up
 	@echo -e "${GREEN}Migrations complete!${NC}"
 
 migrate-down: ## Run database migrations down
 	@echo -e "${YELLOW}Running migrations down...${NC}"
-	@which migrate > /dev/null || (echo "Please install golang-migrate: https://github.com/golang-migrate/migrate" && exit 1)
-	@go tool migrate -path $(MIGRATION_PATH) -database "$(DATABASE_URL)" down
+	@go run cmd/archesai/main.go migrate down
 	@echo -e "${GREEN}Migrations rolled back!${NC}"
 
 migrate-create: ## Create a new migration (usage: make migrate-create name=migration_name)
@@ -155,6 +171,18 @@ format-node: ## Format Node.js code
 	@which pnpm > /dev/null || (echo "Please install pnpm: https://pnpm.io/installation" && exit 1)
 	@pnpm format:fix
 	@echo -e "${GREEN}Node.js code formatted!${NC}"
+
+# Shell Completions
+install-completions: ## Install shell completions for both tools
+	@echo -e "${YELLOW}Installing shell completions...${NC}"
+	@echo "For bash:"
+	@echo "  $$ source <(archesai completion bash)"
+	@echo "  $$ source <(codegen completion bash)"
+	@echo ""
+	@echo "For zsh:"
+	@echo "  $$ source <(archesai completion zsh)"
+	@echo "  $$ source <(codegen completion zsh)"
+	@echo -e "${GREEN}Add these to your shell profile to persist${NC}"
 
 # Utilities
 clean: ## Clean build artifacts

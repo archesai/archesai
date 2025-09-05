@@ -3,9 +3,9 @@ testdata_dir = "testdata"
 tmp_dir = ".tmp"
 
 [build]
-  args_bin = []
-  bin = "./bin/api"
-  cmd = "make build"
+  args_bin = ["api"]
+  bin = "./bin/archesai"
+  cmd = "make build-archesai"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules", "web", "deployments", "tools"]
   exclude_file = []

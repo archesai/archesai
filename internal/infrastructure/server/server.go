@@ -199,14 +199,20 @@ func (s *Server) SetReadinessCheck(checkFunc func(echo.Context) error) {
 	s.echo.GET("/ready", checkFunc)
 }
 
-// Start starts the server
+// ListenAndServe starts the server without signal handling
+// This is useful when the caller wants to manage the server lifecycle
+func (s *Server) ListenAndServe() error {
+	addr := fmt.Sprintf(":%s", s.config.Port)
+	s.logger.Info("starting server", "address", addr)
+	return s.echo.Start(addr)
+}
+
+// Start starts the server with built-in signal handling
+// This is a convenience method for simple use cases
 func (s *Server) Start() error {
 	// Start server in goroutine
 	go func() {
-		addr := fmt.Sprintf(":%s", s.config.Port)
-		s.logger.Info("starting server", "address", addr)
-
-		if err := s.echo.Start(addr); err != nil && err != http.ErrServerClosed {
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.Error("failed to start server", "error", err)
 			os.Exit(1)
 		}

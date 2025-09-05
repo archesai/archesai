@@ -22,11 +22,6 @@
     "test:ui": "vitest --ui",
     "typecheck": "nx run-many -t typecheck"
   },
-  "lint-staged": {
-    "**/*.{js,ts,tsx,json,css,md,gitignore,prettierignore}": [
-      "pnpm format"
-    ]
-  },
   "prettier": "@archesai/prettier",
   "devDependencies": {
     "@archesai/eslint": "workspace:*",
@@ -42,7 +37,6 @@
     "core-js": "catalog:",
     "eslint": "catalog:eslint",
     "husky": "catalog:root",
-    "lint-staged": "catalog:root",
     "nx": "catalog:nx",
     "only-allow": "catalog:root",
     "openapi-types": "^12.1.3",
