@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/generated/api"
+	"github.com/archesai/archesai/internal/infrastructure/config/generated/api"
 	_ "modernc.org/sqlite" // Pure Go SQLite driver
 )
 

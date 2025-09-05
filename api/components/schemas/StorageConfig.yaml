@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Object storage configuration for MinIO or S3-compatible services
 type: object
 properties:

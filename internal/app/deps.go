@@ -9,15 +9,22 @@ import (
 	"os"
 	"time"
 
-	"github.com/archesai/archesai/internal/domains/auth"
-	"github.com/archesai/archesai/internal/domains/content"
-	"github.com/archesai/archesai/internal/domains/organizations"
-	"github.com/archesai/archesai/internal/domains/workflows"
-	"github.com/archesai/archesai/internal/generated/api"
-	postgresqlgen "github.com/archesai/archesai/internal/generated/database/postgresql"
-	sqlitegen "github.com/archesai/archesai/internal/generated/database/sqlite"
+	authcore "github.com/archesai/archesai/internal/domains/auth/core"
+	authhandlers "github.com/archesai/archesai/internal/domains/auth/handlers/http"
+	authinfra "github.com/archesai/archesai/internal/domains/auth/infrastructure"
+	contentcore "github.com/archesai/archesai/internal/domains/content/core"
+	contenthandlers "github.com/archesai/archesai/internal/domains/content/handlers/http"
+	contentinfra "github.com/archesai/archesai/internal/domains/content/infrastructure"
+	orgcore "github.com/archesai/archesai/internal/domains/organizations/core"
+	orghandlers "github.com/archesai/archesai/internal/domains/organizations/handlers/http"
+	orginfra "github.com/archesai/archesai/internal/domains/organizations/infrastructure"
+	workflowcore "github.com/archesai/archesai/internal/domains/workflows/core"
+	workflowhandlers "github.com/archesai/archesai/internal/domains/workflows/handlers/http"
+	workflowinfra "github.com/archesai/archesai/internal/domains/workflows/infrastructure"
 	"github.com/archesai/archesai/internal/infrastructure/config"
 	"github.com/archesai/archesai/internal/infrastructure/database"
+	postgresqlgen "github.com/archesai/archesai/internal/infrastructure/database/generated/postgresql"
+	sqlitegen "github.com/archesai/archesai/internal/infrastructure/database/generated/sqlite"
 	"github.com/archesai/archesai/internal/infrastructure/server"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -55,24 +62,24 @@ type Container struct {
 	Server        *server.Server // The HTTP server
 
 	// Auth domain
-	AuthRepository auth.Repository
-	AuthService    *auth.Service
-	AuthHandler    *auth.Handler
+	AuthRepository authcore.Repository
+	AuthService    *authcore.Service
+	AuthHandler    *authhandlers.Handler
 
 	// Organizations domain
-	OrganizationsRepository organizations.Repository
-	OrganizationsService    *organizations.Service
-	OrganizationsHandler    *organizations.Handler
+	OrganizationsRepository orgcore.Repository
+	OrganizationsService    *orgcore.Service
+	OrganizationsHandler    *orghandlers.Handler
 
 	// Workflows domain
-	WorkflowsRepository workflows.Repository
-	WorkflowsService    *workflows.Service
-	WorkflowsHandler    *workflows.Handler
+	WorkflowsRepository workflowcore.Repository
+	WorkflowsService    *workflowcore.Service
+	WorkflowsHandler    *workflowhandlers.Handler
 
 	// Content domain
-	ContentRepository content.Repository
-	ContentService    *content.Service
-	ContentHandler    *content.Handler
+	ContentRepository contentcore.Repository
+	ContentService    *contentcore.Service
+	ContentHandler    *contenthandlers.Handler
 }
 
 // NewContainer creates and initializes all application dependencies
@@ -83,13 +90,13 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 
 	// Parse log level
 	switch cfg.Logging.Level {
-	case api.LoggingConfigLevelDebug:
+	case "debug":
 		logLevel = slog.LevelDebug
-	case api.LoggingConfigLevelInfo:
+	case "info":
 		logLevel = slog.LevelInfo
-	case api.LoggingConfigLevelWarn:
+	case "warn":
 		logLevel = slog.LevelWarn
-	case api.LoggingConfigLevelError:
+	case "error":
 		logLevel = slog.LevelError
 	default:
 		logLevel = slog.LevelInfo
@@ -133,10 +140,10 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	// Create queries based on database type
 	var pgQueries *postgresqlgen.Queries
 	var sqliteQueries *sqlitegen.Queries
-	var authRepo auth.Repository
-	var organizationsRepo organizations.Repository
-	var workflowsRepo workflows.Repository
-	var contentRepo content.Repository
+	var authRepo authcore.Repository
+	var organizationsRepo orgcore.Repository
+	var workflowsRepo workflowcore.Repository
+	var contentRepo contentcore.Repository
 
 	// Determine actual database type
 	var dbType database.Type
@@ -151,10 +158,10 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresqlgen.New(pool)
-			authRepo = auth.NewPostgresRepository(pgQueries)
-			organizationsRepo = organizations.NewPostgresRepository(pgQueries)
-			workflowsRepo = workflows.NewPostgresRepository(pgQueries)
-			contentRepo = content.NewPostgresRepository(pgQueries)
+			authRepo = authinfra.NewPostgresRepository(pgQueries)
+			organizationsRepo = orginfra.NewPostgresRepository(pgQueries)
+			workflowsRepo = workflowinfra.NewPostgresRepository(pgQueries)
+			contentRepo = contentinfra.NewPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
@@ -180,25 +187,25 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		return nil, fmt.Errorf("failed to parse refresh token TTL: %w", err)
 	}
 
-	authConfig := auth.Config{
+	authConfig := authcore.Config{
 		JWTSecret:          cfg.GetJWTSecret(),
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := auth.NewService(authRepo, authConfig, logger)
-	authHandler := auth.NewHandler(authService, logger)
+	authService := authcore.NewService(authRepo, authConfig, logger)
+	authHandler := authhandlers.NewHandler(authService, logger)
 
 	// Initialize organizations domain
-	organizationsService := organizations.NewService(organizationsRepo, logger)
-	organizationsHandler := organizations.NewHandler(organizationsService, logger)
+	organizationsService := orgcore.NewService(organizationsRepo, logger)
+	organizationsHandler := orghandlers.NewHandler(organizationsService, logger)
 
 	// Initialize workflows domain
-	workflowsService := workflows.NewService(workflowsRepo, logger)
-	workflowsHandler := workflows.NewHandler(workflowsService, logger)
+	workflowsService := workflowcore.NewService(workflowsRepo, logger)
+	workflowsHandler := workflowhandlers.NewHandler(workflowsService, logger)
 
 	// Initialize content domain
-	contentService := content.NewService(contentRepo, logger)
-	contentHandler := content.NewHandler(contentService, logger)
+	contentService := contentcore.NewService(contentRepo, logger)
+	contentHandler := contenthandlers.NewHandler(contentService, logger)
 
 	// Create the HTTP server
 	serverConfig := &server.Config{
@@ -267,16 +274,18 @@ func (c *Container) registerRoutes() {
 	// Register readiness check that can access the database
 	c.Server.SetReadinessCheck(c.readinessCheck)
 
+	// TODO: Setup domain-scoped API documentation
 	// Setup API documentation if enabled
 	if c.Config.Api.Docs {
-		swagger, err := api.GetSwagger()
-		if err != nil {
-			c.Logger.Error("failed to load OpenAPI spec", "error", err)
-		} else {
-			if err := c.Server.SetupDocs(swagger); err != nil {
-				c.Logger.Error("failed to setup API docs", "error", err)
-			}
-		}
+		c.Logger.Info("API documentation setup temporarily disabled - needs domain-scoped implementation")
+		// swagger, err := api.GetSwagger()
+		// if err != nil {
+		// 	c.Logger.Error("failed to load OpenAPI spec", "error", err)
+		// } else {
+		// 	if err := c.Server.SetupDocs(swagger); err != nil {
+		// 		c.Logger.Error("failed to setup API docs", "error", err)
+		// 	}
+		// }
 	}
 
 	// Register all application routes

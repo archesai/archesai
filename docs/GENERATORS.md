@@ -150,7 +150,7 @@ converters:
     automap: true # Automatically map fields with same names
     fields:
       # Only specify custom conversions
-      OrganizationId: 'openapi_types.UUID(uuid.MustParse(from.OrganizationId))'
+      OrganizationId: 'uuid.MustParse(from.OrganizationId)'
 
   - name: AuthUserDBToAPI
     from: postgresql.User
@@ -159,7 +159,7 @@ converters:
     automap: true
     fields:
       Email: 'openapi_types.Email(from.Email)'
-      Id: 'openapi_types.UUID(uuid.MustParse(from.Id))'
+      Id: 'uuid.MustParse(from.Id)'
 ```
 
 **Features**:
@@ -185,9 +185,9 @@ func PipelineDBToAPI(from *postgresql.Pipeline) api.PipelineEntity {
     return api.PipelineEntity{
         CreatedAt:      from.CreatedAt,
         Description:    handleNullableString(from.Description),
-        Id:             openapi_types.UUID(uuid.MustParse(from.Id)),
+        Id:             uuid.MustParse(from.Id),
         Name:           handleNullableString(from.Name),
-        OrganizationId: openapi_types.UUID(uuid.MustParse(from.OrganizationId)),
+        OrganizationId: uuid.MustParse(from.OrganizationId),
         UpdatedAt:      from.UpdatedAt,
     }
 }

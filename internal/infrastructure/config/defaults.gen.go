@@ -3,7 +3,7 @@
 package config
 
 import (
-	"github.com/archesai/archesai/internal/generated/api"
+	"github.com/archesai/archesai/internal/infrastructure/config/generated/api"
 )
 
 // GetDefaultConfig returns a new ArchesConfig with all default values from OpenAPI schema

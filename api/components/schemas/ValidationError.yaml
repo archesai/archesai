@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Individual field validation error
 type: object
 additionalProperties: false
@@ -26,4 +27,3 @@ properties:
       - type: boolean
         example: true
     example: invalid-email
-    x-go-type: interface{}

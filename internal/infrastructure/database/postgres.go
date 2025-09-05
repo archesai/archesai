@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/archesai/archesai/internal/generated/api"
+	"github.com/archesai/archesai/internal/infrastructure/config/generated/api"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"

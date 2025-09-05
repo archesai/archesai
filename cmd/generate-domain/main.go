@@ -280,7 +280,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/generated/database/postgresql"
+	"github.com/archesai/archesai/internal/infrastructure/database/generated/postgresql"
 )
 
 // Compile-time check that PostgresRepository implements Repository.

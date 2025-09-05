@@ -507,7 +507,7 @@ converters:
     automap: true # Automatically map matching fields
     fields:
       # Only specify fields that need custom conversion
-      OrganizationId: 'openapi_types.UUID(uuid.MustParse(from.OrganizationId))'
+      OrganizationId: 'uuid.MustParse(from.OrganizationId)'
 ```
 
 ### Benefits of Code Generation

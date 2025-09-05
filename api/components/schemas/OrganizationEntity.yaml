@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for Organization entity
 allOf:
   - $ref: ./BaseEntity.yaml
@@ -9,7 +10,6 @@ allOf:
         minLength: 1
         maxLength: 255
         example: Acme Corporation
-        x-go-validate: required,min=1,max=255
       slug:
         description: URL-friendly unique identifier for the organization
         type: string
@@ -17,7 +17,6 @@ allOf:
         minLength: 3
         maxLength: 50
         example: acme-corp
-        x-go-validate: required,min=3,max=50,slug
       logo:
         description: The organization's logo URL
         type: string
@@ -38,7 +37,6 @@ allOf:
           - UNLIMITED
         default: FREE
         example: STANDARD
-        x-go-validate: required,oneof=FREE BASIC STANDARD PREMIUM UNLIMITED
         minLength: 1
       credits:
         description: Available credits for this organization
@@ -46,14 +44,10 @@ allOf:
         minimum: 0
         default: 0
         example: 1000
-        x-go-type: float64
       metadata:
         description: Custom metadata in JSON format
-        type: string
-        example: '{"key": "value"}'
-        x-go-type: '*json.RawMessage'
-        x-go-import:
-          path: encoding/json
+        type: object
+        additionalProperties: true
       stripeCustomerId:
         description: Stripe customer identifier
         type: string
@@ -64,4 +58,5 @@ allOf:
       - slug
       - plan
       - credits
+      - metadata
     additionalProperties: false

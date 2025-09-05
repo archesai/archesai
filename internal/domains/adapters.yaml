@@ -1,0 +1,122 @@
+# Converter configuration for generating type mappings between layers
+converters:
+  # Auth domain converters
+  - name: AuthUserDBToAPI
+    from: postgresql.User
+    to: api.UserEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      Email: 'openapi_types.Email(from.Email)'
+      Name: 'from.Name' # Not nullable in DB
+
+  - name: AuthSessionDBToAPI
+    from: postgresql.Session
+    to: api.SessionEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      UserId: 'from.UserId' # API expects string, not UUID
+      ExpiresAt: 'from.ExpiresAt.Format(time.RFC3339)'
+      ActiveOrganizationId: 'handleNullableString(from.ActiveOrganizationId)'
+
+  - name: AuthAccountDBToAPI
+    from: postgresql.Account
+    to: api.AccountEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      AccountId: 'from.AccountId' # API expects string
+      UserId: 'uuid.MustParse(from.UserId)' # API expects UUID
+      ProviderId: 'api.AccountEntityProviderId(from.ProviderId)'
+      IdToken: 'handleNullableString(from.IdToken)'
+      Password: 'handleNullableString(from.Password)'
+      AccessTokenExpiresAt: 'handleNullableTimestamp(from.AccessTokenExpiresAt)'
+      RefreshTokenExpiresAt: 'handleNullableTimestamp(from.RefreshTokenExpiresAt)'
+
+  # Organizations domain converters
+  - name: OrganizationDBToAPI
+    from: postgresql.Organization
+    to: api.OrganizationEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      Plan: 'api.OrganizationEntityPlan(from.Plan)'
+      BillingEmail: 'openapi_types.Email(handleNullableString(from.BillingEmail))'
+      Credits: 'float32(from.Credits)'
+      Metadata: 'handleNullableMetadata(from.Metadata)'
+      Name: 'from.Name' # Not nullable in DB
+      StripeCustomerId: 'handleNullableString(from.StripeCustomerId)' # Already a pointer
+
+  # Workflows domain converters
+  - name: PipelineDBToAPI
+    from: postgresql.Pipeline
+    to: api.PipelineEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      OrganizationId: 'uuid.MustParse(from.OrganizationId)'
+
+  - name: RunDBToAPI
+    from: postgresql.Run
+    to: api.RunEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      PipelineId: 'handleNullableString(from.PipelineId)'
+      OrganizationId: 'from.OrganizationId'
+      ToolId: 'from.ToolId'
+      Status: 'api.RunEntityStatus(from.Status)'
+      Progress: 'float32(from.Progress)'
+
+  - name: ToolDBToAPI
+    from: postgresql.Tool
+    to: api.ToolEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      OrganizationId: 'from.OrganizationId'
+      Description: 'from.Description'
+      Name: 'from.Name' # Not nullable in DB
+
+  - name: MemberDBToAPI
+    from: postgresql.Member
+    to: api.MemberEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      UserId: 'from.UserId' # API expects string, not UUID
+      OrganizationId: 'from.OrganizationId' # API expects string, not UUID
+      Role: 'api.MemberEntityRole(from.Role)' # Use correct type
+
+  - name: InvitationDBToAPI
+    from: postgresql.Invitation
+    to: api.InvitationEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      OrganizationId: 'from.OrganizationId' # API expects string, not UUID
+      InviterId: 'from.InviterId' # API expects string, not UUID
+      Email: 'from.Email' # API expects string, not Email type
+      Role: 'api.InvitationEntityRole(from.Role)' # Use correct type
+      ExpiresAt: 'from.ExpiresAt.Format(time.RFC3339)' # Format as string
+
+  # Content domain converters
+  - name: ArtifactDBToAPI
+    from: postgresql.Artifact
+    to: api.ArtifactEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      Credits: 'float32(from.Credits)'
+      OrganizationId: 'from.OrganizationId'
+      ProducerId: 'handleNullableString(from.ProducerId)'
+
+  - name: LabelDBToAPI
+    from: postgresql.Label
+    to: api.LabelEntity
+    automap: true
+    overrides:
+      Id: 'uuid.MustParse(from.Id)'
+      OrganizationId: 'from.OrganizationId'
+      Name: 'from.Name'

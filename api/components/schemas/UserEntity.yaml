@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 description: Schema for User entity
 allOf:
   - $ref: ./BaseEntity.yaml
@@ -22,7 +23,6 @@ allOf:
         minLength: 1
         maxLength: 255
         example: John Doe
-        x-go-validate: required,min=1,max=255
     required:
       - email
       - emailVerified

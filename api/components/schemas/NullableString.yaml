@@ -1,5 +1,0 @@
-type: string
-nullable: true
-x-go-type: '*string'
-x-omitempty: true
-example: example-string

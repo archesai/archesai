@@ -1,7 +1,0 @@
-type: string
-format: date-time
-nullable: true
-x-go-type: '*time.Time'
-x-omitempty: true
-example: '2024-01-15T09:30:00Z'
-minLength: 1

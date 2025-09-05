@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/archesai/archesai/internal/generated/api"
+	"github.com/archesai/archesai/internal/infrastructure/config/generated/api"
 )
 
 // Factory creates database instances based on configuration

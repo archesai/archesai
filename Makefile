@@ -39,17 +39,23 @@ dev: ## Run the application with hot reload (requires air)
 	@go tool air
 
 # Code Generation
-generate: sqlc oapi generate-defaults generate-converters ## Generate all code (sqlc + OpenAPI + converters)
+generate: sqlc oapi generate-defaults generate-adapters ## Generate all code (sqlc + OpenAPI + adapters)
 	@echo -e "${GREEN}All code generation complete!${NC}"
 
 sqlc: ## Generate database code with sqlc
 	@echo -e "${YELLOW}Generating sqlc code...${NC}"
-	@cd internal/generated/database && go generate
+	@cd internal/infrastructure/database && go generate
 	@echo -e "${GREEN}sqlc generation complete!${NC}"
 
 oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "${YELLOW}Generating OpenAPI server code...${NC}"
-	@cd internal/generated/api && go generate
+	#@cd internal/generated/api && go generate
+	@cd internal/domains/auth/generated/api && go generate
+	@cd internal/domains/organizations/generated/api && go generate
+	@cd internal/domains/workflows/generated/api && go generate
+	@cd internal/domains/content/generated/api && go generate
+	@cd internal/infrastructure/config/generated/api && go generate
+	@cd internal/infrastructure/health/generated/api && go generate
 	@echo -e "${GREEN}OpenAPI generation complete!${NC}"
 
 # Config generation
@@ -58,11 +64,14 @@ generate-defaults: ## Generate config defaults from OpenAPI schema
 	@go run cmd/generate-defaults/main.go
 	@echo -e "${GREEN}Config defaults generated!${NC}"
 
-# Converter generation
-generate-converters: ## Generate converters between layers
-	@echo -e "${YELLOW}Generating converters...${NC}"
+# Adapter generation
+generate-adapters: ## Generate adapters between layers
+	@echo -e "${YELLOW}Generating adapters...${NC}"
 	@go run cmd/generate-converters/main.go
-	@echo -e "${GREEN}Converters generated!${NC}"
+	@echo -e "${GREEN}Adapters generated!${NC}"
+
+# Legacy alias for backward compatibility
+generate-converters: generate-adapters ## (Deprecated) Use generate-adapters instead
 
 # Domain scaffolding
 generate-domain: ## Generate a new domain scaffold (usage: make generate-domain name=billing tables=subscription,invoice)
