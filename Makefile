@@ -61,13 +61,13 @@ oapi: openapi-bundle ## Generate OpenAPI server code
 # Config generation
 generate-defaults: ## Generate config defaults from OpenAPI schema
 	@echo -e "${YELLOW}Generating config defaults from OpenAPI...${NC}"
-	@go run cmd/generate-defaults/main.go
+	@go run cmd/codegen/main.go defaults
 	@echo -e "${GREEN}Config defaults generated!${NC}"
 
 # Adapter generation
 generate-adapters: ## Generate adapters between layers
 	@echo -e "${YELLOW}Generating adapters...${NC}"
-	@go run cmd/generate-converters/main.go
+	@go run cmd/codegen/main.go converters
 	@echo -e "${GREEN}Adapters generated!${NC}"
 
 # Legacy alias for backward compatibility
@@ -76,7 +76,7 @@ generate-converters: generate-adapters ## (Deprecated) Use generate-adapters ins
 # Domain scaffolding
 generate-domain: ## Generate a new domain scaffold (usage: make generate-domain name=billing tables=subscription,invoice)
 	@echo -e "${YELLOW}Generating domain: $(name)...${NC}"
-	@go run cmd/generate-domain/main.go -name=$(name) -tables="$(tables)" -desc="$(desc)" $(if $(auth),-auth) $(if $(events),-events)
+	@go run cmd/codegen/main.go domain -name=$(name) -tables="$(tables)" -desc="$(desc)" $(if $(auth),-auth) $(if $(events),-events)
 	@echo -e "${GREEN}Domain $(name) generated!${NC}"
 
 # Testing

@@ -308,3 +308,4 @@ ArchesAI uses multiple code generators to reduce boilerplate and ensure type saf
 - **Domain Boundaries**: Keep domains isolated - communicate through interfaces
 - **Migration Safety**: Always review migrations before applying to production
 - **Interface Pattern**: Consumer defines interface (e.g., Service defines Repository interface)
+- Always remember to run make generate and make lint before you sign off on a task

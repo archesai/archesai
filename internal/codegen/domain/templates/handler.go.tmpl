@@ -1,0 +1,122 @@
+package {{.Package}}
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/archesai/archesai/internal/generated/api"
+)
+
+// Handler handles HTTP requests for the {{.Package}} domain.
+type Handler struct {
+	service *Service
+}
+
+// NewHandler creates a new HTTP handler.
+func NewHandler(service *Service) *Handler {
+	return &Handler{
+		service: service,
+	}
+}
+
+// RegisterRoutes registers the HTTP routes for this domain.
+func (h *Handler) RegisterRoutes(e *echo.Echo) {
+	// Register routes here
+	// Example:
+	{{range .Tables}}
+	// e.GET("/api/v1/{{$.Package}}/{{.}}s", h.List{{title .}}s)
+	// e.GET("/api/v1/{{$.Package}}/{{.}}s/:id", h.Get{{title .}})
+	// e.POST("/api/v1/{{$.Package}}/{{.}}s", h.Create{{title .}})
+	// e.PUT("/api/v1/{{$.Package}}/{{.}}s/:id", h.Update{{title .}})
+	// e.DELETE("/api/v1/{{$.Package}}/{{.}}s/:id", h.Delete{{title .}})
+	{{end}}
+}
+
+// Implement OpenAPI ServerInterface methods here
+// These methods should match the generated interface from oapi-codegen
+
+{{range .Tables}}
+// Get{{title .}} handles GET /{{$.Package}}/{{.}}s/:id
+func (h *Handler) Get{{title .}}(c echo.Context) error {
+	id := c.Param("id")
+	
+	{{lower .}}, err := h.service.Get{{title .}}(c.Request().Context(), id)
+	if err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get {{.}}")
+	}
+
+	return c.JSON(http.StatusOK, {{lower .}})
+}
+
+// List{{title .}}s handles GET /{{$.Package}}/{{.}}s
+func (h *Handler) List{{title .}}s(c echo.Context) error {
+	// TODO: Parse query parameters for pagination
+	limit := 20
+	offset := 0
+
+	{{.}}s, err := h.service.List{{title .}}s(c.Request().Context(), limit, offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to list {{.}}s")
+	}
+
+	return c.JSON(http.StatusOK, {{.}}s)
+}
+
+// Create{{title .}} handles POST /{{$.Package}}/{{.}}s
+func (h *Handler) Create{{title .}}(c echo.Context) error {
+	var req {{title .}}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+
+	if err := h.service.Create{{title .}}(c.Request().Context(), &req); err != nil {
+		if errors.Is(err, ErrInvalidInput) {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create {{.}}")
+	}
+
+	return c.JSON(http.StatusCreated, req)
+}
+
+// Update{{title .}} handles PUT /{{$.Package}}/{{.}}s/:id
+func (h *Handler) Update{{title .}}(c echo.Context) error {
+	id := c.Param("id")
+	
+	var req {{title .}}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	req.ID = id
+
+	if err := h.service.Update{{title .}}(c.Request().Context(), &req); err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		}
+		if errors.Is(err, ErrInvalidInput) {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update {{.}}")
+	}
+
+	return c.JSON(http.StatusOK, req)
+}
+
+// Delete{{title .}} handles DELETE /{{$.Package}}/{{.}}s/:id
+func (h *Handler) Delete{{title .}}(c echo.Context) error {
+	id := c.Param("id")
+
+	if err := h.service.Delete{{title .}}(c.Request().Context(), id); err != nil {
+		if errors.Is(err, ErrNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to delete {{.}}")
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+{{end}}
