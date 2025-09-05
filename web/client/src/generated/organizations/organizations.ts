@@ -23,7 +23,6 @@ import type {
 } from "@tanstack/react-query";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -159,10 +158,24 @@ export const useCreateOrganization = <
 export const getFindManyOrganizationsUrl = (
   params?: FindManyOrganizationsParams,
 ) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/organizations?${stringifiedParams}`
@@ -1059,10 +1072,24 @@ export const getFindManyMembersUrl = (
   id: string | undefined | null,
   params?: FindManyMembersParams,
 ) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/organizations/${id}/members?${stringifiedParams}`
@@ -1995,10 +2022,24 @@ export const getFindManyInvitationsUrl = (
   id: string | undefined | null,
   params?: FindManyInvitationsParams,
 ) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/organizations/${id}/invitations?${stringifiedParams}`

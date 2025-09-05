@@ -23,7 +23,6 @@ import type {
 } from "@tanstack/react-query";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -46,10 +45,24 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary Find many sessions
  */
 export const getFindManySessionsUrl = (params?: FindManySessionsParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/auth/sessions?${stringifiedParams}`

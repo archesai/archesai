@@ -23,7 +23,6 @@ import type {
 } from "@tanstack/react-query";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -157,10 +156,24 @@ export const useCreatePipeline = <
  * @summary Find many pipelines
  */
 export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/workflows/pipelines?${stringifiedParams}`
@@ -1024,10 +1037,24 @@ export const useCreateRun = <
  * @summary Find many runs
  */
 export const getFindManyRunsUrl = (params?: FindManyRunsParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/workflows/runs?${stringifiedParams}`
@@ -1854,10 +1881,24 @@ export const useCreateTool = <
  * @summary Find many tools
  */
 export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/workflows/tools?${stringifiedParams}`

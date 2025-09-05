@@ -5,23 +5,19 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "clean": "pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output node_modules'",
+    "clean": "pnpm -r exec sh -c 'rm -rf .cache .tanstack dist .nitro .output'",
+    "clean:deps": "pnpm -r exec sh -c 'rm -rf node_modules pnpm-lock.yaml'",
     "generate": "pnpm -r generate",
     "dev": "pnpm -r dev",
-    "format": "pnpm prettier --ignore-path .gitignore --ignore-path .prettierignore '**/*.{css,html,js,json,jsonc,md,ts,tsx,yaml}' --check --write --log-level warn",
-    "preinstall": "pnpm dlx only-allow pnpm",
+    "format": "pnpm -r exec prettier --ignore-path ../../.gitignore '**/*.{css,html,js,json,md,ts,tsx,yaml}' --check --write --log-level warn --cache --cache-location .cache/.prettiercache",
     "postinstall": "pnpm dlx sherif --fix",
-    "lint": "pnpm -r lint",
+    "lint": "pnpm -r lint --cache --cache-location .cache/.eslintcache",
     "test": "pnpm -r test",
     "typecheck": "pnpm tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier",
   "devDependencies": {
-    "@archesai/prettier": "workspace:*",
-    "eslint": "catalog:eslint",
-    "prettier": "catalog:prettier",
-    "tailwindcss": "catalog:ui",
-    "typescript": "catalog:"
+    "@archesai/prettier": "workspace:*"
   },
   "packageManager": "pnpm@10.15.1",
   "engines": {

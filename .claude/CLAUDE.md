@@ -54,12 +54,11 @@ pnpm build # Build all packages
 
 # Quality checks
 pnpm lint       # Run ESLint on all packages
-pnpm lint:fix   # Fix linting issues
 pnpm typecheck  # TypeScript type checking
 pnpm format     # Fix Prettier formatting
 
 # Client SDK generation
-pnpm client:generate # Generate TypeScript client from OpenAPI
+pnpm generate # Generate TypeScript client from OpenAPI
 ```
 
 ### Running a Single Test

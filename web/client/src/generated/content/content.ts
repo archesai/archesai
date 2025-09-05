@@ -23,7 +23,6 @@ import type {
 } from "@tanstack/react-query";
 
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import qs from "qs";
 
 import type {
   BadRequestResponse,
@@ -149,10 +148,24 @@ export const useCreateArtifact = <
  * @summary Find many artifacts
  */
 export const getFindManyArtifactsUrl = (params?: FindManyArtifactsParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/content/artifacts?${stringifiedParams}`
@@ -1018,10 +1031,24 @@ export const useCreateLabel = <
  * @summary Find many labels
  */
 export const getFindManyLabelsUrl = (params?: FindManyLabelsParams) => {
-  const stringifiedParams = qs.stringify(params || {}, {
-    skipNulls: false,
-    strictNullHandling: true,
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    const explodeParameters = ["sort"];
+
+    if (Array.isArray(value) && explodeParameters.includes(key)) {
+      value.forEach((v) =>
+        normalizedParams.append(key, v === null ? "null" : v.toString()),
+      );
+      return;
+    }
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
   });
+
+  const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
     ? `/content/labels?${stringifiedParams}`

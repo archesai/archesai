@@ -26,7 +26,7 @@ const prettierConfig = {
   ],
   singleAttributePerLine: true,
   tailwindFunctions: ["cn", "cva"],
-  tailwindStylesheet: "./src/styles/globals.css",
+  tailwindStylesheet: "./web/ui/src/styles/globals.css",
 };
 
 export default prettierConfig;

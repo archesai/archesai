@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
+    "prettier": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
   }
 }

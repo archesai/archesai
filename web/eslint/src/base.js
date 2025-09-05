@@ -74,6 +74,9 @@ const base = defineConfig(
         ...banImportExtension("ts"),
         ...banImportExtension("tsx"),
       ],
+      ...(process.env.CI !== "true" && {
+        "@typescript-eslint/no-deprecated": "off",
+      }),
     },
   },
   // Import plugin config
@@ -90,7 +93,6 @@ const base = defineConfig(
       "import-x/no-relative-packages": "error",
       ...(process.env.CI === "true" && {
         "import-x/no-cycle": "error",
-        "import-x/no-deprecated": "error",
         "import-x/no-named-as-default": "error",
         "import-x/no-unused-modules": "error",
       }),

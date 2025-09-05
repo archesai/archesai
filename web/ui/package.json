@@ -31,7 +31,6 @@
     "lint": "eslint .",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
-  "prettier": "@archesai/prettier",
   "dependencies": {
     "@dnd-kit/core": "catalog:ui",
     "@dnd-kit/modifiers": "catalog:ui",

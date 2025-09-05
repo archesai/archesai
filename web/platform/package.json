@@ -16,7 +16,6 @@
     "start": "vite preview",
     "typecheck": "tsc --build --emitDeclarationOnly"
   },
-  "prettier": "@archesai/prettier",
   "dependencies": {
     "@archesai/client": "workspace:*",
     "@archesai/ui": "workspace:*",
