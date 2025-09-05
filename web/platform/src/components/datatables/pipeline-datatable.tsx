@@ -2,7 +2,12 @@ import type { JSX } from 'react'
 
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { FindManyPipelinesParams, PipelineEntity } from '@archesai/client'
+import type {
+  PageQueryParameter,
+  PipelineEntity,
+  PipelinesFilterParameter,
+  PipelinesSortParameter
+} from '@archesai/client'
 import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
@@ -18,19 +23,11 @@ export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate()
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyPipelinesParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && {
-            sort: query.sort as FindManyPipelinesParams['sort']
-          })
-        }
-      : undefined
-    return getFindManyPipelinesSuspenseQueryOptions(params) as any
+    return getFindManyPipelinesSuspenseQueryOptions({
+      filter: query.filter as unknown as PipelinesFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as PipelinesSortParameter
+    })
   }
 
   return (
@@ -72,7 +69,8 @@ export default function PipelineDataTable(): JSX.Element {
         await deletePipeline(id)
       }}
       entityKey={PIPELINE_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       handleSelect={async (pipeline) => {
         await navigate({
           params: {

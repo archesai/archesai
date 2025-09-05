@@ -1,6 +1,11 @@
 import type { JSX } from 'react'
 
-import type { FindManyMembersParams, MemberEntity } from '@archesai/client'
+import type {
+  MemberEntity,
+  MembersFilterParameter,
+  MembersSortParameter,
+  PageQueryParameter
+} from '@archesai/client'
 import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
@@ -21,19 +26,11 @@ export default function MemberDataTable(): JSX.Element {
   const organizationId = sessionData.data.activeOrganizationId
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyMembersParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && {
-            sort: query.sort as FindManyMembersParams['sort']
-          })
-        }
-      : undefined
-    return getFindManyMembersSuspenseQueryOptions(organizationId, params) as any
+    return getFindManyMembersSuspenseQueryOptions(organizationId, {
+      filter: query.filter as unknown as MembersFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as MembersSortParameter
+    })
   }
 
   return (
@@ -70,7 +67,8 @@ export default function MemberDataTable(): JSX.Element {
         await deleteMember(organizationId, id)
       }}
       entityKey={MEMBER_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       handleSelect={() => {
         // Handle member selection if needed
       }}

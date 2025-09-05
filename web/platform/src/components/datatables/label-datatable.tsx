@@ -2,7 +2,12 @@ import type { JSX } from 'react'
 
 import { useNavigate } from '@tanstack/react-router'
 
-import type { FindManyLabelsParams, LabelEntity } from '@archesai/client'
+import type {
+  LabelEntity,
+  LabelsFilterParameter,
+  LabelsSortParameter,
+  PageQueryParameter
+} from '@archesai/client'
 import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
@@ -21,19 +26,11 @@ export default function LabelDataTable(): JSX.Element {
   const navigate = useNavigate()
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyLabelsParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && {
-            sort: query.sort as FindManyLabelsParams['sort']
-          })
-        }
-      : undefined
-    return getFindManyLabelsSuspenseQueryOptions(params) as any
+    return getFindManyLabelsSuspenseQueryOptions({
+      filter: query.filter as unknown as LabelsFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as LabelsSortParameter
+    })
   }
 
   return (
@@ -66,7 +63,8 @@ export default function LabelDataTable(): JSX.Element {
         await deleteLabel(id)
       }}
       entityKey={LABEL_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}

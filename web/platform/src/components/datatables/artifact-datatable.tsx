@@ -2,7 +2,12 @@ import type { JSX } from 'react'
 
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { ArtifactEntity, FindManyArtifactsParams } from '@archesai/client'
+import type {
+  ArtifactEntity,
+  ArtifactsFilterParameter,
+  ArtifactsSortParameter,
+  PageQueryParameter
+} from '@archesai/client'
 import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
@@ -22,19 +27,11 @@ export default function ArtifactDataTable(): JSX.Element {
   const navigate = useNavigate()
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyArtifactsParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && {
-            sort: query.sort as FindManyArtifactsParams['sort']
-          })
-        }
-      : undefined
-    return getFindManyArtifactsSuspenseQueryOptions(params) as any
+    return getFindManyArtifactsSuspenseQueryOptions({
+      filter: query.filter as unknown as ArtifactsFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as ArtifactsSortParameter
+    })
   }
 
   return (
@@ -129,7 +126,8 @@ export default function ArtifactDataTable(): JSX.Element {
       ]}
       createForm={ArtifactForm}
       entityKey={ARTIFACT_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       grid={(_item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>

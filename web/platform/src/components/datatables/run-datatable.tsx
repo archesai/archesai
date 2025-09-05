@@ -2,8 +2,13 @@ import type { JSX } from 'react'
 
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { FindManyRunsParams } from '@archesai/client'
-import type { RunEntity, SearchQuery } from '@archesai/ui/types/entities'
+import type {
+  PageQueryParameter,
+  RunEntity,
+  RunsFilterParameter,
+  RunsSortParameter
+} from '@archesai/client'
+import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
   deleteRun,
@@ -19,17 +24,11 @@ export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate()
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyRunsParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && { sort: query.sort as FindManyRunsParams['sort'] })
-        }
-      : undefined
-    return getFindManyRunsSuspenseQueryOptions(params) as any
+    return getFindManyRunsSuspenseQueryOptions({
+      filter: query.filter as unknown as RunsFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as RunsSortParameter
+    })
   }
 
   return (
@@ -57,7 +56,8 @@ export default function RunDataTable(): JSX.Element {
           cell: ({ row }) => {
             return (
               <StatusTypeEnumButton
-                run={row.original}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+                run={row.original as any}
                 size='sm'
               />
             )
@@ -101,7 +101,8 @@ export default function RunDataTable(): JSX.Element {
         await deleteRun(id)
       }}
       entityKey={RUN_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}

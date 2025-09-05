@@ -2,7 +2,12 @@ import type { JSX } from 'react'
 
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { FindManyToolsParams, ToolEntity } from '@archesai/client'
+import type {
+  PageQueryParameter,
+  ToolEntity,
+  ToolsFilterParameter,
+  ToolsSortParameter
+} from '@archesai/client'
 import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
@@ -23,17 +28,11 @@ export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate()
 
   const getQueryOptions = (query: SearchQuery) => {
-    const params: any =
-      query.filter || query.page || query.sort ?
-        {
-          ...(query.filter && {
-            filter: query.filter as unknown as FindManyToolsParams['filter']
-          }),
-          ...(query.page && { page: query.page }),
-          ...(query.sort && { sort: query.sort as FindManyToolsParams['sort'] })
-        }
-      : undefined
-    return getFindManyToolsSuspenseQueryOptions(params) as any
+    return getFindManyToolsSuspenseQueryOptions({
+      filter: query.filter as unknown as ToolsFilterParameter,
+      page: query.page as PageQueryParameter,
+      sort: query.sort as ToolsSortParameter
+    })
   }
 
   return (
@@ -123,7 +122,8 @@ export default function ToolDataTable(): JSX.Element {
         await deleteTool(id)
       }}
       entityKey={TOOL_ENTITY_KEY}
-      getQueryOptions={getQueryOptions}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      getQueryOptions={getQueryOptions as any}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}
