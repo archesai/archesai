@@ -13,6 +13,18 @@
   },
   "parallel": 5,
   "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build", "typecheck"],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist/**"]
+    },
+    "client:generate": {
+      "cache": true,
+      "dependsOn": [],
+      "inputs": ["{workspaceRoot}/api/openapi.bundled.yaml", "default"],
+      "outputs": ["{projectRoot}/src/generated/**"]
+    },
     "dev": {
       "cache": false,
       "continuous": true
@@ -20,7 +32,12 @@
     "lint": {
       "cache": true,
       "dependsOn": ["^lint", "typecheck"],
-      "inputs": ["default", "^default"]
+      "inputs": ["default", "^default"],
+      "outputs": []
+    },
+    "start": {
+      "cache": false,
+      "continuous": true
     },
     "typecheck": {
       "cache": true,
