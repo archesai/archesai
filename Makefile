@@ -55,12 +55,12 @@ sqlc: ## Generate database code with sqlc
 oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "${YELLOW}Generating OpenAPI server code...${NC}"
 	#@cd internal/generated/api && go generate
-	@cd internal/domains/auth/generated/api && go generate
-	@cd internal/domains/organizations/generated/api && go generate
-	@cd internal/domains/workflows/generated/api && go generate
-	@cd internal/domains/content/generated/api && go generate
-	@cd internal/infrastructure/config/generated/api && go generate
-	@cd internal/infrastructure/health/generated/api && go generate
+	@cd internal/domains/auth/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
+	@cd internal/domains/organizations/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
+	@cd internal/domains/workflows/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
+	@cd internal/domains/content/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
+	@cd internal/infrastructure/config/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
+	@cd internal/infrastructure/health/generated/api && { go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; }
 	@echo -e "${GREEN}OpenAPI generation complete!${NC}"
 
 # Config generation
