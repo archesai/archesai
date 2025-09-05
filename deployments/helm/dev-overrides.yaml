@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./arches/values.schema.json
 ingress:
   mode: enabled
   domain: archesai.dev

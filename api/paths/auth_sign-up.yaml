@@ -34,7 +34,7 @@ post:
             - password
     required: true
   responses:
-    '201':
+    "201":
       description: Default Response
       content:
         application/json:
@@ -46,5 +46,5 @@ post:
             required:
               - data
             additionalProperties: false
-    '401':
+    "401":
       $ref: ../components/responses/Unauthorized.yaml

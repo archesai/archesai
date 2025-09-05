@@ -1,26 +1,26 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate } from "@tanstack/react-router"
 
 import type {
   LabelEntity,
   LabelsFilterParameter,
   LabelsSortParameter,
   PageQueryParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
 import {
   deleteLabel,
   getFindManyLabelsSuspenseQueryOptions
-} from '@archesai/client'
-import { ListIcon } from '@archesai/ui/components/custom/icons'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { Badge } from '@archesai/ui/components/shadcn/badge'
-import { LABEL_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/client"
+import { ListIcon } from "@archesai/ui/components/custom/icons"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { Badge } from "@archesai/ui/components/shadcn/badge"
+import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
-import LabelForm from '#components/forms/label-form'
+import LabelForm from "#components/forms/label-form"
 
 export default function LabelDataTable(): JSX.Element {
   const navigate = useNavigate()
@@ -37,25 +37,25 @@ export default function LabelDataTable(): JSX.Element {
     <DataTable<LabelEntity>
       columns={[
         {
-          accessorKey: 'name',
+          accessorKey: "name",
           cell: ({ row }) => {
-            return <Badge variant={'secondary'}>{row.original.name}</Badge>
+            return <Badge variant={"secondary"}>{row.original.name}</Badge>
           },
-          id: 'name'
+          id: "name"
         },
         {
-          accessorKey: 'createdAt',
+          accessorKey: "createdAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
           },
-          id: 'createdAt'
+          id: "createdAt"
         },
         {
-          accessorKey: 'updatedAt',
+          accessorKey: "updatedAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.updatedAt} />
           },
-          id: 'updatedAt'
+          id: "updatedAt"
         }
       ]}
       createForm={LabelForm}

@@ -1,7 +1,7 @@
-import type { ThemeProviderProps } from 'next-themes'
-import type { JSX } from 'react'
+import type { ThemeProviderProps } from "next-themes"
+import type { JSX } from "react"
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 export const ThemeProvider = ({
   children,

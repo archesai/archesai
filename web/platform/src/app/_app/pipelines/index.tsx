@@ -1,13 +1,13 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-import PipelineDataTable from '#components/datatables/pipeline-datatable'
-import { getRouteMeta } from '#lib/site-utils'
+import PipelineDataTable from "#components/datatables/pipeline-datatable"
+import { getRouteMeta } from "#lib/site-utils"
 
-export const metadata = getRouteMeta('/pipelines')
+export const metadata = getRouteMeta("/pipelines")
 
-export const Route = createFileRoute('/_app/pipelines/')({
+export const Route = createFileRoute("/_app/pipelines/")({
   component: PipelinesPage
 })
 

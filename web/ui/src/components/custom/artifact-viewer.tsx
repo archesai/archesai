@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
 interface ArtifactViewerProps {
   artifact: {
@@ -12,17 +12,17 @@ export function ArtifactViewer({
 }: ArtifactViewerProps): JSX.Element | null {
   let hoverContent: React.ReactNode = null
   if (
-    artifact.mimeType.startsWith('video/') ||
-    artifact.mimeType.startsWith('audio/')
+    artifact.mimeType.startsWith("video/") ||
+    artifact.mimeType.startsWith("audio/")
   ) {
     hoverContent = (
       <video
-        className='h-full w-full object-contain'
+        className="h-full w-full object-contain"
         controls
-        src={artifact.text ?? ''}
+        src={artifact.text ?? ""}
       />
     )
-  } else if (artifact.mimeType.startsWith('image/') && artifact.text) {
+  } else if (artifact.mimeType.startsWith("image/") && artifact.text) {
     hoverContent = (
       <image
         // className='h-full w-full object-contain'
@@ -31,23 +31,23 @@ export function ArtifactViewer({
         width={516}
       />
     )
-  } else if (artifact.mimeType === 'application/pdf' && artifact.text) {
+  } else if (artifact.mimeType === "application/pdf" && artifact.text) {
     hoverContent = (
       <iframe
-        className='h-full w-full'
+        className="h-full w-full"
         src={artifact.text}
-        title='PDF Document'
+        title="PDF Document"
       ></iframe>
     )
-  } else if (artifact.mimeType.startsWith('text/') && artifact.text) {
+  } else if (artifact.mimeType.startsWith("text/") && artifact.text) {
     hoverContent = (
-      <div className='flex h-full items-center justify-center p-4 text-center'>
+      <div className="flex h-full items-center justify-center p-4 text-center">
         <p>{artifact.text}</p>
       </div>
     )
   } else {
     hoverContent = (
-      <div className='flex h-full items-center justify-center'>
+      <div className="flex h-full items-center justify-center">
         <p>Cannot preview this content type. Please download to view.</p>
       </div>
     )

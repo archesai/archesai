@@ -1,16 +1,16 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import type { CreateLabelBody, UpdateLabelBody } from '@archesai/client'
-import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
+import type { CreateLabelBody, UpdateLabelBody } from "@archesai/client"
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
 
 import {
   useCreateLabel,
   useGetOneLabelSuspense,
   useUpdateLabel
-} from '@archesai/client'
-import { GenericForm } from '@archesai/ui/components/custom/generic-form'
-import { Input } from '@archesai/ui/components/shadcn/input'
-import { LABEL_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/client"
+import { GenericForm } from "@archesai/ui/components/custom/generic-form"
+import { Input } from "@archesai/ui/components/shadcn/input"
+import { LABEL_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
 export default function LabelForm({ id }: { id?: string }): JSX.Element {
   const { mutateAsync: updateLabel } = useUpdateLabel()
@@ -20,14 +20,14 @@ export default function LabelForm({ id }: { id?: string }): JSX.Element {
   const formFields: FormFieldConfig[] = [
     {
       defaultValue: existingLabel.data.name,
-      description: 'This is the name that will be used for this label.',
-      label: 'Name',
-      name: 'name',
+      description: "This is the name that will be used for this label.",
+      label: "Name",
+      name: "name",
       renderControl: (field) => (
         <Input
-          placeholder='Label name here...'
+          placeholder="Label name here..."
           {...field}
-          type='text'
+          type="text"
         />
       )
     }
@@ -35,7 +35,7 @@ export default function LabelForm({ id }: { id?: string }): JSX.Element {
 
   return (
     <GenericForm<CreateLabelBody, UpdateLabelBody>
-      description={!id ? 'Invite a new label' : 'Update an existing label'}
+      description={!id ? "Invite a new label" : "Update an existing label"}
       entityKey={LABEL_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!id}
@@ -50,7 +50,7 @@ export default function LabelForm({ id }: { id?: string }): JSX.Element {
           id: id
         })
       }}
-      title='Configuration'
+      title="Configuration"
     />
   )
 }

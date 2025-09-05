@@ -5,11 +5,11 @@ get:
     - Health
   description: Check the health status of the application
   responses:
-    '200':
+    "200":
       description: Default Response
       content:
         application/json:
           schema:
             $ref: ../components/schemas/HealthResponse.yaml
-    '400':
+    "400":
       $ref: ../components/responses/BadRequest.yaml

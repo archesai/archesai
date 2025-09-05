@@ -1,28 +1,28 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from "@tanstack/react-router"
 
 import type {
   PageQueryParameter,
   ToolEntity,
   ToolsFilterParameter,
   ToolsSortParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
 import {
   deleteTool,
   getFindManyToolsSuspenseQueryOptions
-} from '@archesai/client'
+} from "@archesai/client"
 import {
   CalendarIcon,
   PackageCheckIcon,
   TextIcon
-} from '@archesai/ui/components/custom/icons'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { Badge } from '@archesai/ui/components/shadcn/badge'
-import { TOOL_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/ui/components/custom/icons"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { Badge } from "@archesai/ui/components/shadcn/badge"
+import { TOOL_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
 export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate()
@@ -39,11 +39,11 @@ export default function ToolDataTable(): JSX.Element {
     <DataTable<ToolEntity>
       columns={[
         {
-          accessorKey: 'name',
+          accessorKey: "name",
           cell: ({ row }) => {
             return (
               <Link
-                className='shrink truncate text-wrap text-blue-500 hover:underline md:text-sm'
+                className="shrink truncate text-wrap text-blue-500 hover:underline md:text-sm"
                 params={{
                   artifactId: row.original.id
                 }}
@@ -54,67 +54,67 @@ export default function ToolDataTable(): JSX.Element {
             )
           },
           enableColumnFilter: true,
-          id: 'name',
+          id: "name",
           meta: {
-            filterVariant: 'text',
+            filterVariant: "text",
             icon: TextIcon,
-            label: 'Name'
+            label: "Name"
           }
         },
         {
-          accessorKey: 'description',
+          accessorKey: "description",
           cell: ({ row }) => {
-            return row.original.description || 'No Description'
+            return row.original.description || "No Description"
           },
           enableColumnFilter: true,
-          id: 'description',
+          id: "description",
           meta: {
-            filterVariant: 'text',
+            filterVariant: "text",
             icon: TextIcon,
-            label: 'Description'
+            label: "Description"
           }
         },
         {
-          accessorKey: 'inputMimeType',
+          accessorKey: "inputMimeType",
           cell: ({ row }) => {
             return (
-              <Badge variant={'secondary'}>{row.original.inputMimeType}</Badge>
+              <Badge variant={"secondary"}>{row.original.inputMimeType}</Badge>
             )
           },
           enableColumnFilter: true,
-          id: 'inputMimeType',
+          id: "inputMimeType",
           meta: {
-            filterVariant: 'text',
+            filterVariant: "text",
             icon: TextIcon,
-            label: 'Input'
+            label: "Input"
           }
         },
         {
-          accessorKey: 'outputMimeType',
+          accessorKey: "outputMimeType",
           cell: ({ row }) => {
             return (
-              <Badge variant={'secondary'}>{row.original.outputMimeType}</Badge>
+              <Badge variant={"secondary"}>{row.original.outputMimeType}</Badge>
             )
           },
           enableColumnFilter: true,
-          id: 'outputMimeType',
+          id: "outputMimeType",
           meta: {
-            filterVariant: 'multiSelect',
+            filterVariant: "multiSelect",
             icon: TextIcon,
-            label: 'Output'
+            label: "Output"
           }
         },
         {
-          accessorKey: 'createdAt',
+          accessorKey: "createdAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
           },
           enableColumnFilter: true,
-          id: 'createdAt',
+          id: "createdAt",
           meta: {
-            filterVariant: 'dateRange',
+            filterVariant: "dateRange",
             icon: CalendarIcon,
-            label: 'Created at'
+            label: "Created at"
           }
         }
       ]}

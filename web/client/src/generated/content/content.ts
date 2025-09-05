@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   BadRequestResponse,
@@ -45,9 +45,9 @@ import type {
   UpdateArtifactBody,
   UpdateLabel200,
   UpdateLabelBody
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -65,8 +65,8 @@ export const createArtifact = async (
 ): Promise<CreateArtifact201> => {
   return customFetch<CreateArtifact201>(getCreateArtifactUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createArtifactBody)
   })
 }
@@ -88,15 +88,12 @@ export const getCreateArtifactMutationOptions = <
   { data: CreateArtifactBody },
   TContext
 > => {
-  const mutationKey = ['createArtifact']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createArtifact"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -157,8 +154,8 @@ export const getFindManyArtifactsUrl = (params?: FindManyArtifactsParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/content/artifacts?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/content/artifacts?${stringifiedParams}`
     : `/content/artifacts`
 }
 
@@ -168,7 +165,7 @@ export const findManyArtifacts = async (
 ): Promise<FindManyArtifacts200> => {
   return customFetch<FindManyArtifacts200>(getFindManyArtifactsUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -236,7 +233,7 @@ export function useFindManyArtifacts<
           TError,
           Awaited<ReturnType<typeof findManyArtifacts>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -263,7 +260,7 @@ export function useFindManyArtifacts<
           TError,
           Awaited<ReturnType<typeof findManyArtifacts>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -472,7 +469,7 @@ export const deleteArtifact = async (
 ): Promise<DeleteArtifact200> => {
   return customFetch<DeleteArtifact200>(getDeleteArtifactUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -493,15 +490,12 @@ export const getDeleteArtifactMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteArtifact']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteArtifact"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -564,7 +558,7 @@ export const getOneArtifact = async (
 ): Promise<GetOneArtifact200> => {
   return customFetch<GetOneArtifact200>(getGetOneArtifactUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -624,7 +618,7 @@ export function useGetOneArtifact<
           TError,
           Awaited<ReturnType<typeof getOneArtifact>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -647,7 +641,7 @@ export function useGetOneArtifact<
           TError,
           Awaited<ReturnType<typeof getOneArtifact>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -846,8 +840,8 @@ export const updateArtifact = async (
 ): Promise<UpdateArtifact200> => {
   return customFetch<UpdateArtifact200>(getUpdateArtifactUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateArtifactBody)
   })
 }
@@ -869,15 +863,12 @@ export const getUpdateArtifactMutationOptions = <
   { id: string | undefined | null; data: UpdateArtifactBody },
   TContext
 > => {
-  const mutationKey = ['updateArtifact']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateArtifact"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -940,8 +931,8 @@ export const createLabel = async (
 ): Promise<CreateLabel201> => {
   return customFetch<CreateLabel201>(getCreateLabelUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createLabelBody)
   })
 }
@@ -963,15 +954,12 @@ export const getCreateLabelMutationOptions = <
   { data: CreateLabelBody },
   TContext
 > => {
-  const mutationKey = ['createLabel']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createLabel"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1030,8 +1018,8 @@ export const getFindManyLabelsUrl = (params?: FindManyLabelsParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/content/labels?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/content/labels?${stringifiedParams}`
     : `/content/labels`
 }
 
@@ -1041,7 +1029,7 @@ export const findManyLabels = async (
 ): Promise<FindManyLabels200> => {
   return customFetch<FindManyLabels200>(getFindManyLabelsUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1096,7 +1084,7 @@ export function useFindManyLabels<
           TError,
           Awaited<ReturnType<typeof findManyLabels>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1119,7 +1107,7 @@ export function useFindManyLabels<
           TError,
           Awaited<ReturnType<typeof findManyLabels>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1319,7 +1307,7 @@ export const deleteLabel = async (
 ): Promise<DeleteLabel200> => {
   return customFetch<DeleteLabel200>(getDeleteLabelUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -1340,15 +1328,12 @@ export const getDeleteLabelMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteLabel']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteLabel"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1408,7 +1393,7 @@ export const getOneLabel = async (
 ): Promise<GetOneLabel200> => {
   return customFetch<GetOneLabel200>(getGetOneLabelUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1468,7 +1453,7 @@ export function useGetOneLabel<
           TError,
           Awaited<ReturnType<typeof getOneLabel>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1491,7 +1476,7 @@ export function useGetOneLabel<
           TError,
           Awaited<ReturnType<typeof getOneLabel>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1690,8 +1675,8 @@ export const updateLabel = async (
 ): Promise<UpdateLabel200> => {
   return customFetch<UpdateLabel200>(getUpdateLabelUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateLabelBody)
   })
 }
@@ -1713,15 +1698,12 @@ export const getUpdateLabelMutationOptions = <
   { id: string | undefined | null; data: UpdateLabelBody },
   TContext
 > => {
-  const mutationKey = ['updateLabel']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateLabel"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

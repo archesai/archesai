@@ -1,8 +1,5 @@
 {
-  "eslint.workingDirectories": [
-    { "pattern": "web/*/" },
-    { "pattern": "tools/*/" }
-  ],
+  "eslint.workingDirectories": [{ "pattern": "web/*/" }],
   "files.exclude": {
     "**/.cache": false,
     "**/.coverage": false,
@@ -18,12 +15,7 @@
     "./web/ui/src/styles/globals.css": "./web/ui/src/**"
   },
   "yaml.schemas": {
-    "file:///home/jonathan/Projects/archesai/helm/arches/values.schema.json": [
-      "file:///home/jonathan/Projects/archesai/helm/arches/values.yaml",
-      "file:///home/jonathan/Projects/archesai/helm/dev-overrides.yaml"
-    ],
-    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta13.json": "file:///home/jonathan/Projects/archesai/skaffold.yaml",
-    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/deployments/k3d/k3d.yaml",
-    "https://spec.openapis.org/oas/3.1/schema/2022-10-07": "file:///home/jonathan/Projects/archesai/api/openapi.yaml"
+    "https://raw.githubusercontent.com/evilmartians/lefthook/master/schema.json": "file:///home/jonathan/Projects/archesai/.lefthook.yaml",
+    "https://goreleaser.com/static/schema.json": "file:///home/jonathan/Projects/archesai/.goreleaser.yaml"
   }
 }

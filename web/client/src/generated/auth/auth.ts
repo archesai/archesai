@@ -10,9 +10,9 @@ import type {
   QueryClient,
   UseMutationOptions,
   UseMutationResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation } from '@tanstack/react-query'
+import { useMutation } from "@tanstack/react-query"
 
 import type {
   BadRequestResponse,
@@ -29,9 +29,9 @@ import type {
   RequestEmailChangeBody,
   RequestPasswordResetBody,
   UnauthorizedResponse
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -49,8 +49,8 @@ export const register = async (
 ): Promise<Register201> => {
   return customFetch<Register201>(getRegisterUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(registerBody)
   })
 }
@@ -72,15 +72,12 @@ export const getRegisterMutationOptions = <
   { data: RegisterBody },
   TContext
 > => {
-  const mutationKey = ['register']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["register"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -140,8 +137,8 @@ export const login = async (
 ): Promise<Login200> => {
   return customFetch<Login200>(getLoginUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(loginBody)
   })
 }
@@ -163,15 +160,12 @@ export const getLoginMutationOptions = <
   { data: LoginBody },
   TContext
 > => {
-  const mutationKey = ['login']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["login"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -228,7 +222,7 @@ export const logout = async (
 ): Promise<NotFoundResponse> => {
   return customFetch<NotFoundResponse>(getLogoutUrl(), {
     ...options,
-    method: 'POST'
+    method: "POST"
   })
 }
 
@@ -249,15 +243,12 @@ export const getLogoutMutationOptions = <
   void,
   TContext
 > => {
-  const mutationKey = ['logout']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["logout"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -317,8 +308,8 @@ export const confirmEmailVerification = async (
     getConfirmEmailVerificationUrl(),
     {
       ...options,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
       body: JSON.stringify(confirmEmailVerificationBody)
     }
   )
@@ -341,15 +332,12 @@ export const getConfirmEmailVerificationMutationOptions = <
   { data: ConfirmEmailVerificationBody },
   TContext
 > => {
-  const mutationKey = ['confirmEmailVerification']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["confirmEmailVerification"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -413,7 +401,7 @@ export const requestEmailVerification = async (
 ): Promise<NoContentResponse> => {
   return customFetch<NoContentResponse>(getRequestEmailVerificationUrl(), {
     ...options,
-    method: 'POST'
+    method: "POST"
   })
 }
 
@@ -434,15 +422,12 @@ export const getRequestEmailVerificationMutationOptions = <
   void,
   TContext
 > => {
-  const mutationKey = ['requestEmailVerification']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["requestEmailVerification"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -505,8 +490,8 @@ export const requestPasswordReset = async (
 ): Promise<NoContentResponse> => {
   return customFetch<NoContentResponse>(getRequestPasswordResetUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(requestPasswordResetBody)
   })
 }
@@ -528,15 +513,12 @@ export const getRequestPasswordResetMutationOptions = <
   { data: RequestPasswordResetBody },
   TContext
 > => {
-  const mutationKey = ['requestPasswordReset']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["requestPasswordReset"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -599,8 +581,8 @@ export const confirmPasswordReset = async (
 ): Promise<NotFoundResponse> => {
   return customFetch<NotFoundResponse>(getConfirmPasswordResetUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(confirmPasswordResetBody)
   })
 }
@@ -622,15 +604,12 @@ export const getConfirmPasswordResetMutationOptions = <
   { data: ConfirmPasswordResetBody },
   TContext
 > => {
-  const mutationKey = ['confirmPasswordReset']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["confirmPasswordReset"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -695,8 +674,8 @@ export const requestEmailChange = async (
 ): Promise<NoContentResponse> => {
   return customFetch<NoContentResponse>(getRequestEmailChangeUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(requestEmailChangeBody)
   })
 }
@@ -718,15 +697,12 @@ export const getRequestEmailChangeMutationOptions = <
   { data: RequestEmailChangeBody },
   TContext
 > => {
-  const mutationKey = ['requestEmailChange']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["requestEmailChange"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -791,8 +767,8 @@ export const confirmEmailChange = async (
 ): Promise<NotFoundResponse> => {
   return customFetch<NotFoundResponse>(getConfirmEmailChangeUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(confirmEmailChangeBody)
   })
 }
@@ -814,15 +790,12 @@ export const getConfirmEmailChangeMutationOptions = <
   { data: ConfirmEmailChangeBody },
   TContext
 > => {
-  const mutationKey = ['confirmEmailChange']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["confirmEmailChange"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

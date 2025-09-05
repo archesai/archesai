@@ -1,10 +1,10 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import type { PageHeaderProps } from '#layouts/page-header/page-header'
+import type { PageHeaderProps } from "#layouts/page-header/page-header"
 
-import { SearchIcon } from '#components/custom/icons'
-import { UserButton } from '#components/custom/user-button'
-import { Label } from '#components/shadcn/label'
+import { SearchIcon } from "#components/custom/icons"
+import { UserButton } from "#components/custom/user-button"
+import { Label } from "#components/shadcn/label"
 import {
   Sidebar,
   SidebarContent,
@@ -14,9 +14,9 @@ import {
   SidebarHeader,
   SidebarInput,
   SidebarRail
-} from '#components/shadcn/sidebar'
-import { OrganizationButton } from '#layouts/app-sidebar/organization-button'
-import { SidebarLinks } from '#layouts/app-sidebar/sidebar-links'
+} from "#components/shadcn/sidebar"
+import { OrganizationButton } from "#layouts/app-sidebar/organization-button"
+import { SidebarLinks } from "#layouts/app-sidebar/sidebar-links"
 
 export function AppSidebar({
   siteRoutes,
@@ -41,23 +41,23 @@ export function AppSidebar({
 
 export function SearchForm({
   ...props
-}: React.ComponentProps<'form'>): JSX.Element {
+}: React.ComponentProps<"form">): JSX.Element {
   return (
     <form {...props}>
       <SidebarGroup>
-        <SidebarGroupContent className='relative'>
+        <SidebarGroupContent className="relative">
           <Label
-            className='sr-only'
-            htmlFor='search'
+            className="sr-only"
+            htmlFor="search"
           >
             Search
           </Label>
           <SidebarInput
-            className='pl-8'
-            id='search'
-            placeholder='Search the docs...'
+            className="pl-8"
+            id="search"
+            placeholder="Search the docs..."
           />
-          <SearchIcon className='pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none' />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
         </SidebarGroupContent>
       </SidebarGroup>
     </form>

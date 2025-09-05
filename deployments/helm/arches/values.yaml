@@ -1,6 +1,7 @@
+# yaml-language-server: $schema=./values.schema.json
 api:
   cors:
-    origins: '*'
+    origins: "*"
   docs: true
   email:
     mode: disabled
@@ -71,13 +72,13 @@ infrastructure:
       port: 30056
   images:
     imagePullSecrets: []
-    imageRegistry: ''
+    imageRegistry: ""
   migrations:
     enabled: false
   namespace: arches-system
   serviceAccount:
     create: true
-    name: ''
+    name: ""
 
 ingress:
   domain: archesai.com

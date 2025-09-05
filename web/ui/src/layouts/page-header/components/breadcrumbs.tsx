@@ -1,6 +1,6 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useLocation } from '@tanstack/react-router'
+import { useLocation } from "@tanstack/react-router"
 
 import {
   Breadcrumb,
@@ -9,20 +9,20 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator
-} from '#components/shadcn/breadcrumb'
+} from "#components/shadcn/breadcrumb"
 
 export const BreadCrumbs = (): JSX.Element => {
   const location = useLocation()
 
   // Split the pathname into segments and create breadcrumbs
-  const pathSegments = location.pathname.split('/').filter(Boolean)
+  const pathSegments = location.pathname.split("/").filter(Boolean)
 
   const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = '/' + pathSegments.slice(0, index + 1).join('/')
+    const path = "/" + pathSegments.slice(0, index + 1).join("/")
     const title = segment
-      .split('-')
+      .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
+      .join(" ")
 
     return {
       isLast: index === pathSegments.length - 1,
@@ -37,17 +37,18 @@ export const BreadCrumbs = (): JSX.Element => {
         <BreadcrumbList>
           {breadcrumbs.map((breadcrumb, index) => (
             <div
-              className='flex items-center'
+              className="flex items-center"
               key={breadcrumb.path}
             >
-              {index > 0 && <BreadcrumbSeparator className='hidden md:block' />}
-              <BreadcrumbItem className={index === 0 ? 'hidden md:block' : ''}>
-                {breadcrumb.isLast ?
+              {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+              <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
+                {breadcrumb.isLast ? (
                   <BreadcrumbPage>{breadcrumb.title}</BreadcrumbPage>
-                : <BreadcrumbLink href={breadcrumb.path}>
+                ) : (
+                  <BreadcrumbLink href={breadcrumb.path}>
                     {breadcrumb.title}
                   </BreadcrumbLink>
-                }
+                )}
               </BreadcrumbItem>
             </div>
           ))}

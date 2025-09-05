@@ -1,13 +1,13 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-import LabelDataTable from '#components/datatables/label-datatable'
-import { getRouteMeta } from '#lib/site-utils'
+import LabelDataTable from "#components/datatables/label-datatable"
+import { getRouteMeta } from "#lib/site-utils"
 
-export const metadata = getRouteMeta('/labels')
+export const metadata = getRouteMeta("/labels")
 
-export const Route = createFileRoute('/_app/labels/')({
+export const Route = createFileRoute("/_app/labels/")({
   component: LabelsPage
 })
 

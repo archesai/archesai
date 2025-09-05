@@ -8,257 +8,257 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-import { Route as rootRouteImport } from './app/__root'
-import { Route as AppArtifactsArtifactIdIndexRouteImport } from './app/_app/artifacts/$artifactId/index'
-import { Route as AppArtifactsIndexRouteImport } from './app/_app/artifacts/index'
-import { Route as AppIndexRouteImport } from './app/_app/index'
-import { Route as AppLabelsIndexRouteImport } from './app/_app/labels/index'
-import { Route as AppOrganizationIndexRouteImport } from './app/_app/organization/index'
-import { Route as AppOrganizationMembersIndexRouteImport } from './app/_app/organization/members/index'
-import { Route as AppPipelinesPipelineIdIndexRouteImport } from './app/_app/pipelines/$pipelineId/index'
-import { Route as AppPipelinesIndexRouteImport } from './app/_app/pipelines/index'
-import { Route as AppProfileIndexRouteImport } from './app/_app/profile/index'
-import { Route as AppRouteRouteImport } from './app/_app/route'
-import { Route as AppRunsRunIdIndexRouteImport } from './app/_app/runs/$runId/index'
-import { Route as AppRunsIndexRouteImport } from './app/_app/runs/index'
-import { Route as AppToolsIndexRouteImport } from './app/_app/tools/index'
-import { Route as AuthForgotPasswordIndexRouteImport } from './app/auth/forgot-password/index'
-import { Route as AuthLoginIndexRouteImport } from './app/auth/login/index'
-import { Route as AuthRegisterIndexRouteImport } from './app/auth/register/index'
-import { Route as AuthRouteRouteImport } from './app/auth/route'
-import { Route as LandingIndexRouteImport } from './app/landing/index'
+import { Route as rootRouteImport } from "./app/__root"
+import { Route as AppArtifactsArtifactIdIndexRouteImport } from "./app/_app/artifacts/$artifactId/index"
+import { Route as AppArtifactsIndexRouteImport } from "./app/_app/artifacts/index"
+import { Route as AppIndexRouteImport } from "./app/_app/index"
+import { Route as AppLabelsIndexRouteImport } from "./app/_app/labels/index"
+import { Route as AppOrganizationIndexRouteImport } from "./app/_app/organization/index"
+import { Route as AppOrganizationMembersIndexRouteImport } from "./app/_app/organization/members/index"
+import { Route as AppPipelinesPipelineIdIndexRouteImport } from "./app/_app/pipelines/$pipelineId/index"
+import { Route as AppPipelinesIndexRouteImport } from "./app/_app/pipelines/index"
+import { Route as AppProfileIndexRouteImport } from "./app/_app/profile/index"
+import { Route as AppRouteRouteImport } from "./app/_app/route"
+import { Route as AppRunsRunIdIndexRouteImport } from "./app/_app/runs/$runId/index"
+import { Route as AppRunsIndexRouteImport } from "./app/_app/runs/index"
+import { Route as AppToolsIndexRouteImport } from "./app/_app/tools/index"
+import { Route as AuthForgotPasswordIndexRouteImport } from "./app/auth/forgot-password/index"
+import { Route as AuthLoginIndexRouteImport } from "./app/auth/login/index"
+import { Route as AuthRegisterIndexRouteImport } from "./app/auth/register/index"
+import { Route as AuthRouteRouteImport } from "./app/auth/route"
+import { Route as LandingIndexRouteImport } from "./app/landing/index"
 
 const AppPipelinesCreateIndexLazyRouteImport = createFileRoute(
-  '/_app/pipelines/create/'
+  "/_app/pipelines/create/"
 )()
 
 const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+  id: "/auth",
+  path: "/auth",
   getParentRoute: () => rootRouteImport
 } as any)
 const AppRouteRoute = AppRouteRouteImport.update({
-  id: '/_app',
+  id: "/_app",
   getParentRoute: () => rootRouteImport
 } as any)
 const LandingIndexRoute = LandingIndexRouteImport.update({
-  id: '/landing/',
-  path: '/landing/',
+  id: "/landing/",
+  path: "/landing/",
   getParentRoute: () => rootRouteImport
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
-  id: '/register/',
-  path: '/register/',
+  id: "/register/",
+  path: "/register/",
   getParentRoute: () => AuthRouteRoute
 } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
+  id: "/login/",
+  path: "/login/",
   getParentRoute: () => AuthRouteRoute
 } as any)
 const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
-  id: '/forgot-password/',
-  path: '/forgot-password/',
+  id: "/forgot-password/",
+  path: "/forgot-password/",
   getParentRoute: () => AuthRouteRoute
 } as any)
 const AppToolsIndexRoute = AppToolsIndexRouteImport.update({
-  id: '/tools/',
-  path: '/tools/',
+  id: "/tools/",
+  path: "/tools/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppRunsIndexRoute = AppRunsIndexRouteImport.update({
-  id: '/runs/',
-  path: '/runs/',
+  id: "/runs/",
+  path: "/runs/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppProfileIndexRoute = AppProfileIndexRouteImport.update({
-  id: '/profile/',
-  path: '/profile/',
+  id: "/profile/",
+  path: "/profile/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesIndexRoute = AppPipelinesIndexRouteImport.update({
-  id: '/pipelines/',
-  path: '/pipelines/',
+  id: "/pipelines/",
+  path: "/pipelines/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppOrganizationIndexRoute = AppOrganizationIndexRouteImport.update({
-  id: '/organization/',
-  path: '/organization/',
+  id: "/organization/",
+  path: "/organization/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppLabelsIndexRoute = AppLabelsIndexRouteImport.update({
-  id: '/labels/',
-  path: '/labels/',
+  id: "/labels/",
+  path: "/labels/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppArtifactsIndexRoute = AppArtifactsIndexRouteImport.update({
-  id: '/artifacts/',
-  path: '/artifacts/',
+  id: "/artifacts/",
+  path: "/artifacts/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesCreateIndexLazyRoute =
   AppPipelinesCreateIndexLazyRouteImport.update({
-    id: '/pipelines/create/',
-    path: '/pipelines/create/',
+    id: "/pipelines/create/",
+    path: "/pipelines/create/",
     getParentRoute: () => AppRouteRoute
   } as any).lazy(() =>
-    import('./app/_app/pipelines/create/index.lazy').then((d) => d.Route)
+    import("./app/_app/pipelines/create/index.lazy").then((d) => d.Route)
   )
 const AppRunsRunIdIndexRoute = AppRunsRunIdIndexRouteImport.update({
-  id: '/runs/$runId/',
-  path: '/runs/$runId/',
+  id: "/runs/$runId/",
+  path: "/runs/$runId/",
   getParentRoute: () => AppRouteRoute
 } as any)
 const AppPipelinesPipelineIdIndexRoute =
   AppPipelinesPipelineIdIndexRouteImport.update({
-    id: '/pipelines/$pipelineId/',
-    path: '/pipelines/$pipelineId/',
+    id: "/pipelines/$pipelineId/",
+    path: "/pipelines/$pipelineId/",
     getParentRoute: () => AppRouteRoute
   } as any)
 const AppOrganizationMembersIndexRoute =
   AppOrganizationMembersIndexRouteImport.update({
-    id: '/organization/members/',
-    path: '/organization/members/',
+    id: "/organization/members/",
+    path: "/organization/members/",
     getParentRoute: () => AppRouteRoute
   } as any)
 const AppArtifactsArtifactIdIndexRoute =
   AppArtifactsArtifactIdIndexRouteImport.update({
-    id: '/artifacts/$artifactId/',
-    path: '/artifacts/$artifactId/',
+    id: "/artifacts/$artifactId/",
+    path: "/artifacts/$artifactId/",
     getParentRoute: () => AppRouteRoute
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
-  '/artifacts': typeof AppArtifactsIndexRoute
-  '/labels': typeof AppLabelsIndexRoute
-  '/organization': typeof AppOrganizationIndexRoute
-  '/pipelines': typeof AppPipelinesIndexRoute
-  '/profile': typeof AppProfileIndexRoute
-  '/runs': typeof AppRunsIndexRoute
-  '/tools': typeof AppToolsIndexRoute
-  '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
-  '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
-  '/organization/members': typeof AppOrganizationMembersIndexRoute
-  '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
-  '/runs/$runId': typeof AppRunsRunIdIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
+  "/auth": typeof AuthRouteRouteWithChildren
+  "/": typeof AppIndexRoute
+  "/landing": typeof LandingIndexRoute
+  "/artifacts": typeof AppArtifactsIndexRoute
+  "/labels": typeof AppLabelsIndexRoute
+  "/organization": typeof AppOrganizationIndexRoute
+  "/pipelines": typeof AppPipelinesIndexRoute
+  "/profile": typeof AppProfileIndexRoute
+  "/runs": typeof AppRunsIndexRoute
+  "/tools": typeof AppToolsIndexRoute
+  "/auth/forgot-password": typeof AuthForgotPasswordIndexRoute
+  "/auth/login": typeof AuthLoginIndexRoute
+  "/auth/register": typeof AuthRegisterIndexRoute
+  "/artifacts/$artifactId": typeof AppArtifactsArtifactIdIndexRoute
+  "/organization/members": typeof AppOrganizationMembersIndexRoute
+  "/pipelines/$pipelineId": typeof AppPipelinesPipelineIdIndexRoute
+  "/runs/$runId": typeof AppRunsRunIdIndexRoute
+  "/pipelines/create": typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesByTo {
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/': typeof AppIndexRoute
-  '/landing': typeof LandingIndexRoute
-  '/artifacts': typeof AppArtifactsIndexRoute
-  '/labels': typeof AppLabelsIndexRoute
-  '/organization': typeof AppOrganizationIndexRoute
-  '/pipelines': typeof AppPipelinesIndexRoute
-  '/profile': typeof AppProfileIndexRoute
-  '/runs': typeof AppRunsIndexRoute
-  '/tools': typeof AppToolsIndexRoute
-  '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
-  '/auth/login': typeof AuthLoginIndexRoute
-  '/auth/register': typeof AuthRegisterIndexRoute
-  '/artifacts/$artifactId': typeof AppArtifactsArtifactIdIndexRoute
-  '/organization/members': typeof AppOrganizationMembersIndexRoute
-  '/pipelines/$pipelineId': typeof AppPipelinesPipelineIdIndexRoute
-  '/runs/$runId': typeof AppRunsRunIdIndexRoute
-  '/pipelines/create': typeof AppPipelinesCreateIndexLazyRoute
+  "/auth": typeof AuthRouteRouteWithChildren
+  "/": typeof AppIndexRoute
+  "/landing": typeof LandingIndexRoute
+  "/artifacts": typeof AppArtifactsIndexRoute
+  "/labels": typeof AppLabelsIndexRoute
+  "/organization": typeof AppOrganizationIndexRoute
+  "/pipelines": typeof AppPipelinesIndexRoute
+  "/profile": typeof AppProfileIndexRoute
+  "/runs": typeof AppRunsIndexRoute
+  "/tools": typeof AppToolsIndexRoute
+  "/auth/forgot-password": typeof AuthForgotPasswordIndexRoute
+  "/auth/login": typeof AuthLoginIndexRoute
+  "/auth/register": typeof AuthRegisterIndexRoute
+  "/artifacts/$artifactId": typeof AppArtifactsArtifactIdIndexRoute
+  "/organization/members": typeof AppOrganizationMembersIndexRoute
+  "/pipelines/$pipelineId": typeof AppPipelinesPipelineIdIndexRoute
+  "/runs/$runId": typeof AppRunsRunIdIndexRoute
+  "/pipelines/create": typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_app': typeof AppRouteRouteWithChildren
-  '/auth': typeof AuthRouteRouteWithChildren
-  '/_app/': typeof AppIndexRoute
-  '/landing/': typeof LandingIndexRoute
-  '/_app/artifacts/': typeof AppArtifactsIndexRoute
-  '/_app/labels/': typeof AppLabelsIndexRoute
-  '/_app/organization/': typeof AppOrganizationIndexRoute
-  '/_app/pipelines/': typeof AppPipelinesIndexRoute
-  '/_app/profile/': typeof AppProfileIndexRoute
-  '/_app/runs/': typeof AppRunsIndexRoute
-  '/_app/tools/': typeof AppToolsIndexRoute
-  '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
-  '/auth/login/': typeof AuthLoginIndexRoute
-  '/auth/register/': typeof AuthRegisterIndexRoute
-  '/_app/artifacts/$artifactId/': typeof AppArtifactsArtifactIdIndexRoute
-  '/_app/organization/members/': typeof AppOrganizationMembersIndexRoute
-  '/_app/pipelines/$pipelineId/': typeof AppPipelinesPipelineIdIndexRoute
-  '/_app/runs/$runId/': typeof AppRunsRunIdIndexRoute
-  '/_app/pipelines/create/': typeof AppPipelinesCreateIndexLazyRoute
+  "/_app": typeof AppRouteRouteWithChildren
+  "/auth": typeof AuthRouteRouteWithChildren
+  "/_app/": typeof AppIndexRoute
+  "/landing/": typeof LandingIndexRoute
+  "/_app/artifacts/": typeof AppArtifactsIndexRoute
+  "/_app/labels/": typeof AppLabelsIndexRoute
+  "/_app/organization/": typeof AppOrganizationIndexRoute
+  "/_app/pipelines/": typeof AppPipelinesIndexRoute
+  "/_app/profile/": typeof AppProfileIndexRoute
+  "/_app/runs/": typeof AppRunsIndexRoute
+  "/_app/tools/": typeof AppToolsIndexRoute
+  "/auth/forgot-password/": typeof AuthForgotPasswordIndexRoute
+  "/auth/login/": typeof AuthLoginIndexRoute
+  "/auth/register/": typeof AuthRegisterIndexRoute
+  "/_app/artifacts/$artifactId/": typeof AppArtifactsArtifactIdIndexRoute
+  "/_app/organization/members/": typeof AppOrganizationMembersIndexRoute
+  "/_app/pipelines/$pipelineId/": typeof AppPipelinesPipelineIdIndexRoute
+  "/_app/runs/$runId/": typeof AppRunsRunIdIndexRoute
+  "/_app/pipelines/create/": typeof AppPipelinesCreateIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/auth'
-    | '/'
-    | '/landing'
-    | '/artifacts'
-    | '/labels'
-    | '/organization'
-    | '/pipelines'
-    | '/profile'
-    | '/runs'
-    | '/tools'
-    | '/auth/forgot-password'
-    | '/auth/login'
-    | '/auth/register'
-    | '/artifacts/$artifactId'
-    | '/organization/members'
-    | '/pipelines/$pipelineId'
-    | '/runs/$runId'
-    | '/pipelines/create'
+    | "/auth"
+    | "/"
+    | "/landing"
+    | "/artifacts"
+    | "/labels"
+    | "/organization"
+    | "/pipelines"
+    | "/profile"
+    | "/runs"
+    | "/tools"
+    | "/auth/forgot-password"
+    | "/auth/login"
+    | "/auth/register"
+    | "/artifacts/$artifactId"
+    | "/organization/members"
+    | "/pipelines/$pipelineId"
+    | "/runs/$runId"
+    | "/pipelines/create"
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/auth'
-    | '/'
-    | '/landing'
-    | '/artifacts'
-    | '/labels'
-    | '/organization'
-    | '/pipelines'
-    | '/profile'
-    | '/runs'
-    | '/tools'
-    | '/auth/forgot-password'
-    | '/auth/login'
-    | '/auth/register'
-    | '/artifacts/$artifactId'
-    | '/organization/members'
-    | '/pipelines/$pipelineId'
-    | '/runs/$runId'
-    | '/pipelines/create'
+    | "/auth"
+    | "/"
+    | "/landing"
+    | "/artifacts"
+    | "/labels"
+    | "/organization"
+    | "/pipelines"
+    | "/profile"
+    | "/runs"
+    | "/tools"
+    | "/auth/forgot-password"
+    | "/auth/login"
+    | "/auth/register"
+    | "/artifacts/$artifactId"
+    | "/organization/members"
+    | "/pipelines/$pipelineId"
+    | "/runs/$runId"
+    | "/pipelines/create"
   id:
-    | '__root__'
-    | '/_app'
-    | '/auth'
-    | '/_app/'
-    | '/landing/'
-    | '/_app/artifacts/'
-    | '/_app/labels/'
-    | '/_app/organization/'
-    | '/_app/pipelines/'
-    | '/_app/profile/'
-    | '/_app/runs/'
-    | '/_app/tools/'
-    | '/auth/forgot-password/'
-    | '/auth/login/'
-    | '/auth/register/'
-    | '/_app/artifacts/$artifactId/'
-    | '/_app/organization/members/'
-    | '/_app/pipelines/$pipelineId/'
-    | '/_app/runs/$runId/'
-    | '/_app/pipelines/create/'
+    | "__root__"
+    | "/_app"
+    | "/auth"
+    | "/_app/"
+    | "/landing/"
+    | "/_app/artifacts/"
+    | "/_app/labels/"
+    | "/_app/organization/"
+    | "/_app/pipelines/"
+    | "/_app/profile/"
+    | "/_app/runs/"
+    | "/_app/tools/"
+    | "/auth/forgot-password/"
+    | "/auth/login/"
+    | "/auth/register/"
+    | "/_app/artifacts/$artifactId/"
+    | "/_app/organization/members/"
+    | "/_app/pipelines/$pipelineId/"
+    | "/_app/runs/$runId/"
+    | "/_app/pipelines/create/"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -267,138 +267,138 @@ export interface RootRouteChildren {
   LandingIndexRoute: typeof LandingIndexRoute
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
+    "/auth": {
+      id: "/auth"
+      path: "/auth"
+      fullPath: "/auth"
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app': {
-      id: '/_app'
-      path: ''
-      fullPath: ''
+    "/_app": {
+      id: "/_app"
+      path: ""
+      fullPath: ""
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/landing/': {
-      id: '/landing/'
-      path: '/landing'
-      fullPath: '/landing'
+    "/landing/": {
+      id: "/landing/"
+      path: "/landing"
+      fullPath: "/landing"
       preLoaderRoute: typeof LandingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/': {
-      id: '/_app/'
-      path: '/'
-      fullPath: '/'
+    "/_app/": {
+      id: "/_app/"
+      path: "/"
+      fullPath: "/"
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/auth/register/': {
-      id: '/auth/register/'
-      path: '/register'
-      fullPath: '/auth/register'
+    "/auth/register/": {
+      id: "/auth/register/"
+      path: "/register"
+      fullPath: "/auth/register"
       preLoaderRoute: typeof AuthRegisterIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/auth/login/': {
-      id: '/auth/login/'
-      path: '/login'
-      fullPath: '/auth/login'
+    "/auth/login/": {
+      id: "/auth/login/"
+      path: "/login"
+      fullPath: "/auth/login"
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/auth/forgot-password/': {
-      id: '/auth/forgot-password/'
-      path: '/forgot-password'
-      fullPath: '/auth/forgot-password'
+    "/auth/forgot-password/": {
+      id: "/auth/forgot-password/"
+      path: "/forgot-password"
+      fullPath: "/auth/forgot-password"
       preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_app/tools/': {
-      id: '/_app/tools/'
-      path: '/tools'
-      fullPath: '/tools'
+    "/_app/tools/": {
+      id: "/_app/tools/"
+      path: "/tools"
+      fullPath: "/tools"
       preLoaderRoute: typeof AppToolsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/runs/': {
-      id: '/_app/runs/'
-      path: '/runs'
-      fullPath: '/runs'
+    "/_app/runs/": {
+      id: "/_app/runs/"
+      path: "/runs"
+      fullPath: "/runs"
       preLoaderRoute: typeof AppRunsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/profile/': {
-      id: '/_app/profile/'
-      path: '/profile'
-      fullPath: '/profile'
+    "/_app/profile/": {
+      id: "/_app/profile/"
+      path: "/profile"
+      fullPath: "/profile"
       preLoaderRoute: typeof AppProfileIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/pipelines/': {
-      id: '/_app/pipelines/'
-      path: '/pipelines'
-      fullPath: '/pipelines'
+    "/_app/pipelines/": {
+      id: "/_app/pipelines/"
+      path: "/pipelines"
+      fullPath: "/pipelines"
       preLoaderRoute: typeof AppPipelinesIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/organization/': {
-      id: '/_app/organization/'
-      path: '/organization'
-      fullPath: '/organization'
+    "/_app/organization/": {
+      id: "/_app/organization/"
+      path: "/organization"
+      fullPath: "/organization"
       preLoaderRoute: typeof AppOrganizationIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/labels/': {
-      id: '/_app/labels/'
-      path: '/labels'
-      fullPath: '/labels'
+    "/_app/labels/": {
+      id: "/_app/labels/"
+      path: "/labels"
+      fullPath: "/labels"
       preLoaderRoute: typeof AppLabelsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/artifacts/': {
-      id: '/_app/artifacts/'
-      path: '/artifacts'
-      fullPath: '/artifacts'
+    "/_app/artifacts/": {
+      id: "/_app/artifacts/"
+      path: "/artifacts"
+      fullPath: "/artifacts"
       preLoaderRoute: typeof AppArtifactsIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/pipelines/create/': {
-      id: '/_app/pipelines/create/'
-      path: '/pipelines/create'
-      fullPath: '/pipelines/create'
+    "/_app/pipelines/create/": {
+      id: "/_app/pipelines/create/"
+      path: "/pipelines/create"
+      fullPath: "/pipelines/create"
       preLoaderRoute: typeof AppPipelinesCreateIndexLazyRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/runs/$runId/': {
-      id: '/_app/runs/$runId/'
-      path: '/runs/$runId'
-      fullPath: '/runs/$runId'
+    "/_app/runs/$runId/": {
+      id: "/_app/runs/$runId/"
+      path: "/runs/$runId"
+      fullPath: "/runs/$runId"
       preLoaderRoute: typeof AppRunsRunIdIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/pipelines/$pipelineId/': {
-      id: '/_app/pipelines/$pipelineId/'
-      path: '/pipelines/$pipelineId'
-      fullPath: '/pipelines/$pipelineId'
+    "/_app/pipelines/$pipelineId/": {
+      id: "/_app/pipelines/$pipelineId/"
+      path: "/pipelines/$pipelineId"
+      fullPath: "/pipelines/$pipelineId"
       preLoaderRoute: typeof AppPipelinesPipelineIdIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/organization/members/': {
-      id: '/_app/organization/members/'
-      path: '/organization/members'
-      fullPath: '/organization/members'
+    "/_app/organization/members/": {
+      id: "/_app/organization/members/"
+      path: "/organization/members"
+      fullPath: "/organization/members"
       preLoaderRoute: typeof AppOrganizationMembersIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/_app/artifacts/$artifactId/': {
-      id: '/_app/artifacts/$artifactId/'
-      path: '/artifacts/$artifactId'
-      fullPath: '/artifacts/$artifactId'
+    "/_app/artifacts/$artifactId/": {
+      id: "/_app/artifacts/$artifactId/"
+      path: "/artifacts/$artifactId"
+      fullPath: "/artifacts/$artifactId"
       preLoaderRoute: typeof AppArtifactsArtifactIdIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }

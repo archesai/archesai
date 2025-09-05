@@ -1,25 +1,25 @@
-'use no memo'
+"use no memo"
 
-import type { ColumnSort, SortDirection, Table } from '@tanstack/react-table'
-import type { JSX } from 'react'
+import type { ColumnSort, SortDirection, Table } from "@tanstack/react-table"
+import type { JSX } from "react"
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 
 import {
   ArrowDownUpIcon,
   ChevronsUpDownIcon,
   GripVerticalIcon,
   TrashIcon
-} from '#components/custom/icons'
+} from "#components/custom/icons"
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
   SortableOverlay
-} from '#components/custom/sortable'
-import { Badge } from '#components/shadcn/badge'
-import { Button } from '#components/shadcn/button'
+} from "#components/custom/sortable"
+import { Badge } from "#components/shadcn/badge"
+import { Button } from "#components/shadcn/button"
 import {
   Command,
   CommandEmpty,
@@ -27,23 +27,23 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from '#components/shadcn/command'
+} from "#components/shadcn/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '#components/shadcn/popover'
+} from "#components/shadcn/popover"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '#components/shadcn/select'
-import { cn } from '#lib/utils'
+} from "#components/shadcn/select"
+import { cn } from "#lib/utils"
 
-const OPEN_MENU_SHORTCUT = 's'
-const REMOVE_SORT_SHORTCUTS = ['backspace', 'delete']
+const OPEN_MENU_SHORTCUT = "s"
+const REMOVE_SORT_SHORTCUTS = ["backspace", "delete"]
 
 interface DataTableSortItemProps {
   columnLabels: Map<string, string>
@@ -158,9 +158,9 @@ export function DataTableSortList<TData>({
       }
     }
 
-    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener("keydown", onKeyDown)
     return () => {
-      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener("keydown", onKeyDown)
     }
   }, [sorting.length, onSortingReset])
 
@@ -190,15 +190,15 @@ export function DataTableSortList<TData>({
         <PopoverTrigger asChild>
           <Button
             onKeyDown={onTriggerKeyDown}
-            size='sm'
-            variant='ghost'
+            size="sm"
+            variant="ghost"
           >
             <ArrowDownUpIcon />
             Sort
             {sorting.length > 0 && (
               <Badge
-                className='h-[18.24px] rounded-[3.2px] px-[5.12px] font-mono text-[10.4px] font-normal'
-                variant='secondary'
+                className="h-[18.24px] rounded-[3.2px] px-[5.12px] font-mono text-[10.4px] font-normal"
+                variant="secondary"
               >
                 {sorting.length}
               </Badge>
@@ -208,31 +208,31 @@ export function DataTableSortList<TData>({
         <PopoverContent
           aria-describedby={descriptionId}
           aria-labelledby={labelId}
-          className='flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]'
+          className="flex w-full max-w-[var(--radix-popover-content-available-width)] origin-[var(--radix-popover-content-transform-origin)] flex-col gap-3.5 p-4 sm:min-w-[380px]"
           {...props}
         >
-          <div className='flex flex-col gap-1'>
+          <div className="flex flex-col gap-1">
             <h4
-              className='leading-none font-medium'
+              className="leading-none font-medium"
               id={labelId}
             >
-              {sorting.length > 0 ? 'Sort by' : 'No sorting applied'}
+              {sorting.length > 0 ? "Sort by" : "No sorting applied"}
             </h4>
             <p
               className={cn(
-                'text-sm text-muted-foreground',
-                sorting.length > 0 && 'sr-only'
+                "text-sm text-muted-foreground",
+                sorting.length > 0 && "sr-only"
               )}
               id={descriptionId}
             >
-              {sorting.length > 0 ?
-                'Modify sorting to organize your rows.'
-              : 'Add sorting to organize your rows.'}
+              {sorting.length > 0
+                ? "Modify sorting to organize your rows."
+                : "Add sorting to organize your rows."}
             </p>
           </div>
           {sorting.length > 0 && (
             <SortableContent asChild>
-              <ul className='flex max-h-[300px] flex-col gap-2 overflow-y-auto p-1'>
+              <ul className="flex max-h-[300px] flex-col gap-2 overflow-y-auto p-1">
                 {sorting.map((sort) => (
                   <DataTableSortItem
                     columnLabels={columnLabels}
@@ -247,22 +247,22 @@ export function DataTableSortList<TData>({
               </ul>
             </SortableContent>
           )}
-          <div className='flex w-full items-center gap-2'>
+          <div className="flex w-full items-center gap-2">
             <Button
-              className='rounded'
+              className="rounded"
               disabled={columns.length === 0}
               onClick={onSortAdd}
               ref={addButtonRef}
-              size='sm'
+              size="sm"
             >
               Add sort
             </Button>
             {sorting.length > 0 && (
               <Button
-                className='rounded'
+                className="rounded"
                 onClick={onSortingReset}
-                size='sm'
-                variant='ghost'
+                size="sm"
+                variant="ghost"
               >
                 Reset sorting
               </Button>
@@ -271,11 +271,11 @@ export function DataTableSortList<TData>({
         </PopoverContent>
       </Popover>
       <SortableOverlay>
-        <div className='flex items-center gap-2'>
-          <div className='h-8 w-[180px] rounded-sm bg-primary/10' />
-          <div className='h-8 w-24 rounded-sm bg-primary/10' />
-          <div className='size-8 shrink-0 rounded-sm bg-primary/10' />
-          <div className='size-8 shrink-0 rounded-sm bg-primary/10' />
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-[180px] rounded-sm bg-primary/10" />
+          <div className="h-8 w-24 rounded-sm bg-primary/10" />
+          <div className="size-8 shrink-0 rounded-sm bg-primary/10" />
+          <div className="size-8 shrink-0 rounded-sm bg-primary/10" />
         </div>
       </SortableOverlay>
     </Sortable>
@@ -324,7 +324,7 @@ function DataTableSortItem({
       value={sort.id}
     >
       <li
-        className='flex items-center gap-2'
+        className="flex items-center gap-2"
         id={sortItemId}
         onKeyDown={onItemKeyDown}
         tabIndex={-1}
@@ -336,21 +336,21 @@ function DataTableSortItem({
           <PopoverTrigger asChild>
             <Button
               aria-controls={fieldListboxId}
-              className='w-44 justify-between rounded font-normal'
+              className="w-44 justify-between rounded font-normal"
               id={fieldTriggerId}
-              size='sm'
-              variant='ghost'
+              size="sm"
+              variant="ghost"
             >
-              <span className='truncate'>{columnLabels.get(sort.id)}</span>
-              <ChevronsUpDownIcon className='opacity-50' />
+              <span className="truncate">{columnLabels.get(sort.id)}</span>
+              <ChevronsUpDownIcon className="opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='w-[var(--radix-popover-trigger-width)] origin-[var(--radix-popover-content-transform-origin)] p-0'
+            className="w-[var(--radix-popover-trigger-width)] origin-[var(--radix-popover-content-transform-origin)] p-0"
             id={fieldListboxId}
           >
             <Command>
-              <CommandInput placeholder='Search fields...' />
+              <CommandInput placeholder="Search fields..." />
               <CommandList>
                 <CommandEmpty>No fields found.</CommandEmpty>
                 <CommandGroup>
@@ -362,7 +362,7 @@ function DataTableSortItem({
                       }}
                       value={column.id}
                     >
-                      <span className='truncate'>{column.label}</span>
+                      <span className="truncate">{column.label}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -373,24 +373,24 @@ function DataTableSortItem({
         <Select
           onOpenChange={setShowDirectionSelector}
           onValueChange={(value: SortDirection) => {
-            onSortUpdate(sort.id, { desc: value === 'desc' })
+            onSortUpdate(sort.id, { desc: value === "desc" })
           }}
           open={showDirectionSelector}
-          value={sort.desc ? 'desc' : 'asc'}
+          value={sort.desc ? "desc" : "asc"}
         >
           <SelectTrigger
             aria-controls={directionListboxId}
-            className='h-8 w-24 rounded [&[data-size]]:h-8'
+            className="h-8 w-24 rounded [&[data-size]]:h-8"
           >
             <SelectValue />
           </SelectTrigger>
           <SelectContent
-            className='min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]'
+            className="min-w-[var(--radix-select-trigger-width)] origin-[var(--radix-select-content-transform-origin)]"
             id={directionListboxId}
           >
             {[
-              { label: 'Asc', value: 'asc' as const },
-              { label: 'Desc', value: 'desc' as const }
+              { label: "Asc", value: "asc" as const },
+              { label: "Desc", value: "desc" as const }
             ].map((order) => (
               <SelectItem
                 key={order.value}
@@ -403,20 +403,20 @@ function DataTableSortItem({
         </Select>
         <Button
           aria-controls={sortItemId}
-          className='size-8 shrink-0 rounded'
+          className="size-8 shrink-0 rounded"
           onClick={() => {
             onSortRemove(sort.id)
           }}
-          size='icon'
-          variant='ghost'
+          size="icon"
+          variant="ghost"
         >
           <TrashIcon />
         </Button>
         <SortableItemHandle asChild>
           <Button
-            className='size-8 shrink-0 rounded'
-            size='icon'
-            variant='ghost'
+            className="size-8 shrink-0 rounded"
+            size="icon"
+            variant="ghost"
           >
             <GripVerticalIcon />
           </Button>

@@ -1,4 +1,4 @@
-import type { LucideIcon } from '#components/custom/icons'
+import type { LucideIcon } from "#components/custom/icons"
 
 export interface SiteRoute {
   children?: SiteRoute[]

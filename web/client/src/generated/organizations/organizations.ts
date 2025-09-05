@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   BadRequestResponse,
@@ -53,9 +53,9 @@ import type {
   UpdateMemberBody,
   UpdateOrganization200,
   UpdateOrganizationBody
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -73,8 +73,8 @@ export const createOrganization = async (
 ): Promise<CreateOrganization201> => {
   return customFetch<CreateOrganization201>(getCreateOrganizationUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createOrganizationBody)
   })
 }
@@ -96,15 +96,12 @@ export const getCreateOrganizationMutationOptions = <
   { data: CreateOrganizationBody },
   TContext
 > => {
-  const mutationKey = ['createOrganization']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createOrganization"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -167,8 +164,8 @@ export const getFindManyOrganizationsUrl = (
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/organizations?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/organizations?${stringifiedParams}`
     : `/organizations`
 }
 
@@ -180,7 +177,7 @@ export const findManyOrganizations = async (
     getFindManyOrganizationsUrl(params),
     {
       ...options,
-      method: 'GET'
+      method: "GET"
     }
   )
 }
@@ -250,7 +247,7 @@ export function useFindManyOrganizations<
           TError,
           Awaited<ReturnType<typeof findManyOrganizations>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -277,7 +274,7 @@ export function useFindManyOrganizations<
           TError,
           Awaited<ReturnType<typeof findManyOrganizations>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -490,7 +487,7 @@ export const deleteOrganization = async (
 ): Promise<DeleteOrganization200> => {
   return customFetch<DeleteOrganization200>(getDeleteOrganizationUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -511,15 +508,12 @@ export const getDeleteOrganizationMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteOrganization']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteOrganization"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -582,7 +576,7 @@ export const getOneOrganization = async (
 ): Promise<GetOneOrganization200> => {
   return customFetch<GetOneOrganization200>(getGetOneOrganizationUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -652,7 +646,7 @@ export function useGetOneOrganization<
           TError,
           Awaited<ReturnType<typeof getOneOrganization>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -679,7 +673,7 @@ export function useGetOneOrganization<
           TError,
           Awaited<ReturnType<typeof getOneOrganization>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -886,8 +880,8 @@ export const updateOrganization = async (
 ): Promise<UpdateOrganization200> => {
   return customFetch<UpdateOrganization200>(getUpdateOrganizationUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateOrganizationBody)
   })
 }
@@ -909,15 +903,12 @@ export const getUpdateOrganizationMutationOptions = <
   { id: string | undefined | null; data: UpdateOrganizationBody },
   TContext
 > => {
-  const mutationKey = ['updateOrganization']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateOrganization"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -981,8 +972,8 @@ export const createMember = async (
 ): Promise<CreateMember201> => {
   return customFetch<CreateMember201>(getCreateMemberUrl(id), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createMemberBody)
   })
 }
@@ -1004,15 +995,12 @@ export const getCreateMemberMutationOptions = <
   { id: string | undefined | null; data: CreateMemberBody },
   TContext
 > => {
-  const mutationKey = ['createMember']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createMember"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1076,8 +1064,8 @@ export const getFindManyMembersUrl = (
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/organizations/${id}/members?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/organizations/${id}/members?${stringifiedParams}`
     : `/organizations/${id}/members`
 }
 
@@ -1088,7 +1076,7 @@ export const findManyMembers = async (
 ): Promise<FindManyMembers200> => {
   return customFetch<FindManyMembers200>(getFindManyMembersUrl(id, params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1164,7 +1152,7 @@ export function useFindManyMembers<
           TError,
           Awaited<ReturnType<typeof findManyMembers>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1192,7 +1180,7 @@ export function useFindManyMembers<
           TError,
           Awaited<ReturnType<typeof findManyMembers>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1416,7 +1404,7 @@ export const deleteMember = async (
 ): Promise<DeleteMember200> => {
   return customFetch<DeleteMember200>(getDeleteMemberUrl(id, memberId), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -1437,15 +1425,12 @@ export const getDeleteMemberMutationOptions = <
   { id: string | undefined | null; memberId: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteMember']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteMember"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1509,7 +1494,7 @@ export const getOneMember = async (
 ): Promise<GetOneMember200> => {
   return customFetch<GetOneMember200>(getGetOneMemberUrl(id, memberId), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1575,7 +1560,7 @@ export function useGetOneMember<
           TError,
           Awaited<ReturnType<typeof getOneMember>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1599,7 +1584,7 @@ export function useGetOneMember<
           TError,
           Awaited<ReturnType<typeof getOneMember>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1814,8 +1799,8 @@ export const updateMember = async (
 ): Promise<UpdateMember200> => {
   return customFetch<UpdateMember200>(getUpdateMemberUrl(id, memberId), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateMemberBody)
   })
 }
@@ -1845,15 +1830,12 @@ export const getUpdateMemberMutationOptions = <
   },
   TContext
 > => {
-  const mutationKey = ['updateMember']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateMember"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1926,8 +1908,8 @@ export const createInvitation = async (
 ): Promise<CreateInvitation201> => {
   return customFetch<CreateInvitation201>(getCreateInvitationUrl(id), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createInvitationBody)
   })
 }
@@ -1949,15 +1931,12 @@ export const getCreateInvitationMutationOptions = <
   { id: string | undefined | null; data: CreateInvitationBody },
   TContext
 > => {
-  const mutationKey = ['createInvitation']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createInvitation"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -2021,8 +2000,8 @@ export const getFindManyInvitationsUrl = (
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/organizations/${id}/invitations?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/organizations/${id}/invitations?${stringifiedParams}`
     : `/organizations/${id}/invitations`
 }
 
@@ -2035,7 +2014,7 @@ export const findManyInvitations = async (
     getFindManyInvitationsUrl(id, params),
     {
       ...options,
-      method: 'GET'
+      method: "GET"
     }
   )
 }
@@ -2116,7 +2095,7 @@ export function useFindManyInvitations<
           TError,
           Awaited<ReturnType<typeof findManyInvitations>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2144,7 +2123,7 @@ export function useFindManyInvitations<
           TError,
           Awaited<ReturnType<typeof findManyInvitations>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2371,7 +2350,7 @@ export const deleteInvitation = async (
     getDeleteInvitationUrl(id, invitationId),
     {
       ...options,
-      method: 'DELETE'
+      method: "DELETE"
     }
   )
 }
@@ -2393,15 +2372,12 @@ export const getDeleteInvitationMutationOptions = <
   { id: string | undefined | null; invitationId: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteInvitation']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteInvitation"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -2473,7 +2449,7 @@ export const getOneInvitation = async (
     getGetOneInvitationUrl(id, invitationId),
     {
       ...options,
-      method: 'GET'
+      method: "GET"
     }
   )
 }
@@ -2549,7 +2525,7 @@ export function useGetOneInvitation<
           TError,
           Awaited<ReturnType<typeof getOneInvitation>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2577,7 +2553,7 @@ export function useGetOneInvitation<
           TError,
           Awaited<ReturnType<typeof getOneInvitation>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2807,8 +2783,8 @@ export const updateInvitation = async (
     getUpdateInvitationUrl(id, invitationId),
     {
       ...options,
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
       body: JSON.stringify(updateInvitationBody)
     }
   )
@@ -2839,15 +2815,12 @@ export const getUpdateInvitationMutationOptions = <
   },
   TContext
 > => {
-  const mutationKey = ['updateInvitation']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateInvitation"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

@@ -1,12 +1,12 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useTransition } from 'react'
-import { toast } from 'sonner'
+import { useTransition } from "react"
+import { toast } from "sonner"
 
-import type { BaseEntity } from '#types/entities'
+import type { BaseEntity } from "#types/entities"
 
-import { Loader2Icon, TrashIcon } from '#components/custom/icons'
-import { Button } from '#components/shadcn/button'
+import { Loader2Icon, TrashIcon } from "#components/custom/icons"
+import { Button } from "#components/shadcn/button"
 import {
   Dialog,
   DialogClose,
@@ -16,9 +16,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger
-} from '#components/shadcn/dialog'
-import { ScrollArea } from '#components/shadcn/scroll-area'
-import { Separator } from '#components/shadcn/separator'
+} from "#components/shadcn/dialog"
+import { ScrollArea } from "#components/shadcn/scroll-area"
+import { Separator } from "#components/shadcn/separator"
 
 interface DeleteItemsProps<TEntity extends BaseEntity>
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
@@ -45,7 +45,7 @@ export const DeleteItems = <TEntity extends BaseEntity>(
               description: error.message
             })
             props.onOpenChange?.(false)
-            toast.success('Tasks deleted')
+            toast.success("Tasks deleted")
           } else {
             console.error(error)
           }
@@ -58,39 +58,39 @@ export const DeleteItems = <TEntity extends BaseEntity>(
 
   return (
     <Dialog {...props}>
-      {props.showTrigger ?
+      {props.showTrigger ? (
         <DialogTrigger asChild>
           <Button
-            size='sm'
-            variant='outline'
+            size="sm"
+            variant="outline"
           >
             <TrashIcon
-              aria-hidden='true'
-              className='mr-2 size-4'
+              aria-hidden="true"
+              className="mr-2 size-4"
             />
             Delete ({props.items.length})
           </Button>
         </DialogTrigger>
-      : null}
+      ) : null}
 
-      <DialogContent className='gap-0 p-0'>
+      <DialogContent className="gap-0 p-0">
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your{' '}
-            <span className='font-medium'>{props.items.length}</span>
-            {props.items.length === 1 ? ' item' : ' items'} from our servers.
+            This action cannot be undone. This will permanently delete your{" "}
+            <span className="font-medium">{props.items.length}</span>
+            {props.items.length === 1 ? " item" : " items"} from our servers.
           </DialogDescription>
         </DialogHeader>
-        <div className='flex flex-col items-center justify-center gap-3 p-4'>
-          <TrashIcon className='text-destructive' />
-          <p className='text-center'>
+        <div className="flex flex-col items-center justify-center gap-3 p-4">
+          <TrashIcon className="text-destructive" />
+          <p className="text-center">
             {t(
-              `Are you sure you want to permanently delete the following ${props.entityKey}${props.items.length > 1 ? 's' : ''}?`
+              `Are you sure you want to permanently delete the following ${props.entityKey}${props.items.length > 1 ? "s" : ""}?`
             )}
           </p>
           <ScrollArea>
-            <div className='max-h-72 p-4'>
+            <div className="max-h-72 p-4">
               {props.items.map((item, i) => (
                 <p key={i}>{item.id}</p>
               ))}
@@ -98,20 +98,20 @@ export const DeleteItems = <TEntity extends BaseEntity>(
           </ScrollArea>
         </div>
         <Separator />
-        <DialogFooter className='gap-2 sm:gap-x-0'>
+        <DialogFooter className="gap-2 sm:gap-x-0">
           <DialogClose asChild>
-            <Button variant='outline'>Cancel</Button>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button
-            aria-label='Delete selected rows'
+            aria-label="Delete selected rows"
             disabled={isDeletePending}
             onClick={onDelete}
-            variant='destructive'
+            variant="destructive"
           >
             {isDeletePending && (
               <Loader2Icon
-                aria-hidden='true'
-                className='mr-2 size-4 animate-spin'
+                aria-hidden="true"
+                className="mr-2 size-4 animate-spin"
               />
             )}
             Delete

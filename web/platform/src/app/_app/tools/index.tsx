@@ -1,13 +1,13 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-import ToolDataTable from '#components/datatables/tool-datatable'
-import { getRouteMeta } from '#lib/site-utils'
+import ToolDataTable from "#components/datatables/tool-datatable"
+import { getRouteMeta } from "#lib/site-utils"
 
-export const metadata = getRouteMeta('/tools')
+export const metadata = getRouteMeta("/tools")
 
-export const Route = createFileRoute('/_app/tools/')({
+export const Route = createFileRoute("/_app/tools/")({
   component: ToolsPage
 })
 

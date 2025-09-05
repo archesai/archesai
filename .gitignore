@@ -77,8 +77,6 @@ test-output
 
 .cache
 
-.husky/_
-
 **/tmp
 
 #api/openapi.bundled.yaml

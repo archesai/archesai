@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   BadRequestResponse,
@@ -35,9 +35,9 @@ import type {
   UnauthorizedResponse,
   UpdateUser200,
   UpdateUserBody
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -51,8 +51,8 @@ export const getFindManyUsersUrl = (params?: FindManyUsersParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/auth/users?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/auth/users?${stringifiedParams}`
     : `/auth/users`
 }
 
@@ -62,7 +62,7 @@ export const findManyUsers = async (
 ): Promise<FindManyUsers200> => {
   return customFetch<FindManyUsers200>(getFindManyUsersUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -117,7 +117,7 @@ export function useFindManyUsers<
           TError,
           Awaited<ReturnType<typeof findManyUsers>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -140,7 +140,7 @@ export function useFindManyUsers<
           TError,
           Awaited<ReturnType<typeof findManyUsers>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -340,7 +340,7 @@ export const deleteUser = async (
 ): Promise<DeleteUser200> => {
   return customFetch<DeleteUser200>(getDeleteUserUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -361,15 +361,12 @@ export const getDeleteUserMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteUser']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteUser"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -429,7 +426,7 @@ export const getOneUser = async (
 ): Promise<GetOneUser200> => {
   return customFetch<GetOneUser200>(getGetOneUserUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -489,7 +486,7 @@ export function useGetOneUser<
           TError,
           Awaited<ReturnType<typeof getOneUser>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -512,7 +509,7 @@ export function useGetOneUser<
           TError,
           Awaited<ReturnType<typeof getOneUser>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -711,8 +708,8 @@ export const updateUser = async (
 ): Promise<UpdateUser200> => {
   return customFetch<UpdateUser200>(getUpdateUserUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateUserBody)
   })
 }
@@ -734,15 +731,12 @@ export const getUpdateUserMutationOptions = <
   { id: string | undefined | null; data: UpdateUserBody },
   TContext
 > => {
-  const mutationKey = ['updateUser']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateUser"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

@@ -1,4 +1,4 @@
-'use no memo'
+"use no memo"
 
 import type {
   AccessorKeyColumnDef,
@@ -11,45 +11,45 @@ import type {
   TableState,
   Updater,
   VisibilityState
-} from '@tanstack/react-table'
+} from "@tanstack/react-table"
 
-import { useCallback, useMemo, useState } from 'react'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { useCallback, useMemo, useState } from "react"
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
 
 import type {
   BaseEntity //FilterNode
-} from '#types/entities'
+} from "#types/entities"
 
-import { DataTableColumnHeader } from '#components/datatable/components/data-table-column-header'
-import { Checkbox } from '#components/shadcn/checkbox'
+import { DataTableColumnHeader } from "#components/datatable/components/data-table-column-header"
+import { Checkbox } from "#components/shadcn/checkbox"
 // import { useDebouncedCallback } from '#hooks/use-debounced-callback'
-import { useFilterState } from '#hooks/use-filter-state'
-import { toSentenceCase } from '#lib/utils'
+import { useFilterState } from "#hooks/use-filter-state"
+import { toSentenceCase } from "#lib/utils"
 
 const DEBOUNCE_MS = 300
 const THROTTLE_MS = 50
 
 export interface ExtendedColumnSort<TData extends BaseEntity>
-  extends Omit<ColumnSort, 'id'> {
+  extends Omit<ColumnSort, "id"> {
   id: Extract<keyof TData, string>
 }
 
 interface useDataTableProps<TEntity extends BaseEntity>
   extends Omit<
       TableOptions<TEntity>,
-      | 'getCoreRowModel'
-      | 'manualFiltering'
-      | 'manualPagination'
-      | 'manualSorting'
-      | 'pageCount'
-      | 'state'
+      | "getCoreRowModel"
+      | "manualFiltering"
+      | "manualPagination"
+      | "manualSorting"
+      | "pageCount"
+      | "state"
     >,
-    Required<Pick<TableOptions<TEntity>, 'pageCount'>> {
+    Required<Pick<TableOptions<TEntity>, "pageCount">> {
   clearOnDefault?: boolean
   debounceMs?: number
   enableAdvancedFilter?: boolean
-  history?: 'push' | 'replace'
-  initialState?: Omit<Partial<TableState>, 'sorting'> & {
+  history?: "push" | "replace"
+  initialState?: Omit<Partial<TableState>, "sorting"> & {
     sorting?: ExtendedColumnSort<TEntity>[]
   }
   scroll?: boolean
@@ -108,7 +108,7 @@ export function useDataTable<TData extends BaseEntity>(
 
   const onPaginationChange = useCallback(
     (updaterOrValue: Updater<PaginationState>) => {
-      if (typeof updaterOrValue === 'function') {
+      if (typeof updaterOrValue === "function") {
         const newPagination = updaterOrValue(pagination)
         setPage(newPagination.pageIndex + 1)
         setPageSize(newPagination.pageSize)
@@ -122,7 +122,7 @@ export function useDataTable<TData extends BaseEntity>(
 
   const onSortingChange = useCallback(
     (updaterOrValue: Updater<SortingState>) => {
-      if (typeof updaterOrValue === 'function') {
+      if (typeof updaterOrValue === "function") {
         const newSorting = updaterOrValue(sorting)
         setSorting(newSorting as ExtendedColumnSort<TData>[])
       } else {
@@ -179,9 +179,9 @@ export function useDataTable<TData extends BaseEntity>(
 
       setColumnFilters((prev) => {
         const next =
-          typeof updaterOrValue === 'function' ?
-            updaterOrValue(prev)
-          : updaterOrValue
+          typeof updaterOrValue === "function"
+            ? updaterOrValue(prev)
+            : updaterOrValue
 
         // const filterUpdates = next.reduce<
         //   Record<string, null | string | string[]>
@@ -209,11 +209,11 @@ export function useDataTable<TData extends BaseEntity>(
     () => [
       // Checkbox column
       {
-        accessorKey: 'select',
+        accessorKey: "select",
         cell: ({ row }) => (
-          <div className='flex w-4'>
+          <div className="flex w-4">
             <Checkbox
-              aria-label='Select row'
+              aria-label="Select row"
               checked={row.getIsSelected()}
               onCheckedChange={(value) => {
                 row.toggleSelected(!!value)
@@ -224,21 +224,21 @@ export function useDataTable<TData extends BaseEntity>(
         enableHiding: false,
         enableSorting: false,
         header: ({ table }) => (
-          <div className='flex'>
+          <div className="flex">
             <Checkbox
-              aria-label='Select all'
+              aria-label="Select all"
               checked={
                 table.getIsAllPageRowsSelected() ||
-                (table.getIsSomePageRowsSelected() && 'indeterminate')
+                (table.getIsSomePageRowsSelected() && "indeterminate")
               }
-              className='translate-y-0.5'
+              className="translate-y-0.5"
               onCheckedChange={(value) => {
                 table.toggleAllPageRowsSelected(!!value)
               }}
             />
           </div>
         ),
-        id: 'select'
+        id: "select"
       },
       ...columns.map((column) => ({
         ...column,
@@ -248,7 +248,7 @@ export function useDataTable<TData extends BaseEntity>(
           (({ column: col }) => (
             <DataTableColumnHeader
               column={col}
-              title={toSentenceCase(column.meta?.label?.toString() ?? '')}
+              title={toSentenceCase(column.meta?.label?.toString() ?? "")}
             />
           ))
         // header:

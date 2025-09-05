@@ -46,13 +46,13 @@ paths:
       tags:
         - Accounts
       parameters:
-        - $ref: '#/components/parameters/AccountsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/AccountsSort'
+        - $ref: "#/components/parameters/AccountsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/AccountsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: List of accounts
           content:
             application/json:
@@ -66,7 +66,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/AccountEntity'
+                      $ref: "#/components/schemas/AccountEntity"
                   meta:
                     type: object
                     additionalProperties: false
@@ -76,10 +76,10 @@ paths:
                       total:
                         type: number
                         example: 42
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
       description: Find many accounts
   /auth/accounts/{id}:
     get:
@@ -99,7 +99,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: The account
           content:
             application/json:
@@ -110,9 +110,9 @@ paths:
                   - data
                 properties:
                   data:
-                    $ref: '#/components/schemas/AccountEntity'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                    $ref: "#/components/schemas/AccountEntity"
+        "404":
+          $ref: "#/components/responses/NotFound"
       description: Find an account
     delete:
       operationId: accounts_delete
@@ -131,7 +131,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Deleted account
           content:
             application/json:
@@ -142,9 +142,9 @@ paths:
                   - data
                 properties:
                   data:
-                    $ref: '#/components/schemas/AccountEntity'
-        '404':
-          $ref: '#/components/responses/NotFound'
+                    $ref: "#/components/schemas/AccountEntity"
+        "404":
+          $ref: "#/components/responses/NotFound"
       description: Delete an account
   /auth/sign-up:
     post:
@@ -182,7 +182,7 @@ paths:
                 - password
         required: true
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -190,12 +190,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - data
                 additionalProperties: false
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/sign-in:
     post:
       operationId: login
@@ -226,7 +226,7 @@ paths:
                 - password
         required: true
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -234,12 +234,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - data
                 additionalProperties: false
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/sign-out:
     post:
       operationId: logout
@@ -248,10 +248,10 @@ paths:
         - Auth
       description: This endpoint will log you out of the current session
       responses:
-        '204':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "204":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/email-verification/verify:
     post:
       operationId: confirmEmailVerification
@@ -274,7 +274,7 @@ paths:
                 - token
         required: true
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -282,17 +282,17 @@ paths:
                 type: object
                 properties:
                   session:
-                    $ref: '#/components/schemas/SessionEntity'
+                    $ref: "#/components/schemas/SessionEntity"
                   user:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - session
                   - user
                 additionalProperties: false
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /auth/email-verification/request:
     post:
       operationId: requestEmailVerification
@@ -303,12 +303,12 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/password-reset/request:
     post:
       operationId: requestPasswordReset
@@ -331,10 +331,10 @@ paths:
                 - email
         required: true
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
   /auth/password-reset/verify:
     post:
       operationId: confirmPasswordReset
@@ -363,12 +363,12 @@ paths:
                 - token
         required: true
       responses:
-        '204':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "204":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /auth/email-change/request:
     post:
       operationId: requestEmailChange
@@ -400,12 +400,12 @@ paths:
                 - userId
         required: true
       responses:
-        '204':
-          $ref: '#/components/responses/NoContent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/email-change/verify:
     post:
       operationId: confirmEmailChange
@@ -443,12 +443,12 @@ paths:
                 - userId
         required: true
       responses:
-        '204':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "204":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /auth/sessions:
     get:
       operationId: findManySessions
@@ -457,13 +457,13 @@ paths:
         - Sessions
       description: Find many sessions
       parameters:
-        - $ref: '#/components/parameters/SessionsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/SessionsSort'
+        - $ref: "#/components/parameters/SessionsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/SessionsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -473,7 +473,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SessionEntity'
+                      $ref: "#/components/schemas/SessionEntity"
                   meta:
                     type: object
                     properties:
@@ -488,10 +488,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/sessions/{id}:
     delete:
       operationId: deleteSession
@@ -511,7 +511,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -519,12 +519,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SessionEntity'
+                    $ref: "#/components/schemas/SessionEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneSession
       summary: Find a session
@@ -543,7 +543,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -551,12 +551,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SessionEntity'
+                    $ref: "#/components/schemas/SessionEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateSession
       summary: Update Session
@@ -587,7 +587,7 @@ paths:
           required: true
           description: The unique identifier of the resource.
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -595,12 +595,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SessionEntity'
+                    $ref: "#/components/schemas/SessionEntity"
                 required:
                   - data
                 additionalProperties: false
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/users:
     get:
       operationId: findManyUsers
@@ -609,13 +609,13 @@ paths:
         - Users
       description: Find many users
       parameters:
-        - $ref: '#/components/parameters/UsersFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/UsersSort'
+        - $ref: "#/components/parameters/UsersFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/UsersSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -625,7 +625,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/UserEntity'
+                      $ref: "#/components/schemas/UserEntity"
                   meta:
                     type: object
                     properties:
@@ -640,10 +640,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /auth/users/{id}:
     delete:
       operationId: deleteUser
@@ -663,7 +663,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -671,12 +671,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneUser
       summary: Find an user
@@ -695,7 +695,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -703,12 +703,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateUser
       summary: Update an user
@@ -742,7 +742,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -750,12 +750,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/UserEntity'
+                    $ref: "#/components/schemas/UserEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /organizations:
     post:
       operationId: createOrganization
@@ -787,7 +787,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -795,14 +795,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OrganizationEntity'
+                    $ref: "#/components/schemas/OrganizationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyOrganizations
       summary: Find many organizations
@@ -810,13 +810,13 @@ paths:
         - Organizations
       description: Find many organizations
       parameters:
-        - $ref: '#/components/parameters/OrganizationsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/OrganizationsSort'
+        - $ref: "#/components/parameters/OrganizationsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/OrganizationsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -826,7 +826,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/OrganizationEntity'
+                      $ref: "#/components/schemas/OrganizationEntity"
                   meta:
                     type: object
                     properties:
@@ -841,10 +841,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /organizations/{id}:
     delete:
       operationId: deleteOrganization
@@ -864,7 +864,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -872,12 +872,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OrganizationEntity'
+                    $ref: "#/components/schemas/OrganizationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneOrganization
       summary: Find an organization
@@ -896,7 +896,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -904,12 +904,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OrganizationEntity'
+                    $ref: "#/components/schemas/OrganizationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateOrganization
       summary: Update an organization
@@ -943,7 +943,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -951,12 +951,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/OrganizationEntity'
+                    $ref: "#/components/schemas/OrganizationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /organizations/{id}/members:
     post:
       operationId: createMember
@@ -992,7 +992,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -1000,14 +1000,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MemberEntity'
+                    $ref: "#/components/schemas/MemberEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyMembers
       summary: Find many members
@@ -1021,13 +1021,13 @@ paths:
           schema:
             type: string
           description: Organization ID
-        - $ref: '#/components/parameters/MembersFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/MembersSort'
+        - $ref: "#/components/parameters/MembersFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/MembersSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1037,7 +1037,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/MemberEntity'
+                      $ref: "#/components/schemas/MemberEntity"
                   meta:
                     type: object
                     properties:
@@ -1052,10 +1052,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /organizations/{id}/members/{memberId}:
     delete:
       operationId: deleteMember
@@ -1083,7 +1083,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1091,12 +1091,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MemberEntity'
+                    $ref: "#/components/schemas/MemberEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneMember
       summary: Find a member
@@ -1123,7 +1123,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1131,12 +1131,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MemberEntity'
+                    $ref: "#/components/schemas/MemberEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateMember
       summary: Update a member
@@ -1177,7 +1177,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1185,12 +1185,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/MemberEntity'
+                    $ref: "#/components/schemas/MemberEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /organizations/{id}/invitations:
     post:
       operationId: createInvitation
@@ -1234,7 +1234,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -1242,14 +1242,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/InvitationEntity'
+                    $ref: "#/components/schemas/InvitationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyInvitations
       summary: Find many invitations
@@ -1265,13 +1265,13 @@ paths:
           name: id
           required: true
           description: The unique identifier of the organization.
-        - $ref: '#/components/parameters/InvitationsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/InvitationsSort'
+        - $ref: "#/components/parameters/InvitationsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/InvitationsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1281,7 +1281,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/InvitationEntity'
+                      $ref: "#/components/schemas/InvitationEntity"
                   meta:
                     type: object
                     properties:
@@ -1296,10 +1296,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /organizations/{id}/invitations/{invitationId}:
     delete:
       operationId: deleteInvitation
@@ -1327,7 +1327,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1335,12 +1335,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/InvitationEntity'
+                    $ref: "#/components/schemas/InvitationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneInvitation
       summary: Find an invitation
@@ -1367,7 +1367,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1375,12 +1375,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/InvitationEntity'
+                    $ref: "#/components/schemas/InvitationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateInvitation
       summary: Update an invitation
@@ -1425,7 +1425,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1433,12 +1433,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/InvitationEntity'
+                    $ref: "#/components/schemas/InvitationEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /workflows/pipelines:
     post:
       operationId: createPipeline
@@ -1466,7 +1466,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -1474,14 +1474,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PipelineEntity'
+                    $ref: "#/components/schemas/PipelineEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyPipelines
       summary: Find many pipelines
@@ -1489,13 +1489,13 @@ paths:
         - Workflows
       description: Find many pipelines
       parameters:
-        - $ref: '#/components/parameters/PipelinesFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/PipelinesSort'
+        - $ref: "#/components/parameters/PipelinesFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/PipelinesSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1505,7 +1505,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PipelineEntity'
+                      $ref: "#/components/schemas/PipelineEntity"
                   meta:
                     type: object
                     properties:
@@ -1520,10 +1520,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /workflows/pipelines/{id}:
     delete:
       operationId: deletePipeline
@@ -1543,7 +1543,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1551,12 +1551,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PipelineEntity'
+                    $ref: "#/components/schemas/PipelineEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOnePipeline
       summary: Find a pipeline
@@ -1575,7 +1575,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1583,12 +1583,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PipelineEntity'
+                    $ref: "#/components/schemas/PipelineEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updatePipeline
       summary: Update a pipeline
@@ -1621,7 +1621,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1629,12 +1629,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/PipelineEntity'
+                    $ref: "#/components/schemas/PipelineEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /workflows/runs:
     post:
       operationId: createRun
@@ -1659,7 +1659,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -1667,14 +1667,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RunEntity'
+                    $ref: "#/components/schemas/RunEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyRuns
       summary: Find many runs
@@ -1682,13 +1682,13 @@ paths:
         - Workflows
       description: Find many runs
       parameters:
-        - $ref: '#/components/parameters/RunsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/RunsSort'
+        - $ref: "#/components/parameters/RunsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/RunsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1698,7 +1698,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RunEntity'
+                      $ref: "#/components/schemas/RunEntity"
                   meta:
                     type: object
                     properties:
@@ -1713,10 +1713,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /workflows/runs/{id}:
     delete:
       operationId: deleteRun
@@ -1736,7 +1736,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1744,12 +1744,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RunEntity'
+                    $ref: "#/components/schemas/RunEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneRun
       summary: Find a run
@@ -1768,7 +1768,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1776,12 +1776,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RunEntity'
+                    $ref: "#/components/schemas/RunEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateRun
       summary: Update a run
@@ -1810,7 +1810,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1818,12 +1818,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RunEntity'
+                    $ref: "#/components/schemas/RunEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /workflows/tools:
     post:
       operationId: createTool
@@ -1854,7 +1854,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -1862,14 +1862,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ToolEntity'
+                    $ref: "#/components/schemas/ToolEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyTools
       summary: Find many tools
@@ -1877,13 +1877,13 @@ paths:
         - Workflows
       description: Find many tools
       parameters:
-        - $ref: '#/components/parameters/ToolsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/ToolsSort'
+        - $ref: "#/components/parameters/ToolsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/ToolsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1893,7 +1893,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ToolEntity'
+                      $ref: "#/components/schemas/ToolEntity"
                   meta:
                     type: object
                     properties:
@@ -1908,10 +1908,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /workflows/tools/{id}:
     delete:
       operationId: deleteTool
@@ -1931,7 +1931,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1939,12 +1939,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ToolEntity'
+                    $ref: "#/components/schemas/ToolEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneTool
       summary: Find a tool
@@ -1963,7 +1963,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -1971,12 +1971,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ToolEntity'
+                    $ref: "#/components/schemas/ToolEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateTool
       summary: Update a tool
@@ -2011,7 +2011,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2019,12 +2019,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ToolEntity'
+                    $ref: "#/components/schemas/ToolEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /content/artifacts:
     post:
       operationId: createArtifact
@@ -2054,7 +2054,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -2062,14 +2062,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ArtifactEntity'
+                    $ref: "#/components/schemas/ArtifactEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyArtifacts
       summary: Find many artifacts
@@ -2077,13 +2077,13 @@ paths:
         - Content
       description: Find many artifacts
       parameters:
-        - $ref: '#/components/parameters/ArtifactsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/ArtifactsSort'
+        - $ref: "#/components/parameters/ArtifactsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/ArtifactsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2093,7 +2093,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ArtifactEntity'
+                      $ref: "#/components/schemas/ArtifactEntity"
                   meta:
                     type: object
                     properties:
@@ -2108,10 +2108,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /content/artifacts/{id}:
     delete:
       operationId: deleteArtifact
@@ -2131,7 +2131,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2139,12 +2139,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ArtifactEntity'
+                    $ref: "#/components/schemas/ArtifactEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneArtifact
       summary: Find an artifact
@@ -2163,7 +2163,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2171,12 +2171,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ArtifactEntity'
+                    $ref: "#/components/schemas/ArtifactEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateArtifact
       summary: Update an artifact
@@ -2214,7 +2214,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2222,12 +2222,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ArtifactEntity'
+                    $ref: "#/components/schemas/ArtifactEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /content/labels:
     post:
       operationId: createLabel
@@ -2252,7 +2252,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '201':
+        "201":
           description: Default Response
           content:
             application/json:
@@ -2260,14 +2260,14 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/LabelEntity'
+                    $ref: "#/components/schemas/LabelEntity"
                 required:
                   - data
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
     get:
       operationId: findManyLabels
       summary: Find many labels
@@ -2275,13 +2275,13 @@ paths:
         - Content
       description: Find many labels
       parameters:
-        - $ref: '#/components/parameters/LabelsFilter'
-        - $ref: '#/components/parameters/PageQuery'
-        - $ref: '#/components/parameters/LabelsSort'
+        - $ref: "#/components/parameters/LabelsFilter"
+        - $ref: "#/components/parameters/PageQuery"
+        - $ref: "#/components/parameters/LabelsSort"
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2291,7 +2291,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LabelEntity'
+                      $ref: "#/components/schemas/LabelEntity"
                   meta:
                     type: object
                     properties:
@@ -2306,10 +2306,10 @@ paths:
                   - data
                   - meta
                 additionalProperties: false
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /content/labels/{id}:
     delete:
       operationId: deleteLabel
@@ -2329,7 +2329,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2337,12 +2337,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/LabelEntity'
+                    $ref: "#/components/schemas/LabelEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     get:
       operationId: getOneLabel
       summary: Find a label
@@ -2361,7 +2361,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2369,12 +2369,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/LabelEntity'
+                    $ref: "#/components/schemas/LabelEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       operationId: updateLabel
       summary: Update a label
@@ -2404,7 +2404,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
@@ -2412,12 +2412,12 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/LabelEntity'
+                    $ref: "#/components/schemas/LabelEntity"
                 required:
                   - data
                 additionalProperties: false
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
   /config:
     get:
       operationId: getConfig
@@ -2426,14 +2426,14 @@ paths:
         - Config
       description: Get the configuration of the application
       responses:
-        '200':
+        "200":
           description: Current configuration
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArchesConfig'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/ArchesConfig"
+        "400":
+          $ref: "#/components/responses/BadRequest"
   /health:
     get:
       operationId: getHealth
@@ -2442,14 +2442,14 @@ paths:
         - Health
       description: Check the health status of the application
       responses:
-        '200':
+        "200":
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
+                $ref: "#/components/schemas/HealthResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 components:
   securitySchemes:
     bearerAuth:
@@ -2497,18 +2497,18 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
         createdAt:
           description: The date and time when the resource was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         updatedAt:
           description: The date and time when the resource was last updated
           type: string
           format: date-time
-          example: '2024-01-15T10:45:00Z'
+          example: "2024-01-15T10:45:00Z"
           minLength: 1
       required:
         - id
@@ -2517,7 +2517,7 @@ components:
     AccountEntity:
       description: Schema for Account entity (authentication provider account)
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
+        - $ref: "#/components/schemas/BaseEntity"
         - type: object
           properties:
             accountId:
@@ -2528,7 +2528,7 @@ components:
             userId:
               description: The user ID this account belongs to
               allOf:
-                - $ref: '#/components/schemas/UUID'
+                - $ref: "#/components/schemas/UUID"
             providerId:
               description: The authentication provider identifier
               type: string
@@ -2549,7 +2549,7 @@ components:
               description: The access token expiration timestamp
               type: string
               format: date-time
-              example: '2024-12-31T23:59:59Z'
+              example: "2024-12-31T23:59:59Z"
             refreshToken:
               description: The OAuth refresh token
               type: string
@@ -2559,7 +2559,7 @@ components:
               description: The refresh token expiration timestamp
               type: string
               format: date-time
-              example: '2025-12-31T23:59:59Z'
+              example: "2025-12-31T23:59:59Z"
             idToken:
               description: The OpenID Connect ID token
               type: string
@@ -2650,7 +2650,7 @@ components:
           description: Additional validation errors for specific fields
           type: array
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
     Email:
       type: string
       format: email
@@ -2659,13 +2659,13 @@ components:
     UserEntity:
       description: Schema for User entity
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
+        - $ref: "#/components/schemas/BaseEntity"
         - type: object
           properties:
             email:
               description: The user's email address
               allOf:
-                - $ref: '#/components/schemas/Email'
+                - $ref: "#/components/schemas/Email"
             emailVerified:
               description: Whether the user's email has been verified
               type: boolean
@@ -2694,7 +2694,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -2706,7 +2706,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         activeOrganizationId:
           description: The active organization ID
@@ -2752,7 +2752,7 @@ components:
     OrganizationEntity:
       description: Schema for Organization entity
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
+        - $ref: "#/components/schemas/BaseEntity"
         - type: object
           properties:
             name:
@@ -2819,7 +2819,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -2831,7 +2831,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         organizationId:
           description: The organization name
@@ -2868,7 +2868,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -2880,7 +2880,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         email:
           description: The email of the invitated user
@@ -2932,14 +2932,14 @@ components:
       properties:
         organizationId:
           description: The organization identifier
-          $ref: '#/components/schemas/UUID'
+          $ref: "#/components/schemas/UUID"
       required:
         - organizationId
     PipelineEntity:
       description: Schema for Pipeline entity
       allOf:
-        - $ref: '#/components/schemas/BaseEntity'
-        - $ref: '#/components/schemas/OrganizationReference'
+        - $ref: "#/components/schemas/BaseEntity"
+        - $ref: "#/components/schemas/OrganizationReference"
         - type: object
           properties:
             name:
@@ -2964,7 +2964,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -2976,13 +2976,13 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         completedAt:
           description: The timestamp when the run completed
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         error:
           description: The error message
@@ -3007,7 +3007,7 @@ components:
           description: The timestamp when the run started
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         status:
           type: string
@@ -3041,7 +3041,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -3053,7 +3053,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         description:
           description: The tool description
@@ -3098,7 +3098,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -3110,7 +3110,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         credits:
           description: The number of credits required to access this artifact. This is used for metering and billing purposes.
@@ -3168,7 +3168,7 @@ components:
           description: The date this item was created
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         id:
           description: The ID of the item
@@ -3180,7 +3180,7 @@ components:
           description: The date this item was last updated
           type: string
           format: date-time
-          example: '2024-01-15T09:30:00Z'
+          example: "2024-01-15T09:30:00Z"
           minLength: 1
         name:
           description: The name of the label
@@ -3307,9 +3307,9 @@ components:
       type: object
       properties:
         limits:
-          $ref: '#/components/schemas/ResourceLimits'
+          $ref: "#/components/schemas/ResourceLimits"
         requests:
-          $ref: '#/components/schemas/ResourceRequests'
+          $ref: "#/components/schemas/ResourceRequests"
       required:
         - limits
         - requests
@@ -3319,14 +3319,14 @@ components:
       type: object
       properties:
         cors:
-          $ref: '#/components/schemas/CORSConfig'
+          $ref: "#/components/schemas/CORSConfig"
         docs:
           description: Enable or disable API documentation
           type: boolean
           default: true
           example: true
         email:
-          $ref: '#/components/schemas/EmailConfig'
+          $ref: "#/components/schemas/EmailConfig"
         environment:
           description: Deployment environment (development, staging, production)
           type: string
@@ -3353,9 +3353,9 @@ components:
           default: true
           example: true
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - cors
         - docs
@@ -3464,11 +3464,11 @@ components:
           default: true
           example: true
         firebase:
-          $ref: '#/components/schemas/FirebaseAuth'
+          $ref: "#/components/schemas/FirebaseAuth"
         local:
-          $ref: '#/components/schemas/LocalAuth'
+          $ref: "#/components/schemas/LocalAuth"
         twitter:
-          $ref: '#/components/schemas/TwitterAuth'
+          $ref: "#/components/schemas/TwitterAuth"
       required:
         - enabled
       additionalProperties: false
@@ -3500,7 +3500,7 @@ components:
           default: false
           example: true
         stripe:
-          $ref: '#/components/schemas/StripeConfig'
+          $ref: "#/components/schemas/StripeConfig"
       required:
         - enabled
       additionalProperties: false
@@ -3604,13 +3604,13 @@ components:
           default: false
           example: true
         auth:
-          $ref: '#/components/schemas/DatabaseAuth'
+          $ref: "#/components/schemas/DatabaseAuth"
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         persistence:
-          $ref: '#/components/schemas/PersistenceConfig'
+          $ref: "#/components/schemas/PersistenceConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
         - url
@@ -3637,7 +3637,7 @@ components:
       type: object
       properties:
         api:
-          $ref: '#/components/schemas/DevServiceConfig'
+          $ref: "#/components/schemas/DevServiceConfig"
         hostIP:
           description: Host IP address for dev port forwarding
           type: string
@@ -3645,13 +3645,13 @@ components:
           minLength: 1
           example: example-string
         loki:
-          $ref: '#/components/schemas/DevServiceConfig'
+          $ref: "#/components/schemas/DevServiceConfig"
         platform:
-          $ref: '#/components/schemas/DevServiceConfig'
+          $ref: "#/components/schemas/DevServiceConfig"
         postgres:
-          $ref: '#/components/schemas/DevServiceConfig'
+          $ref: "#/components/schemas/DevServiceConfig"
         redis:
-          $ref: '#/components/schemas/DevServiceConfig'
+          $ref: "#/components/schemas/DevServiceConfig"
       required:
         - api
         - hostIP
@@ -3675,7 +3675,7 @@ components:
         imageRegistry:
           description: Custom container registry URL (leave empty for Docker Hub)
           type: string
-          default: ''
+          default: ""
           minLength: 1
           example: example-string
       required:
@@ -3706,7 +3706,7 @@ components:
         name:
           description: Custom service account name
           type: string
-          default: ''
+          default: ""
           minLength: 1
           example: Example Name
       required:
@@ -3718,11 +3718,11 @@ components:
       type: object
       properties:
         development:
-          $ref: '#/components/schemas/DevelopmentConfig'
+          $ref: "#/components/schemas/DevelopmentConfig"
         images:
-          $ref: '#/components/schemas/ImagesConfig'
+          $ref: "#/components/schemas/ImagesConfig"
         migrations:
-          $ref: '#/components/schemas/MigrationsConfig'
+          $ref: "#/components/schemas/MigrationsConfig"
         namespace:
           description: Kubernetes namespace where all resources will be deployed
           type: string
@@ -3730,7 +3730,7 @@ components:
           minLength: 1
           example: Example Name
         serviceAccount:
-          $ref: '#/components/schemas/ServiceAccountConfig'
+          $ref: "#/components/schemas/ServiceAccountConfig"
       required:
         - development
         - images
@@ -3779,7 +3779,7 @@ components:
           minLength: 1
           example: example-string
         tls:
-          $ref: '#/components/schemas/TLSConfig'
+          $ref: "#/components/schemas/TLSConfig"
       required:
         - enabled
       additionalProperties: false
@@ -3862,9 +3862,9 @@ components:
           minLength: 1
           example: example-string
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
       additionalProperties: false
@@ -3900,9 +3900,9 @@ components:
           default: false
           example: true
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
       additionalProperties: false
@@ -3911,17 +3911,17 @@ components:
       type: object
       properties:
         embedding:
-          $ref: '#/components/schemas/EmbeddingConfig'
+          $ref: "#/components/schemas/EmbeddingConfig"
         llm:
-          $ref: '#/components/schemas/LLMConfig'
+          $ref: "#/components/schemas/LLMConfig"
         runpod:
-          $ref: '#/components/schemas/RunPodConfig'
+          $ref: "#/components/schemas/RunPodConfig"
         scraper:
-          $ref: '#/components/schemas/ScraperConfig'
+          $ref: "#/components/schemas/ScraperConfig"
         speech:
-          $ref: '#/components/schemas/SpeechConfig'
+          $ref: "#/components/schemas/SpeechConfig"
         unstructured:
-          $ref: '#/components/schemas/UnstructuredConfig'
+          $ref: "#/components/schemas/UnstructuredConfig"
       required:
         - embedding
         - llm
@@ -3972,9 +3972,9 @@ components:
           default: false
           example: true
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
       additionalProperties: false
@@ -3999,9 +3999,9 @@ components:
           minLength: 1
           example: example-string
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
       additionalProperties: false
@@ -4010,9 +4010,9 @@ components:
       type: object
       properties:
         grafana:
-          $ref: '#/components/schemas/GrafanaConfig'
+          $ref: "#/components/schemas/GrafanaConfig"
         loki:
-          $ref: '#/components/schemas/LokiConfig'
+          $ref: "#/components/schemas/LokiConfig"
       required:
         - grafana
         - loki
@@ -4038,9 +4038,9 @@ components:
           minLength: 1
           example: example-string
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
       additionalProperties: false
@@ -4081,11 +4081,11 @@ components:
           default: 6379
           example: 42
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         persistence:
-          $ref: '#/components/schemas/PersistenceConfig'
+          $ref: "#/components/schemas/PersistenceConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
         - auth
@@ -4131,11 +4131,11 @@ components:
           minLength: 1
           example: example-string
         image:
-          $ref: '#/components/schemas/ImageConfig'
+          $ref: "#/components/schemas/ImageConfig"
         persistence:
-          $ref: '#/components/schemas/PersistenceConfig'
+          $ref: "#/components/schemas/PersistenceConfig"
         resources:
-          $ref: '#/components/schemas/ResourceConfig'
+          $ref: "#/components/schemas/ResourceConfig"
       required:
         - enabled
         - accesskey
@@ -4148,29 +4148,29 @@ components:
       type: object
       properties:
         api:
-          $ref: '#/components/schemas/APIConfig'
+          $ref: "#/components/schemas/APIConfig"
         auth:
-          $ref: '#/components/schemas/AuthConfig'
+          $ref: "#/components/schemas/AuthConfig"
         billing:
-          $ref: '#/components/schemas/BillingConfig'
+          $ref: "#/components/schemas/BillingConfig"
         database:
-          $ref: '#/components/schemas/DatabaseConfig'
+          $ref: "#/components/schemas/DatabaseConfig"
         infrastructure:
-          $ref: '#/components/schemas/InfrastructureConfig'
+          $ref: "#/components/schemas/InfrastructureConfig"
         ingress:
-          $ref: '#/components/schemas/IngressConfig'
+          $ref: "#/components/schemas/IngressConfig"
         intelligence:
-          $ref: '#/components/schemas/IntelligenceConfig'
+          $ref: "#/components/schemas/IntelligenceConfig"
         logging:
-          $ref: '#/components/schemas/LoggingConfig'
+          $ref: "#/components/schemas/LoggingConfig"
         monitoring:
-          $ref: '#/components/schemas/MonitoringConfig'
+          $ref: "#/components/schemas/MonitoringConfig"
         platform:
-          $ref: '#/components/schemas/PlatformConfig'
+          $ref: "#/components/schemas/PlatformConfig"
         redis:
-          $ref: '#/components/schemas/RedisConfig'
+          $ref: "#/components/schemas/RedisConfig"
         storage:
-          $ref: '#/components/schemas/StorageConfig'
+          $ref: "#/components/schemas/StorageConfig"
       required:
         - api
         - auth
@@ -4228,7 +4228,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter accounts by field values. Supported fields:
         - createdAt, id, updatedAt, accessToken, accessTokenExpiresAt
@@ -4241,7 +4241,7 @@ components:
       style: form
       explode: true
       schema:
-        $ref: '#/components/schemas/Page'
+        $ref: "#/components/schemas/Page"
       description: The page parameter
     AccountsSort:
       in: query
@@ -4290,7 +4290,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter sessions by field values. Supported fields:
         - createdAt, id, updatedAt, activeOrganizationId, expiresAt
@@ -4338,7 +4338,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter users by field values. Supported fields:
         - createdAt, id, updatedAt, email, emailVerified, image, name
@@ -4383,7 +4383,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter organizations by field values. Supported fields:
         - createdAt, id, updatedAt, billingEmail, credits, logo
@@ -4433,7 +4433,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter members by field values. Supported fields:
         - createdAt, id, updatedAt, organizationId, role, userId
@@ -4477,7 +4477,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter invitations by field values. Supported fields:
         - createdAt, id, updatedAt, email, expiresAt
@@ -4525,7 +4525,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter pipelines by field values. Supported fields:
         - createdAt, id, updatedAt, description, name, organizationId
@@ -4569,7 +4569,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter runs by field values. Supported fields:
         - createdAt, id, updatedAt, completedAt, error, organizationId
@@ -4619,7 +4619,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter tools by field values. Supported fields:
         - createdAt, id, updatedAt, description, inputMimeType
@@ -4666,7 +4666,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter artifacts by field values. Supported fields:
         - createdAt, id, updatedAt, credits, description, mimeType
@@ -4717,7 +4717,7 @@ components:
       style: deepObject
       explode: true
       schema:
-        $ref: '#/components/schemas/FilterNode'
+        $ref: "#/components/schemas/FilterNode"
       description: |
         Filter labels by field values. Supported fields:
         - createdAt, id, updatedAt, name, organizationId
@@ -4759,18 +4759,18 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: "#/components/schemas/Problem"
     Unauthorized:
       description: 401 Unauthorized
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: "#/components/schemas/Problem"
     NotFound:
       description: 404 Not Found
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/Problem'
+            $ref: "#/components/schemas/Problem"
     NoContent:
       description: 204 No Content

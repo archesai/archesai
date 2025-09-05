@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   BadRequestResponse,
@@ -53,9 +53,9 @@ import type {
   UpdateRunBody,
   UpdateTool200,
   UpdateToolBody
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -73,8 +73,8 @@ export const createPipeline = async (
 ): Promise<CreatePipeline201> => {
   return customFetch<CreatePipeline201>(getCreatePipelineUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createPipelineBody)
   })
 }
@@ -96,15 +96,12 @@ export const getCreatePipelineMutationOptions = <
   { data: CreatePipelineBody },
   TContext
 > => {
-  const mutationKey = ['createPipeline']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createPipeline"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -165,8 +162,8 @@ export const getFindManyPipelinesUrl = (params?: FindManyPipelinesParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/workflows/pipelines?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/workflows/pipelines?${stringifiedParams}`
     : `/workflows/pipelines`
 }
 
@@ -176,7 +173,7 @@ export const findManyPipelines = async (
 ): Promise<FindManyPipelines200> => {
   return customFetch<FindManyPipelines200>(getFindManyPipelinesUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -244,7 +241,7 @@ export function useFindManyPipelines<
           TError,
           Awaited<ReturnType<typeof findManyPipelines>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -271,7 +268,7 @@ export function useFindManyPipelines<
           TError,
           Awaited<ReturnType<typeof findManyPipelines>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -480,7 +477,7 @@ export const deletePipeline = async (
 ): Promise<DeletePipeline200> => {
   return customFetch<DeletePipeline200>(getDeletePipelineUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -501,15 +498,12 @@ export const getDeletePipelineMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deletePipeline']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deletePipeline"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -572,7 +566,7 @@ export const getOnePipeline = async (
 ): Promise<GetOnePipeline200> => {
   return customFetch<GetOnePipeline200>(getGetOnePipelineUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -632,7 +626,7 @@ export function useGetOnePipeline<
           TError,
           Awaited<ReturnType<typeof getOnePipeline>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -655,7 +649,7 @@ export function useGetOnePipeline<
           TError,
           Awaited<ReturnType<typeof getOnePipeline>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -854,8 +848,8 @@ export const updatePipeline = async (
 ): Promise<UpdatePipeline200> => {
   return customFetch<UpdatePipeline200>(getUpdatePipelineUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updatePipelineBody)
   })
 }
@@ -877,15 +871,12 @@ export const getUpdatePipelineMutationOptions = <
   { id: string | undefined | null; data: UpdatePipelineBody },
   TContext
 > => {
-  const mutationKey = ['updatePipeline']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updatePipeline"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -948,8 +939,8 @@ export const createRun = async (
 ): Promise<CreateRun201> => {
   return customFetch<CreateRun201>(getCreateRunUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createRunBody)
   })
 }
@@ -971,15 +962,12 @@ export const getCreateRunMutationOptions = <
   { data: CreateRunBody },
   TContext
 > => {
-  const mutationKey = ['createRun']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createRun"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1038,8 +1026,8 @@ export const getFindManyRunsUrl = (params?: FindManyRunsParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/workflows/runs?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/workflows/runs?${stringifiedParams}`
     : `/workflows/runs`
 }
 
@@ -1049,7 +1037,7 @@ export const findManyRuns = async (
 ): Promise<FindManyRuns200> => {
   return customFetch<FindManyRuns200>(getFindManyRunsUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1104,7 +1092,7 @@ export function useFindManyRuns<
           TError,
           Awaited<ReturnType<typeof findManyRuns>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1127,7 +1115,7 @@ export function useFindManyRuns<
           TError,
           Awaited<ReturnType<typeof findManyRuns>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1327,7 +1315,7 @@ export const deleteRun = async (
 ): Promise<DeleteRun200> => {
   return customFetch<DeleteRun200>(getDeleteRunUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -1348,15 +1336,12 @@ export const getDeleteRunMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteRun']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteRun"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1416,7 +1401,7 @@ export const getOneRun = async (
 ): Promise<GetOneRun200> => {
   return customFetch<GetOneRun200>(getGetOneRunUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1474,7 +1459,7 @@ export function useGetOneRun<
           TError,
           Awaited<ReturnType<typeof getOneRun>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1497,7 +1482,7 @@ export function useGetOneRun<
           TError,
           Awaited<ReturnType<typeof getOneRun>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1696,8 +1681,8 @@ export const updateRun = async (
 ): Promise<UpdateRun200> => {
   return customFetch<UpdateRun200>(getUpdateRunUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateRunBody)
   })
 }
@@ -1719,15 +1704,12 @@ export const getUpdateRunMutationOptions = <
   { id: string | undefined | null; data: UpdateRunBody },
   TContext
 > => {
-  const mutationKey = ['updateRun']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateRun"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1787,8 +1769,8 @@ export const createTool = async (
 ): Promise<CreateTool201> => {
   return customFetch<CreateTool201>(getCreateToolUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(createToolBody)
   })
 }
@@ -1810,15 +1792,12 @@ export const getCreateToolMutationOptions = <
   { data: CreateToolBody },
   TContext
 > => {
-  const mutationKey = ['createTool']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["createTool"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -1877,8 +1856,8 @@ export const getFindManyToolsUrl = (params?: FindManyToolsParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/workflows/tools?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/workflows/tools?${stringifiedParams}`
     : `/workflows/tools`
 }
 
@@ -1888,7 +1867,7 @@ export const findManyTools = async (
 ): Promise<FindManyTools200> => {
   return customFetch<FindManyTools200>(getFindManyToolsUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -1943,7 +1922,7 @@ export function useFindManyTools<
           TError,
           Awaited<ReturnType<typeof findManyTools>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -1966,7 +1945,7 @@ export function useFindManyTools<
           TError,
           Awaited<ReturnType<typeof findManyTools>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2166,7 +2145,7 @@ export const deleteTool = async (
 ): Promise<DeleteTool200> => {
   return customFetch<DeleteTool200>(getDeleteToolUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -2187,15 +2166,12 @@ export const getDeleteToolMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteTool']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteTool"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -2255,7 +2231,7 @@ export const getOneTool = async (
 ): Promise<GetOneTool200> => {
   return customFetch<GetOneTool200>(getGetOneToolUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -2315,7 +2291,7 @@ export function useGetOneTool<
           TError,
           Awaited<ReturnType<typeof getOneTool>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2338,7 +2314,7 @@ export function useGetOneTool<
           TError,
           Awaited<ReturnType<typeof getOneTool>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -2537,8 +2513,8 @@ export const updateTool = async (
 ): Promise<UpdateTool200> => {
   return customFetch<UpdateTool200>(getUpdateToolUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateToolBody)
   })
 }
@@ -2560,15 +2536,12 @@ export const getUpdateToolMutationOptions = <
   { id: string | undefined | null; data: UpdateToolBody },
   TContext
 > => {
-  const mutationKey = ['updateTool']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateTool"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

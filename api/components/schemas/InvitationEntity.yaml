@@ -6,7 +6,7 @@ properties:
     description: The date this item was created
     type: string
     format: date-time
-    example: '2024-01-15T09:30:00Z'
+    example: "2024-01-15T09:30:00Z"
     minLength: 1
   id:
     description: The ID of the item
@@ -18,7 +18,7 @@ properties:
     description: The date this item was last updated
     type: string
     format: date-time
-    example: '2024-01-15T09:30:00Z'
+    example: "2024-01-15T09:30:00Z"
     minLength: 1
   email:
     description: The email of the invitated user

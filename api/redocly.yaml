@@ -66,4 +66,4 @@ openapi:
   sortRequiredPropsFirst: true
   schemasExpansionLevel: 2
   onlyRequiredInSamples: false
-  schemaDefinitionsTagName: 'Schemas'
+  schemaDefinitionsTagName: "Schemas"

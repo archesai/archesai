@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
 import {
   createContext,
@@ -6,10 +6,10 @@ import {
   useContext,
   useMemo,
   useState
-} from 'react'
+} from "react"
 
-import { CheckCircle2Icon, ChevronsUpDownIcon } from '#components/custom/icons'
-import { Badge } from '#components/shadcn/badge'
+import { CheckCircle2Icon, ChevronsUpDownIcon } from "#components/custom/icons"
+import { Badge } from "#components/shadcn/badge"
 import {
   Command,
   CommandEmpty,
@@ -18,13 +18,13 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator
-} from '#components/shadcn/command'
+} from "#components/shadcn/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '#components/shadcn/popover'
-import { cn } from '#lib/utils'
+} from "#components/shadcn/popover"
+import { cn } from "#lib/utils"
 
 interface FacetedContextValue<Multiple extends boolean = boolean> {
   multiple?: Multiple
@@ -32,12 +32,13 @@ interface FacetedContextValue<Multiple extends boolean = boolean> {
   value?: FacetedValue<Multiple> | undefined
 }
 
-type FacetedValue<Multiple extends boolean> =
-  Multiple extends true ? string[] : string
+type FacetedValue<Multiple extends boolean> = Multiple extends true
+  ? string[]
+  : string
 
 const FacetedContext = createContext<FacetedContextValue | null>(null)
 
-interface FacetedBadgeListProps extends React.ComponentProps<'div'> {
+interface FacetedBadgeListProps extends React.ComponentProps<"div"> {
   badgeClassName?: string
   max?: number
   options?: { label: string; value: string }[]
@@ -85,9 +86,8 @@ function Faceted<Multiple extends boolean = false>(
 
       if (multiple) {
         const currentValue: unknown[] = Array.isArray(value) ? value : []
-        const newValue =
-          currentValue.includes(selectedValue) ?
-            currentValue.filter((v) => v !== selectedValue)
+        const newValue = currentValue.includes(selectedValue)
+          ? currentValue.filter((v) => v !== selectedValue)
           : [...currentValue, selectedValue]
         onValueChange(newValue as FacetedValue<Multiple>)
       } else {
@@ -129,14 +129,13 @@ function FacetedBadgeList(props: FacetedBadgeListProps): JSX.Element {
     className,
     max = 2,
     options = [],
-    placeholder = 'Select options...',
+    placeholder = "Select options...",
     ...badgeListProps
   } = props
 
-  const context = useFacetedContext('FacetedBadgeList')
-  const values =
-    Array.isArray(context.value) ?
-      (context.value as string[] | undefined)
+  const context = useFacetedContext("FacetedBadgeList")
+  const values = Array.isArray(context.value)
+    ? (context.value as string[] | undefined)
     : ([context.value].filter(Boolean) as string[])
 
   const getLabel = useCallback(
@@ -151,10 +150,10 @@ function FacetedBadgeList(props: FacetedBadgeListProps): JSX.Element {
     return (
       <div
         {...badgeListProps}
-        className='flex w-full items-center gap-1 text-muted-foreground'
+        className="flex w-full items-center gap-1 text-muted-foreground"
       >
         {placeholder}
-        <ChevronsUpDownIcon className='ml-auto size-4 shrink-0 opacity-50' />
+        <ChevronsUpDownIcon className="ml-auto size-4 shrink-0 opacity-50" />
       </div>
     )
   }
@@ -162,25 +161,26 @@ function FacetedBadgeList(props: FacetedBadgeListProps): JSX.Element {
   return (
     <div
       {...badgeListProps}
-      className={cn('flex flex-wrap items-center gap-1', className)}
+      className={cn("flex flex-wrap items-center gap-1", className)}
     >
-      {values.length > max ?
+      {values.length > max ? (
         <Badge
-          className={cn('rounded-sm px-1 font-normal', badgeClassName)}
-          variant='secondary'
+          className={cn("rounded-sm px-1 font-normal", badgeClassName)}
+          variant="secondary"
         >
           {values.length} selected
         </Badge>
-      : values.map((value) => (
+      ) : (
+        values.map((value) => (
           <Badge
-            className={cn('rounded-sm px-1 font-normal', badgeClassName)}
+            className={cn("rounded-sm px-1 font-normal", badgeClassName)}
             key={value}
-            variant='secondary'
+            variant="secondary"
           >
-            <span className='truncate'>{getLabel(value)}</span>
+            <span className="truncate">{getLabel(value)}</span>
           </Badge>
         ))
-      }
+      )}
     </div>
   )
 }
@@ -193,9 +193,9 @@ function FacetedContent(
   return (
     <PopoverContent
       {...contentProps}
-      align='start'
+      align="start"
       className={cn(
-        'w-[200px] origin-(--radix-popover-content-transform-origin) p-0',
+        "w-[200px] origin-(--radix-popover-content-transform-origin) p-0",
         className
       )}
     >
@@ -212,7 +212,7 @@ function FacetedTrigger(
   return (
     <PopoverTrigger
       {...triggerProps}
-      className={cn('justify-between text-left', className)}
+      className={cn("justify-between text-left", className)}
     >
       {children}
     </PopoverTrigger>
@@ -241,11 +241,10 @@ interface FacetedItemProps extends React.ComponentProps<typeof CommandItem> {
 
 function FacetedItem(props: FacetedItemProps): JSX.Element {
   const { children, className, onSelect, value, ...itemProps } = props
-  const context = useFacetedContext('FacetedItem')
+  const context = useFacetedContext("FacetedItem")
 
-  const isSelected =
-    context.multiple ?
-      Array.isArray(context.value) && context.value.includes(value)
+  const isSelected = context.multiple
+    ? Array.isArray(context.value) && context.value.includes(value)
     : context.value === value
 
   const onItemSelect = useCallback(
@@ -262,7 +261,7 @@ function FacetedItem(props: FacetedItemProps): JSX.Element {
   return (
     <CommandItem
       aria-selected={isSelected}
-      className={cn('gap-2', className)}
+      className={cn("gap-2", className)}
       data-selected={isSelected}
       onSelect={() => {
         onItemSelect(value)
@@ -271,13 +270,13 @@ function FacetedItem(props: FacetedItemProps): JSX.Element {
     >
       <span
         className={cn(
-          'flex size-4 items-center justify-center rounded-sm border border-primary',
-          isSelected ?
-            'bg-primary text-primary-foreground'
-          : 'opacity-50 [&_svg]:invisible'
+          "flex size-4 items-center justify-center rounded-sm border border-primary",
+          isSelected
+            ? "bg-primary text-primary-foreground"
+            : "opacity-50 [&_svg]:invisible"
         )}
       >
-        <CheckCircle2Icon className='size-4' />
+        <CheckCircle2Icon className="size-4" />
       </span>
       {children}
     </CommandItem>

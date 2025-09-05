@@ -17,13 +17,13 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 
-import type { ArchesConfig, BadRequestResponse } from '../orval.schemas'
+import type { ArchesConfig, BadRequestResponse } from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -40,7 +40,7 @@ export const getConfig = async (
 ): Promise<ArchesConfig> => {
   return customFetch<ArchesConfig>(getGetConfigUrl(), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -91,7 +91,7 @@ export function useGetConfig<
           TError,
           Awaited<ReturnType<typeof getConfig>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -113,7 +113,7 @@ export function useGetConfig<
           TError,
           Awaited<ReturnType<typeof getConfig>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },

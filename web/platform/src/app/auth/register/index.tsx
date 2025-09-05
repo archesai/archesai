@@ -1,21 +1,21 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
 
-import type { RegisterBody } from '@archesai/client'
-import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
+import type { RegisterBody } from "@archesai/client"
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
 
-import { useRegister } from '@archesai/client'
-import { GenericForm } from '@archesai/ui/components/custom/generic-form'
-import { Input } from '@archesai/ui/components/shadcn/input'
+import { useRegister } from "@archesai/client"
+import { GenericForm } from "@archesai/ui/components/custom/generic-form"
+import { Input } from "@archesai/ui/components/shadcn/input"
 
-import { TermsIndicator } from '#components/terms-indicator'
+import { TermsIndicator } from "#components/terms-indicator"
 
 type RegisterFormData = RegisterBody & {
   confirmPassword: string
 }
 
-export const Route = createFileRoute('/auth/register/')({
+export const Route = createFileRoute("/auth/register/")({
   component: RegisterPage
 })
 
@@ -25,46 +25,46 @@ export default function RegisterPage(): JSX.Element {
 
   const formFields: FormFieldConfig<RegisterFormData>[] = [
     {
-      defaultValue: '',
-      label: 'Name',
-      name: 'name',
+      defaultValue: "",
+      label: "Name",
+      name: "name",
       renderControl: (field) => (
         <Input
           {...field}
-          type='text'
+          type="text"
         />
       )
     },
     {
-      defaultValue: '',
-      label: 'Email',
-      name: 'email',
+      defaultValue: "",
+      label: "Email",
+      name: "email",
       renderControl: (field) => (
         <Input
           {...field}
-          type='email'
+          type="email"
         />
       )
     },
     {
-      defaultValue: '',
-      label: 'Password',
-      name: 'password',
+      defaultValue: "",
+      label: "Password",
+      name: "password",
       renderControl: (field) => (
         <Input
           {...field}
-          type='password'
+          type="password"
         />
       )
     },
     {
-      defaultValue: '',
-      label: 'Confirm Password',
-      name: 'confirmPassword',
+      defaultValue: "",
+      label: "Confirm Password",
+      name: "confirmPassword",
       renderControl: (field) => (
         <Input
           {...field}
-          type='password'
+          type="password"
         />
       )
     }
@@ -73,8 +73,8 @@ export default function RegisterPage(): JSX.Element {
   return (
     <>
       <GenericForm<RegisterFormData, never>
-        description='Create your account by entering your email and password'
-        entityKey='auth'
+        description="Create your account by entering your email and password"
+        entityKey="auth"
         fields={formFields}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
@@ -86,22 +86,22 @@ export default function RegisterPage(): JSX.Element {
             }
           })
           await router.navigate({
-            to: '/'
+            to: "/"
           })
         }}
         postContent={
-          <div className='text-center text-sm'>
-            Already have an account?{' '}
+          <div className="text-center text-sm">
+            Already have an account?{" "}
             <Link
-              className='underline'
-              to='/auth/login'
+              className="underline"
+              to="/auth/login"
             >
               Login
             </Link>
           </div>
         }
         showCard={true}
-        title='Register'
+        title="Register"
       />
       <TermsIndicator />
     </>

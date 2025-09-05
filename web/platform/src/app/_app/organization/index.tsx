@@ -1,13 +1,13 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
-import OrganizationForm from '#components/forms/organization-form'
-import { getRouteMeta } from '#lib/site-utils'
+import OrganizationForm from "#components/forms/organization-form"
+import { getRouteMeta } from "#lib/site-utils"
 
-export const metadata = getRouteMeta('/organization')
+export const metadata = getRouteMeta("/organization")
 
-export const Route = createFileRoute('/_app/organization/')({
+export const Route = createFileRoute("/_app/organization/")({
   component: OrganizationPage
 })
 

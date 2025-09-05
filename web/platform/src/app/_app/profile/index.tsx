@@ -1,32 +1,32 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router"
 
 import {
   useDeleteUser,
   useGetOneSessionSuspense,
   useGetOneUserSuspense,
   useRequestPasswordReset
-} from '@archesai/client'
-import { Loader2Icon } from '@archesai/ui/components/custom/icons'
-import { Button } from '@archesai/ui/components/shadcn/button'
+} from "@archesai/client"
+import { Loader2Icon } from "@archesai/ui/components/custom/icons"
+import { Button } from "@archesai/ui/components/shadcn/button"
 import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle
-} from '@archesai/ui/components/shadcn/card'
-import { Separator } from '@archesai/ui/components/shadcn/separator'
+} from "@archesai/ui/components/shadcn/card"
+import { Separator } from "@archesai/ui/components/shadcn/separator"
 
-import UserForm from '#components/forms/user-form'
+import UserForm from "#components/forms/user-form"
 
-export const Route = createFileRoute('/_app/profile/')({
+export const Route = createFileRoute("/_app/profile/")({
   component: ProfileSecuritySettingsPage
 })
 
 export default function ProfileSecuritySettingsPage(): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense('current')
+  const { data: sessionData } = useGetOneSessionSuspense("current")
   const { data: userData } = useGetOneUserSuspense(sessionData.data.userId)
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
@@ -36,9 +36,9 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
   } = useRequestPasswordReset()
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className="flex flex-col gap-4">
       <UserForm />
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Reset Password</CardTitle>
@@ -59,11 +59,11 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
                   }
                 })
               }}
-              size={'sm'}
-              type='submit'
+              size={"sm"}
+              type="submit"
             >
               {requestPasswordResetPending && (
-                <Loader2Icon className='animate-spin' />
+                <Loader2Icon className="animate-spin" />
               )}
               Reset Password
             </Button>
@@ -86,10 +86,10 @@ export default function ProfileSecuritySettingsPage(): JSX.Element {
                   id: userData.data.id
                 })
               }}
-              size='sm'
-              variant={'destructive'}
+              size="sm"
+              variant={"destructive"}
             >
-              {deactivatePending && <Loader2Icon className='animate-spin' />}
+              {deactivatePending && <Loader2Icon className="animate-spin" />}
               Delete Account
             </Button>
           </CardFooter>

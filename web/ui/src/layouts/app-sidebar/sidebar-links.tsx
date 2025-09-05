@@ -1,15 +1,15 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link, useLocation, useRouter } from '@tanstack/react-router'
+import { Link, useLocation, useRouter } from "@tanstack/react-router"
 
-import type { PageHeaderProps } from '#layouts/page-header/page-header'
+import type { PageHeaderProps } from "#layouts/page-header/page-header"
 
-import { ChevronRightIcon } from '#components/custom/icons'
+import { ChevronRightIcon } from "#components/custom/icons"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
-} from '#components/shadcn/collapsible'
+} from "#components/shadcn/collapsible"
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -20,7 +20,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem
-} from '#components/shadcn/sidebar'
+} from "#components/shadcn/sidebar"
 
 export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
   const router = useRouter()
@@ -51,7 +51,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                             tooltip={rootRoute.title}
                           >
                             <Link
-                              className='text-muted-foreground'
+                              className="text-muted-foreground"
                               to={rootRoute.href}
                             >
                               <rootRoute.Icon />
@@ -65,19 +65,19 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                     return (
                       <Collapsible
                         asChild
-                        className='group/collapsible'
+                        className="group/collapsible"
                         defaultOpen={isActive ?? false}
                         key={rootRoute.title}
                       >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton
-                              className='text-muted-foreground'
+                              className="text-muted-foreground"
                               tooltip={rootRoute.title}
                             >
                               <rootRoute.Icon />
                               <span>{rootRoute.title}</span>
-                              <ChevronRightIcon className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>
@@ -86,7 +86,7 @@ export function SidebarLinks({ siteRoutes }: PageHeaderProps): JSX.Element {
                                 <SidebarMenuSubItem key={route.title}>
                                   <SidebarMenuSubButton
                                     asChild
-                                    className='text-muted-foreground'
+                                    className="text-muted-foreground"
                                     isActive={route.href === pathname}
                                   >
                                     <Link to={route.href}>

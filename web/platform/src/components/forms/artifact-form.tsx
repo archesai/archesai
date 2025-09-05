@@ -1,29 +1,29 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useState } from 'react'
+import { useState } from "react"
 
-import type { CreateArtifactBody, UpdateArtifactBody } from '@archesai/client'
-import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
+import type { CreateArtifactBody, UpdateArtifactBody } from "@archesai/client"
+import type { FormFieldConfig } from "@archesai/ui/components/custom/generic-form"
 
 import {
   createArtifact,
   updateArtifact,
   useGetOneArtifactSuspense
-} from '@archesai/client'
-import { GenericForm } from '@archesai/ui/components/custom/generic-form'
+} from "@archesai/client"
+import { GenericForm } from "@archesai/ui/components/custom/generic-form"
 // import ImportCard from '@archesai/ui/components/custom/import-card'
-import { Input } from '@archesai/ui/components/shadcn/input'
+import { Input } from "@archesai/ui/components/shadcn/input"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
-} from '@archesai/ui/components/shadcn/tabs'
-import { Textarea } from '@archesai/ui/components/shadcn/textarea'
-import { ARTIFACT_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/ui/components/shadcn/tabs"
+import { Textarea } from "@archesai/ui/components/shadcn/textarea"
+import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
 export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
-  const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
+  const [tab, setTab] = useState<"file" | "text" | "url">("file")
 
   const { data: existingContentResponse, error } = useGetOneArtifactSuspense(id)
 
@@ -34,67 +34,67 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: content.name ?? '',
-      description: 'This is the name that will be used for this content.',
-      label: 'Name',
-      name: 'name',
+      defaultValue: content.name ?? "",
+      description: "This is the name that will be used for this content.",
+      label: "Name",
+      name: "name",
       renderControl: (field) => (
         <Input
           {...field}
-          placeholder='Content name here...'
-          type='text'
+          placeholder="Content name here..."
+          type="text"
         />
       )
     },
     {
       description:
-        'Select the content you would like to run the tool on. You can select multiple content items.',
-      label: 'Input',
-      name: tab === 'file' ? 'text' : tab,
+        "Select the content you would like to run the tool on. You can select multiple content items.",
+      label: "Input",
+      name: tab === "file" ? "text" : tab,
       renderControl: (field) => (
         <Tabs value={tab}>
-          <TabsList className='grid w-full grid-cols-3 px-1'>
+          <TabsList className="grid w-full grid-cols-3 px-1">
             <TabsTrigger
               onClick={() => {
-                setTab('text')
+                setTab("text")
               }}
-              value='text'
+              value="text"
             >
               Text
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
-                setTab('file')
+                setTab("file")
               }}
-              value='file'
+              value="file"
             >
               File
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
-                setTab('url')
+                setTab("url")
               }}
-              value='url'
+              value="url"
             >
               URL
             </TabsTrigger>
           </TabsList>
-          <TabsContent value='text'>
+          <TabsContent value="text">
             <Textarea
               {...field}
-              placeholder='Enter text here'
+              placeholder="Enter text here"
               value={field.value as string}
             />
           </TabsContent>
-          <TabsContent value='url'>
+          <TabsContent value="url">
             <Textarea
               {...field}
-              placeholder='Enter url here'
+              placeholder="Enter url here"
               rows={5}
               value={field.value as string}
             />
           </TabsContent>
-          <TabsContent value='file'>
+          <TabsContent value="file">
             {/* <ImportCard
               cb={(content) => {
                 field.onChange(content.map((c) => c.id))
@@ -108,7 +108,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
 
   return (
     <GenericForm<CreateArtifactBody, UpdateArtifactBody>
-      description={!id ? 'Invite a new content' : 'Update an existing content'}
+      description={!id ? "Invite a new content" : "Update an existing content"}
       entityKey={ARTIFACT_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={!!id}
@@ -118,7 +118,7 @@ export default function ArtifactForm({ id }: { id?: string }): JSX.Element {
       onSubmitUpdate={async (updateContentDto) => {
         await updateArtifact(id, updateContentDto)
       }}
-      title='Configuration'
+      title="Configuration"
     />
   )
 }

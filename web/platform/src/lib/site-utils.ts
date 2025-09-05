@@ -1,6 +1,6 @@
-import type { SiteRoute } from '@archesai/ui/lib/site-config.interface'
+import type { SiteRoute } from "@archesai/ui/lib/site-config.interface"
 
-import { siteRoutes } from '#lib/site-config'
+import { siteRoutes } from "#lib/site-config"
 
 export const flattenRoutes = (routes: SiteRoute[]): SiteRoute[] => {
   return routes.flatMap((route) =>
@@ -19,9 +19,9 @@ export const getRouteMeta = (
   const matched = allRoutes.find((route) => route.href === pathname)
 
   return {
-    description: matched?.description ?? '',
+    description: matched?.description ?? "",
     Icon: matched?.Icon,
-    title: matched?.title ?? ''
+    title: matched?.title ?? ""
   }
 }
 

@@ -1,8 +1,8 @@
 {
   "extends": [
-    "../../tools/typescript/src/base.json",
-    "../../tools/typescript/src/react.json",
-    "../../tools/typescript/src/lib.json"
+    "../typescript/src/base.json",
+    "../typescript/src/react.json",
+    "../typescript/src/lib.json"
   ],
   "references": []
 }

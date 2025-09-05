@@ -2,9 +2,9 @@
  * @see https://github.com/mantinedev/mantine/blob/master/packages/@mantine/hooks/src/use-debounced-callback/use-debounced-callback.ts
  */
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from "react"
 
-import { useCallbackRef } from '#hooks/use-callback-ref'
+import { useCallbackRef } from "#hooks/use-callback-ref"
 
 export function useDebouncedCallback<T extends (...args: never[]) => unknown>(
   callback: T,

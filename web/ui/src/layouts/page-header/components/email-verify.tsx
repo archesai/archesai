@@ -1,11 +1,11 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { toast } from 'sonner'
+import { toast } from "sonner"
 
-import type { UserEntity } from '#types/entities'
+import type { UserEntity } from "#types/entities"
 
-import { RocketIcon } from '#components/custom/icons'
-import { Alert, AlertTitle } from '#components/shadcn/alert'
+import { RocketIcon } from "#components/custom/icons"
+import { Alert, AlertTitle } from "#components/shadcn/alert"
 
 export interface VerifyEmailAlertProps {
   onRequestEmailVerification: () => Promise<void>
@@ -19,13 +19,13 @@ export function VerifyEmailAlert({
   const handleRequestEmailVerification = async () => {
     try {
       await onRequestEmailVerification()
-      toast('Email verification sent', {
-        description: 'Please check your inbox for the verification email'
+      toast("Email verification sent", {
+        description: "Please check your inbox for the verification email"
       })
     } catch (error) {
-      toast('Error sending verification email', {
+      toast("Error sending verification email", {
         description:
-          error instanceof Error ? error.message : 'An error occurred'
+          error instanceof Error ? error.message : "An error occurred"
       })
     }
   }
@@ -35,21 +35,21 @@ export function VerifyEmailAlert({
   }
 
   return (
-    <Alert className='flex items-center rounded-none border-none bg-amber-700'>
+    <Alert className="flex items-center rounded-none border-none bg-amber-700">
       <RocketIcon
-        className='h-5 w-5'
-        color='white'
+        className="h-5 w-5"
+        color="white"
       />
-      <AlertTitle className='flex items-center font-normal text-primary-foreground'>
-        <span className='flex gap-1'>
+      <AlertTitle className="flex items-center font-normal text-primary-foreground">
+        <span className="flex gap-1">
           Please
           <div
-            className='cursor-pointer font-semibold underline'
+            className="cursor-pointer font-semibold underline"
             onClick={handleRequestEmailVerification}
           >
-            {' '}
-            verify your email address{' '}
-          </div>{' '}
+            {" "}
+            verify your email address{" "}
+          </div>{" "}
           to continue using the app.
         </span>
       </AlertTitle>

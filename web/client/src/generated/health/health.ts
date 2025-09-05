@@ -17,13 +17,13 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 
-import type { BadRequestResponse, HealthResponse } from '../orval.schemas'
+import type { BadRequestResponse, HealthResponse } from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -40,7 +40,7 @@ export const getHealth = async (
 ): Promise<HealthResponse> => {
   return customFetch<HealthResponse>(getGetHealthUrl(), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -91,7 +91,7 @@ export function useGetHealth<
           TError,
           Awaited<ReturnType<typeof getHealth>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -113,7 +113,7 @@ export function useGetHealth<
           TError,
           Awaited<ReturnType<typeof getHealth>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },

@@ -27,37 +27,37 @@ allOf:
       accessToken:
         description: The OAuth access token
         type: string
-        example: 'ya29.a0AfH6SMBa...'
+        example: "ya29.a0AfH6SMBa..."
         x-sensitive: true
       accessTokenExpiresAt:
         description: The access token expiration timestamp
         type: string
         format: date-time
-        example: '2024-12-31T23:59:59Z'
+        example: "2024-12-31T23:59:59Z"
       refreshToken:
         description: The OAuth refresh token
         type: string
-        example: '1//0fM8N5...'
+        example: "1//0fM8N5..."
         x-sensitive: true
       refreshTokenExpiresAt:
         description: The refresh token expiration timestamp
         type: string
         format: date-time
-        example: '2025-12-31T23:59:59Z'
+        example: "2025-12-31T23:59:59Z"
       idToken:
         description: The OpenID Connect ID token
         type: string
-        example: 'eyJhbGciOiJSUzI1NiIs...'
+        example: "eyJhbGciOiJSUzI1NiIs..."
         x-sensitive: true
       password:
         description: The hashed password (only for local authentication)
         type: string
-        example: '$2a$10$...'
+        example: "$2a$10$..."
         x-sensitive: true
       scope:
         description: The OAuth scope granted
         type: string
-        example: 'openid profile email'
+        example: "openid profile email"
     required:
       - accountId
       - userId

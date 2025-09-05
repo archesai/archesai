@@ -1,11 +1,11 @@
-import type { JSX } from 'react'
-import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
+import type { JSX } from "react"
+import type { ControllerRenderProps, FieldValues } from "react-hook-form"
 
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
 
-import { Loader2Icon } from '#components/custom/icons'
-import { Button } from '#components/shadcn/button'
+import { Loader2Icon } from "#components/custom/icons"
+import { Button } from "#components/shadcn/button"
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from '#components/shadcn/card'
+} from "#components/shadcn/card"
 import {
   Form,
   FormControl,
@@ -22,9 +22,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '#components/shadcn/form'
-import { Separator } from '#components/shadcn/separator'
-import { cn } from '#lib/utils'
+} from "#components/shadcn/form"
+import { Separator } from "#components/shadcn/separator"
+import { cn } from "#lib/utils"
 
 export interface FormFieldConfig<T extends FieldValues = FieldValues> {
   defaultValue?: boolean | number | string | undefined
@@ -88,7 +88,7 @@ export function GenericForm<
   /* ---------- form instance ---------- */
   const form = useForm({
     defaultValues,
-    mode: 'onChange'
+    mode: "onChange"
   })
 
   /* ---------- keep external defaults in sync ---------- */
@@ -98,9 +98,8 @@ export function GenericForm<
 
   /* ---------- submit helpers ---------- */
   async function handleSubmit(values: FieldValues) {
-    const run =
-      isUpdateForm ?
-        async () => {
+    const run = isUpdateForm
+      ? async () => {
           await onSubmitUpdate(values as UpdateDto)
         }
       : async () => {
@@ -117,7 +116,7 @@ export function GenericForm<
         onSubmit={form.handleSubmit(handleSubmit)}
       >
         <Card
-          className={cn(!showCard && 'border-none shadow-none', 'min-w-sm')}
+          className={cn(!showCard && "border-none shadow-none", "min-w-sm")}
         >
           <CardHeader>
             {title && <CardTitle>{title}</CardTitle>}
@@ -126,7 +125,7 @@ export function GenericForm<
 
           <Separator />
 
-          <CardContent className='flex flex-col gap-4 p-4'>
+          <CardContent className="flex flex-col gap-4 p-4">
             {props.preContent}
             {fields
               .filter((f) => isUpdateForm || !f.ignoreOnCreate)
@@ -165,13 +164,13 @@ export function GenericForm<
               //     !form.formState.isValid
               //   )
               // }
-              size='sm'
-              type='submit'
+              size="sm"
+              type="submit"
             >
               {form.formState.isSubmitting && (
-                <Loader2Icon className='animate-spin' />
+                <Loader2Icon className="animate-spin" />
               )}
-              <span className='capitalize'>Submit</span>
+              <span className="capitalize">Submit</span>
             </Button>
             <Button
               // disabled={
@@ -180,9 +179,9 @@ export function GenericForm<
               onClick={() => {
                 form.reset()
               }}
-              size='sm'
-              type='button'
-              variant='secondary'
+              size="sm"
+              type="button"
+              variant="secondary"
             >
               Reset
             </Button>

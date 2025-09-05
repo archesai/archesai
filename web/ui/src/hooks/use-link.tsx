@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { LinkProps as TanStackLinkProps } from '@tanstack/react-router'
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import type { LinkProps as TanStackLinkProps } from "@tanstack/react-router"
+import type { ComponentPropsWithoutRef, ReactNode } from "react"
 
-import { createContext, useCallback, useContext } from 'react'
+import { createContext, useCallback, useContext } from "react"
 
 export interface AnalyticsLinkProps {
   // Analytics tracking
@@ -14,7 +14,7 @@ export interface AnalyticsLinkProps {
 }
 
 export interface BaseLinkProps
-  extends Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'onClick'> {
+  extends Omit<ComponentPropsWithoutRef<"a">, "href" | "onClick"> {
   children: ReactNode
   href: string
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
@@ -40,18 +40,18 @@ export type SmartLinkProps = AnalyticsLinkProps &
   TanStackRouterProps
 
 export interface TanStackRouterProps {
-  disabled?: TanStackLinkProps['disabled']
-  hash?: TanStackLinkProps['hash']
-  mask?: TanStackLinkProps['mask']
-  params?: TanStackLinkProps['params']
-  preload?: TanStackLinkProps['preload']
-  preloadDelay?: TanStackLinkProps['preloadDelay']
+  disabled?: TanStackLinkProps["disabled"]
+  hash?: TanStackLinkProps["hash"]
+  mask?: TanStackLinkProps["mask"]
+  params?: TanStackLinkProps["params"]
+  preload?: TanStackLinkProps["preload"]
+  preloadDelay?: TanStackLinkProps["preloadDelay"]
   preserveSearch?: boolean
-  replace?: TanStackLinkProps['replace']
-  resetScroll?: TanStackLinkProps['resetScroll']
+  replace?: TanStackLinkProps["replace"]
+  resetScroll?: TanStackLinkProps["resetScroll"]
   resetSearch?: boolean
-  search?: TanStackLinkProps['search']
-  state?: TanStackLinkProps['state']
+  search?: TanStackLinkProps["search"]
+  state?: TanStackLinkProps["state"]
 }
 
 // Context definition
@@ -122,12 +122,12 @@ export function buildTanStackProps(
 const defaultIsExternalUrl = (url: string): boolean => {
   try {
     return (
-      url.startsWith('http://') ||
-      url.startsWith('https://') ||
-      url.startsWith('mailto:') ||
-      url.startsWith('tel:') ||
-      url.startsWith('ftp://') ||
-      url.startsWith('//')
+      url.startsWith("http://") ||
+      url.startsWith("https://") ||
+      url.startsWith("mailto:") ||
+      url.startsWith("tel:") ||
+      url.startsWith("ftp://") ||
+      url.startsWith("//")
     )
   } catch {
     return false
@@ -141,7 +141,7 @@ const defaultTrackEvent = (
   value?: number
 ) => {
   // Default analytics implementation
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Google Analytics 4
     // if ('gtag' in window && typeof window.gtag === 'function') {
     //   window.gtag('event', action, {
@@ -157,8 +157,8 @@ const defaultTrackEvent = (
     // }
 
     // Console log for development
-    if (process.env.COLLECT === 'development') {
-      console.debug('📊 Analytics Event:', { action, category, label, value })
+    if (process.env.COLLECT === "development") {
+      console.debug("📊 Analytics Event:", { action, category, label, value })
     }
   }
 }
@@ -173,8 +173,8 @@ const DefaultLink: LinkComponent = ({
   noReferrer = false,
   onClick,
   trackClick,
-  trackingAction = 'click',
-  trackingCategory = 'Link',
+  trackingAction = "click",
+  trackingCategory = "Link",
   trackingLabel,
   ...props
 }) => {
@@ -211,15 +211,15 @@ const DefaultLink: LinkComponent = ({
 
   // Build props for external links
   const externalProps =
-    isExternal || external ?
-      {
-        rel:
-          [noOpener && 'noopener', noReferrer && 'noreferrer']
-            .filter(Boolean)
-            .join(' ') || undefined,
-        target: newTab ? '_blank' : undefined
-      }
-    : {}
+    isExternal || external
+      ? {
+          rel:
+            [noOpener && "noopener", noReferrer && "noreferrer"]
+              .filter(Boolean)
+              .join(" ") || undefined,
+          target: newTab ? "_blank" : undefined
+        }
+      : {}
 
   return (
     <a

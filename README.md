@@ -97,7 +97,7 @@ minikube start --driver=docker --gpu
 
 ### Install k8s gpu device plugin
 
-kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml
+https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file#prerequisites
 
 ```
 apiVersion: v1

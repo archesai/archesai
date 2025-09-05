@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   BadRequestResponse,
@@ -35,9 +35,9 @@ import type {
   UnauthorizedResponse,
   UpdateSession200,
   UpdateSessionBody
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -51,8 +51,8 @@ export const getFindManySessionsUrl = (params?: FindManySessionsParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/auth/sessions?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/auth/sessions?${stringifiedParams}`
     : `/auth/sessions`
 }
 
@@ -62,7 +62,7 @@ export const findManySessions = async (
 ): Promise<FindManySessions200> => {
   return customFetch<FindManySessions200>(getFindManySessionsUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -129,7 +129,7 @@ export function useFindManySessions<
           TError,
           Awaited<ReturnType<typeof findManySessions>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -156,7 +156,7 @@ export function useFindManySessions<
           TError,
           Awaited<ReturnType<typeof findManySessions>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -364,7 +364,7 @@ export const deleteSession = async (
 ): Promise<DeleteSession200> => {
   return customFetch<DeleteSession200>(getDeleteSessionUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -385,15 +385,12 @@ export const getDeleteSessionMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['deleteSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["deleteSession"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 
@@ -453,7 +450,7 @@ export const getOneSession = async (
 ): Promise<GetOneSession200> => {
   return customFetch<GetOneSession200>(getGetOneSessionUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -513,7 +510,7 @@ export function useGetOneSession<
           TError,
           Awaited<ReturnType<typeof getOneSession>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -536,7 +533,7 @@ export function useGetOneSession<
           TError,
           Awaited<ReturnType<typeof getOneSession>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -735,8 +732,8 @@ export const updateSession = async (
 ): Promise<UpdateSession200> => {
   return customFetch<UpdateSession200>(getUpdateSessionUrl(id), {
     ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...options?.headers },
     body: JSON.stringify(updateSessionBody)
   })
 }
@@ -758,15 +755,12 @@ export const getUpdateSessionMutationOptions = <
   { id: string | undefined | null; data: UpdateSessionBody },
   TContext
 > => {
-  const mutationKey = ['updateSession']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["updateSession"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { createElement, useCallback, useMemo } from 'react'
-import { Link as TanStackLink } from '@tanstack/react-router'
+import { createElement, useCallback, useMemo } from "react"
+import { Link as TanStackLink } from "@tanstack/react-router"
 
-import type { SmartLinkProps } from '@archesai/ui/hooks/use-link'
+import type { SmartLinkProps } from "@archesai/ui/hooks/use-link"
 
-import { filterUndefined, useLinkContext } from '@archesai/ui/hooks/use-link'
+import { filterUndefined, useLinkContext } from "@archesai/ui/hooks/use-link"
 
 /**
  * Smart Link that automatically chooses between:
@@ -30,7 +30,7 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   // Standard props
   onClick,
   params,
-  preload = 'intent',
+  preload = "intent",
   preloadDelay,
   preserveSearch,
   replace,
@@ -41,8 +41,8 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   state,
   // Analytics props
   trackClick = true,
-  trackingAction = 'click',
-  trackingCategory = 'Navigation',
+  trackingAction = "click",
+  trackingCategory = "Navigation",
   trackingLabel,
   trackingValue,
   ...restProps
@@ -105,10 +105,10 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
     // }
 
     if (disabled) {
-      classes.push('opacity-50', 'cursor-not-allowed', 'pointer-events-none')
+      classes.push("opacity-50", "cursor-not-allowed", "pointer-events-none")
     }
 
-    return classes.filter(Boolean).join(' ') || undefined
+    return classes.filter(Boolean).join(" ") || undefined
   }, [
     className,
     // isNavigating,
@@ -161,18 +161,18 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   if (isExternal) {
     const externalProps = filterUndefined({
       className: combinedClassName,
-      download: download === true ? '' : download,
+      download: download === true ? "" : download,
       href,
       onClick: handleClick,
       rel:
-        [noOpener && 'noopener', noReferrer && 'noreferrer']
+        [noOpener && "noopener", noReferrer && "noreferrer"]
           .filter(Boolean)
-          .join(' ') || undefined,
-      target: newTab ? '_blank' : undefined,
+          .join(" ") || undefined,
+      target: newTab ? "_blank" : undefined,
       ...safeRestProps
     })
 
-    return createElement('a', externalProps, children)
+    return createElement("a", externalProps, children)
   }
 
   // Internal link with TanStack Router

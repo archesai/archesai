@@ -1,23 +1,23 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from "@tanstack/react-router"
 
 import type {
   PageQueryParameter,
   PipelineEntity,
   PipelinesFilterParameter,
   PipelinesSortParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
 import {
   deletePipeline,
   getFindManyPipelinesSuspenseQueryOptions
-} from '@archesai/client'
-import { WorkflowIcon } from '@archesai/ui/components/custom/icons'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { PIPELINE_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/client"
+import { WorkflowIcon } from "@archesai/ui/components/custom/icons"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { PIPELINE_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
 export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate()
@@ -34,12 +34,12 @@ export default function PipelineDataTable(): JSX.Element {
     <DataTable<PipelineEntity>
       columns={[
         {
-          accessorKey: 'name',
+          accessorKey: "name",
           cell: ({ row }) => {
             return (
-              <div className='flex gap-2'>
+              <div className="flex gap-2">
                 <Link
-                  className='max-w-[200px] shrink truncate font-medium text-blue-500'
+                  className="max-w-[200px] shrink truncate font-medium text-blue-500"
                   params={{ pipelineId: row.original.id }}
                   to={`/pipelines/$pipelineId`}
                 >
@@ -48,21 +48,21 @@ export default function PipelineDataTable(): JSX.Element {
               </div>
             )
           },
-          id: 'name'
+          id: "name"
         },
         {
-          accessorKey: 'description',
+          accessorKey: "description",
           cell: ({ row }) => {
-            return row.original.description ?? 'No Description'
+            return row.original.description ?? "No Description"
           },
-          id: 'description'
+          id: "description"
         },
         {
-          accessorKey: 'createdAt',
+          accessorKey: "createdAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
           },
-          id: 'createdAt'
+          id: "createdAt"
         }
       ]}
       deleteItem={async (id) => {

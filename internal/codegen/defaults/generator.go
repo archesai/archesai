@@ -102,7 +102,7 @@ func (g *Generator) loadSchemas(dir string) (map[string]Schema, error) {
 			return err
 		}
 
-		if !strings.HasSuffix(path, ".yaml") && !strings.HasSuffix(path, ".yml") {
+		if !strings.HasSuffix(path, ".yaml") {
 			return nil
 		}
 
@@ -173,7 +173,6 @@ func (g *Generator) generateStructFields(schema Schema, allSchemas map[string]Sc
 			// Reference to another schema
 			refName := filepath.Base(prop.Ref)
 			refName = strings.TrimSuffix(refName, ".yaml")
-			refName = strings.TrimSuffix(refName, ".yml")
 
 			if refSchema, ok := allSchemas[refName]; ok {
 				if refSchema.Type == "object" || refSchema.Type == "" {

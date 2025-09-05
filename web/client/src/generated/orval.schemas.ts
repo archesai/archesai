@@ -57,11 +57,11 @@ export type AccountEntityAllOfProviderId =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountEntityAllOfProviderId = {
-  local: 'local',
-  google: 'google',
-  github: 'github',
-  microsoft: 'microsoft',
-  apple: 'apple'
+  local: "local",
+  google: "google",
+  github: "github",
+  microsoft: "microsoft",
+  apple: "apple"
 } as const
 
 export type AccountEntityAllOf = {
@@ -237,11 +237,11 @@ export type OrganizationEntityAllOfPlan =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationEntityAllOfPlan = {
-  FREE: 'FREE',
-  BASIC: 'BASIC',
-  STANDARD: 'STANDARD',
-  PREMIUM: 'PREMIUM',
-  UNLIMITED: 'UNLIMITED'
+  FREE: "FREE",
+  BASIC: "BASIC",
+  STANDARD: "STANDARD",
+  PREMIUM: "PREMIUM",
+  UNLIMITED: "UNLIMITED"
 } as const
 
 /**
@@ -297,9 +297,9 @@ export type MemberEntityRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MemberEntityRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 /**
@@ -347,9 +347,9 @@ export type InvitationEntityRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationEntityRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 /**
@@ -437,10 +437,10 @@ export type RunEntityStatus =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunEntityStatus = {
-  COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED',
-  PROCESSING: 'PROCESSING',
-  QUEUED: 'QUEUED'
+  COMPLETED: "COMPLETED",
+  FAILED: "FAILED",
+  PROCESSING: "PROCESSING",
+  QUEUED: "QUEUED"
 } as const
 
 /**
@@ -667,9 +667,9 @@ export type ImageConfigPullPolicy =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ImageConfigPullPolicy = {
-  Always: 'Always',
-  IfNotPresent: 'IfNotPresent',
-  Never: 'Never'
+  Always: "Always",
+  IfNotPresent: "IfNotPresent",
+  Never: "Never"
 } as const
 
 /**
@@ -741,9 +741,9 @@ export type APIConfigEnvironment =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const APIConfigEnvironment = {
-  development: 'development',
-  staging: 'staging',
-  production: 'production'
+  development: "development",
+  staging: "staging",
+  production: "production"
 } as const
 
 /**
@@ -910,8 +910,8 @@ export type DatabaseConfigType =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const DatabaseConfigType = {
-  postgresql: 'postgresql',
-  sqlite: 'sqlite'
+  postgresql: "postgresql",
+  sqlite: "sqlite"
 } as const
 
 /**
@@ -1078,8 +1078,8 @@ export type EmbeddingConfigType =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const EmbeddingConfigType = {
-  openai: 'openai',
-  ollama: 'ollama'
+  openai: "openai",
+  ollama: "ollama"
 } as const
 
 /**
@@ -1101,8 +1101,8 @@ export type LLMConfigType = (typeof LLMConfigType)[keyof typeof LLMConfigType]
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LLMConfigType = {
-  ollama: 'ollama',
-  openai: 'openai'
+  ollama: "ollama",
+  openai: "openai"
 } as const
 
 /**
@@ -1202,13 +1202,13 @@ export type LoggingConfigLevel =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LoggingConfigLevel = {
-  fatal: 'fatal',
-  error: 'error',
-  warn: 'warn',
-  info: 'info',
-  debug: 'debug',
-  trace: 'trace',
-  silent: 'silent'
+  fatal: "fatal",
+  error: "error",
+  warn: "warn",
+  info: "info",
+  debug: "debug",
+  trace: "trace",
+  silent: "silent"
 } as const
 
 /**
@@ -1424,19 +1424,19 @@ export type AccountsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  accessToken: 'accessToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  accountId: 'accountId',
-  idToken: 'idToken',
-  password: 'password',
-  providerId: 'providerId',
-  refreshToken: 'refreshToken',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
-  scope: 'scope',
-  userId: 'userId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  accessToken: "accessToken",
+  accessTokenExpiresAt: "accessTokenExpiresAt",
+  accountId: "accountId",
+  idToken: "idToken",
+  password: "password",
+  providerId: "providerId",
+  refreshToken: "refreshToken",
+  refreshTokenExpiresAt: "refreshTokenExpiresAt",
+  scope: "scope",
+  userId: "userId"
 } as const
 
 /**
@@ -1447,8 +1447,8 @@ export type AccountsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const AccountsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type AccountsSortParameterItem = {
@@ -1476,15 +1476,15 @@ export type SessionsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  activeOrganizationId: 'activeOrganizationId',
-  expiresAt: 'expiresAt',
-  ipAddress: 'ipAddress',
-  token: 'token',
-  userAgent: 'userAgent',
-  userId: 'userId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  activeOrganizationId: "activeOrganizationId",
+  expiresAt: "expiresAt",
+  ipAddress: "ipAddress",
+  token: "token",
+  userAgent: "userAgent",
+  userId: "userId"
 } as const
 
 /**
@@ -1495,8 +1495,8 @@ export type SessionsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const SessionsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type SessionsSortParameterItem = {
@@ -1524,13 +1524,13 @@ export type UsersSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  name: 'name'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  email: "email",
+  emailVerified: "emailVerified",
+  image: "image",
+  name: "name"
 } as const
 
 /**
@@ -1541,8 +1541,8 @@ export type UsersSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UsersSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type UsersSortParameterItem = {
@@ -1570,17 +1570,17 @@ export type OrganizationsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  billingEmail: 'billingEmail',
-  credits: 'credits',
-  logo: 'logo',
-  metadata: 'metadata',
-  name: 'name',
-  plan: 'plan',
-  slug: 'slug',
-  stripeCustomerId: 'stripeCustomerId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  billingEmail: "billingEmail",
+  credits: "credits",
+  logo: "logo",
+  metadata: "metadata",
+  name: "name",
+  plan: "plan",
+  slug: "slug",
+  stripeCustomerId: "stripeCustomerId"
 } as const
 
 /**
@@ -1591,8 +1591,8 @@ export type OrganizationsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const OrganizationsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type OrganizationsSortParameterItem = {
@@ -1620,12 +1620,12 @@ export type MembersSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  organizationId: 'organizationId',
-  role: 'role',
-  userId: 'userId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  organizationId: "organizationId",
+  role: "role",
+  userId: "userId"
 } as const
 
 /**
@@ -1636,8 +1636,8 @@ export type MembersSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const MembersSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type MembersSortParameterItem = {
@@ -1665,15 +1665,15 @@ export type InvitationsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  email: 'email',
-  expiresAt: 'expiresAt',
-  inviterId: 'inviterId',
-  organizationId: 'organizationId',
-  role: 'role',
-  status: 'status'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  email: "email",
+  expiresAt: "expiresAt",
+  inviterId: "inviterId",
+  organizationId: "organizationId",
+  role: "role",
+  status: "status"
 } as const
 
 /**
@@ -1684,8 +1684,8 @@ export type InvitationsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const InvitationsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type InvitationsSortParameterItem = {
@@ -1713,12 +1713,12 @@ export type PipelinesSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  name: 'name',
-  organizationId: 'organizationId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  description: "description",
+  name: "name",
+  organizationId: "organizationId"
 } as const
 
 /**
@@ -1729,8 +1729,8 @@ export type PipelinesSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const PipelinesSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type PipelinesSortParameterItem = {
@@ -1758,17 +1758,17 @@ export type RunsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  completedAt: 'completedAt',
-  error: 'error',
-  organizationId: 'organizationId',
-  pipelineId: 'pipelineId',
-  progress: 'progress',
-  startedAt: 'startedAt',
-  status: 'status',
-  toolId: 'toolId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  completedAt: "completedAt",
+  error: "error",
+  organizationId: "organizationId",
+  pipelineId: "pipelineId",
+  progress: "progress",
+  startedAt: "startedAt",
+  status: "status",
+  toolId: "toolId"
 } as const
 
 /**
@@ -1779,8 +1779,8 @@ export type RunsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const RunsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type RunsSortParameterItem = {
@@ -1808,14 +1808,14 @@ export type ToolsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  description: 'description',
-  inputMimeType: 'inputMimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  outputMimeType: 'outputMimeType'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  description: "description",
+  inputMimeType: "inputMimeType",
+  name: "name",
+  organizationId: "organizationId",
+  outputMimeType: "outputMimeType"
 } as const
 
 /**
@@ -1826,8 +1826,8 @@ export type ToolsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ToolsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type ToolsSortParameterItem = {
@@ -1855,18 +1855,18 @@ export type ArtifactsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  credits: 'credits',
-  description: 'description',
-  mimeType: 'mimeType',
-  name: 'name',
-  organizationId: 'organizationId',
-  previewImage: 'previewImage',
-  producerId: 'producerId',
-  text: 'text',
-  url: 'url'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  credits: "credits",
+  description: "description",
+  mimeType: "mimeType",
+  name: "name",
+  organizationId: "organizationId",
+  previewImage: "previewImage",
+  producerId: "producerId",
+  text: "text",
+  url: "url"
 } as const
 
 /**
@@ -1877,8 +1877,8 @@ export type ArtifactsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ArtifactsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type ArtifactsSortParameterItem = {
@@ -1906,11 +1906,11 @@ export type LabelsSortParameterItemField =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemField = {
-  createdAt: 'createdAt',
-  id: 'id',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  organizationId: 'organizationId'
+  createdAt: "createdAt",
+  id: "id",
+  updatedAt: "updatedAt",
+  name: "name",
+  organizationId: "organizationId"
 } as const
 
 /**
@@ -1921,8 +1921,8 @@ export type LabelsSortParameterItemOrder =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const LabelsSortParameterItemOrder = {
-  asc: 'asc',
-  desc: 'desc'
+  asc: "asc",
+  desc: "desc"
 } as const
 
 export type LabelsSortParameterItem = {
@@ -2239,9 +2239,9 @@ export type CreateMemberBodyRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateMemberBodyRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 export type CreateMemberBody = {
@@ -2297,9 +2297,9 @@ export type UpdateMemberBodyRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateMemberBodyRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 export type UpdateMemberBody = {
@@ -2320,9 +2320,9 @@ export type CreateInvitationBodyRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const CreateInvitationBodyRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 export type CreateInvitationBody = {
@@ -2383,9 +2383,9 @@ export type UpdateInvitationBodyRole =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const UpdateInvitationBodyRole = {
-  admin: 'admin',
-  owner: 'owner',
-  member: 'member'
+  admin: "admin",
+  owner: "owner",
+  member: "member"
 } as const
 
 export type UpdateInvitationBody = {

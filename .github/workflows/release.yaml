@@ -3,7 +3,7 @@ name: goreleaser
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 permissions:
   contents: write
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: "1.22.x"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6

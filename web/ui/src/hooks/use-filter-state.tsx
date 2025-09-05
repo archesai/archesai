@@ -1,6 +1,6 @@
-import type { SortingState } from '@tanstack/react-table'
+import type { SortingState } from "@tanstack/react-table"
 
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useSearch } from "@tanstack/react-router"
 
 import type {
   BaseEntity,
@@ -9,8 +9,8 @@ import type {
   FilterNode,
   FilterValue,
   SearchQuery
-} from '#types/entities'
-import type { FilterOperator } from '#types/simple-data-table'
+} from "#types/entities"
+import type { FilterOperator } from "#types/simple-data-table"
 
 /**
  * Simplified filter state management that supports your complex nested filters
@@ -18,8 +18,8 @@ import type { FilterOperator } from '#types/simple-data-table'
  */
 export function useFilterState<TEntity extends BaseEntity>(): {
   addCondition: (condition: FilterCondition) => void
-  addGroup: (operator: 'and' | 'or', conditions: FilterCondition[]) => void
-  addSort: (field: keyof TEntity, order: 'asc' | 'desc') => void
+  addGroup: (operator: "and" | "or", conditions: FilterCondition[]) => void
+  addSort: (field: keyof TEntity, order: "asc" | "desc") => void
   filter: FilterNode | undefined
   hasFilters: boolean
   hasSorting: boolean
@@ -43,7 +43,7 @@ export function useFilterState<TEntity extends BaseEntity>(): {
   setSearchQuery: (query: SearchQuery) => void
   setSorting: (newSorting: SortingState) => SortingState
   sorting: SortingState
-  wrapInGroup: (operator: 'and' | 'or') => void
+  wrapInGroup: (operator: "and" | "or") => void
 } {
   const search = useSearch({ strict: false }) as unknown
   const navigate = useNavigate()
@@ -56,7 +56,7 @@ export function useFilterState<TEntity extends BaseEntity>(): {
   const pageNumber = searchQuery.page?.number ?? 1
   const pageSize = searchQuery.page?.size ?? 10
   const sorting: SortingState = (searchQuery.sort ?? []).map((s) => ({
-    desc: s.order === 'desc',
+    desc: s.order === "desc",
     id: s.field
   }))
 
@@ -107,12 +107,12 @@ export function useFilterState<TEntity extends BaseEntity>(): {
       return
     }
 
-    if (currentFilter.type === 'condition') {
+    if (currentFilter.type === "condition") {
       // Wrap existing condition and new condition in AND group
       setFilter({
         children: [currentFilter, condition],
-        operator: 'and',
-        type: 'group'
+        operator: "and",
+        type: "group"
       })
     } else {
       // Add to existing group
@@ -128,7 +128,7 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     if (!filter) return
 
     const removeFromNode = (node: FilterNode): FilterNode | undefined => {
-      if (node.type === 'condition') {
+      if (node.type === "condition") {
         return node.field === field ? undefined : node
       } else {
         const group = node
@@ -157,7 +157,7 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     const condition: FilterCondition = {
       field: field as string,
       operator: operator,
-      type: 'condition',
+      type: "condition",
       value: value
     }
 
@@ -166,11 +166,11 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     addCondition(condition)
   }
 
-  const addGroup = (operator: 'and' | 'or', conditions: FilterCondition[]) => {
+  const addGroup = (operator: "and" | "or", conditions: FilterCondition[]) => {
     const newGroup: FilterGroup = {
       children: conditions,
       operator,
-      type: 'group'
+      type: "group"
     }
 
     if (!filter) {
@@ -178,19 +178,19 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     } else {
       setFilter({
         children: [filter, newGroup],
-        operator: 'and',
-        type: 'group'
+        operator: "and",
+        type: "group"
       })
     }
   }
 
-  const wrapInGroup = (operator: 'and' | 'or') => {
+  const wrapInGroup = (operator: "and" | "or") => {
     if (!filter) return
 
     setFilter({
       children: [filter],
       operator,
-      type: 'group'
+      type: "group"
     })
   }
 
@@ -216,14 +216,14 @@ export function useFilterState<TEntity extends BaseEntity>(): {
     updateSearch({
       sort: newSorting.map((s) => ({
         field: s.id,
-        order: s.desc ? 'desc' : 'asc'
+        order: s.desc ? "desc" : "asc"
       }))
     })
     return newSorting
   }
 
-  const addSort = (field: keyof TEntity, order: 'asc' | 'desc') => {
-    const newSort = { desc: order === 'desc', id: String(field) }
+  const addSort = (field: keyof TEntity, order: "asc" | "desc") => {
+    const newSort = { desc: order === "desc", id: String(field) }
     setSorting([...sorting.filter((s) => s.id !== String(field)), newSort])
   }
 

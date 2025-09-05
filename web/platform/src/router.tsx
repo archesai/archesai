@@ -3,19 +3,19 @@ import {
   MutationCache,
   notifyManager,
   QueryClient
-} from '@tanstack/react-query'
-import { createRouter as createTanStackRouter } from '@tanstack/react-router'
-import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
+} from "@tanstack/react-query"
+import { createRouter as createTanStackRouter } from "@tanstack/react-router"
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 
-import { toast } from '@archesai/ui/components/shadcn/sonner'
+import { toast } from "@archesai/ui/components/shadcn/sonner"
 
-import { DefaultCatchBoundary } from '#components/default-catch-boundary'
-import NotFound from '#components/not-found'
-import { routeTree } from '#routeTree.gen'
+import { DefaultCatchBoundary } from "#components/default-catch-boundary"
+import NotFound from "#components/not-found"
+import { routeTree } from "#routeTree.gen"
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function createRouter() {
-  if (typeof document !== 'undefined') {
+  if (typeof document !== "undefined") {
     notifyManager.setScheduler(window.requestAnimationFrame)
   }
 
@@ -30,9 +30,9 @@ export function createRouter() {
     },
     mutationCache: new MutationCache({
       onError: (error) => {
-        toast.error('An error occurred', {
-          className: 'bg-red-500 text-white',
-          description: error.message.replaceAll(':', '')
+        toast.error("An error occurred", {
+          className: "bg-red-500 text-white",
+          description: error.message.replaceAll(":", "")
         })
       },
       onSettled: () => {
@@ -43,7 +43,7 @@ export function createRouter() {
         }
       },
       onSuccess: () => {
-        toast.success('Success', { className: 'bg-green-500 text-white' })
+        toast.success("Success", { className: "bg-green-500 text-white" })
       }
     })
   })
@@ -57,12 +57,12 @@ export function createRouter() {
     defaultNotFoundComponent: () => <NotFound />,
     defaultPendingComponent: () => {
       return (
-        <div className='flex h-full w-full items-center justify-center'>
-          <div className='h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary' />
+        <div className="flex h-full w-full items-center justify-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent text-primary" />
         </div>
       )
     },
-    defaultPreload: 'intent',
+    defaultPreload: "intent",
     // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
     defaultPreloadStaleTime: 0,
     defaultStructuralSharing: true,
@@ -78,7 +78,7 @@ export function createRouter() {
   return router
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: ReturnType<typeof createRouter>
   }

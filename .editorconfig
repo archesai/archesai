@@ -30,7 +30,7 @@ trim_trailing_whitespace = false
 [*.{ts,tsx}]
 
 # YAML files
-[*.{yml,yaml}]
+[*.{yaml}]
 
 # Go files
 [*.go]

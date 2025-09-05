@@ -20,7 +20,7 @@ allOf:
       logo:
         description: The organization's logo URL
         type: string
-        example: 'https://example.com/org-logo.png'
+        example: "https://example.com/org-logo.png"
       billingEmail:
         description: Email address for billing communications
         type: string
@@ -51,7 +51,7 @@ allOf:
       stripeCustomerId:
         description: Stripe customer identifier
         type: string
-        example: 'cus_1234567890'
+        example: "cus_1234567890"
         x-sensitive: true
     required:
       - name

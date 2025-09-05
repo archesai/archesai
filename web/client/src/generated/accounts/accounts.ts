@@ -20,10 +20,10 @@ import type {
   UseQueryResult,
   UseSuspenseQueryOptions,
   UseSuspenseQueryResult
-} from '@tanstack/react-query'
+} from "@tanstack/react-query"
 
-import { useMutation, useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import qs from 'qs'
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import qs from "qs"
 
 import type {
   AccountsDelete200,
@@ -33,9 +33,9 @@ import type {
   BadRequestResponse,
   NotFoundResponse,
   UnauthorizedResponse
-} from '../orval.schemas'
+} from "../orval.schemas"
 
-import { customFetch } from '../../fetcher'
+import { customFetch } from "../../fetcher"
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1]
 
@@ -49,8 +49,8 @@ export const getAccountsFindManyUrl = (params?: AccountsFindManyParams) => {
     strictNullHandling: true
   })
 
-  return stringifiedParams.length > 0 ?
-      `/auth/accounts?${stringifiedParams}`
+  return stringifiedParams.length > 0
+    ? `/auth/accounts?${stringifiedParams}`
     : `/auth/accounts`
 }
 
@@ -60,7 +60,7 @@ export const accountsFindMany = async (
 ): Promise<AccountsFindMany200> => {
   return customFetch<AccountsFindMany200>(getAccountsFindManyUrl(params), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -127,7 +127,7 @@ export function useAccountsFindMany<
           TError,
           Awaited<ReturnType<typeof accountsFindMany>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -154,7 +154,7 @@ export function useAccountsFindMany<
           TError,
           Awaited<ReturnType<typeof accountsFindMany>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -362,7 +362,7 @@ export const accountsGetOne = async (
 ): Promise<AccountsGetOne200> => {
   return customFetch<AccountsGetOne200>(getAccountsGetOneUrl(id), {
     ...options,
-    method: 'GET'
+    method: "GET"
   })
 }
 
@@ -422,7 +422,7 @@ export function useAccountsGetOne<
           TError,
           Awaited<ReturnType<typeof accountsGetOne>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -445,7 +445,7 @@ export function useAccountsGetOne<
           TError,
           Awaited<ReturnType<typeof accountsGetOne>>
         >,
-        'initialData'
+        "initialData"
       >
     request?: SecondParameter<typeof customFetch>
   },
@@ -643,7 +643,7 @@ export const accountsDelete = async (
 ): Promise<AccountsDelete200> => {
   return customFetch<AccountsDelete200>(getAccountsDeleteUrl(id), {
     ...options,
-    method: 'DELETE'
+    method: "DELETE"
   })
 }
 
@@ -664,15 +664,12 @@ export const getAccountsDeleteMutationOptions = <
   { id: string | undefined | null },
   TContext
 > => {
-  const mutationKey = ['accountsDelete']
-  const { mutation: mutationOptions, request: requestOptions } =
-    options ?
-      (
-        options.mutation &&
-        'mutationKey' in options.mutation &&
-        options.mutation.mutationKey
-      ) ?
-        options
+  const mutationKey = ["accountsDelete"]
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey }, request: undefined }
 

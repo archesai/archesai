@@ -1,17 +1,17 @@
-import type { Column } from '@tanstack/react-table'
-import type { JSX } from 'react'
+import type { Column } from "@tanstack/react-table"
+import type { JSX } from "react"
 
-import * as React from 'react'
+import * as React from "react"
 
-import type { Option } from '#types/simple-data-table'
+import type { Option } from "#types/simple-data-table"
 
 import {
   CheckCircle2Icon,
   PlusSquareIcon,
   XCircleIcon
-} from '#components/custom/icons'
-import { Badge } from '#components/shadcn/badge'
-import { Button } from '#components/shadcn/button'
+} from "#components/custom/icons"
+import { Badge } from "#components/shadcn/badge"
+import { Button } from "#components/shadcn/button"
 import {
   Command,
   CommandEmpty,
@@ -20,14 +20,14 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator
-} from '#components/shadcn/command'
+} from "#components/shadcn/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '#components/shadcn/popover'
-import { Separator } from '#components/shadcn/separator'
-import { cn } from '#lib/utils'
+} from "#components/shadcn/popover"
+import { Separator } from "#components/shadcn/separator"
+import { cn } from "#lib/utils"
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -86,68 +86,71 @@ export function DataTableFacetedFilter<TData, TValue>({
     >
       <PopoverTrigger asChild>
         <Button
-          className='border-dashed'
-          size='sm'
-          variant='outline'
+          className="border-dashed"
+          size="sm"
+          variant="outline"
         >
-          {selectedValues.size > 0 ?
+          {selectedValues.size > 0 ? (
             <div
               aria-label={`Clear ${title} filter`}
-              className='rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none'
+              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
               onClick={onReset}
-              role='button'
+              role="button"
               tabIndex={0}
             >
               <XCircleIcon />
             </div>
-          : <PlusSquareIcon />}
+          ) : (
+            <PlusSquareIcon />
+          )}
           {title}
           {selectedValues.size > 0 && (
             <>
               <Separator
-                className='mx-0.5 data-[orientation=vertical]:h-4'
-                orientation='vertical'
+                className="mx-0.5 data-[orientation=vertical]:h-4"
+                orientation="vertical"
               />
               <Badge
-                className='rounded-sm px-1 font-normal lg:hidden'
-                variant='secondary'
+                className="rounded-sm px-1 font-normal lg:hidden"
+                variant="secondary"
               >
                 {selectedValues.size}
               </Badge>
-              <div className='hidden items-center gap-1 lg:flex'>
-                {selectedValues.size > 2 ?
+              <div className="hidden items-center gap-1 lg:flex">
+                {selectedValues.size > 2 ? (
                   <Badge
-                    className='rounded-sm px-1 font-normal'
-                    variant='secondary'
+                    className="rounded-sm px-1 font-normal"
+                    variant="secondary"
                   >
                     {selectedValues.size} selected
                   </Badge>
-                : options
+                ) : (
+                  options
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
                       <Badge
-                        className='rounded-sm px-1 font-normal'
+                        className="rounded-sm px-1 font-normal"
                         key={option.value}
-                        variant='secondary'
+                        variant="secondary"
                       >
                         {option.label}
                       </Badge>
                     ))
-                }
+                )}
               </div>
             </>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        align='start'
-        className='w-[12.5rem] p-0'
+        align="start"
+        className="w-[12.5rem] p-0"
       >
         <Command>
           <CommandInput placeholder={title} />
-          <CommandList className='max-h-full'>
+          <CommandList className="max-h-full">
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup className='max-h-[18.75rem] overflow-x-hidden overflow-y-auto'>
+            <CommandGroup className="max-h-[18.75rem] overflow-x-hidden overflow-y-auto">
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value)
 
@@ -160,18 +163,18 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        'flex size-4 items-center justify-center rounded-sm border border-primary',
-                        isSelected ? 'bg-primary' : (
-                          'opacity-50 [&_svg]:invisible'
-                        )
+                        "flex size-4 items-center justify-center rounded-sm border border-primary",
+                        isSelected
+                          ? "bg-primary"
+                          : "opacity-50 [&_svg]:invisible"
                       )}
                     >
                       <CheckCircle2Icon />
                     </div>
                     {option.icon && <option.icon />}
-                    <span className='truncate'>{option.label}</span>
+                    <span className="truncate">{option.label}</span>
                     {option.count && (
-                      <span className='ml-auto font-mono text-xs'>
+                      <span className="ml-auto font-mono text-xs">
                         {option.count}
                       </span>
                     )}
@@ -184,7 +187,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    className='justify-center text-center'
+                    className="justify-center text-center"
                     onSelect={() => {
                       onReset()
                     }}

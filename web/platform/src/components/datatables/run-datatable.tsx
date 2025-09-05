@@ -1,24 +1,24 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from "@tanstack/react-router"
 
 import type {
   PageQueryParameter,
   RunEntity,
   RunsFilterParameter,
   RunsSortParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
 import {
   deleteRun,
   getFindManyRunsSuspenseQueryOptions
-} from '@archesai/client'
-import { PackageCheckIcon } from '@archesai/ui/components/custom/icons'
-import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { RUN_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/client"
+import { PackageCheckIcon } from "@archesai/ui/components/custom/icons"
+import { StatusTypeEnumButton } from "@archesai/ui/components/custom/run-status-button"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { RUN_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
 export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate()
@@ -35,11 +35,11 @@ export default function RunDataTable(): JSX.Element {
     <DataTable<RunEntity>
       columns={[
         {
-          accessorKey: 'id',
+          accessorKey: "id",
           cell: ({ row }) => {
             return (
               <Link
-                className='max-w-[200px] shrink truncate font-medium'
+                className="max-w-[200px] shrink truncate font-medium"
                 params={{
                   runId: row.original.id
                 }}
@@ -49,52 +49,58 @@ export default function RunDataTable(): JSX.Element {
               </Link>
             )
           },
-          id: 'id'
+          id: "id"
         },
         {
-          accessorKey: 'status',
+          accessorKey: "status",
           cell: ({ row }) => {
             return (
               <StatusTypeEnumButton
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
                 run={row.original as any}
-                size='sm'
+                size="sm"
               />
             )
           },
-          id: 'status'
+          id: "status"
         },
         {
-          accessorKey: 'duration',
+          accessorKey: "duration",
           cell: ({ row }) => {
-            return row.original.startedAt && row.original.completedAt ?
-                <Timestamp
-                  date={new Date(
-                    new Date(row.original.completedAt).getTime() -
-                      new Date(row.original.startedAt).getTime()
-                  ).toISOString()}
-                />
-              : 'N/A'
+            return row.original.startedAt && row.original.completedAt ? (
+              <Timestamp
+                date={new Date(
+                  new Date(row.original.completedAt).getTime() -
+                    new Date(row.original.startedAt).getTime()
+                ).toISOString()}
+              />
+            ) : (
+              "N/A"
+            )
           },
-          id: 'duration'
+          id: "duration"
         },
         {
-          accessorKey: 'startedAt',
+          accessorKey: "startedAt",
           cell: ({ row }) => {
-            return row.original.startedAt ?
-                <Timestamp date={row.original.startedAt} />
-              : 'N/A'
+            return row.original.startedAt ? (
+              <Timestamp date={row.original.startedAt} />
+            ) : (
+              "N/A"
+            )
           },
-          id: 'startedAt'
+          id: "startedAt"
         },
         {
-          accessorKey: 'completedAt',
+          accessorKey: "completedAt",
           cell: ({ row }) => {
-            return row.original.completedAt ?
-                <Timestamp date={row.original.completedAt} />
-              : 'N/A'
+            return row.original.completedAt ? (
+              <Timestamp date={row.original.completedAt} />
+            ) : (
+              "N/A"
+            )
           },
-          id: 'completedAt'
+          id: "completedAt"
         }
       ]}
       deleteItem={async (id) => {

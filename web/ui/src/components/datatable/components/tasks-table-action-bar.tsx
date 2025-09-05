@@ -1,24 +1,24 @@
-'use no memo'
+"use no memo"
 
-import type { Table } from '@tanstack/react-table'
-import type { JSX } from 'react'
+import type { Table } from "@tanstack/react-table"
+import type { JSX } from "react"
 
-import * as React from 'react'
+import * as React from "react"
 
 // import { toast } from 'sonner'
 
-import type { BaseEntity } from '#types/entities'
+import type { BaseEntity } from "#types/entities"
 
-import { DownloadIcon, TrashIcon } from '#components/custom/icons'
+import { DownloadIcon, TrashIcon } from "#components/custom/icons"
 import {
   DataTableActionBar,
   DataTableActionBarAction,
   DataTableActionBarSelection
-} from '#components/datatable/components/data-table-action-bar'
-import { Separator } from '#components/shadcn/separator'
-import { exportTableToCSV } from '#lib/export'
+} from "#components/datatable/components/data-table-action-bar"
+import { Separator } from "#components/shadcn/separator"
+import { exportTableToCSV } from "#lib/export"
 
-const _actions = ['export', 'delete'] as const
+const _actions = ["export", "delete"] as const
 
 type Action = (typeof _actions)[number]
 
@@ -64,10 +64,10 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
   // )
 
   const onExport = React.useCallback(() => {
-    setCurrentAction('export')
+    setCurrentAction("export")
     startTransition(() => {
       exportTableToCSV(table, {
-        excludeColumns: ['select', 'actions'],
+        excludeColumns: ["select", "actions"],
         onlySelected: true
       })
     })
@@ -95,10 +95,10 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
     >
       <DataTableActionBarSelection table={table} />
       <Separator
-        className='hidden data-[orientation=vertical]:h-5 sm:block'
-        orientation='vertical'
+        className="hidden data-[orientation=vertical]:h-5 sm:block"
+        orientation="vertical"
       />
-      <div className='flex items-center gap-1.5'>
+      <div className="flex items-center gap-1.5">
         {/* <Select
           onValueChange={(value: Task['status']) => {
             onTaskUpdate({ field: 'status', value })
@@ -156,18 +156,18 @@ export function TasksTableActionBar<TEntity extends BaseEntity>({
           </SelectContent>
         </Select> */}
         <DataTableActionBarAction
-          isPending={getIsActionPending('export')}
+          isPending={getIsActionPending("export")}
           onClick={onExport}
-          size='icon'
-          tooltip='Export'
+          size="icon"
+          tooltip="Export"
         >
           <DownloadIcon />
         </DataTableActionBarAction>
         <DataTableActionBarAction
-          isPending={getIsActionPending('delete')}
+          isPending={getIsActionPending("delete")}
           // onClick={onDelete}
-          size='icon'
-          tooltip='Delete'
+          size="icon"
+          tooltip="Delete"
         >
           <TrashIcon />
         </DataTableActionBarAction>

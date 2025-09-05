@@ -1,21 +1,21 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useRef, useState } from 'react'
+import { useRef, useState } from "react"
 
 import {
   Loader2Icon,
   TrashIcon,
   UploadCloudIcon
-} from '#components/custom/icons'
+} from "#components/custom/icons"
 // import { toast } from 'sonner'
 
 // import type { ArtifactEntity } from '@archesai/schemas'
 
-import { Badge } from '#components/shadcn/badge'
-import { Button } from '#components/shadcn/button'
-import { Card } from '#components/shadcn/card'
-import { Progress } from '#components/shadcn/progress'
-import { cn } from '#lib/utils'
+import { Badge } from "#components/shadcn/badge"
+import { Button } from "#components/shadcn/button"
+import { Card } from "#components/shadcn/card"
+import { Progress } from "#components/shadcn/progress"
+import { cn } from "#lib/utils"
 
 export default function ImportCard(): JSX.Element {
   //   {
@@ -156,88 +156,89 @@ export default function ImportCard(): JSX.Element {
   return (
     <div
       className={
-        'flex flex-col items-center gap-2 rounded-lg transition-all duration-300'
+        "flex flex-col items-center gap-2 rounded-lg transition-all duration-300"
       }
     >
       {/* Drop Area */}
       <Card
         className={cn(
-          'flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-8 transition-colors duration-300',
-          dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-400'
+          "flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed p-8 transition-colors duration-300",
+          dragActive ? "border-blue-500 bg-blue-50" : "border-gray-400"
         )}
         onClick={() => fileInputRef.current?.click()}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <UploadCloudIcon className='h-5 w-5 text-muted-foreground' />
-        <p className='text-sm text-muted-foreground'>
+        <UploadCloudIcon className="h-5 w-5 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
           Drag and drop files here, or click to select files
         </p>
 
         <input
-          className='hidden'
+          className="hidden"
           multiple
           onChange={handleFileInputChange}
           ref={fileInputRef}
-          type='file'
+          type="file"
         />
       </Card>
 
       {/* Sidebar */}
       {selectedFiles.length > 0 && (
-        <div className='flex w-full flex-col gap-2'>
-          <ul className='flex max-h-52 grow flex-col gap-2 overflow-y-scroll'>
+        <div className="flex w-full flex-col gap-2">
+          <ul className="flex max-h-52 grow flex-col gap-2 overflow-y-scroll">
             {selectedFiles.map((file, idx) => (
               <li
-                className='flex items-center justify-between rounded-xs border bg-muted/50 p-2'
+                className="flex items-center justify-between rounded-xs border bg-muted/50 p-2"
                 key={idx}
               >
-                <span className='flex w-4/5 items-center gap-2 truncate text-foreground'>
+                <span className="flex w-4/5 items-center gap-2 truncate text-foreground">
                   <span>{file.name}</span>
                   <Badge>{file.type}</Badge>
                 </span>
                 <Badge
-                  className='text-nowrap text-primary'
-                  variant='outline'
+                  className="text-nowrap text-primary"
+                  variant="outline"
                 >
                   {`${(file.size / 1024).toFixed(2)} KB`}
                 </Badge>
                 <button
                   aria-label={`Remove ${file.name}`}
-                  className='text-red-500 hover:text-red-700 focus:outline-hidden'
+                  className="text-red-500 hover:text-red-700 focus:outline-hidden"
                   onClick={() => {
                     removeFile(idx)
                   }}
                 >
-                  <TrashIcon className='h-5 w-5' />
+                  <TrashIcon className="h-5 w-5" />
                 </button>
               </li>
             ))}
           </ul>
           <Button
-            className='flex items-center justify-center border'
+            className="flex items-center justify-center border"
             disabled={uploading || selectedFiles.length === 0}
             onClick={uploadFiles}
-            size='sm'
-            variant={'secondary'}
+            size="sm"
+            variant={"secondary"}
           >
-            {uploading ?
-              <div className='flex gap-2'>
-                <Loader2Icon className='h-5 w-5 animate-spin text-white' />
+            {uploading ? (
+              <div className="flex gap-2">
+                <Loader2Icon className="h-5 w-5 animate-spin text-white" />
                 <span>Uploading...</span>
               </div>
-            : <div className='flex gap-2'>
-                <UploadCloudIcon className='h-5 w-5' />
+            ) : (
+              <div className="flex gap-2">
+                <UploadCloudIcon className="h-5 w-5" />
                 <span>Upload</span>
               </div>
-            }
+            )}
           </Button>
 
           {uploading && (
-            <div className='flex flex-col gap-2'>
+            <div className="flex flex-col gap-2">
               <Progress value={uploadProgress} />
-              <p className='text-center text-sm text-gray-600'>
+              <p className="text-center text-sm text-gray-600">
                 {uploadProgress}% Uploaded
               </p>
             </div>

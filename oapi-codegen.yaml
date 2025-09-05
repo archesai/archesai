@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
 package: api
-output: ''
+output: ""
 compatibility:
   always-prefix-enum-values: false
 output-options:

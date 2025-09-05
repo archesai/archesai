@@ -1,25 +1,25 @@
-version: '2'
+version: "2"
 sql:
   # PostgreSQL configuration
-  - engine: 'postgresql'
-    queries: 'queries'
-    schema: 'migrations/postgresql'
+  - engine: "postgresql"
+    queries: "queries"
+    schema: "migrations/postgresql"
     gen:
       go:
         initialisms: []
-        package: 'postgresql'
-        out: 'generated/postgresql'
+        package: "postgresql"
+        out: "generated/postgresql"
         emit_json_tags: true
         emit_enum_valid_method: true
         emit_all_enum_values: true
-        sql_package: 'pgx/v5'
+        sql_package: "pgx/v5"
         emit_interface: true
         overrides:
-          - db_type: 'uuid'
-            go_type: 'github.com/google/uuid.UUID'
-          - db_type: 'timestamptz'
-            go_type: 'time.Time'
-          - db_type: 'text'
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+          - db_type: "text"
             nullable: true
             go_type:
-              type: '*string'
+              type: "*string"

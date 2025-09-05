@@ -1,28 +1,28 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
 import type {
   MemberEntity,
   MembersFilterParameter,
   MembersSortParameter,
   PageQueryParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
 import {
   deleteMember,
   getFindManyMembersSuspenseQueryOptions,
   useGetOneSessionSuspense
-} from '@archesai/client'
-import { UserIcon } from '@archesai/ui/components/custom/icons'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { Badge } from '@archesai/ui/components/shadcn/badge'
-import { MEMBER_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/client"
+import { UserIcon } from "@archesai/ui/components/custom/icons"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { Badge } from "@archesai/ui/components/shadcn/badge"
+import { MEMBER_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
-import MemberForm from '#components/forms/member-form'
+import MemberForm from "#components/forms/member-form"
 
 export default function MemberDataTable(): JSX.Element {
-  const { data: sessionData } = useGetOneSessionSuspense('current')
+  const { data: sessionData } = useGetOneSessionSuspense("current")
   const organizationId = sessionData.data.activeOrganizationId
 
   const getQueryOptions = (query: SearchQuery) => {
@@ -37,29 +37,29 @@ export default function MemberDataTable(): JSX.Element {
     <DataTable<MemberEntity>
       columns={[
         {
-          accessorKey: 'role',
+          accessorKey: "role",
           cell: ({ row }) => {
             return (
-              <Badge variant={'secondary'}>
+              <Badge variant={"secondary"}>
                 {row.original.role.toLowerCase()}
               </Badge>
             )
           },
-          id: 'role'
+          id: "role"
         },
         {
-          accessorKey: 'userId',
+          accessorKey: "userId",
           cell: ({ row }) => {
             return row.original.userId
           },
-          id: 'userId'
+          id: "userId"
         },
         {
-          accessorKey: 'createdAt',
+          accessorKey: "createdAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
           },
-          id: 'createdAt'
+          id: "createdAt"
         }
       ]}
       createForm={MemberForm}

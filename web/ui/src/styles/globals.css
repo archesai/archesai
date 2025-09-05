@@ -1,10 +1,10 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@import '@fontsource/geist';
-@import '@fontsource/geist-mono';
+@import "@fontsource/geist";
+@import "@fontsource/geist-mono";
 
-@import './themes.css';
+@import "./themes.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -42,9 +42,9 @@
   --sidebar-border: oklch(0.9271 0.0101 238.5177);
   --sidebar-ring: oklch(0.6818 0.1584 243.354);
 
-  --font-sans: 'Geist', sans-serif;
+  --font-sans: "Geist", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'Geist Mono', monospace;
+  --font-mono: "Geist Mono", monospace;
 
   --radius: 1.3rem;
   --tracking-normal: 0em;
@@ -85,9 +85,9 @@
   --sidebar-border: oklch(0.3795 0.022 240.5943);
   --sidebar-ring: oklch(0.6818 0.1584 243.354);
 
-  --font-sans: 'Geist', sans-serif;
+  --font-sans: "Geist", sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'Geist Mono', monospace;
+  --font-mono: "Geist Mono", monospace;
 
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0);
@@ -218,10 +218,10 @@
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     font-feature-settings:
-      'rlig' 1,
-      /* Required ligatures */ 'calt' 1,
-      /* Contextual alternates */ 'liga' 1,
-      /* Standard ligatures */ 'kern' 1; /* Kerning */
+      "rlig" 1,
+      /* Required ligatures */ "calt" 1,
+      /* Contextual alternates */ "liga" 1,
+      /* Standard ligatures */ "kern" 1; /* Kerning */
   }
 
   @supports (font: -apple-system-body) and (-webkit-appearance: none) {

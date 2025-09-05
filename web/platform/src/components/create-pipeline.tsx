@@ -1,9 +1,9 @@
-import type { Connection, Edge, Node } from '@xyflow/react'
-import type { JSX } from 'react'
+import type { Connection, Edge, Node } from "@xyflow/react"
+import type { JSX } from "react"
 
 // import '@xyflow/react/dist/style.css'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from "react"
 import {
   addEdge,
   Background,
@@ -15,10 +15,10 @@ import {
   ReactFlow,
   useEdgesState,
   useNodesState
-} from '@xyflow/react'
+} from "@xyflow/react"
 
-import { Button } from '@archesai/ui/components/shadcn/button'
-import { Card } from '@archesai/ui/components/shadcn/card'
+import { Button } from "@archesai/ui/components/shadcn/button"
+import { Card } from "@archesai/ui/components/shadcn/card"
 
 // PipelineStepEntity doesn't exist in generated types yet
 interface PipelineStepEntity {
@@ -36,17 +36,17 @@ function RunFormNode({ data }: { data: PipelineStepEntity }) {
     <div>
       {/* Include your RunForm component */}
       {/* <RunForm /> */}
-      <Card className='flex items-center justify-center px-2 py-1'>
+      <Card className="flex items-center justify-center px-2 py-1">
         {data.toolId}
       </Card>
       {/* Add handles for connecting nodes */}
       <Handle
         position={Position.Left}
-        type='target'
+        type="target"
       />
       <Handle
         position={Position.Right}
-        type='source'
+        type="source"
       />
     </div>
   )
@@ -95,7 +95,7 @@ export const CreatePipelineContent = (): JSX.Element => {
 
   return (
     <ReactFlow
-      attributionPosition='top-right'
+      attributionPosition="top-right"
       edges={edges}
       elementsSelectable
       fitView
@@ -105,8 +105,8 @@ export const CreatePipelineContent = (): JSX.Element => {
       onEdgesChange={onEdgesChange}
       onNodesChange={onNodesChange}
     >
-      <Panel position='top-right'>
-        <Button className='z-50'>Useless Button</Button>
+      <Panel position="top-right">
+        <Button className="z-50">Useless Button</Button>
       </Panel>
       <Controls />
       <MiniMap

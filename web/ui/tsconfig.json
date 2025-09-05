@@ -10,7 +10,7 @@
   //   },
   //   "baseUrl": "."
   // },
-  "extends": "../../tools/typescript/src/base.json",
+  "extends": "../typescript/src/base.json",
   "files": [],
   "references": [
     {

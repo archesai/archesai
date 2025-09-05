@@ -1,12 +1,12 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { useCallback, useEffect, useState } from 'react'
-import { useTheme } from 'next-themes'
+import { useCallback, useEffect, useState } from "react"
+import { useTheme } from "next-themes"
 
-import type { SiteRoute } from '#lib/site-config.interface'
+import type { SiteRoute } from "#lib/site-config.interface"
 
-import { LaptopIcon, MoonIcon, SunIcon } from '#components/custom/icons'
-import { Button } from '#components/shadcn/button'
+import { LaptopIcon, MoonIcon, SunIcon } from "#components/custom/icons"
+import { Button } from "#components/shadcn/button"
 import {
   CommandDialog,
   CommandEmpty,
@@ -15,9 +15,9 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator
-} from '#components/shadcn/command'
-import { DialogDescription, DialogTitle } from '#components/shadcn/dialog'
-import { cn } from '#lib/utils'
+} from "#components/shadcn/command"
+import { DialogDescription, DialogTitle } from "#components/shadcn/dialog"
+import { cn } from "#lib/utils"
 
 interface DialogProps {
   children?: React.ReactNode
@@ -38,7 +38,7 @@ export function CommandMenu({
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || e.key === '/') {
+      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
         if (
           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
           e.target instanceof HTMLInputElement ||
@@ -53,9 +53,9 @@ export function CommandMenu({
       }
     }
 
-    document.addEventListener('keydown', down)
+    document.addEventListener("keydown", down)
     return () => {
-      document.removeEventListener('keydown', down)
+      document.removeEventListener("keydown", down)
     }
   }, [])
 
@@ -68,21 +68,21 @@ export function CommandMenu({
     <div>
       <Button
         className={cn(
-          'h-8 w-full justify-between gap-2 rounded-lg text-sm font-normal text-muted-foreground md:text-sm'
+          "h-8 w-full justify-between gap-2 rounded-lg text-sm font-normal text-muted-foreground md:text-sm"
         )}
         onClick={() => {
           setOpen(true)
         }}
-        variant='outline'
+        variant="outline"
         {...props}
       >
-        <span className='hidden sm:inline-flex'>
+        <span className="hidden sm:inline-flex">
           Type a command or search...
         </span>
-        <span className='inline-flex sm:hidden'>Search...</span>
+        <span className="inline-flex sm:hidden">Search...</span>
 
-        <kbd className='pointer-events-none flex h-5 items-center gap-1 rounded-xs border border-sidebar-accent bg-sidebar-accent p-2 font-mono text-[10px] font-medium select-none'>
-          <span className='text-xs'>⌘</span>
+        <kbd className="pointer-events-none flex h-5 items-center gap-1 rounded-xs border border-sidebar-accent bg-sidebar-accent p-2 font-mono text-[10px] font-medium select-none">
+          <span className="text-xs">⌘</span>
           <span>K</span>
         </kbd>
       </Button>
@@ -90,11 +90,11 @@ export function CommandMenu({
         onOpenChange={setOpen}
         open={open}
       >
-        <div className='hidden'>
+        <div className="hidden">
           <DialogTitle />
         </div>
         <DialogDescription />
-        <CommandInput placeholder='Type a command or search...' />
+        <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           {siteRoutes.map((rootRoute) => (
@@ -104,7 +104,7 @@ export function CommandMenu({
             >
               {rootRoute.children?.map((route) => (
                 <CommandItem
-                  className='flex gap-2'
+                  className="flex gap-2"
                   key={route.href}
                   onClick={() => {
                     runCommand(() => {
@@ -118,17 +118,17 @@ export function CommandMenu({
                   }}
                   value={route.title}
                 >
-                  <route.Icon className='h-5 w-5' />
+                  <route.Icon className="h-5 w-5" />
                   <span>{route.title}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
           ))}
           <CommandSeparator />
-          <CommandGroup heading='Theme'>
-            {['light', 'dark', 'system'].map((theme) => (
+          <CommandGroup heading="Theme">
+            {["light", "dark", "system"].map((theme) => (
               <CommandItem
-                className='flex gap-2'
+                className="flex gap-2"
                 key={theme}
                 onSelect={() => {
                   runCommand(() => {
@@ -136,9 +136,9 @@ export function CommandMenu({
                   })
                 }}
               >
-                {theme === 'light' && <SunIcon className='h-5 w-5' />}
-                {theme === 'dark' && <MoonIcon className='h-5 w-5' />}
-                {theme === 'system' && <LaptopIcon className='h-5 w-5' />}
+                {theme === "light" && <SunIcon className="h-5 w-5" />}
+                {theme === "dark" && <MoonIcon className="h-5 w-5" />}
+                {theme === "system" && <LaptopIcon className="h-5 w-5" />}
                 <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
               </CommandItem>
             ))}

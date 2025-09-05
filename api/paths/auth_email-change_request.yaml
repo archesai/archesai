@@ -29,9 +29,9 @@ post:
             - userId
     required: true
   responses:
-    '204':
+    "204":
       $ref: ../components/responses/NoContent.yaml
-    '400':
+    "400":
       $ref: ../components/responses/BadRequest.yaml
-    '401':
+    "401":
       $ref: ../components/responses/Unauthorized.yaml

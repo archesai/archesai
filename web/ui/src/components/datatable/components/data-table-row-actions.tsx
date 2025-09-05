@@ -1,18 +1,18 @@
-import type { Table } from '@tanstack/table-core'
-import type { JSX } from 'react'
+import type { Table } from "@tanstack/table-core"
+import type { JSX } from "react"
 
-import type { BaseEntity } from '#types/entities'
+import type { BaseEntity } from "#types/entities"
 
-import { DeleteItems } from '#components/custom/delete-items'
-import { MoreHorizontalIcon } from '#components/custom/icons'
-import { Button } from '#components/shadcn/button'
+import { DeleteItems } from "#components/custom/delete-items"
+import { MoreHorizontalIcon } from "#components/custom/icons"
+import { Button } from "#components/shadcn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from '#components/shadcn/dropdown-menu'
+} from "#components/shadcn/dropdown-menu"
 
 export interface DataTableRowActionsProps<TEntity extends BaseEntity> {
   deleteItem?: (id: string) => Promise<void>
@@ -30,23 +30,23 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label='Expand row options'
-          className='flex h-8 w-8 p-0 data-[state=open]:bg-muted'
-          variant='ghost'
+          aria-label="Expand row options"
+          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+          variant="ghost"
         >
-          <MoreHorizontalIcon className='h-5 w-5' />
+          <MoreHorizontalIcon className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align='end'
-        className='w-[160px]'
+        align="end"
+        className="w-[160px]"
       >
-        {props.getEditFormFromItem ?
+        {props.getEditFormFromItem ? (
           <>
             <DropdownMenuItem
               onClick={() => {
                 if (!props.getEditFormFromItem) {
-                  throw new Error('getEditFormFromItem function is not defined')
+                  throw new Error("getEditFormFromItem function is not defined")
                 }
                 if (props.setFinalForm && props.setFormOpen) {
                   props.setFinalForm(
@@ -60,8 +60,8 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
-        : null}
-        {props.deleteItem ?
+        ) : null}
+        {props.deleteItem ? (
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault()
@@ -69,11 +69,11 @@ export function DataTableRowActions<TEntity extends BaseEntity>(
           >
             <DeleteItems
               deleteItem={props.deleteItem}
-              entityKey={props.table.options.meta?.entityKey ?? 'Entity'}
+              entityKey={props.table.options.meta?.entityKey ?? "Entity"}
               items={[props.row.original]}
             />
           </DropdownMenuItem>
-        : null}
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   )

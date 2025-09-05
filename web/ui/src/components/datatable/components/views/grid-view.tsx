@@ -1,15 +1,15 @@
-'use no memo'
+"use no memo"
 
-import type { Table } from '@tanstack/react-table'
-import type { JSX } from 'react'
+import type { Table } from "@tanstack/react-table"
+import type { JSX } from "react"
 
-import { useState } from 'react'
-import { flexRender } from '@tanstack/react-table'
+import { useState } from "react"
+import { flexRender } from "@tanstack/react-table"
 
-import type { BaseEntity } from '#types/entities'
+import type { BaseEntity } from "#types/entities"
 
-import { Card, CardContent, CardFooter } from '#components/shadcn/card'
-import { cn } from '#lib/utils'
+import { Card, CardContent, CardFooter } from "#components/shadcn/card"
+import { cn } from "#lib/utils"
 
 export interface GridViewProps<TEntity extends BaseEntity> {
   grid?: (item: TEntity) => React.ReactNode
@@ -28,9 +28,9 @@ export function GridView<TEntity extends BaseEntity>({
   const [hover, setHover] = useState(-1)
 
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Data Cards */}
-      {data.length > 0 ?
+      {data.length > 0 ? (
         data.map((item, i) => {
           const isItemSelected = item.getIsSelected()
           const checkbox = item.getAllCells().at(0)?.column.columnDef.cell
@@ -40,13 +40,13 @@ export function GridView<TEntity extends BaseEntity>({
             <Card
               className={cn(
                 `h-64 transition-all duration-200 hover:bg-accent hover:shadow-lg`,
-                isItemSelected && 'bg-accent/80'
+                isItemSelected && "bg-accent/80"
               )}
               key={item.id}
             >
               {/* Top Content */}
               <CardContent
-                className='h-full cursor-pointer'
+                className="h-full cursor-pointer"
                 onClick={item.getToggleSelectedHandler()}
                 onMouseEnter={() => {
                   setHover(i)
@@ -55,29 +55,31 @@ export function GridView<TEntity extends BaseEntity>({
                   setHover(-1)
                 }}
               >
-                {grid ?
+                {grid ? (
                   grid(item.original)
-                : <div className='flex h-full items-center justify-center'>
+                ) : (
+                  <div className="flex h-full items-center justify-center">
                     {icon}
                   </div>
-                }
+                )}
               </CardContent>
 
               <hr />
 
               {/* Footer */}
-              <CardFooter className='justify-start'>
+              <CardFooter className="justify-start">
                 {context && flexRender(checkbox, context)}
-                <span className='truncate'>{item.original.id}</span>
+                <span className="truncate">{item.original.id}</span>
               </CardFooter>
               {gridHover && hover === i && gridHover(item.original)}
             </Card>
           )
         })
-      : <div className='col-span-4 row-span-4 flex items-center justify-center pt-20 text-sm'>
+      ) : (
+        <div className="col-span-4 row-span-4 flex items-center justify-center pt-20 text-sm">
           No items found
         </div>
-      }
+      )}
     </div>
   )
 }

@@ -1,27 +1,27 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useNavigate } from "@tanstack/react-router"
 
 import type {
   ArtifactEntity,
   ArtifactsFilterParameter,
   ArtifactsSortParameter,
   PageQueryParameter
-} from '@archesai/client'
-import type { SearchQuery } from '@archesai/ui/types/entities'
+} from "@archesai/client"
+import type { SearchQuery } from "@archesai/ui/types/entities"
 
-import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
+import { getFindManyArtifactsSuspenseQueryOptions } from "@archesai/client"
 import {
   CalendarIcon,
   FileIcon,
   TextIcon
-} from '@archesai/ui/components/custom/icons'
-import { Timestamp } from '@archesai/ui/components/custom/timestamp'
-import { DataTable } from '@archesai/ui/components/datatable/data-table'
-import { Badge } from '@archesai/ui/components/shadcn/badge'
-import { ARTIFACT_ENTITY_KEY } from '@archesai/ui/lib/constants'
+} from "@archesai/ui/components/custom/icons"
+import { Timestamp } from "@archesai/ui/components/custom/timestamp"
+import { DataTable } from "@archesai/ui/components/datatable/data-table"
+import { Badge } from "@archesai/ui/components/shadcn/badge"
+import { ARTIFACT_ENTITY_KEY } from "@archesai/ui/lib/constants"
 
-import ArtifactForm from '#components/forms/artifact-form'
+import ArtifactForm from "#components/forms/artifact-form"
 
 export default function ArtifactDataTable(): JSX.Element {
   const navigate = useNavigate()
@@ -38,12 +38,12 @@ export default function ArtifactDataTable(): JSX.Element {
     <DataTable<ArtifactEntity>
       columns={[
         {
-          accessorKey: 'name',
+          accessorKey: "name",
           cell: ({ row }) => {
             return (
-              <div className='flex gap-2'>
+              <div className="flex gap-2">
                 <Link
-                  className='text-blue-500 hover:underline'
+                  className="text-blue-500 hover:underline"
                   params={{
                     artifactId: row.original.id
                   }}
@@ -55,72 +55,74 @@ export default function ArtifactDataTable(): JSX.Element {
             )
           },
           enableColumnFilter: true,
-          id: 'name',
+          id: "name",
           meta: {
-            filterVariant: 'text',
+            filterVariant: "text",
             icon: TextIcon,
-            label: 'Name'
+            label: "Name"
           }
         },
         {
-          accessorKey: 'mimeType',
+          accessorKey: "mimeType",
           cell: ({ row }) => {
-            return <Badge variant={'secondary'}>{row.original.mimeType}</Badge>
+            return <Badge variant={"secondary"}>{row.original.mimeType}</Badge>
           },
           enableColumnFilter: true,
           enableHiding: false,
-          id: 'mimeType',
+          id: "mimeType",
           meta: {
-            filterVariant: 'multiSelect',
+            filterVariant: "multiSelect",
             icon: TextIcon,
-            label: 'Artifact Type',
+            label: "Artifact Type",
             options: [
-              { label: 'Text', value: 'text' },
-              { label: 'Image', value: 'image' },
-              { label: 'Audio', value: 'audio' },
-              { label: 'Video', value: 'video' }
+              { label: "Text", value: "text" },
+              { label: "Image", value: "image" },
+              { label: "Audio", value: "audio" },
+              { label: "Video", value: "video" }
             ]
           }
         },
         {
-          accessorKey: 'producer',
+          accessorKey: "producer",
           cell: ({ row }) => {
-            return row.original.producerId ?
-                <Link
-                  className='text-blue-500 hover:underline'
-                  params={{
-                    artifactId: row.original.id
-                  }}
-                  search={{
-                    selectedRunId: row.original.producerId
-                  }}
-                  to={`/artifacts/$artifactId`}
-                >
-                  {row.original.producerId}
-                </Link>
-              : <div className='text-muted-foreground'>None</div>
+            return row.original.producerId ? (
+              <Link
+                className="text-blue-500 hover:underline"
+                params={{
+                  artifactId: row.original.id
+                }}
+                search={{
+                  selectedRunId: row.original.producerId
+                }}
+                to={`/artifacts/$artifactId`}
+              >
+                {row.original.producerId}
+              </Link>
+            ) : (
+              <div className="text-muted-foreground">None</div>
+            )
           },
           enableColumnFilter: true,
           enableSorting: true,
-          id: 'producer',
+          id: "producer",
           meta: {
-            filterVariant: 'text',
+            filterVariant: "text",
             icon: TextIcon,
-            label: 'Producer'
+            label: "Producer"
           }
         },
         {
-          accessorKey: 'createdAt',
+          accessorKey: "createdAt",
           cell: ({ row }) => {
             return <Timestamp date={row.original.createdAt} />
           },
           enableColumnFilter: true,
           enableSorting: true,
-          id: 'createdAt',
+          id: "createdAt",
           meta: {
-            filterVariant: 'date',
+            filterVariant: "date",
             icon: CalendarIcon,
-            label: 'Created'
+            label: "Created"
           }
         }
       ]}
@@ -130,7 +132,7 @@ export default function ArtifactDataTable(): JSX.Element {
       getQueryOptions={getQueryOptions as any}
       grid={(_item) => {
         return (
-          <div className='flex h-full w-full items-center justify-center'>
+          <div className="flex h-full w-full items-center justify-center">
             {/* <Image
               alt='source image'
               height={256}

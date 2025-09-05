@@ -1,15 +1,15 @@
-import type { JSX } from 'react'
+import type { JSX } from "react"
 
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router"
 
-import { Button } from '@archesai/ui/components/shadcn/button'
+import { Button } from "@archesai/ui/components/shadcn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle
-} from '@archesai/ui/components/shadcn/card'
+} from "@archesai/ui/components/shadcn/card"
 
 export default function NotFound({
   children
@@ -17,11 +17,11 @@ export default function NotFound({
   children?: React.ReactNode
 }): JSX.Element {
   return (
-    <div className='flex min-h-screen items-center justify-center p-4'>
-      <Card className='w-full max-w-md text-center'>
+    <div className="flex min-h-screen items-center justify-center p-4">
+      <Card className="w-full max-w-md text-center">
         <CardHeader>
-          <div className='text-6xl font-bold text-muted-foreground'>404</div>
-          <CardTitle className='text-2xl'>Page Not Found</CardTitle>
+          <div className="text-6xl font-bold text-muted-foreground">404</div>
+          <CardTitle className="text-2xl">Page Not Found</CardTitle>
           <CardDescription>
             The page you&apos;re looking for doesn&apos;t exist or has been
             moved.
@@ -29,19 +29,19 @@ export default function NotFound({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className='flex flex-col gap-2 sm:flex-row'>
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Button
               asChild
-              className='flex-1'
+              className="flex-1"
             >
-              <Link to='/'>Go Home</Link>
+              <Link to="/">Go Home</Link>
             </Button>
             <Button
-              className='flex-1'
+              className="flex-1"
               onClick={() => {
                 window.history.back()
               }}
-              type='button'
+              type="button"
             >
               Go back
             </Button>

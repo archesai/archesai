@@ -13,7 +13,7 @@ properties:
   imageRegistry:
     description: Custom container registry URL (leave empty for Docker Hub)
     type: string
-    default: ''
+    default: ""
     minLength: 1
     example: example-string
 required:

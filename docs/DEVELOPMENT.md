@@ -191,11 +191,11 @@ paths:
     get:
       summary: List AI models
       responses:
-        '200':
+        "200":
           content:
             application/json:
               schema:
-                $ref: './schemas.yaml#/components/schemas/ModelList'
+                $ref: "./schemas.yaml#/components/schemas/ModelList"
 ```
 
 **Step 2: Generate Code**
@@ -507,7 +507,7 @@ converters:
     automap: true # Automatically map matching fields
     fields:
       # Only specify fields that need custom conversion
-      OrganizationId: 'uuid.MustParse(from.OrganizationId)'
+      OrganizationId: "uuid.MustParse(from.OrganizationId)"
 ```
 
 ### Benefits of Code Generation

@@ -1,4 +1,4 @@
-import type { SiteRoute } from '@archesai/ui/lib/site-config.interface'
+import type { SiteRoute } from "@archesai/ui/lib/site-config.interface"
 
 import {
   BookOpenIcon,
@@ -15,105 +15,105 @@ import {
   UsersIcon,
   Volume2Icon,
   WorkflowIcon
-} from '@archesai/ui/components/custom/icons'
+} from "@archesai/ui/components/custom/icons"
 
 export const siteRoutes: SiteRoute[] = [
   {
-    description: 'Try out your tools here.',
-    href: '/',
+    description: "Try out your tools here.",
+    href: "/",
     Icon: SquareTerminalIcon,
-    section: 'Home',
-    title: 'Dashboard'
+    section: "Home",
+    title: "Dashboard"
   },
   {
-    description: 'Browse and manage your artifacts here.',
-    href: '/artifacts',
+    description: "Browse and manage your artifacts here.",
+    href: "/artifacts",
     Icon: ServerIcon,
-    section: 'Data',
-    title: 'Artifacts'
+    section: "Data",
+    title: "Artifacts"
   },
   {
-    description: 'Explore and run tools.',
-    href: '/tools',
+    description: "Explore and run tools.",
+    href: "/tools",
     Icon: CpuIcon,
-    section: 'Build',
-    title: 'Tools'
+    section: "Build",
+    title: "Tools"
   },
   {
-    description: 'View and manage your pipelines.',
-    href: '/pipelines',
+    description: "View and manage your pipelines.",
+    href: "/pipelines",
     Icon: WorkflowIcon,
-    section: 'Build',
+    section: "Build",
     showInTabs: true,
-    title: 'Pipelines'
+    title: "Pipelines"
   },
   {
-    description: 'View your previous runs.',
-    href: '/runs',
+    description: "View your previous runs.",
+    href: "/runs",
     Icon: PackageCheckIcon,
-    section: 'Build',
-    title: 'History'
+    section: "Build",
+    title: "History"
   },
   {
-    description: 'Create and manage labels.',
-    href: '/labels',
+    description: "Create and manage labels.",
+    href: "/labels",
     Icon: TagsIcon,
-    section: 'Data',
-    title: 'Labels'
+    section: "Data",
+    title: "Labels"
   },
 
   {
-    description: 'View your profile information.',
-    href: '/profile',
+    description: "View your profile information.",
+    href: "/profile",
     Icon: UserIcon,
-    section: 'Settings',
-    title: 'Account'
+    section: "Settings",
+    title: "Account"
   },
   {
     children: [
       {
         description: "View and update your organization's general information.",
-        href: '/organization',
+        href: "/organization",
         Icon: Building2Icon,
-        section: 'Settings',
+        section: "Settings",
         showInTabs: true,
-        title: 'General'
+        title: "General"
       },
       {
         description: "View and manage your organization's members.",
-        href: '/organization/members',
+        href: "/organization/members",
         Icon: UsersIcon,
-        section: 'Settings',
+        section: "Settings",
         showInTabs: true,
-        title: 'Members'
+        title: "Members"
       }
     ],
-    href: '/organization',
+    href: "/organization",
     Icon: Settings2Icon,
-    section: 'Settings',
-    title: 'Settings'
+    section: "Settings",
+    title: "Settings"
   }
 ]
 
 export const toolBaseIcons: Record<
-  | 'create-embeddings'
-  | 'extract-text'
-  | 'summarize'
-  | 'text-to-image'
-  | 'text-to-speech',
-  SiteRoute['Icon']
+  | "create-embeddings"
+  | "extract-text"
+  | "summarize"
+  | "text-to-image"
+  | "text-to-speech",
+  SiteRoute["Icon"]
 > = {
-  'create-embeddings': CpuIcon,
-  'extract-text': TextIcon,
+  "create-embeddings": CpuIcon,
+  "extract-text": TextIcon,
   summarize: BookOpenIcon,
-  'text-to-image': ImageIcon,
-  'text-to-speech': Volume2Icon
+  "text-to-image": ImageIcon,
+  "text-to-speech": Volume2Icon
 }
 
 export const siteMetadata = {
   description:
-    'Arches AI is a platform that provides tools to transform data into various forms of content.',
-  name: 'Arches AI',
-  ogImage: 'https://ui.shadcn.com/og.jpg',
-  url: 'https://archesai.com'
+    "Arches AI is a platform that provides tools to transform data into various forms of content.",
+  name: "Arches AI",
+  ogImage: "https://ui.shadcn.com/og.jpg",
+  url: "https://archesai.com"
 }

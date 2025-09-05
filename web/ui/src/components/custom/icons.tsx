@@ -1,4 +1,4 @@
-export type { LucideIcon } from 'lucide-react'
+export type { LucideIcon } from "lucide-react"
 
 export {
   ArrowDownUpIcon,
@@ -61,7 +61,7 @@ export {
   WorkflowIcon,
   XCircleIcon,
   ZapIcon
-} from 'lucide-react'
+} from "lucide-react"
 
 // type IconProps = React.HTMLAttributes<SVGElement>
 

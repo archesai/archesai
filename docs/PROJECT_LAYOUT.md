@@ -312,7 +312,7 @@ Located in `internal/infrastructure/database/queries/`:
 
 - `go.mod` - Module definition
 - `go.sum` - Dependency checksums
-- `.golangci.yml` - Linter configuration
+- `.golangci.yaml` - Linter configuration
 
 ### Generator Configuration
 
@@ -341,7 +341,7 @@ Located in `internal/infrastructure/database/queries/`:
 
 - `Makefile` - Build automation
 - `Dockerfile` - Container image (if exists)
-- `docker-compose.yml` - Local development stack (if exists)
+- `docker-compose.yaml` - Local development stack (if exists)
 - `helm/` - Kubernetes Helm charts (if exists)
 
 ## Development Workflow

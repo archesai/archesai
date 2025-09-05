@@ -40,14 +40,14 @@ export interface BaseEntity {
 export interface FilterCondition {
   field: string
   operator: string
-  type: 'condition'
+  type: "condition"
   value: FilterValue
 }
 
 export interface FilterGroup {
   children: FilterNode[]
-  operator: 'and' | 'or'
-  type: 'group'
+  operator: "and" | "or"
+  type: "group"
 }
 
 /**
@@ -79,7 +79,7 @@ export interface InvitationEntity extends BaseEntity {
   /** The role assigned to the invitation */
   role: string
   /** Invitation status */
-  status: 'accepted' | 'cancelled' | 'expired' | 'pending'
+  status: "accepted" | "cancelled" | "expired" | "pending"
 }
 
 /**
@@ -143,7 +143,7 @@ export interface PipelineEntity extends BaseEntity {
   /** Organization ID that owns this pipeline */
   organizationId: Uuid
   /** Pipeline status */
-  status: 'active' | 'archived' | 'inactive'
+  status: "active" | "archived" | "inactive"
 }
 
 /**
@@ -165,7 +165,7 @@ export interface RunEntity extends BaseEntity {
   /** Run started timestamp */
   startedAt?: string
   /** Run status */
-  status: 'cancelled' | 'completed' | 'failed' | 'pending' | 'running'
+  status: "cancelled" | "completed" | "failed" | "pending" | "running"
 }
 
 export interface SearchQuery {
@@ -176,7 +176,7 @@ export interface SearchQuery {
   }
   sort?: {
     field: string
-    order: 'asc' | 'desc'
+    order: "asc" | "desc"
   }[]
 }
 
@@ -193,7 +193,7 @@ export interface ToolEntity extends BaseEntity {
   /** Tool name */
   name: string
   /** Tool status */
-  status: 'active' | 'deprecated' | 'inactive'
+  status: "active" | "deprecated" | "inactive"
   /** Tool type */
   type: string
 }

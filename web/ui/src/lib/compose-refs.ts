@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback } from "react"
 
 type PossibleRef<T> = React.Ref<T> | undefined
 
@@ -13,7 +13,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
 
     for (const ref of refs) {
       let cleanup
-      if (typeof ref === 'function') {
+      if (typeof ref === "function") {
         cleanup = ref(node)
       } else {
         setRef(ref, node)
@@ -26,7 +26,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
     return () => {
       for (let i = 0; i < refs.length; i++) {
         const cleanup = cleanups[i]
-        if (typeof cleanup === 'function') {
+        if (typeof cleanup === "function") {
           cleanup()
         } else {
           setRef(refs[i], null)
@@ -40,7 +40,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
  * A utility to set a ref, whether it's a function or a ref object.
  */
 function setRef<T>(ref: PossibleRef<T>, value: null | T): void {
-  if (typeof ref === 'function') {
+  if (typeof ref === "function") {
     ref(value)
   } else if (ref != null) {
     // ref object (e.g. useRef)

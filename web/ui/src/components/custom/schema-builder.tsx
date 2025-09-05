@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { useState } from "react"
 
-import { PlusSquareIcon, TrashIcon } from '#components/custom/icons'
-import { Button } from '#components/shadcn/button'
-import { Input } from '#components/shadcn/input'
-import { Label } from '#components/shadcn/label'
+import { PlusSquareIcon, TrashIcon } from "#components/custom/icons"
+import { Button } from "#components/shadcn/button"
+import { Input } from "#components/shadcn/input"
+import { Label } from "#components/shadcn/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '#components/shadcn/select'
+} from "#components/shadcn/select"
 
 interface FieldDefinition {
   constraints?: {
@@ -24,11 +24,11 @@ interface FieldDefinition {
 }
 
 const fieldTypes = [
-  { label: 'Text', value: 'string' },
-  { label: 'Number', value: 'number' },
-  { label: 'True/False', value: 'boolean' },
-  { label: 'List', value: 'array' },
-  { label: 'Sub-Item', value: 'object' }
+  { label: "Text", value: "string" },
+  { label: "Number", value: "number" },
+  { label: "True/False", value: "boolean" },
+  { label: "List", value: "array" },
+  { label: "Sub-Item", value: "object" }
 ]
 
 const SchemaBuilder: React.FC = () => {
@@ -41,15 +41,15 @@ const SchemaBuilder: React.FC = () => {
   }
 
   return (
-    <div className='flex flex-wrap'>
-      <div className='w-full'>
+    <div className="flex flex-wrap">
+      <div className="w-full">
         <FieldList
           fields={fields}
           setFields={setFields}
         />
-        <div className='flex w-full justify-end'>
+        <div className="flex w-full justify-end">
           <Button
-            className='mt-4'
+            className="mt-4"
             onClick={handleSubmit}
           >
             Submit Schema
@@ -71,8 +71,8 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
       ...fields,
       {
         constraints: {},
-        fieldName: '',
-        fieldType: 'string',
+        fieldName: "",
+        fieldType: "string",
         isOptional: false,
         subFields: []
       }
@@ -80,7 +80,7 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
   }
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className="flex flex-col gap-4">
       {fields.map((field, index) => (
         <FieldEditor
           field={field}
@@ -92,9 +92,9 @@ const FieldList: React.FC<FieldListProps> = ({ fields, setFields }) => {
       ))}
       <Button
         onClick={addField}
-        variant='outline'
+        variant="outline"
       >
-        <PlusSquareIcon className='mr-2 h-4 w-4' />
+        <PlusSquareIcon className="mr-2 h-4 w-4" />
         Add Field
       </Button>
     </div>
@@ -128,12 +128,12 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
   return (
     <div>
-      <div className='flex items-center gap-2'>
+      <div className="flex items-center gap-2">
         <Input
           onChange={(e) => {
             handleFieldChange({ ...field, fieldName: e.target.value })
           }}
-          placeholder='Field Name'
+          placeholder="Field Name"
           value={field.fieldName}
         />
         <Select
@@ -142,8 +142,8 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           }}
           value={field.fieldType}
         >
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select type' />
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
             {fieldTypes.map((type) => (
@@ -171,17 +171,17 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
         */}
 
         <Button
-          className='h-8'
+          className="h-8"
           onClick={removeField}
-          variant='ghost'
+          variant="ghost"
         >
-          <TrashIcon className='h-4 w-4 text-destructive' />
+          <TrashIcon className="h-4 w-4 text-destructive" />
         </Button>
       </div>
 
       {/* Additional constraints based on type */}
-      {field.fieldType === 'object' && (
-        <div className='mt-4 ml-4'>
+      {field.fieldType === "object" && (
+        <div className="mt-4 ml-4">
           <Label>Sub Item Fields</Label>
           <FieldList
             fields={field.subFields ?? []}
@@ -195,8 +195,8 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
         </div>
       )}
 
-      {field.fieldType === 'array' && (
-        <div className='mt-4 ml-4'>
+      {field.fieldType === "array" && (
+        <div className="mt-4 ml-4">
           <Label>List Item Type</Label>
           <Select
             onValueChange={(value) => {
@@ -205,14 +205,14 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                 constraints: { ...field.constraints, elementType: value }
               })
             }}
-            value={field.constraints?.elementType ?? 'string'}
+            value={field.constraints?.elementType ?? "string"}
           >
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue placeholder='Select element type' />
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select element type" />
             </SelectTrigger>
             <SelectContent>
               {fieldTypes
-                .filter((type) => type.value !== 'array') // Avoid nesting arrays
+                .filter((type) => type.value !== "array") // Avoid nesting arrays
                 .map((type) => (
                   <SelectItem
                     key={type.value}
@@ -230,11 +230,11 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 }
 
 const generateJsonSchema = (fields: FieldDefinition[]): string => {
-  let schemaString = 'z.object({\n'
+  let schemaString = "z.object({\n"
   fields.forEach((field) => {
     schemaString += generateFieldSchema(field, 1)
   })
-  schemaString += '})'
+  schemaString += "})"
   return schemaString
 }
 
@@ -242,39 +242,39 @@ const generateFieldSchema = (
   field: FieldDefinition,
   indentLevel: number
 ): string => {
-  const indent = '  '.repeat(indentLevel)
+  const indent = "  ".repeat(indentLevel)
   let fieldString = `${indent}${field.fieldName}: `
-  let fieldSchema = ''
+  let fieldSchema = ""
 
   switch (field.fieldType) {
-    case 'array':
-      fieldSchema = `z.array(${field.constraints?.elementType ? `z.${field.constraints.elementType}()` : 'z.any()'})`
+    case "array":
+      fieldSchema = `z.array(${field.constraints?.elementType ? `z.${field.constraints.elementType}()` : "z.any()"})`
       break
-    case 'boolean':
-      fieldSchema = 'z.boolean()'
+    case "boolean":
+      fieldSchema = "z.boolean()"
       break
-    case 'number':
-      fieldSchema = 'z.number()'
+    case "number":
+      fieldSchema = "z.number()"
       break
-    case 'object':
-      fieldSchema = 'z.object({\n'
+    case "object":
+      fieldSchema = "z.object({\n"
       field.subFields?.forEach((subField) => {
         fieldSchema += generateFieldSchema(subField, indentLevel + 1)
       })
-      fieldSchema += indent + '})'
+      fieldSchema += indent + "})"
       break
-    case 'string':
-      fieldSchema = 'z.string()'
+    case "string":
+      fieldSchema = "z.string()"
       break
     default:
-      fieldSchema = 'z.any()'
+      fieldSchema = "z.any()"
   }
 
   if (field.isOptional) {
-    fieldSchema += '.optional()'
+    fieldSchema += ".optional()"
   }
 
-  fieldString += fieldSchema + ',\n'
+  fieldString += fieldSchema + ",\n"
   return fieldString
 }
 
@@ -296,22 +296,22 @@ const generateFieldExample = (field: FieldDefinition): unknown => {
   if (field.isOptional) return undefined
 
   switch (field.fieldType) {
-    case 'array':
+    case "array":
       return [
         generateFieldExample({
-          fieldName: '',
-          fieldType: field.constraints?.elementType ?? 'string',
+          fieldName: "",
+          fieldType: field.constraints?.elementType ?? "string",
           isOptional: false
         })
       ]
-    case 'boolean':
+    case "boolean":
       return true
-    case 'number':
+    case "number":
       return 123
-    case 'object':
+    case "object":
       return generateExampleJSON(field.subFields ?? [])
-    case 'string':
-      return 'example text'
+    case "string":
+      return "example text"
     default:
       return null
   }
