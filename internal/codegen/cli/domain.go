@@ -82,9 +82,9 @@ func runDomain(_ *cobra.Command, _ []string) error {
 
 	fmt.Printf("✅ Domain '%s' generated successfully!\n", config.Name)
 	fmt.Println("\nNext steps:")
-	fmt.Println("1. Add converter configuration to internal/domains/adapters.yaml")
+	fmt.Println("1. Add adapter configuration to internal/adapters.yaml")
 	fmt.Println("2. Wire dependencies in internal/app/deps.go")
-	fmt.Println("3. Run 'make generate' to generate converters")
+	fmt.Println("3. Run 'make generate' to generate adapters")
 	fmt.Println("4. Implement business logic in service.go")
 
 	return nil

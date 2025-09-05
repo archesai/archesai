@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/archesai/archesai/internal/infrastructure/database/generated/postgresql"
+	"github.com/archesai/archesai/internal/storage/postgres/generated/postgresql"
 )
 
 // Compile-time check that PostgresRepository implements Repository.
@@ -67,7 +67,7 @@ func (r *PostgresRepository) Delete{{title .}}(ctx context.Context, id string) e
 {{end}}
 
 // Helper functions for converting between database and domain types
-// These will be replaced by generated converters once configured
+// These will be replaced by generated adapters once configured
 
 {{range .Tables}}
 func convert{{title .}}FromDB(db *postgresql.{{title .}}) *{{title .}} {

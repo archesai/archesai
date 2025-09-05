@@ -12,7 +12,7 @@ SERVER_OUTPUT := bin/archesai
 CODEGEN_OUTPUT := bin/codegen
 
 # Database Configuration.
-MIGRATION_PATH := internal/infrastructure/database/migrations
+MIGRATION_PATH := internal/storage/postgres/migrations
 
 # Terminal Colors
 GREEN := \033[0;32m
@@ -95,19 +95,19 @@ generate: generate-sqlc generate-oapi generate-defaults generate-adapters ## Gen
 .PHONY: generate-sqlc
 generate-sqlc: ## Generate database code with sqlc
 	@echo -e "$(YELLOW)▶ Generating sqlc code...$(NC)"
-	@cd internal/infrastructure/database && go generate
+	@cd internal/storage/postgres && go generate
 	@echo -e "$(GREEN)✓ sqlc generation complete!$(NC)"
 
 .PHONY: generate-oapi
 generate-oapi: openapi-bundle ## Generate OpenAPI server code
 	@echo -e "$(YELLOW)▶ Generating OpenAPI server code...$(NC)"
 	@for domain in auth organizations workflows content; do \
-		cd internal/domains/$$domain/generated/api && \
+		cd internal/$$domain/generated/api && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
 	@for component in config health; do \
-		cd internal/infrastructure/$$component/generated/api && \
+		cd internal/$$component/generated/api && \
 		{ go generate 2>&1 | grep -v "WARNING: You are using an OpenAPI 3.1.x specification" || [ $$? -eq 1 ]; } && \
 		cd - > /dev/null; \
 	done
@@ -122,7 +122,7 @@ generate-defaults: ## Generate config defaults from OpenAPI
 .PHONY: generate-adapters
 generate-adapters: ## Generate type adapters between layers
 	@echo -e "$(YELLOW)▶ Generating adapters...$(NC)"
-	@go run cmd/codegen/main.go converters
+	@go run cmd/codegen/main.go adapters
 	@echo -e "$(GREEN)✓ Adapters generated!$(NC)"
 
 .PHONY: generate-domain

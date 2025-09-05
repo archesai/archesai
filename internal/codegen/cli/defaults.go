@@ -18,7 +18,7 @@ OpenAPI schema files.
 This command reads schema files from api/components/schemas and generates
 a Go file with default values extracted from the schemas.`,
 	Example: `  codegen defaults
-  codegen defaults --output=internal/infrastructure/config/defaults.gen.go`,
+  codegen defaults --output=internal/config/defaults.gen.go`,
 	RunE: runDefaults,
 }
 
@@ -31,7 +31,7 @@ func init() {
 	rootCmd.AddCommand(defaultsCmd)
 
 	// Local flags
-	defaultsCmd.Flags().StringVar(&defaultsOutput, "output", "internal/infrastructure/config/defaults.gen.go", "Output file path")
+	defaultsCmd.Flags().StringVar(&defaultsOutput, "output", "internal/config/defaults.gen.go", "Output file path")
 	defaultsCmd.Flags().StringVar(&schemasPath, "schemas", "api/components/schemas", "Path to OpenAPI schemas directory")
 
 	// Bind to viper

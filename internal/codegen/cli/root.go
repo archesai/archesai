@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 	Use:   "codegen",
 	Short: "ArchesAI code generation tool",
 	Long: `A unified code generation tool for ArchesAI that generates
-configuration defaults, type converters, and domain scaffolding.
+configuration defaults, type adapters, and domain scaffolding.
 
 This tool helps maintain consistency across the codebase by automating
 repetitive code generation tasks.`,

@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/archesai/archesai/internal/server/cli"
+	"github.com/archesai/archesai/internal/cli"
 )
 
 func main() {
