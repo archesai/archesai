@@ -1,4 +1,3 @@
-// Package cli provides the Cobra CLI structure for the codegen tool.
 package cli
 
 import (
@@ -17,17 +16,18 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "codegen",
-	Short: "ArchesAI code generation tool",
-	Long: `A unified code generation tool for ArchesAI that generates
-configuration defaults, type adapters, and domain scaffolding.
+	Use:   "archesai",
+	Short: "ArchesAI server and utilities",
+	Long: `ArchesAI is a comprehensive data processing platform.
 
-This tool helps maintain consistency across the codebase by automating
-repetitive code generation tasks.`,
+This command provides various modes to run the ArchesAI server:
+- API server for REST endpoints
+- Web server for the UI (future)
+- Worker for background job processing
+- All mode for development`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -39,7 +39,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	// Global flags
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .codegen.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .archesai.yaml)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
 	// Bind flags to viper
@@ -54,14 +54,15 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Search for config in current directory
+		// Search for config in current directory and home directory
 		viper.AddConfigPath(".")
+		viper.AddConfigPath("$HOME")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".codegen")
+		viper.SetConfigName(".archesai")
 	}
 
-	// Read in environment variables that match
-	viper.SetEnvPrefix("CODEGEN")
+	// Read in environment variables
+	viper.SetEnvPrefix("ARCHESAI")
 	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.

@@ -122,7 +122,7 @@ generate-defaults: ## Generate config defaults from OpenAPI
 .PHONY: generate-adapters
 generate-adapters: ## Generate type adapters between layers
 	@echo -e "$(YELLOW)▶ Generating adapters...$(NC)"
-	@go run cmd/codegen/main.go converters
+	@go run cmd/codegen/main.go adapters
 	@echo -e "$(GREEN)✓ Adapters generated!$(NC)"
 
 .PHONY: generate-domain
