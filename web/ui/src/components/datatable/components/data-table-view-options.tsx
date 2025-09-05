@@ -2,7 +2,7 @@
 
 import type { Table } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import {
   CheckIcon,

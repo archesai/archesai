@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
 import { Separator } from '@archesai/ui/components/shadcn/separator'
@@ -12,7 +14,7 @@ import { siteRoutes } from '#lib/site-config'
 
 export const Route = createFileRoute('/_app')({
   beforeLoad: ({ context }) => {
-    if (!context.session?.user) {
+    if (!context.session?.data) {
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw redirect({ to: '/auth/login' })
     }
@@ -20,7 +22,7 @@ export const Route = createFileRoute('/_app')({
   component: AppLayout
 })
 
-export default function AppLayout() {
+export default function AppLayout(): JSX.Element {
   return (
     <SidebarProvider>
       {/* This is the sidebar that is displayed on the left side of the screen. */}

@@ -6,9 +6,9 @@ import {
   useGetOneLabelSuspense,
   useUpdateLabel
 } from '@archesai/client'
-import { LABEL_ENTITY_KEY, StringSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
+import { LABEL_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
 export default function LabelForm({ id }: { id?: string }) {
   const { mutateAsync: updateLabel } = useUpdateLabel()
@@ -27,8 +27,7 @@ export default function LabelForm({ id }: { id?: string }) {
           {...field}
           type='text'
         />
-      ),
-      validationRule: StringSchema
+      )
     }
   ]
 

@@ -2,18 +2,16 @@ packages:
   - web/*
   - tools/*
 
-autoInstallPeers: false
+autoInstallPeers: true
 
 catalog:
   '@redocly/cli': 2.0.8
   '@types/node': 24.3.1
   '@types/qs': 6.14.0
   '@xyflow/react': 12.8.4
-  core-js: 3.45.1
   qs: 6.14.0
   socket.io-client: 4.8.1
   typescript: 5.9.2
-  zod: 4.1.5
 
 catalogs:
   client:
@@ -33,9 +31,7 @@ catalogs:
     jsonc-eslint-parser: 2.4.0
     typescript-eslint: 8.42.0
   nx:
-    '@nx/eslint': 21.4.1
     '@nx/eslint-plugin': 21.4.1
-    '@nx/js': 21.4.1
     nx: 21.4.1
   prettier:
     '@ianvs/prettier-plugin-sort-imports': 4.7.0
@@ -75,7 +71,6 @@ catalogs:
     '@dnd-kit/utilities': 3.2.2
     '@fontsource/geist': 5.2.6
     '@fontsource/geist-mono': 5.2.6
-    '@hookform/resolvers': 5.2.1
     '@radix-ui/react-slot': 1.2.3
     class-variance-authority: 0.7.1
     clsx: 2.1.1

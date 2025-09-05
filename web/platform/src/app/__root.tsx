@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import type { QueryClient } from '@tanstack/react-query'
+import type { JSX } from 'react'
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
@@ -10,9 +11,9 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
-import type { SessionEntity, UserEntity } from '@archesai/schemas'
+import type { GetOneSession200 } from '@archesai/client'
 
-import { getGetSessionQueryKey } from '@archesai/client'
+import { getGetOneSessionQueryKey } from '@archesai/client'
 import { Toaster } from '@archesai/ui/components/shadcn/sonner'
 import { LinkProvider } from '@archesai/ui/hooks/use-link'
 import { seo } from '@archesai/ui/lib/seo'
@@ -26,15 +27,12 @@ import globalsCss from '../styles/globals.css?url'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
-  session: null | {
-    session: SessionEntity
-    user: UserEntity
-  }
+  session: GetOneSession200 | null
 }>()({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.fetchQuery({
       queryFn: ({ signal }) => getServerSession({ signal }),
-      queryKey: getGetSessionQueryKey()
+      queryKey: getGetOneSessionQueryKey()
     })
     return {
       session
@@ -92,7 +90,7 @@ export default function RootDocument({
   children
 }: {
   children: React.ReactNode
-}) {
+}): JSX.Element {
   return (
     <html
       lang='en'

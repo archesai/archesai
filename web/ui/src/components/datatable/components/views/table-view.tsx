@@ -4,7 +4,7 @@ import type { Table as ReactTable } from '@tanstack/react-table'
 
 import { flexRender } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import {
   Table,

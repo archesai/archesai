@@ -1,9 +1,11 @@
+import type { JSX } from 'react'
+
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-import type { CreatePasswordResetDto } from '@archesai/schemas'
+import type { RequestPasswordResetBody } from '@archesai/client'
+import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { useRequestPasswordReset } from '@archesai/client'
-import { CreatePasswordResetDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
@@ -11,27 +13,29 @@ export const Route = createFileRoute('/auth/forgot-password/')({
   component: ForgotPasswordPage
 })
 
-export default function ForgotPasswordPage() {
+export default function ForgotPasswordPage(): JSX.Element {
   const { mutateAsync: requestPasswordReset } = useRequestPasswordReset()
+
+  const formFields: FormFieldConfig<RequestPasswordResetBody>[] = [
+    {
+      defaultValue: '',
+      label: 'Email',
+      name: 'email',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='email'
+        />
+      )
+    }
+  ]
 
   return (
     <>
-      <GenericForm<CreatePasswordResetDto, never>
+      <GenericForm<RequestPasswordResetBody, never>
         description='Enter your email address to receive a password reset link'
         entityKey='auth'
-        fields={[
-          {
-            label: 'Email',
-            name: 'email',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                type='email'
-              />
-            ),
-            validationRule: CreatePasswordResetDtoSchema.shape.email
-          }
-        ]}
+        fields={formFields}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
           await requestPasswordReset({

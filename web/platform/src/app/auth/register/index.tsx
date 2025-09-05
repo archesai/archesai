@@ -1,77 +1,81 @@
+import type { JSX } from 'react'
+
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
-import type { CreateAccountDto } from '@archesai/schemas'
+import type { RegisterBody } from '@archesai/client'
+import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { useRegister } from '@archesai/client'
-import { CreateAccountDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
 
 import { TermsIndicator } from '#components/terms-indicator'
 
+type RegisterFormData = RegisterBody & {
+  confirmPassword: string
+}
+
 export const Route = createFileRoute('/auth/register/')({
   component: RegisterPage
 })
 
-export default function RegisterPage() {
+export default function RegisterPage(): JSX.Element {
   const router = useRouter()
   const { mutateAsync: register } = useRegister()
 
+  const formFields: FormFieldConfig<RegisterFormData>[] = [
+    {
+      defaultValue: '',
+      label: 'Name',
+      name: 'name',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='text'
+        />
+      )
+    },
+    {
+      defaultValue: '',
+      label: 'Email',
+      name: 'email',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='email'
+        />
+      )
+    },
+    {
+      defaultValue: '',
+      label: 'Password',
+      name: 'password',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='password'
+        />
+      )
+    },
+    {
+      defaultValue: '',
+      label: 'Confirm Password',
+      name: 'confirmPassword',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='password'
+        />
+      )
+    }
+  ]
+
   return (
     <>
-      <GenericForm<CreateAccountDto, never>
+      <GenericForm<RegisterFormData, never>
         description='Create your account by entering your email and password'
         entityKey='auth'
-        fields={[
-          {
-            defaultValue: '',
-            label: 'Name',
-            name: 'name',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                type='text'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.name
-          },
-          {
-            defaultValue: '',
-            label: 'Email',
-            name: 'email',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                type='email'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.email
-          },
-          {
-            defaultValue: '',
-            label: 'Password',
-            name: 'password',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                type='password'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.password
-          },
-          {
-            defaultValue: '',
-            label: 'Confirm Password',
-            name: 'confirmPassword',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                type='password'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.password
-          }
-        ]}
+        fields={formFields}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
           await register({

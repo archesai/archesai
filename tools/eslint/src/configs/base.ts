@@ -44,7 +44,7 @@ const base: ConfigArray = tseslint.config(
     name: 'javascript-typescript',
     rules: {
       '@typescript-eslint/consistent-type-assertions': [
-        'warn',
+        'off',
         { assertionStyle: 'never' }
       ],
       '@typescript-eslint/consistent-type-exports': [
@@ -55,7 +55,7 @@ const base: ConfigArray = tseslint.config(
         'error',
         { fixStyle: 'separate-type-imports', prefer: 'type-imports' }
       ],
-      '@typescript-eslint/explicit-module-boundary-types': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-import-type-side-effects': 'error',
       '@typescript-eslint/no-misused-promises': [
         2,

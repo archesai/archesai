@@ -1,50 +1,46 @@
+import type { JSX } from 'react'
+
 import type { UpdateUserBody } from '@archesai/client'
 import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
-import { useGetSessionSuspense, useUpdateUser } from '@archesai/client'
-import { USER_ENTITY_KEY } from '@archesai/schemas'
+import {
+  useGetOneSessionSuspense,
+  useGetOneUserSuspense,
+  useUpdateUser
+} from '@archesai/client'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
+import { USER_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function UserForm() {
+export default function UserForm(): JSX.Element {
   const { mutateAsync: updateUser } = useUpdateUser()
-  const { data: sessionData } = useGetSessionSuspense()
+  const { data: sessionData } = useGetOneSessionSuspense('current')
+  const { data: userData } = useGetOneUserSuspense(
+    sessionData.data.userId || 'current'
+  )
 
-  const formFields: FormFieldConfig[] = [
+  const formFields: FormFieldConfig<UpdateUserBody>[] = [
     {
-      defaultValue: sessionData.user.name,
-      description: 'Your username',
-      label: 'Username',
-      name: 'username',
-      renderControl: (field) => (
-        <Input
-          {...field}
-          disabled={true}
-          type='text'
-        />
-      )
-    },
-    {
-      defaultValue: sessionData.user.name,
-      description: 'Your full name',
-      label: 'Name',
-      name: 'name',
-      renderControl: (field) => (
-        <Input
-          {...field}
-          type='text'
-        />
-      )
-    },
-    {
-      defaultValue: sessionData.user.email,
+      defaultValue: userData.data.email || '',
       description: 'Your email address',
       label: 'Email',
       name: 'email',
       renderControl: (field) => (
         <Input
           {...field}
-          type='text'
+          type='email'
+        />
+      )
+    },
+    {
+      defaultValue: userData.data.image ?? '',
+      description: 'Your profile image URL',
+      label: 'Image URL',
+      name: 'image',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          type='url'
         />
       )
     }
@@ -59,7 +55,7 @@ export default function UserForm() {
       onSubmitUpdate={async (data) => {
         await updateUser({
           data,
-          id: sessionData.user.id
+          id: userData.data.id || ''
         })
       }}
       showCard={true}

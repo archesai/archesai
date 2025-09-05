@@ -8,11 +8,6 @@ import {
   updateArtifact,
   useGetOneArtifactSuspense
 } from '@archesai/client'
-import {
-  ARTIFACT_ENTITY_KEY,
-  ArtifactEntitySchema,
-  StringSchema
-} from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 // import ImportCard from '@archesai/ui/components/custom/import-card'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -23,6 +18,7 @@ import {
   TabsTrigger
 } from '@archesai/ui/components/shadcn/tabs'
 import { Textarea } from '@archesai/ui/components/shadcn/textarea'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
 export default function ArtifactForm({ id }: { id?: string }) {
   const [tab, setTab] = useState<'file' | 'text' | 'url'>('file')
@@ -46,8 +42,7 @@ export default function ArtifactForm({ id }: { id?: string }) {
           placeholder='Content name here...'
           type='text'
         />
-      ),
-      validationRule: StringSchema
+      )
     },
     {
       description:
@@ -105,8 +100,7 @@ export default function ArtifactForm({ id }: { id?: string }) {
             /> */}
           </TabsContent>
         </Tabs>
-      ),
-      validationRule: ArtifactEntitySchema.shape[tab == 'file' ? 'text' : tab]
+      )
     }
   ]
 

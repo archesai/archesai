@@ -24,17 +24,19 @@
     "./layouts/*": "./src/layouts/*.tsx",
     "./lib/*": "./src/lib/*.ts",
     "./providers/*": "./src/providers/*.tsx",
+    "./types/*": "./src/types/*.ts",
     "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier",
   "dependencies": {
-    "@archesai/client": "workspace:*",
-    "@archesai/schemas": "workspace:*",
     "@dnd-kit/core": "catalog:ui",
     "@dnd-kit/modifiers": "catalog:ui",
     "@dnd-kit/sortable": "catalog:ui",
     "@dnd-kit/utilities": "catalog:ui",
-    "@hookform/resolvers": "catalog:ui",
     "@radix-ui/react-slot": "catalog:ui",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-router": "catalog:tanstack",
@@ -55,15 +57,20 @@
     "socket.io-client": "catalog:",
     "sonner": "catalog:ui",
     "tailwind-merge": "catalog:ui",
-    "vaul": "catalog:ui",
-    "zod": "catalog:"
+    "vaul": "catalog:ui"
   },
   "devDependencies": {
+    "@archesai/eslint": "workspace:*",
     "@fontsource/geist": "catalog:ui",
     "@fontsource/geist-mono": "catalog:ui",
     "@tanstack/table-core": "catalog:tanstack",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
-    "@types/react-dom": "catalog:react19"
+    "@types/react-dom": "catalog:react19",
+    "@vitest/ui": "catalog:test",
+    "eslint": "catalog:eslint",
+    "tw-animate-css": "catalog:ui",
+    "typescript": "catalog:",
+    "vitest": "catalog:test"
   }
 }

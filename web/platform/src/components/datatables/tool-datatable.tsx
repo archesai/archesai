@@ -1,12 +1,14 @@
+import type { JSX } from 'react'
+
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { ToolEntity } from '@archesai/schemas'
+import type { FindManyToolsParams, ToolEntity } from '@archesai/client'
+import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
   deleteTool,
   getFindManyToolsSuspenseQueryOptions
 } from '@archesai/client'
-import { TOOL_ENTITY_KEY } from '@archesai/schemas'
 import {
   CalendarIcon,
   PackageCheckIcon,
@@ -15,9 +17,24 @@ import {
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
+import { TOOL_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function ToolDataTable() {
+export default function ToolDataTable(): JSX.Element {
   const navigate = useNavigate()
+
+  const getQueryOptions = (query: SearchQuery) => {
+    const params: any =
+      query.filter || query.page || query.sort ?
+        {
+          ...(query.filter && {
+            filter: query.filter as unknown as FindManyToolsParams['filter']
+          }),
+          ...(query.page && { page: query.page }),
+          ...(query.sort && { sort: query.sort as FindManyToolsParams['sort'] })
+        }
+      : undefined
+    return getFindManyToolsSuspenseQueryOptions(params) as any
+  }
 
   return (
     <DataTable<ToolEntity>
@@ -106,7 +123,7 @@ export default function ToolDataTable() {
         await deleteTool(id)
       }}
       entityKey={TOOL_ENTITY_KEY}
-      getQueryOptions={getFindManyToolsSuspenseQueryOptions}
+      getQueryOptions={getQueryOptions}
       handleSelect={async (tool) => {
         await navigate({ to: `/tool/single?toolId=${tool.id}` })
       }}

@@ -1,19 +1,36 @@
+import type { JSX } from 'react'
+
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { RunEntity } from '@archesai/schemas'
+import type { FindManyRunsParams } from '@archesai/client'
+import type { RunEntity, SearchQuery } from '@archesai/ui/types/entities'
 
 import {
   deleteRun,
   getFindManyRunsSuspenseQueryOptions
 } from '@archesai/client'
-import { RUN_ENTITY_KEY } from '@archesai/schemas'
 import { PackageCheckIcon } from '@archesai/ui/components/custom/icons'
 import { StatusTypeEnumButton } from '@archesai/ui/components/custom/run-status-button'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
+import { RUN_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function RunDataTable() {
+export default function RunDataTable(): JSX.Element {
   const navigate = useNavigate()
+
+  const getQueryOptions = (query: SearchQuery) => {
+    const params: any =
+      query.filter || query.page || query.sort ?
+        {
+          ...(query.filter && {
+            filter: query.filter as unknown as FindManyRunsParams['filter']
+          }),
+          ...(query.page && { page: query.page }),
+          ...(query.sort && { sort: query.sort as FindManyRunsParams['sort'] })
+        }
+      : undefined
+    return getFindManyRunsSuspenseQueryOptions(params) as any
+  }
 
   return (
     <DataTable<RunEntity>
@@ -84,7 +101,7 @@ export default function RunDataTable() {
         await deleteRun(id)
       }}
       entityKey={RUN_ENTITY_KEY}
-      getQueryOptions={getFindManyRunsSuspenseQueryOptions}
+      getQueryOptions={getQueryOptions}
       handleSelect={async (run) => {
         await navigate({ params: { runId: run.id }, to: `/runs/$runId` })
       }}

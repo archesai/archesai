@@ -1,11 +1,11 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
+interface ArtifactViewerProps {
+  artifact: {
+    mimeType: string
+    text?: null | string
+  }
+}
 
-import { getGetOneArtifactSuspenseQueryOptions } from '@archesai/client'
-
-export function ArtifactViewer({ artifactId }: { artifactId: string }) {
-  const {
-    data: { data: artifact }
-  } = useSuspenseQuery(getGetOneArtifactSuspenseQueryOptions(artifactId))
+export function ArtifactViewer({ artifact }: ArtifactViewerProps) {
   let hoverContent: React.ReactNode = null
   if (
     artifact.mimeType.startsWith('video/') ||
@@ -15,23 +15,23 @@ export function ArtifactViewer({ artifactId }: { artifactId: string }) {
       <video
         className='h-full w-full object-contain'
         controls
-        src={artifact.url ?? ''}
+        src={artifact.text ?? ''}
       />
     )
-  } else if (artifact.mimeType.startsWith('image/') && artifact.url) {
+  } else if (artifact.mimeType.startsWith('image/') && artifact.text) {
     hoverContent = (
       <image
         // className='h-full w-full object-contain'
         height={516}
-        href={artifact.url}
+        href={artifact.text}
         width={516}
       />
     )
-  } else if (artifact.mimeType === 'application/pdf' && artifact.url) {
+  } else if (artifact.mimeType === 'application/pdf' && artifact.text) {
     hoverContent = (
       <iframe
         className='h-full w-full'
-        src={artifact.url}
+        src={artifact.text}
         title='PDF Document'
       ></iframe>
     )

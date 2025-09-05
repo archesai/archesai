@@ -4,9 +4,9 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import {
   createMember,
   updateMember,
-  useGetOneMemberSuspense
+  useGetOneMemberSuspense,
+  useGetOneSessionSuspense
 } from '@archesai/client'
-import { MEMBER_ENTITY_KEY, StringSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { FormControl } from '@archesai/ui/components/shadcn/form'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -17,15 +17,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@archesai/ui/components/shadcn/select'
+import { MEMBER_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
 export default function MemberForm({ id }: { id?: string }) {
-  const { data: existingMemberResponse } = useGetOneMemberSuspense(id)
+  const { data: sessionData } = useGetOneSessionSuspense('current')
+  const memberQuery = useGetOneMemberSuspense(
+    sessionData.data.activeOrganizationId,
+    id
+  )
 
-  const member = existingMemberResponse.data
+  const member = id ? memberQuery.data.data : null
 
   const formFields: FormFieldConfig[] = [
     {
-      defaultValue: member.userId,
+      defaultValue: member?.userId,
       description: 'This is the email that will be used for this member.',
       label: 'User ID',
       name: 'userId',
@@ -35,11 +40,10 @@ export default function MemberForm({ id }: { id?: string }) {
           disabled={true}
           type='text'
         />
-      ),
-      validationRule: StringSchema
+      )
     },
     {
-      defaultValue: member.role,
+      defaultValue: member?.role,
       description:
         'This is the role that will be used for this member. Note that different roles have different permissions.',
       label: 'RoleTypeEnum',
@@ -86,10 +90,15 @@ export default function MemberForm({ id }: { id?: string }) {
       fields={formFields}
       isUpdateForm={!!id}
       onSubmitCreate={async (createMemberDto) => {
-        await createMember(createMemberDto)
+        await createMember(
+          sessionData.data.activeOrganizationId,
+          createMemberDto
+        )
       }}
       onSubmitUpdate={async (data) => {
-        await updateMember(id, data)
+        if (id) {
+          await updateMember(sessionData.data.activeOrganizationId, id, data)
+        }
       }}
       title='Configuration'
     />

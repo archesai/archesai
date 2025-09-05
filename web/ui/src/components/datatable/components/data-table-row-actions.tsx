@@ -1,6 +1,6 @@
 import type { Table } from '@tanstack/table-core'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import { DeleteItems } from '#components/custom/delete-items'
 import { MoreHorizontalIcon } from '#components/custom/icons'

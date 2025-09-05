@@ -1,4 +1,4 @@
-import type { DragEvent } from 'react'
+import type { DragEvent, JSX } from 'react'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
@@ -320,7 +320,7 @@ export default function FileUpload({
   onUploadSuccess = () => ({}),
   uploadDelay = 2000,
   validateFile = () => null
-}: FileUploadProps) {
+}: FileUploadProps): JSX.Element {
   const [file, setFile] = useState<File | null>(initialFile)
   const [status, setStatus] = useState<FileStatus>('idle')
   const [progress, setProgress] = useState(0)

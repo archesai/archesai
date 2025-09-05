@@ -1,20 +1,22 @@
 import { toast } from 'sonner'
 
-import type { UserEntity } from '@archesai/schemas'
-
-import { requestEmailVerification } from '@archesai/client'
+import type { UserEntity } from '#types/entities'
 
 import { RocketIcon } from '#components/custom/icons'
 import { Alert, AlertTitle } from '#components/shadcn/alert'
 
 export interface VerifyEmailAlertProps {
+  onRequestEmailVerification: () => Promise<void>
   user?: UserEntity
 }
 
-export function VerifyEmailAlert({ user }: VerifyEmailAlertProps) {
+export function VerifyEmailAlert({
+  onRequestEmailVerification,
+  user
+}: VerifyEmailAlertProps) {
   const handleRequestEmailVerification = async () => {
     try {
-      await requestEmailVerification()
+      await onRequestEmailVerification()
       toast('Email verification sent', {
         description: 'Please check your inbox for the verification email'
       })

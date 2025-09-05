@@ -35,7 +35,7 @@ const SchemaBuilder: React.FC = () => {
   const [fields, setFields] = useState<FieldDefinition[]>([])
 
   const handleSubmit = () => {
-    generateZodSchema(fields)
+    generateJsonSchema(fields)
     // Send schemaString to backend
     // For example, use fetch to send schemaString to your backend
   }
@@ -229,7 +229,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
   )
 }
 
-const generateZodSchema = (fields: FieldDefinition[]): string => {
+const generateJsonSchema = (fields: FieldDefinition[]): string => {
   let schemaString = 'z.object({\n'
   fields.forEach((field) => {
     schemaString += generateFieldSchema(field, 1)

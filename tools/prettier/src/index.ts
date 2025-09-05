@@ -23,8 +23,8 @@ const prettierConfig = {
     '^[../]',
     '^[./]'
   ],
-  importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
-  importOrderTypeScriptVersion: '5.8.3',
+  importOrderParserPlugins: ['typescript', 'jsx'],
+  importOrderTypeScriptVersion: '5.9.2',
   jsonRecursiveSort: true,
   jsxSingleQuote: true,
   overrides: [

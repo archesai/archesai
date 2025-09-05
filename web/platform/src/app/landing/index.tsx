@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useEffect, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
@@ -36,7 +38,7 @@ export const Route = createFileRoute('/landing/')({
   component: RouteComponent
 })
 
-export default function LandingPage() {
+export default function LandingPage(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // const { resolvedTheme, setTheme } = useTheme()

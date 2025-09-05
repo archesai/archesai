@@ -14,12 +14,6 @@
   "files": [],
   "references": [
     {
-      "path": "../schemas"
-    },
-    {
-      "path": "../client"
-    },
-    {
       "path": "../../tools/eslint"
     },
     {

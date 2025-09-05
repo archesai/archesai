@@ -12,9 +12,6 @@
       "path": "./web/platform"
     },
     {
-      "path": "./web/schemas"
-    },
-    {
       "path": "./web/client"
     },
     {

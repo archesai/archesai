@@ -4,8 +4,12 @@ import type { Column, Table } from '@tanstack/react-table'
 
 import * as React from 'react'
 
-import type { BaseEntity, FilterCondition } from '@archesai/schemas'
-
+import type {
+  BaseEntity,
+  FilterCondition,
+  FilterNode,
+  FilterValue
+} from '#types/entities'
 import type { FilterOperator } from '#types/simple-data-table'
 
 import {
@@ -53,12 +57,12 @@ const REMOVE_FILTER_SHORTCUTS = ['backspace', 'delete']
 
 interface DataTableFilterItemProps<TData extends BaseEntity> {
   columns: Column<TData>[]
-  filter: FilterCondition<TData> & { id: string }
+  filter: FilterCondition & { id: string }
   filterItemId: string
   onFilterRemove: (filterId: string) => void
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition<TData>, 'type'>>
+    updates: Partial<Omit<FilterCondition, 'type'>>
   ) => void
 }
 
@@ -127,12 +131,17 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
   // Convert FilterNode to flat array for display
   const filters = React.useMemo(() => {
     const extractConditions = (
-      node: typeof filter,
+      node: FilterNode | undefined,
       id = 0
-    ): (FilterCondition<TData> & { id: string })[] => {
+    ): (FilterCondition & { id: string })[] => {
       if (!node) return []
       if (node.type === 'condition') {
-        return [{ ...node, id: `filter-${id.toString()}` }]
+        return [
+          {
+            ...node,
+            id: `filter-${id.toString()}`
+          }
+        ]
       } else {
         return node.children.flatMap((child, index) =>
           extractConditions(child, id * 100 + index)
@@ -154,12 +163,12 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
 
       // Add condition directly
       addCondition({
-        field: column.id as keyof TData,
+        field: column.id,
         operator: getDefaultFilterOperator(
           column.columnDef.meta?.filterVariant ?? 'text'
         ),
         type: 'condition',
-        value: filterValue
+        value: filterValue as FilterValue
       })
 
       setOpen(false)
@@ -173,20 +182,23 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
   )
 
   // Remove filter by field name
-  const onFilterRemove = (filterId: string) => {
-    const filterToRemove = filters.find((f) => f.id === filterId)
-    if (filterToRemove) {
-      removeCondition(filterToRemove.field)
-    }
-    requestAnimationFrame(() => {
-      triggerRef.current?.focus()
-    })
-  }
+  const onFilterRemove = React.useCallback(
+    (filterId: string) => {
+      const filterToRemove = filters.find((f) => f.id === filterId)
+      if (filterToRemove) {
+        removeCondition(filterToRemove.field as keyof TData)
+      }
+      requestAnimationFrame(() => {
+        triggerRef.current?.focus()
+      })
+    },
+    [filters, removeCondition]
+  )
 
   // Update filter condition
   const onFilterUpdate = (
     filterId: string,
-    updates: Partial<Omit<FilterCondition<TData>, 'type'>>
+    updates: Partial<Omit<FilterCondition, 'type'>>
   ) => {
     const filterToUpdate = filters.find((f) => f.id === filterId)
     if (
@@ -195,7 +207,11 @@ export function DataTableFilterMenu<TData extends BaseEntity>({
       updates.operator &&
       updates.value !== undefined
     ) {
-      setCondition(updates.field, updates.operator, updates.value)
+      setCondition(
+        updates.field as keyof TData,
+        updates.operator as FilterOperator,
+        updates.value
+      )
     }
   }
 
@@ -444,7 +460,7 @@ function DataTableFilterItem<TData extends BaseEntity>({
                     key={column.id}
                     onSelect={() => {
                       onFilterUpdate(filter.id, {
-                        field: column.id as keyof TData,
+                        field: column.id,
                         operator: getDefaultFilterOperator(
                           column.columnDef.meta?.filterVariant ?? 'text'
                         ),
@@ -634,11 +650,11 @@ function onFilterInputRender<TData extends BaseEntity>({
   showValueSelector
 }: {
   column: Column<TData>
-  filter: FilterCondition<TData> & { id: string }
+  filter: FilterCondition & { id: string }
   inputId: string
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition<TData>, 'type'>>
+    updates: Partial<Omit<FilterCondition, 'type'>>
   ) => void
   setShowValueSelector: (value: boolean) => void
   showValueSelector: boolean
@@ -845,7 +861,7 @@ function onFilterInputRender<TData extends BaseEntity>({
                             : [...selectedValues, option.value]
                           : option.value
                         onFilterUpdate(filter.id, {
-                          value: value as string | string[]
+                          value: value
                         })
                       }}
                       value={option.value}

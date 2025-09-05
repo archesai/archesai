@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { createFileRoute } from '@tanstack/react-router'
 
 import ToolDataTable from '#components/datatables/tool-datatable'
@@ -9,6 +11,6 @@ export const Route = createFileRoute('/_app/tools/')({
   component: ToolsPage
 })
 
-export default function ToolsPage() {
+export default function ToolsPage(): JSX.Element {
   return <ToolDataTable />
 }

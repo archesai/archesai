@@ -2,13 +2,13 @@
 
 import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import type { AccessorKeyColumnDef, RowData } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { VisuallyHidden } from 'radix-ui'
 
-import type { BaseEntity, SearchQuery } from '@archesai/schemas'
-
+import type { BaseEntity, SearchQuery } from '#types/entities'
 import type { DataTableRowAction } from '#types/simple-data-table'
 
 import { DataTablePagination } from '#components/datatable/components/data-table-pagination'
@@ -45,7 +45,7 @@ export interface DataTableProps<TEntity extends BaseEntity> {
   createForm?: React.ComponentType
   deleteItem?: (id: string) => Promise<void>
   entityKey?: string
-  getQueryOptions: (query: SearchQuery<TEntity>) => UseSuspenseQueryOptions<{
+  getQueryOptions: (query: SearchQuery) => UseSuspenseQueryOptions<{
     data: TEntity[]
     meta: {
       total: number
@@ -61,7 +61,7 @@ export interface DataTableProps<TEntity extends BaseEntity> {
 
 export function DataTable<TEntity extends BaseEntity>(
   props: DataTableProps<TEntity>
-) {
+): JSX.Element {
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<TEntity> | null>(null)
 

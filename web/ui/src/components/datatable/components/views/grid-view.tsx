@@ -5,7 +5,7 @@ import type { Table } from '@tanstack/react-table'
 import { useState } from 'react'
 import { flexRender } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import { Card, CardContent, CardFooter } from '#components/shadcn/card'
 import { cn } from '#lib/utils'

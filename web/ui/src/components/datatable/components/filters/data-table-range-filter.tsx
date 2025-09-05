@@ -1,8 +1,9 @@
 import type { Column } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 import { useCallback, useMemo } from 'react'
 
-import type { BaseEntity, FilterCondition } from '@archesai/schemas'
+import type { BaseEntity, FilterCondition } from '#types/entities'
 
 import { Input } from '#components/shadcn/input'
 import { cn } from '#lib/utils'
@@ -10,11 +11,11 @@ import { cn } from '#lib/utils'
 interface DataTableRangeFilterProps<TData extends BaseEntity>
   extends React.ComponentProps<'div'> {
   column: Column<TData>
-  filter: FilterCondition<TData> & { id: string }
+  filter: FilterCondition & { id: string }
   inputId: string
   onFilterUpdate: (
     filterId: string,
-    updates: Partial<Omit<FilterCondition<TData>, 'type'>>
+    updates: Partial<Omit<FilterCondition, 'type'>>
   ) => void
 }
 
@@ -25,7 +26,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
   inputId,
   onFilterUpdate,
   ...props
-}: DataTableRangeFilterProps<TData>) {
+}: DataTableRangeFilterProps<TData>): JSX.Element {
   const meta = column.columnDef.meta
 
   const [min, max] = useMemo(() => {
@@ -39,8 +40,8 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
   }, [column])
 
   const formatValue = useCallback(
-    (value: boolean | number | string | undefined) => {
-      if (value === undefined || value === '') return ''
+    (value: boolean | null | number | string | undefined) => {
+      if (value === undefined || value === null || value === '') return ''
       const numValue = Number(value)
       return Number.isNaN(numValue) ? '' : (
           numValue.toLocaleString(undefined, {
@@ -62,7 +63,7 @@ export function DataTableRangeFilter<TData extends BaseEntity>({
       const currentValues =
         Array.isArray(filter.value) ? filter.value : ['', '']
       const otherValue =
-        isMin ? (currentValues[1] ?? '') : (currentValues[0] ?? '')
+        isMin ? String(currentValues[1] ?? '') : String(currentValues[0] ?? '')
 
       if (
         value === '' ||

@@ -94,7 +94,6 @@ archesai/
 │   ├── platform/                    # Main web application
 │   ├── client/                      # Generated API client
 │   ├── ui/                          # Shared UI components
-│   └── schemas/                     # Shared Zod schemas
 │
 ├── docs/                             # Documentation
 │   ├── DEVELOPMENT.md

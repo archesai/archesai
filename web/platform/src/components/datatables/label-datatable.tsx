@@ -1,21 +1,40 @@
+import type { JSX } from 'react'
+
 import { useNavigate } from '@tanstack/react-router'
 
-import type { LabelEntity } from '@archesai/schemas'
+import type { FindManyLabelsParams, LabelEntity } from '@archesai/client'
+import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
   deleteLabel,
   getFindManyLabelsSuspenseQueryOptions
 } from '@archesai/client'
-import { LABEL_ENTITY_KEY } from '@archesai/schemas'
 import { ListIcon } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
+import { LABEL_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
 import LabelForm from '#components/forms/label-form'
 
-export default function LabelDataTable() {
+export default function LabelDataTable(): JSX.Element {
   const navigate = useNavigate()
+
+  const getQueryOptions = (query: SearchQuery) => {
+    const params: any =
+      query.filter || query.page || query.sort ?
+        {
+          ...(query.filter && {
+            filter: query.filter as unknown as FindManyLabelsParams['filter']
+          }),
+          ...(query.page && { page: query.page }),
+          ...(query.sort && {
+            sort: query.sort as FindManyLabelsParams['sort']
+          })
+        }
+      : undefined
+    return getFindManyLabelsSuspenseQueryOptions(params) as any
+  }
 
   return (
     <DataTable<LabelEntity>
@@ -47,7 +66,7 @@ export default function LabelDataTable() {
         await deleteLabel(id)
       }}
       entityKey={LABEL_ENTITY_KEY}
-      getQueryOptions={getFindManyLabelsSuspenseQueryOptions}
+      getQueryOptions={getQueryOptions}
       handleSelect={async (chatbot) => {
         await navigate({ to: `/chatbots/chat?labelId=${chatbot.id}` })
       }}

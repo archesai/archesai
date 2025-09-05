@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useGetOneArtifactSuspense } from '@archesai/client'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
@@ -13,7 +15,7 @@ export const ArtifactDetailsHeader = ({
   artifactId
 }: {
   artifactId: string
-}) => {
+}): JSX.Element => {
   const {
     data: { data: artifact }
   } = useGetOneArtifactSuspense(artifactId)
@@ -28,7 +30,7 @@ export const ArtifactDetailsHeader = ({
           variant='outline'
         >
           <a
-            href={artifact.url ?? ''}
+            href={artifact.text} // FIXME - not a link
             rel='noopener noreferrer'
             target='_blank'
           >
@@ -41,7 +43,11 @@ export const ArtifactDetailsHeader = ({
   )
 }
 
-export const ArtifactDetailsBody = ({ artifactId }: { artifactId: string }) => {
+export const ArtifactDetailsBody = ({
+  artifactId
+}: {
+  artifactId: string
+}): JSX.Element => {
   const {
     data: { data: artifact }
   } = useGetOneArtifactSuspense(artifactId)

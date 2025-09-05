@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { createFileRoute } from '@tanstack/react-router'
 
 import RunDataTable from '#components/datatables/run-datatable'
@@ -9,6 +11,6 @@ export const Route = createFileRoute('/_app/runs/')({
   component: RunsPage
 })
 
-export default function RunsPage() {
+export default function RunsPage(): JSX.Element {
   return <RunDataTable />
 }

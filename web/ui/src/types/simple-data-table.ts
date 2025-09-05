@@ -1,6 +1,6 @@
 import type { Row, RowData } from '@tanstack/react-table'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 export type FilterVariant =
   | 'boolean'

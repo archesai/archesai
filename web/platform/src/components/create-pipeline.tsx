@@ -1,4 +1,5 @@
 import type { Connection, Edge, Node } from '@xyflow/react'
+import type { JSX } from 'react'
 
 // import '@xyflow/react/dist/style.css'
 
@@ -16,12 +17,17 @@ import {
   useNodesState
 } from '@xyflow/react'
 
-import type { PipelineStepEntity } from '@archesai/schemas'
-
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Card } from '@archesai/ui/components/shadcn/card'
 
-export default function CreatePipelinePage() {
+// PipelineStepEntity doesn't exist in generated types yet
+interface PipelineStepEntity {
+  id: string
+  prerequisites: string[]
+  toolId: string
+}
+
+export default function CreatePipelinePage(): JSX.Element {
   return <CreatePipelineContent />
 }
 

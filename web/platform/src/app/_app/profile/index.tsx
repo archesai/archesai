@@ -1,8 +1,11 @@
+import type { JSX } from 'react'
+
 import { createFileRoute } from '@tanstack/react-router'
 
 import {
   useDeleteUser,
-  useGetSessionSuspense,
+  useGetOneSessionSuspense,
+  useGetOneUserSuspense,
   useRequestPasswordReset
 } from '@archesai/client'
 import { Loader2Icon } from '@archesai/ui/components/custom/icons'
@@ -22,8 +25,9 @@ export const Route = createFileRoute('/_app/profile/')({
   component: ProfileSecuritySettingsPage
 })
 
-export default function ProfileSecuritySettingsPage() {
-  const { data: sessionData } = useGetSessionSuspense()
+export default function ProfileSecuritySettingsPage(): JSX.Element {
+  const { data: sessionData } = useGetOneSessionSuspense('current')
+  const { data: userData } = useGetOneUserSuspense(sessionData.data.userId)
   const { isPending: deactivatePending, mutateAsync: deactivateAccount } =
     useDeleteUser()
   const {
@@ -51,7 +55,7 @@ export default function ProfileSecuritySettingsPage() {
               onClick={async () => {
                 await requestPasswordReset({
                   data: {
-                    email: sessionData.user.email
+                    email: userData.data.email
                   }
                 })
               }}
@@ -79,7 +83,7 @@ export default function ProfileSecuritySettingsPage() {
               disabled={deactivatePending}
               onClick={async () => {
                 await deactivateAccount({
-                  id: sessionData.user.id
+                  id: userData.data.id
                 })
               }}
               size='sm'

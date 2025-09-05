@@ -12,12 +12,13 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite dev",
-    "start": "vite preview"
+    "lint": "eslint .",
+    "start": "vite preview",
+    "typecheck": "tsc --build --emitDeclarationOnly"
   },
   "prettier": "@archesai/prettier",
   "dependencies": {
     "@archesai/client": "workspace:*",
-    "@archesai/schemas": "workspace:*",
     "@archesai/ui": "workspace:*",
     "@tanstack/react-query": "catalog:tanstack",
     "@tanstack/react-query-devtools": "catalog:tanstack",
@@ -28,17 +29,23 @@
     "@xyflow/react": "catalog:",
     "motion": "catalog:ui",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19",
-    "vite": "catalog:vite"
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
+    "@archesai/eslint": "workspace:*",
     "@playwright/test": "catalog:test",
     "@tailwindcss/vite": "catalog:vite",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:vite",
+    "@vitest/ui": "catalog:test",
     "babel-plugin-react-compiler": "catalog:vite",
-    "rollup-plugin-visualizer": "catalog:vite"
+    "eslint": "catalog:eslint",
+    "rollup-plugin-visualizer": "catalog:vite",
+    "tailwindcss": "catalog:ui",
+    "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vitest": "catalog:test"
   }
 }

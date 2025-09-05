@@ -1,9 +1,11 @@
+import type { JSX } from 'react'
+
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { ArtifactEntity } from '@archesai/schemas'
+import type { ArtifactEntity, FindManyArtifactsParams } from '@archesai/client'
+import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import { getFindManyArtifactsSuspenseQueryOptions } from '@archesai/client'
-import { ARTIFACT_ENTITY_KEY } from '@archesai/schemas'
 import {
   CalendarIcon,
   FileIcon,
@@ -12,11 +14,28 @@ import {
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
 import { Badge } from '@archesai/ui/components/shadcn/badge'
+import { ARTIFACT_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
 import ArtifactForm from '#components/forms/artifact-form'
 
-export default function ArtifactDataTable() {
+export default function ArtifactDataTable(): JSX.Element {
   const navigate = useNavigate()
+
+  const getQueryOptions = (query: SearchQuery) => {
+    const params: any =
+      query.filter || query.page || query.sort ?
+        {
+          ...(query.filter && {
+            filter: query.filter as unknown as FindManyArtifactsParams['filter']
+          }),
+          ...(query.page && { page: query.page }),
+          ...(query.sort && {
+            sort: query.sort as FindManyArtifactsParams['sort']
+          })
+        }
+      : undefined
+    return getFindManyArtifactsSuspenseQueryOptions(params) as any
+  }
 
   return (
     <DataTable<ArtifactEntity>
@@ -110,7 +129,7 @@ export default function ArtifactDataTable() {
       ]}
       createForm={ArtifactForm}
       entityKey={ARTIFACT_ENTITY_KEY}
-      getQueryOptions={getFindManyArtifactsSuspenseQueryOptions}
+      getQueryOptions={getQueryOptions}
       grid={(_item) => {
         return (
           <div className='flex h-full w-full items-center justify-center'>

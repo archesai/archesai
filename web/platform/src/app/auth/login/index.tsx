@@ -1,10 +1,12 @@
+import type { JSX } from 'react'
+
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 
-import type { CreateAccountDto } from '@archesai/schemas'
+import type { LoginBody } from '@archesai/client'
+import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-form'
 
 import { useLogin } from '@archesai/client'
-import { CreateAccountDtoSchema } from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Button } from '@archesai/ui/components/shadcn/button'
 import { Input } from '@archesai/ui/components/shadcn/input'
@@ -15,47 +17,46 @@ export const Route = createFileRoute('/auth/login/')({
   component: LoginPage
 })
 
-export default function LoginPage() {
+export default function LoginPage(): JSX.Element {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { mutateAsync: login } = useLogin()
 
+  const formFields: FormFieldConfig<LoginBody>[] = [
+    {
+      defaultValue: '',
+      description: 'Your email address',
+      label: 'Email',
+      name: 'email',
+      renderControl: (field) => (
+        <Input
+          placeholder='Enter your email...'
+          {...field}
+          type='email'
+        />
+      )
+    },
+    {
+      defaultValue: '',
+      description: 'Your password',
+      label: 'Password',
+      name: 'password',
+      renderControl: (field) => (
+        <Input
+          {...field}
+          placeholder='Enter your password...'
+          type='password'
+        />
+      )
+    }
+  ]
+
   return (
     <>
-      <GenericForm<CreateAccountDto, never>
+      <GenericForm<LoginBody, never>
         description='Enter your email and password to login'
         entityKey='auth'
-        fields={[
-          {
-            defaultValue: '',
-            description: CreateAccountDtoSchema.shape.email.description ?? '',
-            label: 'Email',
-            name: 'email',
-            renderControl: (field) => (
-              <Input
-                placeholder='Enter your email...'
-                {...field}
-                type='email'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.email
-          },
-          {
-            defaultValue: '',
-            description:
-              CreateAccountDtoSchema.shape.password.description ?? '',
-            label: 'Password',
-            name: 'password',
-            renderControl: (field) => (
-              <Input
-                {...field}
-                placeholder='Enter your password...'
-                type='password'
-              />
-            ),
-            validationRule: CreateAccountDtoSchema.shape.password
-          }
-        ]}
+        fields={formFields}
         isUpdateForm={false}
         onSubmitCreate={async (data) => {
           await login({

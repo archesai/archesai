@@ -1,11 +1,5 @@
 import { toast } from 'sonner'
 
-import {
-  useFindManyMembersSuspense,
-  useGetSessionSuspense,
-  useUpdateSession
-} from '@archesai/client'
-
 import { ArchesLogo } from '#components/custom/arches-logo'
 import { ChevronsUpDownIcon, PlusSquareIcon } from '#components/custom/icons'
 import { Badge } from '#components/shadcn/badge'
@@ -24,21 +18,40 @@ import {
   useSidebar
 } from '#components/shadcn/sidebar'
 
-export function OrganizationButton() {
-  const {
-    data: { session, user }
-  } = useGetSessionSuspense()
-  const { data: memberships } = useFindManyMembersSuspense({
-    filter: {
-      field: 'userId',
-      operator: 'eq',
-      type: 'condition',
-      value: user.id
+interface OrganizationButtonProps {
+  memberships?: {
+    data: {
+      id: string
+      organizationId: string
+    }[]
+  }
+  onUpdateSession?: (
+    data: {
+      data: {
+        activeOrganizationId: string
+      }
+      id: string
+    },
+    options?: {
+      onSuccess?: () => void
     }
-  })
+  ) => Promise<void>
+  session?: {
+    activeOrganizationId?: null | string
+    id: string
+  }
+  user?: {
+    email: string
+    id: string
+    name: string
+  }
+}
 
-  const { mutateAsync: updateSession } = useUpdateSession()
-
+export function OrganizationButton({
+  memberships,
+  onUpdateSession,
+  session
+}: OrganizationButtonProps) {
   const { isMobile } = useSidebar()
 
   return (
@@ -66,32 +79,33 @@ export function OrganizationButton() {
             <DropdownMenuLabel className='text-xs text-muted-foreground'>
               Organizations
             </DropdownMenuLabel>
-            {memberships.data.map((membership) => (
+            {memberships?.data.map((membership) => (
               <DropdownMenuItem
                 className='gap-2 p-2'
                 key={membership.id}
                 onClick={async () => {
-                  await updateSession(
-                    {
-                      data: {
-                        activeOrganizationId: membership.organizationId
+                  if (onUpdateSession && session) {
+                    await onUpdateSession(
+                      {
+                        data: {
+                          activeOrganizationId: membership.organizationId
+                        },
+                        id: session.id
                       },
-                      id: session.id
-                    },
-                    {
-                      onSuccess: () => {
-                        toast.success(
-                          `Switched to organization: ${membership.organizationId}`
-                        )
+                      {
+                        onSuccess: () => {
+                          toast.success(
+                            `Switched to organization: ${membership.organizationId}`
+                          )
+                        }
                       }
-                    }
-                  )
+                    )
+                  }
                 }}
               >
                 {membership.organizationId}
-                {session.activeOrganizationId === membership.organizationId && (
-                  <Badge>Current</Badge>
-                )}
+                {session?.activeOrganizationId ===
+                  membership.organizationId && <Badge>Current</Badge>}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

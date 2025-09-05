@@ -1,9 +1,7 @@
 import type { ControllerRenderProps, FieldValues } from 'react-hook-form'
 
 import { useEffect } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { Loader2Icon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'
@@ -27,14 +25,13 @@ import {
 import { Separator } from '#components/shadcn/separator'
 import { cn } from '#lib/utils'
 
-export interface FormFieldConfig {
+export interface FormFieldConfig<T extends FieldValues = FieldValues> {
   defaultValue?: boolean | number | string | undefined
   description?: string
   ignoreOnCreate?: boolean
   label: string
-  name: string
+  name: keyof T
   renderControl: (field: ControllerRenderProps) => React.ReactNode
-  validationRule?: z.ZodType
 }
 
 type GenericFormProps<
@@ -43,7 +40,7 @@ type GenericFormProps<
 > = {
   description?: string
   entityKey: string
-  fields: FormFieldConfig[]
+  fields: FormFieldConfig<CreateDto | UpdateDto>[]
   /**
    * When supplied, `mutateOptions` is passed straight through.
    * Use it to wire in TanStack Query’s `useMutation` options and keep side-effects outside.
@@ -83,22 +80,14 @@ export function GenericForm<
 
   /* ---------- memoised defaults & schema ---------- */
   const defaultValues = fields.reduce<Record<string, unknown>>((acc, f) => {
-    if (f.defaultValue !== undefined) acc[f.name] = f.defaultValue
+    if (f.defaultValue !== undefined) acc[String(f.name)] = f.defaultValue
     return acc
   }, {})
-
-  const schema = z.object(
-    fields.reduce<Record<string, z.ZodType>>((acc, f) => {
-      if (f.validationRule) acc[f.name] = f.validationRule
-      return acc
-    }, {})
-  )
 
   /* ---------- form instance ---------- */
   const form = useForm({
     defaultValues,
-    mode: 'onChange',
-    resolver: zodResolver(schema)
+    mode: 'onChange'
   })
 
   /* ---------- keep external defaults in sync ---------- */
@@ -143,8 +132,8 @@ export function GenericForm<
               .map((fieldConfig) => (
                 <FormField
                   control={form.control}
-                  key={fieldConfig.name}
-                  name={fieldConfig.name}
+                  key={String(fieldConfig.name)}
+                  name={String(fieldConfig.name)}
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>{fieldConfig.label}</FormLabel>

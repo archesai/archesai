@@ -174,8 +174,6 @@ web/
       hooks/      # Custom React hooks
       lib/        # UI utilities
 
-  schemas/        # Shared Zod schemas
-
 tools/            # Build tools and configs
   eslint/         # Shared ESLint config
   prettier/       # Shared Prettier config

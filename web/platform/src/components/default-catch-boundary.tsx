@@ -1,11 +1,14 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
+import type { JSX } from 'react'
 
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, rootRouteId, useMatch, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@archesai/ui/components/shadcn/button'
 
-export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
+export function DefaultCatchBoundary({
+  error
+}: ErrorComponentProps): JSX.Element {
   const router = useRouter()
   const queryClient = useQueryClient()
   const isRoot = useMatch({

@@ -12,40 +12,25 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "parallel": 5,
-  "plugins": [
-    {
-      "options": {
-        "build": {
-          "configName": "tsconfig.lib.json",
-          "targetName": "build"
-        },
-        "typecheck": {
-          "targetName": "typecheck"
-        }
-      },
-      "plugin": "@nx/js/typescript"
-    },
-    {
-      "options": {
-        "build": {
-          "configName": "tsconfig.app.json",
-          "targetName": "build"
-        },
-        "typecheck": false
-      },
-      "plugin": "@nx/js/typescript"
-    },
-    {
-      "options": {
-        "targetName": "lint"
-      },
-      "plugin": "@nx/eslint/plugin"
-    }
-  ],
   "targetDefaults": {
     "dev": {
+      "cache": false,
       "continuous": true
+    },
+    "lint": {
+      "cache": true,
+      "dependsOn": ["^lint", "typecheck"],
+      "inputs": ["default", "^default"]
+    },
+    "typecheck": {
+      "cache": true,
+      "dependsOn": ["^typecheck"],
+      "inputs": ["default"],
+      "outputs": ["{projectRoot}/dist/**"]
     }
+  },
+  "tui": {
+    "enabled": false
   },
   "useDaemonProcess": false
 }

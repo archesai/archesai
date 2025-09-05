@@ -1,18 +1,37 @@
+import type { JSX } from 'react'
+
 import { Link, useNavigate } from '@tanstack/react-router'
 
-import type { PipelineEntity } from '@archesai/schemas'
+import type { FindManyPipelinesParams, PipelineEntity } from '@archesai/client'
+import type { SearchQuery } from '@archesai/ui/types/entities'
 
 import {
   deletePipeline,
   getFindManyPipelinesSuspenseQueryOptions
 } from '@archesai/client'
-import { PIPELINE_ENTITY_KEY } from '@archesai/schemas'
 import { WorkflowIcon } from '@archesai/ui/components/custom/icons'
 import { Timestamp } from '@archesai/ui/components/custom/timestamp'
 import { DataTable } from '@archesai/ui/components/datatable/data-table'
+import { PIPELINE_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function PipelineDataTable() {
+export default function PipelineDataTable(): JSX.Element {
   const navigate = useNavigate()
+
+  const getQueryOptions = (query: SearchQuery) => {
+    const params: any =
+      query.filter || query.page || query.sort ?
+        {
+          ...(query.filter && {
+            filter: query.filter as unknown as FindManyPipelinesParams['filter']
+          }),
+          ...(query.page && { page: query.page }),
+          ...(query.sort && {
+            sort: query.sort as FindManyPipelinesParams['sort']
+          })
+        }
+      : undefined
+    return getFindManyPipelinesSuspenseQueryOptions(params) as any
+  }
 
   return (
     <DataTable<PipelineEntity>
@@ -53,7 +72,7 @@ export default function PipelineDataTable() {
         await deletePipeline(id)
       }}
       entityKey={PIPELINE_ENTITY_KEY}
-      getQueryOptions={getFindManyPipelinesSuspenseQueryOptions}
+      getQueryOptions={getQueryOptions}
       handleSelect={async (pipeline) => {
         await navigate({
           params: {

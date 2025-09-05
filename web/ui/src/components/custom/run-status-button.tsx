@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { RunEntity } from '@archesai/schemas'
+import type { RunEntity } from '#types/entities'
 
 import {
   BanIcon,
@@ -27,14 +27,14 @@ export const StatusTypeEnumButton = ({
 
   const renderIcon = () => {
     switch (run.status) {
-      case 'COMPLETED':
+      case 'completed':
         return <CheckCircle2Icon className='text-green-500' />
-      case 'FAILED':
+      case 'failed':
         return <BanIcon className='text-destructive' />
-      case 'PROCESSING':
-        return <Loader2Icon className='animate-spin text-primary' />
-      case 'QUEUED':
+      case 'pending':
         return <ClockArrowUpIcon className='text-orange-400' />
+      case 'running':
+        return <Loader2Icon className='animate-spin text-primary' />
       default:
         return null
     }
@@ -74,11 +74,11 @@ export const StatusTypeEnumButton = ({
                 new Date(run.startedAt).getTime()}
           </div>
         )}
-
+        {/* 
         <div>
           <strong className='font-semibold'>Progress:</strong>{' '}
-          {Math.round(run.progress * 100)}%
-        </div>
+          {Math.round(run.progress * 100)}% // FIXME
+        </div> */}
         {run.error && (
           <div>
             <strong className='font-semibold'>Error:</strong> {run.error}

@@ -1,7 +1,7 @@
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import { Loader2Icon, TrashIcon } from '#components/custom/icons'
 import { Button } from '#components/shadcn/button'

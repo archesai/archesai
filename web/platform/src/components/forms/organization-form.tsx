@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import type {
   CreateOrganizationBody,
   UpdateOrganizationMutationBody
@@ -7,20 +9,17 @@ import type { FormFieldConfig } from '@archesai/ui/components/custom/generic-for
 import {
   useCreateOrganization,
   useGetOneOrganizationSuspense,
-  useGetSessionSuspense,
+  useGetOneSessionSuspense,
   useUpdateOrganization
 } from '@archesai/client'
-import {
-  ORGANIZATION_ENTITY_KEY,
-  OrganizationEntitySchema
-} from '@archesai/schemas'
 import { GenericForm } from '@archesai/ui/components/custom/generic-form'
 import { Input } from '@archesai/ui/components/shadcn/input'
+import { ORGANIZATION_ENTITY_KEY } from '@archesai/ui/lib/constants'
 
-export default function OrganizationForm() {
+export default function OrganizationForm(): JSX.Element {
   const {
-    data: { session }
-  } = useGetSessionSuspense()
+    data: { data: session }
+  } = useGetOneSessionSuspense('current')
   const { mutateAsync: createOrganization } = useCreateOrganization()
   const { mutateAsync: updateOrganization } = useUpdateOrganization()
   const {
@@ -30,7 +29,7 @@ export default function OrganizationForm() {
   const formFields: FormFieldConfig[] = [
     {
       defaultValue: organization.name,
-      description: OrganizationEntitySchema.shape.name.description ?? '',
+      description: 'Organization name',
       label: 'Name',
       name: 'name',
       renderControl: (field) => (
@@ -43,8 +42,7 @@ export default function OrganizationForm() {
     },
     {
       defaultValue: organization.billingEmail ?? '',
-      description:
-        OrganizationEntitySchema.shape.billingEmail.description ?? '',
+      description: 'Email address for billing notifications',
       label: 'Billing Email',
       name: 'billingEmail',
       renderControl: (field) => (
@@ -63,12 +61,14 @@ export default function OrganizationForm() {
       entityKey={ORGANIZATION_ENTITY_KEY}
       fields={formFields}
       isUpdateForm={true}
-      onSubmitCreate={async (createOrganizationDto) => {
+      onSubmitCreate={async (createOrganizationDto: CreateOrganizationBody) => {
         await createOrganization({
           data: createOrganizationDto
         })
       }}
-      onSubmitUpdate={async (updateOrganizationDto) => {
+      onSubmitUpdate={async (
+        updateOrganizationDto: UpdateOrganizationMutationBody
+      ) => {
         await updateOrganization({
           data: updateOrganizationDto,
           id: session.activeOrganizationId

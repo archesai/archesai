@@ -6,12 +6,6 @@
   ],
   "references": [
     {
-      "path": "../schemas/tsconfig.lib.json"
-    },
-    {
-      "path": "../client/tsconfig.lib.json"
-    },
-    {
       "path": "../../tools/eslint"
     }
   ]

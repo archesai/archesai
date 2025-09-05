@@ -1,6 +1,9 @@
+import type { JSX } from 'react'
+
 import { Suspense } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
+import { useGetOneArtifactSuspense } from '@archesai/client'
 import { ArtifactViewer } from '@archesai/ui/components/custom/artifact-viewer'
 import { Card } from '@archesai/ui/components/shadcn/card'
 
@@ -13,7 +16,7 @@ export const Route = createFileRoute('/_app/artifacts/$artifactId/')({
   component: ArtifactDetailsPage
 })
 
-export default function ArtifactDetailsPage() {
+export default function ArtifactDetailsPage(): JSX.Element {
   const params = Route.useParams()
 
   return (
@@ -31,9 +34,21 @@ export default function ArtifactDetailsPage() {
       {/*RIGHT SIDE*/}
       <Card className='w-1/2 overflow-hidden'>
         <Suspense>
-          <ArtifactViewer artifactId={params.artifactId} />
+          <ArtifactViewerWrapper artifactId={params.artifactId} />
         </Suspense>
       </Card>
     </div>
   )
+}
+
+function ArtifactViewerWrapper({
+  artifactId
+}: {
+  artifactId: string
+}): JSX.Element {
+  const {
+    data: { data: artifact }
+  } = useGetOneArtifactSuspense(artifactId)
+
+  return <ArtifactViewer artifact={artifact} />
 }

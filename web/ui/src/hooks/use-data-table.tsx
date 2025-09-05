@@ -18,7 +18,7 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 
 import type {
   BaseEntity //FilterNode
-} from '@archesai/schemas'
+} from '#types/entities'
 
 import { DataTableColumnHeader } from '#components/datatable/components/data-table-column-header'
 import { Checkbox } from '#components/shadcn/checkbox'

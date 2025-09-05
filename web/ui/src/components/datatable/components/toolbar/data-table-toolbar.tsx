@@ -4,7 +4,7 @@ import type { Column, Table } from '@tanstack/react-table'
 
 import { useCallback, useMemo } from 'react'
 
-import type { BaseEntity } from '@archesai/schemas'
+import type { BaseEntity } from '#types/entities'
 
 import { XCircleIcon } from '#components/custom/icons'
 import { DataTableViewOptions } from '#components/datatable/components/data-table-view-options'

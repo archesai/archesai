@@ -11,9 +11,13 @@
     ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
+  "scripts": {
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
   "dependencies": {
     "@eslint/compat": "catalog:eslint",
     "@eslint/js": "catalog:eslint",
+    "@nx/eslint-plugin": "catalog:nx",
     "@tanstack/eslint-plugin-query": "catalog:eslint",
     "eslint-config-prettier": "catalog:eslint",
     "eslint-import-resolver-typescript": "catalog:eslint",
@@ -24,5 +28,8 @@
     "globals": "catalog:eslint",
     "jsonc-eslint-parser": "catalog:eslint",
     "typescript-eslint": "catalog:eslint"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:"
   }
 }

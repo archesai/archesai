@@ -1,29 +1,24 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getWebRequest } from '@tanstack/react-start/server'
 
-import { getSession } from '@archesai/client'
+import type { GetOneSession200 } from '@archesai/client'
 
-const getSessionServer = createServerFn({ method: 'GET' }).handler(async () => {
-  const { headers } = getWebRequest()
-  try {
-    const { session, user } = (await getSession({
-      credentials: 'include',
-      headers
-    })) as {
-      session: null | { id: string; userId: string }
-      user: null | { email: string; id: string; name: string }
+import { getOneSession } from '@archesai/client'
+
+const getSessionServer = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<GetOneSession200 | null> => {
+    const { headers } = getWebRequest()
+    try {
+      const result = await getOneSession('current', {
+        credentials: 'include',
+        headers
+      })
+      return result
+    } catch {
+      /* empty */
     }
-    if (user && session) {
-      const sessionData = {
-        session,
-        user
-      }
-      return sessionData
-    }
-  } catch {
-    /* empty */
+    return null
   }
-  return null
-})
+)
 
 export default getSessionServer

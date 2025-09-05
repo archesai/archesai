@@ -3,9 +3,8 @@ import type { UseSuspenseQueryOptions } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
-import type { BaseEntity } from '@archesai/schemas'
-
 import type { LucideIcon } from '#components/custom/icons'
+import type { BaseEntity } from '#types/entities'
 
 import {
   CheckCircle2Icon,

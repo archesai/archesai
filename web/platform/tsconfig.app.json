@@ -9,9 +9,6 @@
       "path": "../ui/tsconfig.lib.json"
     },
     {
-      "path": "../schemas/tsconfig.lib.json"
-    },
-    {
       "path": "../client/tsconfig.lib.json"
     },
     {

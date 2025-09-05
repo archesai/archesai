@@ -2,14 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
-import type { UserEntity } from '@archesai/schemas'
-
-import {
-  useFindManyMembersSuspense,
-  useGetSessionSuspense,
-  useLogout,
-  useUpdateUser
-} from '@archesai/client'
+import type { UserEntity } from '#types/entities'
 
 import {
   BadgeCheckIcon,
@@ -42,30 +35,69 @@ import {
   useSidebar
 } from '#components/shadcn/sidebar'
 
-export function UserButton({
-  size = 'lg'
-}: {
+interface UserButtonProps {
+  memberships?: {
+    data: {
+      id: string
+      organizationId: string
+    }[]
+  }
+  onLogout?: () => Promise<void>
+  onUpdateUser?: (
+    data: {
+      data: UserEntity
+      id: string
+    },
+    options?: {
+      onSuccess?: () => void
+    }
+  ) => Promise<void>
+  sessionData?: {
+    session: {
+      activeOrganizationId?: null | string
+    }
+    user: {
+      email: string
+      id: string
+      image?: null | string
+      name: string
+    }
+  }
   side?: 'bottom' | 'left' | 'right' | 'top'
   size?: 'default' | 'lg' | 'sm' | null | undefined
-}) {
+}
+
+export function UserButton({
+  memberships,
+  onLogout,
+  onUpdateUser,
+  sessionData,
+  size = 'lg'
+}: UserButtonProps) {
   const defaultOrgname = 'Arches Platform'
-  const { data: sessionData } = useGetSessionSuspense()
-  const { mutateAsync: logout } = useLogout()
   const { isMobile } = useSidebar()
   const navigation = useNavigate()
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const { data: memberships } = useFindManyMembersSuspense({
-    filter: {
-      field: 'organizationId',
-      operator: 'eq',
-      type: 'condition',
-      value: sessionData.session.activeOrganizationId ?? ''
-    }
-  })
-
-  const { mutateAsync: updateUser } = useUpdateUser()
+  // If no session data is provided, render a placeholder
+  if (!sessionData) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <Button
+            className='h-8 w-8'
+            size='sm'
+            variant={'ghost'}
+          >
+            <Avatar>
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+          </Button>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    )
+  }
 
   return (
     <SidebarMenu>
@@ -152,25 +184,27 @@ export function UserButton({
               <DropdownMenuSubTrigger>Organizations</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {memberships.data.map((membership) => (
+                  {memberships?.data.map((membership) => (
                     <DropdownMenuItem
                       className='flex justify-between gap-2'
                       key={membership.id}
                       onClick={async () => {
-                        await updateUser(
-                          {
-                            data: {} as UserEntity,
-                            id: sessionData.user.id
-                          },
-                          {
-                            onSuccess: () => {
-                              toast('Organization changed', {
-                                description: `You have
+                        if (onUpdateUser) {
+                          await onUpdateUser(
+                            {
+                              data: {} as UserEntity,
+                              id: sessionData.user.id
+                            },
+                            {
+                              onSuccess: () => {
+                                toast('Organization changed', {
+                                  description: `You have
                               switched to ${membership.organizationId}`
-                              })
+                                })
+                              }
                             }
-                          }
-                        )
+                          )
+                        }
                       }}
                     >
                       {membership.organizationId}
@@ -202,7 +236,9 @@ export function UserButton({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
-                await logout()
+                if (onLogout) {
+                  await onLogout()
+                }
                 await navigation({
                   to: '/auth/login'
                 })
