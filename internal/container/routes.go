@@ -2,6 +2,9 @@ package container
 
 import (
 	authhttp "github.com/archesai/archesai/internal/auth/adapters/http"
+	contenthttp "github.com/archesai/archesai/internal/content/adapters/http"
+	organizationshttp "github.com/archesai/archesai/internal/organizations/adapters/http"
+	workflowshttp "github.com/archesai/archesai/internal/workflows/adapters/http"
 	"github.com/labstack/echo/v4"
 )
 
@@ -11,18 +14,18 @@ func (c *Container) RegisterRoutes(e *echo.Echo) {
 	v1 := e.Group("/api/v1")
 
 	// Register auth routes using StrictHandler pattern
-	strictAuthHandler := authhttp.NewStrictHandlerWithMiddleware(c.AuthHandler)
+	strictAuthHandler := authhttp.NewAuthStrictHandlerWithMiddleware(c.AuthHandler)
 	authhttp.RegisterHandlers(v1, strictAuthHandler)
 
-	// Register organizations routes
-	orgGroup := v1.Group("/organizations")
-	c.OrganizationsHandler.RegisterRoutes(orgGroup)
+	// Register organizations routes using StrictHandler pattern
+	strictOrganizationsHandler := organizationshttp.NewOrganizationStrictHandler(c.OrganizationsHandler)
+	organizationshttp.RegisterHandlers(v1, strictOrganizationsHandler)
 
-	// Register workflows routes
-	workflowsGroup := v1.Group("/workflows")
-	c.WorkflowsHandler.RegisterRoutes(workflowsGroup)
+	// Register workflows routes using StrictHandler pattern
+	strictWorkflowsHandler := workflowshttp.NewWorkflowStrictHandler(c.WorkflowsHandler)
+	workflowshttp.RegisterHandlers(v1, strictWorkflowsHandler)
 
-	// Register content routes
-	contentGroup := v1.Group("/content")
-	c.ContentHandler.RegisterRoutes(contentGroup)
+	// Register content routes using StrictHandler pattern
+	strictContentHandler := contenthttp.NewContentStrictHandler(c.ContentHandler)
+	contenthttp.RegisterHandlers(v1, strictContentHandler)
 }

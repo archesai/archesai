@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository defines the interface for content data persistence
-type Repository interface {
+// ContentRepository defines the interface for content data persistence
+type ContentRepository interface {
 	// Artifact operations
 	CreateArtifact(ctx context.Context, artifact *Artifact) (*Artifact, error)
 	GetArtifact(ctx context.Context, id uuid.UUID) (*Artifact, error)

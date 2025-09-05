@@ -21,7 +21,7 @@ const (
 )
 
 // Middleware creates an authentication middleware
-func Middleware(authService *domain.Service, logger *slog.Logger) echo.MiddlewareFunc {
+func Middleware(authService *domain.AuthService, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header
@@ -64,7 +64,7 @@ func Middleware(authService *domain.Service, logger *slog.Logger) echo.Middlewar
 
 // OptionalAuthMiddleware creates an optional authentication middleware
 // It validates the token if present but doesn't require it
-func OptionalAuthMiddleware(authService *domain.Service, logger *slog.Logger) echo.MiddlewareFunc {
+func OptionalAuthMiddleware(authService *domain.AuthService, logger *slog.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			// Extract token from Authorization header

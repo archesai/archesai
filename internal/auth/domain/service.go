@@ -13,9 +13,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Service handles authentication operations
-type Service struct {
-	repo      Repository
+// AuthService handles authentication operations
+type AuthService struct {
+	repo      AuthRepository
 	jwtSecret []byte
 	logger    *slog.Logger
 	config    Config
@@ -32,8 +32,8 @@ type Config struct {
 	LockoutDuration    time.Duration
 }
 
-// NewService creates a new authentication service
-func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
+// NewAuthService creates a new authentication service
+func NewAuthService(repo AuthRepository, config Config, logger *slog.Logger) *AuthService {
 	if config.AccessTokenExpiry == 0 {
 		config.AccessTokenExpiry = 15 * time.Minute
 	}
@@ -47,7 +47,7 @@ func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
 		config.BCryptCost = bcrypt.DefaultCost
 	}
 
-	return &Service{
+	return &AuthService{
 		repo:      repo,
 		jwtSecret: []byte(config.JWTSecret),
 		logger:    logger,
@@ -56,7 +56,7 @@ func NewService(repo Repository, config Config, logger *slog.Logger) *Service {
 }
 
 // Register creates a new user account
-func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *TokenResponse, error) {
+func (s *AuthService) Register(ctx context.Context, req *RegisterRequest) (*User, *TokenResponse, error) {
 	// Check if user already exists
 	existingUser, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err == nil && existingUser != nil {
@@ -124,7 +124,7 @@ func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*User, *T
 }
 
 // Login authenticates a user
-func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
+func (s *AuthService) Login(ctx context.Context, req *LoginRequest, ipAddress, userAgent string) (*User, *TokenResponse, error) {
 	// Get user by email
 	user, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
@@ -171,7 +171,7 @@ func (s *Service) Login(ctx context.Context, req *LoginRequest, ipAddress, userA
 }
 
 // Logout invalidates a user session
-func (s *Service) Logout(ctx context.Context, token string) error {
+func (s *AuthService) Logout(ctx context.Context, token string) error {
 	// Get session by token
 	session, err := s.repo.GetSessionByToken(ctx, token)
 	if err != nil {
@@ -189,7 +189,7 @@ func (s *Service) Logout(ctx context.Context, token string) error {
 }
 
 // ValidateToken validates a JWT token
-func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
+func (s *AuthService) ValidateToken(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -213,7 +213,7 @@ func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
 }
 
 // RefreshToken refreshes an access token using a refresh token
-func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*TokenResponse, error) {
+func (s *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*TokenResponse, error) {
 	// Validate refresh token
 	claims, err := s.ValidateToken(refreshToken)
 	if err != nil {
@@ -238,7 +238,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 }
 
 // generateTokens generates access and refresh tokens
-func (s *Service) generateTokens(user *User) (*TokenResponse, error) {
+func (s *AuthService) generateTokens(user *User) (*TokenResponse, error) {
 	now := time.Now()
 	expiresAt := now.Add(s.config.AccessTokenExpiry)
 
@@ -294,23 +294,23 @@ func (s *Service) generateTokens(user *User) (*TokenResponse, error) {
 }
 
 // hashPassword hashes a password using bcrypt
-func (s *Service) hashPassword(password string) (string, error) {
+func (s *AuthService) hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), s.config.BCryptCost)
 	return string(bytes), err
 }
 
 // verifyPassword verifies a password against a hash
-func (s *Service) verifyPassword(password, hash string) error {
+func (s *AuthService) verifyPassword(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
 // GetUser retrieves a user by ID
-func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+func (s *AuthService) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	return s.repo.GetUserByID(ctx, id)
 }
 
 // UpdateUser updates user information
-func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserRequest) (*User, error) {
+func (s *AuthService) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserRequest) (*User, error) {
 	// Get existing user
 	user, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
@@ -335,29 +335,29 @@ func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserR
 }
 
 // DeleteUser deletes a user
-func (s *Service) DeleteUser(ctx context.Context, id uuid.UUID) error {
+func (s *AuthService) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return s.repo.DeleteUser(ctx, id)
 }
 
 // ListUsers lists users with pagination
-func (s *Service) ListUsers(ctx context.Context, limit, offset int32) ([]*User, error) {
+func (s *AuthService) ListUsers(ctx context.Context, limit, offset int32) ([]*User, error) {
 	return s.repo.ListUsers(ctx, limit, offset)
 }
 
 // GetUserSessions retrieves all sessions for a user
-func (s *Service) GetUserSessions(_ context.Context, _ uuid.UUID) ([]*Session, error) {
+func (s *AuthService) GetUserSessions(_ context.Context, _ uuid.UUID) ([]*Session, error) {
 	// TODO: Add ListSessionsByUser query to auth.sql
 	// For now, return empty slice
 	return []*Session{}, nil
 }
 
 // RevokeSession revokes a specific session
-func (s *Service) RevokeSession(ctx context.Context, sessionID uuid.UUID) error {
+func (s *AuthService) RevokeSession(ctx context.Context, sessionID uuid.UUID) error {
 	return s.repo.DeleteSession(ctx, sessionID)
 }
 
 // CleanupExpiredSessions removes expired sessions from the database
-func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
+func (s *AuthService) CleanupExpiredSessions(ctx context.Context) error {
 	if err := s.repo.DeleteExpiredSessions(ctx); err != nil {
 		s.logger.Error("failed to cleanup expired sessions", "error", err)
 		return fmt.Errorf("failed to cleanup expired sessions: %w", err)
@@ -367,7 +367,7 @@ func (s *Service) CleanupExpiredSessions(ctx context.Context) error {
 }
 
 // ValidateSession validates a session token and returns the session
-func (s *Service) ValidateSession(ctx context.Context, token string) (*Session, error) {
+func (s *AuthService) ValidateSession(ctx context.Context, token string) (*Session, error) {
 	session, err := s.repo.GetSessionByToken(ctx, token)
 	if err != nil {
 		return nil, err
@@ -387,6 +387,6 @@ func (s *Service) ValidateSession(ctx context.Context, token string) (*Session, 
 }
 
 // DeleteUserSessions deletes all sessions for a user
-func (s *Service) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
+func (s *AuthService) DeleteUserSessions(ctx context.Context, userID uuid.UUID) error {
 	return s.repo.DeleteUserSessions(ctx, userID)
 }

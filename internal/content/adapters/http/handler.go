@@ -2,13 +2,10 @@
 package http
 
 import (
+	"context"
 	"log/slog"
-	"net/http"
-	"strconv"
 
 	"github.com/archesai/archesai/internal/content/domain"
-	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -16,319 +13,296 @@ const (
 	orgPlaceholder = "org-placeholder"
 )
 
-// Handler handles HTTP requests for content operations
-type Handler struct {
-	service *domain.Service
+// ContentHandler handles HTTP requests for content operations
+type ContentHandler struct {
+	service *domain.ContentService
 	logger  *slog.Logger
 }
 
-// NewHandler creates a new content handler
-func NewHandler(service *domain.Service, logger *slog.Logger) *Handler {
-	return &Handler{
+// Ensure ContentHandler implements StrictServerInterface
+var _ StrictServerInterface = (*ContentHandler)(nil)
+
+// NewContentHandler creates a new content handler
+func NewContentHandler(service *domain.ContentService, logger *slog.Logger) *ContentHandler {
+	return &ContentHandler{
 		service: service,
 		logger:  logger,
 	}
 }
 
-// RegisterRoutes registers content routes
-func (h *Handler) RegisterRoutes(g *echo.Group) {
-	// Artifact routes
-	g.POST("/artifacts", h.CreateArtifact)
-	g.GET("/artifacts", h.FindManyArtifacts)
-	g.GET("/artifacts/:id", h.FindArtifactByID)
-	g.PUT("/artifacts/:id", h.UpdateArtifact)
-	g.DELETE("/artifacts/:id", h.DeleteArtifact)
-
-	// Label routes
-	g.POST("/labels", h.CreateLabel)
-	g.GET("/labels", h.FindManyLabels)
-	g.GET("/labels/:id", h.FindLabelByID)
-	g.PUT("/labels/:id", h.UpdateLabel)
-	g.DELETE("/labels/:id", h.DeleteLabel)
-
-	// Artifact-Label relationship routes
-	g.POST("/artifacts/:id/labels/:labelId", h.AddLabelToArtifact)
-	g.DELETE("/artifacts/:id/labels/:labelId", h.RemoveLabelFromArtifact)
-	g.GET("/labels/:id/artifacts", h.GetArtifactsByLabel)
-	g.GET("/artifacts/:id/labels", h.GetLabelsByArtifact)
+// NewContentStrictHandler creates a StrictHandler with middleware
+func NewContentStrictHandler(handler StrictServerInterface) ServerInterface {
+	return NewStrictHandler(handler, nil)
 }
 
 // Artifact handlers
 
-// CreateArtifact creates a new artifact
-func (h *Handler) CreateArtifact(c echo.Context) error {
-	var req domain.CreateArtifactRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get org ID and producer ID from auth context
-	orgID := orgPlaceholder
-	producerID := "user-placeholder"
-
-	artifact, err := h.service.CreateArtifact(c.Request().Context(), &req, orgID, producerID)
-	if err != nil {
-		if err == domain.ErrArtifactTooLarge {
-			return c.JSON(http.StatusRequestEntityTooLarge, map[string]interface{}{
-				"error": "Artifact exceeds maximum size",
-			})
-		}
-		h.logger.Error("failed to create artifact", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create artifact",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": artifact.ArtifactEntity,
-	})
-}
-
-// FindManyArtifacts retrieves artifacts
-func (h *Handler) FindManyArtifacts(c echo.Context) error {
+// FindManyArtifacts retrieves artifacts (implements StrictServerInterface)
+func (h *ContentHandler) FindManyArtifacts(ctx context.Context, req FindManyArtifactsRequestObject) (FindManyArtifactsResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	// TODO: Get org ID from auth context
+	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	// Check if this is a search query
-	if query := c.QueryParam("search"); query != "" {
-		artifacts, total, err := h.service.SearchArtifacts(c.Request().Context(), orgID, query, limit, offset)
-		if err != nil {
-			h.logger.Error("failed to search artifacts", "error", err)
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"error": "Failed to search artifacts",
-			})
-		}
-
-		data := make([]domain.ArtifactEntity, len(artifacts))
-		for i, artifact := range artifacts {
-			data[i] = artifact.ArtifactEntity
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"data": data,
-			"meta": map[string]interface{}{
-				"total": total,
-			},
-		})
-	}
-
-	artifacts, total, err := h.service.ListArtifacts(c.Request().Context(), orgID, limit, offset)
+	artifacts, total, err := h.service.ListArtifacts(ctx, orgID, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list artifacts", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve artifacts",
-		})
+		return nil, err
 	}
 
+	// Convert to API entities
 	data := make([]domain.ArtifactEntity, len(artifacts))
 	for i, artifact := range artifacts {
 		data[i] = artifact.ArtifactEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyArtifacts200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindArtifactByID retrieves an artifact by ID
-func (h *Handler) FindArtifactByID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid artifact ID",
-		})
+// CreateArtifact creates a new artifact (implements StrictServerInterface)
+func (h *ContentHandler) CreateArtifact(ctx context.Context, req CreateArtifactRequestObject) (CreateArtifactResponseObject, error) {
+	// TODO: Get organization ID from context
+	orgID := orgPlaceholder
+	// TODO: Get producer ID from context
+	producerID := "producer-placeholder"
+
+	name := &req.Body.Name
+	createReq := &domain.CreateArtifactRequest{
+		Name: name,
+		Text: req.Body.Text,
 	}
 
-	artifact, err := h.service.GetArtifact(c.Request().Context(), id)
+	artifact, err := h.service.CreateArtifact(ctx, createReq, orgID, producerID)
+	if err != nil {
+		h.logger.Error("failed to create artifact", "error", err)
+		return nil, err
+	}
+
+	return CreateArtifact201JSONResponse{
+		Data: artifact.ArtifactEntity,
+	}, nil
+}
+
+// GetOneArtifact retrieves an artifact by ID (implements StrictServerInterface)
+func (h *ContentHandler) GetOneArtifact(ctx context.Context, req GetOneArtifactRequestObject) (GetOneArtifactResponseObject, error) {
+	artifact, err := h.service.GetArtifact(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrArtifactNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Artifact not found",
-			})
+			return GetOneArtifact404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Artifact not found",
+					Status: 404,
+					Title:  "Artifact not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get artifact", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve artifact",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": artifact.ArtifactEntity,
-	})
+	return GetOneArtifact200JSONResponse{
+		Data: artifact.ArtifactEntity,
+	}, nil
 }
 
-// UpdateArtifact updates an artifact
-func (h *Handler) UpdateArtifact(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid artifact ID",
-		})
+// UpdateArtifact updates an artifact (implements StrictServerInterface)
+func (h *ContentHandler) UpdateArtifact(ctx context.Context, req UpdateArtifactRequestObject) (UpdateArtifactResponseObject, error) {
+	name := &req.Body.Name
+	text := &req.Body.Text
+	updateReq := &domain.UpdateArtifactRequest{
+		Name: name,
+		Text: text,
 	}
 
-	var req domain.UpdateArtifactRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	artifact, err := h.service.UpdateArtifact(c.Request().Context(), id, &req)
+	artifact, err := h.service.UpdateArtifact(ctx, req.Id, updateReq)
 	if err != nil {
 		if err == domain.ErrArtifactNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Artifact not found",
-			})
-		}
-		if err == domain.ErrArtifactTooLarge {
-			return c.JSON(http.StatusRequestEntityTooLarge, map[string]interface{}{
-				"error": "Artifact exceeds maximum size",
-			})
+			return UpdateArtifact404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Artifact not found",
+					Status: 404,
+					Title:  "Artifact not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to update artifact", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to update artifact",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": artifact.ArtifactEntity,
-	})
+	return UpdateArtifact200JSONResponse{
+		Data: artifact.ArtifactEntity,
+	}, nil
 }
 
-// DeleteArtifact deletes an artifact
-func (h *Handler) DeleteArtifact(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid artifact ID",
-		})
-	}
-
-	err = h.service.DeleteArtifact(c.Request().Context(), id)
+// DeleteArtifact deletes an artifact (implements StrictServerInterface)
+func (h *ContentHandler) DeleteArtifact(ctx context.Context, req DeleteArtifactRequestObject) (DeleteArtifactResponseObject, error) {
+	err := h.service.DeleteArtifact(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrArtifactNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Artifact not found",
-			})
+			return DeleteArtifact404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Artifact not found",
+					Status: 404,
+					Title:  "Artifact not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete artifact", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete artifact",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteArtifact200JSONResponse{}, nil
 }
 
-// Label handlers - implemented similarly to artifacts
-// FindManyLabels retrieves labels
+// Label handlers
 
-// CreateLabel creates a new label
-func (h *Handler) CreateLabel(c echo.Context) error {
-	var req domain.CreateLabelRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
+// FindManyLabels retrieves labels (implements StrictServerInterface)
+func (h *ContentHandler) FindManyLabels(ctx context.Context, req FindManyLabelsRequestObject) (FindManyLabelsResponseObject, error) {
+	limit := 50
+	offset := 0
+
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	// TODO: Get org ID from auth context
+	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	label, err := h.service.CreateLabel(c.Request().Context(), &req, orgID)
+	labels, total, err := h.service.ListLabels(ctx, orgID, limit, offset)
 	if err != nil {
-		if err == domain.ErrLabelExists {
-			return c.JSON(http.StatusConflict, map[string]interface{}{
-				"error": "Label already exists",
-			})
-		}
-		h.logger.Error("failed to create label", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create label",
-		})
+		h.logger.Error("failed to list labels", "error", err)
+		return nil, err
 	}
 
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": label.LabelEntity,
-	})
+	// Convert to API entities
+	data := make([]domain.LabelEntity, len(labels))
+	for i, label := range labels {
+		data[i] = label.LabelEntity
+	}
+
+	totalFloat32 := float32(total)
+	return FindManyLabels200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
+		},
+	}, nil
 }
 
-// FindManyLabels retrieves labels
-func (h *Handler) FindManyLabels(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
+// CreateLabel creates a new label (implements StrictServerInterface)
+func (h *ContentHandler) CreateLabel(ctx context.Context, req CreateLabelRequestObject) (CreateLabelResponseObject, error) {
+	// TODO: Get organization ID from context
+	orgID := orgPlaceholder
+
+	createReq := &domain.CreateLabelRequest{
+		Name: req.Body.Name,
+	}
+
+	label, err := h.service.CreateLabel(ctx, createReq, orgID)
+	if err != nil {
+		if err == domain.ErrLabelExists {
+			// Return 400 bad request since there's no 409 response defined
+			return CreateLabel400ApplicationProblemPlusJSONResponse{
+				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+					Detail: "Label already exists",
+					Status: 400,
+					Title:  "Label already exists",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to create label", "error", err)
+		return nil, err
+	}
+
+	return CreateLabel201JSONResponse{
+		Data: label.LabelEntity,
+	}, nil
 }
 
-// FindLabelByID retrieves a label by ID
-func (h *Handler) FindLabelByID(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
+// GetOneLabel retrieves a label by ID (implements StrictServerInterface)
+func (h *ContentHandler) GetOneLabel(ctx context.Context, req GetOneLabelRequestObject) (GetOneLabelResponseObject, error) {
+	label, err := h.service.GetLabel(ctx, req.Id)
+	if err != nil {
+		if err == domain.ErrLabelNotFound {
+			return GetOneLabel404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Label not found",
+					Status: 404,
+					Title:  "Label not found",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to get label", "error", err)
+		return nil, err
+	}
+
+	return GetOneLabel200JSONResponse{
+		Data: label.LabelEntity,
+	}, nil
 }
 
-// UpdateLabel updates a label
-func (h *Handler) UpdateLabel(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
+// UpdateLabel updates a label (implements StrictServerInterface)
+func (h *ContentHandler) UpdateLabel(ctx context.Context, req UpdateLabelRequestObject) (UpdateLabelResponseObject, error) {
+	name := &req.Body.Name
+	updateReq := &domain.UpdateLabelRequest{
+		Name: name,
+	}
+
+	label, err := h.service.UpdateLabel(ctx, req.Id, updateReq)
+	if err != nil {
+		if err == domain.ErrLabelNotFound {
+			return UpdateLabel404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Label not found",
+					Status: 404,
+					Title:  "Label not found",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to update label", "error", err)
+		return nil, err
+	}
+
+	return UpdateLabel200JSONResponse{
+		Data: label.LabelEntity,
+	}, nil
 }
 
-// DeleteLabel deletes a label
-func (h *Handler) DeleteLabel(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
-}
+// DeleteLabel deletes a label (implements StrictServerInterface)
+func (h *ContentHandler) DeleteLabel(ctx context.Context, req DeleteLabelRequestObject) (DeleteLabelResponseObject, error) {
+	err := h.service.DeleteLabel(ctx, req.Id)
+	if err != nil {
+		if err == domain.ErrLabelNotFound {
+			return DeleteLabel404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Label not found",
+					Status: 404,
+					Title:  "Label not found",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to delete label", "error", err)
+		return nil, err
+	}
 
-// AddLabelToArtifact adds a label to an artifact
-func (h *Handler) AddLabelToArtifact(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
-}
-
-// RemoveLabelFromArtifact removes a label from an artifact
-func (h *Handler) RemoveLabelFromArtifact(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
-}
-
-// GetArtifactsByLabel retrieves artifacts by label
-func (h *Handler) GetArtifactsByLabel(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
-}
-
-// GetLabelsByArtifact retrieves labels for an artifact
-func (h *Handler) GetLabelsByArtifact(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
-		"error": "Not implemented yet",
-	})
+	return DeleteLabel200JSONResponse{}, nil
 }

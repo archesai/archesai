@@ -45,24 +45,24 @@ type Container struct {
 	Server        *serverhttp.Server // The HTTP server
 
 	// Auth domain
-	AuthRepository authcore.Repository
-	AuthService    *authcore.Service
-	AuthHandler    *authhandlers.Handler
+	AuthRepository authcore.AuthRepository
+	AuthService    *authcore.AuthService
+	AuthHandler    *authhandlers.AuthHandler
 
 	// Organizations domain
-	OrganizationsRepository orgcore.Repository
-	OrganizationsService    *orgcore.Service
-	OrganizationsHandler    *orghandlers.Handler
+	OrganizationsRepository orgcore.OrganizationRepository
+	OrganizationsService    *orgcore.OrganizationService
+	OrganizationsHandler    *orghandlers.OrganizationHandler
 
 	// Workflows domain
-	WorkflowsRepository workflowcore.Repository
-	WorkflowsService    *workflowcore.Service
-	WorkflowsHandler    *workflowhandlers.Handler
+	WorkflowsRepository workflowcore.WorkflowRepository
+	WorkflowsService    *workflowcore.WorkflowService
+	WorkflowsHandler    *workflowhandlers.WorkflowHandler
 
 	// Content domain
-	ContentRepository contentcore.Repository
-	ContentService    *contentcore.Service
-	ContentHandler    *contenthandlers.Handler
+	ContentRepository contentcore.ContentRepository
+	ContentService    *contentcore.ContentService
+	ContentHandler    *contenthandlers.ContentHandler
 }
 
 // NewContainer creates and initializes all application dependencies
@@ -123,10 +123,10 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	// Create queries based on database type
 	var pgQueries *postgresqlgen.Queries
 	var sqliteQueries *sqlitegen.Queries
-	var authRepo authcore.Repository
-	var organizationsRepo orgcore.Repository
-	var workflowsRepo workflowcore.Repository
-	var contentRepo contentcore.Repository
+	var authRepo authcore.AuthRepository
+	var organizationsRepo orgcore.OrganizationRepository
+	var workflowsRepo workflowcore.WorkflowRepository
+	var contentRepo contentcore.ContentRepository
 
 	// Determine actual database type
 	var dbType database.Type
@@ -141,10 +141,10 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		// Get the underlying pgxpool for PostgreSQL
 		if pool, ok := db.Underlying().(*pgxpool.Pool); ok && pool != nil {
 			pgQueries = postgresqlgen.New(pool)
-			authRepo = authinfra.NewPostgresRepository(pgQueries)
-			organizationsRepo = orginfra.NewPostgresRepository(pgQueries)
-			workflowsRepo = workflowinfra.NewPostgresRepository(pgQueries)
-			contentRepo = contentinfra.NewPostgresRepository(pgQueries)
+			authRepo = authinfra.NewAuthPostgresRepository(pgQueries)
+			organizationsRepo = orginfra.NewOrganizationPostgresRepository(pgQueries)
+			workflowsRepo = workflowinfra.NewWorkflowPostgresRepository(pgQueries)
+			contentRepo = contentinfra.NewContentPostgresRepository(pgQueries)
 		} else {
 			return nil, fmt.Errorf("failed to get PostgreSQL connection pool")
 		}
@@ -152,10 +152,10 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlitegen.New(sqlDB)
 			// Use SQLite repositories
-			authRepo = authsqlite.NewRepository(sqliteQueries)
-			organizationsRepo = orgsqlite.NewRepository(sqliteQueries)
-			workflowsRepo = workflowsqlite.NewRepository(sqliteQueries)
-			contentRepo = contentsqlite.NewRepository(sqliteQueries)
+			authRepo = authsqlite.NewAuthSQLiteRepository(sqliteQueries)
+			organizationsRepo = orgsqlite.NewOrganizationSQLiteRepository(sqliteQueries)
+			workflowsRepo = workflowsqlite.NewWorkflowSQLiteRepository(sqliteQueries)
+			contentRepo = contentsqlite.NewContentSQLiteRepository(sqliteQueries)
 			logger.Info("Using SQLite repositories")
 		}
 	}
@@ -175,20 +175,20 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 		AccessTokenExpiry:  accessTokenTTL,
 		RefreshTokenExpiry: refreshTokenTTL,
 	}
-	authService := authcore.NewService(authRepo, authConfig, logger)
-	authHandler := authhandlers.NewHandler(authService, logger)
+	authService := authcore.NewAuthService(authRepo, authConfig, logger)
+	authHandler := authhandlers.NewAuthHandler(authService, logger)
 
 	// Initialize organizations domain
-	organizationsService := orgcore.NewService(organizationsRepo, logger)
-	organizationsHandler := orghandlers.NewHandler(organizationsService, logger)
+	organizationsService := orgcore.NewOrganizationService(organizationsRepo, logger)
+	organizationsHandler := orghandlers.NewOrganizationHandler(organizationsService, logger)
 
 	// Initialize workflows domain
-	workflowsService := workflowcore.NewService(workflowsRepo, logger)
-	workflowsHandler := workflowhandlers.NewHandler(workflowsService, logger)
+	workflowsService := workflowcore.NewWorkflowService(workflowsRepo, logger)
+	workflowsHandler := workflowhandlers.NewWorkflowHandler(workflowsService, logger)
 
 	// Initialize content domain
-	contentService := contentcore.NewService(contentRepo, logger)
-	contentHandler := contenthandlers.NewHandler(contentService, logger)
+	contentService := contentcore.NewContentService(contentRepo, logger)
+	contentHandler := contenthandlers.NewContentHandler(contentService, logger)
 
 	// Create the HTTP server
 	serverConfig := &serverhttp.Config{

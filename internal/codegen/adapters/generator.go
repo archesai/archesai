@@ -137,7 +137,7 @@ func (g *Generator) generateDomainAdapters(domain string, config Config) error {
 	}
 
 	// Write to file
-	outputPath := fmt.Sprintf("internal/%s/adapters/adapters.gen.go", domain)
+	outputPath := fmt.Sprintf("internal/%s/adapters/mappers.gen.go", domain)
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}

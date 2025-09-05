@@ -2,13 +2,10 @@
 package http
 
 import (
+	"context"
 	"log/slog"
-	"net/http"
-	"strconv"
 
 	"github.com/archesai/archesai/internal/workflows/domain"
-	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -16,556 +13,413 @@ const (
 	orgPlaceholder = "org-placeholder"
 )
 
-// Handler handles HTTP requests for workflow operations
-type Handler struct {
-	service *domain.Service
+// WorkflowHandler handles HTTP requests for workflow operations
+type WorkflowHandler struct {
+	service *domain.WorkflowService
 	logger  *slog.Logger
 }
 
-// NewHandler creates a new workflow handler
-func NewHandler(service *domain.Service, logger *slog.Logger) *Handler {
-	return &Handler{
+// Ensure WorkflowHandler implements StrictServerInterface
+var _ StrictServerInterface = (*WorkflowHandler)(nil)
+
+// NewWorkflowHandler creates a new workflow handler
+func NewWorkflowHandler(service *domain.WorkflowService, logger *slog.Logger) *WorkflowHandler {
+	return &WorkflowHandler{
 		service: service,
 		logger:  logger,
 	}
 }
 
-// RegisterRoutes registers workflow routes
-func (h *Handler) RegisterRoutes(g *echo.Group) {
-	// Pipeline routes
-	g.POST("/pipelines", h.CreatePipeline)
-	g.GET("/pipelines", h.FindManyPipelines)
-	g.GET("/pipelines/:id", h.FindPipelineByID)
-	g.PUT("/pipelines/:id", h.UpdatePipeline)
-	g.DELETE("/pipelines/:id", h.DeletePipeline)
-
-	// Run routes
-	g.POST("/runs", h.CreateRun)
-	g.GET("/runs", h.FindManyRuns)
-	g.GET("/runs/:id", h.FindRunByID)
-	g.POST("/runs/:id/start", h.StartRun)
-	g.POST("/runs/:id/cancel", h.CancelRun)
-	g.DELETE("/runs/:id", h.DeleteRun)
-
-	// Tool routes
-	g.POST("/tools", h.CreateTool)
-	g.GET("/tools", h.FindManyTools)
-	g.GET("/tools/:id", h.FindToolByID)
-	g.PUT("/tools/:id", h.UpdateTool)
-	g.DELETE("/tools/:id", h.DeleteTool)
+// NewWorkflowStrictHandler creates a StrictHandler with middleware
+func NewWorkflowStrictHandler(handler StrictServerInterface) ServerInterface {
+	return NewStrictHandler(handler, nil)
 }
 
 // Pipeline handlers
 
-// CreatePipeline creates a new pipeline
-func (h *Handler) CreatePipeline(c echo.Context) error {
-	var req domain.CreatePipelineRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get org ID from auth context
-	orgID := orgPlaceholder
-
-	pipeline, err := h.service.CreatePipeline(c.Request().Context(), &req, orgID)
-	if err != nil {
-		h.logger.Error("failed to create pipeline", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create pipeline",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": pipeline.PipelineEntity,
-	})
-}
-
-// FindManyPipelines retrieves pipelines
-func (h *Handler) FindManyPipelines(c echo.Context) error {
+// FindManyPipelines retrieves pipelines (implements StrictServerInterface)
+func (h *WorkflowHandler) FindManyPipelines(ctx context.Context, req FindManyPipelinesRequestObject) (FindManyPipelinesResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	// TODO: Get org ID from auth context
+	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	pipelines, total, err := h.service.ListPipelines(c.Request().Context(), orgID, limit, offset)
+	pipelines, total, err := h.service.ListPipelines(ctx, orgID, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list pipelines", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve pipelines",
-		})
+		return nil, err
 	}
 
+	// Convert to API entities
 	data := make([]domain.PipelineEntity, len(pipelines))
 	for i, pipeline := range pipelines {
 		data[i] = pipeline.PipelineEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyPipelines200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindPipelineByID retrieves a pipeline by ID
-func (h *Handler) FindPipelineByID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid pipeline ID",
-		})
+// CreatePipeline creates a new pipeline (implements StrictServerInterface)
+func (h *WorkflowHandler) CreatePipeline(ctx context.Context, req CreatePipelineRequestObject) (CreatePipelineResponseObject, error) {
+	// TODO: Get organization ID from context
+	orgID := orgPlaceholder
+
+	createReq := &domain.CreatePipelineRequest{
+		Name:        req.Body.Name,
+		Description: req.Body.Description,
 	}
 
-	pipeline, err := h.service.GetPipeline(c.Request().Context(), id)
+	pipeline, err := h.service.CreatePipeline(ctx, createReq, orgID)
+	if err != nil {
+		h.logger.Error("failed to create pipeline", "error", err)
+		return nil, err
+	}
+
+	return CreatePipeline201JSONResponse{
+		Data: pipeline.PipelineEntity,
+	}, nil
+}
+
+// GetOnePipeline retrieves a pipeline by ID (implements StrictServerInterface)
+func (h *WorkflowHandler) GetOnePipeline(ctx context.Context, req GetOnePipelineRequestObject) (GetOnePipelineResponseObject, error) {
+	pipeline, err := h.service.GetPipeline(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrPipelineNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Pipeline not found",
-			})
+			return GetOnePipeline404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Pipeline not found",
+					Status: 404,
+					Title:  "Pipeline not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get pipeline", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve pipeline",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": pipeline.PipelineEntity,
-	})
+	return GetOnePipeline200JSONResponse{
+		Data: pipeline.PipelineEntity,
+	}, nil
 }
 
-// UpdatePipeline updates a pipeline
-func (h *Handler) UpdatePipeline(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid pipeline ID",
-		})
+// UpdatePipeline updates a pipeline (implements StrictServerInterface)
+func (h *WorkflowHandler) UpdatePipeline(ctx context.Context, req UpdatePipelineRequestObject) (UpdatePipelineResponseObject, error) {
+	name := &req.Body.Name
+	description := &req.Body.Description
+	updateReq := &domain.UpdatePipelineRequest{
+		Name:        name,
+		Description: description,
 	}
 
-	var req domain.UpdatePipelineRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	pipeline, err := h.service.UpdatePipeline(c.Request().Context(), id, &req)
+	pipeline, err := h.service.UpdatePipeline(ctx, req.Id, updateReq)
 	if err != nil {
 		if err == domain.ErrPipelineNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Pipeline not found",
-			})
+			return UpdatePipeline404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Pipeline not found",
+					Status: 404,
+					Title:  "Pipeline not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to update pipeline", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to update pipeline",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": pipeline.PipelineEntity,
-	})
+	return UpdatePipeline200JSONResponse{
+		Data: pipeline.PipelineEntity,
+	}, nil
 }
 
-// DeletePipeline deletes a pipeline
-func (h *Handler) DeletePipeline(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid pipeline ID",
-		})
-	}
-
-	err = h.service.DeletePipeline(c.Request().Context(), id)
+// DeletePipeline deletes a pipeline (implements StrictServerInterface)
+func (h *WorkflowHandler) DeletePipeline(ctx context.Context, req DeletePipelineRequestObject) (DeletePipelineResponseObject, error) {
+	err := h.service.DeletePipeline(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrPipelineNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Pipeline not found",
-			})
+			return DeletePipeline404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Pipeline not found",
+					Status: 404,
+					Title:  "Pipeline not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete pipeline", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete pipeline",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeletePipeline200JSONResponse{}, nil
 }
 
 // Run handlers
 
-// CreateRun creates a new run
-func (h *Handler) CreateRun(c echo.Context) error {
-	var req domain.CreateRunRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get org ID from auth context
-	orgID := orgPlaceholder
-
-	run, err := h.service.CreateRun(c.Request().Context(), &req, orgID)
-	if err != nil {
-		h.logger.Error("failed to create run", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create run",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": run.RunEntity,
-	})
-}
-
-// FindManyRuns retrieves runs
-func (h *Handler) FindManyRuns(c echo.Context) error {
+// FindManyRuns retrieves runs (implements StrictServerInterface)
+func (h *WorkflowHandler) FindManyRuns(ctx context.Context, req FindManyRunsRequestObject) (FindManyRunsResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	// TODO: Get org ID from auth context
+	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	// Check if filtering by pipeline
-	if pipelineID := c.QueryParam("pipeline_id"); pipelineID != "" {
-		runs, total, err := h.service.ListRunsByPipeline(c.Request().Context(), pipelineID, limit, offset)
-		if err != nil {
-			h.logger.Error("failed to list runs by pipeline", "error", err)
-			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				"error": "Failed to retrieve runs",
-			})
-		}
-
-		data := make([]domain.RunEntity, len(runs))
-		for i, run := range runs {
-			data[i] = run.RunEntity
-		}
-
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"data": data,
-			"meta": map[string]interface{}{
-				"total": total,
-			},
-		})
-	}
-
-	runs, total, err := h.service.ListRuns(c.Request().Context(), orgID, limit, offset)
+	// TODO: Add filter support when service method is updated
+	runs, total, err := h.service.ListRuns(ctx, orgID, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list runs", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve runs",
-		})
+		return nil, err
 	}
 
+	// Convert to API entities
 	data := make([]domain.RunEntity, len(runs))
 	for i, run := range runs {
 		data[i] = run.RunEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyRuns200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindRunByID retrieves a run by ID
-func (h *Handler) FindRunByID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid run ID",
-		})
+// CreateRun creates a new run (implements StrictServerInterface)
+func (h *WorkflowHandler) CreateRun(ctx context.Context, req CreateRunRequestObject) (CreateRunResponseObject, error) {
+	// TODO: Get organization ID from context
+	orgID := orgPlaceholder
+
+	pipelineID := &req.Body.PipelineId
+	createReq := &domain.CreateRunRequest{
+		PipelineID: pipelineID,
+		ToolID:     "tool-placeholder", // TODO: Get from request or pipeline
 	}
 
-	run, err := h.service.GetRun(c.Request().Context(), id)
+	run, err := h.service.CreateRun(ctx, createReq, orgID)
+	if err != nil {
+		h.logger.Error("failed to create run", "error", err)
+		return nil, err
+	}
+
+	return CreateRun201JSONResponse{
+		Data: run.RunEntity,
+	}, nil
+}
+
+// GetOneRun retrieves a run by ID (implements StrictServerInterface)
+func (h *WorkflowHandler) GetOneRun(ctx context.Context, req GetOneRunRequestObject) (GetOneRunResponseObject, error) {
+	run, err := h.service.GetRun(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrRunNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Run not found",
-			})
+			return GetOneRun404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Run not found",
+					Status: 404,
+					Title:  "Run not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get run", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve run",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": run.RunEntity,
-	})
+	return GetOneRun200JSONResponse{
+		Data: run.RunEntity,
+	}, nil
 }
 
-// StartRun starts a run
-func (h *Handler) StartRun(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid run ID",
-		})
-	}
-
-	run, err := h.service.StartRun(c.Request().Context(), id)
-	if err != nil {
-		if err == domain.ErrRunNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Run not found",
-			})
-		}
-		h.logger.Error("failed to start run", "error", err)
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": run.RunEntity,
-	})
+// UpdateRun updates a run (implements StrictServerInterface)
+func (h *WorkflowHandler) UpdateRun(_ context.Context, _ UpdateRunRequestObject) (UpdateRunResponseObject, error) {
+	// Runs are typically not directly updated - their status changes through state transitions
+	// Return 404 since we don't support direct updates
+	return UpdateRun404ApplicationProblemPlusJSONResponse{
+		NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+			Detail: "Run updates not implemented - use state transition endpoints",
+			Status: 404,
+			Title:  "Not Implemented",
+		},
+	}, nil
 }
 
-// CancelRun cancels a run
-func (h *Handler) CancelRun(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid run ID",
-		})
-	}
-
-	run, err := h.service.CancelRun(c.Request().Context(), id)
+// DeleteRun deletes a run (implements StrictServerInterface)
+func (h *WorkflowHandler) DeleteRun(ctx context.Context, req DeleteRunRequestObject) (DeleteRunResponseObject, error) {
+	err := h.service.DeleteRun(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrRunNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Run not found",
-			})
-		}
-		h.logger.Error("failed to cancel run", "error", err)
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": run.RunEntity,
-	})
-}
-
-// DeleteRun deletes a run
-func (h *Handler) DeleteRun(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid run ID",
-		})
-	}
-
-	err = h.service.DeleteRun(c.Request().Context(), id)
-	if err != nil {
-		if err == domain.ErrRunNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Run not found",
-			})
+			return DeleteRun404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Run not found",
+					Status: 404,
+					Title:  "Run not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete run", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete run",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteRun200JSONResponse{}, nil
 }
 
 // Tool handlers
 
-// CreateTool creates a new tool
-func (h *Handler) CreateTool(c echo.Context) error {
-	var req domain.CreateToolRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get org ID from auth context
-	orgID := orgPlaceholder
-
-	tool, err := h.service.CreateTool(c.Request().Context(), &req, orgID)
-	if err != nil {
-		h.logger.Error("failed to create tool", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create tool",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": tool.ToolEntity,
-	})
-}
-
-// FindManyTools retrieves tools
-func (h *Handler) FindManyTools(c echo.Context) error {
+// FindManyTools retrieves tools (implements StrictServerInterface)
+func (h *WorkflowHandler) FindManyTools(ctx context.Context, req FindManyToolsRequestObject) (FindManyToolsResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	// TODO: Get org ID from auth context
+	// TODO: Get organization ID from context
 	orgID := orgPlaceholder
 
-	tools, total, err := h.service.ListTools(c.Request().Context(), orgID, limit, offset)
+	tools, total, err := h.service.ListTools(ctx, orgID, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list tools", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve tools",
-		})
+		return nil, err
 	}
 
+	// Convert to API entities
 	data := make([]domain.ToolEntity, len(tools))
 	for i, tool := range tools {
 		data[i] = tool.ToolEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyTools200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindToolByID retrieves a tool by ID
-func (h *Handler) FindToolByID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid tool ID",
-		})
+// CreateTool creates a new tool (implements StrictServerInterface)
+func (h *WorkflowHandler) CreateTool(ctx context.Context, req CreateToolRequestObject) (CreateToolResponseObject, error) {
+	// TODO: Get organization ID from context
+	orgID := orgPlaceholder
+
+	createReq := &domain.CreateToolRequest{
+		Name:        req.Body.Name,
+		Description: req.Body.Description,
 	}
 
-	tool, err := h.service.GetTool(c.Request().Context(), id)
+	tool, err := h.service.CreateTool(ctx, createReq, orgID)
+	if err != nil {
+		if err == domain.ErrToolExists {
+			// Return 400 bad request since there's no 409 response defined
+			return CreateTool400ApplicationProblemPlusJSONResponse{
+				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+					Detail: "Tool already exists",
+					Status: 400,
+					Title:  "Tool already exists",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to create tool", "error", err)
+		return nil, err
+	}
+
+	return CreateTool201JSONResponse{
+		Data: tool.ToolEntity,
+	}, nil
+}
+
+// GetOneTool retrieves a tool by ID (implements StrictServerInterface)
+func (h *WorkflowHandler) GetOneTool(ctx context.Context, req GetOneToolRequestObject) (GetOneToolResponseObject, error) {
+	tool, err := h.service.GetTool(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrToolNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Tool not found",
-			})
+			return GetOneTool404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Tool not found",
+					Status: 404,
+					Title:  "Tool not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get tool", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve tool",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": tool.ToolEntity,
-	})
+	return GetOneTool200JSONResponse{
+		Data: tool.ToolEntity,
+	}, nil
 }
 
-// UpdateTool updates a tool
-func (h *Handler) UpdateTool(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid tool ID",
-		})
+// UpdateTool updates a tool (implements StrictServerInterface)
+func (h *WorkflowHandler) UpdateTool(ctx context.Context, req UpdateToolRequestObject) (UpdateToolResponseObject, error) {
+	name := &req.Body.Name
+	description := &req.Body.Description
+	updateReq := &domain.UpdateToolRequest{
+		Name:        name,
+		Description: description,
 	}
 
-	var req domain.UpdateToolRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	tool, err := h.service.UpdateTool(c.Request().Context(), id, &req)
+	tool, err := h.service.UpdateTool(ctx, req.Id, updateReq)
 	if err != nil {
 		if err == domain.ErrToolNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Tool not found",
-			})
+			return UpdateTool404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Tool not found",
+					Status: 404,
+					Title:  "Tool not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to update tool", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to update tool",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": tool.ToolEntity,
-	})
+	return UpdateTool200JSONResponse{
+		Data: tool.ToolEntity,
+	}, nil
 }
 
-// DeleteTool deletes a tool
-func (h *Handler) DeleteTool(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid tool ID",
-		})
-	}
-
-	err = h.service.DeleteTool(c.Request().Context(), id)
+// DeleteTool deletes a tool (implements StrictServerInterface)
+func (h *WorkflowHandler) DeleteTool(ctx context.Context, req DeleteToolRequestObject) (DeleteToolResponseObject, error) {
+	err := h.service.DeleteTool(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrToolNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Tool not found",
-			})
+			return DeleteTool404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Tool not found",
+					Status: 404,
+					Title:  "Tool not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete tool", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete tool",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteTool200JSONResponse{}, nil
 }

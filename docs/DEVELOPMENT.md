@@ -115,7 +115,7 @@ var (
 
 ```go
 // Repository interface - defined by the domain, implemented by infrastructure
-type Repository interface {
+type UserRepository interface {
     GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
     GetUserByEmail(ctx context.Context, email string) (*User, error)
     CreateUser(ctx context.Context, user *User) error

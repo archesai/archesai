@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository defines the interface for organization data persistence
-type Repository interface {
+// OrganizationRepository defines the interface for organization data persistence
+type OrganizationRepository interface {
 	// Organization operations
 	CreateOrganization(ctx context.Context, org *Organization) (*Organization, error)
 	GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error)

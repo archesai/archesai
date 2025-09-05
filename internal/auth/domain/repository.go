@@ -6,9 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// Repository defines the interface for auth data persistence
+// AuthRepository defines the interface for auth data persistence
 // This interface is defined in the domain package (hexagonal architecture)
-type Repository interface {
+type AuthRepository interface {
 	// User operations
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)

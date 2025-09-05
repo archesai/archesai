@@ -1,4 +1,3 @@
-// Package redis provides Redis infrastructure for caching, queuing, sessions, and pub/sub
 package redis
 
 import (

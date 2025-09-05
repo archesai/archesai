@@ -2,6 +2,9 @@
 // organization CRUD operations, member management, and invitation handling.
 package organizations
 
+//go:generate go tool oapi-codegen --config=domain/models.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=adapters/http/server.cfg.yaml ../../api/openapi.bundled.yaml
+
 // Domain constants
 const (
 	// DefaultPlan is the default organization plan for new organizations

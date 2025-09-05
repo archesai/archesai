@@ -2,6 +2,9 @@
 // pipeline definitions, run executions, and tool management.
 package workflows
 
+//go:generate go tool oapi-codegen --config=domain/models.cfg.yaml ../../api/openapi.bundled.yaml
+//go:generate go tool oapi-codegen --config=adapters/http/server.cfg.yaml ../../api/openapi.bundled.yaml
+
 // Domain constants
 const (
 	// DefaultTimeout is the default timeout for workflow runs

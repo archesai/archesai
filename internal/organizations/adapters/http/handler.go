@@ -2,13 +2,11 @@
 package http
 
 import (
+	"context"
 	"log/slog"
-	"net/http"
-	"strconv"
 
 	"github.com/archesai/archesai/internal/organizations/domain"
-	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -16,94 +14,45 @@ const (
 	userPlaceholder = "user-placeholder"
 )
 
-// Handler handles HTTP requests for organization operations
-type Handler struct {
-	service *domain.Service
+// OrganizationHandler handles HTTP requests for organization operations
+type OrganizationHandler struct {
+	service *domain.OrganizationService
 	logger  *slog.Logger
 }
 
-// NewHandler creates a new organization handler
-func NewHandler(service *domain.Service, logger *slog.Logger) *Handler {
-	return &Handler{
+// Ensure OrganizationHandler implements StrictServerInterface
+var _ StrictServerInterface = (*OrganizationHandler)(nil)
+
+// NewOrganizationHandler creates a new organization handler
+func NewOrganizationHandler(service *domain.OrganizationService, logger *slog.Logger) *OrganizationHandler {
+	return &OrganizationHandler{
 		service: service,
 		logger:  logger,
 	}
 }
 
-// RegisterRoutes registers organization routes
-func (h *Handler) RegisterRoutes(g *echo.Group) {
-	// Organization routes
-	g.POST("", h.CreateOrganization)
-	g.GET("", h.FindManyOrganizations)
-	g.GET("/:id", h.FindOrganizationByID)
-	g.PUT("/:id", h.UpdateOrganization)
-	g.DELETE("/:id", h.DeleteOrganization)
-
-	// Member routes
-	g.POST("/:id/members", h.CreateMember)
-	g.GET("/:id/members", h.FindManyMembers)
-	g.GET("/:id/members/:memberId", h.FindMemberByID)
-	g.PUT("/:id/members/:memberId", h.UpdateMember)
-	g.DELETE("/:id/members/:memberId", h.DeleteMember)
-
-	// Invitation routes
-	g.POST("/:id/invitations", h.CreateInvitation)
-	g.GET("/:id/invitations", h.FindManyInvitations)
-	g.GET("/:id/invitations/:invitationId", h.FindInvitationByID)
-	g.POST("/:id/invitations/:invitationId/accept", h.AcceptInvitation)
-	g.DELETE("/:id/invitations/:invitationId", h.DeleteInvitation)
+// NewOrganizationStrictHandler creates a StrictHandler with middleware
+func NewOrganizationStrictHandler(handler StrictServerInterface) ServerInterface {
+	return NewStrictHandler(handler, nil)
 }
 
 // Organization handlers
 
-// CreateOrganization creates a new organization
-func (h *Handler) CreateOrganization(c echo.Context) error {
-	var req domain.CreateOrganizationRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get user ID from auth context
-	userID := userPlaceholder // This should come from JWT claims
-
-	org, err := h.service.CreateOrganization(c.Request().Context(), &req, userID)
-	if err != nil {
-		h.logger.Error("failed to create organization", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create organization",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": org.OrganizationEntity,
-	})
-}
-
-// FindManyOrganizations retrieves organizations
-func (h *Handler) FindManyOrganizations(c echo.Context) error {
+// FindManyOrganizations retrieves organizations (implements StrictServerInterface)
+func (h *OrganizationHandler) FindManyOrganizations(ctx context.Context, req FindManyOrganizationsRequestObject) (FindManyOrganizationsResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	orgs, total, err := h.service.ListOrganizations(c.Request().Context(), limit, offset)
+	orgs, total, err := h.service.ListOrganizations(ctx, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list organizations", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve organizations",
-		})
+		return nil, err
 	}
 
 	// Convert to API entities
@@ -112,159 +61,126 @@ func (h *Handler) FindManyOrganizations(c echo.Context) error {
 		data[i] = org.OrganizationEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyOrganizations200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindOrganizationByID retrieves an organization by ID
-func (h *Handler) FindOrganizationByID(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid organization ID",
-		})
+// CreateOrganization creates a new organization (implements StrictServerInterface)
+func (h *OrganizationHandler) CreateOrganization(ctx context.Context, req CreateOrganizationRequestObject) (CreateOrganizationResponseObject, error) {
+	// TODO: Get user ID from auth context
+	userID := userPlaceholder // This should come from JWT claims
+
+	billingEmail := openapi_types.Email(req.Body.BillingEmail)
+	createReq := &domain.CreateOrganizationRequest{
+		Name:         "New Organization", // TODO: Get from request when available
+		BillingEmail: billingEmail,
 	}
 
-	org, err := h.service.GetOrganization(c.Request().Context(), id)
+	org, err := h.service.CreateOrganization(ctx, createReq, userID)
+	if err != nil {
+		h.logger.Error("failed to create organization", "error", err)
+		return nil, err
+	}
+
+	return CreateOrganization201JSONResponse{
+		Data: org.OrganizationEntity,
+	}, nil
+}
+
+// GetOneOrganization retrieves an organization by ID (implements StrictServerInterface)
+func (h *OrganizationHandler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
+	org, err := h.service.GetOrganization(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrOrganizationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Organization not found",
-			})
+			return GetOneOrganization404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Organization not found",
+					Status: 404,
+					Title:  "Organization not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get organization", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve organization",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": org.OrganizationEntity,
-	})
+	return GetOneOrganization200JSONResponse{
+		Data: org.OrganizationEntity,
+	}, nil
 }
 
-// UpdateOrganization updates an organization
-func (h *Handler) UpdateOrganization(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid organization ID",
-		})
+// UpdateOrganization updates an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) UpdateOrganization(ctx context.Context, req UpdateOrganizationRequestObject) (UpdateOrganizationResponseObject, error) {
+	billingEmailVal := openapi_types.Email(req.Body.BillingEmail)
+	billingEmail := &billingEmailVal
+	updateReq := &domain.UpdateOrganizationRequest{
+		BillingEmail: billingEmail,
 	}
 
-	var req domain.UpdateOrganizationRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	org, err := h.service.UpdateOrganization(c.Request().Context(), id, &req)
+	org, err := h.service.UpdateOrganization(ctx, req.Id, updateReq)
 	if err != nil {
 		if err == domain.ErrOrganizationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Organization not found",
-			})
+			return UpdateOrganization404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Organization not found",
+					Status: 404,
+					Title:  "Organization not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to update organization", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to update organization",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": org.OrganizationEntity,
-	})
+	return UpdateOrganization200JSONResponse{
+		Data: org.OrganizationEntity,
+	}, nil
 }
 
-// DeleteOrganization deletes an organization
-func (h *Handler) DeleteOrganization(c echo.Context) error {
-	idParam := c.Param("id")
-	id, err := uuid.Parse(idParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid organization ID",
-		})
-	}
-
-	err = h.service.DeleteOrganization(c.Request().Context(), id)
+// DeleteOrganization deletes an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) DeleteOrganization(ctx context.Context, req DeleteOrganizationRequestObject) (DeleteOrganizationResponseObject, error) {
+	err := h.service.DeleteOrganization(ctx, req.Id)
 	if err != nil {
 		if err == domain.ErrOrganizationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Organization not found",
-			})
+			return DeleteOrganization404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Organization not found",
+					Status: 404,
+					Title:  "Organization not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete organization", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete organization",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteOrganization200JSONResponse{}, nil
 }
 
 // Member handlers
 
-// CreateMember adds a member to an organization
-func (h *Handler) CreateMember(c echo.Context) error {
-	orgID := c.Param("id")
-
-	var req domain.CreateMemberRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	member, err := h.service.CreateMember(c.Request().Context(), &req, orgID)
-	if err != nil {
-		if err == domain.ErrMemberExists {
-			return c.JSON(http.StatusConflict, map[string]interface{}{
-				"error": "Member already exists",
-			})
-		}
-		h.logger.Error("failed to create member", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create member",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": member.MemberEntity,
-	})
-}
-
-// FindManyMembers retrieves members of an organization
-func (h *Handler) FindManyMembers(c echo.Context) error {
-	orgID := c.Param("id")
-
+// FindManyMembers retrieves members of an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) FindManyMembers(ctx context.Context, req FindManyMembersRequestObject) (FindManyMembersResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	members, total, err := h.service.ListMembers(c.Request().Context(), orgID, limit, offset)
+	members, total, err := h.service.ListMembers(ctx, req.Id, limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list members", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve members",
-		})
+		return nil, err
 	}
 
 	// Convert to API entities
@@ -273,158 +189,133 @@ func (h *Handler) FindManyMembers(c echo.Context) error {
 		data[i] = member.MemberEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyMembers200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindMemberByID retrieves a member by ID
-// FindMemberByID retrieves a member by ID
-func (h *Handler) FindMemberByID(c echo.Context) error {
-	memberIDParam := c.Param("memberId")
-	memberID, err := uuid.Parse(memberIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid member ID",
-		})
+// CreateMember adds a member to an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) CreateMember(ctx context.Context, req CreateMemberRequestObject) (CreateMemberResponseObject, error) {
+	// TODO: Get user ID from context or request
+	userID := openapi_types.UUID{} // Placeholder UUID
+	createReq := &domain.CreateMemberRequest{
+		UserID: userID,
+		Role:   domain.MemberEntityRole(req.Body.Role),
 	}
 
-	member, err := h.service.GetMember(c.Request().Context(), memberID)
+	member, err := h.service.CreateMember(ctx, createReq, req.Id)
+	if err != nil {
+		if err == domain.ErrMemberExists {
+			// Return 400 bad request since there's no 409 response defined
+			return CreateMember400ApplicationProblemPlusJSONResponse{
+				BadRequestApplicationProblemPlusJSONResponse: BadRequestApplicationProblemPlusJSONResponse{
+					Detail: "Member already exists",
+					Status: 400,
+					Title:  "Member already exists",
+				},
+			}, nil
+		}
+		h.logger.Error("failed to create member", "error", err)
+		return nil, err
+	}
+
+	return CreateMember201JSONResponse{
+		Data: member.MemberEntity,
+	}, nil
+}
+
+// GetOneMember retrieves a member by ID (implements StrictServerInterface)
+func (h *OrganizationHandler) GetOneMember(ctx context.Context, req GetOneMemberRequestObject) (GetOneMemberResponseObject, error) {
+	member, err := h.service.GetMember(ctx, req.MemberId)
 	if err != nil {
 		if err == domain.ErrMemberNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Member not found",
-			})
+			return GetOneMember404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Member not found",
+					Status: 404,
+					Title:  "Member not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get member", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve member",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": member.MemberEntity,
-	})
+	return GetOneMember200JSONResponse{
+		Data: member.MemberEntity,
+	}, nil
 }
 
-// UpdateMember updates a member's role
-func (h *Handler) UpdateMember(c echo.Context) error {
-	memberIDParam := c.Param("memberId")
-	memberID, err := uuid.Parse(memberIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid member ID",
-		})
+// UpdateMember updates a member's role (implements StrictServerInterface)
+func (h *OrganizationHandler) UpdateMember(ctx context.Context, req UpdateMemberRequestObject) (UpdateMemberResponseObject, error) {
+	role := domain.MemberEntityRole(req.Body.Role)
+	updateReq := &domain.UpdateMemberRequest{
+		Role: &role,
 	}
 
-	var req domain.UpdateMemberRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	member, err := h.service.UpdateMember(c.Request().Context(), memberID, &req)
+	member, err := h.service.UpdateMember(ctx, req.MemberId, updateReq)
 	if err != nil {
 		if err == domain.ErrMemberNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Member not found",
-			})
+			return UpdateMember404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Member not found",
+					Status: 404,
+					Title:  "Member not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to update member", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to update member",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": member.MemberEntity,
-	})
+	return UpdateMember200JSONResponse{
+		Data: member.MemberEntity,
+	}, nil
 }
 
-// DeleteMember removes a member from an organization
-func (h *Handler) DeleteMember(c echo.Context) error {
-	memberIDParam := c.Param("memberId")
-	memberID, err := uuid.Parse(memberIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid member ID",
-		})
-	}
-
-	err = h.service.DeleteMember(c.Request().Context(), memberID)
+// DeleteMember removes a member from an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) DeleteMember(ctx context.Context, req DeleteMemberRequestObject) (DeleteMemberResponseObject, error) {
+	err := h.service.DeleteMember(ctx, req.MemberId)
 	if err != nil {
 		if err == domain.ErrMemberNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Member not found",
-			})
+			return DeleteMember404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Member not found",
+					Status: 404,
+					Title:  "Member not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete member", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete member",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteMember200JSONResponse{}, nil
 }
 
 // Invitation handlers
 
-// CreateInvitation creates a new invitation
-func (h *Handler) CreateInvitation(c echo.Context) error {
-	orgID := c.Param("id")
-
-	var req domain.CreateInvitationRequest
-	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid request body",
-		})
-	}
-
-	// TODO: Get inviter ID from auth context
-	inviterID := userPlaceholder
-
-	invitation, err := h.service.CreateInvitation(c.Request().Context(), &req, orgID, inviterID)
-	if err != nil {
-		h.logger.Error("failed to create invitation", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to create invitation",
-		})
-	}
-
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"data": invitation.InvitationEntity,
-	})
-}
-
-// FindManyInvitations retrieves invitations for an organization
-func (h *Handler) FindManyInvitations(c echo.Context) error {
-	orgID := c.Param("id")
-
+// FindManyInvitations retrieves invitations for an organization (implements StrictServerInterface)
+func (h *OrganizationHandler) FindManyInvitations(ctx context.Context, req FindManyInvitationsRequestObject) (FindManyInvitationsResponseObject, error) {
 	limit := 50
 	offset := 0
 
-	if l := c.QueryParam("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil {
-			limit = parsed
-		}
+	// Handle page-based pagination if provided
+	if req.Params.Page.Number > 0 && req.Params.Page.Size > 0 {
+		limit = req.Params.Page.Size
+		offset = (req.Params.Page.Number - 1) * req.Params.Page.Size
 	}
 
-	if o := c.QueryParam("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil {
-			offset = parsed
-		}
-	}
-
-	invitations, total, err := h.service.ListInvitations(c.Request().Context(), orgID, limit, offset)
+	invitations, total, err := h.service.ListInvitations(ctx, req.Id.String(), limit, offset)
 	if err != nil {
 		h.logger.Error("failed to list invitations", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve invitations",
-		})
+		return nil, err
 	}
 
 	// Convert to API entities
@@ -433,101 +324,89 @@ func (h *Handler) FindManyInvitations(c echo.Context) error {
 		data[i] = invitation.InvitationEntity
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
-		"meta": map[string]interface{}{
-			"total": total,
+	totalFloat32 := float32(total)
+	return FindManyInvitations200JSONResponse{
+		Data: data,
+		Meta: struct {
+			Total float32 `json:"total"`
+		}{
+			Total: totalFloat32,
 		},
-	})
+	}, nil
 }
 
-// FindInvitationByID retrieves an invitation by ID
-// FindInvitationByID retrieves an invitation by ID
-func (h *Handler) FindInvitationByID(c echo.Context) error {
-	invitationIDParam := c.Param("invitationId")
-	invitationID, err := uuid.Parse(invitationIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid invitation ID",
-		})
+// CreateInvitation creates a new invitation (implements StrictServerInterface)
+func (h *OrganizationHandler) CreateInvitation(ctx context.Context, req CreateInvitationRequestObject) (CreateInvitationResponseObject, error) {
+	// TODO: Get inviter ID from auth context
+	inviterID := userPlaceholder
+
+	createReq := &domain.CreateInvitationRequest{
+		Email: req.Body.Email,
+		Role:  domain.InvitationEntityRole(req.Body.Role),
 	}
 
-	invitation, err := h.service.GetInvitation(c.Request().Context(), invitationID)
+	invitation, err := h.service.CreateInvitation(ctx, createReq, req.Id.String(), inviterID)
+	if err != nil {
+		h.logger.Error("failed to create invitation", "error", err)
+		return nil, err
+	}
+
+	return CreateInvitation201JSONResponse{
+		Data: invitation.InvitationEntity,
+	}, nil
+}
+
+// GetOneInvitation retrieves an invitation by ID (implements StrictServerInterface)
+func (h *OrganizationHandler) GetOneInvitation(ctx context.Context, req GetOneInvitationRequestObject) (GetOneInvitationResponseObject, error) {
+	invitation, err := h.service.GetInvitation(ctx, req.InvitationId)
 	if err != nil {
 		if err == domain.ErrInvitationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Invitation not found",
-			})
+			return GetOneInvitation404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Invitation not found",
+					Status: 404,
+					Title:  "Invitation not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to get invitation", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to retrieve invitation",
-		})
+		return nil, err
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": invitation.InvitationEntity,
-	})
+	return GetOneInvitation200JSONResponse{
+		Data: invitation.InvitationEntity,
+	}, nil
 }
 
-// AcceptInvitation accepts an invitation and creates a member
-func (h *Handler) AcceptInvitation(c echo.Context) error {
-	invitationIDParam := c.Param("invitationId")
-	invitationID, err := uuid.Parse(invitationIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid invitation ID",
-		})
-	}
-
-	// TODO: Get user ID from auth context
-	userID := userPlaceholder
-
-	member, err := h.service.AcceptInvitation(c.Request().Context(), invitationID, userID)
-	if err != nil {
-		if err == domain.ErrInvitationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Invitation not found",
-			})
-		}
-		if err == domain.ErrInvitationExpired {
-			return c.JSON(http.StatusGone, map[string]interface{}{
-				"error": "Invitation expired",
-			})
-		}
-		h.logger.Error("failed to accept invitation", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to accept invitation",
-		})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": member.MemberEntity,
-	})
+// UpdateInvitation updates an invitation (implements StrictServerInterface)
+func (h *OrganizationHandler) UpdateInvitation(_ context.Context, _ UpdateInvitationRequestObject) (UpdateInvitationResponseObject, error) {
+	// TODO: Implement invitation updates when needed
+	// Return 404 since we don't support updates yet
+	return UpdateInvitation404ApplicationProblemPlusJSONResponse{
+		NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+			Detail: "Invitation updates not implemented",
+			Status: 404,
+			Title:  "Not Implemented",
+		},
+	}, nil
 }
 
-// DeleteInvitation deletes an invitation
-func (h *Handler) DeleteInvitation(c echo.Context) error {
-	invitationIDParam := c.Param("invitationId")
-	invitationID, err := uuid.Parse(invitationIDParam)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Invalid invitation ID",
-		})
-	}
-
-	err = h.service.DeleteInvitation(c.Request().Context(), invitationID)
+// DeleteInvitation deletes an invitation (implements StrictServerInterface)
+func (h *OrganizationHandler) DeleteInvitation(ctx context.Context, req DeleteInvitationRequestObject) (DeleteInvitationResponseObject, error) {
+	err := h.service.DeleteInvitation(ctx, req.InvitationId)
 	if err != nil {
 		if err == domain.ErrInvitationNotFound {
-			return c.JSON(http.StatusNotFound, map[string]interface{}{
-				"error": "Invitation not found",
-			})
+			return DeleteInvitation404ApplicationProblemPlusJSONResponse{
+				NotFoundApplicationProblemPlusJSONResponse: NotFoundApplicationProblemPlusJSONResponse{
+					Detail: "Invitation not found",
+					Status: 404,
+					Title:  "Invitation not found",
+				},
+			}, nil
 		}
 		h.logger.Error("failed to delete invitation", "error", err)
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"error": "Failed to delete invitation",
-		})
+		return nil, err
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return DeleteInvitation200JSONResponse{}, nil
 }
