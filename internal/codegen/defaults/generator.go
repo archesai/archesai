@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const outputFile = "internal/infrastructure/config/defaults.gen.go"
+const outputFile = "internal/config/defaults.gen.go"
 
 //go:embed templates/config.go.tmpl
 var configTemplate string

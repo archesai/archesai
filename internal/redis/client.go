@@ -1,54 +1,159 @@
-// Package redis provides Redis client and utilities for caching, queuing, and session storage.
+// Package redis provides Redis infrastructure for caching, queuing, sessions, and pub/sub
 package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/redis/go-redis/v9"
 )
 
 var (
-	client *redis.Client
-	ctx    = context.Background()
+	// ErrNoRedisConfig is returned when no Redis configuration is provided
+	ErrNoRedisConfig = errors.New("no Redis configuration provided")
+	// ErrNotInitialized is returned when Redis client is not initialized
+	ErrNotInitialized = errors.New("redis client not initialized")
 )
 
-// Config represents Redis configuration
-type Config struct {
-	Host     string
-	Port     int
-	Password string
-	DB       int
-	PoolSize int
+// Client wraps the Redis client with domain-specific functionality
+type Client struct {
+	redis   *redis.Client
+	Cache   *Cache
+	Queue   *Queue
+	Session *Session
+	PubSub  *PubSub
+	config  *Config
+	logger  *slog.Logger
 }
 
-// Initialize creates and configures the Redis client
-func Initialize(cfg Config) error {
-	client = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Password: cfg.Password,
-		DB:       cfg.DB,
-		PoolSize: cfg.PoolSize,
-	})
-
-	// Test connection
-	_, err := client.Ping(ctx).Result()
-	if err != nil {
-		return fmt.Errorf("failed to connect to Redis: %w", err)
+// NewClient creates a new Redis client with all features
+func NewClient(config *Config, logger *slog.Logger) (*Client, error) {
+	if config == nil {
+		config = DefaultConfig()
 	}
 
-	return nil
-}
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid Redis config: %w", err)
+	}
 
-// GetClient returns the Redis client instance
-func GetClient() *redis.Client {
-	return client
+	// Create Redis options
+	opts := &redis.Options{
+		DB:           config.DB,
+		PoolSize:     config.PoolSize,
+		MinIdleConns: config.MinIdleConns,
+		MaxRetries:   config.MaxRetries,
+		DialTimeout:  config.DialTimeout,
+		ReadTimeout:  config.ReadTimeout,
+		WriteTimeout: config.WriteTimeout,
+		Password:     config.Password,
+	}
+
+	// Use URL if provided, otherwise use host:port
+	if config.URL != "" {
+		parsedOpts, err := redis.ParseURL(config.URL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse Redis URL: %w", err)
+		}
+		opts = parsedOpts
+		// Override with any explicitly set options
+		if config.PoolSize > 0 {
+			opts.PoolSize = config.PoolSize
+		}
+		if config.MinIdleConns > 0 {
+			opts.MinIdleConns = config.MinIdleConns
+		}
+	} else {
+		opts.Addr = fmt.Sprintf("%s:%d", config.Host, config.Port)
+	}
+
+	// Create Redis client
+	redisClient := redis.NewClient(opts)
+
+	// Test connection
+	ctx := context.Background()
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+	}
+
+	logger.Info("Connected to Redis",
+		"addr", opts.Addr,
+		"db", opts.DB,
+		"pool_size", opts.PoolSize,
+	)
+
+	// Create the client with all features
+	client := &Client{
+		redis:  redisClient,
+		config: config,
+		logger: logger,
+	}
+
+	// Initialize features based on config
+	if config.EnableCache {
+		client.Cache = NewCache(redisClient)
+		logger.Info("Redis cache enabled")
+	}
+
+	if config.EnableQueue {
+		client.Queue = NewQueue(redisClient)
+		logger.Info("Redis queue enabled")
+	}
+
+	if config.EnableSession {
+		client.Session = NewSession(redisClient)
+		logger.Info("Redis session storage enabled")
+	}
+
+	if config.EnablePubSub {
+		client.PubSub = NewPubSub(redisClient)
+		logger.Info("Redis pub/sub enabled")
+	}
+
+	return client, nil
 }
 
 // Close closes the Redis connection
-func Close() error {
-	if client != nil {
-		return client.Close()
+func (c *Client) Close() error {
+	if c.redis != nil {
+		return c.redis.Close()
 	}
 	return nil
+}
+
+// Ping checks if Redis is reachable
+func (c *Client) Ping(ctx context.Context) error {
+	return c.redis.Ping(ctx).Err()
+}
+
+// GetRedisClient returns the underlying Redis client for advanced usage
+func (c *Client) GetRedisClient() *redis.Client {
+	return c.redis
+}
+
+// FlushDB flushes the current database (use with caution!)
+func (c *Client) FlushDB(ctx context.Context) error {
+	return c.redis.FlushDB(ctx).Err()
+}
+
+// FlushAll flushes all databases (use with extreme caution!)
+func (c *Client) FlushAll(ctx context.Context) error {
+	return c.redis.FlushAll(ctx).Err()
+}
+
+// Info returns Redis server information
+func (c *Client) Info(ctx context.Context, sections ...string) (string, error) {
+	var cmd *redis.StringCmd
+	if len(sections) > 0 {
+		cmd = c.redis.Info(ctx, sections...)
+	} else {
+		cmd = c.redis.Info(ctx)
+	}
+	return cmd.Result()
+}
+
+// DBSize returns the number of keys in the current database
+func (c *Client) DBSize(ctx context.Context) (int64, error) {
+	return c.redis.DBSize(ctx).Result()
 }

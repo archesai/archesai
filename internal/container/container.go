@@ -11,13 +11,16 @@ import (
 
 	authhandlers "github.com/archesai/archesai/internal/auth/adapters/http"
 	authinfra "github.com/archesai/archesai/internal/auth/adapters/postgres"
+	authsqlite "github.com/archesai/archesai/internal/auth/adapters/sqlite"
 	authcore "github.com/archesai/archesai/internal/auth/domain"
 	"github.com/archesai/archesai/internal/config"
 	contenthandlers "github.com/archesai/archesai/internal/content/adapters/http"
 	contentinfra "github.com/archesai/archesai/internal/content/adapters/postgres"
+	contentsqlite "github.com/archesai/archesai/internal/content/adapters/sqlite"
 	contentcore "github.com/archesai/archesai/internal/content/domain"
 	orghandlers "github.com/archesai/archesai/internal/organizations/adapters/http"
 	orginfra "github.com/archesai/archesai/internal/organizations/adapters/postgres"
+	orgsqlite "github.com/archesai/archesai/internal/organizations/adapters/sqlite"
 	orgcore "github.com/archesai/archesai/internal/organizations/domain"
 	serverhttp "github.com/archesai/archesai/internal/server/http"
 	"github.com/archesai/archesai/internal/storage/postgres"
@@ -25,6 +28,7 @@ import (
 	sqlitegen "github.com/archesai/archesai/internal/storage/postgres/generated/sqlite"
 	workflowhandlers "github.com/archesai/archesai/internal/workflows/adapters/http"
 	workflowinfra "github.com/archesai/archesai/internal/workflows/adapters/postgres"
+	workflowsqlite "github.com/archesai/archesai/internal/workflows/adapters/sqlite"
 	workflowcore "github.com/archesai/archesai/internal/workflows/domain"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -147,12 +151,12 @@ func NewContainer(cfg *config.Config) (*Container, error) {
 	case postgres.TypeSQLite:
 		if sqlDB, ok := db.Underlying().(*sql.DB); ok && sqlDB != nil {
 			sqliteQueries = sqlitegen.New(sqlDB)
-			// TODO: Create SQLite repositories when available
-			logger.Warn("SQLite repositories not yet implemented, features may not work")
-			// authRepo = auth.NewSQLiteRepository(sqliteQueries)
-			// organizationsRepo = organizations.NewSQLiteRepository(sqliteQueries)
-			// workflowsRepo = workflows.NewSQLiteRepository(sqliteQueries)
-			// contentRepo = content.NewSQLiteRepository(sqliteQueries)
+			// Use SQLite repositories
+			authRepo = authsqlite.NewRepository(sqliteQueries)
+			organizationsRepo = orgsqlite.NewRepository(sqliteQueries)
+			workflowsRepo = workflowsqlite.NewRepository(sqliteQueries)
+			contentRepo = contentsqlite.NewRepository(sqliteQueries)
+			logger.Info("Using SQLite repositories")
 		}
 	}
 
@@ -253,18 +257,11 @@ func (c *Container) registerRoutes() {
 	// Register readiness check that can access the database
 	c.Server.SetReadinessCheck(c.readinessCheck)
 
-	// TODO: Setup domain-scoped API documentation
 	// Setup API documentation if enabled
 	if c.Config.Api.Docs {
-		c.Logger.Info("API documentation setup temporarily disabled - needs domain-scoped implementation")
-		// swagger, err := api.GetSwagger()
-		// if err != nil {
-		// 	c.Logger.Error("failed to load OpenAPI spec", "error", err)
-		// } else {
-		// 	if err := c.Server.SetupDocs(swagger); err != nil {
-		// 		c.Logger.Error("failed to setup API docs", "error", err)
-		// 	}
-		// }
+		if err := c.Server.SetupDocs(); err != nil {
+			c.Logger.Error("failed to setup API docs", "error", err)
+		}
 	}
 
 	// Register all application routes

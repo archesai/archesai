@@ -1,32 +1,42 @@
+// Package redis provides Redis infrastructure for caching, queuing, sessions, and pub/sub
 package redis
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 // Queue provides queue operations using Redis lists
-type Queue struct{}
+type Queue struct {
+	client *redis.Client
+}
 
 // NewQueue creates a new queue instance
-func NewQueue() *Queue {
-	return &Queue{}
+func NewQueue(client *redis.Client) *Queue {
+	return &Queue{
+		client: client,
+	}
 }
 
 // Push adds an item to the queue
 func (q *Queue) Push(queueName string, item interface{}) error {
+	ctx := context.Background()
 	data, err := json.Marshal(item)
 	if err != nil {
 		return fmt.Errorf("failed to marshal item: %w", err)
 	}
 
-	return client.RPush(ctx, queueName, data).Err()
+	return q.client.RPush(ctx, queueName, data).Err()
 }
 
 // Pop removes and returns an item from the queue
 func (q *Queue) Pop(queueName string, dest interface{}) error {
-	data, err := client.LPop(ctx, queueName).Result()
+	ctx := context.Background()
+	data, err := q.client.LPop(ctx, queueName).Result()
 	if err != nil {
 		return err
 	}
@@ -36,7 +46,8 @@ func (q *Queue) Pop(queueName string, dest interface{}) error {
 
 // PopBlocking removes and returns an item from the queue, blocking if empty
 func (q *Queue) PopBlocking(queueName string, timeout int, dest interface{}) error {
-	result, err := client.BLPop(ctx, time.Duration(timeout)*time.Second, queueName).Result()
+	ctx := context.Background()
+	result, err := q.client.BLPop(ctx, time.Duration(timeout)*time.Second, queueName).Result()
 	if err != nil {
 		return err
 	}
@@ -50,7 +61,8 @@ func (q *Queue) PopBlocking(queueName string, timeout int, dest interface{}) err
 
 // Peek returns the next item without removing it
 func (q *Queue) Peek(queueName string, dest interface{}) error {
-	data, err := client.LIndex(ctx, queueName, 0).Result()
+	ctx := context.Background()
+	data, err := q.client.LIndex(ctx, queueName, 0).Result()
 	if err != nil {
 		return err
 	}
@@ -60,10 +72,31 @@ func (q *Queue) Peek(queueName string, dest interface{}) error {
 
 // Length returns the queue length
 func (q *Queue) Length(queueName string) (int64, error) {
-	return client.LLen(ctx, queueName).Result()
+	ctx := context.Background()
+	return q.client.LLen(ctx, queueName).Result()
 }
 
 // Clear removes all items from the queue
 func (q *Queue) Clear(queueName string) error {
-	return client.Del(ctx, queueName).Err()
+	ctx := context.Background()
+	return q.client.Del(ctx, queueName).Err()
+}
+
+// Remove removes a specific item from the queue
+func (q *Queue) Remove(queueName string, item interface{}) error {
+	ctx := context.Background()
+	data, err := json.Marshal(item)
+	if err != nil {
+		return fmt.Errorf("failed to marshal item: %w", err)
+	}
+
+	// Remove 1 occurrence of the item
+	removed, err := q.client.LRem(ctx, queueName, 1, string(data)).Result()
+	if err != nil {
+		return err
+	}
+	if removed == 0 {
+		return fmt.Errorf("item not found in queue")
+	}
+	return nil
 }
