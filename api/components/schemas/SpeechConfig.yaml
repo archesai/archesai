@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Speech recognition and TTS services
+type: object
+properties:
+  enabled:
+    description: Enable speech services
+    type: boolean
+    default: false
+    example: true
+  token:
+    description: Speech-to-text service API token
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - enabled
+additionalProperties: false

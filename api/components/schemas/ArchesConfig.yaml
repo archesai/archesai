@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Arches AI configuration schema
+type: object
+properties:
+  api:
+    $ref: ./APIConfig.yaml
+  auth:
+    $ref: ./AuthConfig.yaml
+  billing:
+    $ref: ./BillingConfig.yaml
+  database:
+    $ref: ./DatabaseConfig.yaml
+  infrastructure:
+    $ref: ./InfrastructureConfig.yaml
+  ingress:
+    $ref: ./IngressConfig.yaml
+  intelligence:
+    $ref: ./IntelligenceConfig.yaml
+  logging:
+    $ref: ./LoggingConfig.yaml
+  monitoring:
+    $ref: ./MonitoringConfig.yaml
+  platform:
+    $ref: ./PlatformConfig.yaml
+  redis:
+    $ref: ./RedisConfig.yaml
+  storage:
+    $ref: ./StorageConfig.yaml
+required:
+  - api
+  - auth
+  - billing
+  - database
+  - infrastructure
+  - ingress
+  - intelligence
+  - logging
+  - monitoring
+  - platform
+  - redis
+  - storage
+additionalProperties: false

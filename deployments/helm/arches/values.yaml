@@ -1,0 +1,213 @@
+# yaml-language-server: $schema=./values.schema.json
+api:
+  cors:
+    origins: "*"
+  docs: true
+  email:
+    mode: disabled
+  host: 0.0.0.0
+  image:
+    pullPolicy: IfNotPresent
+    repository: archesai/api
+    tag: latest
+  port: 3001
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  validate: true
+
+auth:
+  firebase:
+    mode: disabled
+  local:
+    mode: enabled
+  mode: enabled
+  twitter:
+    mode: disabled
+
+billing:
+  mode: disabled
+
+database:
+  auth:
+    database: archesai-db
+    password: password
+  image:
+    pullPolicy: IfNotPresent
+    repository: pgvector/pgvector
+    tag: pg16
+  mode: managed
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+infrastructure:
+  development:
+    api:
+      enabled: false
+      port: 3001
+    hostIP: 172.18.0.1
+    platform:
+      enabled: false
+      port: 3000
+    postgres:
+      enabled: false
+      port: 30054
+    redis:
+      enabled: false
+      port: 30055
+    loki:
+      enabled: false
+      port: 30056
+  images:
+    imagePullSecrets: []
+    imageRegistry: ""
+  migrations:
+    enabled: false
+  namespace: arches-system
+  serviceAccount:
+    create: true
+    name: ""
+
+ingress:
+  domain: archesai.com
+  mode: managed
+  tls:
+    enabled: true
+    issuer: letsencrypt-staging
+    secretName: archesai-tls
+
+intelligence:
+  embedding:
+    type: ollama
+  llm:
+    endpoint: http://localhost:11434
+    type: ollama
+  runpod:
+    mode: disabled
+  scraper:
+    image:
+      pullPolicy: IfNotPresent
+      repository: mcr.microsoft.com/playwright
+      tag: v1.55.0-noble
+    mode: managed
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+  speech:
+    mode: disabled
+  unstructured:
+    image:
+      pullPolicy: IfNotPresent
+      repository: downloads.unstructured.io/unstructured-io/unstructured-api
+      tag: latest
+    mode: managed
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+
+logging:
+  level: info
+  pretty: false
+
+monitoring:
+  grafana:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/grafana
+      tag: latest
+    mode: managed
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  loki:
+    image:
+      pullPolicy: IfNotPresent
+      repository: grafana/loki
+      tag: latest
+    mode: managed
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+platform:
+  host: localhost
+  image:
+    pullPolicy: IfNotPresent
+    repository: archesai/platform
+    tag: latest
+  mode: managed
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+redis:
+  auth: password
+  host: localhost
+  image:
+    pullPolicy: IfNotPresent
+    repository: redis
+    tag: 7-alpine
+  mode: managed
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+storage:
+  accesskey: minioadmin
+  bucket: arches
+  endpoint: http://localhost:9000
+  image:
+    pullPolicy: IfNotPresent
+    repository: minio/minio
+    tag: latest
+  mode: managed
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  secretkey: minioadmin

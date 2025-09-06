@@ -1,326 +1,199 @@
-# Development Setup
+# ArchesAI
 
-## GCP Setup
+[![Go Version](https://img.shields.io/badge/go-1.21+-00ADD8?style=flat-square)](https://go.dev/)
+[![License](https://img.shields.io/badge/license-Proprietary-red?style=flat-square)](LICENSE)
+[![API Documentation](https://img.shields.io/badge/API-OpenAPI%203.0-green?style=flat-square)](http://localhost:8080/docs)
 
-### I forgot what this is but we need it
+A high-performance data processing platform for managing, analyzing, and transforming diverse data assets. Built with Go using hexagonal architecture and domain-driven design principles.
 
-https://cloud.google.com/sql/docs/mysql/connect-kubernetes-engine#gsa
+## Features
 
-```
-gcloud iam service-accounts add-iam-policy-binding \
---role="roles/iam.workloadIdentityUser" \
---member="serviceAccount:archesai.svc.id.goog[archesai-stage/cloud-sql-service-account]" \
-cloud-sql-proxy@archesai.iam.gserviceaccount.com
-```
+### 🚀 Core Capabilities
 
-<!-- name: Cut Docs
-on:
-  workflow_dispatch:
+- **Multi-format content processing** - Files, audio, text, images, and web content
+- **Vector embeddings & semantic search** - Advanced similarity matching and retrieval
+- **DAG-based workflows** - Build complex data processing pipelines
+- **Transformation tools** - Text-to-speech, text-to-image, transcription, and more
+- **Multi-tenant architecture** - Organization-based data isolation
 
-jobs:
-  rdme-openapi:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repo 📚
-        uses: actions/checkout@v3
+### 🔒 Security & Auth
 
-      - name: Run `openapi` command 🚀
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi https://api.archesai.com/-json --key=${{ secrets.README_SECRET }} --id=64837ab02aa53c002a2ceccd -->
+- JWT-based authentication with refresh tokens
+- Database-backed session management
+- Multi-organization support with data isolation
+- Role-based access control (coming soon)
 
-REPOSITORES WITH INCLUDES
+### 🛠 Developer Experience
 
-- UserRepository
-- PipelineRepository
+- OpenAPI 3.0 specification with auto-generated types
+- TypeScript SDK for frontend integration
+- Comprehensive code generation from specs
+- Hot-reload development environment
 
-## Installing Minikube
+## Quick Start
 
-sudo apt install -y conntrack
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-minikube version
-sudo apt install -y kubectl
-kubectl get nodes
+### Prerequisites
 
-### Check for rbac enabled
+- **Go 1.21+**
+- **PostgreSQL 15+** with pgvector extension
+- **Node.js 20+** and pnpm 8+
+- **Make** for build commands
 
-```
-kubectl api-resources | grep 'RoleTypeEnum\|ClusterRoleTypeEnum'
+### Installation
 
-minikube dashboard
+```bash
+# Clone repository
+git clone https://github.com/archesai/archesai.git
+cd archesai
 
-sudo apt update
-sudo apt install -y nvidia-driver-<your-driver-version>
-```
+# Setup environment
+cp .env.example .env
+# Edit .env with your configuration
 
-### Install nvidia docker
+# Install dependencies
+make tools              # Install Go tools
+go mod download         # Backend dependencies
+pnpm install           # Frontend dependencies
 
-Add the package repository
+# Setup database
+createdb archesai
+psql archesai -c "CREATE EXTENSION IF NOT EXISTS vector;"
+make migrate-up
 
-```
-distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-```
+# Generate code
+make generate          # Generate all code (SQLC, OpenAPI, codegen)
 
-### Install the nvidia-docker package
-
-```
-sudo apt update
-sudo apt install -y nvidia-docker2
+# Start development
+make dev               # Backend with hot-reload (port 8080)
+pnpm dev:platform      # Frontend in another terminal (port 5173)
 ```
 
-### Restart Docker
+### Access Points
 
-sudo systemctl restart docker
+- **API**: http://localhost:8080
+- **API Docs**: http://localhost:8080/docs
+- **Web UI**: http://localhost:5173
 
-put this in /etc/docker/daemon.json
-
-```
-{
-    "default-runtime": "nvidia",
-    "runtimes": {
-        "nvidia": {
-            "path": "nvidia-container-runtime",
-            "runtimeArgs": []
-        }
-    }
-}
-
-
-minikube start --driver=docker --gpu
+## Project Structure
 
 ```
-
-### Install k8s gpu device plugin
-
-kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml
-
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: gpu-test
-spec:
-  containers:
-  - name: gpu-container
-    image: nvidia/cuda:11.0-base
-    resources:
-      limits:
-        nvidia.com/gpu: 1 # Request 1 GPU
-    command: ["nvidia-smi"]
-```
-
-kubectl apply -f gpu-test.yaml
-
-kubectl logs gpu-test
-
-### Setting image pull secret
-
-```
-kubectl create secret docker-registry artifact-registry-key \
- --docker-server=us-east4-docker.pkg.dev \
- --docker-username=\_json_key \
- --docker-password="$(gcloud auth print-access-token)" \
- --docker-email=jonathan@archesai.com
-
-minikube mount $HOME:/host
-
-gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-east4-docker.pkg.dev
-
-cat /home/jonathan/.docker/config.json
-
-kubectl delete secret artifact-registry-key
-
-kubectl create secret generic artifact-registry-key \  INT ✘  minikube ⎈
---from-file=.dockerconfigjson=$HOME/.docker/config.json \
- --type=kubernetes.io/dockerconfigjson
+archesai/
+├── api/                    # OpenAPI specifications
+├── cmd/                    # Application entry points
+│   ├── archesai/          # Main server
+│   └── codegen/           # Code generation tool
+├── internal/
+│   ├── app/               # Application wiring
+│   ├── auth/              # Authentication domain
+│   ├── organizations/     # Organization management
+│   ├── workflows/         # Pipeline workflows
+│   ├── content/           # Content management
+│   ├── database/          # Database layer
+│   │   ├── postgresql/    # SQLC generated code
+│   │   ├── queries/       # SQL queries
+│   │   └── migrations/    # Database migrations
+│   └── config/            # Configuration
+├── web/                   # Frontend monorepo
+│   ├── platform/          # React application
+│   ├── client/            # TypeScript SDK
+│   └── ui/                # Component library
+└── docs/                  # Documentation
 ```
 
----
+## Development
 
-# BUSINESS
+### Essential Commands
 
-# Arches AI Design and Use Cases
+```bash
+# Development
+make dev              # Start with hot reload
+make build            # Build all binaries
+make test             # Run tests
+make lint             # Run linters
 
-## TODO
+# Code Generation
+make generate         # Run all generators
+make generate-sqlc    # Database code
+make generate-oapi    # OpenAPI types
+make generate-codegen # Domain code
 
-- Add pipeline ux for building stuff with connectors
-- Implement ability to save "forms" that can be run against content and extract data to fill out the form. this form type can then be used as input to other tools
-- Get labels to work better and add faceting
-- Notifications with websockets
-- [DONE] Fix websocket auth
-- Ensure that refresh tokens work as expected and write tests
-- Implement react flow to create pipelines with steps
+# Database
+make migrate-up       # Apply migrations
+make migrate-down     # Rollback
+make migrate-create name=feature_name
+```
 
-## Introduction
+### Adding Features
 
-**Arches AI** is a comprehensive data processing platform designed to empower businesses to efficiently manage, analyze, and transform their diverse data assets. Similar to Palantir Foundry, Arches AI enables organizations to upload various types of content—including files, audio, text, images, and websites—and index them for seamless parsing, querying, and transformation. Leveraging advanced embedding models and a suite of transformation tools, Arches AI provides flexible and powerful data processing capabilities tailored to meet the unique needs of different industries.
+1. Define API in `api/openapi.yaml`
+2. Add SQL queries in `internal/database/queries/`
+3. Run `make generate`
+4. Implement business logic in domain service
+5. Wire dependencies in `internal/app/app.go`
+6. Run `make lint && make test`
 
-## Core Features
+## API Overview
 
-### Data Upload and Indexing
+### Authentication
 
-- **Multi-Format Support:** Seamlessly upload and manage files, audio, text, images, and websites.
-- **Automated Indexing:** Efficiently index all uploaded content for quick retrieval and management.
+- `POST /api/auth/register` - Register user
+- `POST /api/auth/login` - Login
+- `POST /api/auth/refresh` - Refresh token
+- `GET /api/auth/me` - Current user
 
-### Transformation Tools
+### Organizations
 
-- **Text-to-Speech:** Convert textual data into natural-sounding audio.
-- **Text-to-Image:** Generate high-quality images based on textual descriptions.
-- **Text-to-Text:** Advanced text manipulation, generation, and transformation capabilities.
-- **Random Files to Text:** Extract and convert content from various file types into text format.
+- `GET /api/organizations` - List organizations
+- `POST /api/organizations` - Create organization
+- `GET /api/organizations/{id}` - Get details
+- `PUT /api/organizations/{id}` - Update
+- `DELETE /api/organizations/{id}` - Delete
 
-### Embedding Models
+### Workflows
 
-- **Advanced Embeddings:** Utilize state-of-the-art models to embed text content into vector representations.
-- **Semantic Search:** Enable sophisticated querying and semantic search for enhanced data accessibility.
+- `GET /api/workflows` - List workflows
+- `POST /api/workflows` - Create workflow
+- `POST /api/workflows/{id}/runs` - Execute
 
-### Data Querying and Transformation
+### Content
 
-- **Intuitive Query Interface:** User-friendly tools for querying indexed data with ease.
-- **Data Transformation Tools:** Flexible tools to transform data to meet specific business requirements.
+- `GET /api/content/artifacts` - List artifacts
+- `POST /api/content/artifacts` - Upload
+- `POST /api/content/artifacts/{id}/process` - Process
 
-### Pipeline Building
+## Configuration
 
-- **Custom Pipelines:** Design and implement data processing pipelines using individual tools.
-- **Automation:** Automate complex data workflows tailored to organizational needs.
-- **Directed Acyclical Graph**: The pipelines are DAGs, so you can represent all possible pipelines.
+Environment variables use `ARCHESAI_` prefix:
 
-### Support and Consulting
+```bash
+# Database
+ARCHESAI_DATABASE_URL=postgres://user:pass@localhost/archesai?sslmode=disable
 
-- **Integration Support:** Expert assistance in integrating Arches AI with existing systems.
-- **Data Strategy Consulting:** Help businesses optimize their data strategies for maximum impact.
+# Server
+ARCHESAI_SERVER_PORT=8080
+ARCHESAI_SERVER_HOST=0.0.0.0
 
-## Design Concepts
+# Authentication
+ARCHESAI_JWT_SECRET=your-secret-key
+ARCHESAI_JWT_ACCESS_TOKEN_DURATION=15m
+ARCHESAI_JWT_REFRESH_TOKEN_DURATION=7d
 
-### Scalability
+# Logging
+ARCHESAI_LOGGING_LEVEL=info
+ARCHESAI_LOGGING_FORMAT=json
+```
 
-- **Modular Architecture:** Easily add or remove components to scale with business growth.
-- **Cloud-Native Infrastructure:** Built on scalable cloud platforms to handle increasing data volumes.
+## Documentation
 
-### Usability
+- [Development Guide](docs/DEVELOPMENT.md) - Technical development details
+- [Architecture](docs/ARCHITECTURE.md) - System design and patterns
+- [API Reference](http://localhost:8080/docs) - Interactive API documentation
 
-- **Intuitive Interface:** User-friendly dashboards and interfaces to lower the barrier to entry.
-- **Customizable Workflows:** Flexible pipeline creation to suit various business processes.
+## License
 
-### Security
+Proprietary - All rights reserved
 
-- **Data Encryption:** Ensure data is securely stored and transmitted using advanced encryption standards.
-- **Access Controls:** Robust authentication and authorization mechanisms to protect sensitive data.
+## Support
 
-### Integration
-
-- **APIs:** RESTful and GraphQL APIs for seamless integration with other tools and services.
-- **Third-Party Integrations:** Support for integrating with popular third-party applications and services.
-
-### Technology Stack
-
-- **Backend:** PostgreSQL with vector extensions for efficient storage and querying of embeddings, managed via Prisma ORM.
-- **Frontend:** Modern JavaScript frameworks such as React or Vue for responsive and user-friendly interfaces.
-- **AI Models:** Proprietary and third-party AI models for data transformation and embedding.
-- **Cloud Infrastructure:** Reliable and scalable cloud services like AWS, Azure, or GCP to ensure performance and uptime.
-
-## Use Cases by Industry
-
-### Finance
-
-- **Fraud Detection:** Analyze transaction data to identify and prevent fraudulent activities.
-- **Risk Management:** Assess and manage financial risks through comprehensive data analysis.
-- **Customer Insights:** Gain deeper understanding of customer behaviors and preferences to enhance services.
-
-### Healthcare
-
-- **Medical Records Management:** Organize and analyze patient data for improved healthcare delivery.
-- **Research and Development:** Facilitate medical research by managing and processing large datasets.
-- **Telemedicine:** Enhance telemedicine services through efficient data processing and transformation.
-
-### Retail
-
-- **Inventory Management:** Optimize inventory levels and reduce stockouts through data-driven insights.
-- **Personalized Marketing:** Create targeted marketing campaigns based on customer data analysis.
-- **Sales Analytics:** Analyze sales data to identify trends and improve sales strategies.
-
-### Technology
-
-- **Product Development:** Streamline product development processes with efficient data management.
-- **User Experience Analysis:** Analyze user data to enhance product usability and satisfaction.
-- **IT Operations:** Improve IT operations through data-driven monitoring and management.
-
-### Manufacturing
-
-- **Supply Chain Optimization:** Enhance supply chain efficiency through comprehensive data analysis.
-- **Quality Control:** Implement data-driven quality control measures to reduce defects.
-- **Predictive Maintenance:** Use data to predict and prevent equipment failures, minimizing downtime.
-
-### Education
-
-- **Student Performance Tracking:** Analyze student data to improve educational outcomes.
-- **Curriculum Development:** Use data insights to develop and refine educational programs.
-- **Administrative Efficiency:** Streamline administrative tasks through effective data management.
-
-### Media and Entertainment
-
-- **Content Management:** Organize and manage large volumes of media content efficiently.
-- **Audience Analytics:** Gain insights into audience preferences and behaviors to tailor content.
-- **Content Personalization:** Deliver personalized content experiences based on data analysis.
-
-### Logistics
-
-- **Route Optimization:** Improve delivery routes through data-driven insights, reducing costs and increasing efficiency.
-- **Fleet Management:** Manage and monitor fleet operations efficiently using real-time data.
-- **Demand Forecasting:** Predict demand to optimize logistics and reduce operational costs.
-
-### Legal
-
-- **Document Management:** Organize and search through large volumes of legal documents with ease.
-- **Case Analysis:** Analyze case data to identify patterns and support legal strategies.
-- **Compliance Monitoring:** Ensure compliance with regulations through continuous data monitoring and reporting.
-
-### Energy
-
-- **Resource Management:** Optimize the use of resources through detailed data analysis.
-- **Predictive Maintenance:** Predict equipment failures and schedule maintenance to prevent downtime.
-- **Energy Consumption Analysis:** Analyze energy usage patterns to improve efficiency and reduce costs.
-
-### Real Estate
-
-- **Property Management:** Manage property data efficiently, including documents, images, and tenant information.
-- **Market Analysis:** Analyze market trends to inform investment and development strategies.
-- **Customer Relationship Management:** Enhance client interactions through detailed data insights.
-
-## Conclusion
-
-Arches AI offers a versatile and powerful data processing platform designed to meet the diverse needs of businesses across various industries. By providing a comprehensive suite of tools for data management, transformation, and analysis, Arches AI empowers organizations to unlock the full potential of their data, drive innovation, and achieve strategic goals. Whether it's enhancing operational efficiency, enabling advanced analytics, or fostering data-driven decision-making, Arches AI is positioned to be an indispensable partner for businesses seeking to thrive in the data-centric landscape.
-
----
-
-    // "typecheck": {
-    //   "dependsOn": ["^typecheck"],
-    //   "inputs": [
-    //     "production",
-    //     {
-    //       "dependentTasksOutputFiles": "**/*.d.ts"
-    //     }
-    //   ],
-    //   "outputs": ["{projectRoot}/dist/**/*.d.ts"],
-    //   "syncGenerators": ["@nx/js:typescript-sync"]
-    // }
-
-
-        // "@nx/eslint:lint": {
-    //   "inputs": ["default"],
-    //   "options": {
-    //     "cache": true,
-    //     "cacheLocation": "{projectRoot}/.cache/eslint",
-    //     "eslintConfig": "{projectRoot}/eslint.config.ts",
-    //     "lintFilePatterns": ["{projectRoot}/**/*.ts", "{projectRoot}/**/*.tsx"]
-    //   }
-    // }
-    // "build": {
-    //   "dependsOn": ["^build"],
-    //   "inputs": ["production", "^production"],
-    //   "outputs": ["{projectRoot}/dist"],
-    //   "syncGenerators": ["@nx/js:typescript-sync"]
-    // }
+- Email: support@archesai.com
+- Issues: https://github.com/archesai/archesai/issues

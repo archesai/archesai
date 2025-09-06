@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Individual field validation error
+type: object
+additionalProperties: false
+required:
+  - field
+  - message
+properties:
+  field:
+    type: string
+    description: The field path that failed validation
+    example: email
+    minLength: 1
+  message:
+    type: string
+    description: Human-readable error message
+    example: must be a valid email address
+    minLength: 1
+  value:
+    description: The invalid value that was provided
+    oneOf:
+      - type: string
+        minLength: 1
+        example: example-string
+      - type: number
+        example: 42
+      - type: boolean
+        example: true
+    example: invalid-email

@@ -1,0 +1,138 @@
+delete:
+  operationId: deleteInvitation
+  summary: Delete an invitation
+  tags:
+    - Organizations
+  description: Delete an invitation
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Invitation.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getOneInvitation
+  summary: Find an invitation
+  tags:
+    - Organizations
+  description: Find an invitation
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Invitation.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updateInvitation
+  summary: Update an invitation
+  tags:
+    - Organizations
+  description: Update an invitation
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email of the invitated user
+              type: string
+              example: example-string
+            role:
+              description: The role of the invitation
+              type: string
+              enum:
+                - admin
+                - owner
+                - member
+              example: admin
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the organization.
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: invitationId
+      required: true
+      description: The unique identifier of the invitation.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Invitation.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml

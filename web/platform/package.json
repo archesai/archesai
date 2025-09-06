@@ -1,0 +1,50 @@
+{
+  "name": "@archesai/platform",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "imports": {
+    "#*": "./src/*.tsx",
+    "#lib/*": "./src/lib/*.ts",
+    "#routeTree.gen": "./src/routeTree.gen.ts"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "lint": "eslint .",
+    "start": "vite preview",
+    "typecheck": "tsc --build --emitDeclarationOnly"
+  },
+  "dependencies": {
+    "@archesai/client": "workspace:*",
+    "@archesai/ui": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-query-devtools": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-devtools": "catalog:tanstack",
+    "@tanstack/react-router-ssr-query": "catalog:tanstack",
+    "@tanstack/react-start": "catalog:tanstack",
+    "@xyflow/react": "catalog:",
+    "motion": "catalog:ui",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@archesai/eslint": "workspace:*",
+    "@playwright/test": "catalog:test",
+    "@tailwindcss/vite": "catalog:vite",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:vite",
+    "@vitest/ui": "catalog:test",
+    "babel-plugin-react-compiler": "catalog:vite",
+    "eslint": "catalog:eslint",
+    "rollup-plugin-visualizer": "catalog:vite",
+    "tailwindcss": "catalog:ui",
+    "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vitest": "catalog:test"
+  }
+}

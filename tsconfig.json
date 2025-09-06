@@ -1,54 +1,15 @@
 {
-  "extends": "./tooling/typescript/src/base.json",
+  "extends": "./web/typescript/src/base.json",
   "files": [],
   "references": [
     {
-      "path": "./apps/api"
+      "path": "./web/platform"
     },
     {
-      "path": "./apps/platform"
+      "path": "./web/client"
     },
     {
-      "path": "./packages/auth"
-    },
-    {
-      "path": "./packages/billing"
-    },
-    {
-      "path": "./packages/client"
-    },
-    {
-      "path": "./packages/core"
-    },
-    {
-      "path": "./packages/database"
-    },
-    {
-      "path": "./packages/schemas"
-    },
-    {
-      "path": "./packages/intelligence"
-    },
-    {
-      "path": "./packages/orchestration"
-    },
-    {
-      "path": "./packages/storage"
-    },
-    {
-      "path": "./packages/ui"
-    },
-    {
-      "path": "./tooling/eslint"
-    },
-    {
-      "path": "./tooling/prettier"
-    },
-    {
-      "path": "./e2e/platform-e2e"
-    },
-    {
-      "path": "./e2e/api-e2e"
+      "path": "./web/ui"
     }
   ]
 }

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Resource limits
+type: object
+properties:
+  cpu:
+    description: Maximum CPU allocation
+    type: string
+    minLength: 1
+    example: example-string
+  memory:
+    description: Maximum memory allocation
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - cpu
+  - memory
+additionalProperties: false

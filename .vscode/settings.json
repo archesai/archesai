@@ -1,32 +1,17 @@
 {
-  "eslint.workingDirectories": [
-    { "pattern": "apps/*/" },
-    { "pattern": "packages/*/" },
-    { "pattern": "tooling/*/" },
-    { "pattern": "e2e/*/" }
-  ],
+  "eslint.workingDirectories": [{ "pattern": "web/*/" }],
   "files.exclude": {
     "**/.cache": true,
     "**/.coverage": true,
     "**/.nitro": true,
-    "**/.nx": true,
     "**/.output": true,
     "**/.tanstack": true,
-    "**/.turbo": true,
+    "**/node_modules": true,
     "**/dist": true,
-    "**/node_modules": true
+    "**/bin": true
   },
   "tailwindCSS.experimental.configFile": {
-    "./apps/platform/src/styles/globals.css": "./apps/platform/src/**",
-    "./packages/ui/src/styles/globals.css": "./packages/ui/src/**"
-  },
-  "yaml.schemas": {
-    "file:///home/jonathan/Projects/archesai/helm/arches/values.schema.json": [
-      "file:///home/jonathan/Projects/archesai/helm/arches/values.yaml",
-      "file:///home/jonathan/Projects/archesai/helm/dev-overrides.yaml"
-    ],
-
-    "https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta13.json": "file:///home/jonathan/Projects/archesai/skaffold.yaml",
-    "https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json": "file:///home/jonathan/Projects/archesai/k3d.yaml"
+    "./web/platform/src/styles/globals.css": "./web/platform/src/**",
+    "./web/ui/src/styles/globals.css": "./web/ui/src/**"
   }
 }

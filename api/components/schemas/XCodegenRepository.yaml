@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Repository generation configuration
+type: object
+properties:
+  operations:
+    description: CRUD operations to generate
+    type: array
+    items:
+      type: string
+      enum:
+        [
+          create,
+          read,
+          update,
+          delete,
+          list,
+          bulk_create,
+          bulk_update,
+          bulk_delete,
+        ]
+    default: [create, read, update, delete, list]
+  indices:
+    description: Fields to create indices on
+    type: array
+    items:
+      type: string
+  unique_constraints:
+    description: Unique constraints across multiple fields
+    type: array
+    items:
+      type: array
+      items:
+        type: string
+  additional_methods:
+    description: Custom repository methods to generate
+    type: array
+    items:
+      $ref: ./XCodegenRepositoryMethod.yaml
+  soft_delete:
+    description: Enable soft delete functionality
+    type: boolean
+    default: false
+  timestamps:
+    description: Automatically manage created_at and updated_at
+    type: boolean
+    default: true
+  postgres:
+    description: PostgreSQL-specific configuration
+    type: object
+    properties:
+      table_name:
+        description: Override default table name
+        type: string
+      schema:
+        description: Database schema name
+        type: string
+        default: public
+    additionalProperties: false
+  sqlite:
+    description: SQLite-specific configuration
+    type: object
+    properties:
+      table_name:
+        description: Override default table name
+        type: string
+    additionalProperties: false
+additionalProperties: false

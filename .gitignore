@@ -75,11 +75,10 @@ test-output
 
 **/charts/**
 
-.nx/cache
-.nx/workspace-data
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
 .cache
 
-.husky/_
+**/tmp
+
+#api/openapi.bundled.yaml
+#api/split/
+bin

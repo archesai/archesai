@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: CORS configuration for the API server
+type: object
+properties:
+  origins:
+    description: A comma-separated list of allowed origins for CORS requests
+    type: string
+    default: https://platform.archesai.dev
+    minLength: 1
+    example: example-string
+required:
+  - origins
+additionalProperties: false

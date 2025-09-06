@@ -1,0 +1,8 @@
+in: query
+name: page
+required: false
+style: form
+explode: true
+schema:
+  $ref: ../schemas/Page.yaml
+description: The page parameter

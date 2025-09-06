@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=./arches/values.schema.json
+ingress:
+  mode: enabled
+  domain: archesai.dev
+
+logging:
+  level: debug
+  pretty: true
+
+intelligence:
+  runpod:
+    mode: enabled
+    token: E0L11W179IXEBVJ09878F0ICVMNZD6JFSTWE7MZP
+  speech:
+    mode: enabled
+    token: sk_d6c86e029888836fa68bda6cc3cb40de0aefb9fbb2ca76a9
+
+infrastructure:
+  development:
+    api:
+      enabled: true
+    platform:
+      enabled: true
+    redis:
+      enabled: true
+    postgres:
+      enabled: true
+    loki:
+      enabled: true

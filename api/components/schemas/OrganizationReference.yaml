@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  organizationId:
+    description: The organization identifier
+    $ref: ./UUID.yaml
+required:
+  - organizationId

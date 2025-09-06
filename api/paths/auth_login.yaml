@@ -1,0 +1,44 @@
+post:
+  operationId: login
+  summary: Login
+  tags:
+    - Auth
+  description: This endpoint will log you in with your e-mail and password
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            email:
+              description: The email address associated with the account
+              type: string
+              format: email
+              pattern: >-
+                ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+              example: user@example.com
+              minLength: 1
+            password:
+              description: The password for the account
+              type: string
+              minLength: 1
+              example: example-string
+          required:
+            - email
+            - password
+    required: true
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/User.yaml
+            required:
+              - data
+            additionalProperties: false
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml

@@ -1,0 +1,110 @@
+delete:
+  operationId: deletePipeline
+  summary: Delete a pipeline
+  tags:
+    - Workflows
+  description: Delete a pipeline
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Pipeline.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getOnePipeline
+  summary: Find a pipeline
+  tags:
+    - Workflows
+  description: Find a pipeline
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Pipeline.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updatePipeline
+  summary: Update a pipeline
+  tags:
+    - Workflows
+  description: Update a pipeline
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            description:
+              description: The pipeline description
+              type: string
+              example: Example description text
+            name:
+              description: The pipeline name
+              type: string
+              example: Example Name
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Pipeline.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml

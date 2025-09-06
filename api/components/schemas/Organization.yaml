@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Organization entity
+x-codegen:
+  # yaml-language-server: $schema=./XCodegen.yaml
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [slug, stripeCustomerId]
+    additional_methods:
+      - name: GetOrganizationBySlug
+        params: [slug]
+        returns: single
+      - name: GetOrganizationByStripeCustomerId
+        params: [stripeCustomerId]
+        returns: single
+  cache:
+    enabled: true
+    ttl: 600 # 10 minutes
+    key_pattern: "org:{id}"
+    invalidate_on: [update, delete]
+  events:
+    - created
+    - updated
+    - deleted
+    - plan_changed
+    - credits_updated
+allOf:
+  - $ref: ./Base.yaml
+  - type: object
+    properties:
+      name:
+        description: The organization's display name
+        type: string
+        minLength: 1
+        maxLength: 255
+        example: Acme Corporation
+      slug:
+        description: URL-friendly unique identifier for the organization
+        type: string
+        pattern: ^[a-z0-9]+(?:-[a-z0-9]+)*$
+        minLength: 3
+        maxLength: 50
+        example: acme-corp
+      logo:
+        description: The organization's logo URL
+        type: string
+        example: "https://example.com/org-logo.png"
+      billingEmail:
+        description: Email address for billing communications
+        type: string
+        format: email
+        example: billing@acme.com
+      plan:
+        description: The current subscription plan
+        type: string
+        enum:
+          - FREE
+          - BASIC
+          - STANDARD
+          - PREMIUM
+          - UNLIMITED
+        default: FREE
+        example: STANDARD
+        minLength: 1
+      credits:
+        description: Available credits for this organization
+        type: number
+        minimum: 0
+        default: 0
+        example: 1000
+      metadata:
+        description: Custom metadata in JSON format
+        type: object
+        additionalProperties: true
+      stripeCustomerId:
+        description: Stripe customer identifier
+        type: string
+        example: "cus_1234567890"
+        x-sensitive: true
+    required:
+      - name
+      - slug
+      - plan
+      - credits
+      - metadata
+    additionalProperties: false

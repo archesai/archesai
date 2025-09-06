@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Development environment configuration
+type: object
+properties:
+  api:
+    $ref: ./DevServiceConfig.yaml
+  hostIP:
+    description: Host IP address for dev port forwarding
+    type: string
+    default: 172.18.0.1
+    minLength: 1
+    example: example-string
+  loki:
+    $ref: ./DevServiceConfig.yaml
+  platform:
+    $ref: ./DevServiceConfig.yaml
+  postgres:
+    $ref: ./DevServiceConfig.yaml
+  redis:
+    $ref: ./DevServiceConfig.yaml
+required:
+  - api
+  - hostIP
+  - loki
+  - platform
+  - postgres
+  - redis
+additionalProperties: false

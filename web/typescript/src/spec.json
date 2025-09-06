@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "isolatedDeclarations": false,
+    "types": ["node", "vitest/globals"],
+    "tsBuildInfoFile": "${configDir}/.cache/tsconfig.spec.tsbuildinfo"
+  },
+  "include": [
+    "${configDir}/src/**/*.spec.ts",
+    "${configDir}/src/**/*.spec.tsx",
+    "${configDir}/vite.config.ts",
+    "${configDir}/vitest.config.ts",
+    "${configDir}/playwright.config.ts",
+    "${configDir}/orval.config.ts",
+    "${configDir}/drizzle.config.ts",
+    "${configDir}/eslint.config.ts"
+  ]
+}

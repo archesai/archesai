@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Tool entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId]
+    additional_methods:
+      - name: GetToolsByOrganization
+        params: [organizationId]
+type: object
+properties:
+  createdAt:
+    description: The date this item was created
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  id:
+    description: The ID of the item
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+  updatedAt:
+    description: The date this item was last updated
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  description:
+    description: The tool description
+    type: string
+    minLength: 1
+    example: Example description text
+  inputMimeType:
+    description: The MIME type of the input for the tool, e.g. text/plain
+    type: string
+    minLength: 1
+    example: example-string
+  name:
+    description: The name of the tool
+    type: string
+    minLength: 1
+    example: Example Name
+  organizationId:
+    description: The organization name
+    type: string
+    minLength: 1
+    example: example-id-123
+  outputMimeType:
+    description: The MIME type of the output for the tool, e.g. text/plain
+    type: string
+    minLength: 1
+    example: example-string
+required:
+  - createdAt
+  - id
+  - updatedAt
+  - description
+  - inputMimeType
+  - name
+  - organizationId
+  - outputMimeType
+additionalProperties: false

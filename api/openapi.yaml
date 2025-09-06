@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.1/schema/2022-10-07
+openapi: 3.1.1
+info:
+  title: Arches AI API
+  description: The Arches AI API
+  version: v0.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Arches AI Support
+    email: support@archesai.com
+    url: https://archesai.com/support
+jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+servers:
+  - url: https://api.archesai.dev
+    description: Remote development server
+  - url: https://api.archesai.com
+    description: Production server
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: Accounts
+    description: User account management
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Config
+    description: Configuration management
+  - name: Content
+    description: Content artifacts and labels
+  - name: Health
+    description: Health check operations
+  - name: Organizations
+    description: Organization management, membership, and invitations
+  - name: Sessions
+    description: User session management
+  - name: Users
+    description: User profile management
+  - name: Workflows
+    description: Pipeline workflows, runs, and tools
+paths:
+  /auth/accounts:
+    $ref: paths/auth_accounts.yaml
+  /auth/accounts/{id}:
+    $ref: paths/auth_accounts_{id}.yaml
+  /auth/register:
+    $ref: paths/auth_register.yaml
+  /auth/login:
+    $ref: paths/auth_login.yaml
+  /auth/logout:
+    $ref: paths/auth_logout.yaml
+  /auth/email-verification/verify:
+    $ref: paths/auth_email-verification_verify.yaml
+  /auth/email-verification/request:
+    $ref: paths/auth_email-verification_request.yaml
+  /auth/password-reset/request:
+    $ref: paths/auth_password-reset_request.yaml
+  /auth/password-reset/verify:
+    $ref: paths/auth_password-reset_verify.yaml
+  /auth/email-change/request:
+    $ref: paths/auth_email-change_request.yaml
+  /auth/email-change/verify:
+    $ref: paths/auth_email-change_verify.yaml
+  /auth/sessions:
+    $ref: paths/auth_sessions.yaml
+  /auth/sessions/{id}:
+    $ref: paths/auth_sessions_{id}.yaml
+  /auth/users:
+    $ref: paths/auth_users.yaml
+  /auth/users/{id}:
+    $ref: paths/auth_users_{id}.yaml
+  # Organizations domain
+  /organizations:
+    $ref: paths/organizations.yaml
+  /organizations/{id}:
+    $ref: paths/organizations_{id}.yaml
+  /organizations/{id}/members:
+    $ref: paths/organizations_members.yaml
+  /organizations/{id}/members/{memberId}:
+    $ref: paths/organizations_members_{id}.yaml
+  /organizations/{id}/invitations:
+    $ref: paths/organizations_invitations.yaml
+  /organizations/{id}/invitations/{invitationId}:
+    $ref: paths/organizations_invitations_{id}.yaml
+  # Workflows domain
+  /workflows/pipelines:
+    $ref: paths/workflows_pipelines.yaml
+  /workflows/pipelines/{id}:
+    $ref: paths/workflows_pipelines_{id}.yaml
+  /workflows/runs:
+    $ref: paths/workflows_runs.yaml
+  /workflows/runs/{id}:
+    $ref: paths/workflows_runs_{id}.yaml
+  /workflows/tools:
+    $ref: paths/workflows_tools.yaml
+  /workflows/tools/{id}:
+    $ref: paths/workflows_tools_{id}.yaml
+  # Content domain
+  /content/artifacts:
+    $ref: paths/content_artifacts.yaml
+  /content/artifacts/{id}:
+    $ref: paths/content_artifacts_{id}.yaml
+  /content/labels:
+    $ref: paths/content_labels.yaml
+  /content/labels/{id}:
+    $ref: paths/content_labels_{id}.yaml
+  /config:
+    $ref: paths/config.yaml
+  /health:
+    $ref: paths/health.yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: API Token for authenticated requests
+      scheme: bearer
+      type: http
+    sessionCookie:
+      description: Session cookie for authenticated requests
+      in: cookie
+      name: __Secure-better-auth.session_token
+      type: apiKey

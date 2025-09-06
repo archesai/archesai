@@ -1,0 +1,41 @@
+get:
+  operationId: accounts_findMany
+  summary: Find many accounts
+  tags:
+    - Accounts
+  parameters:
+    - $ref: ../components/parameters/AccountsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/AccountsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: List of accounts
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+              - meta
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Account.yaml
+              meta:
+                type: object
+                additionalProperties: false
+                required:
+                  - total
+                properties:
+                  total:
+                    type: number
+                    example: 42
+    "400":
+      $ref: ../components/responses/BadRequest.yaml
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml
+  description: Find many accounts

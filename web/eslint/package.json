@@ -1,0 +1,25 @@
+{
+  "name": "@archesai/eslint",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    "./base": "./src/base.js",
+    "./react": "./src/react.js",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@eslint/compat": "catalog:eslint",
+    "@eslint/js": "catalog:eslint",
+    "@tanstack/eslint-plugin-query": "catalog:eslint",
+    "eslint-config-prettier": "catalog:eslint",
+    "eslint-import-resolver-typescript": "catalog:eslint",
+    "eslint-plugin-import-x": "catalog:eslint",
+    "eslint-plugin-perfectionist": "catalog:eslint",
+    "eslint-plugin-react": "catalog:eslint",
+    "eslint-plugin-react-hooks": "catalog:eslint",
+    "globals": "catalog:eslint",
+    "typescript-eslint": "catalog:eslint"
+  }
+}

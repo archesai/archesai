@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Development service port forwarding configuration
+type: object
+properties:
+  enabled:
+    description: Enable dev port forwarding
+    type: boolean
+    default: false
+    example: true
+  port:
+    description: Local port for forwarding
+    type: number
+    example: 42
+required:
+  - enabled
+  - port
+additionalProperties: false

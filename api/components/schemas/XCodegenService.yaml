@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Service layer generation configuration
+type: object
+properties:
+  generate:
+    description: Generate service layer
+    type: boolean
+    default: true
+  business_methods:
+    description: Business logic methods
+    type: array
+    items:
+      type: string
+  transaction_support:
+    description: Generate transaction support
+    type: boolean
+    default: true
+  error_handling:
+    description: Error handling strategy
+    type: string
+    enum: [panic, error_return, result_type]
+    default: error_return
+  logging:
+    description: Logging configuration
+    type: object
+    properties:
+      level:
+        type: string
+        enum: [debug, info, warn, error]
+        default: info
+      structured:
+        type: boolean
+        default: true
+    additionalProperties: false
+  metrics:
+    description: Generate metrics collection
+    type: boolean
+    default: false
+  tracing:
+    description: Generate distributed tracing
+    type: boolean
+    default: false
+additionalProperties: false

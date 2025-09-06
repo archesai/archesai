@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Configuration management generation
+type: object
+properties:
+  generate_viper:
+    description: Generate Viper configuration
+    type: boolean
+    default: true
+  env_prefix:
+    description: Environment variable prefix
+    type: string
+    pattern: "^[A-Z][A-Z0-9_]*$"
+  config_file:
+    description: Configuration file name
+    type: string
+    pattern: '^[a-z][a-z0-9-]*\.(yaml|yml|json|toml)$'
+  hot_reload:
+    description: Enable configuration hot reload
+    type: boolean
+    default: false
+  validation:
+    description: Configuration validation rules
+    type: object
+    properties:
+      required_fields:
+        type: array
+        items:
+          type: string
+      custom_validators:
+        type: array
+        items:
+          type: string
+    additionalProperties: false
+additionalProperties: false

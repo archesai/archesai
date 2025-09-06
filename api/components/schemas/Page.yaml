@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Pagination (page number & size)
+type: object
+additionalProperties: false
+properties:
+  number:
+    type: integer
+    minimum: 1
+    default: 1
+    maximum: 9007199254740991
+    example: 2
+  size:
+    type: integer
+    minimum: 1
+    default: 10
+    maximum: 100
+    example: 2

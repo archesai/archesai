@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Schema for Member entity
+x-codegen:
+  repository:
+    operations: [create, read, update, delete, list]
+    indices: [organizationId, userId]
+    additional_methods:
+      - name: GetMembersByOrganization
+        params: [organizationId]
+      - name: GetMembersByUser
+        params: [userId]
+      - name: GetMemberByUserAndOrganization
+        params: [userId, organizationId]
+type: object
+properties:
+  createdAt:
+    description: The date this item was created
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  id:
+    description: The ID of the item
+    type: string
+    format: uuid
+    example: 550e8400-e29b-41d4-a716-446655440000
+    minLength: 36
+  updatedAt:
+    description: The date this item was last updated
+    type: string
+    format: date-time
+    example: "2024-01-15T09:30:00Z"
+    minLength: 1
+  organizationId:
+    description: The organization name
+    type: string
+    minLength: 1
+    example: example-id-123
+  role:
+    description: The role of the member
+    type: string
+    enum:
+      - admin
+      - owner
+      - member
+    example: admin
+    minLength: 1
+  userId:
+    description: The user id
+    type: string
+    minLength: 1
+    example: example-id-123
+required:
+  - createdAt
+  - id
+  - updatedAt
+  - organizationId
+  - role
+  - userId
+additionalProperties: false

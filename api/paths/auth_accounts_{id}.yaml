@@ -1,0 +1,64 @@
+get:
+  operationId: accounts_getOne
+  summary: Find an account
+  tags:
+    - Accounts
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: The account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+  description: Find an account
+delete:
+  operationId: accounts_delete
+  summary: Delete an account
+  tags:
+    - Accounts
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      description: The unique identifier of the resource
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Deleted account
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../components/schemas/Account.yaml
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+  description: Delete an account

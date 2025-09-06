@@ -1,0 +1,40 @@
+post:
+  operationId: confirmEmailVerification
+  summary: Confirm e-mail verification
+  tags:
+    - Auth
+  description: This endpoint will confirm your e-mail with a token
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              description: The password reset token
+              type: string
+              minLength: 1
+              example: example-string
+          required:
+            - token
+    required: true
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              session:
+                $ref: ../components/schemas/Session.yaml
+              user:
+                $ref: ../components/schemas/User.yaml
+            required:
+              - session
+              - user
+            additionalProperties: false
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml
+    "404":
+      $ref: ../components/responses/NotFound.yaml

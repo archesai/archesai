@@ -1,0 +1,42 @@
+get:
+  operationId: findManySessions
+  summary: Find many sessions
+  tags:
+    - Sessions
+  description: Find many sessions
+  parameters:
+    - $ref: ../components/parameters/SessionsFilter.yaml
+    - $ref: ../components/parameters/PageQuery.yaml
+    - $ref: ../components/parameters/SessionsSort.yaml
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: ../components/schemas/Session.yaml
+              meta:
+                type: object
+                properties:
+                  total:
+                    description: Total number of items in the collection
+                    type: number
+                    example: 42
+                required:
+                  - total
+                additionalProperties: false
+            required:
+              - data
+              - meta
+            additionalProperties: false
+    "400":
+      $ref: ../components/responses/BadRequest.yaml
+    "401":
+      $ref: ../components/responses/Unauthorized.yaml

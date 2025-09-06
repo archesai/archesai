@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+description: Database authentication credentials
+type: object
+properties:
+  database:
+    description: Database name
+    type: string
+    default: archesai-db
+    minLength: 1
+    example: example-string
+  password:
+    description: Database user password
+    type: string
+    default: password
+    minLength: 1
+    example: example-string
+required:
+  - database
+  - password
+additionalProperties: false

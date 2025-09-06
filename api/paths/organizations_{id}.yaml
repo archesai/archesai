@@ -1,0 +1,111 @@
+delete:
+  operationId: deleteOrganization
+  summary: Delete an organization
+  tags:
+    - Organizations
+  description: Delete an organization
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Organization.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+get:
+  operationId: getOneOrganization
+  summary: Find an organization
+  tags:
+    - Organizations
+  description: Find an organization
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Organization.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml
+patch:
+  operationId: updateOrganization
+  summary: Update an organization
+  tags:
+    - Organizations
+  description: Update an organization
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            billingEmail:
+              description: The billing email to use for the organization
+              type: string
+              example: example-string
+            organizationId:
+              description: The ID of the item
+              type: string
+              format: uuid
+              example: 550e8400-e29b-41d4-a716-446655440000
+  parameters:
+    - schema:
+        type: string
+        format: uuid
+        example: 550e8400-e29b-41d4-a716-446655440000
+      in: path
+      name: id
+      required: true
+      description: The unique identifier of the resource.
+  security:
+    - bearerAuth: []
+  responses:
+    "200":
+      description: Default Response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: ../components/schemas/Organization.yaml
+            required:
+              - data
+            additionalProperties: false
+    "404":
+      $ref: ../components/responses/NotFound.yaml

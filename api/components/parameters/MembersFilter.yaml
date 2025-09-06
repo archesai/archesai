@@ -1,0 +1,10 @@
+in: query
+name: filter
+required: false
+style: deepObject
+explode: true
+schema:
+  $ref: ../schemas/FilterNode.yaml
+description: |
+  Filter members by field values. Supported fields:
+  - createdAt, id, updatedAt, organizationId, role, userId

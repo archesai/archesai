@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/evilmartians/lefthook/refs/heads/master/schema.json
+pre-commit:
+  parallel: true
+  commands:
+    # golangci-lint:
+    #   glob: "*.go"
+    #   run: golangci-lint run --fix {staged_files}
+    #   stage_fixed: true
+
+    lint:
+      run: make lint
+
+    go-mod-tidy:
+      glob: "go.{mod,sum}"
+      run: go mod tidy
+
+    # eslint:
+    #   run: pnpm lint
+    #   stage_fixed: true
+
+    format:
+      run: make format
+      stage_fixed: false
+
+commit-msg:
+  commands:
+    commitizen:
+      run: |
+        commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(.+\))?: .{1,50}'
+        commit_message=$(cat "{1}")
+        if ! echo "$commit_message" | grep -qE "$commit_regex"; then
+          echo "❌ Invalid commit message format!"
+          echo "Your message: '$commit_message'"
+          echo ""
+          echo "Format: type(scope): description"
+          echo "Types: feat, fix, docs, style, refactor, perf, test, chore, build, ci, revert"
+          echo "Example: feat(auth): add user login endpoint"
+          exit 1
+        fi
+
+pre-push:
+  commands:
+    # go-test:
+    #   run: go test -race -coverprofile=coverage.out ./...
+
+    go-build:
+      run: go build ./...

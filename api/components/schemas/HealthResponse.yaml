@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  services:
+    type: object
+    properties:
+      database:
+        type: string
+        minLength: 1
+        example: example-string
+      email:
+        type: string
+        minLength: 1
+        example: example-string
+      redis:
+        type: string
+        minLength: 1
+        example: example-string
+    required:
+      - database
+      - email
+      - redis
+    additionalProperties: false
+  timestamp:
+    type: string
+    minLength: 1
+    example: example-string
+  uptime:
+    type: number
+    example: 42
+required:
+  - services
+  - timestamp
+  - uptime
+additionalProperties: false
