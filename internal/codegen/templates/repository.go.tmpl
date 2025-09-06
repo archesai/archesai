@@ -13,7 +13,7 @@ type Repository interface {
 {{range .Entities}}
 	// {{.Name}} operations
 	{{if contains .Operations "create"}}Create{{.Name}}(ctx context.Context, entity *{{.Type}}) (*{{.Type}}, error){{end}}
-	{{if contains .Operations "read"}}Get{{.Name}}ByID(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
+	{{if contains .Operations "read"}}Get{{.Name}}(ctx context.Context, id uuid.UUID) (*{{.Type}}, error){{end}}
 	{{if contains .Operations "update"}}Update{{.Name}}(ctx context.Context, id uuid.UUID, entity *{{.Type}}) (*{{.Type}}, error){{end}}
 	{{if contains .Operations "delete"}}Delete{{.Name}}(ctx context.Context, id uuid.UUID) error{{end}}
 	{{if contains .Operations "list"}}List{{.Name}}s(ctx context.Context, params List{{.Name}}sParams) ([]*{{.Type}}, int64, error){{end}}

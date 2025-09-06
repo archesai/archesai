@@ -121,7 +121,7 @@ func NewApp(cfg *config.Config) (*App, error) {
 	var pgQueries *postgresql.Queries
 	var sqliteQueries *sqlite.Queries
 	var authRepo auth.ExtendedRepository
-	var organizationsRepo organizations.OrganizationRepository
+	var organizationsRepo organizations.ExtendedRepository
 	var workflowsRepo workflows.Repository
 	var contentRepo content.Repository
 

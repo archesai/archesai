@@ -51,8 +51,8 @@ func (r *PostgresRepository) GetUserByEmail(ctx context.Context, email string) (
 	return r.dbUserToEntity(&row), nil
 }
 
-// GetUserByID retrieves a user by their unique identifier.
-func (r *PostgresRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*User, error) {
+// GetUser retrieves a user by their unique identifier.
+func (r *PostgresRepository) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 	// Note: Generated queries expect string IDs, need to convert
 	row, err := r.q.GetUser(ctx, id.String())
 	if err != nil {
@@ -194,8 +194,8 @@ func (r *PostgresRepository) GetSessionByToken(ctx context.Context, token string
 	return r.dbSessionToEntity(&row), nil
 }
 
-// GetSessionByID retrieves a session by its ID.
-func (r *PostgresRepository) GetSessionByID(ctx context.Context, id uuid.UUID) (*Session, error) {
+// GetSession retrieves a session by its ID.
+func (r *PostgresRepository) GetSession(ctx context.Context, id uuid.UUID) (*Session, error) {
 	row, err := r.q.GetSession(ctx, id.String())
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -257,8 +257,8 @@ func (r *PostgresRepository) CreateAccount(_ context.Context, _ *Account) (*Acco
 	return nil, fmt.Errorf("account operations not yet implemented")
 }
 
-// GetAccountByID retrieves an account by its ID
-func (r *PostgresRepository) GetAccountByID(_ context.Context, _ uuid.UUID) (*Account, error) {
+// GetAccount retrieves an account by its ID
+func (r *PostgresRepository) GetAccount(_ context.Context, _ uuid.UUID) (*Account, error) {
 	// TODO: Implement when account table is added to schema
 	return nil, fmt.Errorf("account operations not yet implemented")
 }

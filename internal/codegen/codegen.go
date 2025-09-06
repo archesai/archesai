@@ -679,11 +679,35 @@ func generateAdapters(config *Config, schemas map[string]*ParsedSchema, template
 }
 
 // generateDefaults generates configuration defaults.
-func generateDefaults(_ *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, _ *FileWriter) error {
+func generateDefaults(config *Config, _ map[string]*ParsedSchema, _ map[string]*template.Template, fileWriter *FileWriter) error {
 	log.Printf("▶️  Running defaults generator...")
 
-	// For now, skip defaults generation as it's causing issues
-	// TODO: Implement proper config schema detection and field mapping
-	log.Printf("  Skipping defaults generation (not implemented)")
+	// Create parser
+	parser := NewParser(filepath.Dir(config.OpenAPI))
+
+	// Parse OpenAPI spec
+	_, err := parser.ParseOpenAPISpec(config.OpenAPI)
+	if err != nil {
+		return fmt.Errorf("failed to parse spec: %w", err)
+	}
+
+	// Get complete defaults
+	defaults, err := parser.GetCompleteConfigDefaults()
+	if err != nil {
+		return fmt.Errorf("failed to get defaults: %w", err)
+	}
+
+	// Generate Go code
+	code := GenerateDefaultsCode(defaults)
+
+	// Write to file
+	outputPath := "./internal/config/defaults.gen.go"
+	if err := fileWriter.WriteFile(outputPath, []byte(code)); err != nil {
+		return fmt.Errorf("failed to write defaults file: %w", err)
+	}
+
+	log.Printf("  ✅ Generated %s", outputPath)
+	log.Printf("  Total defaults generated: %d", len(parser.FlattenConfigDefaults(defaults)))
+
 	return nil
 }

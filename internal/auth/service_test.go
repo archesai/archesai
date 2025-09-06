@@ -55,7 +55,7 @@ func (m *MockRepository) CreateUser(_ context.Context, entity *User) (*User, err
 	return entity, nil
 }
 
-func (m *MockRepository) GetUserByID(_ context.Context, id uuid.UUID) (*User, error) {
+func (m *MockRepository) GetUser(_ context.Context, id uuid.UUID) (*User, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -155,7 +155,7 @@ func (m *MockRepository) CreateSession(_ context.Context, entity *Session) (*Ses
 	return entity, nil
 }
 
-func (m *MockRepository) GetSessionByID(_ context.Context, id uuid.UUID) (*Session, error) {
+func (m *MockRepository) GetSession(_ context.Context, id uuid.UUID) (*Session, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -269,7 +269,7 @@ func (m *MockRepository) CreateAccount(_ context.Context, entity *Account) (*Acc
 	return entity, nil
 }
 
-func (m *MockRepository) GetAccountByID(_ context.Context, id uuid.UUID) (*Account, error) {
+func (m *MockRepository) GetAccount(_ context.Context, id uuid.UUID) (*Account, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -878,7 +878,7 @@ func TestDeleteUser(t *testing.T) {
 			}
 
 			// Verify user was deleted
-			_, err = mockRepo.GetUserByID(context.Background(), tt.userID)
+			_, err = mockRepo.GetUser(context.Background(), tt.userID)
 			if !errors.Is(err, ErrUserNotFound) {
 				t.Error("User was not deleted from repository")
 			}

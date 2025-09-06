@@ -33,13 +33,13 @@ func (s *SQLiteRepository) DeleteRun(_ context.Context, _ uuid.UUID) error {
 	panic("unimplemented")
 }
 
-// GetPipelineByID implements Repository.
-func (s *SQLiteRepository) GetPipelineByID(_ context.Context, _ uuid.UUID) (*Pipeline, error) {
+// GetPipeline implements Repository.
+func (s *SQLiteRepository) GetPipeline(_ context.Context, _ uuid.UUID) (*Pipeline, error) {
 	panic("unimplemented")
 }
 
-// GetRunByID implements Repository.
-func (s *SQLiteRepository) GetRunByID(_ context.Context, _ uuid.UUID) (*Run, error) {
+// GetRun implements Repository.
+func (s *SQLiteRepository) GetRun(_ context.Context, _ uuid.UUID) (*Run, error) {
 	panic("unimplemented")
 }
 

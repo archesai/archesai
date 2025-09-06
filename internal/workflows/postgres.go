@@ -33,13 +33,13 @@ func (p *PostgresRepository) DeleteRun(_ context.Context, _ uuid.UUID) error {
 	panic("unimplemented")
 }
 
-// GetPipelineByID implements Repository.
-func (p *PostgresRepository) GetPipelineByID(_ context.Context, _ uuid.UUID) (*Pipeline, error) {
+// GetPipeline implements Repository.
+func (p *PostgresRepository) GetPipeline(_ context.Context, _ uuid.UUID) (*Pipeline, error) {
 	panic("unimplemented")
 }
 
-// GetRunByID implements Repository.
-func (p *PostgresRepository) GetRunByID(_ context.Context, _ uuid.UUID) (*Run, error) {
+// GetRun implements Repository.
+func (p *PostgresRepository) GetRun(_ context.Context, _ uuid.UUID) (*Run, error) {
 	panic("unimplemented")
 }
 

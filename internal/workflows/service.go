@@ -48,7 +48,7 @@ func (s *Service) CreatePipeline(ctx context.Context, req *CreatePipelineRequest
 
 // GetPipeline retrieves a pipeline by ID
 func (s *Service) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error) {
-	pipeline, err := s.repo.GetPipelineByID(ctx, id)
+	pipeline, err := s.repo.GetPipeline(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
 	}
@@ -57,7 +57,7 @@ func (s *Service) GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, err
 
 // UpdatePipeline updates a pipeline
 func (s *Service) UpdatePipeline(ctx context.Context, id uuid.UUID, req *UpdatePipelineRequest) (*Pipeline, error) {
-	pipeline, err := s.repo.GetPipelineByID(ctx, id)
+	pipeline, err := s.repo.GetPipeline(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pipeline: %w", err)
 	}
@@ -113,7 +113,7 @@ func (s *Service) CreateRun(ctx context.Context, req *CreateRunRequest, orgID st
 		return nil, fmt.Errorf("invalid pipeline ID: %w", err)
 	}
 
-	pipeline, err := s.repo.GetPipelineByID(ctx, pipelineUUID)
+	pipeline, err := s.repo.GetPipeline(ctx, pipelineUUID)
 	if err != nil {
 		return nil, fmt.Errorf("pipeline not found: %w", err)
 	}
@@ -141,7 +141,7 @@ func (s *Service) CreateRun(ctx context.Context, req *CreateRunRequest, orgID st
 
 // GetRun retrieves a run by ID
 func (s *Service) GetRun(ctx context.Context, id uuid.UUID) (*Run, error) {
-	run, err := s.repo.GetRunByID(ctx, id)
+	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -150,7 +150,7 @@ func (s *Service) GetRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 
 // StartRun starts a pending run
 func (s *Service) StartRun(ctx context.Context, id uuid.UUID) (*Run, error) {
-	run, err := s.repo.GetRunByID(ctx, id)
+	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -175,7 +175,7 @@ func (s *Service) StartRun(ctx context.Context, id uuid.UUID) (*Run, error) {
 
 // UpdateRunProgress updates a run's progress
 func (s *Service) UpdateRunProgress(ctx context.Context, id uuid.UUID, progress float32) (*Run, error) {
-	run, err := s.repo.GetRunByID(ctx, id)
+	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -192,7 +192,7 @@ func (s *Service) UpdateRunProgress(ctx context.Context, id uuid.UUID, progress 
 
 // CompleteRun marks a run as completed
 func (s *Service) CompleteRun(ctx context.Context, id uuid.UUID, _ map[string]interface{}) (*Run, error) {
-	run, err := s.repo.GetRunByID(ctx, id)
+	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}
@@ -218,7 +218,7 @@ func (s *Service) CompleteRun(ctx context.Context, id uuid.UUID, _ map[string]in
 
 // CancelRun cancels a run
 func (s *Service) CancelRun(ctx context.Context, id uuid.UUID) (*Run, error) {
-	run, err := s.repo.GetRunByID(ctx, id)
+	run, err := s.repo.GetRun(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get run: %w", err)
 	}

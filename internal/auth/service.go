@@ -285,7 +285,7 @@ func (s *Service) RefreshToken(ctx context.Context, refreshToken string) (*Token
 
 	// Get user (convert uuid.UUID to uuid.UUID)
 	userUUID, _ := uuid.Parse(claims.UserID.String())
-	entity, err := s.repo.GetUserByID(ctx, userUUID)
+	entity, err := s.repo.GetUser(ctx, userUUID)
 	if err != nil {
 		return nil, ErrUserNotFound
 	}
@@ -369,7 +369,7 @@ func (s *Service) verifyPassword(password, hash string) error {
 
 // GetUser retrieves a user by ID
 func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
-	entity, err := s.repo.GetUserByID(ctx, id)
+	entity, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +379,7 @@ func (s *Service) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
 // UpdateUser updates user information
 func (s *Service) UpdateUser(ctx context.Context, id uuid.UUID, req *UpdateUserRequest) (*User, error) {
 	// Get existing user
-	entity, err := s.repo.GetUserByID(ctx, id)
+	entity, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}

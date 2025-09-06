@@ -12,14 +12,14 @@ type Repository interface {
 
 	// Pipeline operations
 	CreatePipeline(ctx context.Context, entity *Pipeline) (*Pipeline, error)
-	GetPipelineByID(ctx context.Context, id uuid.UUID) (*Pipeline, error)
+	GetPipeline(ctx context.Context, id uuid.UUID) (*Pipeline, error)
 	UpdatePipeline(ctx context.Context, id uuid.UUID, entity *Pipeline) (*Pipeline, error)
 	DeletePipeline(ctx context.Context, id uuid.UUID) error
 	ListPipelines(ctx context.Context, params ListPipelinesParams) ([]*Pipeline, int64, error)
 
 	// Run operations
 	CreateRun(ctx context.Context, entity *Run) (*Run, error)
-	GetRunByID(ctx context.Context, id uuid.UUID) (*Run, error)
+	GetRun(ctx context.Context, id uuid.UUID) (*Run, error)
 	UpdateRun(ctx context.Context, id uuid.UUID, entity *Run) (*Run, error)
 	DeleteRun(ctx context.Context, id uuid.UUID) error
 	ListRuns(ctx context.Context, params ListRunsParams) ([]*Run, int64, error)

@@ -65,7 +65,7 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 		}
 
 		// Now get the user
-		retrieved, err := repo.GetUserByID(ctx, created.Id)
+		retrieved, err := repo.GetUser(ctx, created.Id)
 		if err != nil {
 			t.Fatalf("Failed to get user: %v", err)
 		}
@@ -161,7 +161,7 @@ func TestPostgresRepository_UserOperations(t *testing.T) {
 		}
 
 		// Verify the user is deleted
-		_, err = repo.GetUserByID(ctx, created.Id)
+		_, err = repo.GetUser(ctx, created.Id)
 		if err == nil {
 			t.Error("Expected error getting deleted user, got nil")
 		}

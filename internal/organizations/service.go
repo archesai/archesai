@@ -12,12 +12,12 @@ import (
 
 // Service provides organization business logic
 type Service struct {
-	repo   OrganizationRepository
+	repo   ExtendedRepository
 	logger *slog.Logger
 }
 
 // NewService creates a new organization service
-func NewService(repo OrganizationRepository, logger *slog.Logger) *Service {
+func NewService(repo ExtendedRepository, logger *slog.Logger) *Service {
 	return &Service{
 		repo:   repo,
 		logger: logger,
@@ -73,7 +73,7 @@ func (s *Service) CreateOrganization(ctx context.Context, req *CreateOrganizatio
 
 // GetOrganization retrieves an organization by ID
 func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organization, error) {
-	org, err := s.repo.GetOrganizationByID(ctx, id)
+	org, err := s.repo.GetOrganization(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
@@ -82,7 +82,7 @@ func (s *Service) GetOrganization(ctx context.Context, id uuid.UUID) (*Organizat
 
 // UpdateOrganization updates an organization
 func (s *Service) UpdateOrganization(ctx context.Context, id uuid.UUID, req *UpdateOrganizationRequest) (*Organization, error) {
-	org, err := s.repo.GetOrganizationByID(ctx, id)
+	org, err := s.repo.GetOrganization(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get organization: %w", err)
 	}
@@ -280,7 +280,7 @@ func (s *Service) AcceptInvitation(ctx context.Context, id uuid.UUID, _ string) 
 	// Update invitation status
 	invitation.Status = "accepted"
 	invitation.UpdatedAt = time.Now()
-	_, err = s.repo.UpdateInvitation(ctx, invitation)
+	_, err = s.repo.UpdateInvitation(ctx, invitation.Id, invitation)
 	if err != nil {
 		s.logger.Warn("failed to update invitation status", "error", err)
 		// Don't fail the whole operation for this
@@ -308,10 +308,14 @@ func (s *Service) DeleteInvitation(ctx context.Context, id uuid.UUID) error {
 }
 
 // ListInvitations retrieves invitations for an organization
-func (s *Service) ListInvitations(ctx context.Context, orgID string, limit, offset int) ([]*Invitation, int, error) {
-	invitations, total, err := s.repo.ListInvitations(ctx, orgID, limit, offset)
+func (s *Service) ListInvitations(ctx context.Context, _ string, limit, offset int) ([]*Invitation, int, error) {
+	params := ListInvitationsParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+	invitations, total, err := s.repo.ListInvitations(ctx, params)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to list invitations: %w", err)
 	}
-	return invitations, total, nil
+	return invitations, int(total), nil
 }

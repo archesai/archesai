@@ -92,7 +92,7 @@ func (h *Handler) CreateOrganization(ctx context.Context, req CreateOrganization
 
 // GetOneOrganization retrieves an organization by ID (implements StrictServerInterface)
 func (h *Handler) GetOneOrganization(ctx context.Context, req GetOneOrganizationRequestObject) (GetOneOrganizationResponseObject, error) {
-	org, err := h.service.repo.GetOrganizationByID(ctx, req.Id)
+	org, err := h.service.repo.GetOrganization(ctx, req.Id)
 	if err != nil {
 		if err == ErrOrganizationNotFound {
 			return GetOneOrganization404ApplicationProblemPlusJSONResponse{

@@ -16,7 +16,7 @@ type PostgresRepository struct {
 }
 
 // NewPostgresRepository creates a new PostgreSQL repository
-func NewPostgresRepository(queries *postgresqlgen.Queries) OrganizationRepository {
+func NewPostgresRepository(queries *postgresqlgen.Queries) ExtendedRepository {
 	return &PostgresRepository{
 		queries: queries,
 	}
@@ -28,8 +28,8 @@ func (r *PostgresRepository) CreateOrganization(_ context.Context, _ *Organizati
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetOrganizationByID retrieves an organization by ID
-func (r *PostgresRepository) GetOrganizationByID(_ context.Context, _ uuid.UUID) (*Organization, error) {
+// GetOrganization retrieves an organization by ID
+func (r *PostgresRepository) GetOrganization(_ context.Context, _ uuid.UUID) (*Organization, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
@@ -58,13 +58,7 @@ func (r *PostgresRepository) CreateMember(_ context.Context, _ *Member) (*Member
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetMemberByID retrieves a member by ID (generated interface)
-func (r *PostgresRepository) GetMemberByID(_ context.Context, _ uuid.UUID) (*Member, error) {
-	// TODO: Implement after SQL queries are created
-	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
-}
-
-// GetMember retrieves a member by ID (custom interface)
+// GetMember retrieves a member by ID
 func (r *PostgresRepository) GetMember(_ context.Context, _ uuid.UUID) (*Member, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
@@ -94,20 +88,20 @@ func (r *PostgresRepository) ListMembers(_ context.Context, _ ListMembersParams)
 	return nil, 0, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// CreateInvitation creates a new invitation
-func (r *PostgresRepository) CreateInvitation(_ context.Context, _ *Invitation) (*Invitation, error) {
-	// TODO: Implement after SQL queries are created
-	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
-}
-
 // GetInvitation retrieves an invitation by ID
 func (r *PostgresRepository) GetInvitation(_ context.Context, _ uuid.UUID) (*Invitation, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
+// CreateInvitation creates a new invitation
+func (r *PostgresRepository) CreateInvitation(_ context.Context, _ *Invitation) (*Invitation, error) {
+	// TODO: Implement after SQL queries are created
+	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
+}
+
 // UpdateInvitation updates an invitation
-func (r *PostgresRepository) UpdateInvitation(_ context.Context, _ *Invitation) (*Invitation, error) {
+func (r *PostgresRepository) UpdateInvitation(_ context.Context, _ uuid.UUID, _ *Invitation) (*Invitation, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
@@ -119,7 +113,7 @@ func (r *PostgresRepository) DeleteInvitation(_ context.Context, _ uuid.UUID) er
 }
 
 // ListInvitations retrieves a list of invitations
-func (r *PostgresRepository) ListInvitations(_ context.Context, _ string, _, _ int) ([]*Invitation, int, error) {
+func (r *PostgresRepository) ListInvitations(_ context.Context, _ ListInvitationsParams) ([]*Invitation, int64, error) {
 	// TODO: Implement after SQL queries are created
 	return nil, 0, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }

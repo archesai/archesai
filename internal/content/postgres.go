@@ -26,8 +26,8 @@ func (r *PostgresRepository) CreateArtifact(_ context.Context, _ *Artifact) (*Ar
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetArtifactByID retrieves an artifact by ID
-func (r *PostgresRepository) GetArtifactByID(_ context.Context, _ uuid.UUID) (*Artifact, error) {
+// GetArtifact retrieves an artifact by ID
+func (r *PostgresRepository) GetArtifact(_ context.Context, _ uuid.UUID) (*Artifact, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
@@ -56,8 +56,8 @@ func (r *PostgresRepository) CreateLabel(_ context.Context, _ *Label) (*Label, e
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 
-// GetLabelByID retrieves a label by ID
-func (r *PostgresRepository) GetLabelByID(_ context.Context, _ uuid.UUID) (*Label, error) {
+// GetLabel retrieves a label by ID
+func (r *PostgresRepository) GetLabel(_ context.Context, _ uuid.UUID) (*Label, error) {
 	return nil, fmt.Errorf("not implemented yet - waiting for SQL queries")
 }
 

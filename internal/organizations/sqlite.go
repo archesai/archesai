@@ -16,22 +16,22 @@ type SQLiteRepository struct {
 }
 
 // NewSQLiteRepository creates a new SQLite repository for organizations
-func NewSQLiteRepository(q *sqlite.Queries) OrganizationRepository {
+func NewSQLiteRepository(q *sqlite.Queries) ExtendedRepository {
 	return &SQLiteRepository{
 		q: q,
 	}
 }
 
-// Ensure OrganizationSQLiteRepository implements OrganizationRepository
-var _ OrganizationRepository = (*SQLiteRepository)(nil)
+// Ensure SQLiteRepository implements ExtendedRepository
+var _ ExtendedRepository = (*SQLiteRepository)(nil)
 
 // CreateOrganization creates a new organization
 func (r *SQLiteRepository) CreateOrganization(_ context.Context, _ *Organization) (*Organization, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetOrganizationByID retrieves an organization by ID
-func (r *SQLiteRepository) GetOrganizationByID(_ context.Context, _ uuid.UUID) (*Organization, error) {
+// GetOrganization retrieves an organization by ID
+func (r *SQLiteRepository) GetOrganization(_ context.Context, _ uuid.UUID) (*Organization, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -55,12 +55,7 @@ func (r *SQLiteRepository) CreateMember(_ context.Context, _ *Member) (*Member, 
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetMemberByID retrieves a member by ID (generated interface)
-func (r *SQLiteRepository) GetMemberByID(_ context.Context, _ uuid.UUID) (*Member, error) {
-	return nil, fmt.Errorf("SQLite implementation not yet available")
-}
-
-// GetMember retrieves a member by ID (custom interface)
+// GetMember retrieves a member by ID
 func (r *SQLiteRepository) GetMember(_ context.Context, _ uuid.UUID) (*Member, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
@@ -96,7 +91,7 @@ func (r *SQLiteRepository) GetInvitation(_ context.Context, _ uuid.UUID) (*Invit
 }
 
 // UpdateInvitation updates an invitation
-func (r *SQLiteRepository) UpdateInvitation(_ context.Context, _ *Invitation) (*Invitation, error) {
+func (r *SQLiteRepository) UpdateInvitation(_ context.Context, _ uuid.UUID, _ *Invitation) (*Invitation, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -106,6 +101,6 @@ func (r *SQLiteRepository) DeleteInvitation(_ context.Context, _ uuid.UUID) erro
 }
 
 // ListInvitations lists invitations for an organization
-func (r *SQLiteRepository) ListInvitations(_ context.Context, _ string, _, _ int) ([]*Invitation, int, error) {
+func (r *SQLiteRepository) ListInvitations(_ context.Context, _ ListInvitationsParams) ([]*Invitation, int64, error) {
 	return nil, 0, fmt.Errorf("SQLite implementation not yet available")
 }

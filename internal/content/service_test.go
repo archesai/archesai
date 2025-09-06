@@ -42,7 +42,7 @@ func (m *MockRepository) CreateArtifact(_ context.Context, artifact *Artifact) (
 	return artifact, nil
 }
 
-func (m *MockRepository) GetArtifactByID(_ context.Context, id uuid.UUID) (*Artifact, error) {
+func (m *MockRepository) GetArtifact(_ context.Context, id uuid.UUID) (*Artifact, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -101,7 +101,7 @@ func (m *MockRepository) CreateLabel(_ context.Context, label *Label) (*Label, e
 	return label, nil
 }
 
-func (m *MockRepository) GetLabelByID(_ context.Context, id uuid.UUID) (*Label, error) {
+func (m *MockRepository) GetLabel(_ context.Context, id uuid.UUID) (*Label, error) {
 	if m.err != nil {
 		return nil, m.err
 	}

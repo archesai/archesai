@@ -1,47 +1,51 @@
-// Package codegen provides schema parsing and type definitions for x-codegen extensions in OpenAPI schemas.
+// Package codegen provides schema parsing using the Speakeasy OpenAPI library.
+// This parser offers better OpenAPI 3.1.1 support and improved x-codegen extraction.
 package codegen
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"github.com/speakeasy-api/openapi/extensions"
+	"github.com/speakeasy-api/openapi/jsonschema/oas3"
+	"github.com/speakeasy-api/openapi/openapi"
 )
 
-// Legacy type aliases for backward compatibility - removed as they're now generated in models.gen.go
+// ParsedSchema represents a fully parsed and analyzed schema with x-codegen metadata.
+type ParsedSchema struct {
+	Schema
 
-// PropertyXCodegen represents x-codegen at the property level.
-// This remains separate as it's for individual field-level configuration.
-type PropertyXCodegen struct {
-	// Create unique constraint
-	Unique *bool `yaml:"unique,omitempty" json:"unique,omitempty"`
+	// Domain this schema belongs to (e.g., "auth", "organizations")
+	Domain string
 
-	// Create database index
-	Index *bool `yaml:"index,omitempty" json:"index,omitempty"`
+	// File path where schema was defined
+	SourceFile string
 
-	// Field is searchable (full-text search)
-	Searchable *bool `yaml:"searchable,omitempty" json:"searchable,omitempty"`
+	// Timestamp when parsed
+	ParsedAt time.Time
 
-	// Custom validation rule
-	Validation *XCodegenValidation `yaml:"validation,omitempty" json:"validation,omitempty"`
+	// Any parsing warnings
+	Warnings []string
 
-	// Mark as primary key (legacy field)
-	PrimaryKey bool `yaml:"primary-key,omitempty" json:"primary-key,omitempty"`
+	// Primary key field name (typically "ID" or "Id")
+	PrimaryKey string
 
-	// Field is immutable after creation
-	Immutable bool `yaml:"immutable,omitempty" json:"immutable,omitempty"`
+	// Type is the entity type name (same as Name, for template compatibility)
+	Type string
 
-	// Database column name (if different from property name)
-	ColumnName string `yaml:"column-name,omitempty" json:"column-name,omitempty"`
+	// Events extracted and formatted from XCodegen.Events
+	Events []Event
+}
 
-	// Default value expression
-	DefaultValue string `yaml:"default-value,omitempty" json:"default-value,omitempty"`
-
-	// Auto-generate value (e.g., "uuid", "timestamp")
-	AutoGenerate string `yaml:"auto-generate,omitempty" json:"auto-generate,omitempty"`
+// Event represents a domain event for code generation.
+type Event struct {
+	Type        string // e.g., "UserCreated"
+	Description string // e.g., "User created event"
 }
 
 // Schema represents a parsed OpenAPI schema with x-codegen extensions.
@@ -100,108 +104,60 @@ type Property struct {
 	// Nested object properties
 	Properties map[string]Property `yaml:"properties,omitempty" json:"properties,omitempty"`
 
-	// Minimum value (for numbers)
-	Minimum *float64 `yaml:"minimum,omitempty" json:"minimum,omitempty"`
-
-	// Maximum value (for numbers)
-	Maximum *float64 `yaml:"maximum,omitempty" json:"maximum,omitempty"`
-
-	// Minimum length (for strings)
-	MinLength *int `yaml:"minLength,omitempty" json:"minLength,omitempty"`
-
-	// Maximum length (for strings)
-	MaxLength *int `yaml:"maxLength,omitempty" json:"maxLength,omitempty"`
-
-	// Pattern (regex for strings)
-	Pattern string `yaml:"pattern,omitempty" json:"pattern,omitempty"`
-
 	// x-codegen extension at property level
 	XCodegen *PropertyXCodegen `yaml:"x-codegen,omitempty" json:"x-codegen,omitempty"`
+
+	// Required fields for object types
+	Required []string `yaml:"required,omitempty" json:"required,omitempty"`
 }
 
-// Ref represents a reference to another schema.
-type Ref struct {
-	Ref string `yaml:"$ref,omitempty" json:"$ref,omitempty"`
-}
+// PropertyXCodegen represents x-codegen at the property level.
+type PropertyXCodegen struct {
+	// Create unique constraint
+	Unique *bool `yaml:"unique,omitempty" json:"unique,omitempty"`
 
-// ParsedSchema represents a fully parsed schema ready for code generation.
-type ParsedSchema struct {
-	Schema
+	// Create database index
+	Index *bool `yaml:"index,omitempty" json:"index,omitempty"`
 
-	// Domain this schema belongs to (e.g., "auth", "organizations")
-	Domain string
+	// Field is searchable (full-text search)
+	Searchable *bool `yaml:"searchable,omitempty" json:"searchable,omitempty"`
 
-	// File path where schema was defined
-	SourceFile string
+	// Custom validation rule
+	Validation *XCodegenValidation `yaml:"validation,omitempty" json:"validation,omitempty"`
 
-	// Timestamp when parsed
-	ParsedAt time.Time
+	// Mark as primary key (legacy field)
+	PrimaryKey bool `yaml:"primary-key,omitempty" json:"primary-key,omitempty"`
 
-	// Any parsing warnings
-	Warnings []string
+	// Field is immutable after creation
+	Immutable bool `yaml:"immutable,omitempty" json:"immutable,omitempty"`
 
-	// Primary key field name (typically "ID" or "Id")
-	PrimaryKey string
+	// Database column name (if different from property name)
+	ColumnName string `yaml:"column-name,omitempty" json:"column-name,omitempty"`
 
-	// Type is the entity type name (same as Name, for template compatibility)
-	Type string
+	// Default value expression
+	DefaultValue string `yaml:"default-value,omitempty" json:"default-value,omitempty"`
 
-	// Events extracted and formatted from XCodegen.Events
-	Events []Event
-}
-
-// Event represents a domain event for code generation.
-type Event struct {
-	Type        string // e.g., "UserCreated"
-	Description string // e.g., "User created event"
-}
-
-// GeneratorConfig represents configuration for a specific generator.
-type GeneratorConfig struct {
-	// Generator name
-	Name string
-
-	// Enabled flag
-	Enabled bool
-
-	// Output directory
-	OutputDir string
-
-	// Template overrides
-	Templates map[string]string
-
-	// Custom configuration
-	Config map[string]interface{}
-}
-
-// ParseConfig represents the overall codegen configuration.
-type ParseConfig struct {
-	// OpenAPI spec file path
-	OpenAPIFile string `yaml:"openapi" json:"openapi"`
-
-	// Domains to generate
-	Domains map[string]DomainConfig `yaml:"domains" json:"domains"`
-
-	// Global settings
-	Settings GlobalSettings `yaml:"settings" json:"settings"`
-
-	// Generator-specific configurations
-	Generators map[string]GeneratorConfig `yaml:"generators,omitempty" json:"generators,omitempty"`
+	// Auto-generate value (e.g., "uuid", "timestamp")
+	AutoGenerate string `yaml:"auto-generate,omitempty" json:"auto-generate,omitempty"`
 }
 
 // Parser handles parsing of OpenAPI schemas with x-codegen extensions.
+// This implementation uses the Speakeasy OpenAPI library for better OpenAPI 3.1.1 support.
 type Parser struct {
-	// Cache of parsed schemas
+	// Parsed schemas cache
 	schemas map[string]*ParsedSchema
 
-	// Base directory for resolving references
+	// Base directory for relative paths
 	baseDir string
 
 	// Warnings accumulated during parsing
 	warnings []string
+
+	// OpenAPI document
+	doc *openapi.OpenAPI
 }
 
-// NewParser creates a new schema parser.
+// NewParser creates a new schema parser using the Speakeasy OpenAPI library.
 func NewParser(baseDir string) *Parser {
 	return &Parser{
 		schemas:  make(map[string]*ParsedSchema),
@@ -210,153 +166,280 @@ func NewParser(baseDir string) *Parser {
 	}
 }
 
-// ParseFile parses a single OpenAPI schema file.
-func (p *Parser) ParseFile(filePath string) (*ParsedSchema, error) {
-	data, err := os.ReadFile(filePath)
+// ParseOpenAPISpec parses a complete OpenAPI specification file using Speakeasy.
+func (p *Parser) ParseOpenAPISpec(specPath string) (map[string]*ParsedSchema, error) {
+	ctx := context.Background()
+
+	// Open the spec file
+	f, err := os.Open(specPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %w", filePath, err)
+		return nil, fmt.Errorf("failed to open spec file: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	// Parse and validate the OpenAPI document
+	doc, validationErrs, err := openapi.Unmarshal(ctx, f)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal OpenAPI spec: %w", err)
 	}
 
-	var schema Schema
-	if err := yaml.Unmarshal(data, &schema); err != nil {
-		return nil, fmt.Errorf("failed to parse YAML in %s: %w", filePath, err)
+	// Store document for reference
+	p.doc = doc
+
+	// Collect validation warnings
+	for _, validErr := range validationErrs {
+		p.warnings = append(p.warnings, validErr.Error())
 	}
 
-	// Extract schema name from filename
-	baseName := filepath.Base(filePath)
-	schemaName := strings.TrimSuffix(baseName, filepath.Ext(baseName))
-	schema.Name = schemaName
+	// Check if we have components and schemas
+	if doc.Components == nil || doc.Components.Schemas == nil {
+		return nil, fmt.Errorf("no components.schemas found in spec")
+	}
 
-	// Infer domain from path or schema name
-	domain := p.inferDomain(filePath, schemaName)
+	// Parse all schemas in components
+	schemas := make(map[string]*ParsedSchema)
+	for schemaName := range doc.Components.Schemas.Keys() {
+		schemaRef := doc.Components.Schemas.GetOrZero(schemaName)
+		if schemaRef != nil && schemaRef.IsLeft() {
+			schema := schemaRef.GetLeft()
+			parsed := p.parseSchema(schemaName, schema)
+			if parsed != nil {
+				schemas[schemaName] = parsed
+			}
+		}
+	}
 
+	// Cache the parsed schemas
+	p.schemas = schemas
+
+	return schemas, nil
+}
+
+// parseSchema converts a Speakeasy schema to our ParsedSchema format.
+func (p *Parser) parseSchema(name string, schema *oas3.Schema) *ParsedSchema {
+	// Create base parsed schema
 	parsed := &ParsedSchema{
-		Schema:     schema,
-		Domain:     domain,
-		SourceFile: filePath,
+		Schema: Schema{
+			Name: name,
+		},
+		Domain:     p.inferDomain("", name),
+		SourceFile: "openapi.yaml", // Since it's from the bundled spec
 		ParsedAt:   time.Now(),
 		Warnings:   []string{},
-		PrimaryKey: "Id",        // Default primary key field
-		Type:       schema.Name, // For template compatibility
+		PrimaryKey: "Id", // Default primary key field
+		Type:       name, // For template compatibility
 	}
 
-	// Validate and enhance x-codegen configuration
-	p.validateXCodegen(parsed)
+	// Extract basic schema info
+	if schema.Type != nil {
+		types := schema.GetType()
+		if len(types) > 0 {
+			parsed.Schema.Type = string(types[0])
+		}
+	}
 
-	// Cache the parsed schema
-	p.schemas[schemaName] = parsed
+	if schema.Description != nil {
+		parsed.Description = *schema.Description
+	}
 
-	return parsed, nil
+	parsed.Required = schema.Required
+
+	// Extract x-codegen extension
+	if schema.Extensions != nil {
+		xcodegen := p.extractXCodegen(schema.Extensions)
+		if xcodegen != nil {
+			parsed.XCodegen = xcodegen
+
+			// Extract events if present
+			if len(xcodegen.Events) > 0 {
+				parsed.Events = make([]Event, 0, len(xcodegen.Events))
+				for _, eventName := range xcodegen.Events {
+					parsed.Events = append(parsed.Events, Event{
+						Type:        eventName,
+						Description: fmt.Sprintf("%s event", eventName),
+					})
+				}
+			}
+		}
+	}
+
+	// Parse properties
+	if schema.Properties != nil {
+		parsed.Properties = make(map[string]Property)
+		for propName := range schema.Properties.Keys() {
+			propRef := schema.Properties.GetOrZero(propName)
+			if propRef != nil && propRef.IsLeft() {
+				prop := propRef.GetLeft()
+				parsed.Properties[propName] = p.parseProperty(propName, prop)
+			}
+		}
+
+		// Properties are already stored at top level
+	}
+
+	// Extract default values if present
+	if schema.Default != nil {
+		var defaultValue interface{}
+		if err := schema.Default.Decode(&defaultValue); err == nil {
+			parsed.Default = defaultValue
+		}
+	}
+
+	// Extract enum values if present
+	if len(schema.Enum) > 0 {
+		parsed.Enum = make([]interface{}, len(schema.Enum))
+		for i, enumVal := range schema.Enum {
+			var value interface{}
+			if err := enumVal.Decode(&value); err == nil {
+				parsed.Enum[i] = value
+			} else {
+				parsed.Enum[i] = enumVal
+			}
+		}
+	}
+
+	return parsed
 }
 
-// ParseDirectory parses all schema files in a directory.
-func (p *Parser) ParseDirectory(dir string) (map[string]*ParsedSchema, error) {
-	schemas := make(map[string]*ParsedSchema)
+// parseProperty converts a Speakeasy property to our Property format.
+func (p *Parser) parseProperty(_ string, prop *oas3.Schema) Property {
+	result := Property{}
 
-	entries, err := os.ReadDir(dir)
+	// Extract type
+	if prop.Type != nil {
+		types := prop.GetType()
+		if len(types) > 0 {
+			result.Type = string(types[0])
+		}
+	}
+
+	// Extract format
+	if prop.Format != nil {
+		result.Format = *prop.Format
+	}
+
+	// Extract description
+	if prop.Description != nil {
+		result.Description = *prop.Description
+	}
+
+	// Extract default value
+	if prop.Default != nil {
+		var defaultValue interface{}
+		if err := prop.Default.Decode(&defaultValue); err == nil {
+			result.Default = defaultValue
+		}
+	}
+
+	// Extract enum values
+	if len(prop.Enum) > 0 {
+		result.Enum = make([]interface{}, len(prop.Enum))
+		for i, enumVal := range prop.Enum {
+			var value interface{}
+			if err := enumVal.Decode(&value); err == nil {
+				result.Enum[i] = value
+			}
+		}
+	}
+
+	// Extract x-codegen extension at property level
+	if prop.Extensions != nil {
+		xcodegen := p.extractPropertyXCodegen(prop.Extensions)
+		if xcodegen != nil {
+			result.XCodegen = xcodegen
+		}
+	}
+
+	// Handle array items
+	if result.Type == "array" && prop.Items != nil && prop.Items.IsLeft() {
+		itemSchema := prop.Items.GetLeft()
+		itemProp := p.parseProperty("item", itemSchema)
+		result.Items = &itemProp
+	}
+
+	// Handle nested object properties
+	if result.Type == "object" && prop.Properties != nil {
+		result.Properties = make(map[string]Property)
+		for subPropName := range prop.Properties.Keys() {
+			subPropRef := prop.Properties.GetOrZero(subPropName)
+			if subPropRef != nil && subPropRef.IsLeft() {
+				subProp := subPropRef.GetLeft()
+				result.Properties[subPropName] = p.parseProperty(subPropName, subProp)
+			}
+		}
+	}
+
+	return result
+}
+
+// extractXCodegen extracts the x-codegen extension from schema extensions.
+func (p *Parser) extractXCodegen(ext *extensions.Extensions) *XCodegen {
+	raw, err := extensions.GetExtensionValue[interface{}](ext, "x-codegen")
+	if err != nil || raw == nil {
+		return nil
+	}
+
+	// Marshal to JSON then unmarshal to our type
+	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read directory %s: %w", dir, err)
+		p.warnings = append(p.warnings, fmt.Sprintf("failed to marshal x-codegen: %v", err))
+		return nil
 	}
 
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-
-		// Only process YAML files
-		if !strings.HasSuffix(entry.Name(), ".yaml") && !strings.HasSuffix(entry.Name(), ".yml") {
-			continue
-		}
-
-		// Skip non-schema files
-		if strings.Contains(entry.Name(), "Request") || strings.Contains(entry.Name(), "Response") {
-			continue
-		}
-
-		filePath := filepath.Join(dir, entry.Name())
-		schema, err := p.ParseFile(filePath)
-		if err != nil {
-			p.warnings = append(p.warnings, fmt.Sprintf("Failed to parse %s: %v", entry.Name(), err))
-			continue
-		}
-
-		schemas[schema.Name] = schema
+	var xcodegen XCodegen
+	if err := json.Unmarshal(jsonBytes, &xcodegen); err != nil {
+		p.warnings = append(p.warnings, fmt.Sprintf("failed to unmarshal x-codegen: %v", err))
+		return nil
 	}
 
-	return schemas, nil
+	return &xcodegen
 }
 
-// ParseOpenAPISpec parses a complete OpenAPI specification file.
-func (p *Parser) ParseOpenAPISpec(specPath string) (map[string]*ParsedSchema, error) {
-	data, err := os.ReadFile(specPath)
+// extractPropertyXCodegen extracts property-level x-codegen extension.
+func (p *Parser) extractPropertyXCodegen(ext *extensions.Extensions) *PropertyXCodegen {
+	raw, err := extensions.GetExtensionValue[interface{}](ext, "x-codegen")
+	if err != nil || raw == nil {
+		return nil
+	}
+
+	// Marshal to JSON then unmarshal to our type
+	jsonBytes, err := json.Marshal(raw)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read OpenAPI spec: %w", err)
+		return nil
 	}
 
-	var spec struct {
-		OpenAPI    string `yaml:"openapi"`
-		Components struct {
-			Schemas map[string]Schema `yaml:"schemas"`
-		} `yaml:"components"`
-		Paths map[string]interface{} `yaml:"paths"`
+	var xcodegen PropertyXCodegen
+	if err := json.Unmarshal(jsonBytes, &xcodegen); err != nil {
+		return nil
 	}
 
-	if err := yaml.Unmarshal(data, &spec); err != nil {
-		return nil, fmt.Errorf("failed to parse OpenAPI spec: %w", err)
-	}
-
-	schemas := make(map[string]*ParsedSchema)
-
-	for name, schema := range spec.Components.Schemas {
-		schema.Name = name
-		domain := p.inferDomain(specPath, name)
-
-		// Resolve allOf to merge properties
-		p.resolveAllOf(&schema, spec.Components.Schemas)
-
-		parsed := &ParsedSchema{
-			Schema:     schema,
-			Domain:     domain,
-			SourceFile: specPath,
-			ParsedAt:   time.Now(),
-			Warnings:   []string{},
-			PrimaryKey: "Id",        // Default primary key field
-			Type:       schema.Name, // For template compatibility
-		}
-
-		p.validateXCodegen(parsed)
-		schemas[name] = parsed
-		p.schemas[name] = parsed
-	}
-
-	return schemas, nil
+	return &xcodegen
 }
 
-// ParseWithTags parses schemas filtered by OpenAPI tags.
+// ParseWithTags parses schemas associated with specific OpenAPI tags.
 func (p *Parser) ParseWithTags(specPath string, tags []string) (map[string]*ParsedSchema, error) {
-	// First parse all schemas
+	// First parse the entire spec
 	allSchemas, err := p.ParseOpenAPISpec(specPath)
 	if err != nil {
 		return nil, err
 	}
 
-	// Filter by tags if provided
+	// If no tags specified, return all schemas
 	if len(tags) == 0 {
 		return allSchemas, nil
 	}
 
-	// Create a tag set for quick lookup
-	tagSet := make(map[string]bool)
-	for _, tag := range tags {
-		tagSet[tag] = true
-	}
-
-	// Filter schemas based on tags
+	// Filter schemas by tags
+	// Note: This would need to be enhanced to actually check which schemas
+	// are used by operations with the specified tags
 	filtered := make(map[string]*ParsedSchema)
 	for name, schema := range allSchemas {
-		// Check if schema name matches any tag pattern
-		if p.matchesTags(name, tagSet) {
-			filtered[name] = schema
+		// For now, use domain inference as a proxy for tags
+		for _, tag := range tags {
+			if strings.EqualFold(schema.Domain, tag) {
+				filtered[name] = schema
+				break
+			}
 		}
 	}
 
@@ -368,326 +451,320 @@ func (p *Parser) GetWarnings() []string {
 	return p.warnings
 }
 
-// ResolveRef resolves a $ref to its schema.
-func (p *Parser) ResolveRef(ref string) (*ParsedSchema, error) {
-	// Remove the file path prefix if present
-	if strings.Contains(ref, "#/") {
-		parts := strings.Split(ref, "#/")
-		ref = parts[len(parts)-1]
-	}
-
-	// Remove components/schemas/ prefix
-	ref = strings.TrimPrefix(ref, "components/schemas/")
-
-	// Check cache
-	if schema, ok := p.schemas[ref]; ok {
-		return schema, nil
-	}
-
-	// Try to load from file
-	possiblePaths := []string{
-		filepath.Join(p.baseDir, "api", "components", "schemas", ref+".yaml"),
-		filepath.Join(p.baseDir, ref+".yaml"),
-		filepath.Join(p.baseDir, ref+".yml"),
-	}
-
-	for _, path := range possiblePaths {
-		if _, err := os.Stat(path); err == nil {
-			return p.ParseFile(path)
-		}
-	}
-
-	return nil, fmt.Errorf("cannot resolve reference: %s", ref)
-}
-
-// validateXCodegen validates and enhances x-codegen configuration.
-func (p *Parser) validateXCodegen(schema *ParsedSchema) {
-	if schema.XCodegen == nil {
-		return
-	}
-
-	// Validate repository configuration
-	repo := schema.XCodegen.Repository
-	// Ensure operations are valid
-	validOps := map[string]bool{
-		"create":      true,
-		"read":        true,
-		"update":      true,
-		"delete":      true,
-		"list":        true,
-		"bulk_create": true,
-		"bulk_update": true,
-		"bulk_delete": true,
-	}
-
-	if len(repo.Operations) > 0 {
-		for _, op := range repo.Operations {
-			if !validOps[string(op)] {
-				schema.Warnings = append(schema.Warnings,
-					fmt.Sprintf("Invalid repository operation: %s", op))
-			}
-		}
-	}
-
-	// Set default table name if not specified
-	// If Postgres config exists but has no table name, set it
-	if repo.Postgres.TableName == "" {
-		repo.Postgres.TableName = pluralize(strings.ToLower(schema.Name))
-	} else if repo.Sqlite.TableName == "" {
-		// If SQLite config exists but has no table name, set it
-		repo.Sqlite.TableName = pluralize(strings.ToLower(schema.Name))
-	} else if repo.Postgres.TableName == "" && repo.Sqlite.TableName == "" {
-		// If neither Postgres nor SQLite has a table name, set default Postgres table name
-		repo.Postgres.TableName = pluralize(strings.ToLower(schema.Name))
-	}
-
-	// Validate cache configuration
-	cache := schema.XCodegen.Cache
-	if cache.Enabled {
-		if cache.Ttl <= 0 {
-			cache.Ttl = 300 // Default 5 minutes
-		}
-
-		if cache.KeyPattern == "" {
-			cache.KeyPattern = fmt.Sprintf("%s:{id}", strings.ToLower(schema.Name))
-		}
-	}
-
-	// Validate handler configuration
-	handler := &schema.XCodegen.Handler
-	if handler.PathPrefix == "" {
-		prefix := "/" + strings.ToLower(pluralize(schema.Name))
-		handler.PathPrefix = prefix
-	}
-
-	// Process events
-	if len(schema.XCodegen.Events) > 0 {
-		for _, eventName := range schema.XCodegen.Events {
-			event := Event{
-				Type:        CamelCase(schema.Name) + CamelCase(eventName),
-				Description: fmt.Sprintf("%s %s event", schema.Name, eventName),
-			}
-			schema.Events = append(schema.Events, event)
-		}
-	}
-
-	// Validate property-level x-codegen
-	// Sort property keys for consistent processing
-	propKeys := GetSortedPropertyKeys(schema.Properties)
-	for _, propName := range propKeys {
-		prop := schema.Properties[propName]
-		if prop.XCodegen != nil {
-			// Validate primary key
-			if prop.XCodegen.PrimaryKey {
-				// Ensure it's indexed
-				if prop.XCodegen.Index == nil || !*prop.XCodegen.Index {
-					trueVal := true
-					prop.XCodegen.Index = &trueVal
-				}
-				// Ensure it's unique
-				if prop.XCodegen.Unique == nil || !*prop.XCodegen.Unique {
-					trueVal := true
-					prop.XCodegen.Unique = &trueVal
-				}
-			}
-
-			// Set default column name
-			if prop.XCodegen.ColumnName == "" {
-				prop.XCodegen.ColumnName = SnakeCase(propName)
-			}
-			// Update the property back in the map
-			schema.Properties[propName] = prop
-		}
-	}
-}
-
-// resolveAllOf resolves allOf references and merges properties into the schema.
-func (p *Parser) resolveAllOf(schema *Schema, _ map[string]Schema) {
-	if len(schema.AllOf) == 0 {
-		return
-	}
-
-	// Initialize properties map if nil
-	if schema.Properties == nil {
-		schema.Properties = make(map[string]Property)
-	}
-
-	// Process each item in allOf
-	for _, item := range schema.AllOf {
-		// Try to convert to a map (inline schema)
-		if itemMap, ok := item.(map[string]interface{}); ok {
-			// Check if this has properties
-			if props, ok := itemMap["properties"].(map[string]interface{}); ok {
-				// Merge properties
-				for propName, propValue := range props {
-					// Convert property value to Property struct
-					propData, _ := yaml.Marshal(propValue)
-					var prop Property
-					if err := yaml.Unmarshal(propData, &prop); err == nil {
-						schema.Properties[propName] = prop
-					}
-				}
-			}
-
-			// Also check for required fields
-			if required, ok := itemMap["required"].([]interface{}); ok {
-				for _, req := range required {
-					if reqStr, ok := req.(string); ok {
-						schema.Required = append(schema.Required, reqStr)
-					}
-				}
-			}
-		}
-		// If it's a reference, we skip it for now (would need to resolve BaseEntity etc)
-	}
-}
-
-// inferDomain infers the domain from file path or schema name.
+// inferDomain attempts to infer the domain from schema name.
 func (p *Parser) inferDomain(filePath, schemaName string) string {
-	// Try to infer from file path first
-	if strings.Contains(filePath, "/auth/") || strings.Contains(filePath, "\\auth\\") {
-		return "auth"
-	}
-	if strings.Contains(filePath, "/organizations/") || strings.Contains(filePath, "\\organizations\\") {
-		return "organizations"
-	}
-	if strings.Contains(filePath, "/workflows/") || strings.Contains(filePath, "\\workflows\\") {
-		return "workflows"
-	}
-	if strings.Contains(filePath, "/content/") || strings.Contains(filePath, "\\content\\") {
-		return "content"
-	}
-
-	// Infer from schema name
-	schemaLower := strings.ToLower(schemaName)
-	switch {
-	case strings.Contains(schemaLower, "user") ||
-		strings.Contains(schemaLower, "session") ||
-		strings.Contains(schemaLower, "account") ||
-		strings.Contains(schemaLower, "auth"):
-		return "auth"
-	case strings.Contains(schemaLower, "organization") ||
-		strings.Contains(schemaLower, "member") ||
-		strings.Contains(schemaLower, "team"):
-		return "organizations"
-	case strings.Contains(schemaLower, "workflow") ||
-		strings.Contains(schemaLower, "pipeline") ||
-		strings.Contains(schemaLower, "run"):
-		return "workflows"
-	case strings.Contains(schemaLower, "content") ||
-		strings.Contains(schemaLower, "block") ||
-		strings.Contains(schemaLower, "page") ||
-		strings.Contains(schemaLower, "artifact") ||
-		strings.Contains(schemaLower, "label"):
-		return "content"
-	default:
-		return "common"
-	}
-}
-
-// matchesTags checks if a schema name matches any of the given tags.
-func (p *Parser) matchesTags(schemaName string, tags map[string]bool) bool {
-	// Direct tag match
-	if tags[schemaName] {
-		return true
-	}
-
 	// Check common patterns
 	patterns := map[string][]string{
-		"Auth":          {"User", "Session", "Account", "Token"},
-		"Users":         {"User", "UserProfile", "UserSettings"},
-		"Sessions":      {"Session", "SessionToken"},
-		"Organizations": {"Organization", "Member", "Team"},
-		"Workflows":     {"Workflow", "Pipeline", "Run", "Tool"},
-		"Content":       {"Content", "Block", "Page", "Artifact", "Label"},
+		"auth":          {"User", "Account", "Session", "Token", "Login", "Register"},
+		"organizations": {"Organization", "Member", "Invitation", "Team"},
+		"workflows":     {"Workflow", "Pipeline", "Run", "Task", "Job"},
+		"content":       {"Content", "Artifact", "Label", "File", "Document"},
+		"tools":         {"Tool", "Function", "Action", "Operation"},
+		"config":        {"Config", "Setting", "Preference"},
 	}
 
-	for tag, schemaPatterns := range patterns {
-		if tags[tag] {
-			for _, pattern := range schemaPatterns {
-				if strings.Contains(schemaName, pattern) {
-					return true
-				}
+	for domain, names := range patterns {
+		for _, name := range names {
+			if strings.HasPrefix(schemaName, name) {
+				return domain
 			}
 		}
 	}
 
-	return false
-}
-
-// pluralize converts a singular word to plural (simple rules).
-func pluralize(word string) string {
-	if strings.HasSuffix(word, "y") && len(word) > 1 {
-		// Check if the letter before 'y' is a vowel
-		beforeY := word[len(word)-2]
-		if beforeY != 'a' && beforeY != 'e' && beforeY != 'i' && beforeY != 'o' && beforeY != 'u' {
-			return word[:len(word)-1] + "ies"
+	// Try to extract from file path if provided
+	if filePath != "" {
+		dir := filepath.Dir(filePath)
+		parts := strings.Split(dir, string(os.PathSeparator))
+		if len(parts) > 0 {
+			lastPart := parts[len(parts)-1]
+			if lastPart != "schemas" && lastPart != "components" {
+				return strings.ToLower(lastPart)
+			}
 		}
 	}
-	if strings.HasSuffix(word, "s") || strings.HasSuffix(word, "x") ||
-		strings.HasSuffix(word, "ch") || strings.HasSuffix(word, "sh") {
-		return word + "es"
-	}
-	return word + "s"
+
+	// Default to schema name in lowercase
+	return strings.ToLower(schemaName)
 }
 
-// GetSchemasByDomain returns all schemas grouped by domain.
-func (p *Parser) GetSchemasByDomain() map[string][]*ParsedSchema {
-	domains := make(map[string][]*ParsedSchema)
-
-	for _, schema := range p.schemas {
-		domains[schema.Domain] = append(domains[schema.Domain], schema)
+// WalkAllSchemas walks through all schemas including nested ones.
+func (p *Parser) WalkAllSchemas(callback func(name string, schema *ParsedSchema) error) error {
+	if p.doc == nil {
+		return fmt.Errorf("no document loaded")
 	}
 
-	return domains
+	ctx := context.Background()
+	for item := range openapi.Walk(ctx, p.doc) {
+		err := item.Match(openapi.Matcher{
+			Schema: func(schema *oas3.JSONSchema[oas3.Referenceable]) error {
+				if schema.IsLeft() {
+					// Process the schema
+					// Note: We don't have the name here, would need to track context
+					return nil
+				}
+				return nil
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// Also walk our cached schemas
+	for name, schema := range p.schemas {
+		if err := callback(name, schema); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// GetSchema returns a specific parsed schema by name.
-func (p *Parser) GetSchema(name string) (*ParsedSchema, bool) {
-	schema, ok := p.schemas[name]
-	return schema, ok
+// GetDefaultValues extracts all default values from a schema.
+func (p *Parser) GetDefaultValues(schemaName string) (map[string]interface{}, error) {
+	schema, exists := p.schemas[schemaName]
+	if !exists {
+		return nil, fmt.Errorf("schema %s not found", schemaName)
+	}
+
+	defaults := make(map[string]interface{})
+
+	// Extract defaults from properties
+	for propName, prop := range schema.Properties {
+		if prop.Default != nil {
+			defaults[propName] = prop.Default
+		}
+	}
+
+	return defaults, nil
 }
 
-// HasXCodegen checks if a schema has any x-codegen configuration.
+// GetAllConfigDefaults recursively extracts all defaults including from nested schemas.
+// This is especially useful for ArchesConfig which references other config schemas.
+func (p *Parser) GetAllConfigDefaults(schemaName string) (map[string]interface{}, error) {
+	if p.doc == nil || p.doc.Components == nil || p.doc.Components.Schemas == nil {
+		return nil, fmt.Errorf("no document loaded")
+	}
+
+	schemaRef := p.doc.Components.Schemas.GetOrZero(schemaName)
+	if schemaRef == nil || !schemaRef.IsLeft() {
+		return nil, fmt.Errorf("schema %s not found", schemaName)
+	}
+
+	schema := schemaRef.GetLeft()
+	return p.extractDefaultsRecursive(schema, schemaName)
+}
+
+// extractDefaultsRecursive recursively extracts defaults from a schema and its references.
+func (p *Parser) extractDefaultsRecursive(schema *oas3.Schema, path string) (map[string]interface{}, error) {
+	result := make(map[string]interface{})
+
+	if schema.Properties != nil {
+		for propName := range schema.Properties.Keys() {
+			propRef := schema.Properties.GetOrZero(propName)
+			if propRef == nil {
+				continue
+			}
+
+			if propRef.IsLeft() {
+				// Direct schema
+				prop := propRef.GetLeft()
+
+				// Check for default value
+				if prop.Default != nil {
+					var defaultValue interface{}
+					if err := prop.Default.Decode(&defaultValue); err == nil {
+						result[propName] = defaultValue
+					}
+				}
+
+				// If it's an object with properties, recurse
+				if prop.Type != nil {
+					types := prop.GetType()
+					if len(types) > 0 && types[0] == "object" && prop.Properties != nil {
+						// Recursively get defaults from nested object
+						nested, err := p.extractDefaultsRecursive(prop, path+"."+propName)
+						if err == nil && len(nested) > 0 {
+							// Store nested defaults as a map
+							result[propName] = nested
+						}
+					}
+				}
+			}
+			// TODO: Handle references (IsRight) with Speakeasy's API
+			// For now, we're only handling direct schemas
+		}
+	}
+
+	return result, nil
+}
+
+// GetCompleteConfigDefaults safely extracts ALL configuration defaults from the ArchesConfig structure.
+// This includes all nested config schemas (APIConfig, DatabaseConfig, etc.) and their sub-configs.
+// Returns a complete hierarchical map of all defaults that can be used for code generation.
+func (p *Parser) GetCompleteConfigDefaults() (map[string]interface{}, error) {
+	if p.doc == nil || p.doc.Components == nil || p.doc.Components.Schemas == nil {
+		return nil, fmt.Errorf("no OpenAPI document loaded - call ParseOpenAPISpec first")
+	}
+
+	// Build complete config structure matching ArchesConfig
+	// Each top-level key corresponds to a field in ArchesConfig
+	completeDefaults := make(map[string]interface{})
+
+	// Helper function to safely get defaults for a schema
+	safeGetDefaults := func(schemaName string) map[string]interface{} {
+		defaults, err := p.GetDefaultValues(schemaName)
+		if err != nil {
+			// Schema might not exist or have no defaults
+			return make(map[string]interface{})
+		}
+		return defaults
+	}
+
+	// Top-level configs in ArchesConfig
+	configs := map[string]string{
+		"api":            "APIConfig",
+		"auth":           "AuthConfig",
+		"billing":        "BillingConfig",
+		"database":       "DatabaseConfig",
+		"infrastructure": "InfrastructureConfig",
+		"ingress":        "IngressConfig",
+		"intelligence":   "IntelligenceConfig",
+		"logging":        "LoggingConfig",
+		"monitoring":     "MonitoringConfig",
+		"platform":       "PlatformConfig",
+		"redis":          "RedisConfig",
+		"storage":        "StorageConfig",
+	}
+
+	// Get defaults for each top-level config
+	for key, schemaName := range configs {
+		completeDefaults[key] = safeGetDefaults(schemaName)
+	}
+
+	// Handle nested configs within each top-level config
+	// APIConfig has nested: cors, email, image, resources
+	if apiDefaults, ok := completeDefaults["api"].(map[string]interface{}); ok {
+		apiDefaults["cors"] = safeGetDefaults("CORSConfig")
+		apiDefaults["email"] = safeGetDefaults("EmailConfig")
+		apiDefaults["image"] = safeGetDefaults("ImageConfig")
+		apiDefaults["resources"] = safeGetDefaults("ResourceConfig")
+	}
+
+	// AuthConfig has nested: local, oauth
+	if authDefaults, ok := completeDefaults["auth"].(map[string]interface{}); ok {
+		authDefaults["local"] = safeGetDefaults("LocalAuthConfig")
+		authDefaults["oauth"] = safeGetDefaults("OAuthConfig")
+	}
+
+	// IntelligenceConfig has nested: llm, embedding
+	if intellDefaults, ok := completeDefaults["intelligence"].(map[string]interface{}); ok {
+		intellDefaults["llm"] = safeGetDefaults("LLMConfig")
+		intellDefaults["embedding"] = safeGetDefaults("EmbeddingConfig")
+	}
+
+	// MonitoringConfig has nested: grafana, loki
+	if monDefaults, ok := completeDefaults["monitoring"].(map[string]interface{}); ok {
+		monDefaults["grafana"] = safeGetDefaults("GrafanaConfig")
+		monDefaults["loki"] = safeGetDefaults("LokiConfig")
+	}
+
+	// BillingConfig has nested: stripe
+	if billDefaults, ok := completeDefaults["billing"].(map[string]interface{}); ok {
+		billDefaults["stripe"] = safeGetDefaults("StripeConfig")
+	}
+
+	// InfrastructureConfig has nested: development
+	if infraDefaults, ok := completeDefaults["infrastructure"].(map[string]interface{}); ok {
+		infraDefaults["development"] = safeGetDefaults("DevServiceConfig")
+	}
+
+	return completeDefaults, nil
+}
+
+// FlattenConfigDefaults converts nested config defaults to a flat map with dot notation keys.
+// For example: {"api": {"host": "0.0.0.0"}} becomes {"api.host": "0.0.0.0"}
+// This is useful for environment variable generation or flat config files.
+func (p *Parser) FlattenConfigDefaults(defaults map[string]interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	p.flattenRecursive("", defaults, result)
+	return result
+}
+
+// flattenRecursive is a helper to recursively flatten nested maps
+func (p *Parser) flattenRecursive(prefix string, nested map[string]interface{}, result map[string]interface{}) {
+	for key, value := range nested {
+		fullKey := key
+		if prefix != "" {
+			fullKey = prefix + "." + key
+		}
+
+		switch v := value.(type) {
+		case map[string]interface{}:
+			// Recursively flatten nested maps
+			p.flattenRecursive(fullKey, v, result)
+		default:
+			// Store the value with its full path
+			result[fullKey] = value
+		}
+	}
+}
+
+// CountConfigDefaults counts the total number of default values in a nested config map.
+// This includes all nested defaults at any depth.
+func (p *Parser) CountConfigDefaults(defaults map[string]interface{}) int {
+	count := 0
+	for _, value := range defaults {
+		switch v := value.(type) {
+		case map[string]interface{}:
+			// Recursively count nested defaults
+			count += p.CountConfigDefaults(v)
+		default:
+			// This is a leaf value (actual default)
+			count++
+		}
+	}
+	return count
+}
+
+// Helper functions for code generation compatibility
+
+// HasXCodegen checks if a schema has x-codegen extensions.
 func HasXCodegen(schema *ParsedSchema) bool {
-	if schema.XCodegen != nil {
-		return true
-	}
-
-	for _, prop := range schema.Properties {
-		if prop.XCodegen != nil {
-			return true
-		}
-	}
-
-	return false
+	return schema != nil && schema.XCodegen != nil
 }
 
 // NeedsRepository checks if a schema needs repository generation.
 func NeedsRepository(schema *ParsedSchema) bool {
-	return schema.XCodegen != nil &&
-		len(schema.XCodegen.Repository.Operations) > 0
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	// Check if repository operations are defined
+	return len(schema.XCodegen.Repository.Operations) > 0
 }
 
 // NeedsCache checks if a schema needs cache generation.
 func NeedsCache(schema *ParsedSchema) bool {
-	return schema.XCodegen != nil &&
-		schema.XCodegen.Cache.Enabled
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	return schema.XCodegen.Cache.Enabled
 }
 
 // NeedsEvents checks if a schema needs event generation.
 func NeedsEvents(schema *ParsedSchema) bool {
-	return schema.XCodegen != nil &&
-		len(schema.XCodegen.Events) > 0
-}
-
-// NeedsHandler checks if a schema needs handler generation.
-func NeedsHandler(schema *ParsedSchema) bool {
-	return schema.XCodegen != nil && schema.XCodegen.Handler.Generate
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	return len(schema.XCodegen.Events) > 0 || len(schema.Events) > 0
 }
 
 // NeedsAdapter checks if a schema needs adapter generation.
 func NeedsAdapter(schema *ParsedSchema) bool {
-	return schema.XCodegen != nil &&
-		schema.XCodegen.Adapter.GenerateMappers
+	if schema == nil || schema.XCodegen == nil {
+		return false
+	}
+	// Check if adapter is configured (has mappers or custom mappings)
+	return schema.XCodegen.Adapter.GenerateMappers ||
+		len(schema.XCodegen.Adapter.CustomMappings) > 0
 }

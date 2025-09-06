@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// MockRepository implements OrganizationRepository for testing
+// MockRepository implements ExtendedRepository for testing
 type MockRepository struct {
 	organizations map[uuid.UUID]*Organization
 	members       map[uuid.UUID]*Member
@@ -19,7 +19,7 @@ type MockRepository struct {
 }
 
 // Compile-time check
-var _ OrganizationRepository = (*MockRepository)(nil)
+var _ ExtendedRepository = (*MockRepository)(nil)
 
 func NewMockRepository() *MockRepository {
 	return &MockRepository{
@@ -43,7 +43,7 @@ func (m *MockRepository) CreateOrganization(_ context.Context, org *Organization
 	return org, nil
 }
 
-func (m *MockRepository) GetOrganizationByID(_ context.Context, id uuid.UUID) (*Organization, error) {
+func (m *MockRepository) GetOrganization(_ context.Context, id uuid.UUID) (*Organization, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -113,22 +113,16 @@ func (m *MockRepository) GetMember(_ context.Context, id uuid.UUID) (*Member, er
 	return member, nil
 }
 
-func (m *MockRepository) GetMemberByID(_ context.Context, id uuid.UUID) (*Member, error) {
+func (m *MockRepository) GetMemberByUserAndOrg(_ context.Context, userID, orgID string) (*Member, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
-	member, exists := m.members[id]
-	if !exists {
-		return nil, ErrMemberNotFound
+	// Simple implementation - find first member that matches
+	for _, member := range m.members {
+		if member.UserId == userID && member.OrganizationId == orgID {
+			return member, nil
+		}
 	}
-	return member, nil
-}
-
-func (m *MockRepository) GetMemberByUserAndOrg(_ context.Context, _, _ string) (*Member, error) {
-	if m.err != nil {
-		return nil, m.err
-	}
-	// For testing, return not found
 	return nil, ErrMemberNotFound
 }
 
@@ -191,7 +185,7 @@ func (m *MockRepository) GetInvitation(_ context.Context, id uuid.UUID) (*Invita
 	return inv, nil
 }
 
-func (m *MockRepository) UpdateInvitation(_ context.Context, inv *Invitation) (*Invitation, error) {
+func (m *MockRepository) UpdateInvitation(_ context.Context, _ uuid.UUID, inv *Invitation) (*Invitation, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -214,7 +208,7 @@ func (m *MockRepository) DeleteInvitation(_ context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (m *MockRepository) ListInvitations(_ context.Context, _ string, _, _ int) ([]*Invitation, int, error) {
+func (m *MockRepository) ListInvitations(_ context.Context, _ ListInvitationsParams) ([]*Invitation, int64, error) {
 	if m.err != nil {
 		return nil, 0, m.err
 	}
@@ -222,7 +216,7 @@ func (m *MockRepository) ListInvitations(_ context.Context, _ string, _, _ int) 
 	for _, inv := range m.invitations {
 		invs = append(invs, inv)
 	}
-	return invs, len(invs), nil
+	return invs, int64(len(invs)), nil
 }
 
 // Test cases
@@ -1144,7 +1138,7 @@ func TestMockRepository_EdgeCases(t *testing.T) {
 	t.Run("GetMemberByID on non-existent", func(t *testing.T) {
 		repo := NewMockRepository()
 
-		_, err := repo.GetMemberByID(context.Background(), uuid.New())
+		_, err := repo.GetMember(context.Background(), uuid.New())
 
 		if !errors.Is(err, ErrMemberNotFound) {
 			t.Errorf("GetMemberByID() error = %v, want %v", err, ErrMemberNotFound)

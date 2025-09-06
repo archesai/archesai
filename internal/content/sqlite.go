@@ -33,13 +33,13 @@ func (s *SQLiteRepository) DeleteLabel(_ context.Context, _ uuid.UUID) error {
 	panic("unimplemented")
 }
 
-// GetArtifactByID implements Repository.
-func (s *SQLiteRepository) GetArtifactByID(_ context.Context, _ uuid.UUID) (*Artifact, error) {
+// GetArtifact implements Repository.
+func (s *SQLiteRepository) GetArtifact(_ context.Context, _ uuid.UUID) (*Artifact, error) {
 	panic("unimplemented")
 }
 
-// GetLabelByID implements Repository.
-func (s *SQLiteRepository) GetLabelByID(_ context.Context, _ uuid.UUID) (*Label, error) {
+// GetLabel implements Repository.
+func (s *SQLiteRepository) GetLabel(_ context.Context, _ uuid.UUID) (*Label, error) {
 	panic("unimplemented")
 }
 

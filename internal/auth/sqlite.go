@@ -29,8 +29,8 @@ func (r *SQLiteRepository) CreateUser(_ context.Context, _ *User) (*User, error)
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetUserByID retrieves a user by ID
-func (r *SQLiteRepository) GetUserByID(_ context.Context, _ uuid.UUID) (*User, error) {
+// GetUser retrieves a user by ID
+func (r *SQLiteRepository) GetUser(_ context.Context, _ uuid.UUID) (*User, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -66,8 +66,8 @@ func (r *SQLiteRepository) CreateSession(_ context.Context, _ *Session) (*Sessio
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetSessionByID retrieves a session by ID
-func (r *SQLiteRepository) GetSessionByID(_ context.Context, _ uuid.UUID) (*Session, error) {
+// GetSession retrieves a session by ID
+func (r *SQLiteRepository) GetSession(_ context.Context, _ uuid.UUID) (*Session, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
@@ -108,8 +108,8 @@ func (r *SQLiteRepository) CreateAccount(_ context.Context, _ *Account) (*Accoun
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 
-// GetAccountByID retrieves an account by ID
-func (r *SQLiteRepository) GetAccountByID(_ context.Context, _ uuid.UUID) (*Account, error) {
+// GetAccount retrieves an account by ID
+func (r *SQLiteRepository) GetAccount(_ context.Context, _ uuid.UUID) (*Account, error) {
 	return nil, fmt.Errorf("SQLite implementation not yet available")
 }
 

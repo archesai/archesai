@@ -6,10 +6,7 @@ package organizations
 //go:generate go tool oapi-codegen --config=../../server.codegen.yaml --package organizations --include-tags Organizations,Members,Invitations ../../api/openapi.bundled.yaml
 
 import (
-	"context"
 	"errors"
-
-	"github.com/google/uuid"
 )
 
 // Domain types
@@ -22,23 +19,6 @@ type (
 
 	// InvitationAlias is an alias to avoid conflicts with generated type
 	InvitationAlias = Invitation
-
-	// OrganizationRepository combines the generated Repository with additional methods
-	// Note: This is a temporary interface until we add x-codegen for Member and Invitation
-	OrganizationRepository interface {
-		Repository
-
-		// Additional Member operations not in generated interface
-		GetMember(ctx context.Context, id uuid.UUID) (*Member, error)
-		GetMemberByUserAndOrg(ctx context.Context, userID, orgID string) (*Member, error)
-
-		// Invitation operations
-		CreateInvitation(ctx context.Context, invitation *Invitation) (*Invitation, error)
-		GetInvitation(ctx context.Context, id uuid.UUID) (*Invitation, error)
-		UpdateInvitation(ctx context.Context, invitation *Invitation) (*Invitation, error)
-		DeleteInvitation(ctx context.Context, id uuid.UUID) error
-		ListInvitations(ctx context.Context, orgID string, limit, offset int) ([]*Invitation, int, error)
-	}
 
 	// CreateOrganizationRequest represents a request to create an organization
 	CreateOrganizationRequest = CreateOrganizationJSONBody

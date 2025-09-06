@@ -50,6 +50,11 @@ watch: ## Run with hot reload (requires air)
 	@echo -e "$(YELLOW)▶ Running with hot reload...$(NC)"
 	@go tool air
 
+.PHONY: tui
+tui: build ## Launch the TUI interface
+	@echo -e "$(YELLOW)▶ Launching TUI...$(NC)"
+	@./bin/archesai tui
+
 .PHONY: build
 build: build-archesai build-codegen ## Build all binaries
 	@echo -e "$(GREEN)✓ All builds complete!$(NC)"

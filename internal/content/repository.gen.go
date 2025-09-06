@@ -12,14 +12,14 @@ type Repository interface {
 
 	// Artifact operations
 	CreateArtifact(ctx context.Context, entity *Artifact) (*Artifact, error)
-	GetArtifactByID(ctx context.Context, id uuid.UUID) (*Artifact, error)
+	GetArtifact(ctx context.Context, id uuid.UUID) (*Artifact, error)
 	UpdateArtifact(ctx context.Context, id uuid.UUID, entity *Artifact) (*Artifact, error)
 	DeleteArtifact(ctx context.Context, id uuid.UUID) error
 	ListArtifacts(ctx context.Context, params ListArtifactsParams) ([]*Artifact, int64, error)
 
 	// Label operations
 	CreateLabel(ctx context.Context, entity *Label) (*Label, error)
-	GetLabelByID(ctx context.Context, id uuid.UUID) (*Label, error)
+	GetLabel(ctx context.Context, id uuid.UUID) (*Label, error)
 	UpdateLabel(ctx context.Context, id uuid.UUID, entity *Label) (*Label, error)
 	DeleteLabel(ctx context.Context, id uuid.UUID) error
 	ListLabels(ctx context.Context, params ListLabelsParams) ([]*Label, int64, error)

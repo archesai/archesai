@@ -1,9 +1,9 @@
 root = "."
 testdata_dir = "testdata"
-tmp_dir = ".tmp"
+tmp_dir = "/tmp"
 
 [build]
-  args_bin = ["api"]
+  args_bin = ["api", "--tui"]
   bin = "./bin/archesai"
   cmd = "make build-archesai"
   delay = 1000

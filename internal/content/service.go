@@ -89,7 +89,7 @@ func (s *Service) CreateArtifact(ctx context.Context, req *CreateArtifactJSONReq
 
 // GetArtifact retrieves an artifact by ID
 func (s *Service) GetArtifact(ctx context.Context, id uuid.UUID) (*Artifact, error) {
-	artifact, err := s.repo.GetArtifactByID(ctx, id)
+	artifact, err := s.repo.GetArtifact(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
@@ -98,7 +98,7 @@ func (s *Service) GetArtifact(ctx context.Context, id uuid.UUID) (*Artifact, err
 
 // UpdateArtifact updates an artifact
 func (s *Service) UpdateArtifact(ctx context.Context, id uuid.UUID, req *UpdateArtifactJSONRequestBody) (*Artifact, error) {
-	artifact, err := s.repo.GetArtifactByID(ctx, id)
+	artifact, err := s.repo.GetArtifact(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get artifact: %w", err)
 	}
@@ -198,7 +198,7 @@ func (s *Service) CreateLabel(ctx context.Context, req *CreateLabelJSONRequestBo
 
 // GetLabel retrieves a label by ID
 func (s *Service) GetLabel(ctx context.Context, id uuid.UUID) (*Label, error) {
-	label, err := s.repo.GetLabelByID(ctx, id)
+	label, err := s.repo.GetLabel(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get label: %w", err)
 	}
@@ -207,7 +207,7 @@ func (s *Service) GetLabel(ctx context.Context, id uuid.UUID) (*Label, error) {
 
 // UpdateLabel updates a label
 func (s *Service) UpdateLabel(ctx context.Context, id uuid.UUID, req *UpdateLabelJSONRequestBody) (*Label, error) {
-	label, err := s.repo.GetLabelByID(ctx, id)
+	label, err := s.repo.GetLabel(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get label: %w", err)
 	}

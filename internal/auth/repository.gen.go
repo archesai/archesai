@@ -12,21 +12,21 @@ type Repository interface {
 
 	// Account operations
 	CreateAccount(ctx context.Context, entity *Account) (*Account, error)
-	GetAccountByID(ctx context.Context, id uuid.UUID) (*Account, error)
+	GetAccount(ctx context.Context, id uuid.UUID) (*Account, error)
 	UpdateAccount(ctx context.Context, id uuid.UUID, entity *Account) (*Account, error)
 	DeleteAccount(ctx context.Context, id uuid.UUID) error
 	ListAccounts(ctx context.Context, params ListAccountsParams) ([]*Account, int64, error)
 
 	// Session operations
 	CreateSession(ctx context.Context, entity *Session) (*Session, error)
-	GetSessionByID(ctx context.Context, id uuid.UUID) (*Session, error)
+	GetSession(ctx context.Context, id uuid.UUID) (*Session, error)
 	UpdateSession(ctx context.Context, id uuid.UUID, entity *Session) (*Session, error)
 	DeleteSession(ctx context.Context, id uuid.UUID) error
 	ListSessions(ctx context.Context, params ListSessionsParams) ([]*Session, int64, error)
 
 	// User operations
 	CreateUser(ctx context.Context, entity *User) (*User, error)
-	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
+	GetUser(ctx context.Context, id uuid.UUID) (*User, error)
 	UpdateUser(ctx context.Context, id uuid.UUID, entity *User) (*User, error)
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	ListUsers(ctx context.Context, params ListUsersParams) ([]*User, int64, error)

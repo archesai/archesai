@@ -41,7 +41,7 @@ func (m *MockRepository) CreatePipeline(_ context.Context, pipeline *Pipeline) (
 	return pipeline, nil
 }
 
-func (m *MockRepository) GetPipelineByID(_ context.Context, id uuid.UUID) (*Pipeline, error) {
+func (m *MockRepository) GetPipeline(_ context.Context, id uuid.UUID) (*Pipeline, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -100,7 +100,7 @@ func (m *MockRepository) CreateRun(_ context.Context, run *Run) (*Run, error) {
 	return run, nil
 }
 
-func (m *MockRepository) GetRunByID(_ context.Context, id uuid.UUID) (*Run, error) {
+func (m *MockRepository) GetRun(_ context.Context, id uuid.UUID) (*Run, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -808,13 +808,13 @@ func TestMockRepository_EdgeCases(t *testing.T) {
 		}
 	})
 
-	t.Run("GetRunByID on non-existent", func(t *testing.T) {
+	t.Run("GetRun on non-existent", func(t *testing.T) {
 		repo := NewMockRepository()
 
-		_, err := repo.GetRunByID(context.Background(), uuid.New())
+		_, err := repo.GetRun(context.Background(), uuid.New())
 
 		if !errors.Is(err, ErrRunNotFound) {
-			t.Errorf("GetRunByID() error = %v, want %v", err, ErrRunNotFound)
+			t.Errorf("GetRun() error = %v, want %v", err, ErrRunNotFound)
 		}
 	})
 
